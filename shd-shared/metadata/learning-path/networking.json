@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "networking",
-  "summary": "???Networking????????????????????????????????????????????",
+  "summary": "从网络协议与布线施工出发，覆盖交换路由、负载均衡与抓包排障实践。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "????? IP",
+      "title": "网络基础",
+      "subtitle": "协议、交换、路由与 IP",
       "nodes": [
         {
           "id": "networking-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "???????",
+      "title": "进阶技术",
+      "subtitle": "负载均衡、隧道与 BGP",
       "nodes": [
         {
           "id": "networking-101",
@@ -84,8 +84,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "命令实战",
+      "subtitle": "抓包、远程连接与代理",
       "nodes": [
         {
           "id": "networking-201",

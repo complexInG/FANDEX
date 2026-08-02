@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "svg",
-  "summary": "???SVG????????????????????????????????????????????",
+  "summary": "从 SVG 语法与坐标系出发，覆盖图形、路径、滤镜动画与交互实战。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "???????",
+      "title": "基础语法",
+      "subtitle": "坐标、图形与路径",
       "nodes": [
         {
           "id": "svg-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "高级特性",
+      "subtitle": "渐变、变换与滤镜",
       "nodes": [
         {
           "id": "svg-101",
@@ -79,8 +79,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "实战应用",
+      "subtitle": "动画、交互与响应式",
       "nodes": [
         {
           "id": "svg-201",

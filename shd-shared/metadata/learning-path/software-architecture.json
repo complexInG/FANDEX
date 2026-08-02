@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "software-architecture",
-  "summary": "???软件架构????????????????????????????????????????????",
+  "summary": "从架构风格与质量属性出发，覆盖微服务、事件驱动与领域驱动设计。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "?????????",
+      "title": "架构基础",
+      "subtitle": "架构风格与分层设计",
       "nodes": [
         {
           "id": "software-architecture-001",
@@ -22,8 +22,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "????DDD ???",
+      "title": "架构风格",
+      "subtitle": "微服务、事件驱动与 DDD",
       "nodes": [
         {
           "id": "software-architecture-101",
@@ -44,8 +44,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "评估实践",
+      "subtitle": "CAP 理论与架构评估",
       "nodes": [
         {
           "id": "software-architecture-201",

@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "go",
-  "summary": "??? Go ??????????????????????????????????????",
+  "summary": "从 Go 基础语法与数据结构出发，覆盖并发模型、Web 开发与工程生态。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "基础语法",
+      "subtitle": "类型、错误处理与接口",
       "nodes": [
         {
           "id": "go-001",
@@ -47,8 +47,8 @@
     },
     {
       "id": "concurrency",
-      "title": "?????",
-      "subtitle": "goroutine?channel ????",
+      "title": "并发与生态",
+      "subtitle": "goroutine、channel 与 HTTP",
       "nodes": [
         {
           "id": "go-101",
@@ -89,8 +89,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "工程实战",
+      "subtitle": "并发模式与性能分析",
       "nodes": [
         {
           "id": "go-201",

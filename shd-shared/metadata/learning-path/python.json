@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "python",
-  "summary": "??? Python ???????????????????????????????????????",
+  "summary": "从 Python 基础语法与数据结构出发，覆盖并发、Web 开发与自动化生态。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "基础语法",
+      "subtitle": "类型系统与常用生态",
       "nodes": [
         {
           "id": "python-001",
@@ -52,8 +52,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "???????????",
+      "title": "进阶特性",
+      "subtitle": "并发、类型注解与 CI/CD",
       "nodes": [
         {
           "id": "python-101",
@@ -99,8 +99,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "实战速查",
+      "subtitle": "面向对象、标准库与网络请求",
       "nodes": [
         {
           "id": "python-201",

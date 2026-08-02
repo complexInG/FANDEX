@@ -1,12 +1,12 @@
 {
     "version":  "1.0.0",
     "module":  "shell",
-    "summary":  "? Shell ???????????????????????????????",
+    "summary":  "从命令行基础与 Shell 脚本出发，覆盖文本处理、进程控制与自动化。",
     "stages":  [
                    {
                        "id":  "basics",
-                       "title":  "????",
-                       "subtitle":  "????????",
+                       "title":  "基础语法",
+                       "subtitle":  "文件操作与文本三剑客",
                        "nodes":  [
                                      {
                                          "id":  "shell-001",
@@ -32,8 +32,8 @@
                    },
                    {
                        "id":  "practice",
-                       "title":  "????",
-                       "subtitle":  "???????????",
+                       "title":  "实战脚本",
+                       "subtitle":  "调试、函数与命令速查",
                        "nodes":  [
                                      {
                                          "id":  "shell-101",

@@ -94,8 +94,8 @@ const GEO_DECOR_CONFIG: Record<GeoBgVariant, GeoDecorItem[]> = {
   minimal: ['geo-bg-grid', 'geo-bars-marks'],
   /** 加载态：网格底纹 + 小点阵（参考 KeMuONEXueKao 的 loading 变体，保持克制不分散注意力） */
   loading: ['geo-bg-grid', 'geo-dots-sm'],
-  /** 错误态：网格底纹 + 竖条刻度线（参考 KeMuONEXueKao 的 error 变体） */
-  error: ['geo-bg-grid', 'geo-bars-marks'],
+  /** 错误态：网格底纹 + 竖条刻度线 + 竖条脉冲 + 扫描线（克制的动态背景） */
+  error: ['geo-bg-grid', 'geo-bars-marks', 'geo-bars-pulse', 'geo-scan-line'],
   /** 信息页变体：类似 docs 但更克制，用于 about/disclaimer/privacy 等信息页
    *  相比 docs 移除 bezier-flow 动态弧线，保留几何线条，营造沉稳的阅读氛围 */
   info: [

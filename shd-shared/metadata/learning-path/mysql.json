@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "mysql",
-  "summary": "??? MySQL ???????????????????????????????????",
+  "summary": "从数据库设计与存储引擎出发，覆盖索引、事务、锁机制与高可用实践。",
   "stages": [
     {
       "id": "basics",
-      "title": "?????",
-      "subtitle": "?????SQL ???",
+      "title": "入门基础",
+      "subtitle": "存储引擎与 SQL 基础",
       "nodes": [
         {
           "id": "mysql-001",
@@ -52,8 +52,8 @@
     },
     {
       "id": "index",
-      "title": "?????",
-      "subtitle": "???????????",
+      "title": "索引优化",
+      "subtitle": "索引、执行计划与复制",
       "nodes": [
         {
           "id": "mysql-101",
@@ -99,8 +99,8 @@
     },
     {
       "id": "arch",
-      "title": "?????",
-      "subtitle": "?????????",
+      "title": "架构实战",
+      "subtitle": "锁、事务与速查手册",
       "nodes": [
         {
           "id": "mysql-201",

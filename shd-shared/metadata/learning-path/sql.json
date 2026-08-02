@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "sql",
-  "summary": "? SQL ????????????????????????????????????",
+  "summary": "从 SQL 标准与数据操作出发，覆盖高级查询、事务隔离与锁机制。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "SELECT??????",
+      "title": "基础查询",
+      "subtitle": "SELECT 与数据操作",
       "nodes": [
         {
           "id": "sql-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "???????????",
+      "title": "高级查询",
+      "subtitle": "连接、CTE 与事务特性",
       "nodes": [
         {
           "id": "sql-101",
@@ -89,8 +89,8 @@
     },
     {
       "id": "engine",
-      "title": "?????",
-      "subtitle": "?????????",
+      "title": "引擎机制",
+      "subtitle": "锁机制与窗口函数",
       "nodes": [
         {
           "id": "sql-201",

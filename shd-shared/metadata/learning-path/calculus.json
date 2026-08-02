@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "calculus",
-  "summary": "???高等数学????????????????????????????????????????????",
+  "summary": "从函数与极限出发，系统学习微分、积分与多元分析，覆盖级数与常微分方程。",
   "stages": [
     {
       "id": "basics",
-      "title": "?????",
-      "subtitle": "????????",
+      "title": "一元微积分",
+      "subtitle": "极限、导数与中值定理",
       "nodes": [
         {
           "id": "calculus-001",
@@ -27,8 +27,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "积分与多元",
+      "subtitle": "不定积分与多元微分",
       "nodes": [
         {
           "id": "calculus-101",
@@ -49,8 +49,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "综合应用",
+      "subtitle": "重积分、级数与微分方程",
       "nodes": [
         {
           "id": "calculus-201",

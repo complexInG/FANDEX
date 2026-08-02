@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "software-testing",
-  "summary": "???软件测试????????????????????????????????????????????",
+  "summary": "从测试基础与用例设计出发，覆盖自动化测试、性能测试与 CI 门禁。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "?????????",
+      "title": "测试基础",
+      "subtitle": "用例设计与测试类型",
       "nodes": [
         {
           "id": "software-testing-001",
@@ -37,8 +37,8 @@
     },
     {
       "id": "advanced",
-      "title": "?????",
-      "subtitle": "?????? E2E",
+      "title": "自动化测试",
+      "subtitle": "自动化框架与 E2E",
       "nodes": [
         {
           "id": "software-testing-101",
@@ -69,8 +69,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "CI ???????",
+      "title": "工程实践",
+      "subtitle": "CI 门禁与 Jest 测试",
       "nodes": [
         {
           "id": "software-testing-201",

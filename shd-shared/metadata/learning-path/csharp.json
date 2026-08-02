@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "csharp",
-  "summary": "???C#????????????????????????????????????????????",
+  "summary": "从 C# 基础语法与面向对象出发，覆盖异步编程、LINQ 与现代 .NET 工程实践。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "???????",
+      "title": "基础语法",
+      "subtitle": "面向对象与异步编程",
       "nodes": [
         {
           "id": "csharp-001",
@@ -47,8 +47,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "LINQ??????",
+      "title": "高级特性",
+      "subtitle": "LINQ、源生成器与 Web 开发",
       "nodes": [
         {
           "id": "csharp-101",
@@ -89,8 +89,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": ".NET ?????",
+      "title": "工程实战",
+      "subtitle": ".NET 生态、GC 与速查",
       "nodes": [
         {
           "id": "csharp-201",

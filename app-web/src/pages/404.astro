@@ -1,14 +1,15 @@
 ---
-// CSS 引入顺序与 BaseLayout.astro 保持一致
-// 1. styles/shared - ark 令牌体系（必须最先）
-// 2. variables.css - --color-* 兼容层
-// 3. tokens.css - --fandex-* 兼容层
-// 4. tailwind.css - Tailwind 4 配置
-// 5. 业务样式
-//
-// 格式与交互逻辑已拆分至独立文件：
-// - styles/pages/error.css       页面级样式（错误码、搜索框、模块网格、响应式）
-// - lib/error-search.ts          客户端脚本（路径提示、智能建议、模块搜索过滤）
+/**
+ * 404 错误页
+ * -----------------------------------------------------------------------------
+ * 设计原则：极简、克制、直接。
+ * - 保留必要信息：错误码、一句话说明、失效路径
+ * - 只提供两个出口：返回首页 / 学习路线
+ * - 背景使用 error 变体几何装饰（网格漂移 + 竖条脉冲 + 扫描线）
+ *
+ * 样式：styles/pages/error.css
+ * 脚本：仅内联一段路径展示脚本（无搜索、无建议等重功能）
+ */
 import '@/styles/shared/index.css';
 import '@/styles/variables.css';
 import '@/styles/tokens.css';
@@ -20,32 +21,10 @@ import '@/styles/components.css';
 import '@/styles/geo-decor.css';
 import '@/styles/pages/error.css';
 import GeoBgDecor from '@/components/GeoBgDecor.astro';
-import { modules, categoryLabels, categoryColors, getPrimaryCategory } from '@/lib/modules';
-import { getLearningPathModules } from '@/lib/learning-path';
 import { SITE } from '@/lib/constants';
 import { MINIMAL_CSP } from '@/lib/csp';
 
 const base = import.meta.env.BASE_URL;
-
-// 全部模块卡片：搜索时作为完整数据源，默认仅展示前 12 个避免页面过长
-const moduleCards = modules.map((m) => {
-  const category = getPrimaryCategory(m);
-  return {
-    id: m.id,
-    title: m.title,
-    desc: m.description,
-    category: categoryLabels[category] || '',
-    color: categoryColors[category] || categoryColors.tools,
-    href: `${base}${m.id}/`,
-  };
-});
-
-// 供客户端生成「你可能想访问」建议的轻量元数据（不携带学习路径地图全量数据）
-const suggestMeta = {
-  base,
-  modules: modules.map((m) => ({ id: m.id, title: m.title })),
-  learningPaths: getLearningPathModules(),
-};
 ---
 
 <html lang={SITE.lang}>
@@ -87,101 +66,45 @@ const suggestMeta = {
       })();
     </script>
   </head>
-  <body data-suggest-meta={JSON.stringify(suggestMeta)}>
+  <body>
     <div class="error-page">
-      <!-- 几何背景装饰层：竖条与刻度线变体，不含点状元素 -->
-      <GeoBgDecor variant="minimal" />
-      <div class="error-container">
-        <div class="error-code">404</div>
+      <!-- 几何背景装饰层：网格漂移 + 竖条脉冲 + 扫描线，不含点状元素 -->
+      <GeoBgDecor variant="error" />
+      <main class="error-container">
+        <!-- 错误码：渐变扫光 + 四角括号框 -->
+        <div class="error-code-frame" aria-hidden="true">
+          <div class="error-code">404</div>
+        </div>
         <h1 class="error-title">页面未找到</h1>
-        <p class="error-desc">
-          你访问的地址不存在或内容已被移动，请先核对下方路径，或搜索模块继续学习。
-        </p>
+        <p class="error-desc">地址不存在或内容已被移动。</p>
 
-        <!-- 失效路径展示：借鉴文档站 404 惯例，明确告知用户访问了哪个不存在的地址 -->
+        <!-- 刻度装饰线：竖条而非点状，呼应构成主义语言 -->
+        <div class="error-ticks" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+
+        <!-- 失效路径：明确告知用户访问了哪个不存在的地址 -->
         <div class="error-path" id="error-path-block" hidden>
-          <span class="error-path-label">你打开了一个不存在的链接：</span>
+          <span class="error-path-label">失效链接</span>
           <code class="error-path-value" id="error-path-value"></code>
         </div>
 
-        <!-- 智能建议：客户端根据当前路径匹配学习路径 / 语法速查 / 模块首页 -->
-        <div class="error-suggest" id="error-suggest" hidden>
-          <span class="error-suggest-label">你可能想访问</span>
-          <div class="error-suggest-links" id="error-suggest-links"></div>
-        </div>
-
-        <div class="error-search">
-          <!-- 放大镜图标：aria-hidden，输入框的 aria-label 提供可访问名称 -->
-          <svg
-            class="error-search-icon"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="7"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input
-            type="text"
-            id="error-search-input"
-            placeholder="搜索模块，回车打开第一个结果"
-            class="error-search-input"
-            aria-label="搜索模块"
-            autocomplete="off"
-            spellcheck="false"
-          />
-          <kbd class="error-search-kbd" aria-hidden="true">/</kbd>
-        </div>
-        <div class="error-search-meta" id="error-search-meta" hidden>
-          <span id="error-search-count"></span>
-          <button type="button" class="error-search-clear" id="error-search-clear">清除</button>
-        </div>
-
-        <p class="error-empty" id="error-empty" hidden>
-          没有找到匹配的模块，试试其他关键词。
-        </p>
-
-        <div class="error-modules" id="error-modules">
-          {
-            moduleCards.map((m, index) => (
-              <a
-                href={m.href}
-                class={`error-module-card${index >= 12 ? ' is-extra' : ''}`}
-                data-search={`${m.id} ${m.title} ${m.desc} ${m.category}`}
-              >
-                <span class="error-module-bar" style={`background:${m.color}`} />
-                <span class="error-module-name">{m.title}</span>
-                <span class="error-module-desc">{m.desc}</span>
-              </a>
-            ))
-          }
-        </div>
-
-        <a href={base} class="error-home-btn">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-          >
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          返回首页
-        </a>
-      </div>
+        <nav class="error-actions" aria-label="错误页出口">
+          <a href={base} class="error-btn error-btn--primary">返回首页</a>
+          <a href={`${base}learning-path/`} class="error-btn">学习路线</a>
+        </nav>
+      </main>
     </div>
+
+    <!-- 路径展示脚本：仅输出当前失效路径，无其他交互 -->
+    <script is:inline>
+      (function () {
+        var block = document.getElementById('error-path-block');
+        var value = document.getElementById('error-path-value');
+        if (!block || !value) return;
+        value.textContent = window.location.pathname;
+        block.hidden = false;
+      })();
+    </script>
   </body>
 </html>
-
-<!-- 客户端交互脚本：路径提示、智能建议与模块搜索过滤 -->
-<script>
-  import '@/lib/error-search';
-</script>

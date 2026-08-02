@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "harmonyos",
-  "summary": "???HarmonyOS????????????????????????????????????????????",
+  "summary": "从应用开发环境搭建出发，覆盖 ArkTS 组件、状态管理、设备能力与发布流程。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "???????",
+      "title": "应用基础",
+      "subtitle": "组件、状态与网络能力",
       "nodes": [
         {
           "id": "harmonyos-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "能力进阶",
+      "subtitle": "持久化、动画与性能优化",
       "nodes": [
         {
           "id": "harmonyos-101",
@@ -79,8 +79,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "发布实战",
+      "subtitle": "签名发布与调试实践",
       "nodes": [
         {
           "id": "harmonyos-201",

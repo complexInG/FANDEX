@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "cloud-computing",
-  "summary": "???云计算????????????????????????????????????????????",
+  "summary": "从云计算基础与 IaC 出发，覆盖容器编排、云厂商核心服务与无服务器架构。",
   "stages": [
     {
       "id": "basics",
-      "title": "???",
-      "subtitle": "?????????",
+      "title": "云基础",
+      "subtitle": "核心概念与容器编排",
       "nodes": [
         {
           "id": "cloud-computing-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "advanced",
-      "title": "??????",
-      "subtitle": "Docker ? Kubernetes",
+      "title": "云进阶",
+      "subtitle": "Docker 与 Kubernetes 生态",
       "nodes": [
         {
           "id": "cloud-computing-101",
@@ -79,8 +79,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????IaC ???",
+      "title": "命令实战",
+      "subtitle": "云服务与 IaC 命令实战",
       "nodes": [
         {
           "id": "cloud-computing-201",

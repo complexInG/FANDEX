@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "github",
-  "summary": "???GitHub????????????????????????????????????????????",
+  "summary": "从远程仓库配置到协作流程，覆盖分支保护、Actions、包管理与自动化。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "??? Issue",
+      "title": "协作基础",
+      "subtitle": "远程配置、Issue 与分支保护",
       "nodes": [
         {
           "id": "github-001",
@@ -47,8 +47,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "??? Review",
+      "title": "自动化",
+      "subtitle": "PR 与 Review、Actions 与 CI/CD",
       "nodes": [
         {
           "id": "github-101",
@@ -89,8 +89,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "CI/CD ????",
+      "title": "命令实战",
+      "subtitle": "CI/CD 与 CLI 命令速查",
       "nodes": [
         {
           "id": "github-201",

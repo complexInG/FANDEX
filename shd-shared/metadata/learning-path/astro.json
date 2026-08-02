@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "astro",
-  "summary": "???Astro????????????????????????????????????????????",
+  "summary": "以内容网站与文档站为主线，从项目创建到岛屿架构、构建部署与 Astro 新特性。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "?????",
+      "title": "入门基础",
+      "subtitle": "框架概念与项目脚手架",
       "nodes": [
         {
           "id": "astro-001",
@@ -27,8 +27,8 @@
     },
     {
       "id": "advanced",
-      "title": "?????",
-      "subtitle": "?????",
+      "title": "核心机制",
+      "subtitle": "组件、内容集合与岛屿架构",
       "nodes": [
         {
           "id": "astro-101",
@@ -49,8 +49,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "工程实战",
+      "subtitle": "样式优化与构建部署",
       "nodes": [
         {
           "id": "astro-201",

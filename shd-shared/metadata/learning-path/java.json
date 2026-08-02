@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "java",
-  "summary": "? Java ?????????????????? JVM??????????????????",
+  "summary": "从 Java 基础与面向对象出发，覆盖并发、Spring 生态与 JVM 核心机制。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "基础语法",
+      "subtitle": "环境、面向对象与并发",
       "nodes": [
         {
           "id": "java-001",
@@ -52,8 +52,8 @@
     },
     {
       "id": "oop",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "核心进阶",
+      "subtitle": "生态集成、异步与设计模式",
       "nodes": [
         {
           "id": "java-101",
@@ -94,8 +94,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "???JVM ?????",
+      "title": "工程实战",
+      "subtitle": "JVM 原理与命令速查",
       "nodes": [
         {
           "id": "java-201",

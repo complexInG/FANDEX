@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "kotlin",
-  "summary": "???Kotlin????????????????????????????????????????????",
+  "summary": "从 Kotlin 语法与协程出发，覆盖面向对象、函数式特性与 Android 生态。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "?????????",
+      "title": "基础语法",
+      "subtitle": "类、协程与测试",
       "nodes": [
         {
           "id": "kotlin-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "生态集成",
+      "subtitle": "作用域函数、Compose 与 Android",
       "nodes": [
         {
           "id": "kotlin-101",
@@ -79,8 +79,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "Android ???",
+      "title": "实战进阶",
+      "subtitle": "Flow、原子操作与协程异常",
       "nodes": [
         {
           "id": "kotlin-201",

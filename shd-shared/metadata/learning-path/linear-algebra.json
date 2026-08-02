@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "linear-algebra",
-  "summary": "???线性代数????????????????????????????????????????????",
+  "summary": "从行列式与矩阵运算出发，覆盖线性方程组、向量空间与特征值理论。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "???????????",
+      "title": "行列式矩阵",
+      "subtitle": "行列式、逆矩阵与秩",
       "nodes": [
         {
           "id": "linear-algebra-001",
@@ -37,8 +37,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "?????????",
+      "title": "线性方程组",
+      "subtitle": "消元法与解的结构",
       "nodes": [
         {
           "id": "linear-algebra-101",
@@ -69,8 +69,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "???????",
+      "title": "特征理论",
+      "subtitle": "特征值、对角化与二次型",
       "nodes": [
         {
           "id": "linear-algebra-201",

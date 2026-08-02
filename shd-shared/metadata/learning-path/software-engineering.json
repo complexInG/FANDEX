@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "software-engineering",
-  "summary": "???软件工程????????????????????????????????????????????",
+  "summary": "从软件工程方法与敏捷开发出发，覆盖需求分析、设计模式与质量度量。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "工程方法",
+      "subtitle": "敏捷开发与需求分析",
       "nodes": [
         {
           "id": "software-engineering-001",
@@ -27,8 +27,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "设计实践",
+      "subtitle": "UML、设计模式与重构",
       "nodes": [
         {
           "id": "software-engineering-101",
@@ -49,8 +49,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "质量保障",
+      "subtitle": "测试、度量与技术债务",
       "nodes": [
         {
           "id": "software-engineering-201",

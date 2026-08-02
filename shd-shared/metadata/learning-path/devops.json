@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "devops",
-  "summary": "????????????????????????????????????????",
+  "summary": "从 Linux 与容器基础出发，覆盖 CI/CD、IaC、云原生与平台工程实践。",
   "stages": [
     {
       "id": "tools",
-      "title": "????",
-      "subtitle": "Shell?Git ? CI/CD",
+      "title": "基础工具",
+      "subtitle": "Shell、Git 与 CI/CD",
       "nodes": [
         {
           "id": "devops-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "cloud-native",
-      "title": "??????",
-      "subtitle": "Docker?Kubernetes ? IaC",
+      "title": "云原生",
+      "subtitle": "Docker、Kubernetes 与 IaC",
       "nodes": [
         {
           "id": "devops-101",
@@ -79,8 +79,8 @@
     },
     {
       "id": "platform",
-      "title": "?????",
-      "subtitle": "??????????",
+      "title": "平台工程",
+      "subtitle": "观测、编排与配置管理",
       "nodes": [
         {
           "id": "devops-201",

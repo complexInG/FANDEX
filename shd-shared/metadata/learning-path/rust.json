@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "rust",
-  "summary": "???Rust????????????????????????????????????????????",
+  "summary": "从 Rust 工具链与基础语法出发，深入所有权、Trait 与异步生态。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "入门基础",
+      "subtitle": "环境工具链与基础语法",
       "nodes": [
         {
           "id": "rust-001",
@@ -27,8 +27,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "???trait ??",
+      "title": "核心机制",
+      "subtitle": "所有权、借用与 trait",
       "nodes": [
         {
           "id": "rust-101",
@@ -54,8 +54,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "实战生态",
+      "subtitle": "测试、异步与常用库",
       "nodes": [
         {
           "id": "rust-201",

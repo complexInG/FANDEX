@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "postgresql",
-  "summary": "???PostgreSQL????????????????????????????????????????????",
+  "summary": "从安装配置与高级 SQL 出发，覆盖锁、索引、复制备份与权限管理。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "SQL ?????",
+      "title": "基础入门",
+      "subtitle": "安装配置与 SQL 进阶",
       "nodes": [
         {
           "id": "postgresql-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "高级特性",
+      "subtitle": "复制、备份与权限管理",
       "nodes": [
         {
           "id": "postgresql-101",
@@ -79,8 +79,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "??????",
+      "title": "实战速查",
+      "subtitle": "审计、JSONB 与 CLI 命令",
       "nodes": [
         {
           "id": "postgresql-201",

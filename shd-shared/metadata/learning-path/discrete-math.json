@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "discrete-math",
-  "summary": "???离散数学????????????????????????????????????????????",
+  "summary": "从命题逻辑与谓词逻辑出发，覆盖集合、图论、代数系统与组合数学。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "数理逻辑",
+      "subtitle": "命题逻辑与谓词逻辑",
       "nodes": [
         {
           "id": "discrete-math-001",
@@ -22,8 +22,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "结构与关系",
+      "subtitle": "集合、函数与图论基础",
       "nodes": [
         {
           "id": "discrete-math-101",
@@ -44,8 +44,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "???????",
+      "title": "综合应用",
+      "subtitle": "图论进阶与代数系统",
       "nodes": [
         {
           "id": "discrete-math-201",

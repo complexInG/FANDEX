@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "lua",
-  "summary": "???Lua????????????????????????????????????????????",
+  "summary": "从 Lua 语法与 Table 出发，覆盖元表、面向对象、C 交互与工程场景。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "?????????",
+      "title": "语言基础",
+      "subtitle": "Table、元表与模块",
       "nodes": [
         {
           "id": "lua-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "?????? C API",
+      "title": "进阶特性",
+      "subtitle": "协程、性能与 C API",
       "nodes": [
         {
           "id": "lua-101",
@@ -79,8 +79,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "实战速查",
+      "subtitle": "元方法、弱表与库速查",
       "nodes": [
         {
           "id": "lua-201",

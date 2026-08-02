@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "english",
-  "summary": "???英语????????????????????????????????????????????",
+  "summary": "面向技术阅读与写作的英语体系，覆盖词汇语法、长难句与翻译实践。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "?????",
+      "title": "基础语法",
+      "subtitle": "词汇、语法与句子结构",
       "nodes": [
         {
           "id": "english-001",
@@ -32,8 +32,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "?????",
+      "title": "阅读进阶",
+      "subtitle": "长难句拆解与文献阅读",
       "nodes": [
         {
           "id": "english-101",
@@ -59,8 +59,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "???????",
+      "title": "写作翻译",
+      "subtitle": "学术写作与翻译技巧",
       "nodes": [
         {
           "id": "english-201",

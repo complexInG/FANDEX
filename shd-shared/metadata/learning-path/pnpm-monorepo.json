@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "pnpm-monorepo",
-  "summary": "???pnpm Monorepo????????????????????????????????????????????",
+  "summary": "从 pnpm 核心特性与工作空间出发，覆盖依赖管理、任务编排与发布流程。",
   "stages": [
     {
       "id": "basics",
-      "title": "Monorepo ??",
-      "subtitle": "????????",
+      "title": "Monorepo 基础",
+      "subtitle": "工作空间与依赖管理",
       "nodes": [
         {
           "id": "pnpm-monorepo-001",
@@ -32,8 +32,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "工程实践",
+      "subtitle": "catalog、Turborepo 与发布",
       "nodes": [
         {
           "id": "pnpm-monorepo-101",

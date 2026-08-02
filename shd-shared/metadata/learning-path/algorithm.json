@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "algorithm",
-  "summary": "???????????????????????????????????????????",
+  "summary": "从复杂度分析到基础与高级数据结构，覆盖经典算法、动态规划与算法理论。",
   "stages": [
     {
       "id": "data-structure",
-      "title": "??????",
-      "subtitle": "?????????",
+      "title": "数据结构基础",
+      "subtitle": "复杂度分析与线性/树形结构",
       "nodes": [
         {
           "id": "algorithm-001",
@@ -37,8 +37,8 @@
     },
     {
       "id": "classic",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "经典算法",
+      "subtitle": "递归、查找与动态规划",
       "nodes": [
         {
           "id": "algorithm-101",
@@ -69,8 +69,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "??????????",
+      "title": "高级专题",
+      "subtitle": "高级数据结构与算法理论",
       "nodes": [
         {
           "id": "algorithm-201",

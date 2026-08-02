@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "redis",
-  "summary": "? Redis ??????????????????????????????????????",
+  "summary": "从核心数据结构与持久化出发，覆盖集群高可用、Lua 脚本与运维命令。",
   "stages": [
     {
       "id": "basics",
-      "title": "???????",
-      "subtitle": "String?Hash ? List",
+      "title": "核心数据结构",
+      "subtitle": "String、Hash 与 List",
       "nodes": [
         {
           "id": "redis-001",
@@ -42,8 +42,8 @@
     },
     {
       "id": "cluster",
-      "title": "??????",
-      "subtitle": "?????? Cluster",
+      "title": "集群高可用",
+      "subtitle": "复制、分片与 Cluster",
       "nodes": [
         {
           "id": "redis-101",
@@ -74,8 +74,8 @@
     },
     {
       "id": "practice",
-      "title": "?????",
-      "subtitle": "?????????",
+      "title": "运维实战",
+      "subtitle": "淘汰策略、ACL 与命令速查",
       "nodes": [
         {
           "id": "redis-201",

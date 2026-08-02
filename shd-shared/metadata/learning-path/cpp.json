@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "cpp",
-  "summary": "??? C++ ?????????????????? C++??????????????",
+  "summary": "从现代 C++ 特性与资源管理出发，覆盖模板元编程、并发协程与工程实践。",
   "stages": [
     {
       "id": "basics",
-      "title": "???????",
-      "subtitle": "?????????",
+      "title": "现代特性",
+      "subtitle": "移动语义与模板元编程",
       "nodes": [
         {
           "id": "cpp-001",
@@ -47,8 +47,8 @@
     },
     {
       "id": "modern",
-      "title": "????? C++",
-      "subtitle": "???????????",
+      "title": "深入现代 C++",
+      "subtitle": "面向对象、元编程与格式化",
       "nodes": [
         {
           "id": "cpp-101",
@@ -94,8 +94,8 @@
     },
     {
       "id": "practice",
-      "title": "?????",
-      "subtitle": "??????????",
+      "title": "工程实践",
+      "subtitle": "协程、调试与性能分析",
       "nodes": [
         {
           "id": "cpp-201",

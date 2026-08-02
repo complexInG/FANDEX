@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "vite",
-  "summary": "???Vite????????????????????????????????????????????",
+  "summary": "从 Vite 概述与快速上手出发，覆盖配置、资源处理、HMR 与生产构建。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "?????",
+      "title": "入门基础",
+      "subtitle": "概述、上手与配置",
       "nodes": [
         {
           "id": "vite-001",
@@ -27,8 +27,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "?????",
+      "title": "核心机制",
+      "subtitle": "资源、CSS 与开发服务器",
       "nodes": [
         {
           "id": "vite-101",
@@ -49,8 +49,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????",
+      "title": "工程实战",
+      "subtitle": "构建优化与插件系统",
       "nodes": [
         {
           "id": "vite-201",

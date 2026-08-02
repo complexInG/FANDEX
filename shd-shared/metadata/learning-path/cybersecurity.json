@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "cybersecurity",
-  "summary": "???网络安全????????????????????????????????????????????",
+  "summary": "从安全基础与防御理念出发，覆盖 Web 漏洞、加密体系与安全运营实践。",
   "stages": [
     {
       "id": "basics",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "安全基础",
+      "subtitle": "攻防理念与安全运营",
       "nodes": [
         {
           "id": "cybersecurity-001",
@@ -47,8 +47,8 @@
     },
     {
       "id": "advanced",
-      "title": "????",
-      "subtitle": "Web ?????",
+      "title": "漏洞攻防",
+      "subtitle": "Web 漏洞、加密与认证",
       "nodes": [
         {
           "id": "cybersecurity-101",
@@ -89,8 +89,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "???????",
+      "title": "工具实战",
+      "subtitle": "检测、加固与命令行实践",
       "nodes": [
         {
           "id": "cybersecurity-201",

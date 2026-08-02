@@ -1,12 +1,12 @@
 {
     "version":  "1.0.0",
     "module":  "cs-fundamentals",
-    "summary":  "????????????????????????????????????????",
+    "summary":  "覆盖计算机科学核心知识，从组成原理、操作系统到网络、分布式与信息安全。",
     "stages":  [
                    {
                        "id":  "basics",
-                       "title":  "?????",
-                       "subtitle":  "????????????",
+                       "title":  "核心基础",
+                       "subtitle":  "体系结构、存储与编程基础",
                        "nodes":  [
                                      {
                                          "id":  "cs-fundamentals-001",
@@ -72,8 +72,8 @@
                    },
                    {
                        "id":  "system",
-                       "title":  "?????",
-                       "subtitle":  "????????????",
+                       "title":  "系统原理",
+                       "subtitle":  "操作系统、内存与调度",
                        "nodes":  [
                                      {
                                          "id":  "cs-fundamentals-101",
@@ -114,8 +114,8 @@
                    },
                    {
                        "id":  "advanced",
-                       "title":  "????",
-                       "subtitle":  "??????????",
+                       "title":  "高级专题",
+                       "subtitle":  "网络、并发与编译优化",
                        "nodes":  [
                                      {
                                          "id":  "cs-fundamentals-201",

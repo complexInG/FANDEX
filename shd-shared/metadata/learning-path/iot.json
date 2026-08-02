@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
   "module": "iot",
-  "summary": "???物联网????????????????????????????????????????????",
+  "summary": "从物联网架构与通信协议出发，覆盖主流平台、边缘计算与嵌入式实战。",
   "stages": [
     {
       "id": "basics",
-      "title": "?????",
-      "subtitle": "????????",
+      "title": "架构基础",
+      "subtitle": "协议、平台与安全",
       "nodes": [
         {
           "id": "iot-001",
@@ -37,8 +37,8 @@
     },
     {
       "id": "advanced",
-      "title": "?????",
-      "subtitle": "????????",
+      "title": "开发进阶",
+      "subtitle": "CoAP、ESP32 与边缘 AI",
       "nodes": [
         {
           "id": "iot-101",
@@ -69,8 +69,8 @@
     },
     {
       "id": "practice",
-      "title": "????",
-      "subtitle": "????????",
+      "title": "动手实践",
+      "subtitle": "数字孪生与设备调试",
       "nodes": [
         {
           "id": "iot-201",

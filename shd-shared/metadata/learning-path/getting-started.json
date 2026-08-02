@@ -1,12 +1,12 @@
 {
     "version":  "1.0.0",
     "module":  "getting-started",
-    "summary":  "???入门指南????????????????????????????????????????????",
+    "summary":  "零基础搭建开发环境，覆盖环境变量、编辑器、包管理器与构建工具。",
     "stages":  [
                    {
                        "id":  "basics",
-                       "title":  "????",
-                       "subtitle":  "???????",
+                       "title":  "环境基础",
+                       "subtitle":  "开发环境与核心工具",
                        "nodes":  [
                                      {
                                          "id":  "getting-started-001",
@@ -37,8 +37,8 @@
                    },
                    {
                        "id":  "practice",
-                       "title":  "????",
-                       "subtitle":  "??????",
+                       "title":  "动手实践",
+                       "subtitle":  "多平台环境配置实战",
                        "nodes":  [
                                      {
                                          "id":  "getting-started-101",
