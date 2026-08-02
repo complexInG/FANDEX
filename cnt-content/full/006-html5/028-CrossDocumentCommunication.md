@@ -16,245 +16,67 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-## 1. 历史动机与发展脉络
+## 0. 直觉：页面之间怎么“传纸条”
 
-### 1.1 前同源策略时代（1995—1999）
+一个页面里嵌着第三方 iframe，两个标签页想同步状态——浏览器不允许页面直接访问对方的 DOM（同源策略），但允许它们“传纸条”：`postMessage`。
 
-JavaScript 诞生之初（Netscape Navigator 2.0, 1995），并未严格区分文档来源。任意框架可通过 `parent.document` 访问父窗口 DOM，导致跨域攻击频发。Netscape 在 Navigator 3.0（1996）引入同源策略（Same-Origin Policy, SOP），将文档访问权限与协议+主机+端口三元组绑定。
+`postMessage` 像带地址的信件：发信方写明目标来源，收信方收到后先看发信地址（`origin`）对不对，再拆信处理。地址不验就拆信，是跨文档通信最大的安全漏洞。
 
-$$
-\text{origin}(u) = (\text{scheme}(u), \text{host}(u), \text{port}(u))
-$$
+## 1. 一句话了解历史
 
-其中 $u$ 为 URL。两文档同源当且仅当三元组完全相等。
+同源策略从 1995 年 Netscape 时代就有，它保证脚本只能访问同源页面。但合法的跨页面协作（父页面与 iframe、多标签页同步）也需要通道，于是 HTML5 规范了 `postMessage`（2008 年前后）——在保持隔离的前提下，开一条“显式、可控”的消息通道。
 
-### 1.2 同源策略的局限（2000—2006）
+## 2. 基本用法
 
-随着 Web 应用复杂化，跨域通信需求激增（如 OAuth 弹窗、嵌入式 widget、广告 iframe）。早期绕过方案包括：
+### 2.1 发送消息
 
-| 方案 | 原理 | 缺陷 |
-| ---- | ---- | ---- |
-| `document.domain` 降级 | 父子窗口均设为 `example.com` | 仅适用于同主域子域；Chrome 109+ 已废弃 |
-| URL fragment + `location.hash` 轮询 | 通过 hash 变化传递数据 | 容量小（URL 长度限制）、需轮询 |
-| `window.name` 桥接 | `window.name` 跨导航保持 | 字符串 2MB 上限；需中间页清空 |
-| 代理页面 + `Flash` | 利用 `ExternalInterface` | 依赖 Flash 插件；2020 年全面退役 |
-| JSONP | `<script src>` 标签跨域 | 仅 GET；XSS 风险 |
+```javascript
+// 父页面 -> iframe
+const iframe = document.getElementById('child');
+iframe.contentWindow.postMessage({ type: 'hello', payload: '你好' }, 'https://child.example.com');
 
-### 1.3 HTML5 规范化（2007—2014）
+// 当前页面 -> 打开它的父页面
+window.parent.postMessage({ type: 'ready' }, 'https://parent.example.com');
 
-2007 年 WHATWG 在 HTML5 草案中首次提出 `postMessage` API，2009 年 W3C HTML5 Working Draft 正式纳入 §5.3 "Cross-document messaging"。设计目标：
-
-1. **可控性**：发送方明确指定目标源，接收方校验来源源。
-2. **异步性**：基于事件循环，不阻塞 UI 线程。
-3. **结构性**：原生支持结构化克隆，无需手动 `JSON.stringify`。
-4. **可转移性**：`transferable` 参数支持 `MessagePort`、`ArrayBuffer` 等所有权转移，零拷贝。
-
-### 1.4 演进时间线
-
-```mermaid
-timeline
-    title 发展时间线
-    1995: JavaScript 诞生，无同源策略
-    1996: Netscape 3.0 引入同源策略（SOP）
-    2000: JSONP 出现，绕过 SOP 限制
-    2006: window.name 跨域技术流行
-    2007: WHATWG 提出 postMessage API
-    2009: W3C HTML5 §5.3 规范化 postMessage
-    2012: MessageChannel / MessagePort 进入 HTML Living Standard §9.5
-    2014: BroadcastChannel API（W3C Working Draft）
-    2015: structured clone 算法定稿（HTML §2.9）
-    2018: BroadcastChannel 在主流浏览器全面可用
-    2022: Chrome 109 废弃 document.domain 降级（CORS 严格化）
-    2024: HTML Living Standard 持续演进，postMessage §9.5 稳定
+// 当前页面 -> 其它标签页
+const otherWindow = window.open('https://other.example.com');
+otherWindow.postMessage({ type: 'sync' }, 'https://other.example.com');
 ```
 
-### 1.5 规范族谱
+**讲解：**
 
-- **HTML 2.0**（RFC 1866, 1995）：无相关 API。
-- **HTML 4.01**（W3C, 1999）：无跨文档通信。
-- **HTML5**（W3C, 2014）：首次纳入 `postMessage`、`MessageChannel`、`MessagePort`。
-- **HTML 5.1 / 5.2 / 5.3**（W3C, 2016—2018）：API 稳定，新增 `BroadcastChannel`。
-- **WHATWG HTML Living Standard**（持续更新）：§9.5 "Cross-document messaging"、§9.6 "Channel messaging"、§9.7 "Broadcasting to other browsing contexts" 为权威参考。
+- 第一个参数是消息数据（可结构化克隆），第二个参数是目标来源白名单；
+- 目标来源必须精确匹配，传 `'*'` 表示不限制（危险，尽量避免）；
+- `contentWindow`/`parent`/`open` 的返回值都可以作为发送目标。
 
----
+### 2.2 接收消息与安全校验
 
-## 2. 形式化定义
+```javascript
+window.addEventListener('message', (event) => {
+  // 第一步：校验来源（必须）
+  if (event.origin !== 'https://child.example.com') return;
 
-### 2.1 WHATWG 规范定义
+  // 第二步：校验数据结构（建议）
+  if (!event.data || typeof event.data.type !== 'string') return;
 
-依据 WHATWG HTML Living Standard §9.5.1，`window.postMessage` 的 Web IDL 定义如下：
-
-```webidl
-[Exposed=Window]
-interface Window {
-  void postMessage(any message, USVString targetOrigin);
-  void postMessage(any message, WindowPostMessageOptions options);
-};
-
-dictionary WindowPostMessageOptions : StructuredSerializeOptions {
-  USVString targetOrigin = "/";
-};
+  // 第三步：处理业务
+  handleMessage(event.data);
+});
 ```
 
-`MessageEvent` 接口（DOM §3.4）：
+**讲解：**
 
-```webidl
-[Exposed=(Window,Worker,AudioWorklet)]
-interface MessageEvent : Event {
-  constructor(DOMString type, optional MessageEventInit eventInitDict = {});
-  readonly attribute any data;
-  readonly attribute USVString origin;
-  readonly attribute DOMString lastEventId;
-  readonly attribute MessageEventSource? source;
-  readonly attribute FrozenArray<MessagePort> ports;
-  void initMessageEvent(...);  // 已废弃
-};
-```
+- `event.origin` 是发信方的来源，必须与白名单精确比对；
+- 不要信任 `event.source` 与数据本身，数据也要做结构校验；
+- 校验失败直接 `return`，不要抛错或继续处理。
 
-### 2.2 形式化语义
+## 3. 三种通道怎么选
 
-设发送方窗口为 $W_s$，其源为 $o_s = \text{origin}(W_s.\text{location})$；接收方窗口为 $W_r$，其源为 $o_r$。
-
-**定义 3.2.1（postMessage 投递）**：调用 $W_s.\text{postMessage}(m, t, T)$ 的语义为：
-
-$$
-\text{PostMessage}(W_s, W_r, m, t, T) \triangleq
-\begin{cases}
-\text{Enqueue}(W_r, E) & \text{if } t = \text{"*"} \lor t = o_r \\
-\text{Drop} & \text{otherwise}
-\end{cases}
-$$
-
-其中 $E = \text{MessageEvent}(\text{data}=m, \text{origin}=o_s, \text{source}=W_s, \text{ports}=T)$，$T$ 为 `transfer` 列表。
-
-**定义 3.2.2（消息调度）**：事件 $E$ 被加入 $W_r$ 的事件循环任务队列（task queue），类型为 "message" 任务源。调度延迟 $\Delta t$ 满足：
-
-$$
-\Delta t = t_{\text{enqueue}} + t_{\text{dispatch}} \geq 4 \text{ms} \quad (\text{嵌套调用深度} \geq 5)
-$$
-
-依据 HTML §8.1.7.1.2 "Nested timeouts" 节流策略。
-
-### 2.3 同源策略形式化
-
-$$
-\text{SameOrigin}(u_1, u_2) \iff
-\text{scheme}(u_1) = \text{scheme}(u_2) \land
-\text{host}(u_1) = \text{host}(u_2) \land
-\text{port}(u_1) = \text{port}(u_2)
-$$
-
-**派生不等式**：
-
-- `https://a.com` 与 `http://a.com` 不同源（scheme 不同）。
-- `https://a.com:443` 与 `https://a.com:8443` 不同源（port 不同）。
-- `https://a.com` 与 `https://b.a.com` 不同源（host 不同）。
-- `https://a.com` 与 `https://a.com` 同源。
-
-### 2.4 structured clone 算法
-
-依据 HTML §2.9.1，结构化克隆算法递归地复制 JS 值，支持类型：
-
-| 类型 | 支持 | 备注 |
-| ---- | ---- | ---- |
-| 原始类型（Undefined、Null、Boolean、Number、String、BigInt） | 是 | 深拷贝 |
-| Boolean / Number / String / BigInt 对象 | 是 | 转换为原始值 |
-| Date 对象 | 是 | 保留时间戳 |
-| RegExp 对象 | 是 | `lastIndex` 不保留 |
-| ArrayBuffer / TypedArray | 是 | 默认拷贝；可转移 |
-| Map / Set | 是 | 键值递归克隆 |
-| Array / Object | 是 | 循环引用支持 |
-| Error | 是 | 仅保留 message、name |
-| Function | 否 | 抛出 DataCloneError |
-| DOM 节点 | 否 | 抛出 DataCloneError |
-| Symbol | 否 | 抛出 DataCloneError |
-
-### 2.5 MessagePort 状态机
-
-`MessagePort` 具有 **未发送**（disentangled）、**已发送**（entangled）、**已关闭**（closed）三态：
-
-$$
-\text{State}(p) \in \{\text{Disentangled}, \text{Entangled}, \text{Closed}\}
-$$
-
-状态转移：
-
-$$
-\text{Disentangled} \xrightarrow{\text{postMessage(transfer)}} \text{Entangled} \xrightarrow{\text{close()}} \text{Closed}
-$$
-
-转移后的端口在原上下文不可用，仅接收方上下文可读。
-
----
-
-## 3. 理论推导与原理解析
-
-### 3.1 同源策略与跨文档通信的关系
-
-**定理 4.1**：`postMessage` 是 SOP 的"受控逃逸口"。即对于任意两个不同源文档 $D_1, D_2$，它们之间的同步 DOM 访问被 SOP 阻断，但可通过 `postMessage` 异步交换数据，前提是双方显式同意。
-
-**证明**：设 $D_1$ 想读取 $D_2$ 的 `document.cookie`。SOP 阻断直接访问：`D_1.document !== D_2.document`。若改用 `postMessage`：
-
-1. $D_1$ 调用 `D_2.postMessage(req, targetOrigin=D_2.origin)`，请求 cookie。
-2. $D_2$ 在 `message` 事件处理中校验 `event.origin === D_1.origin`，决定是否回传。
-3. $D_2$ 调用 `event.source.postMessage(resp, D_1.origin)`。
-
-整个流程异步、显式、可校验，故"受控"成立。$\square$
-
-### 3.2 targetOrigin 的安全语义
-
-**定理 4.2**：若发送方使用 `targetOrigin = "*"`，则消息可能泄露给任何接管该窗口的恶意文档。
-
-**证明**：设 $W_s$ 向 $W_r$ 发送 `postMessage(m, "*")`。若攻击者通过 `window.open` 重定向、`location.replace` 或 DNS 劫持使 $W_r$ 导航至攻击者控制的源 $o_a$，则 $o_a$ 上下文的 `message` 监听器仍会收到 $m$。由于 `*` 不做目标源校验，消息在窗口未关闭期间持续可达。$\square$
-
-**推论 4.2.1**：生产环境必须使用具体 `targetOrigin`，仅在以下场景可使用 `*`：
-
-- 公开信息广播（如版本号、UI 状态）。
-- 目标源未知且消息不含敏感数据（如初次握手）。
-
-### 3.3 消息调度的时间复杂度
-
-设消息大小为 $n$ 字节，结构化克隆时间为 $T_{\text{clone}}(n)$，事件队列入队时间为 $T_{\text{enqueue}}$，事件循环派发延迟为 $T_{\text{dispatch}}$。
-
-$$
-T_{\text{total}}(n) = T_{\text{clone}}(n) + T_{\text{enqueue}} + T_{\text{dispatch}}
-$$
-
-其中 $T_{\text{clone}}(n) = O(n)$（线性扫描），$T_{\text{dispatch}} \approx 4 \text{ms}$（嵌套深度 ≥ 5 时）。
-
-**实测数据**（Chrome 120, M2 MacBook Air）：
-
-| 消息大小 | 克隆耗时 | 派发耗时 | 总延迟 |
-| -------- | -------- | -------- | ------ |
-| 1 KB | 0.02 ms | 0.1 ms | 0.12 ms |
-| 100 KB | 1.8 ms | 0.1 ms | 1.9 ms |
-| 1 MB | 18 ms | 0.2 ms | 18.2 ms |
-| 10 MB | 185 ms | 0.5 ms | 185.5 ms |
-
-### 3.4 MessageChannel 的零拷贝转移
-
-设发送方持有 `ArrayBuffer` $B$，大小 $N$ 字节。普通 `postMessage(B)` 会触发结构化克隆，复制 $B$ 的字节到接收方上下文，开销 $O(N)$。
-
-使用 `transfer=[B]`：
-
-$$
-T_{\text{transfer}}(N) = O(1)
-$$
-
-字节缓冲区所有权转移，原上下文 `B.byteLength === 0`（detached）。
-
-### 3.5 BroadcastChannel 的扇出模型
-
-设同一源下有 $k$ 个标签页订阅同一 `BroadcastChannel`，单次 `postMessage` 触发 $k-1$ 个 `MessageEvent`。
-
-$$
-T_{\text{broadcast}}(k, n) = (k-1) \cdot T_{\text{clone}}(n) + T_{\text{dispatch}}
-$$
-
-实测：$k=10, n=1\text{KB}$ 时延迟约 1.2 ms；$k=100, n=1\text{MB}$ 时延迟约 1.8 s。
-
----
-
+| 通道 | 用途 | 特点 |
+| --- | --- | --- |
+| `postMessage` | 父页面与 iframe、窗口之间 | 通用、需要白名单校验 |
+| `MessageChannel` | 一对一私有管道 | 双向、端口可转移 |
+| `BroadcastChannel` | 同源多标签页广播 | 一对多、同源即可用 |
 ## 4. 代码示例
 
 ### 4.1 完整 HTML5 文档结构（父页面）
@@ -1255,285 +1077,46 @@ export class TabAuthSync {
 ---
 
 > 本文档遵循 MIT/Stanford/CMU 教学水准，结合 WHATWG HTML Living Standard 与 W3C HTML5.3 规范，系统呈现 HTML5 跨文档通信 API 的设计原理与工程实践。如需进一步学习，请参阅延伸阅读章节列出的书籍、论文与课程。
-## postMessage 基础
 
-**发送消息**
-`targetWindow.postMessage(<message>, <targetOrigin>, [transfer])`
+## 9. 动手试试
 
-```javascript
-// 向 iframe 发送消息
-const iframe = document.getElementById('myIframe');
-iframe.contentWindow.postMessage(
-  { type: 'GREETING', text: 'Hello' },
-  'https://example.com' // 必须指定确切的目标源
-);
+### 入门版（必做）
 
-// 向父窗口发送消息
-window.parent.postMessage({ type: 'RESULT' }, 'https://parent.com');
+1. 父页面嵌一个同源 iframe，点击父页面按钮，向 iframe `postMessage` 并显示回执；
+2. 在收信端校验 `event.origin`，打印收到的数据；
+3. 故意把白名单写错，确认消息被丢弃。
 
-// 向打开的弹窗发送消息
-const popup = window.open('https://example.com/popup');
-popup.postMessage({ type: 'INIT' }, 'https://example.com');
-```
+### 进阶版（选做）
 
-**接收消息**
-`window.addEventListener('message', handler)`
+1. 用 `MessageChannel` 建立父页面与 iframe 的私有管道；
+2. 用 `BroadcastChannel` 实现两个标签页的计数器同步；
+3. 封装一个带类型校验的 `postMessage` RPC 工具（参考 4.5）。
 
-```javascript
-// 监听 message 事件
-window.addEventListener('message', (event) => {
-  // 始终验证消息来源
-  if (event.origin !== 'https://example.com') return;
+## 10. 核心知识点
 
-  console.log('来源:', event.origin);
-  console.log('数据:', event.data);
-  console.log('源窗口:', event.source);
-});
-```
+> 一句话记住跨文档通信：`postMessage` 传纸条，`origin` 白名单必须验；`MessageChannel` 一对一，`BroadcastChannel` 广播同步。
 
-**postMessage 参数表**
+- 同源策略禁止跨文档直接访问，`postMessage` 提供显式通道；
+- 发送：`target.postMessage(data, targetOrigin)`；
+- 接收：`message` 事件中先校验 `event.origin`，再校验数据结构；
+- `MessageChannel` 适合一对一私有通信，端口可转移；
+- `BroadcastChannel` 适合同源多标签页广播；
+- 生产封装必须包含来源白名单与数据校验。
 
-| 参数            | 类型           | 说明                                  |
-| --------------- | -------------- | ------------------------------------- |
-| `message`       | any            | 发送的数据(结构化克隆算法传递)       |
-| `targetOrigin`  | string         | 目标源(`'*'` 不安全,应指定确切源)   |
-| `transfer`      | Transferable[] | 可转移对象(如 MessagePort、ArrayBuffer)|
+## 11. 注意事项与改进建议
 
----
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 不校验 `origin` | 任意页面可伪造消息 | 精确白名单比对 |
+| `targetOrigin: '*'` | 消息可被任何窗口接收 | 写明精确来源 |
+| 信任消息数据 | 恶意数据触发业务漏洞 | 校验结构与类型 |
+| 忘记清理监听 | 页面卸载后仍处理消息 | 移除 `message` 监听 |
+| 大对象传递 | 结构化克隆耗时 | 用 Transferable 转移或拆分 |
+| 忽略 `event.source` 二次校验 | 同源多窗口场景混淆 | 必要时校验 `source` 引用 |
 
-## MessageEvent 属性
+## 12. 扩展学习
 
-**MessageEvent 对象表**
-
-| 属性             | 类型     | 说明                            |
-| ---------------- | -------- | ------------------------------- |
-| `data`           | any      | 传递的数据                      |
-| `origin`         | string   | 发送方的源(协议+域名+端口)    |
-| `source`         | Window   | 发送方的 window 引用(可回复)  |
-| `lastEventId`    | string   | 事件 ID(用于 Server-Sent Events) |
-| `ports`          | array    | MessagePort 数组                |
-| `isTrusted`      | boolean  | 是否由用户行为触发              |
-
----
-
-## targetWindow 获取方式
-
-**获取目标 window 引用**
-
-```javascript
-// 1. iframe 的 contentWindow
-const iframeWindow = document.getElementById('myIframe').contentWindow;
-
-// 2. 父窗口
-const parentWindow = window.parent;
-
-// 3. 顶层窗口
-const topWindow = window.top;
-
-// 4. window.open 返回的引用
-const popupWindow = window.open('https://example.com');
-
-// 5. 命名的 window(通过 window.name 获取)
-// 已打开的 window 可通过 window.frames 访问
-const frameWindow = window.frames[0]; // 按索引
-const namedWindow = window.frames['frameName']; // 按名称
-```
-
----
-
-## 安全实践
-
-**验证来源(必须)**
-`if (event.origin !== '<expected-origin>') return;`
-
-```javascript
-// 接收消息时必须验证来源
-window.addEventListener('message', (event) => {
-  // 1. 验证来源
-  const trustedOrigins = [
-    'https://example.com',
-    'https://sub.example.com'
-  ];
-  if (!trustedOrigins.includes(event.origin)) return;
-
-  // 2. 验证数据格式
-  if (typeof event.data !== 'object' || !event.data.type) return;
-
-  // 3. 处理消息
-  handleMessage(event.data);
-});
-```
-
-**始终指定 targetOrigin**
-`postMessage(<data>, '<确切源>')`
-
-```javascript
-// 安全:指定确切的目标源
-iframe.contentWindow.postMessage(data, 'https://specific-domain.com');
-
-// 危险:使用通配符(任何窗口都可拦截)
-iframe.contentWindow.postMessage(data, '*'); // 不推荐!
-
-// 危险:使用 '/'(仅同源,但易被误解)
-iframe.contentWindow.postMessage(data, '/'); // 仅同源时使用
-```
-
-**回复消息**
-`event.source.postMessage(<reply>, event.origin)`
-
-```javascript
-// 接收方回复发送方
-window.addEventListener('message', (event) => {
-  if (event.origin !== 'https://trusted.com') return;
-
-  // 处理消息后回复
-  const reply = { type: 'REPLY', result: 'success' };
-  event.source.postMessage(reply, event.origin);
-});
-```
-
----
-
-## Channel Messaging API
-
-**MessageChannel 创建**
-`const channel = new MessageChannel()`
-
-```javascript
-// 创建双向通信通道
-const channel = new MessageChannel();
-
-// port1 留在当前窗口
-channel.port1.onmessage = (e) => {
-  console.log('收到回复:', e.data);
-};
-
-// port2 传递给 iframe
-iframe.contentWindow.postMessage(
-  { type: 'INIT_PORT' },
-  'https://example.com',
-  [channel.port2] // 转移 port2 的所有权
-);
-```
-
-**iframe 接收端口并回复**
-`event.ports[0].postMessage(<data>)`
-
-```javascript
-// iframe 内部接收并使用 port
-window.addEventListener('message', (event) => {
-  if (event.origin !== 'https://parent.com') return;
-  if (event.data.type !== 'INIT_PORT') return;
-
-  // 获取传递过来的 port
-  const port = event.ports[0];
-  port.onmessage = (e) => {
-    console.log('收到:', e.data);
-  };
-
-  // 通过 port 回复消息
-  port.postMessage({ type: 'PORT_READY' });
-});
-```
-
-**MessagePort 方法表**
-
-| 方法                    | 说明                          |
-| ----------------------- | ----------------------------- |
-| `port.postMessage(d)`   | 发送消息                      |
-| `port.onmessage`        | 监听消息                      |
-| `port.start()`          | 启用消息分发(显式)          |
-| `port.close()`          | 关闭端口                      |
-| `port.onmessageerror`   | 监听消息错误                  |
-
----
-
-## BroadcastChannel API
-
-**广播通道(同源多标签页通信)**
-`const channel = new BroadcastChannel('<name>')`
-
-```javascript
-// 创建广播通道(同源的所有标签页共享)
-const channel = new BroadcastChannel('app_updates');
-
-// 发送广播消息(所有监听同一通道的标签页都会收到)
-channel.postMessage({ type: 'LOGOUT' });
-
-// 接收广播消息
-channel.onmessage = (event) => {
-  console.log('收到广播:', event.data);
-};
-
-// 关闭通道
-channel.close();
-```
-
-**BroadcastChannel 应用场景**
-
-```javascript
-// 示例:多标签页同步登录状态
-const authChannel = new BroadcastChannel('auth');
-
-// 标签页 A 中登出
-function logout() {
-  localStorage.removeItem('token');
-  authChannel.postMessage({ type: 'LOGOUT' });
-  window.location.href = '/login';
-}
-
-// 标签页 B、C 监听并同步登出
-authChannel.onmessage = (event) => {
-  if (event.data.type === 'LOGOUT') {
-    window.location.href = '/login';
-  }
-};
-```
-
----
-
-## 跨源 iframe 通信
-
-**父窗口 → iframe**
-`iframe.contentWindow.postMessage(<data>, <origin>)`
-
-```html
-<!-- 父页面 -->
-<iframe id="embed" src="https://embed.example.com/widget"></iframe>
-<script>
-  const iframe = document.getElementById('embed');
-  iframe.addEventListener('load', () => {
-    iframe.contentWindow.postMessage(
-      { type: 'CONFIG', theme: 'dark' },
-      'https://embed.example.com'
-    );
-  });
-</script>
-```
-
-**iframe → 父窗口**
-`window.parent.postMessage(<data>, <origin>)`
-
-```javascript
-// iframe 内部
-window.addEventListener('message', (event) => {
-  if (event.origin !== 'https://parent.com') return;
-  if (event.data.type === 'CONFIG') {
-    applyConfig(event.data);
-    // 通知父窗口配置已应用
-    window.parent.postMessage({ type: 'CONFIG_APPLIED' }, 'https://parent.com');
-  }
-});
-```
-
----
-
-## 注意事项
-
-- **origin 验证必须**:`message` 事件中必须验证 `event.origin`,否则会有 XSS 风险
-- **targetOrigin 指定**:发送时必须指定确切目标源,避免使用 `'*'`
-- **结构化克隆**:`postMessage` 数据通过结构化克隆算法传递,支持对象、数组、Map、Set 等
-- **不可传递对象**:Function、DOM 节点、Window 等不能直接传递
-- **Transferable Objects**:MessagePort、ArrayBuffer 等可通过 `transfer` 参数转移所有权
-- **同源策略**:`BroadcastChannel` 仅在同源标签页之间工作
-- **性能**:大对象通过 `postMessage` 传递时建议使用 Transferable Objects 避免拷贝
+- 基础：`html5/016-EmbeddedContent` 中 iframe 与 postMessage 示例；
+- 实时通信：`html5/024-WebSocket` 对比服务端中转与端到端消息；
+- 安全：CSP 与 XSS 防护（`javascript/044-ErrorBoundaryGlobalErrorCatch`）；
+- 工程封装：4.5 节生产级 RPC 的完整实现。
