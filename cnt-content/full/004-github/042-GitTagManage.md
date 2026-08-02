@@ -5,295 +5,371 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: GitHub 标签管理 的完整教学讲解。
+description: 以清单驱动方式按标签全生命周期讲解 git tag 的创建、查看、推送、删除与检出，覆盖附注标签与轻量标签的区别和语义化版本规范，适合零基础学习者。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
-## 创建标签
+## 开篇：像里程碑书签一样打标签
 
-**基本写法：创建轻量标签**
-`git tag <标签名>`
-```bash
-# 在当前提交创建轻量标签
-git tag v1.0.0
-```
+长途自驾时，你会在导航里设置几个**途经点**：出发 100 公里是服务区、300 公里是加油站、终点是目的地。这些途经点让你的行程有了"可回溯的刻度"——无论开到哪，都知道离哪个节点还有多远。
+
+Git 的**标签（tag）** 就是版本历史里的"途经点"：它给某一个提交打上一个固定的、有意义的名字，比如 `v1.0.0`、`v2.1.0-rc.1`。与分支不同，标签**不会随着新提交移动**，它是"静止的书签"——永远指向那一个提交。
+
+对发布流程来说，标签就是**里程碑**：`v1.0.0` 代表"1.0 正式版在这里"，团队只要 checkout 这个标签，就能精确复现当时的代码。
+
+本篇采用**清单驱动**的叙事方式，把标签的"全生命周期"拆成一张任务清单，逐项勾选：**创建 → 查看 → 推送 → 检出 → 删除**，最后补上语义化版本规范。
 
 ---
 
-**基本写法：创建附注标签**
-`git tag -a <标签名> -m "<说明>"`
+## 一、先认识两种标签：附注 vs 轻量
+
+官方文档把标签分为两类，新手务必先分清：
+
+| 对比维度 | 附注标签（Annotated） | 轻量标签（Lightweight） |
+| --- | --- | --- |
+| 创建命令 | `git tag -a v1.0.0 -m "说明"` | `git tag v1.0.0` |
+| 存储形式 | 完整的 Git 对象（含创建者、邮箱、日期、说明，可 GPG 签名） | 只是一个指向提交的引用（指针） |
+| 查看信息 | `git show` 能看到完整标签信息 | `git show` 只显示提交信息 |
+| 适用场景 | **正式发布、里程碑标记（推荐）** | 临时标记、私人标记 |
+| 可追溯性 | 强，可签名可验证 | 弱，无额外信息 |
+
+> 原理提示（官方原文）：附注标签"包含创建日期、标签者姓名和电子邮件、标签信息和可选的 GnuPG 签名"；轻量标签"只是一个对象（通常是提交对象）的名字"。**官方建议正式发布的版本一律使用附注标签**。
+
+---
+
+## 二、清单第一项：创建标签
+
+### 2.1 在当前提交创建附注标签（推荐）
+
 ```bash
-# 创建带说明的附注标签（推荐）
+# -a 表示附注标签，-m 写说明；不写 -m 会打开编辑器
 git tag -a v1.0.0 -m "发布版本 1.0.0"
 ```
 
----
+### 2.2 在历史提交上补标签
 
-**基本写法：在指定提交创建标签**
-`git tag -a <标签名> <提交ID> -m "<说明>"`
+忘记给上个版本打标签了？补上即可：
+
 ```bash
-# 为历史提交创建标签
-git tag -a v0.9.0 abc1234 -m "历史版本"
-```
+# 为历史提交 abc1234 补打附注标签
+git tag -a v0.9.0 abc1234 -m "历史版本 v0.9.0"
 
----
-
-**基本写法：创建轻量标签在指定提交**
-`git tag <标签名> <提交ID>`
-```bash
-# 在指定提交创建轻量标签
+# 为历史提交打轻量标签
 git tag v0.9.0 abc1234
 ```
 
+### 2.3 创建轻量标签
+
+```bash
+# 不带 -a/-s/-m 就是轻量标签
+git tag v1.0.0-lw
+```
+
+### 2.4 创建 GPG 签名标签（开源项目进阶）
+
+```bash
+# -s 用你的 GPG 密钥签名
+git tag -s v2.0.0 -m "正式发布版本 2.0.0，已签名"
+
+# 验证标签签名
+git tag -v v2.0.0
+```
+
+### 2.5 命名规范（避免踩坑）
+
+| 要求 | 示例 |
+| --- | --- |
+| 不能以 `-` 开头 | 不要写成 `-v1.0` |
+| 语义化版本命名 | `v1.0.0`、`v2.1.0`、`v1.0.0-rc.1` |
+| 预发布带后缀 | `-beta`、`-rc.1`（放在主版本号之后） |
+| 不建议包含空格 | 标签名里不要用空格 |
+
 ---
 
-## 查看标签
+## 三、清单第二项：查看标签
 
-**基本写法：查看所有标签**
-`git tag`
 ```bash
-# 列出所有本地标签
+# 列出所有本地标签（按字母顺序）
 git tag
-```
+# 输出示例：
+# v0.9.0
+# v1.0.0
+# v1.0.0-beta
 
----
-
-**基本写法：按模式筛选标签**
-`git tag -l "<模式>"`
-```bash
-# 列出匹配模式的标签
+# 按模式筛选（注意：用通配符时必须带 -l）
 git tag -l "v1.*"
-```
+# 输出：v1.0.0、v1.0.0-beta
 
----
-
-**基本写法：查看标签详情**
-`git show <标签名>`
-```bash
-# 查看标签指向的提交信息
+# 查看标签详情（附注标签会显示完整信息）
 git show v1.0.0
-```
 
----
-
-**基本写法：按版本排序标签**
-`git tag -l --sort=-v:refname`
-```bash
-# 按版本号倒序排列标签
+# 按版本号倒序排列
 git tag -l --sort=-v:refname
-```
 
----
-
-**基本写法：查看标签数量**
-`git tag | wc -l`
-```bash
-# 统计标签总数
+# 统计标签数量
 git tag | wc -l
 ```
 
+`git show v1.0.0` 的输出示例（附注标签）：
+
+```
+tag v1.0.0
+Tagger: 张三 <zhangsan@example.com>
+Date:   Sat Aug 2 10:00:00 2026 +0800
+
+发布版本 1.0.0
+
+commit 7a3f9c1e2d4b5a6c8f9e0d1b2c3a4b5c6d7e8f9a
+Author: 张三 <zhangsan@example.com>
+Date:   Sat Aug 2 09:30:00 2026 +0800
+
+    feat: 完成核心功能
+```
+
+看懂输出：上面是标签自己的信息（Tagger、Date、说明），下面是标签指向的提交信息。这就是附注标签比轻量标签"信息量大"的直接体现。
+
 ---
 
-## 推送标签
+## 四、清单第三项：推送标签到远程
 
-**基本写法：推送单个标签**
-`git push origin <标签名>`
+**重要知识点：`git push` 默认不会推送标签**，必须显式操作：
+
 ```bash
-# 推送指定标签到远程
+# 推送单个标签
 git push origin v1.0.0
-```
 
----
-
-**基本写法：推送所有标签**
-`git push origin --tags`
-```bash
-# 推送所有本地标签到远程
+# 推送所有本地标签
 git push origin --tags
-```
 
----
-
-**基本写法：推送带标签的分支**
-`git push origin <分支名> --tags`
-```bash
-# 推送分支的同时推送所有标签
+# 推送分支的同时推送标签
 git push origin main --tags
-```
 
----
-
-**基本写法：强制推送标签**
-`git push origin -f <标签名>`
-```bash
-# 强制更新远程标签（覆盖）
+# 标签已被占用时强制覆盖（慎重！会覆盖远程同名标签）
 git push origin -f v1.0.0
 ```
 
+推送输出示例：
+
+```
+Enumerating objects: 1, done.
+Counting objects: 100% (1/1), done.
+Writing objects: 100% (1/1), 1.14 KiB | 1.14 MiB/s, done.
+Total 1 (delta 0), reused 0 (delta 0)
+To https://github.com/user/repo.git
+ * [new tag]         v1.0.0 -> v1.0.0
+```
+
+> 最佳实践：发布流程建议用 `--follow-tags` 代替 `--tags`——它只推送"附注标签"，避免把临时轻量标签也推上去：
+>
+> ```bash
+> git push --follow-tags origin main
+> ```
+
 ---
 
-## 删除标签
+## 五、清单第四项：检出标签
 
-**基本写法：删除本地标签**
-`git tag -d <标签名>`
+检出标签时要注意：**直接 checkout 标签会进入"分离头指针"（detached HEAD）状态**，此时的新提交不属于任何分支。
+
 ```bash
-# 删除本地指定标签
+# 检出标签指向的代码（分离 HEAD 状态）
+git checkout v1.0.0
+# 输出提示：You are in 'detached HEAD' state...
+
+# 想基于标签改代码：从标签创建新分支（推荐做法）
+git switch -c hotfix-1.0 v1.0.0
+
+# 旧写法（等价）
+git checkout -b hotfix-1.0 v1.0.0
+```
+
+> 原则：**只读查看用 `git checkout <标签>`；要修改就必须先建分支**。不要在分离 HEAD 状态下直接提交，否则切走后提交会"找不到归属"。
+
+---
+
+## 六、清单第五项：删除标签
+
+```bash
+# 删除本地标签
 git tag -d v1.0.0
-```
+# 输出：Deleted tag 'v1.0.0' (was 7a3f9c1)
 
----
-
-**基本写法：删除远程标签**
-`git push origin --delete <标签名>`
-```bash
-# 删除远程仓库的标签
+# 删除远程标签（推荐写法）
 git push origin --delete v1.0.0
-```
 
----
-
-**基本写法：删除远程标签（替代方式）**
-`git push origin :refs/tags/<标签名>`
-```bash
-# 通过推送空引用删除远程标签
+# 删除远程标签（替代写法：推送空引用）
 git push origin :refs/tags/v1.0.0
-```
 
----
-
-**基本写法：批量删除本地标签**
-`git tag -l "<模式>" | xargs git tag -d`
-```bash
-# 删除匹配模式的所有本地标签
+# 批量删除本地标签（例如清掉所有 v0.x 的旧标签）
 git tag -l "v0.*" | xargs git tag -d
 ```
 
 ---
 
-## 检出标签
+## 七、清单之外的进阶操作
 
-**基本写法：检出标签代码**
-`git checkout <标签名>`
 ```bash
-# 切换到标签指向的提交（分离 HEAD）
-git checkout v1.0.0
-```
-
----
-
-**基本写法：从标签创建分支**
-`git switch -c <分支名> <标签名>`
-```bash
-# 基于标签创建新分支进行修改
-git switch -c hotfix-1.0 v1.0.0
-```
-
----
-
-**基本写法：checkout 从标签创建分支**
-`git checkout -b <分支名> <标签名>`
-```bash
-# 旧写法从标签创建分支
-git checkout -b hotfix-1.0 v1.0.0
-```
-
----
-
-## 标签管理
-
-**基本写法：验证标签签名**
-`git tag -v <标签名>`
-```bash
-# 验证 GPG 签名的标签
-git tag -v v1.0.0
-```
-
----
-
-**基本写法：查看标签指向的提交**
-`git rev-list -n 1 <标签名>`
-```bash
-# 获取标签指向的提交 ID
+# 查看标签指向的提交 ID
 git rev-list -n 1 v1.0.0
-```
 
----
-
-**基本写法：比较标签差异**
-`git diff <标签1>..<标签2>`
-```bash
-# 查看两个标签之间的差异
+# 比较两个标签之间的差异
 git diff v1.0.0..v1.1.0
-```
 
----
-
-**基本写法：查看标签间日志**
-`git log <标签1>..<标签2> --oneline`
-```bash
 # 查看两个标签之间的提交记录
 git log v1.0.0..v1.1.0 --oneline
-```
 
----
-
-## 语义化版本标签
-
-**基本写法：创建预发布标签**
-`git tag -a v1.0.0-beta -m "<说明>"`
-```bash
-# 创建 beta 预发布版本标签
-git tag -a v1.0.0-beta -m "1.0.0 测试版"
-```
-
----
-
-**基本写法：创建发布候选标签**
-`git tag -a v1.0.0-rc.1 -m "<说明>"`
-```bash
-# 创建 release candidate 标签
-git tag -a v1.0.0-rc.1 -m "1.0.0 候选版本"
-```
-
----
-
-**基本写法：查看正式版本标签**
-`git tag -l "v[0-9]*.[0-9]*.[0-9]*" | grep -v "-"`
-```bash
-# 仅列出正式版本（不含预发布）
+# 只列出正式版本标签（排除预发布带 - 的）
 git tag -l "v[0-9]*.[0-9]*.[0-9]*" | grep -v "-"
 ```
 
-## 参考文献
+### 7.1 标签与分支的本质区别（必懂）
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+| 对比维度 | 分支（branch） | 标签（tag） |
+| --- | --- | --- |
+| 是否移动 | 会随新提交**自动前移** | **静止不动**，永远指向同一个提交 |
+| 本质 | 可移动的指针 | 固定的引用（或指向提交的名字） |
+| 用途 | 承载持续开发 | 标记发布点、里程碑 |
+| 修改方式 | 提交即前移 | 需显式 `-f` 才能强制移动 |
+
+这个区别是理解"为什么发布版本要用标签而不是分支"的关键：**分支是流动的"河"，标签是固定的"界碑"**。测试、部署、复现线上问题，都应该锚定在标签上，而不是可能被新提交带跑的分支上。
+
+---
+
+## 八、语义化版本（SemVer）规范
+
+标签命名强烈建议遵循语义化版本规范 `主版本.次版本.修订号`：
+
+```
+v1.0.0-beta     # 测试版
+v1.0.0-rc.1     # 发布候选（Release Candidate）
+v1.0.0          # 正式版
+v1.1.0          # 新增功能（向后兼容）
+v2.0.0          # 不兼容的大改版
+```
+
+```bash
+# 创建预发布标签
+git tag -a v1.0.0-beta -m "1.0.0 测试版"
+
+# 创建发布候选标签
+git tag -a v1.0.0-rc.1 -m "1.0.0 候选版本"
+
+# 创建正式版标签
+git tag -a v1.0.0 -m "1.0.0 正式发布"
+```
+
+版本号变更规则一句话：**修复 Bug 改修订号，加功能改次版本，破坏性变更改主版本**。
+
+---
+
+## 九、常见错误与对策表
+
+| 错误现象 | 报错信息（节选） | 原因分析 | 解决办法 |
+| --- | --- | --- | --- |
+| 标签名重复创建 | `fatal: tag 'v1.0.0' already exists` | 标签必须唯一 | 换新名字，或用 `git tag -f` 强制覆盖（先确认影响） |
+| push 后远程没标签 | 远程仓库找不到标签 | 忘了 `git push` 默认不推送标签 | 显式执行 `git push origin <标签>` 或 `git push origin --tags` |
+| checkout 标签后提交"丢失" | 切回分支后改动找不到了 | 分离 HEAD 状态下提交不属于任何分支 | 先 `git switch -c <新分支>` 再提交 |
+| 推标签失败 | `! [rejected] v1.0.0 -> v1.0.0 (already exists)` | 远程已有同名标签 | 确认是否真的要覆盖，需要时 `git push -f origin v1.0.0` |
+| 打标签打错提交 | 标签指向了错误的提交 | 没指定提交 ID，默认打在 HEAD | 用 `git tag -a v1.0.0 <正确提交ID> -m "..."` 补打，再删掉错的 |
+| 删除远程标签没生效 | 远程仍显示旧标签 | 用了错误的删除语法 | 用 `git push origin --delete <标签>`；本地残留可 `git fetch --prune --tags` 清理 |
+
+---
+
+## 十、实战练习
+
+### 练习 1：创建并查看第一个标签（入门）
+
+**题目**：在仓库完成一次提交后，创建附注标签 `v0.1.0`，用 `git tag` 和 `git show` 查看结果。
+
+**提示**：`-a` + `-m`，观察 `git show` 输出的 Tagger 信息。
+
+**参考答案要点**：
+
+```bash
+git commit -m "feat: 初始功能"
+git tag -a v0.1.0 -m "第一个里程碑"
+git tag              # 输出 v0.1.0
+git show v0.1.0      # 显示标签信息 + 提交信息
+```
+
+### 练习 2：区分两种标签（核心）
+
+**题目**：分别创建轻量标签 `v0.1.0-lw` 和附注标签 `v0.1.0-ann`，对比两个 `git show` 输出的差异。
+
+**提示**：轻量标签的 show 输出里没有 Tagger/Date 段。
+
+**参考答案要点**：
+
+```bash
+git tag v0.1.0-lw
+git tag -a v0.1.0-ann -m "测试附注"
+git show v0.1.0-lw    # 只有提交信息
+git show v0.1.0-ann   # 有 tag 对象信息 + 提交信息
+```
+
+### 练习 3：推送并验证标签（进阶）
+
+**题目**：把本地标签推送到远程仓库，然后在 GitHub 网页的 Releases 页面或 `git ls-remote --tags origin` 中验证。
+
+**提示**：push 不会自动带标签。
+
+**参考答案要点**：
+
+```bash
+git push origin v0.1.0
+git ls-remote --tags origin    # 远程能看到 refs/tags/v0.1.0
+# 或者：git push origin --tags 一次推全部
+```
+
+### 练习 4：基于标签修复 Bug（进阶）
+
+**题目**：检出 `v1.0.0` 标签，基于它创建 `hotfix-1.0` 分支修复一个 Bug 并提交。
+
+**提示**：分离 HEAD 下先建分支再改。
+
+**参考答案要点**：
+
+```bash
+git switch -c hotfix-1.0 v1.0.0
+# 修复 Bug
+git add . && git commit -m "fix: 修复 1.0 的严重 Bug"
+```
+
+### 练习 5：版本发布全流程（综合）
+
+**题目**：模拟一次完整发布：从 main 提交正式版代码，打 `v1.0.0` 附注标签，推送标签，用 `git diff v0.1.0..v1.0.0 --stat` 查看版本间变更规模。
+
+**提示**：按"提交 → 打标签 → 推标签 → 对比"的顺序执行。
+
+**参考答案要点**：
+
+```bash
+git commit -m "feat: 1.0 正式版"
+git tag -a v1.0.0 -m "1.0.0 正式发布"
+git push origin v1.0.0
+git diff v0.1.0..v1.0.0 --stat   # 查看版本差异统计
+```
+
+---
+
+## 十一、一句话记忆
+
+**标签是静止的书签、发布的里程碑：`-a -m` 建附注标签（正式发布用），`push` 默认不带你得显式推，checkout 后记得建分支，`-d` 删本地、`--delete` 删远程，命名跟着语义化版本走（主.次.修订）。**
+
+---
+
+## 参考链接
+
+- Git 官方文档（git tag，中文）：https://git-scm.com/docs/git-tag/zh_HANS-CN
+- Pro Git 中文版 2.6 打标签：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%89%93%E6%A0%87%E7%AD%BE
+- GitHub 文档（Releases 与标签）：https://docs.github.com/zh/repositories/releasing-projects-on-github/about-releases
+- 语义化版本规范（SemVer，中文）：https://semver.org/lang/zh-CN/
 
 ## 延伸阅读
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- 推送标签到远程的完整流程，见 038-GitCommitPush。
+- 标签在 CI/CD 中作为版本触发条件，见 029-GitHubActionsCICD 与 050-GhRelease。
+- 历史与日志（如何对比标签间差异），见 044-GitHistoryLog。
+- 关联文档：GitHub Release 发布，见 050-GhRelease；GitHub CLI 版本管理，见 053-GhExtension。

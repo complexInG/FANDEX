@@ -243,7 +243,19 @@ mod tests {
 
 讲解：边界值测试（90/89/60 等临界点）是测试的核心价值；`#[should_panic]` 验证非法输入的防护路径。
 
-## 7. 参考资源
+## 7. 实战练习
+
+1. **第一个测试**：给一个 `add` 函数写 3 个测试（正数、负数、零），用 `cargo test` 运行。
+
+2. **边界测试**：实现 `grade` 函数并测试所有边界值（100/90/89/60/59/0），再加一个 `should_panic` 测试非法分数。
+
+3. **结果测试**：写一个返回 `Result` 的解析函数，用"返回 Result 的测试"方式验证成功与失败路径。
+
+4. **clippy 实践**：故意写几段有 clippy 警告的代码（如 `format!("{}", 42)`、`if x == true`），运行 `cargo clippy` 观察提示并修复。
+
+5. **调试练习**：写一个循环累加程序，用 `dbg!` 观察中间值、用 `RUST_BACKTRACE=1` 定位一处 panic。
+
+## 8. 参考资源
 
 TRPL 第 11 章（测试）：https://kaisery.github.io/trpl-zh-cn/ch11-00-testing.html
 
@@ -251,6 +263,8 @@ Rust 测试与基准指南：https://doc.rust-lang.org/cargo/guide/tests.html
 
 Clippy 文档：https://doc.rust-lang.org/clippy/
 
-## 8. 小结
+## 9. 小结
 
 测试三件套（`#[test]` + 断言宏 + cargo test）、质量双保险（clippy + fmt）、调试三板斧（dbg!、断点、RUST_BACKTRACE）。把"写代码 → check → clippy → test"变成肌肉记忆，代码质量就有了基本保障。下一步进入异步编程，学习高并发服务的基础。
+
+> **一句话记忆**：Rust 质量保障四步曲——"`cargo check` 快验证、`cargo clippy` 查质量、`cargo fmt` 整格式、`cargo test` 验功能"；测试用 `#[test]` + `assert_eq!`，边界值优先测，调试用 `dbg!` + `RUST_BACKTRACE=1`。

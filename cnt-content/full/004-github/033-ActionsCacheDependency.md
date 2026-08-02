@@ -4,9 +4,9 @@ title: Actions缓存依赖
 module: github
 category: toolchain
 difficulty: intermediate
-description: 'GitHub Actions缓存机制详解：actions/cache使用、缓存策略与依赖加速最佳实践。'
+description: 'GitHub Actions缓存机制问题驱动详解：从每次CI都重新下载依赖太慢的痛点切入，讲透 actions/cache 用法、缓存键设计、命中逻辑与依赖加速最佳实践。'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - github/常见问题排查
   - github/Actions矩阵构建
@@ -15,74 +15,111 @@ related:
 prerequisites:
   - github/GitHub概述
 ---
-## 1. 缓存机制原理
+## 0. 开始之前：一个"厨房储物柜"的故事
 
-### 1.1 缓存工作流程
+想象你开了一家小餐馆，每天要做 50 道菜。没有储物柜的话，厨师每次做菜都要**从零开始**：去买菜、洗菜、切菜、备料，做完一道菜再全部重来一遍——哪怕今天和昨天的菜单一模一样。
+
+后来你买了**厨房储物柜**：昨天买好的酱油、面粉、香料都存在柜子里，今天做菜直接"取用"，只有用完了或过期了才重新采购。做菜时间从 1 小时缩短到 10 分钟。你还在柜子上贴了标签（`key`），比如"酱油-大瓶-2026-07 批"，方便精准找到该用哪一瓶；万一指定的那瓶用完了，你还有备用的（`restore-keys`），凑合着先做，再补货。
+
+GitHub Actions 的**依赖缓存**就是 CI 世界的"厨房储物柜"：把 npm/pip/go 下载好的依赖包存起来，下次构建直接复用，避免每次都从网络重新下载。本文从一个具体痛点出发，把缓存讲透。
+
+## 1. 问题：每次 CI 都重新下载依赖，太慢了
+
+### 1.1 痛点场景
+
+一个典型的前端项目 CI 流水线是这样跑的：
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+  - uses: actions/setup-node@v4
+    with:
+      node-version: 20
+  - run: npm ci          # 每次都从 npm 源下载几百 MB 依赖，耗时数分钟
+  - run: npm test
+```
+
+每次提交、每个 PR 都会触发一次 `npm ci`，把几百 MB 的依赖从网络重新拉一遍。遇到网络波动还会更慢。对于一个几十上百人提交的仓库，这些"重复下载"浪费的分钟数和金钱非常可观。
+
+### 1.2 缓存要解决的问题
+
+缓存真正要解决的不是"让所有步骤都变快"，而是**减少重复下载和重复计算**：
+
+- 依赖文件没变化时，就不要每次重新下载——直接复用缓存。
+- 构建产物只用于本次交付，不要拿它当长期缓存（那是 Artifacts 的职责，见 035）。
+- 把"依赖缓存"与"产物传递"的边界分清楚，优化才会清晰。
+
+### 1.3 缓存的收益（官方实践数据）
+
+GitHub 官方文档给出典型的收益预期：启用依赖缓存后，工作流运行时间可以从几分钟缩短到几十秒，尤其在依赖体积大的项目中效果显著。缓存对每个仓库最多可存 10 GB，超限后按"最久未访问"策略自动清理旧缓存。
+
+## 2. 缓存原理：命中、未命中与匹配顺序
+
+### 2.1 整体工作流程
 
 ```mermaid
 flowchart TD
-    T0["Job 开始"]
-    T1["检查缓存是否存在（基于 key 匹配）"]
-    T2["命中 → 恢复缓存到指定路径"]
-    T3["未命中 → 正常安装依赖"]
-    T4["执行构建/测试"]
-    T5["Post 阶段 → 保存新缓存（如果 key 不存在）"]
-    T0 --> T1
-    T0 --> T2
-    T0 --> T3
-    T3 --> T4
-    T3 --> T5
+    T0["Job 开始"] --> T1["用 key 查找缓存"]
+    T1 -->|"精确命中 key"| T2["恢复缓存到指定路径<br/>(cache hit)"]
+    T1 -->|"未精确命中"| T3["按 restore-keys 顺序前缀匹配"]
+    T3 -->|"部分命中"| T4["恢复最近的匹配缓存"]
+    T3 -->|"都未命中"| T5["跳过恢复<br/>(cache miss)"]
+    T2 --> T6["正常安装/执行"]
+    T4 --> T6
+    T5 --> T6
+    T6 -->|"job 成功完成且未精确命中"| T7["保存新缓存<br/>(使用新 key)"]
 ```
 
-### 1.2 缓存限制
+### 2.2 命中与未命中的官方定义
 
-| 限制项       | 值                       |
-| ------------ | ------------------------ |
-| 单个缓存大小 | 最大 10 GB               |
-| 仓库总缓存   | 最大 10 GB               |
-| 缓存保留时间 | 7 天未访问自动删除       |
-| 缓存范围     | 同一仓库的所有分支可共享 |
+根据 GitHub 官方文档（Dependency caching reference），恢复缓存时按以下顺序尝试：
 
-## 2. actions/cache 使用
+1. **精确匹配 `key`**：如果找到了与 `key` 完全一致的缓存，视为 **cache hit**（缓存命中），直接恢复。
+2. **按 `restore-keys` 顺序前缀匹配**：没有精确命中时，逐个用 `restore-keys` 做前缀匹配，取最近创建的匹配缓存。
+3. **仍未命中**：视为 **cache miss**（缓存未命中），不恢复任何内容。
 
-### 2.1 基本用法
+关键规则：**缓存未命中时，只要 job 最终成功完成，actions/cache 会自动用你提供的 `key` 保存一份新缓存**（内容为 `path` 指定的文件）。缓存保存后**不能原地修改**，只能通过新 key 生成新缓存——所以缓存策略有变时，改一下 key 里的版本号（如 `v2` → `v3`）就能自然切换到新缓存。
+
+### 2.3 缓存范围与限制
+
+| 限制项 | 值 | 说明 |
+| --- | --- | --- |
+| 单个缓存大小 | 最大 10 GB | 超大缓存会导致上传/下载变慢 |
+| 仓库总缓存 | 最大 10 GB | 超限按最久未访问自动清理 |
+| 缓存保留 | 7 天未访问自动删除 | 与 Artifacts 的保留策略不同 |
+| 跨分支访问 | 当前分支 + 默认分支 | PR 还能访问 base 分支（目标分支）的缓存 |
+| 缓存内容 | 禁止存放敏感信息 | 官方明确建议不要缓存 Token、凭据等 |
+
+补充说明（官方文档）：PR 触发时创建的缓存会挂在 `refs/pull/.../merge` 下，通常只适合该 PR 自己重跑时使用；兄弟分支、不同 tag 之间不能随意互相读取缓存。
+
+## 3. actions/cache 使用：从基础到各语言
+
+### 3.1 基础用法
 
 ```yaml
-- uses: actions/cache@v4
-  with:
-    path: |
-      ~/.npm
-      node_modules
-    key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-    restore-keys: |
-      npm-${{ runner.os }}-
+steps:
+  - uses: actions/cache@v4
+    with:
+      path: |                    # 要缓存/恢复的路径（支持多行、glob）
+        ~/.npm
+        node_modules
+      key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}   # 精确键
+      restore-keys: |            # 回退键（前缀匹配，按顺序尝试）
+        npm-${{ runner.os }}-
 ```
 
-### 2.2 参数详解
+参数详解：
 
-| 参数                | 说明                                 |
-| ------------------- | ------------------------------------ |
-| `path`              | 要缓存/恢复的路径，支持多路径和 glob |
-| `key`               | 缓存键，用于精确匹配                 |
-| `restore-keys`      | 回退键前缀，用于部分匹配             |
-| `upload-chunk-size` | 上传分块大小（默认 32MB）            |
+| 参数 | 必填 | 说明 |
+| --- | --- | --- |
+| `path` | 是 | 缓存/恢复的路径，支持多路径和 glob；相对路径基于工作区目录解析 |
+| `key` | 是 | 保存缓存时生成的键，也是查找缓存的键；最长 512 字符，超长会报错 |
+| `restore-keys` | 否 | 回退键列表，每行一个，按顺序做前缀匹配 |
+| `enableCrossOsArchive` | 否 | 设为 true 允许 Windows 运行器跨操作系统恢复缓存（默认 false） |
 
-### 2.3 缓存匹配逻辑
+### 3.2 各语言缓存配置
 
-```
-1. 精确匹配 key
-   npm-linux-abc123  → 命中 → 恢复，跳过保存
-
-2. 未精确匹配，按 restore-keys 顺序前缀匹配
-   npm-linux-xyz789  → 命中 → 恢复，Post 阶段用新 key 保存
-
-3. 都未命中
-   → 不恢复，Post 阶段用新 key 保存
-```
-
-## 3. 各语言缓存配置
-
-### 3.1 Node.js / npm
+**Node.js / npm**（缓存 npm 全局缓存目录，而非 node_modules）：
 
 ```yaml
 - uses: actions/cache@v4
@@ -91,19 +128,10 @@ flowchart TD
     key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
     restore-keys: npm-${{ runner.os }}-
 
-- run: npm ci # npm ci 利用缓存加速安装
+- run: npm ci     # 缓存命中时秒装，未命中时才全量下载
 ```
 
-使用 `setup-node` 内置缓存：
-
-```yaml
-- uses: actions/setup-node@v4
-  with:
-    node-version: 22
-    cache: npm # 自动缓存 ~/.npm
-```
-
-### 3.2 Python / pip
+**Python / pip**：
 
 ```yaml
 - uses: actions/cache@v4
@@ -115,7 +143,7 @@ flowchart TD
 - run: pip install -r requirements.txt
 ```
 
-### 3.3 Go
+**Go**：
 
 ```yaml
 - uses: actions/cache@v4
@@ -129,7 +157,7 @@ flowchart TD
 - run: go mod download
 ```
 
-### 3.4 Java / Gradle
+**Java / Gradle**：
 
 ```yaml
 - uses: actions/cache@v4
@@ -141,7 +169,7 @@ flowchart TD
     restore-keys: gradle-${{ runner.os }}-
 ```
 
-### 3.5 Rust / Cargo
+**Rust / Cargo**：
 
 ```yaml
 - uses: actions/cache@v4
@@ -154,49 +182,56 @@ flowchart TD
     restore-keys: cargo-${{ runner.os }}-
 ```
 
-## 4. 缓存策略优化
+### 3.3 更省事的做法：setup-* 内置缓存
 
-### 4.1 缓存键设计
+对主流语言，`setup-node`、`setup-python` 等官方 Action 已经内置缓存能力，**一行配置即可**，不必手写 actions/cache：
 
 ```yaml
-# 精确缓存：依赖文件变化时失效
-key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+- uses: actions/setup-node@v4
+  with:
+    node-version: 20
+    cache: npm                     # 自动缓存 npm 全局缓存目录
+    cache-dependency-path: package-lock.json   # monorepo 场景指定锁文件位置
+```
 
-# 粗粒度缓存：同一 OS 共享
-key: npm-${{ runner.os }}-
+注意：`setup-node` 的内置缓存**不缓存 node_modules**，而是缓存 npm 的全局包缓存目录，并根据 `package-lock.json` / `yarn.lock` 等锁文件自动生成缓存键。
 
-# 多级回退
+## 4. 缓存策略设计：key 怎么设计才科学
+
+### 4.1 key 的三层信息（官方推荐组合）
+
+最常见的 key 写法是把"操作系统 + 语言版本 + 锁文件哈希"三要素放进去：
+
+```yaml
+key: ${{ runner.os }}-node-20-npm-v2-${{ hashFiles('**/package-lock.json') }}
+```
+
+- `runner.os`：区分 Linux/macOS/Windows。不同系统的依赖缓存不能混用（尤其带原生扩展的依赖）。
+- `node-20`：区分运行时版本。Node/Python/Java 版本变了，缓存最好跟着变。
+- `hashFiles(...)`：监听依赖变化。锁文件变了就生成新缓存，没变就尽量复用旧缓存。
+- `v2`（可选）：手动版本号。未来调整缓存策略时，把 v2 改成 v3 即可自然切换到新缓存。
+
+### 4.2 key 设计的两大误区
+
+| 误区 | 后果 | 正确做法 |
+| --- | --- | --- |
+| key 太宽（如固定 `linux-node`） | 依赖换了还复用旧缓存，易污染、难排查 | key 至少包含 OS + 锁文件哈希 |
+| key 太细（如把 `github.sha` 放进 key） | 每次提交 key 都不同，永远命中不了 | key 只放"会反映依赖变化"的信息，不要放提交 SHA |
+
+### 4.3 多级回退：restore-keys 的正确打开方式
+
+restore-keys 是"降级匹配"：精确 key 未命中时，按前缀尽量恢复一份**最近创建的**缓存，恢复后包管理器再补齐缺失依赖。注意：**restore-keys 命中的缓存不代表依赖完全一致，后续仍需执行安装命令**，不能因为恢复成功就跳过安装。
+
+```yaml
 key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 restore-keys: |
-  npm-${{ runner.os }}-
-  npm-
+  npm-${{ runner.os }}-    # 一级回退：同系统最近缓存
+  npm-                     # 二级回退：跨系统兜底
 ```
 
-### 4.2 分层缓存
+### 4.4 缓存命中判断：cache-hit 输出
 
-```yaml
-# 第一层：操作系统 + 语言版本
-# 第二层：依赖文件哈希
-- uses: actions/cache@v4
-  with:
-    path: ~/.npm
-    key: npm-${{ runner.os }}-node22-${{ hashFiles('package-lock.json') }}
-    restore-keys: |
-      npm-${{ runner.os }}-node22-
-      npm-${{ runner.os }}-
-```
-
-### 4.3 条件缓存
-
-```yaml
-- uses: actions/cache@v4
-  if: github.ref == 'refs/heads/main' # 仅 main 分支保存缓存
-  with:
-    path: ~/.npm
-    key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-```
-
-### 4.4 缓存命中判断
+通过 `cache-hit` 输出可以精确控制后续步骤（比如命中时用离线安装，未命中时全量安装）：
 
 ```yaml
 - uses: actions/cache@v4
@@ -205,32 +240,45 @@ restore-keys: |
     path: ~/.npm
     key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-- name: Install dependencies
+- name: Install dependencies (cache miss)
   if: steps.cache-npm.outputs.cache-hit != 'true'
   run: npm ci
 
-- name: Quick install (cache hit)
+- name: Install dependencies (cache hit)
   if: steps.cache-npm.outputs.cache-hit == 'true'
   run: npm ci --prefer-offline
 ```
 
-## 5. 缓存管理
+### 4.5 条件缓存：只在需要的分支保存
 
-### 5.1 手动清除缓存
-
-```bash
-# 使用 GitHub CLI 清除所有缓存
-gh api repos/OWNER/REPO/actions/caches \
-  --method GET \
-  --jq '.actions_caches[].id' | \
-  xargs -I {} gh api repos/OWNER/REPO/actions/caches/{} --method DELETE
+```yaml
+- uses: actions/cache@v4
+  if: github.ref == 'refs/heads/main'   # 仅 main 分支保存新缓存，PR 只恢复不保存
+  with:
+    path: ~/.npm
+    key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 ```
 
-### 5.2 按键前缀清除
+## 5. 缓存管理：查看、清理与监控
+
+### 5.1 用 gh 命令管理缓存
 
 ```bash
-gh api repos/OWNER/REPO/actions/caches?key=npm-linux- \
-  --method GET \
+# 列出仓库所有缓存
+gh cache list
+
+# 按键前缀删除缓存
+gh cache delete <key>
+
+# 删除所有缓存
+gh cache delete --all
+```
+
+### 5.2 通过 REST API 精确清理
+
+```bash
+# 获取所有缓存 ID 并逐个删除
+gh api repos/OWNER/REPO/actions/caches \
   --jq '.actions_caches[].id' | \
   xargs -I {} gh api repos/OWNER/REPO/actions/caches/{} --method DELETE
 ```
@@ -245,179 +293,98 @@ gh api repos/OWNER/REPO/actions/caches?key=npm-linux- \
     du -sh ~/go/pkg/mod || true
 ```
 
-## 6. 常见问题
+## 6. 常见错误与对策
 
-### 6.1 缓存未命中
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| --- | --- | --- | --- |
+| 缓存永远不命中 | 每次构建都重新下载依赖 | key 中包含了每次提交都变化的变量（如 `github.sha`） | key 只保留 OS、语言版本、锁文件哈希等稳定信息 |
+| 把 node_modules 塞进缓存 | 缓存巨大、跨平台冲突 | node_modules 含平台相关二进制，且体积大 | 只缓存包管理器缓存目录（如 `~/.npm`），不缓存 node_modules |
+| 缓存命中后跳过安装导致依赖缺失 | 构建报找不到模块 | 误以为恢复缓存 = 依赖完整（restore-keys 部分命中时依赖可能不全） | 命中后仍执行安装命令，用 `npm ci --prefer-offline` 加速 |
+| key 超过 512 字符 | actions/cache 执行失败 | key 太长 | 精简 key，去掉冗余变量 |
+| 缓存里混入敏感文件 | 凭据泄露风险 | 把含 Token 的文件一起缓存了 | 官方明确建议：缓存中不要存放访问令牌、登录凭据等敏感信息 |
+| 分支间互相读不到缓存 | 缓存命中率低 | 不了解缓存范围：兄弟分支、不同 tag 之间不能互读 | 依赖"当前分支 + 默认分支"的缓存规则设计 key 与恢复策略 |
+| 缓存策略变更后旧缓存干扰 | 出现奇怪构建结果 | 新逻辑与旧缓存内容不兼容 | 在 key 中加手动版本号（v2 → v3），自然淘汰旧缓存 |
+
+## 7. 实战练习
+
+### 练习 1：给 Node 项目加缓存
+
+**题目**：为下面的工作流加上 npm 依赖缓存，要求依赖文件变化时缓存自动失效。
+
+**提示**：在 `npm ci` 之前加 `actions/cache@v4` 步骤；`path: ~/.npm`；key 用 `hashFiles('package-lock.json')`。
+
+**参考答案要点**：
 
 ```yaml
-# 问题：缓存键过于精确
+steps:
+  - uses: actions/checkout@v4
+  - uses: actions/cache@v4
+    with:
+      path: ~/.npm
+      key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      restore-keys: npm-${{ runner.os }}-
+  - run: npm ci
+  - run: npm test
+```
+
+### 练习 2：改用 setup-node 内置缓存
+
+**题目**：用 `actions/setup-node` 的内置缓存替代手写 actions/cache，并验证 npm 是否自动获得缓存。
+
+**提示**：在 `with` 中设置 `cache: npm`；可选 `cache-dependency-path` 指定锁文件路径。
+
+**参考答案要点**：
+
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: 20
+    cache: npm
+    cache-dependency-path: package-lock.json
+```
+
+### 练习 3：根据缓存命中与否走不同安装路径
+
+**题目**：缓存命中时用离线安装，未命中时全量安装，并在日志中区分两种状态。
+
+**提示**：给 cache 步骤加 `id`，用 `steps.<id>.outputs.cache-hit` 判断。
+
+**参考答案要点**：
+
+```yaml
+- uses: actions/cache@v4
+  id: cache-npm
+  with:
+    path: ~/.npm
+    key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+- name: Install (miss)
+  if: steps.cache-npm.outputs.cache-hit != 'true'
+  run: npm ci
+- name: Install (hit)
+  if: steps.cache-npm.outputs.cache-hit == 'true'
+  run: npm ci --prefer-offline
+```
+
+### 练习 4：修复"缓存永远不命中"的 bug
+
+**题目**：下面的配置缓存命中率为 0，请找出原因并修复：
+
+```yaml
 key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
-# 每次提交都不同，永远命中不了
-
-# 解决：去掉不必要的变量
-key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 ```
 
-### 6.2 缓存过大
+**提示**：`github.sha` 每次提交都不同，导致 key 每次都变。
 
-```yaml
-# 问题：缓存了不必要的文件
-path: node_modules # 包含平台相关的二进制文件
+**参考答案要点**：删掉 `-${{ github.sha }}`，改为 `key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}`。记住：key 只反映"依赖是否会变化"，不反映"代码是否变化"。
 
-# 解决：只缓存包管理器缓存目录
-path: ~/.npm # 只缓存下载缓存
-```
+## 8. 一句话记忆
 
-### 6.3 跨分支缓存
+**缓存是 CI 的"厨房储物柜"：用 key 精确存取依赖包，锁文件不变就复用，变了就自动换新钥匙，restore-keys 兜底降级，让依赖安装从"重新买菜"变成"开柜取用"。**
 
-缓存默认在同一仓库的所有分支间共享，但 `key` 中的分支变量会限制匹配：
+## 参考链接与延伸阅读
 
-```yaml
-# 问题：key 包含分支名，其他分支无法命中
-key: npm-${{ github.ref }}-${{ hashFiles('package-lock.json') }}
-
-# 解决：key 不包含分支名
-key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-```
-## actions/cache 缓存
-
-**基本用法:缓存依赖**
-`uses: actions/cache@v4`
-
-```yaml
-- uses: actions/cache@v4
-  with:
-    path: |
-      ~/.npm
-      node_modules
-    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    # 部分匹配回退
-    restore-keys: |
-      ${{ runner.os }}-node-
-```
-
----
-
-**基本用法:缓存不同包管理器**
-`uses: actions/cache@v4`
-
-```yaml
-# pip 缓存
-- uses: actions/cache@v4
-  with:
-    path: ~/.cache/pip
-    key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-
-# Gradle 缓存
-- uses: actions/cache@v4
-  with:
-    path: |
-      ~/.gradle/caches
-      ~/.gradle/wrapper
-    key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-```
-
----
-
-## 缓存管理命令
-
-**基本用法:通过 gh 管理缓存**
-`gh cache <子命令>`
-
-```bash
-# 列出仓库缓存
-gh cache list
-
-# 按键删除缓存
-gh cache delete <key>
-
-# 删除所有缓存
-gh cache delete --all
-```
-
----
-
-## 上传产物
-
-**基本用法:上传构建产物**
-`uses: actions/upload-artifact@v4`
-
-```yaml
-- uses: actions/upload-artifact@v4
-  with:
-    name: dist-files
-    path: |
-      dist/
-      build/
-    # 保留天数
-    retention-days: 14
-    # 覆盖同名
-    overwrite: true
-    # 压缩级别
-    compression-level: 6
-```
-
----
-
-## 下载产物
-
-**基本用法:在工作流中下载**
-`uses: actions/download-artifact@v4`
-
-```yaml
-- uses: actions/download-artifact@v4
-  with:
-    name: dist-files
-    path: ./artifact
-
-# 下载上一个工作流产物
-- uses: actions/download-artifact@v4
-  with:
-    name: dist-files
-    run-id: ${{ github.event.workflow_run.id }}
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-```
-
----
-
-**基本用法:通过 gh 命令下载**
-`gh run download`
-
-```bash
-# 下载某次运行的产物
-gh run download 12345 -n dist-files
-```
-
----
-
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
-
-## 延伸阅读
-
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- GitHub 官方：缓存依赖以加速工作流（缓存命中/未命中逻辑与限制）：https://docs.github.com/zh/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+- GitHub 官方：依赖缓存参考（key/path/restore-keys 参数详解）：https://docs.github.com/zh/actions/reference/workflows-and-actions/dependency-caching
+- actions/cache 官方仓库（各语言缓存示例）：https://github.com/actions/cache
+- 延伸：缓存与制品的边界（缓存省重复下载、制品做交付传递），见《Actions 制品传递》（035）
+- 延伸：矩阵多环境下缓存如何设计 key，见《Actions 矩阵构建》（032）

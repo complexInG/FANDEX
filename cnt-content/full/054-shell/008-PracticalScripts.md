@@ -6,7 +6,7 @@ category: Shell
 difficulty: intermediate
 description: '实战脚本案例：部署脚本模板、日志分析报表、定时备份、文件批量处理'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - shell/003-TextProcessingTools
   - shell/006-ScriptDebugging
@@ -15,15 +15,18 @@ prerequisites:
   - shell/007-FunctionsArguments
   - shell/006-ScriptDebugging
 ---
-## 1. 实战脚本的设计原则
 
-前面的文档讲解了命令、三剑客、进程、环境变量、调试、函数，本篇用 4 个完整案例串联全部知识点。生产级脚本的共同特征：
+## 1. 从"菜谱集"说起
 
-1. 开头 `set -euo pipefail`，失败立即停止；
-2. 参数有默认值或必填校验，`getopts` 解析；
-3. 日志函数统一输出，带时间戳；
-4. 关键动作可预览（dry-run），删除前确认；
-5. 通过 `shellcheck` 静态检查。
+前 7 篇文档讲解了命令、三剑客、进程、环境变量、调试、函数。本篇用 **4 个完整案例**串联全部知识点——就像一本菜谱集，把前面的"单个技巧"组合成"完整菜品"。
+
+**生产级脚本的共同特征**：
+
+1. 开头 `set -euo pipefail`，失败立即停止（006 篇）
+2. 参数有默认值或必填校验，`getopts` 解析（007 篇）
+3. 日志函数统一输出，带时间戳（007 篇）
+4. 关键动作可预览（dry-run），删除前确认（002 篇）
+5. 通过 `shellcheck` 静态检查（006 篇）
 
 ## 2. 案例一：部署脚本模板
 
@@ -97,7 +100,12 @@ fi
 log INFO "部署完成 v$version"
 ```
 
-讲解：`run()` 封装所有危险命令，`-d` 演练模式只打印不执行，部署前先演练是避免误操作的关键。备份使用 `tar -czf` 带时间戳命名，`--exclude=.git` 排除仓库目录。`systemctl is-active` 做服务健康校验，失败即退出。将脚本放入 crontab 或 CI 即可自动部署。
+**设计亮点**：
+
+- `run()` 封装所有危险命令，`-d` 演练模式只打印不执行——**部署前先演练是避免误操作的关键**
+- 备份使用 `tar -czf` 带时间戳命名，`--exclude=.git` 排除仓库目录
+- `systemctl is-active` 做服务健康校验，失败即退出
+- 将脚本放入 crontab 或 CI 即可自动部署
 
 ## 3. 案例二：日志分析报表
 
@@ -138,7 +146,11 @@ OUT="${2:-/tmp/report_$(date +%F).txt}"   # 默认输出文件
 echo "报表已生成: $OUT"
 ```
 
-讲解：`{ ... }` 分组把多段输出合并成一次管道，`tee` 同时写文件与终端。所有统计复用 003 篇的三段式 `sort | uniq -c | sort -rn`。此脚本可放入 crontab 每天 0 点生成日报，运维同学每天查看即可掌握站点健康度。
+**设计亮点**：
+
+- `{ ... }` 分组把多段输出合并成一次管道，`tee` 同时写文件与终端
+- 所有统计复用 003 篇的三段式 `sort | uniq -c | sort -rn`
+- 此脚本可放入 crontab 每天 0 点生成日报，运维同学每天查看即可掌握站点健康度
 
 ## 4. 案例三：定时备份脚本
 
@@ -184,7 +196,12 @@ log "备份完成，共 $(du -h "$archive" | cut -f1)"
 0 2 * * * /usr/local/bin/backup.sh /var/www/myapp 7 >> /var/log/backup_cron.log 2>&1
 ```
 
-讲解：`tar -tzf` 列出包内容校验可读性，防止备份损坏而不知情。过期清理用 `ls -1t`（按时间倒序）+ `tail -n +K` 挑出"第 K 份之后的旧包"逐一删除，实现滚动保留。crontab 五个字段分别表示分、时、日、月、星期，`0 2 * * *` 即每天 2 点。备份脚本务必先本地验证一轮再上定时任务。
+**设计亮点**：
+
+- `tar -tzf` 列出包内容校验可读性，**防止备份损坏而不知情**
+- 过期清理用 `ls -1t`（按时间倒序）+ `tail -n +K` 挑出"第 K 份之后的旧包"逐一删除，实现滚动保留
+- crontab 五个字段分别表示分、时、日、月、星期，`0 2 * * *` 即每天 2 点
+- **备份脚本务必先本地验证一轮再上定时任务**
 
 ## 5. 案例四：文件批量处理
 
@@ -219,9 +236,16 @@ done
 echo "批量处理完成"
 ```
 
-讲解：`[ -e "$file" ] || continue` 是"通配符可能无匹配"的防御（结合 002 篇陷阱三）。`printf "%04d"` 生成四位补零序号。`${file##*.}` 用参数扩展取扩展名，比 `sed`/`awk` 更轻快。批量脚本一律先打印再执行（演练模式），确认无误后再去掉 echo 落盘。
+**设计亮点**：
+
+- `[ -e "$file" ] || continue` 是"通配符可能无匹配"的防御（结合 002 篇陷阱三）
+- `printf "%04d"` 生成四位补零序号
+- `${file##*.}` 用参数扩展取扩展名，比 `sed`/`awk` 更轻快
+- **批量脚本一律先打印再执行（演练模式），确认无误后再去掉 echo 落盘**
 
 ## 6. 脚本上线检查清单
+
+写完一个脚本、准备投入使用前，按清单检查：
 
 1. `bash -n script.sh` 语法检查；
 2. `shellcheck script.sh` 静态检查，0 warning；
@@ -230,12 +254,39 @@ echo "批量处理完成"
 5. 检查 `set -euo pipefail`、日志函数、参数校验是否齐全；
 6. 正式使用后保留日志，便于事后追溯。
 
-## 7. 参考资源
+## 7. 常见误区
 
-crontab 说明：https://man7.org/linux/man-pages/man5/crontab.5.html
+**误区一：生产脚本不设演练模式。** → 删除、重启、覆盖等危险操作，没有 dry-run 就是在"赌运气"。
 
-tar 手册：https://www.gnu.org/software/tar/manual/
+**误区二：备份不做校验。** → `tar -tzf` 校验只花一秒钟，却能避免"备份了但损坏了"的灾难。
 
-ShellCheck 规则库（SC 编号检索）：https://www.shellcheck.net/wiki/Home
+**误区三：脚本写完就上 crontab。** → 定时任务没有交互确认，必须先在命令行手工验证。
 
-Google Shell 风格指南：https://google.github.io/styleguide/shellguide.html
+**误区四：删过期文件不留余地。** → 保留份数（KEEP）设大一点，宁多勿少——删除容易恢复难。
+
+## 8. 实战练习
+
+1. **改造部署脚本**：给案例一加上"回滚"功能（部署失败自动回滚到上一个备份）。
+
+2. **扩展日报**：给案例二加上"请求量趋势图"（按小时统计）和"TOP10 来源 IP"。
+
+3. **增量备份**：把案例三改造成"每天全量 + 每小时增量"的备份方案。
+
+4. **综合实战**：写一个"日志轮转"脚本：超过 100MB 的日志自动压缩归档，保留最近 30 份，并加入演练模式。
+
+## 9. 参考资源
+
+- crontab 说明：https://man7.org/linux/man-pages/man5/crontab.5.html
+- tar 手册：https://www.gnu.org/software/tar/manual/
+- ShellCheck 规则库（SC 编号检索）：https://www.shellcheck.net/wiki/Home
+- Google Shell 风格指南：https://google.github.io/styleguide/shellguide.html
+
+## 10. 延伸阅读
+
+- 三剑客综合运用，见本模块《文本处理三剑客》
+- 进程与后台任务，见本模块《进程与作业控制》
+- 脚本质量保障，见本模块《脚本调试与严格模式》
+- 函数封装，见本模块《函数与参数处理》
+- 工程化方法论，见 039-engineering-practices《工程实践概述》
+
+> **一句话记忆**：生产级脚本 = 严格模式（set -euo pipefail）+ 参数校验（getopts + ${var:?}）+ 演练模式（dry-run）+ 日志函数（带时间戳）+ 静态检查（shellcheck）——四个案例是模板，照着改就能覆盖部署、监控、备份、批量处理四大场景。

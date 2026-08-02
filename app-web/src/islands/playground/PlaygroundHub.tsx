@@ -78,15 +78,6 @@ function PlaygroundHub() {
 
   return (
     <div className="pg-hub">
-      {/* 顶部介绍 */}
-      <section className="pg-hub-hero">
-        <span className="pg-hub-kicker">FANDEX PLAYGROUND</span>
-        <h1 className="pg-hub-title">在线编程实验场</h1>
-        <p className="pg-hub-subtitle">
-          两个实验入口：前端效果实验与编程算法练习。所有作品和记录只保存在当前浏览器本地，刷新不丢失。
-        </p>
-      </section>
-
       {/* 功能入口卡片 */}
       <section className="pg-hub-cards">
         <a className="pg-hub-card pg-hub-card--frontend" href={`${import.meta.env.BASE_URL}playground/frontend/`}>

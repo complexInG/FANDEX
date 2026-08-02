@@ -4,9 +4,9 @@ title: Actions矩阵构建
 module: github
 category: toolchain
 difficulty: advanced
-description: 'GitHub Actions矩阵策略详解：多操作系统、多版本、多配置的并行构建。'
+description: 'GitHub Actions矩阵策略原理详解：从一次配置多环境测试的痛点出发，深入 strategy.matrix 语法、include/exclude、fail-fast 与动态矩阵。'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - github/Actions触发器
   - github/常见问题排查
@@ -15,75 +15,154 @@ related:
 prerequisites:
   - github/GitHub概述
 ---
-## 1. 矩阵策略基础
+## 0. 开始之前：一条"批量生产线"的故事
 
-### 1.1 基本概念
+想象一家饮料厂。过去，工厂里每种口味（橙汁、苹果汁、葡萄汁）都要**单独建一条生产线**，工人重复做同样的事：灌装、贴标、装箱。三倍口味 = 三倍设备、三倍人力、三倍维护成本。
 
-矩阵策略（Matrix Strategy）允许你通过变量组合创建多个并行 Job，一次配置即可在多种环境下测试。
+后来工厂引进了一条**柔性生产线**：一条线上有一个"配方参数面板"，工人在面板上切换 `口味: [橙汁, 苹果汁, 葡萄汁]`、`包装: [瓶装, 罐装]`，机器就自动按每种组合各产一批。一套设备，同时覆盖 3×2=6 种产品。参数一变，全线跟着变，再也不用复制三套产线。
+
+GitHub Actions 的**矩阵构建（Matrix Strategy）** 正是这条"柔性生产线"：你只写**一个 job 定义**，声明若干"配方参数"（操作系统、语言版本、浏览器……），GitHub 自动按所有组合生成多个并行的 job 实例。配置一份，处处运行。
+
+## 1. 矩阵构建要解决的问题：先看清痛点
+
+### 1.1 没有矩阵时的痛苦
+
+假设你要在 Node.js 18、20、22 三个版本上跑测试。没有矩阵，你只能**复制粘贴三份 job**：
+
+```yaml
+jobs:
+  test-node18:                 # 第一份：Node 18
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '18' }
+      - run: npm test
+
+  test-node20:                 # 第二份：Node 20（几乎一样的代码）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm test
+
+  test-node22:                 # 第三份：Node 22
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm test
+```
+
+问题一目了然：
+
+- **改一处要改三处**：想加 `--reporter=json` 要同步改三个 job，极易漏改。
+- **难以扩展**：想再加 macOS/Windows 两个系统？组合变 3×2=6 份，复制粘贴灾难升级。
+- **可读性差**：一个工作流文件几百行，一半是重复代码。
+
+### 1.2 矩阵的解法
 
 ```yaml
 jobs:
   test:
     strategy:
-      matrix:
+      matrix:                  # 声明两个"维度"
         os: [ubuntu-latest, macos-latest, windows-latest]
         node-version: [18, 20, 22]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}              # 读取当前组合的 os
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-version }}  # 读取当前组合的 node-version
       - run: npm test
 ```
 
-上述配置会生成 $3 \times 3 = 9$ 个并行 Job。
+一份定义，GitHub 自动生成 **3 × 3 = 9 个并行 job**，分别对应每种 (os, node-version) 组合。
 
-### 1.2 矩阵变量类型
+## 2. 原理：一次配置，多种环境
 
-| 类型   | 示例                          | 说明           |
-| ------ | ----------------------------- | -------------- |
-| 字符串 | `os: [ubuntu-latest]`         | 最常用         |
-| 数字   | `node-version: [18, 20]`      | 自动转为字符串 |
-| 布尔值 | `experimental: [true, false]` | 自动转为字符串 |
-| 对象   | `include: [{...}]`            | 复杂配置       |
+### 2.1 笛卡尔积：矩阵的数学内核
 
-## 2. 矩阵组合
+矩阵的本质是**笛卡尔积**：把每个维度（变量）的所有取值两两组合。`os: [A, B]`、`node-version: [X, Y, Z]` 会生成 2×3=6 种组合：
 
-### 2.1 笛卡尔积
-
-默认行为是所有变量的笛卡尔积：
-
-```yaml
-strategy:
-  matrix:
-    os: [ubuntu-latest, windows-latest] # 2 个值
-    python: ['3.10', '3.11', '3.12'] # 3 个值
-# 结果: 2 × 3 = 6 个 Job
+```
+{os: A, node-version: X}   {os: A, node-version: Y}   {os: A, node-version: Z}
+{os: B, node-version: X}   {os: B, node-version: Y}   {os: B, node-version: Z}
 ```
 
-### 2.2 include — 添加额外组合
+GitHub 官方文档确认了这一行为：**对矩阵中定义的每个变量组合，工作流都会运行一个 job**。
+
+### 2.2 matrix 上下文：每个 job 如何知道自己该用哪个值
+
+每个矩阵 job 运行时，`matrix` 上下文里装着**当前组合的完整取值**。通过 `${{ matrix.<变量名> }}` 引用：
+
+```yaml
+- name: 打印当前组合
+  run: echo "正在 ${{ matrix.os }} 上测试 Node ${{ matrix.node-version }}"
+```
+
+这就像生产线上的工人看一眼参数面板，就知道这一批该灌什么口味。
+
+### 2.3 递进理解：从"复制"到"模板化"
+
+| 阶段 | 做法 | 维护成本 |
+| --- | --- | --- |
+| 复制粘贴 | 每个环境写一个 job | 高，改一处要改 N 处 |
+| 模板化 | 一个 job + 矩阵变量 | 低，改一处全线生效 |
+| 动态矩阵 | 矩阵由前置 job 用 JSON 生成 | 极低，按需生成组合 |
+
+## 3. 语法详解：strategy.matrix 全家桶
+
+### 3.1 基础定义
+
+```yaml
+jobs:
+  example:
+    strategy:
+      matrix:                  # 矩阵定义
+        version: [10, 12, 14]  # 维度一：版本
+        os: [ubuntu-latest, windows-latest]  # 维度二：系统
+    runs-on: ${{ matrix.os }}
+```
+
+### 3.2 include：给矩阵"加料"
+
+`include` 有两个作用（官方文档）：
+
+- **给已有组合追加额外变量**：当 include 条目中的键值对与某个已有组合匹配时，只在该组合上追加新变量。
+- **新增一个独立组合**：当 include 条目不匹配任何已有组合时，直接新增一个 job。
 
 ```yaml
 strategy:
   matrix:
     os: [ubuntu-latest, windows-latest]
-    python: ['3.11', '3.12']
+    node-version: [18, 20]
     include:
-      - os: macos-latest
-        python: '3.12'
-        experimental: true
+      # 场景一：匹配已有组合（ubuntu + node 20），追加 experimental 变量
       - os: ubuntu-latest
-        python: '3.13-dev'
+        node-version: 20
         experimental: true
-# 基础: 2 × 2 = 4 + 2 = 6 个 Job
+
+      # 场景二：不匹配任何组合，新增一个独立 job（macos + node 22）
+      - os: macos-latest
+        node-version: 22
+        experimental: true
+
+      # 场景三：只写部分键，其余键取 include 条目中补充的默认值
+      - node-version: 22
+        os: ubuntu-latest
+        flag: nightly
+# 最终 job 数：基础 2×2=4 个 + include 新增 2 个 = 6 个
 ```
 
-`include` 中的条目：
+注意：`include` 条目匹配判断只针对**已存在的组合**（笛卡尔积 + 之前 include 新增的组合），这是新手最容易误解的点。
 
-- 如果匹配已有组合，则**追加变量**
-- 如果不匹配，则**新增一个 Job**
+### 3.3 exclude：剔除不需要的组合
 
-### 2.3 exclude — 排除组合
+有些组合毫无意义（比如"Windows 上跑 Linux 专用脚本"）或已知不兼容，用 `exclude` 去掉：
 
 ```yaml
 strategy:
@@ -91,24 +170,74 @@ strategy:
     os: [ubuntu-latest, windows-latest]
     python: ['3.10', '3.11', '3.12']
     exclude:
+      # 不在 Windows 上测 Python 3.10
       - os: windows-latest
-        python: '3.10' # 不在 Windows + Python 3.10 上测试
+        python: '3.10'
+      # 不在 Ubuntu 上测 Python 3.10
       - os: ubuntu-latest
-        python: '3.10' # 不在 Ubuntu + Python 3.10 上测试
-# 结果: 6 - 2 = 4 个 Job
+        python: '3.10'
+# 结果：2×3=6 个组合，剔除 2 个，剩 4 个 job
 ```
 
-### 2.4 include 与 exclude 的执行顺序
+### 3.4 执行顺序（重要）
+
+GitHub 处理矩阵的完整顺序：
 
 ```
-1. 先计算笛卡尔积
-2. 应用 exclude 排除组合
-3. 应用 include 添加组合
+1. 先计算所有维度的笛卡尔积，得到基础组合集合
+2. 应用 include：为匹配的组合追加变量，或新增组合
+3. 应用 exclude：从当前集合中剔除匹配的组合
 ```
 
-## 3. 实战配置
+官方文档特别说明：`exclude` 会剔除 include 之前或之后产生的组合，建议把"先 include 再 exclude"作为习惯，逻辑更清晰。
 
-### 3.1 多语言项目
+### 3.5 fail-fast 与 max-parallel：失败策略与并发闸门
+
+```yaml
+strategy:
+  fail-fast: true     # 默认值：任一矩阵 job 失败，立即取消其余所有 job
+  # fail-fast: false  # 所有组合都跑完，收集完整失败信息
+  max-parallel: 4     # 最多同时运行 4 个矩阵 job
+  matrix:
+    os: [ubuntu-latest, macos-latest, windows-latest]
+    node: [18, 20, 22]
+```
+
+- **fail-fast: true**：某个组合一旦失败就"叫停全场"，省运行分钟数，适合发现根本性问题时快速止损。
+- **fail-fast: false**：9 个 job 全部执行完毕，适合"想收集所有环境下的失败清单"的场景。CI 中常用 false。
+- **max-parallel**：限制同时运行的 job 数，防止目标系统（如共享数据库）被并发打爆。
+
+## 4. 实战配置示例
+
+### 4.1 多操作系统 + 多版本测试（最典型）
+
+```yaml
+name: Test Matrix
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false          # 收集所有环境的失败信息
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18, 20, 22]
+        exclude:                # Windows + Node 18 已知有问题，跳过
+          - os: windows-latest
+            node-version: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm test
+```
+
+### 4.2 多语言多命令组合（include 充当"配置表"）
+
+用 include 直接定义"每种语言的构建/测试命令"，一条 job 通吃多语言：
 
 ```yaml
 jobs:
@@ -135,7 +264,9 @@ jobs:
         run: ${{ matrix.test }}
 ```
 
-### 3.2 浏览器兼容性测试
+### 4.3 浏览器测试分片（并发放大）
+
+E2E 测试很慢，用矩阵把测试**分片**并行跑：
 
 ```yaml
 jobs:
@@ -144,14 +275,14 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chromium, firefox, webkit]
-        shard: [1/4, 2/4, 3/4, 4/4]
+        shard: [1/4, 2/4, 3/4, 4/4]     # 4 个分片
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: npx playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}
 ```
 
-### 3.3 容器镜像构建
+### 4.4 容器多架构构建
 
 ```yaml
 jobs:
@@ -161,71 +292,44 @@ jobs:
         platform: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
     steps:
-      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-qemu-action@v3   # 模拟其他 CPU 架构
       - uses: docker/setup-buildx-action@v3
-      - uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v6
         with:
           platforms: ${{ matrix.platform }}
           push: true
-          tags: myapp:latest-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
+          tags: myapp:latest-${{ matrix.platform }}
 ```
 
-## 4. fail-fast 与并发控制
+## 5. 动态矩阵：让矩阵自己长出来
 
-### 4.1 fail-fast
+静态矩阵在组合数量固定时很好用；但组合数量不确定（比如 monorepo 里包越来越多）时，可以用**动态矩阵**：先跑一个"探测 job"，把矩阵 JSON 输出，再让下游 job 用 `fromJSON` 消费它。
 
-```yaml
-strategy:
-  fail-fast: true # 默认值，任一 Job 失败则取消其他 Job
-  # fail-fast: false  # 所有 Job 都执行完毕
-```
-
-建议在 CI 场景设为 `false`，以便收集所有环境的失败信息。
-
-### 4.2 max-parallel
-
-```yaml
-strategy:
-  max-parallel: 4 # 最多同时运行 4 个 Job
-  matrix:
-    os: [ubuntu, macos, windows]
-    node: [18, 20, 22]
-# 9 个 Job，但最多 4 个并行
-```
-
-### 4.3 Job 级别并发
-
-```yaml
-concurrency:
-  group: ci-${{ github.ref }}-${{ matrix.os }}-${{ matrix.node-version }}
-  cancel-in-progress: true
-```
-
-## 5. 动态矩阵
-
-### 5.1 使用 JSON 生成矩阵
+### 5.1 基于目录列表生成矩阵
 
 ```yaml
 jobs:
-  setup:
+  setup:                              # 探测 job：读取 packages/ 下的包名
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}   # 输出 JSON 给下游
     steps:
       - id: set-matrix
         run: |
           echo "matrix={\"include\":$(ls packages/ | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({"package": .})')}" >> $GITHUB_OUTPUT
 
-  test:
+  test:                               # 消费 job：按 JSON 生成矩阵
     needs: setup
     strategy:
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Testing ${{ matrix.package }}"
+      - run: echo "Testing package ${{ matrix.package }}"
 ```
 
-### 5.2 基于文件变更的动态矩阵
+### 5.2 基于文件变更生成矩阵
+
+配合 `dorny/paths-filter`，只有被改动的模块才进入测试矩阵，省下大量分钟数：
 
 ```yaml
 jobs:
@@ -254,83 +358,35 @@ jobs:
       - run: npm test --workspace=src/${{ matrix.service }}
 ```
 
-## 6. 矩阵中的条件逻辑
+### 5.3 调试技巧：查看矩阵展开结果
 
-### 6.1 条件步骤
-
-```yaml
-jobs:
-  test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Linux only
-        if: runner.os == 'Linux'
-        run: sudo apt-get update
-
-      - name: macOS only
-        if: runner.os == 'macOS'
-        run: brew update
-```
-
-### 6.2 环境变量差异化
+在 step 里把矩阵 JSON 打印出来，一目了然：
 
 ```yaml
-strategy:
-  matrix:
-    include:
-      - os: ubuntu-latest
-        env: { CC: gcc, CXX: g++ }
-      - os: macos-latest
-        env: { CC: clang, CXX: clang++ }
-      - os: windows-latest
-        env: { CC: cl, CXX: cl }
-```
-
-## 7. 最佳实践
-
-### 7.1 矩阵规模控制
-
-```
-推荐矩阵大小: ≤ 20 个 Job
-超过 20 个: 考虑拆分工作流或使用动态矩阵
-超过 50 个: 必须使用动态矩阵 + 路径过滤
-```
-
-### 7.2 资源优化
-
-```yaml
-# 快速测试先跑，慢速测试后跑
-jobs:
-  quick-test:
-    strategy:
-      matrix:
-        node: [22] # 仅最新版本
-    runs-on: ubuntu-latest
-    steps:
-      - run: npm test
-
-  full-test:
-    needs: quick-test # 快速测试通过后再跑完整矩阵
-    strategy:
-      matrix:
-        node: [18, 20, 22]
-        os: [ubuntu-latest, macos-latest, windows-latest]
-```
-
-### 7.3 调试技巧
-
-```yaml
-# 查看矩阵展开结果
 - name: Debug matrix
   run: echo "${{ toJson(matrix) }}"
 ```
-## 基础矩阵
 
-**基本用法:定义矩阵**
-`strategy.matrix`
+## 6. 常见错误与对策
+
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| --- | --- | --- | --- |
+| include 条目没生效 | 期望新增的 job 不存在 | include 条目恰好匹配了某个已有组合，只追加了变量而未新增 job | 检查匹配逻辑；想让 include 条目不匹配现有组合，可用不同的变量值 |
+| exclude 顺序理解错误 | 被排除的组合仍在运行 | exclude 放在 include 之前或组合规则混乱 | 记住顺序：笛卡尔积 → include → exclude |
+| 矩阵组合数爆炸 | 一次运行几十上百个 job，分钟数耗尽 | 多维变量全排列组合过大 | 控制矩阵规模（建议不超过 20 个 job），用 exclude 剔除无意义组合，或改用动态矩阵 |
+| Windows 上跑 Linux 命令失败 | `Command not found` | 没按系统区分命令 | 用 `if: runner.os == 'Windows'` 等条件分支，或使用跨平台写法 |
+| fail-fast 导致信息丢失 | 第一个失败后其余 job 全被取消 | fail-fast 默认为 true | CI 场景显式设置 `fail-fast: false` |
+| 在 `runs-on` 中引用错误变量名 | job 无法启动 | `${{ matrix.os }}` 与矩阵定义中变量名不一致 | 核对矩阵变量名与引用处拼写一致 |
+
+## 7. 实战练习
+
+### 练习 1：三版本测试矩阵
+
+**题目**：写一个工作流，在 Ubuntu 上分别用 Node.js 18、20、22 跑 `npm ci && npm test`。
+
+**提示**：一个 job + `strategy.matrix.node-version: [18, 20, 22]`，setup-node 的 `node-version` 用 `${{ matrix.node-version }}`。
+
+**参考答案要点**：
 
 ```yaml
 jobs:
@@ -338,73 +394,62 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [16, 18, 20]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [18, 20, 22]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
       - run: npm test
 ```
 
----
+### 练习 2：双维矩阵 + 排除
 
-## 矩阵组合与排除
+**题目**：在 3 个系统 × 2 个 Python 版本上测试，但剔除"Windows + Python 3.10"这个已知有问题的组合。写出最终 job 数量并给出配置。
 
-**基本用法:排除特定组合**
-`strategy.matrix.exclude`
+**提示**：`os: [ubuntu-latest, macos-latest, windows-latest]`、`python: ['3.10', '3.11']`，用 `exclude` 剔除一个组合。
+
+**参考答案要点**：基础组合 3×2=6，排除 1 个，最终 **5 个 job**。
 
 ```yaml
 strategy:
+  fail-fast: false
   matrix:
-    os: [ubuntu-latest, windows-latest]
-    node: [18, 20]
+    os: [ubuntu-latest, macos-latest, windows-latest]
+    python: ['3.10', '3.11']
     exclude:
-      # 跳过 Windows + Node18
       - os: windows-latest
-        node: 18
+        python: '3.10'
 ```
 
----
+### 练习 3：include 追加实验性变量
 
-**基本用法:额外包含组合**
-`strategy.matrix.include`
+**题目**：给 Node 22 的测试加一个 `experimental: true` 标记，让该组合即使失败也不阻断整个工作流。
+
+**提示**：用 `include` 给匹配的组合追加变量；在步骤上加 `continue-on-error: ${{ matrix.experimental == true }}`。
+
+**参考答案要点**：
 
 ```yaml
 strategy:
   matrix:
-    node: [18, 20]
+    node-version: [18, 20]
     include:
-      # 给 node 20 额外加一个变量
-      - node: 20
+      - node-version: 22
         experimental: true
-      # 追加一个完全独立的组合
-      - node: 22
-        os: ubuntu-latest
+steps:
+  - run: npm test
+    continue-on-error: ${{ matrix.experimental == true }}
 ```
 
----
+### 练习 4：动态矩阵实践
 
-## 失败策略
+**题目**：先跑一个探测 job 输出 `["a","b","c"]` 三个目标，再用 `fromJSON` 生成矩阵逐一 echo 每个目标。
 
-**基本用法:控制失败行为**
-`strategy:`
+**提示**：探测 job 用 `outputs` 声明矩阵 JSON，`echo "matrix=[\"a\",\"b\",\"c\"]" >> $GITHUB_OUTPUT`；下游 job 用 `needs` 依赖并 `strategy.matrix.target: ${{ fromJSON(...) }}`。
 
-```yaml
-strategy:
-  fail-fast: false      # 一个失败不取消其他
-  max-parallel: 4       # 最大并行数
-  matrix:
-    node: [16, 18, 20]
-```
-
----
-
-## 动态矩阵
-
-**基本用法:从 JSON 输出动态生成**
-`strategy.matrix: ${{ fromJSON(...) }}`
+**参考答案要点**：
 
 ```yaml
 jobs:
@@ -423,39 +468,17 @@ jobs:
       matrix:
         target: ${{ fromJSON(needs.dynamic.outputs.matrix) }}
     steps:
-      - run: echo ${{ matrix.target }}
+      - run: echo "处理目标 ${{ matrix.target }}"
 ```
 
----
+## 8. 一句话记忆
 
-## 参考文献
+**矩阵 = 一条柔性生产线：一份 job 定义 + 多个维度变量，GitHub 按笛卡尔积自动生成并行的多环境 job，include 加料、exclude 减料、fail-fast 控止损。**
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+## 参考链接与延伸阅读
 
-## 延伸阅读
-
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- GitHub 官方：为作业使用矩阵（矩阵策略完整指南）：https://docs.github.com/zh/actions/using-jobs/using-a-matrix
+- GitHub 官方：工作流语法参考（`strategy` 关键字完整语法）：https://docs.github.com/zh/actions/using-workflows/workflow-syntax-for-github-actions
+- GitHub 官方：工作流运行作业（job 并行/依赖关系）：https://docs.github.com/zh/actions/using-jobs/using-jobs-in-a-workflow
+- 延伸：矩阵 job 之间传递构建产物，见《Actions 制品传递》（035）
+- 延伸：矩阵各环境共用的依赖如何缓存，见《Actions 缓存依赖》（033）

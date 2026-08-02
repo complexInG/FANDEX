@@ -119,6 +119,12 @@
    * - 悬停背景：--color-bg-hover
    * - 过渡：--motion-duration-instant + --motion-easing-out
    *
+   * 统一交互特效（全站图标按钮共用一套反馈语言）：
+   * - 悬停：背景提亮 + 文字加深 + 图标微缩放（scale 1.08）
+   * - 按下：整体缩放反馈（scale 0.94）+ 激活背景加深
+   * - 聚焦：2px 焦点环（--color-border-focus）
+   * - 方向性图标（左右滚动/上下篇/外链箭头）可在各自组件中叠加位移动效
+   *
    * 变体：
    * - .fndx-icon-btn--labeled：带文字标签，自动宽度，统一字号/字重/字距
    *
@@ -142,23 +148,40 @@
     cursor: pointer;
     text-decoration: none;
     flex-shrink: 0;
+    /* 触屏设备去除点击高亮，统一由背景/缩放反馈替代 */
+    -webkit-tap-highlight-color: transparent;
     transition: background-color var(--motion-duration-instant) var(--motion-easing-out),
-                color var(--motion-duration-instant) var(--motion-easing-out);
+                color var(--motion-duration-instant) var(--motion-easing-out),
+                border-color var(--motion-duration-instant) var(--motion-easing-out),
+                box-shadow var(--motion-duration-normal) var(--motion-easing-out),
+                transform var(--motion-duration-instant) var(--motion-easing-out);
   }
 
-  /* SVG 图标默认 16px，flex-shrink 防止被压缩 */
-  .fndx-icon-btn svg {
+  /* SVG 图标默认 16px，flex-shrink 防止被压缩；微缩放动效由 hover 触发。
+   * 主题切换按钮除外：其图标由 Motion 驱动旋转/缩放动画，避免 CSS 过渡冲突 */
+  .fndx-icon-btn:not(.fndx-theme-toggle) svg {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
+    transition: transform var(--motion-duration-normal) var(--motion-easing-out);
   }
 
-  /* 悬停反馈：背景提亮 + 文字加深（仅支持 hover 的设备生效） */
+  /* 悬停反馈：背景提亮 + 文字加深 + 图标微缩放（仅支持 hover 的设备生效） */
   @media (hover: hover) {
     .fndx-icon-btn:hover {
       background-color: var(--color-bg-hover);
       color: var(--color-fg-primary);
     }
+
+    .fndx-icon-btn:not(.fndx-theme-toggle):hover svg {
+      transform: scale(1.08);
+    }
+  }
+
+  /* 按下反馈：整体缩放 + 激活背景加深（与悬停背景区分层级） */
+  .fndx-icon-btn:active {
+    background-color: var(--color-bg-active);
+    transform: scale(0.94);
   }
 
   /* 键盘焦点可见状态：统一焦点环 */
@@ -941,19 +964,12 @@
     outline-offset: -2px;
   }
 
-  /* 返回首页（图标按钮）：基础样式由 .fndx-icon-btn 提供，此处仅保留 24px 紧凑尺寸 */
+  /* 返回首页（图标按钮）：基础样式与统一特效由 .fndx-icon-btn 提供，此处仅保留 24px 紧凑尺寸 */
   .fndx-sidebar__back {
     flex-shrink: 0;
     width: 24px;
     height: 24px;
-    color: var(--color-fg-tertiary);
     text-decoration: none;
-  }
-
-  @media (hover: hover) {
-    .fndx-sidebar__back:hover {
-      color: var(--color-accent-base);
-    }
   }
 
   /* 面板（视图容器）：章节 / 资料 / 全部模块互斥显示 */

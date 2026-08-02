@@ -6,19 +6,33 @@ category: Shell
 difficulty: intermediate
 description: '脚本调试与严格模式：set -euo pipefail、trap 清理、bash -x、shellcheck 与 shfmt'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - shell/007-FunctionsArguments
   - shell/008-PracticalScripts
 prerequisites:
   - shell/005-EnvVariablesConfig
+  - shell/001-ShellBasics
 ---
-## 1. 为什么需要调试体系
 
-Shell 脚本默认"宽容"：命令失败不报错、未定义变量当空值、管道只看最后一段结果。这种宽容在生产环境是灾难——脚本会带着错误状态继续执行，产生半成品数据。调试体系的思路是"三层防御"：
+## 1. 从"自动驾驶的刹车"说起
+
+### 1.1 为什么需要调试体系
+
+想象一辆车没有刹车（Shell 脚本默认行为）：踩错油门（命令失败）不会停下，反而继续加速（继续执行），最后撞墙（生产事故）。
+
+**Shell 脚本默认"宽容"**：
+
+- 命令失败不报错（继续执行）
+- 未定义变量当空值（静默）
+- 管道只看最后一段结果（前面的失败被忽略）
+
+这种宽容在生产环境是灾难——脚本会带着错误状态继续执行，产生半成品数据。
+
+### 1.2 调试体系的"三层防御"
 
 | 层次 | 手段 | 作用 |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | 防患于未然 | `set -euo pipefail` | 让错误立刻暴露、当场停止 |
 | 过程可视化 | `bash -x` / `set -x` | 跟踪每一步执行的细节 |
 | 兜底清理 | `trap` | 无论成败都执行清理 |
@@ -31,7 +45,7 @@ Shell 脚本默认"宽容"：命令失败不报错、未定义变量当空值、
 set -euo pipefail
 ```
 
-逐个拆解：
+**逐个拆解**：
 
 | 选项 | 完整写法 | 行为 |
 | --- | --- | --- |
@@ -48,7 +62,7 @@ false                    # 返回非零，脚本在此退出
 echo "这行永远不会执行"    # 不会执行
 ```
 
-讲解：`false` 命令永远返回失败。在 `set -e` 下脚本第 3 行就终止，后续代码被跳过——这正是我们想要的"快速失败"。
+`false` 命令永远返回失败。在 `set -e` 下脚本第 3 行就终止，后续代码被跳过——这正是我们想要的"**快速失败**"。
 
 ### 2.1 例外与细节
 
@@ -69,7 +83,11 @@ set -e
 echo "退出码: $status"
 ```
 
-讲解：`set -e` 不是"所有失败都退出"：`if`/`while` 条件、`&&`/`||` 左侧、`!` 取反等上下文中的失败不会被触发退出。真正"允许失败但想捕获结果"时，临时 `set +e` 再 `set -e` 是标准做法。注意 `set -u` 下 `$1` 若未传参会报错，需用 `${1:-}` 提供默认。
+**要点**：
+
+- `set -e` 不是"所有失败都退出"：`if`/`while` 条件、`&&`/`||` 左侧、`!` 取反等上下文中的失败不会触发退出
+- 真正"允许失败但想捕获结果"时，临时 `set +e` 再 `set -e` 是标准做法
+- 注意 `set -u` 下 `$1` 若未传参会报错，需用 `${1:-}` 提供默认
 
 ## 3. bash -x：跟踪执行
 
@@ -89,7 +107,7 @@ bash -x 输出示例：
 + echo "正常退出"
 ```
 
-讲解：`+` 开头的行是"展开后的命令"，能看出变量实际值、通配符实际匹配结果——绝大多数"为什么和我以为的不一样"问题在这里一目了然。
+**要点**：`+` 开头的行是"展开后的命令"，能看出变量实际值、通配符实际匹配结果——绝大多数"为什么和我以为的不一样"问题在这里一目了然。
 
 ### 3.1 脚本内跟踪与 PS4
 
@@ -102,7 +120,7 @@ echo "值: $DEBUG"
 set +x                    # 到这里结束跟踪
 ```
 
-讲解：默认 `PS4` 只有一个 `+`，设置后输出变成 `+ script.sh:5: echo 值: 1`，定位问题行非常方便。只在可疑片段前后开启/关闭 `set -x`，比全程跟踪输出更清爽。
+默认 `PS4` 只有一个 `+`，设置后输出变成 `+ script.sh:5: echo 值: 1`，定位问题行非常方便。**只在可疑片段前后开启/关闭 `set -x`**，比全程跟踪输出更清爽。
 
 ## 4. trap：注册信号处理
 
@@ -124,7 +142,10 @@ echo "处理中"
 false                           # 触发 set -e 退出
 ```
 
-讲解：`trap ... EXIT` 是清理临时文件、锁文件的标准姿势——正常结束、出错退出、被信号终止都会执行。`mktemp -d` 生成安全的临时目录，避免硬编码 `/tmp/xxx` 的冲突风险。
+**要点**：
+
+- `trap ... EXIT` 是清理临时文件、锁文件的标准姿势——正常结束、出错退出、被信号终止都会执行
+- `mktemp -d` 生成安全的临时目录，避免硬编码 `/tmp/xxx` 的冲突风险
 
 ### 4.1 常用事件
 
@@ -142,7 +163,7 @@ trap - EXIT              # 取消已注册的处理
 trap -l                  # 列出所有信号
 ```
 
-讲解：`ERR` 陷阱配合 `$LINENO` 能在出错时打印行号，快速定位。信号陷阱要立即退出（`exit`），避免在信号处理中继续执行危险操作。信号编号见 `trap -l`。
+**要点**：`ERR` 陷阱配合 `$LINENO` 能在出错时打印行号，快速定位。信号陷阱要立即退出（`exit`），避免在信号处理中继续执行危险操作。
 
 ## 5. shellcheck：静态检查
 
@@ -161,7 +182,11 @@ In script.sh line 7:
            ^-----^ SC2086: Double quote to prevent globbing and word splitting.
 ```
 
-讲解：SC2086（变量未加引号）是最常见的警告。修复：`rm -rf "$tmpdir"`。shellcheck 的警告码（SC 编号）可在官网按编号检索详细说明，是学习 Shell 陷阱的最佳教材。安装方式：`apt install shellcheck` / `brew install shellcheck`，也可在编辑器装插件实时检查。
+**要点**：
+
+- SC2086（变量未加引号）是最常见的警告，修复：`rm -rf "$tmpdir"`
+- shellcheck 的警告码（SC 编号）可在官网按编号检索详细说明，是学习 Shell 陷阱的最佳教材
+- 安装方式：`apt install shellcheck` / `brew install shellcheck`，也可在编辑器装插件实时检查
 
 ## 6. shfmt：统一格式
 
@@ -173,9 +198,9 @@ shfmt -i 4 -w script.sh # 缩进 4 空格
 shfmt -d script.sh      # 只显示差异（diff）
 ```
 
-讲解：shfmt 处理缩进、空格、换行等风格问题，与 shellcheck 功能互补：shfmt 管"好不好看"，shellcheck 管"对不对"。两者配合 CI 可以在提交前自动检查。
+**要点**：shfmt 处理缩进、空格、换行等风格问题，与 shellcheck 功能互补：**shfmt 管"好不好看"，shellcheck 管"对不对"**。两者配合 CI 可以在提交前自动检查。
 
-## 7. 调试清单
+## 7. 调试清单：遇到问题按顺序走
 
 1. 先 `bash -n script.sh` 排除语法错误；
 2. 再 `shellcheck script.sh` 修复静态问题；
@@ -185,12 +210,37 @@ shfmt -d script.sh      # 只显示差异（diff）
 6. 关键处 `echo "DEBUG: var=$var"` 打印中间值（或写入日志文件）；
 7. 生产脚本必须 `set -euo pipefail` + `trap cleanup EXIT`。
 
-## 8. 参考资源
+## 8. 常见误区
 
-Bash 手册（set 内建命令）：https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
+**误区一：`set -e` 会让所有失败都退出。** → 不是。`if` 条件、`&&`/`||` 左侧的失败不会触发退出——这正是设计如此（让脚本可以"尝试后判断"）。
 
-Bash 手册（trap 内建命令）：https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html
+**误区二：调试信息随便 print。** → 用 `set -x` 或条件化调试（`${DEBUG:+...}`），生产环境别留一堆 `echo` 垃圾。
 
-ShellCheck 官网：https://www.shellcheck.net/
+**误区三：shellcheck 是"建议"，可看可不看。** → 多数 SC 警告对应真实陷阱（引号、未定义变量），是"生产脚本别踩坑"的免费教材。
 
-shfmt：https://github.com/mvdan/sh
+**误区四：`trap` 只在出错时触发。** → `trap ... EXIT` 无论正常结束还是出错退出都会触发，是"无论成败都要清理"的标准姿势。
+
+## 9. 实战练习
+
+1. **严格模式体验**：写一个脚本，分别在有/无 `set -euo pipefail` 时运行 `false` 后的命令，观察行为差异。
+
+2. **调试追踪**：写一个有变量插值的脚本，用 `bash -x` 和 `PS4='+ $LINENO: '` 两种方式追踪，对比输出。
+
+3. **trap 清理**：写一个创建临时文件的脚本，用 `trap cleanup EXIT` 保证出错也清理，验证中途 `false` 触发清理。
+
+4. **静态检查**：写一个含 3 个以上 shellcheck 警告的脚本，用 shellcheck 找出并用 shfmt 格式化，直到 0 warning。
+
+## 10. 参考资源
+
+- Bash 手册（set 内建命令）：https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
+- Bash 手册（trap 内建命令）：https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html
+- ShellCheck 官网：https://www.shellcheck.net/
+- shfmt：https://github.com/mvdan/sh
+
+## 11. 延伸阅读
+
+- 调试在实际脚本中的应用，见本模块《实战脚本案例》
+- 函数与参数，见本模块《函数与参数处理》
+- 工程化方法论，见 039-engineering-practices《工程实践概述》
+
+> **一句话记忆**：Shell 调试是"三层防御"——`set -euo pipefail` 让错误当场暴露、`bash -x` 让过程可视化、`trap` 让清理必执行；配合 shellcheck（对不对）和 shfmt（好不好看），生产脚本才能立于不败之地。

@@ -4,9 +4,9 @@ title: 二次型典型例题
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 二次型典型例题集锦，涵盖标准形与规范形、正定性判定、合同判定、含参数二次型等题型。
+description: 以"综合大练习"为主线，先用二次曲面分类与多元函数极值判定两个真实应用场景串起二次型知识，再按题型（化标准形、正定性、合同、含参数）给出完整例题与实战练习。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'linear-algebra/二次型的规范形'
   - 'linear-algebra/正定二次型'
@@ -16,194 +16,268 @@ prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
 ---
 
-## 1. 化标准形与规范形
+## 0. 从生活场景说起：学骑车的"综合上路"
 
-### 例1
+学骑车分三步：先学平衡（基础概念），再学踩踏板（标准形与规范形），最后学刹车和转弯（正定判定）。但真正学会骑车，靠的是**综合上路**——把每一步动作自然衔接起来。
+
+前几篇我们学了二次型的三大块知识：化标准形（order 60）、化规范形（order 61）、判定正定性（order 62）。今天这篇就是"综合上路"：先用两个**真实应用场景**（二次曲面分类、多元函数极值判定）告诉你"学这些到底有什么用"，再按题型做一套完整的"综合大练习"（化标准形、正定性判定、合同判定、含参数问题），最后配实战练习。做完这篇，你对二次型的掌握就闭环了。
+
+## 1. 应用一：二次曲面分类——标准形一眼看出形状
+
+### 1.1 从方程到形状
+
+在三维空间中，形如
+
+$$a_{11}x_1^2 + a_{22}x_2^2 + a_{33}x_3^2 + 2a_{12}x_1x_2 + 2a_{13}x_1x_3 + 2a_{23}x_2x_3 = 1$$
+
+的方程表示一个二次曲面。但交叉项存在时，你很难看出它到底是椭球、双曲抛物面还是别的什么。
+
+### 1.2 标准形 = 转正坐标系
+
+用正交变换 $\boldsymbol{x} = Q\boldsymbol{y}$（几何上就是旋转坐标系，把曲面的"主轴"转到坐标轴上），方程化为标准形：
+
+$$\lambda_1y_1^2 + \lambda_2y_2^2 + \lambda_3y_3^2 = 1$$
+
+**分类规则**（$\lambda_i$ 为特征值，均为实数）：
+
+| 特征值符号 | 曲面类型 |
+| ---------- | -------- |
+| 全为正（正定） | 椭球面 |
+| 两正一负 | 单叶双曲面 |
+| 一正两负 | 双叶双曲面 |
+| 一个为零 | 椭圆柱面 / 抛物面族 |
+
+**关键洞察**：曲面的"形状"只由特征值的**符号**决定，这正是"合同判定"（惯性指数）的几何意义——合同的两个二次型代表**同一种形状的曲面**。
+
+### 1.3 小例子
+
+判断 $2x_1^2 + 2x_2^2 + 2x_3^2 + 2x_1x_2 + 2x_1x_3 + 2x_2x_3 = 1$ 的曲面类型。
+
+由 030 篇例题 3 已知特征值为 $4, 1, 1$，全为正，故这是**椭球面**（长半轴方向为主特征向量方向）。
+
+## 2. 应用二：多元函数极值判定——Hessian 矩阵的正定性
+
+### 2.1 问题背景
+
+微积分告诉我们：一元函数 $g(x)$ 在 $x_0$ 处取得极值的二阶条件是 $g''(x_0)$ 的符号。多元函数的对应物是**Hessian 矩阵**：
+
+设 $F(x_1, \ldots, x_n)$ 二阶可微，$x^*$ 为驻点（$\nabla F(x^*) = \mathbf{0}$），记
+
+$$H = \left(\frac{\partial^2 F}{\partial x_i \partial x_j}\right)_{n \times n}$$
+
+则 $F$ 在 $x^*$ 附近的二阶展开为
+
+$$F(\boldsymbol{x}) \approx F(\boldsymbol{x}^*) + \frac{1}{2}(\boldsymbol{x} - \boldsymbol{x}^*)^TH(\boldsymbol{x} - \boldsymbol{x}^*)$$
+
+这正是二次型 $\boldsymbol{x}^TA\boldsymbol{x}$（平移后）！所以：
+
+### 2.2 判定规则
+
+| $H$ 的性质 | $F$ 在 $x^*$ 处 |
+| ---------- | --------------- |
+| 正定 | 严格极小值（山谷底部） |
+| 负定 | 严格极大值（山顶） |
+| 不定 | 鞍点（马鞍面，不是极值点） |
+| 半正定 | 需更高阶项判定 |
+
+**生活类比**：Hessian 正定 = 你站在谷底（往哪走都上坡）；负定 = 站在山顶（往哪走都下坡）；不定 = 站在马鞍上（一个方向下坡、一个方向上坡）。
+
+### 2.3 完整例题 0：极值判定
+
+求 $F(x_1, x_2) = x_1^2 + 3x_2^2 - 2x_1x_2 - 4x_1 + 2x_2$ 的极值。
+
+**解**：
+
+**第 1 步**：求驻点。$\frac{\partial F}{\partial x_1} = 2x_1 - 2x_2 - 4 = 0$，$\frac{\partial F}{\partial x_2} = 6x_2 - 2x_1 + 2 = 0$。解得 $x_1 = \frac{7}{2}$，$x_2 = \frac{3}{2}$。
+
+**第 2 步**：写 Hessian。二阶偏导：$\frac{\partial^2 F}{\partial x_1^2} = 2$，$\frac{\partial^2 F}{\partial x_1\partial x_2} = -2$，$\frac{\partial^2 F}{\partial x_2^2} = 6$，故
+
+$$H = \begin{pmatrix} 2 & -2 \\ -2 & 6 \end{pmatrix}$$
+
+**第 3 步**：判定。$\Delta_1 = 2 > 0$，$\Delta_2 = 12 - 4 = 8 > 0$，$H$ 正定。
+
+**结论**：$F$ 在 $(\frac{7}{2}, \frac{3}{2})$ 处取得严格极小值。
+
+## 3. 题型一：化标准形与规范形
+
+### 例 1（配方法全流程）
 
 用配方法将 $f = x_1^2 - 2x_2^2 + x_3^2 + 2x_1x_2 + 4x_1x_3 + 2x_2x_3$ 化为标准形和规范形。
 
-**解**：
+**解**：对 $x_1$ 配方。注意 $(x_1 + x_2 + 2x_3)^2 = x_1^2 + x_2^2 + 4x_3^2 + 2x_1x_2 + 4x_1x_3 + 4x_2x_3$，于是
 
-$f = (x_1 + x_2 + 2x_3)^2 - x_2^2 - 4x_3^2 - 4x_2x_3 - 2x_2^2 + x_3^2 + 2x_2x_3$
+$$f = (x_1 + x_2 + 2x_3)^2 - x_2^2 - 4x_3^2 - 4x_2x_3 - 2x_2^2 + x_3^2 + 2x_2x_3$$
 
-$= (x_1 + x_2 + 2x_3)^2 - 3x_2^2 - 2x_2x_3 - 3x_3^2$
+$$= (x_1 + x_2 + 2x_3)^2 - 3x_2^2 - 2x_2x_3 - 3x_3^2$$
 
-$= (x_1 + x_2 + 2x_3)^2 - 3(x_2 + \frac{1}{3}x_3)^2 + \frac{1}{3}x_3^2 - 3x_3^2$
+继续对 $x_2$ 配方：$-3x_2^2 - 2x_2x_3 = -3\left(x_2 + \frac{1}{3}x_3\right)^2 + \frac{1}{3}x_3^2$，所以
 
-$= (x_1 + x_2 + 2x_3)^2 - 3(x_2 + \frac{1}{3}x_3)^2 - \frac{8}{3}x_3^2$
+$$f = (x_1 + x_2 + 2x_3)^2 - 3\left(x_2 + \frac{1}{3}x_3\right)^2 - \frac{8}{3}x_3^2$$
 
-标准形：$f = y_1^2 - 3y_2^2 - \frac{8}{3}y_3^2$
+令 $y_1 = x_1 + x_2 + 2x_3$，$y_2 = x_2 + \frac{1}{3}x_3$，$y_3 = x_3$，得标准形：
 
-规范形：$f = z_1^2 - z_2^2 - z_3^2$
+$$f = y_1^2 - 3y_2^2 - \frac{8}{3}y_3^2$$
+
+再缩放（$\frac{8}{3} > 0$ 项即 $y_1^2$ 直接是 $z_1^2$；对 $-3y_2^2$ 令 $z_2 = \sqrt{3}y_2$；对 $-\frac{8}{3}y_3^2$ 令 $z_3 = \sqrt{\frac{8}{3}}y_3$）得规范形：
+
+$$f = z_1^2 - z_2^2 - z_3^2$$
 
 正惯性指数 $p = 1$，负惯性指数 $q = 2$。
 
-### 例2
+**检验**（用特征值法交叉验证）：矩阵 $A$ 的特征值一正两负，与 $p = 1, q = 2$ 一致。
+
+### 例 2（正交变换法）
 
 用正交变换将 $f = 2x_1^2 + 5x_2^2 + 5x_3^2 + 4x_1x_2 - 4x_1x_3 - 8x_2x_3$ 化为标准形。
 
-**解**：
+**解**：矩阵
 
 $$A = \begin{pmatrix} 2 & 2 & -2 \\ 2 & 5 & -4 \\ -2 & -4 & 5 \end{pmatrix}$$
 
+特征多项式：
+
 $$|A - \lambda I| = \begin{vmatrix} 2-\lambda & 2 & -2 \\ 2 & 5-\lambda & -4 \\ -2 & -4 & 5-\lambda \end{vmatrix} = (10-\lambda)(1-\lambda)^2$$
 
-$\lambda_1 = 10$，$\lambda_2 = \lambda_3 = 1$
+特征值 $\lambda_1 = 10$，$\lambda_2 = \lambda_3 = 1$，故标准形为
 
-标准形：$f = 10y_1^2 + y_2^2 + y_3^2$
+$$f = 10y_1^2 + y_2^2 + y_3^2$$
 
-## 2. 正定性判定
+**点评**：全正特征值，$p = 3$，$f$ 正定。这个例子同时复习了"正交变换法"和"正定判定"两个知识点——出题人常这样"一题多考"。
 
-### 例3
+## 4. 题型二：正定性判定
+
+### 例 3（含参数的正定判定）
 
 判断 $f = x_1^2 + 4x_2^2 + x_3^2 + 2tx_1x_2 + 2x_1x_3 + 6x_2x_3$ 的正定性。
 
-**解**：
+**解**：矩阵
 
 $$A = \begin{pmatrix} 1 & t & 1 \\ t & 4 & 3 \\ 1 & 3 & 1 \end{pmatrix}$$
 
-$\Delta_1 = 1 > 0$
+$\Delta_1 = 1 > 0$；$\Delta_2 = 4 - t^2 > 0 \Rightarrow |t| < 2$；$\Delta_3 = |A| = 1(4-9) - t(t-3) + 1(3t-4) = -t^2 + 6t - 9 = -(t-3)^2 \leq 0$。
 
-$\Delta_2 = 4 - t^2 > 0 \Rightarrow |t| < 2$
+$\Delta_3$ 永远不可能为正，故**对任何 $t$，$f$ 都不正定**。
 
-$\Delta_3 = |A| = 1(4-9) - t(t-3) + 1(3t-4) = -5 - t^2 + 3t + 3t - 4 = -t^2 + 6t - 9 = -(t-3)^2$
+**点评**：发现 $\Delta_3$ 恒非正后，前面 $\Delta_2$ 的不等式就不用继续求解了——判定链条"一票否决"。
 
-$\Delta_3 = -(t-3)^2 \leq 0$，等号在 $t = 3$ 时成立。
-
-但 $t = 3$ 时 $\Delta_2 = 4 - 9 = -5 < 0$，不满足。
-
-故对任何 $t$，$f$ 都不是正定的。
-
-### 例4
+### 例 4（证明题套路）
 
 设 $A$ 为 $n$ 阶正定矩阵，$B$ 为 $n$ 阶半正定矩阵，证明 $A + B$ 正定。
 
-**证明**：对任意 $\boldsymbol{x} \neq 0$：
+**证明**：对任意 $\boldsymbol{x} \neq \mathbf{0}$：
 
-$\boldsymbol{x}^T(A+B)\boldsymbol{x} = \boldsymbol{x}^TA\boldsymbol{x} + \boldsymbol{x}^TB\boldsymbol{x}$
+$$\boldsymbol{x}^T(A+B)\boldsymbol{x} = \boldsymbol{x}^TA\boldsymbol{x} + \boldsymbol{x}^TB\boldsymbol{x}$$
 
-$A$ 正定：$\boldsymbol{x}^TA\boldsymbol{x} > 0$
+$A$ 正定 $\Rightarrow \boldsymbol{x}^TA\boldsymbol{x} > 0$；$B$ 半正定 $\Rightarrow \boldsymbol{x}^TB\boldsymbol{x} \geq 0$。两者之和 $> 0$，故 $A + B$ 正定。
 
-$B$ 半正定：$\boldsymbol{x}^TB\boldsymbol{x} \geq 0$
+**点评**：这是"正定 + 半正定 = 正定"的标准套路，逻辑极简，考的是对定义的理解而非计算。
 
-故 $\boldsymbol{x}^T(A+B)\boldsymbol{x} > 0$，$A + B$ 正定。
+## 5. 题型三：合同判定
 
-## 3. 合同判定
-
-### 例5
+### 例 5（合同判定）
 
 判断 $A = \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}$ 与 $B = \begin{pmatrix} -1 & 2 \\ 2 & -1 \end{pmatrix}$ 是否合同。
 
-**解**：$A$ 的特征值为 $3, -1$，$p = 1, q = 1$。
+**解**：$A$ 的特征值：$|A - \lambda I| = (1-\lambda)^2 - 4 = (\lambda - 3)(\lambda + 1)$，即 $3, -1$，正惯性指数 $p = 1$，负惯性指数 $q = 1$。
 
-$B$ 的特征值为 $1, -3$，$p = 1, q = 1$。
+$B$ 的特征值：$|B - \lambda I| = (-1-\lambda)^2 - 4 = (\lambda + 3)(\lambda - 1)$，即 $1, -3$，正惯性指数 $p = 1$，负惯性指数 $q = 1$。
 
-$p$ 和 $q$ 相同，故 $A$ 与 $B$ 合同。
+两者秩与正惯性指数相同，**合同**。
 
-### 例6
+**点评**：注意 $A$ 和 $B$ 的特征值**完全不同**（不相似！），但合同——这正是"相似 vs 合同"最经典的辨析题。
 
-设 $A$ 为三阶实对称矩阵，$r(A) = 2$，$f = \boldsymbol{x}^TA\boldsymbol{x}$ 的规范形为 $y_1^2 - y_2^2$，求 $A$ 的特征值。
+## 6. 题型四：含参数与综合
 
-**解**：规范形为 $y_1^2 - y_2^2$，正惯性指数 $p = 1$，负惯性指数 $q = 1$，秩 $r = 2$。
+### 例 6（秩与惯性指数）
 
-$A$ 的特征值为 $\lambda_1 > 0$，$\lambda_2 < 0$，$\lambda_3 = 0$。
+设 $f(x_1, x_2, x_3) = (1 - a)x_1^2 + (1 - a)x_2^2 + 2x_3^2 + 2(1 + a)x_1x_2$ 的秩为 2，求 $a$ 及正惯性指数。
 
-具体值无法确定，但符号为正、负、零。
-
-## 4. 含参数二次型
-
-### 例7
-
-设 $f = x_1^2 + x_2^2 + x_3^2 + 2\lambda x_1x_2 + 2x_1x_3 + 2\mu x_2x_3$，当 $\lambda, \mu$ 满足什么条件时，$f$ 正定？
-
-**解**：
-
-$$A = \begin{pmatrix} 1 & \lambda & 1 \\ \lambda & 1 & \mu \\ 1 & \mu & 1 \end{pmatrix}$$
-
-$\Delta_1 = 1 > 0$
-
-$\Delta_2 = 1 - \lambda^2 > 0 \Rightarrow |\lambda| < 1$
-
-$\Delta_3 = |A| = 1(1 - \mu^2) - \lambda(\lambda - \mu) + 1(\lambda\mu - 1) = 1 - \mu^2 - \lambda^2 + \lambda\mu + \lambda\mu - 1 = 2\lambda\mu - \lambda^2 - \mu^2 = -(\lambda - \mu)^2$
-
-$\Delta_3 > 0 \Rightarrow -(\lambda - \mu)^2 > 0$，不可能！
-
-故 $f$ 不可能正定（除非 $\lambda = \mu$ 且 $\Delta_3 = 0$，此时半正定）。
-
-实际上，$|A| = -(\lambda - \mu)^2 \leq 0$，$f$ 不可能正定。
-
-### 例8
-
-设二次型 $f(x_1, x_2, x_3) = (1 - a)x_1^2 + (1 - a)x_2^2 + 2x_3^2 + 2(1 + a)x_1x_2$ 的秩为 2，求 $a$ 及正惯性指数。
-
-**解**：
+**解**：矩阵
 
 $$A = \begin{pmatrix} 1-a & 1+a & 0 \\ 1+a & 1-a & 0 \\ 0 & 0 & 2 \end{pmatrix}$$
 
-$|A| = 2[(1-a)^2 - (1+a)^2] = 2[(1-2a+a^2) - (1+2a+a^2)] = 2 \cdot (-4a) = -8a$
+$|A| = 2[(1-a)^2 - (1+a)^2] = 2[(1-2a+a^2) - (1+2a+a^2)] = -8a$。
 
-$r(A) = 2 \Rightarrow |A| = 0 \Rightarrow a = 0$
+秩为 2 $\Rightarrow |A| = 0 \Rightarrow a = 0$。此时
 
-当 $a = 0$ 时：$A = \begin{pmatrix} 1 & 1 & 0 \\ 1 & 1 & 0 \\ 0 & 0 & 2 \end{pmatrix}$
+$$A = \begin{pmatrix} 1 & 1 & 0 \\ 1 & 1 & 0 \\ 0 & 0 & 2 \end{pmatrix}$$
 
-$r(A) = 2$
+特征值：$\begin{vmatrix} 1-\lambda & 1 & 0 \\ 1 & 1-\lambda & 0 \\ 0 & 0 & 2-\lambda \end{vmatrix} = (2-\lambda)[(1-\lambda)^2 - 1] = (2-\lambda)\lambda(\lambda-2) = -\lambda(2-\lambda)^2$，即 $\lambda_1 = 0$，$\lambda_2 = \lambda_3 = 2$。
 
-特征值：$\begin{vmatrix} 1-\lambda & 1 & 0 \\ 1 & 1-\lambda & 0 \\ 0 & 0 & 2-\lambda \end{vmatrix} = (2-\lambda)[(1-\lambda)^2 - 1] = (2-\lambda)\lambda(\lambda - 2) = -\lambda(2-\lambda)^2$
+正惯性指数 $p = 2$，负惯性指数 $q = 0$。
 
-$\lambda_1 = 0$，$\lambda_2 = 2$（二重）
+**点评**：这是"秩 + 惯性指数"的组合题，用"秩 2 $\Rightarrow$ 行列式为零"定位参数，再用特征值定指数，一气呵成。
 
-正惯性指数 $p = 2$。
-
-## 5. 综合证明题
-
-### 例9
+### 例 7（综合证明）
 
 设 $A$ 为 $n$ 阶实对称矩阵，证明 $A$ 正定 $\iff$ 存在可逆矩阵 $B$ 使得 $A = B^TB$。
 
 **证明**：
 
-$\Rightarrow$：$A$ 正定，合同于 $I$，存在可逆 $C$ 使得 $C^TAC = I$，$A = (C^{-1})^TC^{-1}$，取 $B = C^{-1}$。
+$\Rightarrow$：$A$ 正定，合同于 $I$，存在可逆 $C$ 使 $C^TAC = I$，于是 $A = (C^{-1})^TC^{-1}$，取 $B = C^{-1}$ 即可。
 
-$\Leftarrow$：$A = B^TB$，$\boldsymbol{x}^TA\boldsymbol{x} = \boldsymbol{x}^TB^TB\boldsymbol{x} = \|B\boldsymbol{x}\|^2 \geq 0$。$B$ 可逆，$\boldsymbol{x} \neq 0 \Rightarrow B\boldsymbol{x} \neq 0 \Rightarrow \|B\boldsymbol{x}\|^2 > 0$。$A$ 正定。
+$\Leftarrow$：若 $A = B^TB$（$B$ 可逆），则 $\boldsymbol{x}^TA\boldsymbol{x} = \|B\boldsymbol{x}\|^2 \geq 0$；且 $\boldsymbol{x} \neq \mathbf{0}$ 时 $B\boldsymbol{x} \neq \mathbf{0}$，故 $\|B\boldsymbol{x}\|^2 > 0$，$A$ 正定。
 
-### 例10
+**点评**：这道题把"正定 $\iff$ 合同于 $I$ $\iff$ 可写成 $B^TB$"串成了一条完整的逻辑链，是证明题的经典压轴。
 
-设 $A$ 为 $n$ 阶正定矩阵，$\boldsymbol{x}^TA\boldsymbol{x} = 1$ 表示 $\mathbb{R}^n$ 中的椭球面，证明该椭球面的体积为 $V = \dfrac{\omega_n}{\sqrt{|A|}}$，其中 $\omega_n$ 是单位球的体积。
+## 7. 常见错误与对策
 
-**证明**：$A = Q\Lambda Q^T$，令 $\boldsymbol{x} = Q\Lambda^{-1/2}\boldsymbol{y}$，则 $\boldsymbol{x}^TA\boldsymbol{x} = \boldsymbol{y}^T\boldsymbol{y} = 1$。
+| 错误示例 | 错误类型 | 出错原因 | 纠正方法 |
+| -------- | -------- | -------- | -------- |
+| 极值判定直接用 $F$ 的系数矩阵当 Hessian | 概念迁移错误 | 把"二次函数 $F$"与"二次型 $f$"混淆 | Hessian 是**二阶偏导矩阵**，先求偏导再写矩阵 |
+| 配方时不检查换元可逆性 | 逻辑漏洞 | 只求形式 | 换元后验证变换矩阵行列式非零 |
+| 合同判定用"特征值相同" | 相似合同混淆 | 概念不清 | 合同只看秩与正惯性指数 |
+| 秩为 2 的题只解 $|A| = 0$ 不验证 $r(A) = 2$ | 漏验充分性 | 解出的参数可能让秩更小 | 回代验证三阶及二阶主子式确实"恰好秩 2" |
+| 二重特征值不验证特征向量正交 | 步骤缺失 | 以为随便取两个就行 | 正交化（施密特）后再单位化 |
+| 求出驻点不判定 Hessian 就下结论 | 结论过早 | 忘记极值的二阶充分条件 | 先写 Hessian，再判定正定/负定/不定 |
 
-变换的雅可比行列式为 $|Q\Lambda^{-1/2}| = |\Lambda|^{-1/2} = |A|^{-1/2}$。
+## 8. 实战练习
 
-$V = \omega_n \cdot |A|^{-1/2} = \dfrac{\omega_n}{\sqrt{|A|}}$。
+### 练习 1（入门）：曲面分类
+
+判断 $f = x_1^2 + 2x_2^2 + 3x_3^2 + 2x_1x_2$ 是否为椭球面。
+
+**提示**：写出矩阵，用特征值或顺序主子式判断正定性。注意只需判断"全正"即可。
+
+**参考答案要点**：矩阵 $A = \begin{pmatrix} 1 & 1 & 0 \\ 1 & 2 & 0 \\ 0 & 0 & 3 \end{pmatrix}$。$\Delta_1 = 1$，$\Delta_2 = 2 - 1 = 1$，$\Delta_3 = 3 > 0$，正定，是椭球面。
+
+### 练习 2（基础）：极值判定
+
+求 $F(x, y) = x^2 + y^2 + xy - 3x - 3y$ 的极值点与极值类型。
+
+**提示**：先求驻点（两个偏导为零），再写 Hessian 判定。
+
+**参考答案要点**：驻点 $(1, 1)$；Hessian $H = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$，$\Delta_1 = 2 > 0$，$\Delta_2 = 3 > 0$，正定，$F$ 在 $(1, 1)$ 处取得严格极小值。
+
+### 练习 3（进阶）：综合判定
+
+设 $A = \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}$，求 $\boldsymbol{x}^TA\boldsymbol{x}$ 的规范形，并判断 $A$ 与 $I$ 是否合同。
+
+**提示**：特征值 $3, -1$，正惯性指数 1。
+
+**参考答案要点**：规范形 $y_1^2 - y_2^2$，$p = 1$，$r = 2$；$I$ 的 $p = 2$，$r = 2$，正惯性指数不同，**不合同**。
+
+### 练习 4（综合）：参数与极值
+
+设 $F(x_1, x_2) = 3x_1^2 + 4x_2^2 - 4x_1x_2 + 2tx_1x_2$ 在原点取极小值，求 $t$ 的范围。
+
+**提示**：$F$ 是二次齐次函数，其 Hessian 恰为其二次型矩阵（乘 2 的关系），要求 Hessian 正定。
+
+**参考答案要点**：二次型矩阵 $A = \begin{pmatrix} 3 & -2 + t \\ -2 + t & 4 \end{pmatrix}$（注意 $-4x_1x_2 + 2tx_1x_2 = 2(t - 2)x_1x_2$，取半得 $a_{12} = t - 2$）。$\Delta_1 = 3 > 0$；$\Delta_2 = 12 - (t-2)^2 > 0 \Rightarrow |t - 2| < 2\sqrt{3}$，即 $2 - 2\sqrt{3} < t < 2 + 2\sqrt{3}$ 时取严格极小值。
+
+## 9. 一句话记忆
+
+> **二次型知识的"综合应用"就两条主线：化标准形/规范形看形状（二次曲面分类），判定正定性看性质（极值判定）——把"化简"和"判定"两套技能串起来，二次型就算真正学通了。**
 
 ## 参考文献
 
-3Blue1Brown 线性代数的本质：https://www.3blue1brown.com/topics/linear-algebra
-MIT 18.06：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-NumPy 文档：https://numpy.org/doc/stable/
-Interactive Linear Algebra：https://textbooks.math.gatech.edu/ila/
+1. 同济大学数学科学学院（编），《线性代数》（第七版），高等教育出版社——第五章习题与"二次曲面"相关内容，含化标准形、正定性、含参数题型的标准解法。
+2. 线性代数知识库（kmath.cn）"二次型与正定型"目录：http://kb.kmath.cn/kbase/detail.aspx?id=1394
+3. MIT 18.06 Linear Algebra（Gilbert Strang），Spring 2010——二次型与正定矩阵综合练习：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
+4. Interactive Linear Algebra（Georgia Tech），Quadratic Forms：https://textbooks.math.gatech.edu/ila/
 
 ## 延伸阅读
 
-线性代数基础，见 029-linear-algebra 模块文档。
-微积分与优化，见 027-calculus 模块。
-数据分析（PCA/矩阵），见 051-data-analysis 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供线性代数课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 矩阵分解体系
-
-LU：消元分解，解方程组；QR：正交化，稳定最小二乘。
-特征分解：对称矩阵可正交对角化；主成分分析基础。
-SVD：A=UΣVᵀ，任意矩阵；低秩近似与压缩。
-选择：一般求解 LU/QR，分析用 SVD/特征分解。
-
-### 13.2 线性变换的几何
-
-矩阵乘法 = 基向量的新位置；行列式 = 面积/体积缩放因子。
-特征向量：变换中方向不变只伸缩的方向。
-秩：变换后空间的维数（塌缩程度）。
-应用：理解梯度、雅可比、神经网络层。
+- 二次型的理论三件套见《二次型的标准形》（order 60）、《二次型的规范形》（order 61）、《正定二次型》（order 62）。
+- 极值判定的微积分基础见 027-calculus 模块（多元函数微分学）。
+- 后续的矩阵分解（LU/QR/SVD）提供了二次型理论在数值计算中的实现方式，见 order 70-73 各篇。

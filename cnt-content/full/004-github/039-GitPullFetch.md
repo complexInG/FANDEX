@@ -5,282 +5,343 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: GitHub 拉取与获取 的完整教学讲解。
+description: 以对比驱动方式讲解 git pull 与 git fetch 的区别与适用场景，覆盖远程更新同步、远程跟踪分支与拉取冲突处理，适合零基础学习者。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
-## 拉取远程更新
+## 开篇：像收发室取件一样拉取更新
 
-**基本写法：拉取并合并**
-`git pull`
-```bash
-# 拉取远程更新并合并到当前分支
-git pull
-```
+想象你所在的小区有个收发室，快递员把新包裹送到收发室后，会发短信通知你。这时你有两种取件方式：
 
----
+- **方式 A（先看一眼再决定）**：到收发室看到包裹的**面单信息**（谁寄的、什么时候到的），不着急拆开，先回家想想这份快递要不要、怎么处理，想清楚了再拆；
+- **方式 B（直接拆开用）**：到了收发室直接拆包，把东西用起来——如果里面的东西和你家里的旧家具摆放冲突，就得现场重新摆放。
 
-**基本写法：拉取指定远程分支**
-`git pull origin <分支名>`
-```bash
-# 拉取指定远程分支并合并
-git pull origin main
-```
+对应到 Git：
+
+- **`git fetch`（方式 A）**：只把远程仓库的**新提交信息**下载到本地（更新 `origin/main` 这类"远程跟踪分支"），**你的工作区代码完全不动**，可以慢慢看、对比、确认后再决定要不要合并；
+- **`git pull`（方式 B）**：`fetch` 完**自动执行合并**（默认是 merge），直接把远程更新并进你的当前分支，一步到位，但也可能当场触发冲突。
+
+官方文档说得更直白：**`git pull` 本质就是 `git fetch` 加 `git merge` 的简写**。本篇采用**对比驱动**的叙事方式，把这两个命令放在同一张桌子上逐项对照，让你彻底分清"什么时候用 fetch、什么时候用 pull"。
 
 ---
 
-**基本写法：拉取并变基**
-`git pull --rebase`
-```bash
-# 拉取远程更新并使用 rebase 方式合并
-git pull --rebase
-```
+## 一、先看结论：一张表分清 fetch 与 pull
+
+| 对比维度 | `git fetch` | `git pull` |
+| --- | --- | --- |
+| 本质 | 只下载远程新提交，更新远程跟踪分支 | `git fetch` + 自动合并（merge 或 rebase） |
+| 是否修改工作区 | 不修改，本地代码纹丝不动 | 立即合并进当前分支，可能改动代码 |
+| 是否可能冲突 | 不会（不合并） | 可能触发合并冲突 |
+| 安全性 | 高，完全可控 | 中，自动合并有风险 |
+| 典型场景 | 先看远程改了什么再决定 | 快速同步最新代码 |
+| 命令组合 | fetch 后手动 `git merge origin/main` | 一步完成 |
+
+一句话记忆版：**fetch 是"只看不拆"，pull 是"拆了就用"**。
 
 ---
 
-**基本写法：拉取指定远程和分支并变基**
-`git pull --rebase origin <分支名>`
+## 二、原理讲解：远程跟踪分支是什么
+
+要理解 fetch 和 pull，必须先搞懂"远程跟踪分支"（remote-tracking branch）。它的原理可以这样理解：
+
+Git 在本地仓库里为远程的每个分支保存了一个**"分身"**，命名规则是 `远程名/分支名`，例如 `origin/main`。这个分身记录的是"**我上次从远程同步时，远程分支长什么样**"。它只是一个引用（指针），不是你工作区里的真实文件。
+
 ```bash
-# 拉取指定分支并使用 rebase
-git pull --rebase origin main
-```
-
----
-
-**基本写法：允许不相关历史合并**
-`git pull --allow-unrelated-histories`
-```bash
-# 合并不相关的历史（如初始化仓库后首次合并）
-git pull origin main --allow-unrelated-histories
-```
-
----
-
-**基本写法：仅拉取不自动合并**
-`git pull --no-commit`
-```bash
-# 拉取更新但不自动创建合并提交
-git pull --no-commit
-```
-
----
-
-## 获取远程信息
-
-**基本写法：获取所有远程更新**
-`git fetch`
-```bash
-# 获取远程所有分支的更新（不合并）
-git fetch
-```
-
----
-
-**基本写法：获取指定远程**
-`git fetch origin`
-```bash
-# 获取 origin 远程的更新
-git fetch origin
-```
-
----
-
-**基本写法：获取指定分支**
-`git fetch origin <分支名>`
-```bash
-# 获取指定远程分支的更新
-git fetch origin main
-```
-
----
-
-**基本写法：获取所有远程**
-`git fetch --all`
-```bash
-# 获取所有远程仓库的更新
-git fetch --all
-```
-
----
-
-**基本写法：获取并清理已删除分支**
-`git fetch --prune`
-```bash
-# 获取更新并清理远程已删除的分支引用
-git fetch --prune
-```
-
----
-
-**基本写法：获取指定标签**
-`git fetch origin <标签名>`
-```bash
-# 获取远程指定的标签
-git fetch origin v1.0.0
-```
-
----
-
-**基本写法：获取所有标签**
-`git fetch --tags`
-```bash
-# 获取远程所有标签
-git fetch --tags
-```
-
----
-
-## 远程分支操作
-
-**基本写法：查看远程分支**
-`git branch -r`
-```bash
-# 列出所有远程分支
+# 查看远程跟踪分支（克隆后自动生成）
 git branch -r
-```
+# 输出示例：
+#   origin/HEAD -> origin/main
+#   origin/main
 
----
-
-**基本写法：查看所有分支**
-`git branch -a`
-```bash
-# 列出本地和远程所有分支
+# 查看本地 + 远程全部分支
 git branch -a
 ```
 
----
+`git fetch` 干的事就是：**把这个分身更新到远程的最新状态**——`origin/main` 指向最新的提交，但你的本地分支 `main` 和工作区文件保持不变。
 
-**基本写法：查看分支详细信息**
-`git branch -vv`
-```bash
-# 查看分支及其追踪关系和最新提交
-git branch -vv
+图解（fetch 前后）：
+
+```
+fetch 前：                     fetch 后：
+本地 main --- A --- B          本地 main --- A --- B
+远程 origin/main --- A         远程 origin/main --- A --- B --- C   (C 是远程新增)
+工作区文件：仍是 A/B 版本        工作区文件：仍是 A/B 版本（没变！）
 ```
 
+只有你手动执行 `git merge origin/main` 或 `git pull`，本地分支和工作区才会前进到 C。
+
 ---
 
-**基本写法：从远程分支创建本地分支**
-`git switch -c <本地分支> origin/<远程分支>`
+## 三、git fetch 全解
+
+### 3.1 基本用法
+
 ```bash
-# 基于远程分支创建本地分支并切换
-git switch -c feature origin/feature
+# 获取默认远程（origin）所有分支的更新（只更新分身，不合并）
+git fetch
+
+# 获取指定远程的更新
+git fetch origin
+
+# 获取指定远程的指定分支
+git fetch origin main
+
+# 获取所有远程仓库的更新
+git fetch --all
+
+# 获取更新并清理远程已删除分支的本地引用
+git fetch --prune
+
+# 获取指定标签
+git fetch origin v1.0.0
+
+# 获取所有标签
+git fetch --tags
 ```
 
----
+### 3.2 fetch 之后能做什么
 
-**基本写法：直接跟踪远程分支**
-`git switch <分支名>`
+fetch 的完整价值在于"先侦查，后决策"：
+
 ```bash
-# 自动追踪同名远程分支
-git switch feature
+# 1. 查看远程 main 比你本地多哪些提交
+git log --oneline main..origin/main
+
+# 2. 对比本地与远程的差异
+git diff origin/main
+
+# 3. 确认无误后，手动合并（这才是真正把更新并进来）
+git merge origin/main
+
+# 4. 或者用 rebase 方式整合（历史更线性）
+git rebase origin/main
 ```
 
+### 3.3 典型输出解读
+
+```bash
+git fetch origin
+```
+
+输出示例：
+
+```
+From https://github.com/user/repo
+ * [new branch]      feature/login -> origin/feature/login
+   8f4b2c1..c9d3e7a  main         -> origin/main
+```
+
+看懂输出：第一行表示远程出现了新分支；第二行表示 `main` 从 `8f4b2c1` 推进到 `c9d3e7a`。**注意：你的本地 main 和工作区没有任何变化**。
+
 ---
 
-## 拉取冲突处理
+## 四、git pull 全解
 
-**基本写法：中止合并**
-`git merge --abort`
+### 4.1 基本用法
+
 ```bash
-# 取消正在进行的合并操作
+# 拉取并合并（默认 merge 方式）：fetch + merge
+git pull
+
+# 指定远程和分支
+git pull origin main
+
+# 拉取并使用 rebase 方式整合（避免多余的合并提交）
+git pull --rebase
+
+# 指定分支 + rebase
+git pull --rebase origin main
+```
+
+### 4.2 默认合并 vs --rebase
+
+同样是 `git pull`，内部可以选择两种整合策略：
+
+```bash
+# 默认：merge（生成一个合并提交，历史会出现分叉）
+git pull
+
+# 推荐给个人分支：--rebase（把本地提交"垫到"远程提交之后，历史呈直线）
+git pull --rebase
+```
+
+两条路线的区别与取舍，在 040-GitMergeRebase 篇有详细对比，这里只需记住：**团队要求历史整洁就用 `git pull --rebase`，想保留完整合并记录就用默认 `git pull`**。也可以在配置里一劳永逸：
+
+```bash
+# 全局设置 pull 默认使用 rebase
+git config --global pull.rebase true
+```
+
+### 4.3 特殊参数
+
+```bash
+# 允许合并不相关历史（例如：本地 init 的仓库首次和远程仓库合并时）
+git pull origin main --allow-unrelated-histories
+
+# 拉取但不自动创建合并提交（先检查再自己提交）
+git pull --no-commit
+```
+
+> 场景说明：如果你在本地 `git init` 建了仓库并提交过，再 `git remote add origin` 关联远程，此时本地与远程没有任何共同祖先，直接 `git pull` 会报 `refusing to merge unrelated histories`。加上 `--allow-unrelated-histories` 才能强行合并。
+
+---
+
+## 五、拉取冲突处理（提前预告）
+
+`git pull` 合并时若双方改了同一处代码，就会停下等你解决。完整解法见 041 篇，这里先给出"止血三板斧"：
+
+```bash
+# 合并冲突：中止（回到 pull 之前的状态）
 git merge --abort
-```
 
----
-
-**基本写法：中止变基**
-`git rebase --abort`
-```bash
-# 取消正在进行的变基操作
+# 变基冲突：中止
 git rebase --abort
-```
 
----
-
-**基本写法：继续合并**
-`git merge --continue`
-```bash
-# 解决冲突后继续合并
+# 解决完冲突后：继续合并
 git merge --continue
-```
 
----
-
-**基本写法：继续变基**
-`git rebase --continue`
-```bash
-# 解决冲突后继续变基
+# 解决完冲突后：继续变基
 git rebase --continue
-```
 
----
-
-**基本写法：跳过当前变基提交**
-`git rebase --skip`
-```bash
-# 跳过当前冲突的提交继续变基
+# 变基时跳过当前有问题的提交
 git rebase --skip
 ```
 
 ---
 
-## 远程信息查看
+## 六、远程分支操作补充
 
-**基本写法：查看远程仓库详情**
-`git remote show origin`
 ```bash
-# 显示 origin 远程仓库的详细信息
+# 查看远程分支及其追踪关系
+git branch -vv
+# 输出示例：* main 8f4b2c1 [origin/main] feat: 添加加法函数
+
+# 基于远程分支创建本地分支并切换
+git switch -c feature origin/feature
+
+# 本地分支自动追踪同名远程分支（远程存在时才有效）
+git switch feature
+
+# 查看远程仓库详情（含分支、落后/领先状态）
 git remote show origin
-```
 
----
-
-**基本写法：查看远程分支列表**
-`git ls-remote origin`
-```bash
 # 列出远程仓库的所有引用
 git ls-remote origin
-```
 
----
-
-**基本写法：查看远程 HEAD 分支**
-`git remote show origin | grep "HEAD branch"`
-```bash
 # 查看远程默认分支名
 git remote show origin | grep "HEAD branch"
 ```
 
-## 参考文献
+---
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+## 七、常见错误与对策表
+
+| 错误现象 | 报错信息（节选） | 原因分析 | 解决办法 |
+| --- | --- | --- | --- |
+| 工作区有未提交改动时 pull | `Your local changes to the following files would be overwritten by merge` | 本地未提交改动与远程更新重叠 | 先 `git stash` 暂存改动，pull 后再 `git stash pop` 恢复（见 045 篇） |
+| pull 报不相关历史 | `refusing to merge unrelated histories` | 本地 init 仓库与远程仓库没有共同祖先 | 加 `--allow-unrelated-histories`（首次合并时用） |
+| pull 后出现冲突标记 | `Automatic merge failed; fix conflicts and then commit the result` | 双方修改了同一处代码 | 按 041 篇解决：编辑文件 → `git add` → `git merge --continue` |
+| 误以为 fetch 后代码更新了 | fetch 后本地代码没变化 | 对 fetch 的认知偏差——它只更新 origin/main 分身 | 主动执行 `git merge origin/main` 或改用 `git pull` |
+| pull --rebase 冲突后不会收场 | 变基进行中，不知道下一步 | 没掌握 continue/abort/skip | 解决冲突后 `git add` + `git rebase --continue`；想放弃就 `git rebase --abort` |
+| 远程分支列表有"幽灵分支" | `git branch -r` 里出现远程已删除的分支 | 远程分支被删，但本地引用未清理 | `git fetch --prune` 或 `git remote prune origin` |
+| 拉取慢/卡住 | fetch/pull 长时间无响应 | 大仓库全量下载或网络受限 | 用 `git fetch --depth 1` 浅获取，或检查网络代理 |
+
+---
+
+## 八、实战练习
+
+### 练习 1：体验 fetch 的"不动声色"（入门）
+
+**题目**：在本地仓库执行 `git fetch origin`，用 `git status` 观察工作区是否发生变化，再用 `git log --oneline main..origin/main` 查看远程新增的提交。
+
+**提示**：需要一个已有远程的仓库；可以 clone 一个公开仓库练习。
+
+**参考答案要点**：
+
+```bash
+git fetch origin
+git status                    # 工作区无变化
+git log --oneline main..origin/main   # 列出远程比本地多的提交
+```
+
+### 练习 2：fetch + merge 手动整合（核心）
+
+**题目**：不直接 pull，用"fetch → 对比 → merge"三步手动完成同步，体会 pull 内部做了什么。
+
+**提示**：`git diff origin/main` 先看差异再合并。
+
+**参考答案要点**：
+
+```bash
+git fetch origin
+git diff origin/main          # 确认差异内容
+git merge origin/main         # 手动合并（等价于默认 pull 的后半段）
+```
+
+### 练习 3：用 pull --rebase 保持历史整洁（进阶）
+
+**题目**：在本地分支上有自己的提交，远程也有新提交，用 `git pull --rebase` 同步，并用 `git log --oneline --graph` 观察历史呈直线。
+
+**提示**：rebase 会把自己的提交"垫"到远程提交之后；冲突时用 `git rebase --continue`。
+
+**参考答案要点**：
+
+```bash
+git pull --rebase
+# 若无冲突：直接完成，历史直线
+# 若有冲突：解决 -> git add -> git rebase --continue
+git log --oneline --graph
+```
+
+### 练习 4：处理"不相关历史"合并（进阶）
+
+**题目**：本地 `git init` 建仓库并提交，关联远程已有仓库，执行 `git pull origin main --allow-unrelated-histories`，观察合并结果。
+
+**提示**：这是本地 init + 远程已有内容的典型场景。
+
+**参考答案要点**：
+
+```bash
+git init -b main
+git remote add origin https://github.com/user/repo.git
+# 直接 pull 会报 refusing to merge unrelated histories
+git pull origin main --allow-unrelated-histories
+```
+
+### 练习 5：清理远程"幽灵分支"（综合）
+
+**题目**：让队友（或自己）在 GitHub 上删除一个分支，本地执行 `git fetch --prune`，对比清理前后的 `git branch -r` 输出。
+
+**提示**：`--prune` 会删除本地已不存在的远程跟踪引用。
+
+**参考答案要点**：
+
+```bash
+git branch -r                 # 清理前：还显示已删除的远程分支
+git fetch --prune             # 清理
+git branch -r                 # 清理后：幽灵分支消失
+```
+
+---
+
+## 九、一句话记忆
+
+**`git fetch` 只更新远程"分身"（origin/main）不碰你的代码，`git pull` 是 fetch 加 merge（或 rebase）一步到位——先侦查用 fetch，快同步用 pull，冲突了记得 abort 或 continue。**
+
+---
+
+## 参考链接
+
+- Git 官方文档（git pull）：https://git-scm.com/docs/git-pull
+- Git 官方文档（git fetch）：https://git-scm.com/docs/git-fetch
+- Pro Git 中文版 2.5 远程仓库的使用：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8
+- GitHub 文档（同步仓库）：https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork
 
 ## 延伸阅读
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- 合并与变基的深入对比（merge vs rebase），见下一篇 040-GitMergeRebase。
+- 冲突的产生与完整解决流程，见 041-GitConflictResolve。
+- 远程仓库关联管理（origin/upstream/fork 工作流），见 043-GitRemoteManage。
+- 关联文档：提交与推送流程，见 038-GitCommitPush；Git 协作基础，见 003-git 模块。

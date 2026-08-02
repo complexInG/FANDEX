@@ -23,15 +23,28 @@
   margin-right: auto;
 }
 
-/* 导航按钮：基础样式由 .fndx-icon-btn--labeled 统一提供（透明背景 + 无边框 + 统一悬停）
- * 此处仅保留 flex 布局与间距 */
+/* 导航按钮：基础样式与统一特效由 .fndx-icon-btn--labeled 提供（透明背景 + 无边框 + 统一悬停）
+ * 此处仅保留双行内容的布局：高度交由内容撑开，保证标签 + 标题完整展示 */
 .nav-btn {
   /* display/align/size/background/color/border/transition/hover 均由 .fndx-icon-btn--labeled 提供 */
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-md);
+  height: auto;
+  min-height: var(--size-control-sm);
   text-decoration: none;
   flex: 1;
   min-width: 0;
+}
+
+/* 方向性图标微位移：上一篇/下一篇悬停时箭头沿阅读方向平移（与左右滚动按钮一致） */
+@media (hover: hover) {
+  .doc-nav .nav-btn--prev.fndx-icon-btn:hover svg {
+    transform: translateX(-2px) scale(1.08);
+  }
+
+  .doc-nav .nav-btn--next.fndx-icon-btn:hover svg {
+    transform: translateX(2px) scale(1.08);
+  }
 }
 
 /* 仅有一个按钮时的布局 */
@@ -45,15 +58,20 @@
 
 /* "上一篇/下一篇"标签 */
 .nav-label {
-  font-size: 0.68em;
-  color: var(--color-text-tertiary);
+  font-size: var(--font-size-caption);
+  line-height: 1.4;
+  color: var(--color-fg-tertiary);
+  letter-spacing: var(--font-letter-spacing-label);
   display: block;
+  white-space: nowrap;
 }
 
 /* 文档标题：单行省略 */
 .nav-title {
-  font-size: 0.82em;
-  font-weight: 500;
+  font-size: var(--font-size-secondary);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  color: var(--color-fg-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

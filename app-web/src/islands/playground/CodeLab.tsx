@@ -272,7 +272,9 @@ function CodeLab() {
       <div className="pg-lab-main">
         <aside className="pg-lab-desc">
           <div className="pg-lab-desc-head">
-            <span className={`pg-badge ${DIFFICULTY_CLASS[exercise.difficulty]}`}>{exercise.difficulty}</span>
+            <span className={`fndx-badge fndx-badge--soft fndx-badge--pill ${DIFFICULTY_CLASS[exercise.difficulty]}`}>
+              {exercise.difficulty}
+            </span>
             <div className="pg-tags">
               {exercise.tags.map((tag) => (
                 <span className="pg-tag" key={tag}>

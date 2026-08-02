@@ -25,7 +25,7 @@
  */
 
 /** 支持的视图变体类型 */
-export type GeoBgVariant = 'home' | 'docs' | 'list' | 'minimal' | 'loading' | 'error' | 'info';
+export type GeoBgVariant = 'home' | 'docs' | 'list' | 'minimal' | 'loading' | 'error' | 'info' | 'playground';
 
 /** 装饰层单项：可仅为类名字符串，或携带内联 style 的对象（适配带定位的装饰元素） */
 type GeoDecorItem = string | { readonly className: string; readonly style?: string };
@@ -82,6 +82,16 @@ const GEO_DECOR_CONFIG: Record<GeoBgVariant, GeoDecorItem[]> = {
     'geo-dots-radial',
     'geo-pulse-ring',
     'geo-float-block',
+  ],
+  /** 在线编程实验场变体：网格底纹 + 尖括号对 + 终端方块 + 平行线 + 点阵 + 十字标记 + 脉冲环 */
+  playground: [
+    'geo-bg-grid',
+    'geo-bracket-pair',
+    'geo-terminal-block',
+    'geo-parallel-lines',
+    'geo-dots-radial',
+    'geo-cross-marks',
+    'geo-pulse-ring',
   ],
 };
 

@@ -19,7 +19,7 @@ const { prev, next } = Astro.props as { prev: DocEntry | null; next: DocEntry | 
     prev ? (
       <a
         href={`${import.meta.env.BASE_URL}${prev.data.module}/${docSlug(prev.id)}/`}
-        class="nav-btn fndx-icon-btn fndx-icon-btn--labeled"
+        class="nav-btn nav-btn--prev fndx-icon-btn fndx-icon-btn--labeled"
       >
         <svg
           width="12"
@@ -44,7 +44,7 @@ const { prev, next } = Astro.props as { prev: DocEntry | null; next: DocEntry | 
     next ? (
       <a
         href={`${import.meta.env.BASE_URL}${next.data.module}/${docSlug(next.id)}/`}
-        class="nav-btn fndx-icon-btn fndx-icon-btn--labeled"
+        class="nav-btn nav-btn--next fndx-icon-btn fndx-icon-btn--labeled"
         style="text-align:right"
       >
         <div>
@@ -67,4 +67,3 @@ const { prev, next } = Astro.props as { prev: DocEntry | null; next: DocEntry | 
     )
   }
 </nav>
-

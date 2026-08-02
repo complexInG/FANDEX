@@ -5,383 +5,425 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: GitHub 历史与日志 的完整教学讲解。
+description: 以侦探查案驱动方式讲解 git log 的各类查看姿势与 git diff、git show、git blame、git reflog 的取证技巧，覆盖历史筛选、差异对比与引用日志，适合零基础学习者。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
-## 提交历史查看
+## 开篇：像侦探查案一样翻阅历史
 
-**基本写法：查看完整历史**
-`git log`
+想象你是一名侦探，接手一桩"代码失踪案"：昨晚还能运行的程序，今天早上突然崩溃了。你需要回答三个问题：
+
+1. **什么时候改的？**（哪一次提交让程序变坏的）
+2. **谁改的？**（哪个同事的哪次操作）
+3. **改成什么样了？**（具体是哪几行代码出了问题）
+
+Git 的提交历史就是你的"案卷库"，而 `git log` 就是你的"查档系统"。Git 官方甚至把仓库描述为"内容寻址文件系统"——每次提交都是一个不可变的快照，你可以像翻档案一样回到任何一天。
+
+本篇采用**侦探驱动**的叙事方式：以"破案"为线索，依次学习**看总览（log）、筛线索（filter）、对现场（diff）、看单份案卷（show）、追查每行来源（blame）、翻查活动记录（reflog）** 六种取证姿势。
+
+---
+
+## 一、第一招：看总览——git log 基础
+
+### 1.1 完整案卷
+
 ```bash
-# 查看完整提交历史
+# 查看完整提交历史（按时间倒序）
 git log
 ```
 
----
+输出示例：
 
-**基本写法：单行简洁显示**
-`git log --oneline`
+```
+commit 8f4b2c1e2d3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c
+Author: 张三 <zhangsan@example.com>
+Date:   Sat Aug 2 09:30:00 2026 +0800
+
+    feat: 添加加法函数
+```
+
+每条提交包含：提交 ID（完整 SHA-1 哈希）、作者、日期、提交信息。
+
+### 1.2 精简案卷
+
 ```bash
-# 每条提交一行显示
+# 每条提交一行（最常用，一眼扫过全部历史）
 git log --oneline
-```
+# 输出示例：
+# 8f4b2c1 (HEAD -> main) feat: 添加加法函数
+# a1b2c3d docs: 更新 README
 
----
+# 只看最近 N 条
+git log -5
 
-**基本写法：图形化分支显示**
-`git log --graph`
-```bash
-# 图形化显示分支合并历史
-git log --graph
-```
-
----
-
-**基本写法：完整图形化显示**
-`git log --oneline --graph --all`
-```bash
-# 图形化显示所有分支的简洁历史
-git log --oneline --graph --all
-```
-
----
-
-**基本写法：查看最近 N 条提交**
-`git log -<数量>`
-```bash
-# 查看最近 10 条提交
-git log -10
-```
-
----
-
-**基本写法：查看指定数量并单行**
-`git log -<数量> --oneline`
-```bash
-# 单行查看最近 5 条提交
+# 单行 + 数量
 git log -5 --oneline
 ```
 
+### 1.3 画关系图
+
+```bash
+# 图形化显示分支合并历史（能看到 merge 的分叉与交汇）
+git log --graph
+
+# 最常用的组合：单行 + 图形 + 所有分支
+git log --oneline --graph --all
+
+# 只看合并提交
+git log --merges
+
+# 排除合并提交
+git log --no-merges
+```
+
+`git log --oneline --graph --all` 输出示例：
+
+```
+* 8f4b2c1 (HEAD -> main) feat: 添加加法函数
+* a1b2c3d docs: 更新 README
+|\
+| * e4f5g6h (feature) feat: 登录功能
+|/
+* 7a3f9c1 chore: 项目初始化
+```
+
 ---
 
-## 历史筛选
+## 二、第二招：筛线索——git log 过滤参数
 
-**基本写法：按作者筛选**
-`git log --author="<作者>"`
+### 2.1 按作者筛选
+
 ```bash
 # 查看指定作者的提交
 git log --author="zhangsan"
+
+# 模糊匹配（支持正则）
+git log --author="zhang"
 ```
 
----
+### 2.2 按提交信息搜索
 
-**基本写法：按提交信息搜索**
-`git log --grep="<关键词>"`
 ```bash
-# 搜索提交信息含关键词的提交
+# 搜索提交信息中包含"登录"的提交
 git log --grep="登录"
+
+# 不区分大小写
+git log --grep="login" -i
 ```
 
----
+### 2.3 按日期筛选
 
-**基本写法：按日期筛选**
-`git log --since="<开始日期>" --until="<结束日期>"`
 ```bash
-# 查看指定日期范围的提交
+# 指定日期范围
 git log --since="2026-01-01" --until="2026-07-31"
-```
 
----
-
-**基本写法：相对日期筛选**
-`git log --since="<时间>"`
-```bash
-# 查看最近 2 周的提交
+# 相对时间（最近 2 周）
 git log --since="2 weeks ago"
+
+# 等价写法：--after / --before
+git log --after="2026-06-01" --before="2026-06-30"
 ```
 
----
+### 2.4 按文件筛选
 
-**基本写法：按文件筛选**
-`git log -- <文件路径>`
 ```bash
-# 查看指定文件的提交历史
+# 查看指定文件的提交历史（注意 -- 分隔）
 git log -- src/index.js
+
+# 查看指定目录的历史
+git log -- src/
+
+# 跟踪文件重命名前的历史
+git log --follow src/index.js
 ```
 
----
+### 2.5 按代码内容筛选（Pickaxe 挖掘）
 
-**基本写法：按代码变更搜索**
-`git log -S "<代码片段>"`
 ```bash
-# 搜索添加或删除指定代码的提交
+# 找出"添加或删除过某段代码"的提交（-S 是次数变化）
 git log -S "console.log"
-```
 
----
-
-**基本写法：按正则搜索代码**
-`git log -G "<正则表达式>"`
-```bash
-# 使用正则搜索代码变更
+# 按正则匹配行变化（-G 是行匹配）
 git log -G "function\s+login"
 ```
 
+### 2.6 提交范围筛选（双点语法）
+
+```bash
+# 在 feature 但不在 main 的提交（feature 独有提交）
+git log main..feature
+
+# 本地比远程多的提交（push 前检查）
+git log origin/main..HEAD
+```
+
 ---
 
-## 差异查看
+## 三、第三招：对现场——git diff 差异对比
 
-**基本写法：查看工作区差异**
-`git diff`
+diff 是"案发现场对比"：同一个文件在提交前后差了什么。
+
 ```bash
-# 查看工作区与暂存区的差异
+# 工作区与暂存区的差异（还没 add 的改动）
 git diff
-```
 
----
-
-**基本写法：查看暂存区差异**
-`git diff --staged`
-```bash
-# 查看暂存区与上次提交的差异
+# 暂存区与上次提交的差异（已 add 未 commit 的改动）
 git diff --staged
-```
 
----
-
-**基本写法：查看所有改动**
-`git diff HEAD`
-```bash
-# 查看工作区与上次提交的所有差异
+# 工作区与上次提交的所有差异（add 没 add 都算）
 git diff HEAD
-```
 
----
-
-**基本写法：查看指定文件差异**
-`git diff <文件>`
-```bash
-# 查看指定文件的改动
+# 指定文件
 git diff src/index.js
-```
 
----
-
-**基本写法：比较两个提交**
-`git diff <提交1> <提交2>`
-```bash
-# 查看两个提交之间的差异
+# 两个提交之间
 git diff abc1234 def5678
-```
 
----
-
-**基本写法：比较两个分支**
-`git diff <分支1>..<分支2>`
-```bash
-# 查看两个分支之间的差异
+# 两个分支之间
 git diff main..feature
-```
 
----
-
-**基本写法：三点差异比较**
-`git diff <分支1>...<分支2>`
-```bash
-# 查看分支2 相对共同祖先的差异
+# 三点比较：feature 相对两分支共同祖先的差异（更聚焦）
 git diff main...feature
-```
 
----
-
-**基本写法：仅查看文件名**
-`git diff --name-only`
-```bash
-# 仅列出有改动的文件名
+# 只看文件名
 git diff --name-only
-```
 
----
-
-**基本写法：查看改动统计**
-`git diff --stat`
-```bash
-# 显示文件改动行数统计
+# 看改动统计
 git diff --stat
 ```
 
----
+`git diff --stat` 输出示例：
 
-## 文件历史分析
-
-**基本写法：查看文件改动历史**
-`git log -p <文件>`
-```bash
-# 查看文件的每次改动内容
-git log -p src/index.js
+```
+ src/index.js | 10 +++++-----
+ README.md    |  2 +-
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 ```
 
 ---
 
-**基本写法：查看文件改动（含重命名）**
-`git log --follow -p <文件>`
-```bash
-# 跟踪文件重命名前的历史
-git log --follow -p src/index.js
-```
+## 四、第四招：看单份案卷——git show
 
----
-
-**基本写法：查看每行最后修改者**
-`git blame <文件>`
-```bash
-# 显示文件每行最后的修改者
-git blame src/index.js
-```
-
----
-
-**基本写法：查看指定行范围的 blame**
-`git blame -L <起始>,<结束> <文件>`
-```bash
-# 查看 10 到 20 行的最后修改者
-git blame -L 10,20 src/index.js
-```
-
----
-
-**基本写法：查看 blame 忽略空格**
-`git blame -w <文件>`
-```bash
-# blame 时忽略空格改动
-git blame -w src/index.js
-```
-
----
-
-## 提交详情
-
-**基本写法：查看指定提交**
-`git show <提交ID>`
 ```bash
 # 查看指定提交的详情和改动
 git show abc1234
-```
 
----
-
-**基本写法：查看提交的文件列表**
-`git show --stat <提交ID>`
-```bash
-# 查看提交修改的文件列表
+# 只看提交改动的文件列表
 git show --stat abc1234
-```
 
----
-
-**基本写法：查看提交的指定文件**
-`git show <提交ID>:<文件路径>`
-```bash
-# 查看指定提交中某文件的内容
+# 查看指定提交中某文件的内容（取证"这个版本里这个文件长什么样"）
 git show abc1234:src/index.js
-```
 
----
-
-**基本写法：查看最近提交**
-`git show HEAD`
-```bash
-# 查看最近一次提交的详情
+# 查看最近一次提交
 git show HEAD
-```
 
----
-
-**基本写法：查看上一次提交**
-`git show HEAD~1`
-```bash
 # 查看倒数第二次提交
 git show HEAD~1
 ```
 
+`git show HEAD` 输出结构：提交元信息 + 改动 diff。
+
 ---
 
-## 引用日志
+## 五、第五招：追查每行来源——git blame
 
-**基本写法：查看引用日志**
-`git reflog`
+"这行代码到底是谁写的？"——`git blame` 就是干这个的，它能告诉你**文件每一行最后一次被谁、在哪个提交、什么时候修改**：
+
 ```bash
-# 查看 HEAD 的变更历史
+# 显示文件每行的最后修改者
+git blame src/index.js
+
+# 只看 10 到 20 行（定位嫌疑区间）
+git blame -L 10,20 src/index.js
+
+# 忽略纯空格改动（避免把格式化也算作"修改者"）
+git blame -w src/index.js
+```
+
+`git blame` 输出示例：
+
+```
+8f4b2c1 (张三 2026-08-02 09:30:00 +0800  1) function add(a, b) {
+a1b2c3d (李四 2026-07-25 14:20:00 +0800  2)   return a + b;
+```
+
+---
+
+## 六、第六招：翻活动记录——git reflog（时光机）
+
+`git log` 只记录**提交历史**，而 `git reflog` 记录**你所有的操作足迹**——包括 reset、checkout、rebase、merge 这些"移动指针"的动作。它是找回"丢失提交"的最后防线：
+
+```bash
+# 查看 HEAD 的所有操作历史
 git reflog
 ```
 
----
+输出示例：
 
-**基本写法：查看指定分支引用日志**
-`git reflog <分支名>`
+```
+8f4b2c1 (HEAD -> main) HEAD@{0}: commit: feat: 添加加法函数
+7a3f9c1 HEAD@{1}: reset: moving to HEAD~1
+a1b2c3d HEAD@{2}: commit: docs: 更新 README
+9fceb02 HEAD@{3}: checkout: moving from feature to main
+```
+
 ```bash
 # 查看指定分支的引用日志
 git reflog feature
-```
 
----
-
-**基本写法：查看所有引用日志**
-`git reflog --all`
-```bash
-# 查看所有引用的变更历史
+# 查看所有引用日志
 git reflog --all
-```
 
----
-
-**基本写法：恢复到引用日志的提交**
-`git reset --hard <引用日志ID>`
-```bash
-# 重置到引用日志记录的某个状态
+# 用 reflog 找回误删的提交（reset 之后救命的操作）
 git reset --hard HEAD@{2}
-```
 
----
-
-**基本写法：查看引用日志的相对引用**
-`git show HEAD@{<n>}`
-```bash
-# 查看引用日志中第 n 个状态
+# 查看 reflog 中第 N 个状态的提交内容
 git show HEAD@{3}
 ```
 
-## 参考文献
+> 原理与警告：reflog 是 Git 的"本地保险丝"——只要操作发生在本地，它就留有足迹。但 reflog **不会推送到远程**，且仓库 GC（垃圾回收）后会过期清理（默认 90 天）。所以"误删提交后的急救"要趁早。
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+### 6.1 自定义输出格式（让案卷按你的口味排版）
+
+`git log` 支持用 `--pretty=format:` 自定义每条提交的排版，适合写进别名长期使用：
+
+```bash
+# 自定义格式：哈希 + 分支标记 + 作者 + 相对时间 + 提交信息
+git log --pretty=format:'%h %d %an %ar %s'
+
+# 美化版（带颜色）：
+git log --pretty=format:'%Cred%h%Creset - %C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --graph
+
+# 配置成别名（一劳永逸）
+git config --global alias.lg "log --oneline --graph --all --decorate"
+git lg
+```
+
+常用格式占位符速查：`%h` 短哈希、`%an` 作者名、`%ae` 作者邮箱、`%ar` 相对时间、`%s` 提交信息、`%d` 引用名（分支/标签）、`%Cred/%Cgreen` 颜色控制。
+
+### 6.2 提交范围语法补充（双点与三点）
+
+```bash
+# 双点 A..B：在 B 但不在 A 的提交（B 独有）
+git log main..feature
+
+# 三点 A...B：A 和 B 各自独有的提交（对称差）
+git log main...feature
+
+# 结合 --left-right 显示每行属于哪一边
+git log --left-right --oneline main...feature
+```
+
+`--left-right` 输出中 `<` 表示属于左边分支（main），`>` 表示属于右边分支（feature），方便一眼看清两边的分叉内容。
+
+---
+
+## 七、常见错误与对策表
+
+| 错误现象 | 报错信息（节选） | 原因分析 | 解决办法 |
+| --- | --- | --- | --- |
+| 查文件历史没结果 | `git log <文件>` 输出为空 | 路径写错，或未用 `--` 分隔（与分支名歧义） | 用 `git log -- <路径>` 明确是路径 |
+| log 输出太长 | 刷屏看不到重点 | 默认输出全部历史 | 用 `--oneline`、`-10` 等参数限制 |
+| diff 无输出 | `git diff` 什么都没显示 | 改动已全部暂存（diff 默认只看工作区） | 改用 `git diff --staged` 或 `git diff HEAD` |
+| blame 显示不了 | `fatal: no such path` | 文件路径不在当前提交中 | 确认文件存在；旧文件用 `git blame <提交ID> -- <路径>` |
+| 误 reset 后提交"消失" | `git log` 找不到那个提交 | 指针移走了，但提交对象还在 | 用 `git reflog` 找到原 ID，`git reset --hard <ID>` 找回 |
+| reflog 里找不到记录 | 想找的记录不在了 | 超过 90 天或仓库 GC 过 | 无解；养成"危险操作前先备份分支"的习惯 |
+| 想查删除文件的历史 | `git log -- <删除文件>` 没反应 | 默认不追踪删除 | 用 `git log --all --diff-filter=D -- <路径>` 或先定位删除提交 |
+
+---
+
+## 八、实战练习
+
+### 练习 1：写出你的"案件卷宗"（入门）
+
+**题目**：在练习仓库中制造 5 次不同前缀的提交（feat/fix/docs），用 `git log --oneline` 查看，并用 `git log --oneline --graph` 观察图形输出。
+
+**提示**：提交信息用 Conventional Commits 前缀，便于后续筛选。
+
+**参考答案要点**：
+
+```bash
+git log --oneline
+git log --oneline --graph
+git log --author="你的名字"     # 只看自己的
+```
+
+### 练习 2：追踪"谁改坏了代码"（核心）
+
+**题目**：在文件里故意制造一个 Bug 提交，然后用 `git log -S "bug代码"` 和 `git blame` 定位是哪个提交、哪一行引入的。
+
+**提示**：`-S` 找引入/移除某字符串的提交，`blame` 看行归属。
+
+**参考答案要点**：
+
+```bash
+git log -S "oops" --oneline        # 找到引入 bug 的提交
+git blame -L 1,20 app.py           # 查看相关行是谁改的
+git show <提交ID>                  # 查看该提交的完整改动
+```
+
+### 练习 3：对比两个版本（进阶）
+
+**题目**：用 `git diff` 对比两个相邻提交、两个分支，并用 `--stat` 和 `--name-only` 分别查看统计与文件名。
+
+**提示**：`git diff HEAD~1 HEAD` 对比最近两次提交。
+
+**参考答案要点**：
+
+```bash
+git diff HEAD~1 HEAD --stat      # 最近提交改了哪些文件
+git diff main..feature           # 分支间差异
+git diff main...feature          # 三点比较（更聚焦 feature 独有改动）
+```
+
+### 练习 4：查看某个文件的前世今生（进阶）
+
+**题目**：对 `README.md` 使用 `git log --follow -p` 查看它的完整演变过程（含每次改动的 diff）。
+
+**提示**：`--follow` 能跨重命名追踪。
+
+**参考答案要点**：
+
+```bash
+git log --follow -p README.md
+git show HEAD:README.md          # 看当前版本文件内容
+```
+
+### 练习 5：reflog 时光机救场（综合）
+
+**题目**：故意 `git reset --hard HEAD~2` 丢掉两次提交，然后用 `git reflog` 找回并恢复到原状态。
+
+**提示**：reset 后 log 里看不到的提交，reflog 里一定还有足迹。
+
+**参考答案要点**：
+
+```bash
+git reset --hard HEAD~2          # 故意"丢"两次提交
+git log --oneline                # 确认提交消失了
+git reflog                       # 找到丢之前的 HEAD@{n}
+git reset --hard HEAD@{2}        # 恢复（以 reflog 实际输出为准）
+```
+
+---
+
+## 九、一句话记忆
+
+**查历史像破案：`git log` 看总览（--oneline 精简、--graph 画图），`--author/--since/-S` 筛线索，`git diff` 对现场，`git show` 看单份案卷，`git blame` 追每行来源，`git reflog` 是最后保险丝——误删别慌，reflog 里找回来。**
+
+---
+
+## 参考链接
+
+- Git 官方文档（git log）：https://git-scm.com/docs/git-log
+- Git 官方文档（git diff）：https://git-scm.com/docs/git-diff
+- Pro Git 中文版 2.3 查看提交历史：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%9F%A5%E7%9C%8B%E6%8F%90%E4%BA%A4%E5%8E%86%E5%8F%B2
+- Pro Git 中文版 2.4 撤销操作（reflog 相关）：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%92%A4%E9%94%80%E6%93%8D%E4%BD%9C
 
 ## 延伸阅读
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- 撤销与回退的完整命令（reset/revert/restore），见下一篇 045-GitStashReset。
+- 分支合并历史如何呈现，见 040-GitMergeRebase。
+- 标签对比（diff/log 结合 tag），见 042-GitTagManage。
+- 关联文档：提交与推送，见 038-GitCommitPush；GitHub 提交历史网页界面，见 003-RepositoryCreateCloneArchiveDelete。

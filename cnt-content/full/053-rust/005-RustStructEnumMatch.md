@@ -14,9 +14,9 @@ prerequisites:
   - rust/004-RustOwnershipBorrowing
 ---
 
-## 1. 结构体（Struct）
+## 1. 从"登记表"说起：结构体（Struct）
 
-结构体把多个字段组合成一个自定义类型，是组织数据的基本单位。
+想象一张学员登记表：姓名、年龄、是否活跃——几个字段合在一起，就是一个"学员"的整体信息。**结构体就是把多个字段组合成一个自定义类型**，是组织数据的基本单位。
 
 ```rust
 struct User {
@@ -283,7 +283,28 @@ fn main() {
 
 讲解：枚举 + match 天然适合状态机：非法迁移在编译期难以表达，运行时靠 match 穷尽保证每一步都有处理。
 
-## 7. 参考资源
+## 7. 常见错误与对策
+
+| 编译错误 | 原因 | 对策 |
+| :--- | :--- | :--- |
+| non-exhaustive patterns | match 未覆盖所有分支 | 补上剩余分支，或加 `_` 兜底 |
+| no method named `area` | 结构体未定义该方法 | 用 `impl` 块添加方法 |
+| `Rectangle` cannot be formatted | 结构体未实现 Debug | 加 `#[derive(Debug)]` |
+| type `Option<T>` cannot be used with `?` | Option 与 Result 混用 | 用 `ok_or` 转换类型 |
+
+## 8. 实战练习
+
+1. **学员管理**：定义 `Student` 结构体（name、score、grade），实现方法 `is_pass()`（≥60 分及格），创建 3 个学生并输出结果。
+
+2. **形状面积**：用枚举 `Shape`（Circle/Rectangle/Triangle）实现 `area()` 函数，用 match 穷尽处理，验证新增一种形状时的编译提示。
+
+3. **Option 实战**：写一个"按索引取数组元素"的函数返回 `Option<&i32>`，在 main 中分别用 match、unwrap_or、if let 三种方式处理。
+
+4. **状态机练习**：用枚举实现"红绿灯"状态机（红→绿→黄→红），每次推进打印当前状态。
+
+5. **思考题**：为什么 Rust 用 `Option<T>` 而不是 `null`？结合"编译器强制处理 None 分支"这一点，说明它如何消灭空指针异常。
+
+## 9. 参考资源
 
 TRPL 第 5 章（结构体）：https://kaisery.github.io/trpl-zh-cn/ch05-00-structs.html
 
@@ -291,6 +312,8 @@ TRPL 第 6 章（枚举与模式匹配）：https://kaisery.github.io/trpl-zh-cn
 
 Rust 参考（模式）：https://doc.rust-lang.org/reference/patterns.html
 
-## 8. 小结
+## 10. 小结
 
 结构体组织数据、impl 定义行为、枚举表达状态、match 穷尽处理分支、Option 消灭空指针。这五件套是 Rust 建模日常业务的基本功。下一步学习错误处理：让程序在失败时给出优雅的反馈而非崩溃。
+
+> **一句话记忆**：Rust 建模五件套——"struct 装数据、impl 给行为、enum 表状态、match 穷尽分支、Option 替代 null"；把 `Option` 当"必须处理的空值"，把 `match` 当"编译器替你检查有没有漏掉分支"。

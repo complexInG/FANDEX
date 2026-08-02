@@ -4,87 +4,197 @@ title: Astro 样式与资源优化
 module: astro
 category: Astro
 difficulty: intermediate
-description: 'Astro 样式体系：scoped CSS、全局样式、Fonts API、Image 组件与 SVG 优化'
+description: '流程驱动掌握 Astro 样式与资源：全局风格、scoped 样式、Fonts API、Image 组件与 SVG 优化'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - astro/002-QuickStartProject
   - astro/009-Astro7Features
 prerequisites:
   - astro/002-QuickStartProject
 ---
-## 1. Astro 的样式方案
 
-Astro 对 CSS 的处理理念与组件一致：默认隔离、按需输出、构建期优化。主要方案对比：
+## 0. 开篇：装修一套房子，先打底还是先挂画？
 
-| 方案 | 写法 | 作用域 | 适用场景 |
-| --- | --- | --- | --- |
-| `<style>` | 组件内标签 | 自动 scoped | 组件局部样式（首选） |
-| 全局样式 | `import './global.css'` | 全局 | 主题变量、Reset、字体 |
-| CSS Modules | `*.module.css` | scoped | 框架组件（React/Vue）中使用 |
-| Tailwind | `@tailwindcss/vite` 集成 | 按类名 | 工具类优先的项目 |
-| `<style is:global>` | 显式声明 | 全局 | 覆盖第三方内容样式 |
+想象你要装修一套房子。有经验的工长绝不会让你先挂装饰画、再选窗帘、最后才想起刷墙——那会让前面所有努力都作废。正确的顺序是：**先全屋打底（刷墙、铺地板、定水电），再逐间软装（挑家具、窗帘），最后才是点缀（挂画、摆件）**。这个顺序的背后是依赖关系：打底定了全屋的基调，局部要服从整体，点缀品不承担结构功能。
 
-讲解：默认推荐"组件 scoped + 少量全局主题样式"的组合。Tailwind 等集成通过 `npx astro add tailwind` 安装，Astro 7 内置 Tailwind 4 支持。
+给 Astro 网站加样式，和装修是同一套逻辑。本文按"装修流程"组织成一条完整的操作链：
 
-## 2. scoped 与全局样式
+```text
+第一步 全屋打底：全局样式与主题变量（墙、地板）
+   │
+第二步 逐间软装：组件 scoped 样式（每间房自己挑窗帘）
+   │
+第三步 门面招牌：字体（Fonts API）
+   │
+第四步 家具家电：图片资源（Image / Picture）
+   │
+第五步 装饰点缀：SVG 与图标
+   │
+第六步 竣工验收：性能基线与检查清单
+```
 
-### 2.1 组件 scoped 样式
+每一步都可以独立使用，但理解了顺序，你才知道"全局样式应该放哪、为什么组件样式不会互相污染、字体和图片为什么应该走专用 API"。
+
+## 1. 第一步，全屋打底：全局样式与主题变量
+
+装修先刷墙。网站的"墙"是全局样式：字体基调、颜色体系、间距、浏览器默认样式重置（Reset）。它们决定全站的长相，所以必须**统一、集中、只写一份**。
+
+### 1.1 用 CSS 变量定主题
+
+主题类的内容（颜色、字号、间距）用 CSS 自定义属性（变量）定义在 `:root`，全站通过 `var(--xxx)` 引用。这样"改主题=改一个文件"，而不是全站搜索替换颜色值。
+
+```css
+/* src/styles/global.css */
+:root {
+  /* 品牌色系 */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-bg: #ffffff;
+  --color-border: #e5e7eb;
+  /* 字体与圆角 */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --radius-md: 8px;
+  /* 间距刻度 */
+  --space-1: 0.25rem;
+  --space-4: 1rem;
+  --space-8: 2rem;
+}
+
+/* 最简单的 Reset：去掉默认外边距，统一行高 */
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  line-height: 1.7;
+  background: var(--color-bg);
+}
+
+/* 标题统一排版 */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.25;
+  margin: 0 0 var(--space-4) 0;
+}
+```
+
+### 1.2 在哪里引入全局样式
+
+全局样式**只在布局组件中引入一次**（推荐），Astro 构建时会对重复 import 做去重合并，不会出现重复代码：
+
+```astro
+---
+// src/layouts/Layout.astro
+import '../styles/global.css'
+---
+```
+
+注意引入顺序的直观含义：全局样式先于页面内容输出，主题变量早于组件渲染生效。**不要在每个组件里都 import global.css**——虽然不会重复打包，但会让"全局样式在哪"变得难以维护。
+
+### 1.3 为什么不用"全局选择器"乱写
+
+很多新手习惯直接写 `div { ... }`、`p { ... }` 这类全局选择器。这等于给全屋只刷一种颜色：后续任何组件想有自己的样子，都得和全局规则"打架"（优先级之争），越改越乱。正确的分工是：**变量与 Reset 留在全局，组件细节一律走 scoped 样式**（下一步）。
+
+## 2. 第二步，逐间软装：组件 scoped 样式
+
+每间房可以挑自己的窗帘，但绝不能影响隔壁房间。Astro 的 `<style>` 标签天然就是"每间房的窗帘"——**默认作用域隔离（scoped）**。
+
+### 2.1 基本写法
 
 ```astro
 ---
 // src/components/Card.astro
 ---
-
 <div class="card">
   <h2 class="title">卡片标题</h2>
+  <p class="desc">卡片描述</p>
 </div>
 
 <style>
   .card {
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
   }
   .title {
-    margin: 0 0 0.5rem;
+    margin: 0 0 var(--space-1) 0;
     font-size: 1.25rem;
+    color: var(--color-primary);
   }
 </style>
 ```
 
-讲解：构建时 Astro 为每个 class 追加哈希（如 `.card:where(.astro-xyz123)`），保证样式只作用于本组件。即使另一个组件写了相同的 `.card` 也不会冲突，删除组件时样式随之消失，无样式泄漏。
+### 2.2 作用域隔离的原理：哈希属性
 
-### 2.2 全局样式与主题变量
+构建时，Astro 会给组件里的元素与选择器都加上一个唯一的哈希标记，例如：
+
+```html
+<!-- 构建后输出的 HTML -->
+<div class="card" data-astro-cid-7f3k9a>
+  <h2 class="title" data-astro-cid-7f3k9a>卡片标题</h2>
+</div>
+```
 
 ```css
-/* src/styles/global.css */
-:root {
-  --color-primary: #2563eb;
-  --color-text: #1f2937;
-  --border-color: #e5e7eb;
-  --font-sans: 'Inter', system-ui, sans-serif;
-}
-
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  color: var(--color-text);
-}
+/* 构建后输出的 CSS：选择器带上了属性标记 */
+.card[data-astro-cid-7f3k9a] { ... }
+.title[data-astro-cid-7f3k9a] { ... }
 ```
+
+效果：就算另一个组件里也有一个 `.card`，两个选择器带不同的哈希，互不干扰。**删除组件时样式自动消失，没有样式泄漏，没有全局污染**。这就是"每间房的窗帘不影响隔壁"的实现细节。
+
+### 2.3 需要"通向外面的样式"怎么办：is:global 与 :global()
+
+两种写法作用相同，选择取决于你想表达的范围：
 
 ```astro
----
-// 在布局组件中引入，全站生效
-import '../styles/global.css'
----
+<!-- 方式一：整块样式全局化 -->
+<style is:global>
+  body { background: #f8fafc; }
+</style>
+
+<!-- 方式二：scoped 块内局部逃逸 -->
+<style>
+  .prose { max-width: 720px; margin: 0 auto; }
+  /* 只让 .prose 内部的链接走全局规则 */
+  .prose :global(a) { color: var(--color-primary); text-decoration: none; }
+</style>
 ```
 
-讲解：主题类内容（颜色、间距、字体）用 CSS 变量定义在 `:root`，各组件通过 `var(--color-primary)` 引用，实现主题统一与后续可维护。全局样式只在布局或页面中导入一次，构建时会被去重合并。
+使用原则：**尽量用 `:global()` 缩小逃逸面**，把全局影响限制在一个范围内（如富文本正文 `.prose` 内的 `a` 标签），而不是整个 `<style>` 直接 `is:global`。逃逸面越小，越不容易踩到其他组件的样式。
 
-## 3. Fonts API（Astro 6+）
+### 2.4 全家桶横向对比
 
-自定义字体常面临自托管、加载性能、隐私等复杂问题。Astro 6 起内置 Fonts API，自动完成下载、缓存、回退字体生成与预加载：
+| 方案 | 写法 | 作用域 | 适用场景 |
+| --- | --- | --- | --- |
+| `<style>` | 组件内标签 | 自动 scoped | 组件局部样式（首选） |
+| 全局样式文件 | `import './global.css'` | 全局 | 主题变量、Reset、字体基调 |
+| `<style is:global>` | 显式声明 | 全局 | 覆盖第三方注入内容（如富文本正文） |
+| CSS Modules | `*.module.css` | scoped（类名哈希） | React/Vue 等框架组件内部 |
+| 预处理器 Sass/Less | `npm i sass` 后直接写 `lang="scss"` | 同左 | 需要嵌套、变量、mixin 的场景 |
+| Tailwind | `npx astro add tailwind` | 按类名 | 工具类优先的项目 |
+
+其中 Tailwind 与 Sass 属于"升级项"：Sass 只需 `npm install sass` 即可在 `<style lang="scss">` 中使用（Astro 开箱支持）；Tailwind 通过 `npx astro add tailwind` 一键集成，Astro 7 内置对 Tailwind 4 的完整支持（Vite 插件方式，无需 PostCSS 胶水）。
+
+## 3. 第三步，门面招牌：字体与 Fonts API
+
+房子的门面是招牌，网站的门面是字体。但"换招牌"远比换字体文件复杂：需要下载多种字重、处理加载性能、考虑用户隐私、防止文字布局抖动（CLS）。手动做这些很容易出错。
+
+### 3.1 传统手动方式的问题
+
+```css
+/* 手动方式：你需要自己托管文件、写 @font-face、手动加 preload */
+@font-face {
+  font-family: 'MyFont';
+  src: url('/fonts/MyFont.woff2') format('woff2');
+  font-display: swap;
+}
+```
+
+手动方式要操心的事情非常多：字体文件从哪下载、加载时用哪个回退字体避免闪烁、要不要预加载、第三方字体域名是否泄露用户 IP 到 Google……Astro 6 起内置的 **Fonts API** 把这些问题全部自动化了。
+
+### 3.2 Fonts API：声明式配置，自动托管
 
 ```js
 // astro.config.mjs
@@ -93,52 +203,89 @@ import { defineConfig, fontProviders } from 'astro/config'
 export default defineConfig({
   fonts: [
     {
-      provider: fontProviders.google(),   // 从 Google Fonts 拉取并自托管
-      family: 'Inter',
+      // 从 Google Fonts 拉取并自托管（构建期下载到本地，不再依赖第三方域名）
+      provider: fontProviders.google(),
+      name: 'Inter',
+      cssVariable: '--font-inter',
       weights: [400, 500, 700],
       subsets: ['latin'],
     },
     {
-      provider: fontProviders.local(),    // 使用本地字体文件
-      family: 'MyFont',
-      path: './src/assets/MyFont.woff2',
+      // 使用本地字体文件（.woff2 放 src/assets 下）
+      provider: fontProviders.local(),
+      name: 'DingTalk',
+      path: './src/assets/fonts/DingTalk.woff2',
+      cssVariable: '--font-ding',
     },
   ],
 })
 ```
 
-讲解：内置 provider 包括 Google、Fontsource、Adobe、Bunny、Fontshare 与 Local 等。Astro 在构建期下载字体文件并自托管（不再依赖第三方域名，符合隐私要求），自动生成 `font-display` 优化与回退字形（fallback metrics），避免布局偏移（CLS）。
+配置要点：
 
-### 3.1 页面中使用字体
+1. **每个字体必须指定三项**：`name`（字体家族名）、`cssVariable`（注入的 CSS 变量名）、`provider`（字体来源）；
+2. **内置 provider 包括**：Google、Fontsource、Adobe、Bunny、Fontshare、Google Icons 与 Local（本地文件），覆盖绝大多数使用场景；
+3. **构建期行为**：Astro 下载字体文件并自托管（隐私友好、无第三方请求）、自动生成优化的回退字体（fallback metrics，消除 CLS）、输出 `font-display` 优化与预加载链接。
+
+### 3.3 在页面中启用字体
 
 ```astro
 ---
+// src/layouts/Layout.astro
 import { Font } from 'astro/fonts'
 ---
-
-<Font family="Inter" weights={[400, 700]} />
-<h1 class="display">使用 Inter 字体的标题</h1>
-
-<style>
-  .display { font-family: 'Inter', system-ui, sans-serif; }
-</style>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <!-- <Font /> 会在 head 中输出字体 CSS 与预加载链接 -->
+    <Font cssVariable="--font-inter" />
+    <Font cssVariable="--font-ding" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
 ```
 
-讲解：`<Font />` 组件在页面 head 中输出字体 CSS 与预加载链接。未用 `fontProviders` 配置的字体仍可直接用 CSS 引用，但建议统一走 Fonts API 以获得预加载与优化收益。
+启用后，配置中声明的 `cssVariable` 变成可用的 CSS 变量，在任何组件里直接引用：
 
-## 4. 图片优化：astro:assets
+```css
+body {
+  /* 引用 Fonts API 注入的字体变量 */
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+h1 {
+  font-family: var(--font-ding), sans-serif;
+}
+```
 
-### 4.1 资源目录约定
+### 3.4 预加载与变量字体
 
-图片等资源放 `src/assets/`（参与构建处理，可优化）或 `public/`（原样拷贝，不处理）。需要优化时用 `src/assets/`。
+- **预加载（preload）**：`<Font />` 自动为首屏关键字体输出 `<link rel="preload">`，加快首屏文字渲染；
+- **变量字体**：Fonts API 支持 variable fonts，一个文件覆盖所有字重，进一步减小体积（配置时省略 `weights` 即视为变量字体）。
 
-### 4.2 Image 组件
+一句话总结第三步：**字体是"门面"，交给 Fonts API 这个专业团队处理，你只负责声明"用哪个、放哪、叫什么变量"。**
+
+## 4. 第四步，家具家电：图片资源优化
+
+图片是网站里最重的"家具"。一张 5MB 的原图直接丢上网页，等于在客厅放了一台超重的老式冰箱——又慢又占地方。Astro 内置 `astro:assets` 模块，扮演"家电搬运工"：构建期完成压缩、格式转换、尺寸裁剪。
+
+### 4.1 先选址：src/assets 还是 public？
+
+| 目录 | 处理方式 | 用途 |
+| --- | --- | --- |
+| `src/assets/` | 参与构建：压缩、转格式、哈希重命名、响应式尺寸 | 所有需要优化的图片（首选） |
+| `public/` | 原样拷贝，不做任何处理 | favicon、robots.txt、无需优化的静态文件 |
+
+口诀：**"要优化的进 `src/assets/`，原样给的进 `public/`。"**
+
+### 4.2 Image 组件：最常用的家电
 
 ```astro
 ---
 // src/components/Hero.astro
 import { Image } from 'astro:assets'
-import heroImg from '../assets/hero.jpg'
+import heroImg from '../assets/hero.jpg'  // 导入时获得图片元数据
 ---
 
 <Image
@@ -146,22 +293,29 @@ import heroImg from '../assets/hero.jpg'
   alt="课程封面"
   width={1200}
   height={675}
-  format="webp"
-  loading="lazy"
+  format="webp"          // 构建期转成 webp
+  loading="lazy"         // 视口外懒加载
 />
 ```
 
-讲解：`<Image />` 在构建期完成格式转换（webp/avif）、尺寸压缩与哈希重命名，自动输出 `srcset` 响应式尺寸并生成合适的 `width`/`height` 占位，防止 CLS。`format="webp"` 指定目标格式；可叠加 `densities`、`sizes` 适配不同屏幕。
+构建期发生了什么：
+
+1. **格式转换**：`format="webp"`（也支持 avif），旧格式浏览器自动回退；
+2. **尺寸压缩**：按 `width`/`height` 输出指定尺寸；
+3. **哈希重命名**：`hero_abc123.webp`，内容变化文件名才变，利于 CDN 长缓存；
+4. **自动 `srcset`**：生成响应式尺寸集，浏览器按屏幕选择最合适的一张；
+5. **宽高占位**：输出正确 `width`/`height` 属性，防止图片加载时页面跳动（CLS）。
 
 ### 4.3 Picture 组件与 getImage
 
 ```astro
 ---
+// src/components/Banner.astro
 import { Picture, getImage } from 'astro:assets'
 import banner from '../assets/banner.png'
 ---
 
-<!-- Picture：自动生成多格式多尺寸组合 -->
+<!-- Picture：多格式 + 多尺寸组合，输出 <source> 列表 -->
 <Picture
   src={banner}
   formats={['avif', 'webp']}
@@ -169,64 +323,156 @@ import banner from '../assets/banner.png'
   alt="横幅"
 />
 
-<!-- getImage：编程式获取优化后的 URL -->
+<!-- getImage：编程式获取优化后的图片 URL（适合内容集合正文） -->
 <script>
   const optimized = await getImage({ src: banner, width: 400 })
+  console.log(optimized.src)  // 优化后的文件地址
 </script>
 ```
 
-讲解：`<Picture />` 按浏览器支持自动选择 avif/webp/png，输出多个 `<source>`；`getImage` 在代码中动态生成优化 URL，适合内容集合正文里的图片处理。远程图片需在 `astro.config.mjs` 的 `image.domains`（或 `remotePatterns`）中登记域名。
+使用场景区分：**`<Image />` 用于模板中静态写好的图片；`<Picture />` 用于需要多格式多尺寸切换的场景；`getImage()` 用于代码中动态处理（如内容集合的 Markdown 正文图片）。**
 
-### 4.4 内容集合中的图片
+### 4.4 远程图片与响应式
+
+```js
+// astro.config.mjs：登记远程图片域名（否则远程图片无法优化）
+export default defineConfig({
+  image: {
+    domains: ['images.example.com'],
+    // 或更精确的 remotePatterns（支持协议、主机名、路径模式匹配）
+    remotePatterns: [{ protocol: 'https', hostname: 'cdn.example.com' }],
+  },
+})
+```
+
+关于响应式图片：Astro 5 起实验性的**响应式图片**（Responsive Images）在 Astro 6/7 已全面可用——开启后 `<Image />` 默认自动生成多尺寸 `srcset`，无需手写 `densities`/`sizes`，配合 `image.experimentalLayout` 还能输出 `fill` 模式的自动裁剪。手动需要精确控制时仍可显式传 `densities={[1, 2]}` 或 `sizes` 属性。
+
+### 4.5 内容集合中的图片字段
 
 ```ts
-// content.config.ts
+// src/content.config.ts
 import { defineCollection, z } from 'astro:content'
+import { glob } from 'astro/loaders'
 
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
   schema: z.object({
-    heroImage: z.image().optional(),  // 图片字段自动验证并优化
+    // 声明图片字段：自动验证文件存在、读取尺寸元数据
+    heroImage: z.image().optional(),
   }),
 })
 ```
 
-讲解：schema 用 `z.image()` 声明图片字段，`getCollection` 返回的图片可直接传给 `<Image />`，在查询阶段就完成元数据校验与优化链路。
+`getCollection()` 返回的 `heroImage` 可直接传给 `<Image src={entry.data.heroImage} />`，在查询阶段就完成校验与优化链路，杜绝"图片路径写错直到上线才发现"。
 
-## 5. SVG 优化
+## 5. 第五步，装饰点缀：SVG 与图标
 
-Astro 支持把 SVG 文件作为组件导入：
+装修的最后是挂装饰画。网站的"装饰画"是 SVG——体积小、可缩放、可着色。
+
+### 5.1 三种用法的选择
+
+| 用法 | 写法 | 适用场景 |
+| --- | --- | --- |
+| 内联 `<svg>` | 直接写在模板里 | 少数简单图标（请求数最少） |
+| SVG 组件 | `import Logo from '../assets/logo.svg?astro'` | 需要传 props、改属性、套样式的复杂插图 |
+| SVG 精灵图 | 多图标合并为一个 sprite | 站点有大量图标（一次请求） |
+
+### 5.2 把 SVG 导入为组件
 
 ```astro
 ---
-// 把 SVG 导入为组件，可直接修改 fill 等属性
+// src/components/Header.astro
+// ?astro 后缀：把 SVG 编译为 Astro 组件
 import Logo from '../assets/logo.svg?astro'
 ---
 
 <Logo class="logo" />
-<svg class="icon" aria-hidden="true">…</svg>
-
-<style>
-  .logo { width: 120px; height: 40px; }
-</style>
 ```
 
-讲解：`?astro` 后缀把 SVG 编译为 Astro 组件，可传 props、套样式，并自动清理无用属性。简单图标建议直接用内联 `<svg>` 或精灵图（sprite）合并，减少请求数；复杂插图用 `?astro` 保持可维护性。
+```css
+/* 组件化后可以像普通元素一样套样式 */
+.logo {
+  width: 120px;
+  height: 40px;
+  color: var(--color-primary);  /* 若 SVG 使用 currentColor 可整体着色 */
+}
+```
 
-## 6. 性能基线建议
+`?astro` 组件化带来三个好处：可以接收 props（如 `size`）、可被 scoped 样式精准控制、构建时会自动清理无用属性（如编辑器的 `<metadata>` 等）。小项目图标少时直接用内联 `<svg>` 即可，避免过度工程。
 
-第一，CSS 变量承载主题，scoped 样式承载组件细节，避免全局选择器滥用；
+## 6. 竣工验收：性能基线与检查清单
 
-第二，字体统一走 Fonts API，确保预加载与回退完整；
+装修完要验收，网站要按下面四条基线自查：
 
-第三，图片一律经 `<Image />` 处理，杜绝原图直出；
+第一，**主题走变量，细节走 scoped**：全局选择器只保留 Reset 与 `:root` 变量，组件样式全部 scoped，禁止滥用 `is:global`；
 
-第四，`public/` 只放 favicon、robots.txt 等无需优化的静态文件。
+第二，**字体统一走 Fonts API**：不再手动 `@font-face`、不引第三方字体域名，预加载与回退交给框架，杜绝 FOUT 闪烁与 CLS；
 
-## 7. 参考资源
+第三，**图片一律经 `<Image />`/`<Picture />`**：杜绝原图直出，`public/` 只放 favicon、robots.txt 等无需优化的静态文件；
 
-Astro 样式指南：https://docs.astro.build/zh-cn/guides/styling/
+第四，**验收指标**：构建后检查 `dist/_astro/` 中无体积异常的图片/字体；用浏览器 DevTools 的 Coverage 面板确认没有"未被使用的 CSS"大量堆积（scoped 样式天然裁剪到最小，若发现全局样式膨胀，优先怀疑 `is:global` 滥用）。
 
-Fonts API 指南：https://docs.astro.build/zh-cn/guides/fonts/
+## 7. 常见错误与对策
 
-图片优化指南：https://docs.astro.build/zh-cn/guides/images/
+| 常见错误 | 典型报错/现象 | 原因 | 解决办法 |
+| --- | --- | --- | --- |
+| 图片放 `public/` 却用 `<Image />` | 报错提示图片不来自 `src/` | `<Image />` 只处理 `src/assets` 或已登记域名的远程图片 | 把需要优化的图片移入 `src/assets/` 后重新导入 |
+| 远程图片未登记域名 | 报错 `remote image ... is not allowed` | 安全策略默认禁止未登记的远程域名 | 在 `image.domains` 或 `image.remotePatterns` 中登记 |
+| 用了 `format="webp"` 但没生效 | 输出仍是原格式 | 浏览器/构建环境不支持目标格式，或未走 `<Image />` | 确认经 `astro:assets` 处理；avif/webp 支持性由框架自动回退 |
+| `@font-face` 手动引入的字体不显示 | 控制台 404，字体加载失败 | 路径写错或未正确处理 `font-display` | 改用 Fonts API：`fontProviders.local()` + `<Font />` |
+| 组件样式"串"到别的组件 | 某组件样式影响全站 | 误用了全局选择器或 `is:global` | 去掉 `is:global`，改用 scoped 选择器；需要外溢时用 `:global()` 收窄范围 |
+| `import '../styles/global.css'` 重复引入 | 样式重复出现（通常无报错） | 在每个组件里都导入了全局样式 | 只在布局组件中引入一次，其余组件靠变量与 scoped 样式 |
+
+## 8. 实战练习
+
+### 练习 1：搭一套主题变量
+
+**题目**：为你的个人博客建立 `src/styles/global.css`，包含主色、文字色、背景色、字体栈、间距刻度各一组 CSS 变量，并在布局中引入。
+
+**提示**：变量名用语义化前缀（`--color-`、`--space-`、`--font-`），方便 `var()` 引用时一眼看懂含义。
+
+**参考答案要点**：仿照本文 1.1 节的结构写 `:root`；在 `Layout.astro` 中 `import '../styles/global.css'`；页面中任一组件用 `color: var(--color-primary)` 验证生效。
+
+### 练习 2：造一个"永不相撞"的按钮组件
+
+**题目**：写 `Button.astro`（含 `.btn` 与 `.primary` 两个类），并在同一页面使用两次；再写一个也有 `.btn` 类的 `Badge.astro`，验证两者样式互不影响。
+
+**提示**：构建后查看产物，找到 `data-astro-cid-*` 属性，理解隔离机制。
+
+**参考答案要点**：两个组件各自写 `<style>`；构建后选择器形如 `.btn[data-astro-cid-xxx]`，哈希不同故互不影响；这是 Astro scoped CSS 的默认行为，无需任何额外配置。
+
+### 练习 3：接入一套自定义字体
+
+**题目**：使用 Fonts API 接入本地字体文件 `src/assets/fonts/MyFont.woff2`，并为正文标题设置该字体。
+
+**提示**：`fontProviders.local()` 需要 `name`、`path`、`cssVariable` 三项；页面中用 `<Font cssVariable="--font-myfont" />` 启用；CSS 中 `font-family: var(--font-myfont)`。
+
+**参考答案要点**：配置见本文 3.2 节；验证要点是构建后 `dist/_astro/` 出现自托管的字体文件，页面 head 出现 preload 链接，本地预览时字体正常显示且无第三方请求。
+
+### 练习 4：给博客文章页的封面图做优化
+
+**题目**：在文章列表页用 `<Image />` 展示每篇文章的封面（`z.image()` 声明的字段），要求格式转 webp、按容器宽度响应式输出。
+
+**提示**：schema 用 `z.image()`；渲染时 `<Image src={post.data.heroImage} alt={post.data.title} />`；可显式传 `format="webp"`。
+
+**参考答案要点**：内容集合字段配置见本文 4.5 节；渲染处传入 `src`、`alt`，Astro 自动完成格式转换、srcset 生成与宽高占位，页面加载不再有图片引起的布局跳动。
+
+### 练习 5：装饰画升级——把 Logo 变成可着色组件
+
+**题目**：把 `src/assets/logo.svg` 导入为组件，让它能跟随主题色显示。
+
+**提示**：`import Logo from '../assets/logo.svg?astro'`；SVG 内填充色使用 `currentColor`，组件外通过 CSS `color` 控制。
+
+**参考答案要点**：`<Logo class="logo" />` + `.logo { color: var(--color-primary); }`；若原 SVG 填充是固定色值，需先编辑 SVG 把 `fill="#xxx"` 改为 `fill="currentColor"` 才能随主题变色。
+
+## 9. 一句话记忆
+
+**"全局样式刷墙、scoped 样式软装、字体交给 Fonts API、图片交给 astro:assets——装修从打底开始，优化从源头抓起。"**
+
+## 10. 参考链接与延伸阅读
+
+- Astro 样式指南（官方，中文）：https://docs.astro.build/zh-cn/guides/styling/
+- Astro Fonts API 指南（官方，中文）：https://docs.astro.build/zh-cn/guides/fonts/
+- Astro 图片优化指南（官方，中文）：https://docs.astro.build/zh-cn/guides/images/
+- Astro 6.0 发布公告（Fonts API 与 CSP 来源）：https://astro.build/blog/astro-6/
+- 延伸阅读：Web 字体性能最佳实践（web.dev，中文）：https://web.dev/articles/font-best-practices?hl=zh-cn

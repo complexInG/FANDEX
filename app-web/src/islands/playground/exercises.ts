@@ -26,11 +26,14 @@ export const LAB_LANGUAGE_LABELS: Record<LabLanguage, string> = {
   cpp: 'C++',
 };
 
-/** 难度标签样式类（与主题令牌联动） */
+/**
+ * 难度对应站点 fndx-badge 语义色变体
+ * 用法：<span class="fndx-badge fndx-badge--soft fndx-badge--pill ${DIFFICULTY_CLASS[d]}">难度</span>
+ */
 export const DIFFICULTY_CLASS: Record<ExerciseDifficulty, string> = {
-  入门: 'pg-badge--easy',
-  进阶: 'pg-badge--medium',
-  挑战: 'pg-badge--hard',
+  入门: 'fndx-badge--success',
+  进阶: 'fndx-badge--warning',
+  挑战: 'fndx-badge--danger',
 };
 
 /** 通用 JavaScript 起始代码头部注释 */

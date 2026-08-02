@@ -162,27 +162,13 @@
   /* ============================================================
    * 4. 加载更多按钮
    * ============================================================ */
+  /* 加载更多：基础样式与统一特效由 .fndx-icon-btn--labeled 提供（ghost 风格），
+   * 此处仅保留块级居中布局与主操作区横向内边距 */
   .syntax-more {
     display: block;
     margin: var(--spacing-sm) auto var(--spacing-2xl);
-    padding: 6px 18px;
-    border: 1px solid var(--color-border-light);
-    border-radius: 2px;
-    background: transparent;
-    color: var(--color-text-secondary);
-    font-family: var(--font-display);
-    font-size: 0.76em;
-    cursor: pointer;
-    transition:
-      color var(--motion-duration-instant) var(--motion-easing-out),
-      border-color var(--motion-duration-instant) var(--motion-easing-out),
-      background-color var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  .syntax-more:hover {
-    color: var(--color-accent-base);
-    border-color: color-mix(in oklch, var(--color-accent-base) 50%, transparent);
-    background-color: color-mix(in oklch, var(--color-accent-base) 6%, transparent);
+    padding: 0 var(--space-4);
+    height: var(--size-control-sm);
   }
 
   /* ============================================================
@@ -326,29 +312,16 @@
     color: var(--color-text-tertiary);
   }
 
-  /* 复制按钮 */
+  /* 复制按钮：复用统一图标按钮语言，悬停色使用语言主题色保持面板语义 */
   .syntax-panel__copy {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border: 1px solid transparent;
-    border-radius: 2px;
-    background: transparent;
-    color: var(--color-text-tertiary);
-    font-family: var(--font-display);
-    font-size: 0.68em;
-    cursor: pointer;
-    transition:
-      color var(--motion-duration-instant) var(--motion-easing-out),
-      border-color var(--motion-duration-instant) var(--motion-easing-out),
-      background-color var(--motion-duration-instant) var(--motion-easing-out);
+    color: var(--color-fg-tertiary);
   }
 
-  .syntax-panel__copy:hover {
-    color: var(--lang-color, var(--color-accent-base));
-    border-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 40%, transparent);
-    background-color: color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 7%, transparent);
+  @media (hover: hover) {
+    .syntax-panel__copy:hover {
+      color: var(--lang-color, var(--color-accent-base));
+      background-color: var(--color-bg-hover);
+    }
   }
 
   .syntax-panel__pre {
@@ -381,41 +354,27 @@
     border-top: 1px solid var(--color-border-light);
   }
 
+  /* 完整文档入口：复用统一图标按钮语言，保留语义强调色；
+   * 悬停时背景提亮 + 箭头向右位移，明确“前往”语义 */
   .syntax-panel__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
     color: var(--color-accent-base);
-    font-family: var(--font-display);
-    font-size: 0.76em;
-    font-weight: 600;
-    text-decoration: none;
-    transition: opacity var(--motion-duration-instant) var(--motion-easing-out);
+    font-weight: var(--font-weight-emphasis);
   }
 
-  .syntax-panel__link:hover {
-    opacity: 0.8;
+  @media (hover: hover) {
+    .syntax-panel__link:hover {
+      color: var(--color-accent-hover);
+      background-color: var(--color-bg-hover);
+    }
+
+    .syntax-panel__link:hover svg {
+      transform: translateX(2px);
+    }
   }
 
+  /* 关闭按钮：完全复用统一图标按钮语言（ghost 风格 + 统一悬停/按下/焦点特效） */
   .syntax-panel__close {
-    padding: 5px 14px;
-    border: 1px solid var(--color-border-light);
-    border-radius: 2px;
-    background: transparent;
-    color: var(--color-text-secondary);
-    font-family: var(--font-display);
-    font-size: 0.72em;
-    cursor: pointer;
-    transition:
-      color var(--motion-duration-instant) var(--motion-easing-out),
-      border-color var(--motion-duration-instant) var(--motion-easing-out),
-      background-color var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  .syntax-panel__close:hover {
-    color: var(--color-text);
-    border-color: var(--color-text-secondary);
-    background-color: var(--color-bg-hover);
+    /* 基础样式与特效均由 .fndx-icon-btn--labeled 提供 */
   }
 
   /* 面板打开时锁定首页滚动容器 */

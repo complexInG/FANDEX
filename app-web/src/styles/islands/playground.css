@@ -1,9 +1,13 @@
 /**
- * Playground 样式（前端实验 + 编程练习 + 首页）
+ * Playground 样式（前端实验 + 编程练习 + 实验场首页）
  *
- * 设计说明：
- *   - 全部颜色/间距/圆角/阴影引用 FANDEX 设计令牌，亮/暗主题由 CSS 变量自动切换
- *   - 编辑器工作区使用独立滚动容器，页面主体不滚动，避免嵌套滚动卡顿
+ * 美术统一说明（与首页/语法速览/学习路线同一套设计语言，但保留个性化）：
+ *   - 实验场首页复用站点 Hero 体系（styles/pages/index.css），几何装饰使用
+ *     GeoBgDecor 的 playground 专属变体（网格 + 尖括号 + 终端方块）
+ *   - 入口卡片沿用 module-card 语法：顶部强调色条、几何图标框、hover 边框转色
+ *   - 难度标签复用站点 fndx-badge（soft/pill + 语义色）
+ *   - 编辑器工作区以克制为主：面板标题使用等宽小号大写 + 强调色刻度线
+ *   - 全部颜色/间距/圆角/阴影引用 FANDEX 设计令牌，亮/暗主题自动切换
  *   - 图标一律使用自绘 SVG（PgIcon），不使用 emoji 与位图
  */
 @layer components {
@@ -15,29 +19,29 @@
     min-height: 100%;
   }
 
-  /* 通用按钮 */
+  /* 通用按钮：与站点 fndx 按钮同语法（透明底 + 细边框 + 4px 圆角） */
   .pg-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    height: 30px;
+    height: 28px;
     padding: 0 12px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md, 4px);
     border: 1px solid transparent;
     background: transparent;
-    color: var(--color-text-secondary);
-    font-size: 13px;
+    color: var(--color-fg-secondary);
+    font-size: 12px;
     font-family: var(--font-body);
     cursor: pointer;
     white-space: nowrap;
     transition:
-      color var(--motion-duration-fast) var(--motion-easing-out),
-      background-color var(--motion-duration-fast) var(--motion-easing-out),
-      border-color var(--motion-duration-fast) var(--motion-easing-out);
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   .pg-btn:hover {
-    color: var(--color-text);
+    color: var(--color-fg-primary);
     background: var(--color-bg-hover);
   }
 
@@ -46,43 +50,48 @@
     cursor: not-allowed;
   }
 
+  .pg-btn:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
   .pg-btn--ghost {
     border-color: var(--color-border-light);
     background: var(--color-bg-card);
   }
 
   .pg-btn--ghost:hover {
-    border-color: var(--color-border);
+    border-color: color-mix(in srgb, var(--color-accent-base) 45%, transparent);
   }
 
   .pg-btn--primary {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: var(--color-text-inverse);
+    background: var(--color-accent-base);
+    border-color: var(--color-accent-base);
+    color: var(--color-accent-fg);
     font-weight: 600;
   }
 
   .pg-btn--primary:hover {
-    background: var(--color-primary-hover);
-    border-color: var(--color-primary-hover);
-    color: var(--color-text-inverse);
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    color: var(--color-accent-fg);
   }
 
   .pg-btn--danger {
-    border-color: color-mix(in srgb, var(--color-error) 45%, transparent);
-    color: var(--color-error);
+    border-color: color-mix(in srgb, var(--color-danger-base) 45%, transparent);
+    color: var(--color-danger-base);
   }
 
   .pg-btn--danger:hover {
-    background: var(--color-error-bg, color-mix(in srgb, var(--color-error) 10%, transparent));
-    border-color: var(--color-error);
-    color: var(--color-error);
+    background: color-mix(in srgb, var(--color-danger-base) 10%, transparent);
+    border-color: var(--color-danger-base);
+    color: var(--color-danger-base);
   }
 
   .pg-btn--sm {
     height: 24px;
     padding: 0 8px;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   /* 顶部工具栏（前端实验与编程练习共用） */
@@ -103,15 +112,17 @@
     gap: 4px;
     height: 28px;
     padding: 0 8px;
-    border-radius: var(--radius-sm);
-    color: var(--color-text-secondary);
+    border-radius: var(--radius-md, 4px);
+    color: var(--color-fg-secondary);
     text-decoration: none;
-    font-size: 13px;
-    transition: color var(--motion-duration-fast) var(--motion-easing-out), background-color var(--motion-duration-fast) var(--motion-easing-out);
+    font-size: 12px;
+    font-family: var(--font-display);
+    letter-spacing: 0.04em;
+    transition: color var(--motion-duration-instant) var(--motion-easing-out), background-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   .pg-back:hover {
-    color: var(--color-primary);
+    color: var(--color-accent-base);
     background: var(--color-bg-hover);
   }
 
@@ -121,15 +132,32 @@
     gap: 6px;
   }
 
+  /* 保存状态：圆点 + 等宽文本 */
   .pg-save-state {
     margin-left: auto;
-    font-size: 12px;
-    color: var(--color-text-tertiary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    color: var(--color-fg-tertiary);
     white-space: nowrap;
   }
 
+  .pg-save-state::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-success-base);
+  }
+
   .pg-save-state--saving {
-    color: var(--color-warning);
+    color: var(--color-warning-base);
+  }
+
+  .pg-save-state--saving::before {
+    background: var(--color-warning-base);
   }
 
   .pg-warning-bar {
@@ -137,10 +165,11 @@
     align-items: center;
     gap: 8px;
     padding: 6px 14px;
-    font-size: 12px;
-    color: var(--color-warning-dark, var(--color-warning));
-    background: var(--color-warning-bg, color-mix(in srgb, var(--color-warning) 10%, transparent));
-    border-bottom: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    color: var(--color-warning-base);
+    background: color-mix(in srgb, var(--color-warning-base) 10%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-warning-base) 30%, transparent);
   }
 
   /* ============================================================
@@ -155,20 +184,20 @@
 
   .pg-title-input {
     width: min(260px, 34vw);
-    height: 30px;
+    height: 28px;
     padding: 0 10px;
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
-    color: var(--color-text);
-    font-size: 13px;
+    color: var(--color-fg-primary);
+    font-size: 12px;
     font-family: var(--font-body);
     outline: none;
-    transition: border-color var(--motion-duration-fast) var(--motion-easing-out);
+    transition: border-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   .pg-title-input:focus {
-    border-color: var(--color-primary);
+    border-color: var(--color-accent-base);
   }
 
   .pg-workspace {
@@ -198,28 +227,45 @@
     overflow: hidden;
   }
 
+  /* 面板标题：等宽小号大写 + 左侧强调色刻度线（代码工具语境） */
   .pg-pane-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     height: 28px;
-    padding: 0 10px;
+    padding: 0 10px 0 14px;
     background: var(--color-bg-surface, var(--color-bg-sidebar));
     border-bottom: 1px solid var(--color-border-light);
     flex-shrink: 0;
+    position: relative;
+  }
+
+  .pg-pane-head::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 12px;
+    background: var(--color-accent-base);
+    opacity: 0.65;
   }
 
   .pg-pane-title {
-    font-size: 12px;
+    font-family: var(--font-family-mono);
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    color: var(--color-text-secondary);
-    font-family: var(--font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-secondary);
   }
 
   .pg-pane-note {
-    font-size: 11px;
-    color: var(--color-text-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-fg-tertiary);
   }
 
   .pg-pane-toggle {
@@ -229,15 +275,15 @@
     width: 20px;
     height: 20px;
     border: none;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-sm, 3px);
     background: transparent;
-    color: var(--color-text-tertiary);
+    color: var(--color-fg-tertiary);
     cursor: pointer;
-    transition: color var(--motion-duration-fast) var(--motion-easing-out), background-color var(--motion-duration-fast) var(--motion-easing-out);
+    transition: color var(--motion-duration-instant) var(--motion-easing-out), background-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   .pg-pane-toggle:hover {
-    color: var(--color-error);
+    color: var(--color-danger-base);
     background: var(--color-bg-hover);
   }
 
@@ -257,8 +303,9 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    color: var(--color-text-tertiary);
-    font-size: 13px;
+    color: var(--color-fg-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 12px;
   }
 
   /* 分隔条 */
@@ -267,7 +314,7 @@
     position: relative;
     z-index: 2;
     touch-action: none;
-    transition: background-color var(--motion-duration-fast) var(--motion-easing-out);
+    transition: background-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   .pg-splitter--left {
@@ -280,7 +327,7 @@
 
   .pg-splitter:hover,
   .pg-dragging .pg-splitter {
-    background: var(--color-primary);
+    background: var(--color-accent-base);
   }
 
   .pg-dragging {
@@ -306,21 +353,35 @@
     align-items: center;
     justify-content: space-between;
     height: 28px;
-    padding: 0 10px;
+    padding: 0 10px 0 14px;
     background: var(--color-bg-surface, var(--color-bg-sidebar));
     border-bottom: 1px solid var(--color-border-light);
     flex-shrink: 0;
+    position: relative;
+  }
+
+  .pg-preview-head::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 12px;
+    background: var(--color-accent-base);
+    opacity: 0.65;
   }
 
   .pg-preview-title {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-family: var(--font-family-mono);
+    font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    color: var(--color-text-secondary);
-    font-family: var(--font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-secondary);
   }
 
   .pg-preview-actions {
@@ -330,8 +391,9 @@
   }
 
   .pg-preview-size {
-    font-size: 11px;
-    color: var(--color-text-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-fg-tertiary);
   }
 
   .pg-frame {
@@ -339,7 +401,7 @@
     min-height: 0;
     width: 100%;
     border: none;
-    background: var(--color-bg-elevated, #ffffff);
+    background: #ffffff;
   }
 
   /* 控制台 */
@@ -357,17 +419,33 @@
     align-items: center;
     justify-content: space-between;
     height: 26px;
-    padding: 0 10px;
+    padding: 0 10px 0 14px;
     border-bottom: 1px solid var(--color-border-light);
     flex-shrink: 0;
+    position: relative;
+  }
+
+  .pg-console-head::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 10px;
+    background: var(--color-accent-base);
+    opacity: 0.65;
   }
 
   .pg-console-title {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
-    color: var(--color-text-secondary);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-secondary);
   }
 
   .pg-console-actions {
@@ -381,13 +459,13 @@
     min-height: 0;
     overflow: auto;
     padding: 6px 10px;
-    font-family: var(--font-code);
+    font-family: var(--font-family-mono);
     font-size: 12px;
     line-height: 1.6;
   }
 
   .pg-console-empty {
-    color: var(--color-text-tertiary);
+    color: var(--color-fg-tertiary);
     font-family: var(--font-body);
   }
 
@@ -401,27 +479,27 @@
     flex-shrink: 0;
     width: 38px;
     text-align: right;
-    font-size: 11px;
-    color: var(--color-text-tertiary);
+    font-size: 10px;
+    color: var(--color-fg-tertiary);
     text-transform: uppercase;
   }
 
   .pg-console-line--warn .pg-console-kind {
-    color: var(--color-warning);
+    color: var(--color-warning-base);
   }
 
   .pg-console-line--error .pg-console-kind {
-    color: var(--color-error);
+    color: var(--color-danger-base);
   }
 
   .pg-console-text {
     margin: 0;
     white-space: pre-wrap;
     word-break: break-word;
-    color: var(--color-text);
+    color: var(--color-fg-primary);
   }
 
-  /* 作品库抽屉 */
+  /* 作品库抽屉：沿用站点卡片语法（细边框 + 悬浮转色） */
   .pg-drawer-mask {
     position: fixed;
     inset: 0;
@@ -467,7 +545,7 @@
     gap: 8px;
     font-weight: 600;
     font-family: var(--font-display);
-    color: var(--color-text);
+    color: var(--color-fg-primary);
   }
 
   .pg-drawer-body {
@@ -480,8 +558,8 @@
   .pg-drawer-empty {
     padding: 24px 12px;
     text-align: center;
-    color: var(--color-text-tertiary);
-    font-size: 13px;
+    color: var(--color-fg-tertiary);
+    font-size: 12px;
     line-height: 1.7;
   }
 
@@ -492,14 +570,21 @@
     gap: 8px;
     padding: 10px 12px;
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 4px);
     margin-bottom: 8px;
     background: var(--color-bg-elevated, var(--color-bg-card));
-    transition: border-color var(--motion-duration-fast) var(--motion-easing-out);
+    transition:
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .pg-lib-item:hover {
+    border-color: color-mix(in srgb, var(--color-accent-base) 45%, transparent);
+    background: var(--color-bg-hover);
   }
 
   .pg-lib-item--active {
-    border-color: var(--color-primary);
+    border-color: var(--color-accent-base);
   }
 
   .pg-lib-info {
@@ -512,15 +597,17 @@
   .pg-lib-title {
     font-size: 13px;
     font-weight: 600;
-    color: var(--color-text);
+    font-family: var(--font-display);
+    color: var(--color-fg-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .pg-lib-meta {
-    font-size: 11px;
-    color: var(--color-text-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-fg-tertiary);
   }
 
   .pg-lib-actions {
@@ -532,11 +619,12 @@
 
   .pg-count {
     font-style: normal;
-    font-size: 11px;
+    font-family: var(--font-family-mono);
+    font-size: 10px;
     padding: 0 5px;
     border-radius: 999px;
-    background: var(--color-primary);
-    color: var(--color-text-inverse);
+    background: var(--color-accent-base);
+    color: var(--color-accent-fg);
   }
 
   /* ============================================================
@@ -550,57 +638,58 @@
   }
 
   .pg-select {
-    height: 30px;
+    height: 28px;
     max-width: 260px;
     padding: 0 8px;
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
-    color: var(--color-text);
-    font-size: 13px;
+    color: var(--color-fg-primary);
+    font-size: 12px;
     font-family: var(--font-body);
     outline: none;
     cursor: pointer;
   }
 
   .pg-select:focus {
-    border-color: var(--color-primary);
+    border-color: var(--color-accent-base);
   }
 
   .pg-lang-switch {
     flex-wrap: wrap;
   }
 
+  /* 语言药丸：与站点 fndx-badge 视觉一致（描边态 / 实心激活态） */
   .pg-lang-pill {
-    height: 26px;
+    height: 24px;
     padding: 0 10px;
     border: 1px solid var(--color-border-light);
     border-radius: 999px;
     background: transparent;
-    color: var(--color-text-secondary);
-    font-size: 12px;
-    font-family: var(--font-body);
+    color: var(--color-fg-secondary);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
     cursor: pointer;
     transition:
-      color var(--motion-duration-fast) var(--motion-easing-out),
-      border-color var(--motion-duration-fast) var(--motion-easing-out),
-      background-color var(--motion-duration-fast) var(--motion-easing-out);
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   .pg-lang-pill:hover {
-    color: var(--color-primary);
-    border-color: var(--color-primary);
+    color: var(--color-accent-base);
+    border-color: var(--color-accent-base);
   }
 
   .pg-lang-pill--active {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: var(--color-text-inverse);
+    background: var(--color-accent-base);
+    border-color: var(--color-accent-base);
+    color: var(--color-accent-fg);
     font-weight: 600;
   }
 
   .pg-lang-pill--active:hover {
-    color: var(--color-text-inverse);
+    color: var(--color-accent-fg);
   }
 
   .pg-lab-main {
@@ -617,7 +706,7 @@
   /* 题目说明栏 */
   .pg-lab-desc {
     overflow-y: auto;
-    padding: 16px 18px 24px;
+    padding: 18px 20px 28px;
     background: var(--color-bg-sidebar);
   }
 
@@ -628,31 +717,7 @@
     flex-wrap: wrap;
   }
 
-  .pg-badge {
-    display: inline-flex;
-    align-items: center;
-    height: 22px;
-    padding: 0 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .pg-badge--easy {
-    background: var(--color-success-bg, color-mix(in srgb, var(--color-success) 12%, transparent));
-    color: var(--color-success-dark, var(--color-success));
-  }
-
-  .pg-badge--medium {
-    background: var(--color-warning-bg, color-mix(in srgb, var(--color-warning) 12%, transparent));
-    color: var(--color-warning-dark, var(--color-warning));
-  }
-
-  .pg-badge--hard {
-    background: var(--color-danger-bg, color-mix(in srgb, var(--color-danger) 12%, transparent));
-    color: var(--color-danger-dark, var(--color-danger));
-  }
-
+  /* 标签：等宽小号描边片 */
   .pg-tags {
     display: flex;
     gap: 6px;
@@ -660,31 +725,34 @@
   }
 
   .pg-tag {
-    font-size: 11px;
-    color: var(--color-text-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--color-fg-tertiary);
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-sm, 3px);
     padding: 2px 8px;
   }
 
   .pg-lab-title {
-    margin: 12px 0 8px;
+    margin: 14px 0 8px;
     font-family: var(--font-display);
     font-size: 20px;
-    color: var(--color-text);
+    letter-spacing: 0.02em;
+    color: var(--color-fg-primary);
   }
 
   .pg-lab-desc-text {
     margin: 0 0 14px;
     font-size: 13px;
     line-height: 1.8;
-    color: var(--color-text-secondary);
+    color: var(--color-fg-secondary);
     white-space: pre-line;
   }
 
   .pg-lab-example {
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 4px);
     background: var(--color-bg-sunken, var(--color-bg-code));
     margin-bottom: 14px;
     overflow: hidden;
@@ -692,20 +760,22 @@
 
   .pg-lab-example-head {
     padding: 6px 12px;
-    font-size: 11px;
+    font-family: var(--font-family-mono);
+    font-size: 10px;
     font-weight: 600;
-    color: var(--color-text-tertiary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-tertiary);
     border-bottom: 1px solid var(--color-border-light);
-    letter-spacing: 0.05em;
   }
 
   .pg-lab-example pre {
     margin: 0;
     padding: 10px 12px;
-    font-family: var(--font-code);
+    font-family: var(--font-family-mono);
     font-size: 12px;
     line-height: 1.7;
-    color: var(--color-text);
+    color: var(--color-fg-primary);
     white-space: pre-wrap;
     word-break: break-word;
   }
@@ -719,14 +789,14 @@
     border: none;
     border-bottom: 1px solid var(--color-border-light);
     background: transparent;
-    color: var(--color-text-secondary);
-    font-size: 13px;
+    color: var(--color-fg-secondary);
+    font-size: 12px;
     font-family: var(--font-body);
     cursor: pointer;
   }
 
   .pg-hints-toggle:hover {
-    color: var(--color-primary);
+    color: var(--color-accent-base);
   }
 
   .pg-hints-icon--open {
@@ -736,12 +806,12 @@
   .pg-hints {
     margin: 10px 0 14px;
     padding: 10px 14px 10px 28px;
-    border-left: 2px solid var(--color-primary);
-    background: var(--color-primary-50, color-mix(in srgb, var(--color-primary) 8%, transparent));
-    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    border-left: 2px solid var(--color-accent-base);
+    background: color-mix(in srgb, var(--color-accent-base) 7%, transparent);
+    border-radius: 0 var(--radius-md, 4px) var(--radius-md, 4px) 0;
     font-size: 12px;
     line-height: 1.8;
-    color: var(--color-text-secondary);
+    color: var(--color-fg-secondary);
   }
 
   .pg-hints li + li {
@@ -752,7 +822,7 @@
   .pg-record {
     margin-top: 18px;
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
     padding: 12px 14px;
   }
@@ -761,9 +831,12 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-family: var(--font-family-mono);
+    font-size: 10px;
     font-weight: 600;
-    color: var(--color-text-secondary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-tertiary);
     margin-bottom: 10px;
   }
 
@@ -776,30 +849,32 @@
 
   .pg-record-grid dt {
     font-size: 11px;
-    color: var(--color-text-tertiary);
+    color: var(--color-fg-tertiary);
     margin-bottom: 2px;
   }
 
   .pg-record-grid dd {
     margin: 0;
-    font-size: 13px;
+    font-family: var(--font-display);
+    font-size: 14px;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--color-fg-primary);
+    font-variant-numeric: tabular-nums;
   }
 
   .pg-record-empty {
     margin: 0;
     font-size: 12px;
-    color: var(--color-text-tertiary);
+    color: var(--color-fg-tertiary);
     line-height: 1.7;
   }
 
   .pg-text-ok {
-    color: var(--color-success);
+    color: var(--color-success-base);
   }
 
   .pg-text-fail {
-    color: var(--color-error);
+    color: var(--color-danger-base);
   }
 
   /* 编辑器 + 输出区 */
@@ -827,39 +902,54 @@
     justify-content: space-between;
     gap: 10px;
     height: 30px;
-    padding: 0 12px;
+    padding: 0 12px 0 14px;
     border-bottom: 1px solid var(--color-border-light);
     flex-shrink: 0;
+    position: relative;
+  }
+
+  .pg-run-head::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 12px;
+    background: var(--color-accent-base);
+    opacity: 0.65;
   }
 
   .pg-run-state {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-family: var(--font-family-mono);
+    font-size: 11px;
     font-weight: 600;
-    color: var(--color-text-secondary);
+    color: var(--color-fg-secondary);
   }
 
   .pg-run-state--ok {
-    color: var(--color-success);
+    color: var(--color-success-base);
   }
 
   .pg-run-state--fail {
-    color: var(--color-error);
+    color: var(--color-danger-base);
   }
 
   .pg-run-state--timeout {
-    color: var(--color-warning);
+    color: var(--color-warning-base);
   }
 
   .pg-run-state--running {
-    color: var(--color-info);
+    color: var(--color-info-base);
   }
 
   .pg-run-meta {
-    font-size: 11px;
-    color: var(--color-text-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-fg-tertiary);
     white-space: nowrap;
   }
 
@@ -871,7 +961,7 @@
   }
 
   .pg-run-empty {
-    color: var(--color-text-tertiary);
+    color: var(--color-fg-tertiary);
     font-size: 12px;
     font-family: var(--font-body);
   }
@@ -879,7 +969,7 @@
   .pg-run-stdout,
   .pg-run-stderr {
     margin: 0;
-    font-family: var(--font-code);
+    font-family: var(--font-family-mono);
     font-size: 12px;
     line-height: 1.7;
     white-space: pre-wrap;
@@ -887,108 +977,151 @@
   }
 
   .pg-run-stdout {
-    color: var(--color-text);
+    color: var(--color-fg-primary);
   }
 
   .pg-run-stderr {
-    color: var(--color-error);
+    color: var(--color-danger-base);
   }
 
   /* ============================================================
-     Playground 首页
+     实验场首页（Hero 由 pages/index.css 提供，此处只负责内容区）
      ============================================================ */
   .pg-hub {
     max-width: 1080px;
     margin: 0 auto;
-    padding: 40px 24px 72px;
+    padding: 8px 0 72px;
   }
 
-  .pg-hub-hero {
-    margin-bottom: 32px;
-  }
-
-  .pg-hub-kicker {
-    font-family: var(--font-display);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    color: var(--color-primary);
-  }
-
-  .pg-hub-title {
-    margin: 10px 0 10px;
-    font-family: var(--font-display);
-    font-size: clamp(26px, 4vw, 38px);
-    color: var(--color-text);
-  }
-
-  .pg-hub-subtitle {
-    margin: 0;
-    max-width: 640px;
-    font-size: 14px;
-    line-height: 1.8;
-    color: var(--color-text-secondary);
-  }
-
+  /* 功能入口卡片：沿用 module-card 语法，按模式注入 --module-color */
   .pg-hub-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 18px;
+    gap: 16px;
     margin-bottom: 40px;
   }
 
   .pg-hub-card {
+    --module-color: var(--color-accent-base);
     display: flex;
     flex-direction: column;
-    padding: 24px;
+    padding: 22px 24px;
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
+    box-shadow: var(--shadow-xs);
     text-decoration: none;
     color: inherit;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     transition:
-      transform var(--motion-duration-normal) var(--motion-easing-out),
-      border-color var(--motion-duration-normal) var(--motion-easing-out),
-      box-shadow var(--motion-duration-normal) var(--motion-easing-out);
+      transform var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      box-shadow var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  /* 顶部强调色条：hover 时从左展开 */
+  .pg-hub-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--module-color);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--motion-duration-normal) var(--motion-easing-out);
+    z-index: 1;
   }
 
   .pg-hub-card:hover {
+    background: var(--color-bg-hover);
+    border-color: color-mix(in srgb, var(--module-color) 50%, transparent);
+    box-shadow: var(--shadow-md);
     transform: translateY(-3px);
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-lg);
   }
 
+  .pg-hub-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .pg-hub-card:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pg-hub-card:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* 算法练习模式：使用信息蓝作为模式色，与前端实验区分 */
+  .pg-hub-card--lab {
+    --module-color: var(--color-info-base);
+  }
+
+  /* 几何图标框：低饱和填充 + 细边框 + 左上角坐标标记 */
   .pg-hub-card-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 52px;
-    height: 52px;
-    border-radius: var(--radius-lg);
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm, 3px);
+    background: color-mix(in srgb, var(--module-color) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--module-color) 38%, transparent);
+    color: var(--module-color);
     margin-bottom: 16px;
-    background: var(--color-primary-100, color-mix(in srgb, var(--color-primary) 12%, transparent));
-    color: var(--color-primary);
+    position: relative;
+    flex-shrink: 0;
+    transition:
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
-  .pg-hub-card--lab .pg-hub-card-icon {
-    background: var(--color-accent-100, color-mix(in srgb, var(--color-accent-base) 12%, transparent));
-    color: var(--color-accent-base, var(--color-primary));
+  .pg-hub-card-icon::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 6px;
+    height: 6px;
+    border-top: 1px solid var(--module-color);
+    border-left: 1px solid var(--module-color);
+    border-top-left-radius: var(--radius-sm, 3px);
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
+  .pg-hub-card:hover .pg-hub-card-icon {
+    background: color-mix(in srgb, var(--module-color) 16%, transparent);
+    border-color: color-mix(in srgb, var(--module-color) 60%, transparent);
   }
 
   .pg-hub-card h2 {
     margin: 0 0 8px;
     font-family: var(--font-display);
-    font-size: 19px;
-    color: var(--color-text);
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    color: var(--color-fg-primary);
+    transition: color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .pg-hub-card:hover h2 {
+    color: var(--module-color);
   }
 
   .pg-hub-card > p {
     margin: 0 0 14px;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.8;
-    color: var(--color-text-secondary);
+    color: var(--color-fg-secondary);
   }
 
+  /* 特性列表：等宽小号 + 模式色方块标记（代码语境） */
   .pg-hub-card-features {
     margin: 0 0 18px;
     padding: 0;
@@ -999,24 +1132,22 @@
 
   .pg-hub-card-features li {
     position: relative;
-    padding-left: 16px;
-    font-size: 12px;
-    color: var(--color-text-tertiary);
+    padding-left: 18px;
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    color: var(--color-fg-tertiary);
   }
 
   .pg-hub-card-features li::before {
     content: '';
     position: absolute;
     left: 2px;
-    top: 6px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-primary);
-  }
-
-  .pg-hub-card--lab .pg-hub-card-features li::before {
-    background: var(--color-accent-base, var(--color-primary));
+    top: 50%;
+    transform: translateY(-50%);
+    width: 7px;
+    height: 7px;
+    border: 1px solid var(--module-color);
+    opacity: 0.7;
   }
 
   .pg-hub-card-action {
@@ -1024,13 +1155,10 @@
     align-items: center;
     gap: 6px;
     margin-top: auto;
-    font-size: 13px;
+    font-family: var(--font-family-mono);
+    font-size: 12px;
     font-weight: 600;
-    color: var(--color-primary);
-  }
-
-  .pg-hub-card--lab .pg-hub-card-action {
-    color: var(--color-accent-base, var(--color-primary));
+    color: var(--module-color);
   }
 
   .pg-hub-card-action svg {
@@ -1042,6 +1170,7 @@
     transform: rotate(180deg) translateX(-3px);
   }
 
+  /* 本地数据区 */
   .pg-hub-local,
   .pg-hub-recent {
     margin-bottom: 40px;
@@ -1052,20 +1181,38 @@
     align-items: baseline;
     gap: 12px;
     margin-bottom: 14px;
+    padding-left: 12px;
+    position: relative;
+  }
+
+  /* 章节标题：左侧强调色方块刻度（站点几何语言） */
+  .pg-hub-section-head::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 16px;
+    background: var(--color-accent-base);
+    opacity: 0.8;
   }
 
   .pg-hub-section-head h2 {
     margin: 0;
     font-family: var(--font-display);
-    font-size: 18px;
-    color: var(--color-text);
+    font-size: 17px;
+    letter-spacing: 0.03em;
+    color: var(--color-fg-primary);
   }
 
   .pg-hub-section-note {
-    font-size: 12px;
-    color: var(--color-text-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    color: var(--color-fg-tertiary);
   }
 
+  /* 本地统计卡片：沿用站点 stat 语法（展示字体数字 + 大写标签） */
   .pg-hub-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -1079,26 +1226,34 @@
     gap: 4px;
     padding: 14px 16px;
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
+    box-shadow: var(--shadow-xs);
   }
 
   .pg-stat-num {
     font-family: var(--font-display);
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
-    color: var(--color-text);
+    color: var(--color-fg-primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
   }
 
   .pg-stat-label {
-    font-size: 12px;
-    color: var(--color-text-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-tertiary);
   }
 
+  /* 存储用量 */
   .pg-hub-storage {
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 4px);
     background: var(--color-bg-card);
+    box-shadow: var(--shadow-xs);
     padding: 16px 18px;
   }
 
@@ -1107,8 +1262,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    font-size: 12px;
-    color: var(--color-text-secondary);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    color: var(--color-fg-secondary);
     margin-bottom: 10px;
   }
 
@@ -1119,7 +1275,7 @@
   }
 
   .pg-hub-storage-bar {
-    height: 8px;
+    height: 6px;
     border-radius: 999px;
     background: var(--color-bg-hover);
     overflow: hidden;
@@ -1129,7 +1285,7 @@
     display: block;
     height: 100%;
     border-radius: 999px;
-    background: var(--color-primary);
+    background: linear-gradient(90deg, var(--color-accent-base), var(--color-info-base));
     transition: width var(--motion-duration-normal) var(--motion-easing-out);
   }
 
@@ -1137,9 +1293,10 @@
     margin: 10px 0 12px;
     font-size: 12px;
     line-height: 1.7;
-    color: var(--color-text-tertiary);
+    color: var(--color-fg-tertiary);
   }
 
+  /* 最近作品 / 最近练习 */
   .pg-hub-recent {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1149,9 +1306,9 @@
   .pg-hub-empty {
     padding: 18px;
     border: 1px dashed var(--color-border-light);
-    border-radius: var(--radius-md);
-    font-size: 13px;
-    color: var(--color-text-tertiary);
+    border-radius: var(--radius-md, 4px);
+    font-size: 12px;
+    color: var(--color-fg-tertiary);
   }
 
   .pg-hub-list {
@@ -1159,7 +1316,7 @@
     padding: 0;
     list-style: none;
     border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 4px);
     overflow: hidden;
   }
 
@@ -1174,20 +1331,40 @@
     gap: 10px;
     padding: 11px 14px;
     text-decoration: none;
-    transition: background-color var(--motion-duration-fast) var(--motion-easing-out);
+    position: relative;
+    transition: background-color var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   .pg-hub-list a:hover {
     background: var(--color-bg-hover);
   }
 
+  /* 悬浮时左侧强调色刻度线 */
+  .pg-hub-list a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 2px;
+    background: var(--color-accent-base);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .pg-hub-list a:hover::before {
+    transform: scaleY(1);
+  }
+
   .pg-hub-list-title {
     display: flex;
     align-items: center;
     gap: 8px;
+    font-family: var(--font-display);
     font-size: 13px;
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-fg-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1195,7 +1372,8 @@
 
   .pg-hub-list-status {
     font-style: normal;
-    font-size: 11px;
+    font-family: var(--font-family-mono);
+    font-size: 10px;
     padding: 1px 7px;
     border-radius: 999px;
     border: 1px solid currentColor;
@@ -1203,8 +1381,9 @@
   }
 
   .pg-hub-list-meta {
-    font-size: 11px;
-    color: var(--color-text-tertiary);
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    color: var(--color-fg-tertiary);
     flex-shrink: 0;
   }
 
@@ -1258,7 +1437,7 @@
     }
 
     .pg-hub {
-      padding: 24px 16px 56px;
+      padding: 4px 0 56px;
     }
 
     .pg-hub-cards {

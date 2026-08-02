@@ -5,291 +5,374 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: GitHub 合并与变基 的完整教学讲解。
+description: 以对比驱动方式讲解 git merge 与 git rebase 两种分支整合路线的原理、适用场景与选择原则，覆盖快进合并、三方合并与交互式变基，适合零基础学习者。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
-## 合并分支
+## 开篇：像双人写作合并一样整合分支
 
-**基本写法：合并指定分支**
-`git merge <分支名>`
-```bash
-# 将指定分支合并到当前分支
-git merge feature/login
-```
+假设你和同事合写一本书：你负责"第 1-3 章"，他负责"第 4-6 章"。你俩在各自的文档副本上写作，最后要把两份稿子合成一本完整的书。此时有两条路线：
 
----
+- **路线一（merge，合并）**：把两份稿子**原样装订在一起**，加上一个"合并页"记录"本书由两份稿件合成"。书的正文里，你的章节和同事的章节**完整保留各自历史**，合订本能清楚看到每个章节各自的发展过程，缺点是目录结构有分叉，读起来略乱。
+- **路线二（rebase，变基）**：把同事写完的第 4-6 章作为"基准"，把你的第 1-3 章**拆散重写**，按顺序重新誊抄到基准之上。最终书稿是一份**连续、直线**的完整稿子，历史干净，但你的原始草稿（原提交）被"重写"了——誊抄稿和原稿不是同一份。
 
-**基本写法：禁止快进合并**
-`git merge --no-ff <分支名>`
-```bash
-# 强制创建合并提交保留分支历史
-git merge --no-ff feature/login
-```
+对应到 Git：**`git merge` 保留双方完整历史并生成合并提交；`git rebase` 把你的提交"重放"到对方最新提交之后，历史呈一条直线**。本篇采用**对比驱动**方式，把这两条路线掰开揉碎，讲清原理、场景和选择原则。
 
 ---
 
-**基本写法：仅快进合并**
-`git merge --ff-only <分支名>`
-```bash
-# 仅在可快进时合并否则失败
-git merge --ff-only feature/login
-```
+## 一、先看结论：merge 与 rebase 速览表
+
+| 对比维度 | `git merge` | `git rebase` |
+| --- | --- | --- |
+| 本质 | 三方合并，生成合并提交 | 提取提交补丁，在目标基底上重放 |
+| 历史形态 | 有分叉（能看到分支合并痕迹） | 直线（历史整洁） |
+| 是否改写已有提交 | 否，原提交不变 | 是，生成全新提交（ID 改变） |
+| 对共享分支的风险 | 无，安全 | 高，禁止对已推送的共享分支使用 |
+| 可追溯性 | 强，合并提交记录两个父提交 | 较弱，分支独立开发过程被抹平 |
+| 适用场景 | 长期分支、公共分支、保留合并记录 | 个人功能分支、push 前整理历史 |
+| 命令形态 | `git merge <分支>` | `git rebase <基底>` |
+
+官方结论（Pro Git）：**两种方式整合的最终代码快照完全一样，区别只在提交历史**。变基让历史更整洁，合并让历史更完整。
 
 ---
 
-**基本写法：压缩合并**
-`git merge --squash <分支名>`
-```bash
-# 将所有提交压缩为一个后合并
-git merge --squash feature/login
+## 二、原理讲解：从"共同祖先"说起
+
+### 2.1 分支为什么会分叉
+
+Git 的分支本质上是一个**指向提交的可移动指针**。当两个分支从同一个提交（共同祖先）各自前进时，历史就分叉了：
+
 ```
+A --- B --- C   (main)
+       \
+        D --- E   (feature)
+```
+
+### 2.2 merge 的三方合并原理
+
+`git merge feature`（在 main 上执行）时，Git 取三个点做三方合并：
+
+1. **我方**（ours）：当前分支 main 的最新提交 C；
+2. **对方**（theirs）：要合并进来的分支 feature 的最新提交 E；
+3. **共同祖先**（base）：两个分支最近共同祖先 B。
+
+Git 逐文件比较三个版本：只有一方改的，自动采用；双方改了同一处且不一致的，标记为冲突等你裁决。合并成功后生成**合并提交 M**（有两个父提交），历史变成：
+
+```
+A --- B --- C --- M   (main)
+       \         /
+        D --- E   (feature)
+```
+
+### 2.3 快进合并（fast-forward）的特殊情况
+
+如果被合并的分支是当前分支的**直接后代**（没分叉），Git 不需要创建合并提交，直接把指针往前移即可：
+
+```bash
+# 前提：main 在 B，feature 在 C，且 C 直接继承 B
+git merge feature
+# 输出：Updating a1b2c3d..e4f5g6h (Fast-forward)
+```
+
+### 2.4 rebase 的"重放"原理
+
+`git rebase main`（在 feature 上执行）分四步走（官方文档描述）：
+
+1. **找分叉点**：定位 feature 与 main 的共同祖先 B；
+2. **提取补丁**：把 feature 自 B 以来的提交（D、E）的修改内容存为临时补丁；
+3. **移动基底**：把 feature 指针指向 main 的最新提交 C；
+4. **依次重放**：把补丁按原顺序应用到 C 之上，生成新提交 D'、E'。
+
+结果：
+
+```
+A --- B --- C           (main)
+             \
+              D' --- E'   (feature)
+```
+
+> 关键区别再强调：merge 后 D、E 原封不动；rebase 后 D'、E' 是**全新的提交**（哈希 ID 变了，作者信息保留）。所以 rebase 等于"重写了自己这一侧的历史"。
 
 ---
 
-**基本写法：合并并编辑提交信息**
-`git merge -e <分支名>`
+## 三、git merge 命令全解
+
+### 3.1 基本用法
+
 ```bash
-# 合并时打开编辑器编辑提交信息
-git merge -e feature/login
+# 把 feature 分支合并到当前分支
+git switch main
+git merge feature
+
+# 强制创建合并提交（即使可以快进也创建一个，保留"分支曾存在"的记录）
+git merge --no-ff feature
+
+# 仅当可以快进时才合并，否则报错退出（适合不想产生合并提交的场景）
+git merge --ff-only feature
+
+# 压缩合并：把 feature 的所有提交压成一个改动，暂存到暂存区（需再 commit）
+git merge --squash feature
+git commit -m "feat: 用户登录功能"
+
+# 合并时打开编辑器修改合并信息
+git merge -e feature
 ```
 
----
+### 3.2 合并输出示例
 
-**基本写法：合并指定提交**
-`git cherry-pick <提交ID>`
 ```bash
-# 将指定提交应用到当前分支
+git merge feature
+```
+
+输出示例：
+
+```
+Merge made by the 'ort' strategy.
+ app.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+```
+
+### 3.3 合并后清理
+
+```bash
+# 删除已合并的本地分支（-d 只允许删除已合并的分支，安全）
+git branch -d feature
+
+# 删除远程分支
+git push origin --delete feature
+
+# 查看已合并到 main 的分支（可用于批量清理）
+git branch --merged main
+
+# 查看尚未合并的分支（-d 会拒绝删除它们）
+git branch --no-merged
+```
+
+### 3.4 cherry-pick：只摘取某个提交
+
+不是整条分支合并，而是只把某一个提交"移植"过来：
+
+```bash
+# 把指定提交应用到当前分支
 git cherry-pick abc1234
-```
 
----
-
-**基本写法：合并多个提交**
-`git cherry-pick <提交1> <提交2>`
-```bash
-# 将多个提交应用到当前分支
+# 一次移植多个提交
 git cherry-pick abc1234 def5678
+
+# 遇到冲突时：解决后继续
+git cherry-pick --continue
+
+# 放弃整个 cherry-pick
+git cherry-pick --abort
 ```
 
 ---
 
-## 变基操作
+## 四、git rebase 命令全解
 
-**基本写法：变基到指定分支**
-`git rebase <目标分支>`
+### 4.1 基本用法
+
 ```bash
-# 将当前分支变基到目标分支
+# 把当前分支变基到 main 之上
+git switch feature
 git rebase main
-```
 
----
+# 简写形式：直接指定分支（等价于 switch + rebase）
+git rebase main feature
 
-**基本写法：交互式变基**
-`git rebase -i HEAD~<数量>`
-```bash
-# 交互式整理最近 N 次提交
-git rebase -i HEAD~5
-```
-
----
-
-**基本写法：交互式变基到指定提交**
-`git rebase -i <提交ID>`
-```bash
-# 从指定提交开始交互式变基
-git rebase -i abc1234
-```
-
----
-
-**基本写法：变基到远程分支**
-`git rebase origin/<分支名>`
-```bash
-# 将当前分支变基到远程分支
+# 把当前分支变基到远程分支
 git rebase origin/main
-```
 
----
-
-**基本写法：变基时保留空提交**
-`git rebase --keep-empty <目标分支>`
-```bash
 # 变基时保留空提交
 git rebase --keep-empty main
 ```
 
----
+### 4.2 变基冲突处理三板斧
 
-## 变基冲突处理
-
-**基本写法：继续变基**
-`git rebase --continue`
 ```bash
-# 解决冲突后继续变基
+# 解决冲突后继续
 git rebase --continue
-```
 
----
-
-**基本写法：跳过当前提交**
-`git rebase --skip`
-```bash
-# 跳过当前冲突的提交
+# 跳过当前有问题的提交
 git rebase --skip
-```
 
----
-
-**基本写法：中止变基**
-`git rebase --abort`
-```bash
-# 取消变基回到变基前状态
+# 中止变基，回到变基前状态
 git rebase --abort
 ```
 
----
+### 4.3 交互式变基：整理自己的历史
 
-**基本写法：编辑待提交内容**
-`git rebase --edit-todo`
+`git rebase -i` 是重写本地历史的利器，常用于 push 前把多个零碎提交合并成一个清晰提交：
+
 ```bash
-# 编辑变基待办列表
-git rebase --edit-todo
+# 交互式整理最近 5 次提交
+git rebase -i HEAD~5
+
+# 从指定提交开始整理
+git rebase -i abc1234
 ```
 
----
+执行后会打开编辑器，列出待办清单，常用命令：
 
-## 交互式变基操作
-
-**基本写法：使用 pick 保留提交**
-`pick <提交ID>`
-```bash
-# 在变基编辑器中使用保留该提交
+```
 pick abc1234 添加登录功能
+reword def5678 修改提交说明
+squash e9f0123 修复样式       # 合并到上一个提交，并合并说明
+fixup f1a2b3c 小修复          # 合并到上一个提交，丢弃说明
+drop g4h5i6j 废弃的实验代码    # 删除该提交
+edit 7k8l9m0 需要暂停修改      # 在该提交处暂停
+```
+
+> 使用原则：交互式变基**只允许用于还没推送到共享远程的本地提交**。已 push 的提交被改写，会让拉取过它的队友陷入历史冲突。
+
+### 4.4 常用变体
+
+```bash
+# --onto：把 A 分支上基于 X 的提交，改放到 Y 之上
+git rebase --onto main server client
+
+# 编辑变基待办列表（进行中时用）
+git rebase --edit-todo
+
+# 查看当前变基正在应用的补丁
+git rebase --show-current-patch
 ```
 
 ---
 
-**基本写法：使用 reword 修改信息**
-`reword <提交ID>`
+## 五、merge vs rebase：怎么选
+
+| 场景 | 推荐 | 理由 |
+| --- | --- | --- |
+| main 合并功能分支（发布） | `git merge --no-ff` | 保留"功能曾独立开发"的合并记录 |
+| 个人功能分支同步 main | `git rebase main` | 历史整洁，push 前顺手整理 |
+| 多人协作的共享分支同步 | `git merge` | 不改写他人可能已拉取的提交 |
+| PR 合并到 main | GitHub 默认 Squash 或 Merge | 平台内配置，避免本地操作 |
+| 本地提交太碎想合并 | `git rebase -i` | 交互式压缩提交 |
+| 只想要别人的某一个提交 | `git cherry-pick` | 精准移植 |
+
+**黄金原则（Pro Git 原话）**：**不要对已推送到远程、且可能被别人拉取的提交执行 rebase**。变基是"重写历史"，只能用于自己还没共享的提交。
+
+---
+
+## 六、常见错误与对策表
+
+| 错误现象 | 报错信息（节选） | 原因分析 | 解决办法 |
+| --- | --- | --- | --- |
+| merge 想快进却被拒绝 | `fatal: Not possible to fast-forward, aborting.` | 用了 `--ff-only` 但两分支已分叉 | 去掉 `--ff-only`，接受普通三方合并 |
+| rebase 后 push 被拒 | `! [rejected] feature -> feature (non-fast-forward)` | 改写历史后与远程分叉 | 个人分支可用 `--force-with-lease`；共享分支禁止 |
+| merge 出现冲突 | `Automatic merge failed; fix conflicts...` | 双方改同一处 | 按 041 篇解决：编辑 → `git add` → `git merge --continue` |
+| rebase 到一半想反悔 | 变基进行中 | 不知道可以中止 | `git rebase --abort` 一键回到起点 |
+| 删分支被拒 | `error: The branch 'feature' is not fully merged` | `git branch -d` 只删已合并分支 | 确认内容不要后改用 `git branch -D` 强删 |
+| 交互式变基里填错命令 | 编辑器里看到 `pick` 等命令不知道干嘛 | 不熟悉 rebase -i 指令 | 查阅 4.3 节命令表；`drop` 删提交、`squash` 合并、`reword` 改信息 |
+| 对已推送提交 amend/rebase | 队友拉取后历史混乱 | 改写公共历史 | 只重写未推送提交；已推送的用新提交修正（如 revert） |
+
+---
+
+## 七、实战练习
+
+### 练习 1：体验快进合并（入门）
+
+**题目**：在 main 上提交 A，从 A 拉出 feature 分支并提交 B，回到 main 执行 `git merge feature`，观察是否显示 Fast-forward 且没有生成合并提交。
+
+**提示**：main 没有新提交时才会快进。
+
+**参考答案要点**：
+
 ```bash
-# 保留提交但修改提交信息
-reword abc1234 修改提交说明
+git switch -c feature
+echo "B" > b.txt && git add . && git commit -m "feat: B"
+git switch main
+git merge feature            # 输出包含 Fast-forward
+git log --oneline --graph    # 历史是一条直线
+```
+
+### 练习 2：体验三方合并（核心）
+
+**题目**：让 main 和 feature 各自有新提交（形成分叉），在 main 上 merge feature，用 `--graph` 观察合并提交的双父结构。
+
+**提示**：双方都提交后才会触发三方合并。
+
+**参考答案要点**：
+
+```bash
+# main 上提交 C1
+# 从 C1 拉 feature，feature 提交 F1、F2
+# 回到 main 再提交 C2（形成分叉）
+git switch main && git merge feature
+git log --oneline --graph    # 出现合并提交，两条线交汇
+```
+
+### 练习 3：rebase 让历史变直线（进阶）
+
+**题目**：用和练习 2 相同的分叉场景，改用 `git rebase main`（在 feature 上），再快进合并，对比 `--graph` 输出的差异。
+
+**提示**：rebase 后 feature 的提交 ID 会改变。
+
+**参考答案要点**：
+
+```bash
+git switch feature
+git rebase main              # feature 的提交重放到 main 最新之上
+git switch main
+git merge feature            # 此时是快进合并
+git log --oneline --graph    # 一条直线，无分叉
+```
+
+### 练习 4：交互式变基压缩提交（进阶）
+
+**题目**：在功能分支上制造 4 个碎提交（如"改了一行""又改了一行"），用 `git rebase -i HEAD~4` 把它们 squash 成 1 个有意义的提交。
+
+**提示**：把后面 3 个的命令从 pick 改成 squash，然后写合并后的信息。
+
+**参考答案要点**：
+
+```bash
+git rebase -i HEAD~4
+# 编辑器里：
+# pick 第1个提交
+# squash 第2个
+# squash 第3个
+# squash 第4个
+# 保存后输入新的提交信息
+git log --oneline            # 只剩 1 个提交
+```
+
+### 练习 5：cherry-pick 精准移植（综合）
+
+**题目**：在 feature 分支上有一个修复 Bug 的提交，main 分支不需要整个 feature，只把那个修复提交 cherry-pick 到 main。
+
+**提示**：`git cherry-pick <提交ID>` 在 main 分支上执行。
+
+**参考答案要点**：
+
+```bash
+git log --oneline feature    # 记下修复提交的 ID，如 abc1234
+git switch main
+git cherry-pick abc1234
+git log --oneline            # main 上多了一个修复提交
 ```
 
 ---
 
-**基本写法：使用 squash 合并提交**
-`squash <提交ID>`
-```bash
-# 将该提交合并到前一个提交
-squash def5678 修复样式
-```
+## 八、一句话记忆
+
+**merge 保留双方历史、生成合并提交（安全、适合共享分支）；rebase 把提交重放成直线（整洁、只用于未推送的本地提交）——快进是特权，公共历史禁改写，push 前整理用 rebase -i。**
 
 ---
 
-**基本写法：使用 fixup 合并并丢弃信息**
-`fixup <提交ID>`
-```bash
-# 合并到前一个提交并丢弃提交信息
-fixup def5678 修复样式
-```
+## 参考链接
 
----
-
-**基本写法：使用 drop 删除提交**
-`drop <提交ID>`
-```bash
-# 删除该提交
-drop ghi9012 废弃的实验代码
-```
-
----
-
-**基本写法：使用 edit 暂停修改**
-`edit <提交ID>`
-```bash
-# 在该提交处暂停以便修改内容
-edit abc1234 添加登录功能
-```
-
----
-
-## 合并后清理
-
-**基本写法：删除已合并的本地分支**
-`git branch -d <分支名>`
-```bash
-# 合并完成后删除本地分支
-git branch -d feature/login
-```
-
----
-
-**基本写法：删除已合并的远程分支**
-`git push origin --delete <分支名>`
-```bash
-# 合并完成后删除远程分支
-git push origin --delete feature/login
-```
-
----
-
-**基本写法：清理已删除的远程分支引用**
-`git fetch --prune`
-```bash
-# 清理本地中已不存在的远程分支引用
-git fetch --prune
-```
-
----
-
-**基本写法：查看可清理的分支**
-`git branch --merged main`
-```bash
-# 查看已合并到 main 的分支
-git branch --merged main
-```
-
----
-
-**基本写法：批量删除已合并分支**
-`git branch --merged main | grep -v "main" | xargs git branch -d`
-```bash
-# 删除所有已合并到 main 的分支（保留 main）
-git branch --merged main | grep -v "main" | xargs git branch -d
-```
-
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+- Git 官方文档（git merge）：https://git-scm.com/docs/git-merge
+- Git 官方文档（git rebase，中文）：https://git-scm.com/docs/git-rebase/zh_HANS-CN.html
+- Pro Git 中文版 3.6 变基：https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%8F%98%E5%9F%BA
+- Pro Git 中文版 3.2 分支的新建与合并：https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E6%96%B0%E5%BB%BA%E4%B8%8E%E5%90%88%E5%B9%B6
 
 ## 延伸阅读
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- pull 内部如何选 merge/rebase（git pull 参数），见上一篇 039-GitPullFetch。
+- 合并冲突的产生原理与完整解决流程，见下一篇 041-GitConflictResolve。
+- 历史查看与追踪（log/diff/blame），见 044-GitHistoryLog。
+- 关联文档：分支模型与分支规则，见 007-BranchModelBranchRule；GitHub PR 协作流程，见 027-PullRequestCompleteCollaborationFlow。

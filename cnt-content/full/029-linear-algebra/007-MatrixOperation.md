@@ -4,9 +4,9 @@ title: 矩阵运算
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: beginner
-description: 矩阵的加法、减法、乘法运算，矩阵的转置，方阵的幂，矩阵运算的性质与法则。
+description: 从"表格数据运算"的直觉出发，讲解矩阵的加法、数乘、乘法（含不满足交换律与消去律的辨析）、转置与对称矩阵、方阵的幂与多项式、矩阵的迹。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'linear-algebra/克莱姆法则'
   - 'linear-algebra/行列式典型例题'
@@ -15,212 +15,242 @@ related:
 prerequisites: []
 ---
 
-## 1. 矩阵的基本概念
+## 0. 生活类比：表格数据的运算
 
-### 1.1 矩阵的定义
+想象你负责统计一家连锁店的月度销售：一张 Excel 表格，行是各门店，列是各品类。你想做的所有操作，几乎都能在矩阵运算里找到对应：
 
-由 $m \times n$ 个数 $a_{ij}$ 排成的 $m$ 行 $n$ 列的数表称为 $m \times n$ **矩阵**，记作：
+- 汇总两个月的销售额 → **矩阵加法**（对应位置相加）；
+- 价格统一上调 10% → **矩阵数乘**（每个格子乘 1.1）；
+- 已知"门店 × 单价"和"单价 × 数量"，求总销售额 → **矩阵乘法**（行乘列、求和）；
+- 把"行是门店"翻转为"列是门店"（方便纵向对比）→ **矩阵转置**。
+
+这个类比揭示了矩阵的本质：**矩阵是一张"数表"，运算是表与表之间的批量化操作**。上一模块你学了"行列式"（一个数），现在进入"矩阵"（一张表）的世界。两者最关键的区分：行列式算出来是一个**数**，矩阵本身是**表**；只有方阵才有行列式，而矩阵运算对任意长方形数表都成立。
+
+同济版《线性代数》第 2 章"矩阵及其运算"正是从"线性方程组和矩阵"讲起，把方程组写成 $Ax = b$ 的紧凑形式，然后用矩阵运算整体处理。本文按"运算"主线组织：加、乘、转置、幂、迹，逐一定义、给示例、辨误区。
+
+## 1. 矩阵是什么
+
+### 1.1 定义
+
+由 $m \times n$ 个数 $a_{ij}$ 排成的 $m$ 行 $n$ 列数表称为 **$m \times n$ 矩阵**，记作：
 
 $$A = \begin{pmatrix} a_{11} & a_{12} & \cdots & a_{1n} \\ a_{21} & a_{22} & \cdots & a_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1} & a_{m2} & \cdots & a_{mn} \end{pmatrix} = (a_{ij})_{m \times n}$$
 
-### 1.2 特殊矩阵
+当 $m = n$ 时称为**方阵**，此时可以讨论行列式 $|A|$。
 
-- **零矩阵**：所有元素为零的矩阵，记作 $O$
-- **单位矩阵**：主对角线为1，其余为0的方阵，记作 $I$ 或 $E$
-- **对角矩阵**：非主对角线元素全为零的方阵，记作 $\text{diag}(d_1, d_2, \ldots, d_n)$
-- **数量矩阵**：$kI$（$k$ 为常数）
-- **三角矩阵**：上三角矩阵、下三角矩阵
+### 1.2 常用特殊矩阵
 
-## 2. 矩阵的加法
+| 名称 | 定义 | 记号 |
+| --- | --- | --- |
+| 零矩阵 | 所有元素为零 | $O$ |
+| 单位矩阵 | 主对角线为 1，其余为 0 的方阵 | $I$（或 $E$） |
+| 对角矩阵 | 非主对角线元素全为零的方阵 | $\text{diag}(d_1, \ldots, d_n)$ |
+| 数量矩阵 | $kI$（$k$ 为常数） | $kI$ |
+| 上（下）三角矩阵 | 主对角线以下（上）全为零 | — |
 
-### 2.1 定义
+单位矩阵 $I$ 是矩阵世界的"1"：$AI = IA = A$。
+
+## 2. 矩阵加法与数乘
+
+### 2.1 加法：对应位置相加
 
 设 $A = (a_{ij})_{m \times n}$，$B = (b_{ij})_{m \times n}$，则：
 
 $$A + B = (a_{ij} + b_{ij})_{m \times n}$$
 
-**注意**：只有同型矩阵（行数和列数分别相同）才能相加。
+**前提**：必须是**同型矩阵**（行数、列数分别相同）才能相加。
 
-### 2.2 运算律
+**运算律**：交换律 $A + B = B + A$；结合律 $(A + B) + C = A + (B + C)$；零矩阵 $A + O = A$；负矩阵 $A + (-A) = O$。
 
-1. **交换律**：$A + B = B + A$
-2. **结合律**：$(A + B) + C = A + (B + C)$
-3. **零矩阵**：$A + O = A$
-4. **负矩阵**：$A + (-A) = O$，其中 $-A = (-a_{ij})$
+### 2.2 数乘：每个元素乘同一个数
 
-## 3. 矩阵的数乘
+设 $k$ 为常数，则 $kA = (ka_{ij})_{m \times n}$。
+
+**运算律**：$k(A + B) = kA + kB$；$(k + l)A = kA + lA$；$(kl)A = k(lA)$；$1 \cdot A = A$。
+
+**例 1**：设 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$，$B = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$，求 $2A + 3B$。
+
+**解**：对应位置运算：
+
+$$2A + 3B = \begin{pmatrix} 2 & 4 \\ 6 & 8 \end{pmatrix} + \begin{pmatrix} 0 & 3 \\ 3 & 0 \end{pmatrix} = \begin{pmatrix} 2 & 7 \\ 9 & 8 \end{pmatrix}$$
+
+## 3. 矩阵乘法：行乘列，对位求和
 
 ### 3.1 定义
 
-设 $A = (a_{ij})_{m \times n}$，$k$ 为常数，则：
-
-$$kA = (ka_{ij})_{m \times n}$$
-
-### 3.2 运算律
-
-1. $k(A + B) = kA + kB$
-2. $(k + l)A = kA + lA$
-3. $(kl)A = k(lA)$
-4. $1 \cdot A = A$
-
-## 4. 矩阵的乘法
-
-### 4.1 定义
-
-设 $A = (a_{ij})_{m \times s}$，$B = (b_{ij})_{s \times n}$，则乘积 $AB = (c_{ij})_{m \times n}$，其中：
+设 $A = (a_{ik})_{m \times s}$，$B = (b_{kj})_{s \times n}$，则乘积 $C = AB = (c_{ij})_{m \times n}$，其中：
 
 $$c_{ij} = \sum_{k=1}^{s} a_{ik}b_{kj} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{is}b_{sj}$$
 
-**关键**：$A$ 的列数必须等于 $B$ 的行数才能相乘。
+**维度匹配规则**：$A$ 的**列数**必须等于 $B$ 的**行数**（都是 $s$）才能相乘；结果的形状是"$A$ 的行数 $\times$ $B$ 的列数"。
 
-### 4.2 运算律
+$$\underbrace{(m \times s)}_{A} \cdot \underbrace{(s \times n)}_{B} = \underbrace{(m \times n)}_{C}$$
 
-1. **结合律**：$(AB)C = A(BC)$
-2. **分配律**：$A(B + C) = AB + AC$，$(A + B)C = AC + BC$
-3. **数乘结合**：$k(AB) = (kA)B = A(kB)$
-4. **单位矩阵**：$AI = IA = A$
+**例 2**：设 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$，$B = \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix}$，求 $AB$ 与 $BA$。
 
-### 4.3 矩阵乘法不满足的运算律
-
-**1. 交换律一般不成立**：$AB \neq BA$（一般情况下）
-
-- $AB$ 有意义时 $BA$ 未必有意义
-- 即使 $AB$ 和 $BA$ 都有意义，它们也未必同型
-- 即使同型，$AB$ 和 $BA$ 也未必相等
-
-**2. 消去律不成立**：
-
-- $AB = AC$ 且 $A \neq O$，不能推出 $B = C$
-- $AB = O$，不能推出 $A = O$ 或 $B = O$
-
-**示例**：设 $A = \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}$，$B = \begin{pmatrix} 1 & -1 \\ -1 & 1 \end{pmatrix}$，则 $AB = O$，但 $A \neq O$，$B \neq O$。
-
-### 4.4 乘法示例
-
-设 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$，$B = \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix}$，则：
+**解**：
 
 $$AB = \begin{pmatrix} 1 \times 5 + 2 \times 7 & 1 \times 6 + 2 \times 8 \\ 3 \times 5 + 4 \times 7 & 3 \times 6 + 4 \times 8 \end{pmatrix} = \begin{pmatrix} 19 & 22 \\ 43 & 50 \end{pmatrix}$$
 
 $$BA = \begin{pmatrix} 5 \times 1 + 6 \times 3 & 5 \times 2 + 6 \times 4 \\ 7 \times 1 + 8 \times 3 & 7 \times 2 + 8 \times 4 \end{pmatrix} = \begin{pmatrix} 23 & 34 \\ 31 & 46 \end{pmatrix}$$
 
-可见 $AB \neq BA$。
+$AB \neq BA$——这是矩阵乘法与普通乘法最根本的差异。
 
-## 5. 矩阵的转置
+### 3.2 运算律（成立的）
 
-### 5.1 定义
+1. **结合律**：$(AB)C = A(BC)$；
+2. **分配律**：$A(B + C) = AB + AC$，$(A + B)C = AC + BC$；
+3. **数乘结合**：$k(AB) = (kA)B = A(kB)$；
+4. **单位矩阵**：$AI = IA = A$。
 
-设 $A = (a_{ij})_{m \times n}$，则 $A$ 的**转置** $A^T = (a_{ji})_{n \times m}$，即将 $A$ 的行与列互换。
+### 3.3 不成立的运算律（必考陷阱）
 
-$$A = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ a_{31} & a_{32} \end{pmatrix} \Rightarrow A^T = \begin{pmatrix} a_{11} & a_{21} & a_{31} \\ a_{12} & a_{22} & a_{32} \end{pmatrix}$$
+**陷阱一：交换律不成立** $AB \neq BA$（一般情况下）。
 
-### 5.2 运算律
+- $AB$ 有意义时 $BA$ 可能没意义（维度不匹配）；
+- 即使都有意义，可能不同型；
+- 即使同型，值也常不相等（如例 2）。
 
-1. $(A^T)^T = A$
-2. $(A + B)^T = A^T + B^T$
-3. $(kA)^T = kA^T$
-4. $(AB)^T = B^T A^T$（**注意顺序反转**）
+**陷阱二：消去律不成立**。$AB = AC$ 且 $A \neq O$，不能推出 $B = C$；$AB = O$ 也不能推出 $A = O$ 或 $B = O$。
 
-### 5.3 特殊矩阵
+**例 3**（零因子）：设 $A = \begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}$，$B = \begin{pmatrix} 1 & -1 \\ -1 & 1 \end{pmatrix}$，则：
 
-- **对称矩阵**：$A^T = A$，即 $a_{ij} = a_{ji}$
-- **反对称矩阵**：$A^T = -A$，即 $a_{ij} = -a_{ji}$（主对角线元素为零）
+$$AB = \begin{pmatrix} 1 \times 1 + 1 \times (-1) & 1 \times (-1) + 1 \times 1 \\ 1 \times 1 + 1 \times (-1) & 1 \times (-1) + 1 \times 1 \end{pmatrix} = \begin{pmatrix} 0 & 0 \\ 0 & 0 \end{pmatrix} = O$$
 
-**性质**：
+但 $A \neq O$ 且 $B \neq O$。**两个非零矩阵相乘可能得到零矩阵**，这是"数"的世界里永远不会发生的事。
 
-- 任意方阵 $A$ 可表示为对称部分与反对称部分之和：$A = \dfrac{A + A^T}{2} + \dfrac{A - A^T}{2}$
-- $AA^T$ 和 $A^TA$ 都是对称矩阵
+## 4. 矩阵的转置
 
-## 6. 方阵的幂
+### 4.1 定义
+
+把 $A$ 的行与列互换得到 $A^T$：$(A^T)_{ij} = a_{ji}$。
+
+$$A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \end{pmatrix} \Rightarrow A^T = \begin{pmatrix} 1 & 3 & 5 \\ 2 & 4 & 6 \end{pmatrix}$$
+
+### 4.2 运算律
+
+1. $(A^T)^T = A$；
+2. $(A + B)^T = A^T + B^T$；
+3. $(kA)^T = kA^T$；
+4. $(AB)^T = B^TA^T$——**注意顺序反转**（"穿衣脱衣"法则：先穿的外套最后脱，先乘的矩阵最后转置）。
+
+### 4.3 对称矩阵与反对称矩阵
+
+- **对称矩阵**：$A^T = A$（$a_{ij} = a_{ji}$）；
+- **反对称矩阵**：$A^T = -A$（$a_{ij} = -a_{ji}$，主对角线必为零）。
+
+**两个重要结论**：
+
+1. 任意方阵可拆成对称与反对称部分之和：$A = \dfrac{A + A^T}{2} + \dfrac{A - A^T}{2}$；
+2. $AA^T$ 与 $A^TA$ 恒为对称矩阵（验证：$(AA^T)^T = (A^T)^TA^T = AA^T$）。
+
+**例 4**：验证 $(AB)^T = B^TA^T$。设 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$，$B = \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix}$。
+
+**解**：$AB = \begin{pmatrix} 19 & 22 \\ 43 & 50 \end{pmatrix}$，$(AB)^T = \begin{pmatrix} 19 & 43 \\ 22 & 50 \end{pmatrix}$；
+
+$$B^TA^T = \begin{pmatrix} 5 & 7 \\ 6 & 8 \end{pmatrix}\begin{pmatrix} 1 & 3 \\ 2 & 4 \end{pmatrix} = \begin{pmatrix} 19 & 43 \\ 22 & 50 \end{pmatrix}$$
+
+两边相等，验证通过。
+
+## 5. 方阵的幂与多项式
+
+### 5.1 幂的定义
+
+$A^k = \underbrace{A \cdot A \cdots A}_{k \text{ 个}}$，规定 $A^0 = I$。运算律：$A^k A^l = A^{k+l}$，$(A^k)^l = A^{kl}$。
+
+**注意**：$(AB)^k \neq A^kB^k$（一般情况），原因还是交换律不成立。
+
+### 5.2 求幂技巧：拆成"I + 幂零矩阵"
+
+**例 5**：设 $A = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}$，求 $A^n$。
+
+**解**：把 $A$ 拆成 $I + B$，其中 $B = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}$。计算 $B^2 = O$（幂零矩阵）。因为 $IB = BI$（$I$ 与任何矩阵可交换），可用二项式展开：
+
+$$A^n = (I + B)^n = I + nB + \binom{n}{2}B^2 + \cdots = I + nB = \begin{pmatrix} 1 & n \\ 0 & 1 \end{pmatrix}$$
+
+**思路点拨**：$B^2 = O$ 使二项式展开"在第 2 项后截断"，这是处理幂零扰动的标准手法。
+
+### 5.3 矩阵多项式
+
+设 $f(x) = a_m x^m + \cdots + a_1 x + a_0$，则 $f(A) = a_m A^m + \cdots + a_1 A + a_0 I$。
+
+**性质**：若 $A\boldsymbol{\alpha} = \lambda\boldsymbol{\alpha}$（$\lambda$ 为特征值），则 $f(A)\boldsymbol{\alpha} = f(\lambda)\boldsymbol{\alpha}$——矩阵多项式把特征值"代入"多项式，这是 025 文档的伏笔。
+
+## 6. 矩阵的迹
 
 ### 6.1 定义
 
-设 $A$ 为 $n$ 阶方阵，$k$ 为正整数，则：
-
-$$A^k = \underbrace{A \cdot A \cdots A}_{k \text{ 个}}$$
-
-规定 $A^0 = I$。
-
-### 6.2 运算律
-
-1. $A^k \cdot A^l = A^{k+l}$
-2. $(A^k)^l = A^{kl}$
-
-**注意**：$(AB)^k \neq A^k B^k$（一般情况下），因为矩阵乘法不满足交换律。
-
-### 6.3 方阵幂的计算技巧
-
-**方法一：对角化法**
-
-若 $A = P\Lambda P^{-1}$，则 $A^k = P\Lambda^k P^{-1}$。
-
-**方法二：递推法**
-
-找出 $A^k$ 的递推关系。
-
-**方法三：二项式展开**
-
-若 $A = B + C$ 且 $BC = CB$，则：
-
-$$A^k = (B+C)^k = \sum_{i=0}^{k} \binom{k}{i} B^{k-i}C^i$$
-
-**示例**：设 $A = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}$，求 $A^n$。
-
-$$A = I + B, \quad B = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}, \quad B^2 = O$$
-
-$$A^n = (I + B)^n = I + nB = \begin{pmatrix} 1 & n \\ 0 & 1 \end{pmatrix}$$
-
-### 6.4 方阵多项式
-
-设 $f(x) = a_mx^m + a_{m-1}x^{m-1} + \cdots + a_1x + a_0$，则方阵 $A$ 的多项式为：
-
-$$f(A) = a_mA^m + a_{m-1}A^{m-1} + \cdots + a_1A + a_0I$$
-
-**性质**：若 $A\boldsymbol{\alpha} = \lambda\boldsymbol{\alpha}$，则 $f(A)\boldsymbol{\alpha} = f(\lambda)\boldsymbol{\alpha}$。
-
-## 7. 矩阵的迹
-
-### 7.1 定义
-
-$n$ 阶方阵 $A = (a_{ij})$ 的**迹**（trace）定义为主对角线元素之和：
+$n$ 阶方阵 $A = (a_{ij})$ 的**迹**为主对角线元素之和：
 
 $$\text{tr}(A) = \sum_{i=1}^{n} a_{ii}$$
 
-### 7.2 性质
+### 6.2 性质
 
-1. $\text{tr}(A + B) = \text{tr}(A) + \text{tr}(B)$
-2. $\text{tr}(kA) = k \cdot \text{tr}(A)$
-3. $\text{tr}(A^T) = \text{tr}(A)$
-4. $\text{tr}(AB) = \text{tr}(BA)$（$A$ 为 $m \times n$，$B$ 为 $n \times m$）
-5. $\text{tr}(A) = \lambda_1 + \lambda_2 + \cdots + \lambda_n$（$\lambda_i$ 为 $A$ 的特征值）
+1. $\text{tr}(A + B) = \text{tr}(A) + \text{tr}(B)$；
+2. $\text{tr}(kA) = k\,\text{tr}(A)$；
+3. $\text{tr}(A^T) = \text{tr}(A)$；
+4. $\text{tr}(AB) = \text{tr}(BA)$（$A$ 为 $m \times n$，$B$ 为 $n \times m$——注意此时 $AB$ 是 $m$ 阶、$BA$ 是 $n$ 阶，但迹相等！）；
+5. $\text{tr}(A) = \lambda_1 + \lambda_2 + \cdots + \lambda_n$（特征值之和）。
 
-## 参考文献
+迹在深度学习中有直接应用：神经网络损失函数中常用 $\text{tr}(A^T B)$ 表示矩阵内积（Frobenius 内积），优化理论里到处可见。
 
-3Blue1Brown 线性代数的本质：https://www.3blue1brown.com/topics/linear-algebra
-MIT 18.06：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-NumPy 文档：https://numpy.org/doc/stable/
-Interactive Linear Algebra：https://textbooks.math.gatech.edu/ila/
+## 7. 常见错误与对策
 
-## 延伸阅读
+| 常见错误 | 错误类型 | 原因分析 | 纠正方法 |
+| --- | --- | --- | --- |
+| 两个维度不匹配的矩阵强行相乘 | 维度错误 | 没检查"前列 = 后行" | 相乘前先写维度：$(m\times s)(s\times n)$ 才合法 |
+| 默认 $AB = BA$ | 交换律误用 | 把数的乘法习惯带进来 | 做乘法后随手验证：$AB$ 与 $BA$ 未必相等 |
+| 由 $AB = O$ 推出 $A = O$ 或 $B = O$ | 消去律误用 | 不知"零因子"存在 | 记住例 3：非零矩阵乘积可能为零 |
+| 由 $AB = AC$ 推出 $B = C$ | 消去律误用 | 数的世界里的"约分"习惯 | 矩阵乘法没有消去律；$A$ 可逆时才可"约"（见 008） |
+| 转置乘积忘了反序：$(AB)^T$ 写成 $A^TB^T$ | 公式错误 | 顺序记忆混乱 | 记"穿衣脱衣"：后穿（先乘的）的先脱（先转置） |
+| 把 $|AB|$ 与 $AB$ 混用 | 概念混淆 | 没区分矩阵与行列式 | $AB$ 是矩阵，$|AB| = |A||B|$ 是数（只对方阵） |
 
-线性代数基础，见 029-linear-algebra 模块文档。
-微积分与优化，见 027-calculus 模块。
-数据分析（PCA/矩阵），见 051-data-analysis 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供线性代数课程。
+## 8. 实战练习
 
-## 深度专题扩展
+**练习 1**：设 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$，$B = \begin{pmatrix} 4 & 3 \\ 2 & 1 \end{pmatrix}$，求 $A + B$、$2A - B$。
 
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
+提示：对应位置运算。
 
-### 13.1 矩阵分解体系
+参考答案要点：$A + B = \begin{pmatrix} 5 & 5 \\ 5 & 5 \end{pmatrix}$；$2A - B = \begin{pmatrix} -2 & 1 \\ 4 & 7 \end{pmatrix}$。
 
-LU：消元分解，解方程组；QR：正交化，稳定最小二乘。
-特征分解：对称矩阵可正交对角化；主成分分析基础。
-SVD：A=UΣVᵀ，任意矩阵；低秩近似与压缩。
-选择：一般求解 LU/QR，分析用 SVD/特征分解。
+**练习 2**：设 $A = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}$，$B = \begin{pmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{pmatrix}$，求 $AB$。
 
-### 13.2 线性变换的几何
+提示：$A$ 是 $2 \times 3$，$B$ 是 $3 \times 2$，结果为 $2 \times 2$。
 
-矩阵乘法 = 基向量的新位置；行列式 = 面积/体积缩放因子。
-特征向量：变换中方向不变只伸缩的方向。
-秩：变换后空间的维数（塌缩程度）。
-应用：理解梯度、雅可比、神经网络层。
+参考答案要点：$AB = \begin{pmatrix} 1+0+3 & 0+2+3 \\ 4+0+6 & 0+5+6 \end{pmatrix} = \begin{pmatrix} 4 & 5 \\ 10 & 11 \end{pmatrix}$。
+
+**练习 3**：验证 $(A + B)(A - B) = A^2 - B^2$ 在矩阵世界一般不成⽴，其中 $A = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}$，$B = \begin{pmatrix} 0 & 0 \\ 1 & 0 \end{pmatrix}$。
+
+提示：展开时 $(A + B)(A - B) = A^2 - AB + BA - B^2$，只有 $AB = BA$ 时才等于 $A^2 - B^2$。
+
+参考答案要点：$AB = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}$，$BA = \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix}$，$AB \neq BA$，故公式不成立——这就是"乘法公式"在矩阵世界的失效案例。
+
+**练习 4**：设 $A = \begin{pmatrix} 1 & 2 \\ 0 & 3 \end{pmatrix}$，求 $A^3$。
+
+提示：$A^3 = A^2 \cdot A$，逐步乘。
+
+参考答案要点：$A^2 = \begin{pmatrix} 1 & 8 \\ 0 & 9 \end{pmatrix}$，$A^3 = \begin{pmatrix} 1 & 26 \\ 0 & 27 \end{pmatrix}$。
+
+**练习 5**：证明 $A + A^T$ 是对称矩阵、$A - A^T$ 是反对称矩阵。
+
+提示：直接对转置验证。
+
+参考答案要点：$(A + A^T)^T = A^T + (A^T)^T = A^T + A$；$(A - A^T)^T = A^T - A = -(A - A^T)$。
+
+## 9. 一句话记忆
+
+矩阵运算是"表"的批量化操作：**加法对位相加、数乘逐格放大、乘法行乘列求和、转置行列互换**——而"交换律与消去律双双失效"是它与普通数运算的最大分水岭。
+
+## 10. 参考链接与延伸阅读
+
+### 参考链接
+
+- 同济大学数学科学学院：《工程数学 线性代数（第七版）》，高等教育出版社，第 2 章 §2"矩阵的运算"：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
+- 机器学习数学基础开源书（矩阵运算与编程实践对照）：https://lqlab.readthedocs.io/en/latest/math4ML/linearalgebra/matrixoperation.html
+- NumPy 官方文档（矩阵乘法的编程实现参考）：https://numpy.org/doc/stable/reference/generated/numpy.dot.html
+
+### 延伸阅读
+
+- 矩阵乘法的几何解释（线性变换的复合），见 001 行列式的几何意义部分与 024 向量空间示例。
+- 转置与行列式的关系 $|A^T| = |A|$，见 002 行列式基本性质。
+- 有了乘法，什么时候能"除"？见 008 逆矩阵。

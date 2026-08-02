@@ -6,7 +6,7 @@ difficulty: intermediate
 title: 'SSH 与 HTTPS 远程配置'
 module: github
 category: 'GitHub Basics'
-description: 'SSH 与 HTTPS 远程配置对比、公钥配置、HTTPS+PAT 配置指南。'
+description: 'SSH 与 HTTPS 远程配置对比、公钥配置、HTTPS+PAT 配置指南与故障排查。'
 author: Anonymous
 related:
   - github/账户注册与双因素认证(2FA)
@@ -14,336 +14,284 @@ related:
   - github/协作开发规范
   - github/README文件
 prerequisites: []
-updated: '2026-08-01'
+updated: '2026-08-02'
 ---
 
-## 1. 背景
+## 0. 从一个生活场景说起：钥匙与门禁卡
 
-与远程 **GitHub 仓库（repository）** 通信是日常开发中不可或缺的操作，主要有两种认证方式：
+想象你所在的公司大楼有两种进门方式：**钥匙（SSH）** 和 **门禁卡（HTTPS）**。
 
-- **SSH（Secure Shell）**：使用非对称密钥对进行认证
-- **HTTPS**：使用 **PAT（个人访问令牌）** 作为密码替代
-  选择哪种方式取决于多种因素，如团队规范、网络环境、安全性要求等。本指南将详细介绍两种方式的配置和使用方法。
+- **钥匙**：配好之后天天随身带，开门不需要联网验证、不用输密码——但第一次配钥匙要花点功夫（生成密钥对），而且钥匙丢了很麻烦。
+- **门禁卡**：人人都有、发卡简单，但每次进门都要"刷卡 + 输入临时口令"（输入 PAT），口令还会过期，过期就得重新领。
 
-## 2. 原理对比
+GitHub 远程连接正好对应这两种方式：**SSH** 用非对称密钥对认证，配置一次长期免密；**HTTPS** 用"用户名 + 个人访问令牌（PAT）"认证，简单但每次操作需要凭据。本篇采用**对比驱动**的写法，把两种方式从原理到配置全程对照，帮你做出适合自己的选择。
 
-| 特性       | SSH                        | HTTPS                  |
-| ---------- | -------------------------- | ---------------------- |
-| 认证方式   | 非对称密钥对（公钥/私钥）  | 用户名 + PAT           |
-| 端口       | 22                         | 443                    |
-| 安全性     | 高（私钥本地存储）         | 中（PAT 需要妥善保管） |
-| 网络兼容性 | 可能被防火墙阻止           | 几乎所有网络都支持     |
-| 配置复杂度 | 稍高（需要生成和管理密钥） | 简单（只需生成 PAT）   |
-| 适用场景   | 高频推送、多设备开发       | 偶尔操作、受限网络环境 |
+## 1. 原理讲解：两种认证方式对比
 
-## 3. SSH：生成密钥与配置
+### 1.1 直观对比表
 
-### 3.1 生成 SSH 密钥
+| 特性 | SSH | HTTPS |
+| :--- | :--- | :--- |
+| 认证方式 | 非对称密钥对（公钥 + 私钥） | 用户名 + PAT（个人访问令牌） |
+| 默认端口 | 22（可改用 443） | 443 |
+| 首次配置 | 稍复杂：生成密钥、添加公钥 | 简单：生成 PAT 即可 |
+| 日常体验 | 配置后免密，适合高频推送 | 凭据管理器记住后基本免密 |
+| 安全性 | 私钥保存在本地，安全性高 | PAT 泄露风险需注意保管 |
+| 网络兼容性 | 部分企业防火墙会拦截 22 端口 | 几乎不被拦截（走 HTTPS 443） |
+| 适用场景 | 多设备高频开发、长期项目 | 偶尔操作、受限网络环境 |
 
-#### 3.1.1 使用 Ed25519 算法（推荐）
+### 1.2 SSH 原理：一步步看懂
 
-```bash
- # Windows 系统
- ssh-keygen -t ed25519 -C "you@example.com" -f "%USERPROFILE%\.ssh\id_ed25519_github" -N ""
- # macOS/Linux 系统
- ssh-keygen -t ed25519 -C "you@example.com" -f "~/.ssh/id_ed25519_github" -N ""
- # 参数说明：
- # -t ed25519：使用 Ed25519 算法，更安全且密钥文件更小
- # -C "you@example.com"：添加注释，通常使用邮箱
- # -f：指定密钥文件路径和名称
- # -N ""：设置空密码短语，生产环境建议设置密码短语
-```
+1. 本地生成一对密钥：**公钥（.pub）** 和 **私钥（无后缀）**。
+2. 把**公钥**上传到 GitHub 账户（Settings → SSH and GPG keys）。
+3. 连接时，GitHub 用公钥加密一段"挑战"发送给你，本地用**私钥**解密并回应。
+4. GitHub 验证通过，完成认证。
 
-#### 3.1.2 使用 RSA 算法（兼容性更好）
+> 关键点：**私钥绝不外传**，公钥随便分享。私钥泄露 = 钥匙被复制，攻击者可冒充你访问仓库。
 
-```bash
- # Windows 系统
- ssh-keygen -t rsa -b 4096 -C "you@example.com" -f "%USERPROFILE%\.ssh\id_rsa_github" -N ""
- # macOS/Linux 系统
- ssh-keygen -t rsa -b 4096 -C "you@example.com" -f "~/.ssh/id_rsa_github" -N ""
- # 参数说明：
- # -t rsa：使用 RSA 算法
- # -b 4096：密钥长度为 4096 位
-```
+### 1.3 HTTPS + PAT 原理
 
-### 3.2 查看和复制公钥
+- 2021 年后 GitHub 不再接受账户密码做 Git 认证，改为 **PAT（个人访问令牌）**。
+- PAT 是你在 GitHub 设置中生成的"带权限的临时密码"，可以设置**有效期**（30/60/90 天等）和**权限范围**（scopes）。
+- 本地通过**凭据管理器**（Windows 的 Git Credential Manager、macOS 的 keychain）保存 PAT，避免每次输入。
+
+## 2. SSH 配置：从生成到使用
+
+### 2.1 生成密钥对
 
 ```bash
- # Windows 系统
- type %USERPROFILE%\.ssh\id_ed25519_github.pub
- # macOS/Linux 系统
- cat ~/.ssh/id_ed25519_github.pub
- # 复制输出的公钥内容，包括 ssh-ed25519 前缀和邮箱后缀
+# 推荐 Ed25519 算法（更安全、文件更小）
+ssh-keygen -t ed25519 -C "you@example.com" -f ~/.ssh/id_ed25519_github
+# 参数说明：
+#   -t ed25519  使用 Ed25519 算法
+#   -C "..."    添加注释（建议用你的 GitHub 邮箱）
+#   -f 路径     指定密钥保存路径和文件名（Windows 可写 %USERPROFILE%\.ssh\id_ed25519_github）
+#   -N ""       空密码短语；生产环境建议设置密码短语
 ```
 
-### 3.3 在 GitHub 上添加公钥
-
-1. 登录 GitHub，点击头像 → Settings → SSH and GPG keys
-2. 点击 "New SSH key" 按钮
-3. 在 "Title" 字段中输入密钥名称（如 "My Laptop"）
-4. 在 "Key" 字段中粘贴复制的公钥内容
-5. 点击 "Add SSH key" 按钮完成添加
-   **截图占位**：`[图 02-1] SSH 公钥已添加列表`
-
-### 3.4 测试 SSH 连接
+### 2.2 启动 ssh-agent 并加载私钥
 
 ```bash
- # 测试默认 GitHub 连接
- ssh -T git@github.com
- # 测试指定密钥文件的连接
- ssh -i "%USERPROFILE%\.ssh\id_ed25519_github" -T git@github.com # Windows
- ssh -i "~/.ssh/id_ed25519_github" -T git@github.com # macOS/Linux
- # 首次连接会提示验证主机指纹，确认后输入 yes
- # 成功时显示：Hi username! You've successfully authenticated...
+# Windows（PowerShell）
+Start-Service ssh-agent
+ssh-add "$env:USERPROFILE\.ssh\id_ed25519_github"
+# macOS / Linux
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519_github
+# 查看已加载的密钥
+ssh-add -l
 ```
 
-### 3.5 配置 ssh-agent 管理密钥
+### 2.3 复制公钥并添加到 GitHub
 
 ```bash
- # 启动 ssh-agent
- # Windows 系统
- Start-Service ssh-agent # PowerShell
- # 或
- ssh-agent cmd.exe # CMD
- # macOS/Linux 系统
- eval "$(ssh-agent -s)"
- # 添加私钥到 ssh-agent
- # Windows 系统
- ssh-add "%USERPROFILE%\.ssh\id_ed25519_github"
- # macOS/Linux 系统
- ssh-add ~/.ssh/id_ed25519_github
- # 查看已添加的密钥
- ssh-add -l
+# 查看公钥内容（把整行复制下来）
+cat ~/.ssh/id_ed25519_github.pub
+# Windows: type %USERPROFILE%\.ssh\id_ed25519_github.pub
 ```
 
-### 3.6 多账户配置：SSH config
+网页操作：头像 → **Settings** → **SSH and GPG keys** → **New SSH key** → 填写标题（如 "My Laptop"）→ 粘贴公钥 → **Add SSH key**。
+
+### 2.4 测试连接
+
+```bash
+ssh -T git@github.com
+# 首次连接会提示确认主机指纹，输入 yes 回车
+# 成功输出：Hi username! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+> 官方提醒：如果输出包含你的用户名即成功；若提示 `Permission denied (publickey)`，按第 5 节排查。
+
+### 2.5 使用 SSH 克隆与推送
+
+```bash
+# 克隆（注意是 git@github.com: 开头）
+git clone git@github.com:username/repository.git
+
+# 日常推送流程
+cd repository
+git add .
+git commit -m "feat: update"
+git push origin main
+```
+
+## 3. HTTPS 配置：从生成 PAT 到使用
+
+### 3.1 生成 PAT
+
+1. 进入 **Settings → Developer settings → Personal access tokens**。
+2. **Fine-grained token（细粒度令牌，推荐）**：可选择仅授权特定仓库、按需勾选具体权限、设置过期时间。
+3. 或 **Tokens (classic)**：勾选 scopes，推送代码选 `repo`。
+4. 点击 **Generate token**，**立即复制保存**（离开页面后无法再次查看）。
+
+### 3.2 配置凭据管理器
+
+```bash
+# Windows：Git Credential Manager
+git config --global credential.helper manager
+# macOS
+git config --global credential.helper osxkeychain
+# Linux
+git config --global credential.helper libsecret
+# 验证配置
+git config --global --get credential.helper
+```
+
+### 3.3 使用 HTTPS 克隆与推送
+
+```bash
+# 克隆
+git clone https://github.com/username/repository.git
+
+# 首次推送会提示输入：
+#   用户名：GitHub 用户名
+#   密码：粘贴 PAT（不是账户密码！）
+git push origin main
+
+# 查看远程地址 / 切换协议
+git remote -v
+git remote set-url origin https://github.com/username/repository.git   # HTTPS -> 已是 HTTPS
+git remote set-url origin git@github.com:username/repository.git        # 切到 SSH
+```
+
+## 4. 多账户场景：SSH config 配置
+
+同时使用个人账户和公司账户时，用 `~/.ssh/config` 区分：
 
 ```sshconfig
- # 文件路径：~/.ssh/config（Windows 同路径）
- # 个人 GitHub 账户
- Host github.com-personal
+# 文件：~/.ssh/config
+# 个人账户
+Host github.com-personal
   HostName github.com
   User git
   IdentityFile ~/.ssh/id_ed25519_personal
-  IdentitiesOnly yes # 只使用指定的密钥
- # 工作 GitHub 账户
- Host github.com-work
+  IdentitiesOnly yes
+
+# 公司账户
+Host github.com-work
   HostName github.com
   User git
   IdentityFile ~/.ssh/id_ed25519_work
   IdentitiesOnly yes
- # 配置说明：
- # Host：自定义主机别名
- # HostName：实际主机名
- # User：登录用户名，GitHub 固定为 git
- # IdentityFile：指定使用的私钥文件
- # IdentitiesOnly：只使用配置中指定的密钥
 ```
 
-### 3.7 使用 SSH 克隆和推送
-
 ```bash
- # 使用默认 SSH 配置克隆
- git clone git@github.com:username/repository.git
- # 使用指定账户克隆
- git clone git@github.com-personal:username/personal-repo.git
- git clone git@github.com-work:company/work-repo.git
- # 推送代码
- cd repository
- git add .
- git commit -m "Update files"
- git push origin main
+# 对应克隆命令
+git clone git@github.com-personal:username/personal-repo.git
+git clone git@github.com-work:company/work-repo.git
 ```
 
-## 4. HTTPS：PAT 与凭据管理
+## 5. 高级配置：代理、自动加载与凭据安全
 
-### 4.1 生成个人访问令牌 (PAT)
+### 5.1 SSH 走代理（企业网络）
 
-#### 4.1.1 生成 Fine-grained token（推荐）
+企业网络常需代理才能出网，可在 `~/.ssh/config` 中为 GitHub 配置代理命令：
 
-1. 登录 GitHub，点击头像 → Settings → Developer settings → Personal access tokens → Fine-grained tokens
-2. 点击 "Generate new token" 按钮
-3. 填写以下信息：
-
-- Token name：令牌名称（如 "My Laptop HTTPS"）
-- Expiration：过期时间（建议 30-90 天）
-- Repository access：选择访问权限（可选择特定仓库或所有仓库）
-- Permissions：根据需要选择具体权限
-
-4. 点击 "Generate token" 按钮
-5. 复制生成的令牌，离开页面后将无法再次查看
-
-#### 4.1.2 生成 Classic token
-
-1. 登录 GitHub，点击头像 → Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. 点击 "Generate new token" → "Generate new token (classic)"
-3. 填写以下信息：
-
-- Note：令牌名称
-- Expiration：过期时间
-- Scopes：选择所需权限（如 `repo`、`gist` 等）
-
-4. 点击 "Generate token" 按钮
-5. 复制生成的令牌
-   **截图占位**：`[图 02-2] Fine-grained token 权限勾选界面`
-
-### 4.2 配置 Git 凭据管理
-
-```bash
- # Windows 系统：使用 Git Credential Manager
- git config --global credential.helper manager
- # macOS 系统：使用 osxkeychain
- git config --global credential.helper osxkeychain
- # Linux 系统：使用 libsecret
- git config --global credential.helper libsecret
- # 验证配置
- git config --global --get credential.helper
-```
-
-### 4.3 使用 HTTPS 克隆和推送
-
-```bash
- # 克隆仓库
- git clone https://github.com/username/repository.git
- # 首次推送时，系统会提示输入用户名和密码：
- # 用户名：GitHub 用户名
- # 密码：粘贴生成的 PAT
- # 查看远程配置
- git remote -v
- # 更改远程 URL 从 SSH 到 HTTPS
- git remote set-url origin https://github.com/username/repository.git
- # 更改远程 URL 从 HTTPS 到 SSH
- git remote set-url origin git@github.com:username/repository.git
-```
-
-### 4.4 管理 PAT
-
-- **定期轮换**：设置合理的过期时间，到期前生成新令牌
-- **最小权限**：只授予必要的权限范围
-- **安全存储**：使用密码管理器存储 PAT，避免明文存储
-- **撤销令牌**：当设备丢失或令牌泄露时，及时在 GitHub 上撤销
-
-## 5. 常见问题与解决方案
-
-| 问题                          | 原因                                                             | 解决方案                                                        |
-| ----------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
-| Permission denied (publickey) | 公钥未添加到 GitHub、私钥未加载到 ssh-agent、SSH config 配置错误 | 检查公钥是否已添加、使用 ssh-add 加载私钥、检查 SSH config 配置 |
-| Host key verification failed  | 主机指纹不匹配，可能是中间人攻击                                 | 确认 GitHub 官方指纹后再连接                                    |
-| PAT 过期                      | Classic token 设置了有效期                                       | 生成新的 PAT 并更新凭据                                         |
-| HTTPS 连接失败                | 网络问题、代理设置、企业 MITM                                    | 检查网络连接、配置代理、信任企业根证书                          |
-| 多账户认证冲突                | 多个 SSH 密钥或 PAT 管理混乱                                     | 使用 SSH config 配置多账户、为不同账户使用不同 PAT              |
-
-### 5.1 故障诊断脚本
-
-```bash
- # 检查 SSH 配置
- ssh -v git@github.com # 详细输出 SSH 连接过程
- # 检查 Git 远程配置
- git remote -v
- # 检查 Git 凭据配置
- git config --list | grep credential
- # 测试 HTTPS 连接
- git ls-remote https://github.com/username/repository.git
- # 测试 SSH 连接
- git ls-remote git@github.com:username/repository.git
-```
-
-## 6. 最佳实践
-
-### 6.1 SSH 最佳实践
-
-- **使用 Ed25519 算法**：更安全且密钥文件更小
-- **设置密码短语**：为私钥设置密码短语，增加安全性
-- **合理命名密钥**：为不同用途的密钥使用明确的命名（如 id_ed25519_personal、id_ed25519_work）
-- **权限设置**：
-- Linux/macOS：`chmod 600 ~/.ssh/id_ed25519_*`
-- Windows：使用 OpenSSH 默认权限
-- **定期备份**：备份私钥文件到安全位置
-- **使用 ssh-agent**：避免每次操作都输入密码短语
-
-### 6.2 HTTPS 最佳实践
-
-- **使用 Fine-grained token**：提供更精细的权限控制
-- **设置合理过期时间**：建议 30-90 天
-- **最小权限原则**：只授予必要的权限
-- **使用凭据管理器**：避免每次操作都输入 PAT
-- **定期轮换**：到期前生成新令牌
-- **CI/CD 环境**：使用 GitHub Actions 提供的 `GITHUB_TOKEN`，不使用个人 PAT
-
-### 6.3 团队协作最佳实践
-
-- **统一认证方式**：团队内统一使用 SSH 或 HTTPS
-- **文档化配置**：创建团队配置文档，包含认证方式和步骤
-- **密钥管理**：建立密钥轮换和备份策略
-- **安全审计**：定期检查已添加的 SSH 密钥和 PAT
-
-## 7. 高级配置
-
-### 7.1 使用 SSH 代理
-
-```bash
- # 配置 SSH 通过代理连接
- # ~/.ssh/config
- Host github.com
+```sshconfig
+Host github.com
   HostName github.com
   User git
   ProxyCommand nc -X 5 -x proxy.example.com:1080 %h %p
   IdentityFile ~/.ssh/id_ed25519_github
 ```
 
-### 7.2 自动加载 SSH 密钥
+### 5.2 自动加载密钥（免每次输密码短语）
 
 ```bash
- # Windows：在 PowerShell 配置文件中添加
- # ~/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1
- Start-Service ssh-agent
- ssh-add ~/.ssh/id_ed25519_github
- # macOS/Linux：在 ~/.bashrc 或 ~/.zshrc 中添加
- if [ -z "$SSH_AUTH_SOCK" ]; then
+# Windows：在 PowerShell 配置文件中添加
+Start-Service ssh-agent
+ssh-add ~/.ssh/id_ed25519_github
+
+# macOS/Linux：在 ~/.bashrc 或 ~/.zshrc 中添加
+if [ -z "$SSH_AUTH_SOCK" ]; then
   eval "$(ssh-agent -s)"
   ssh-add ~/.ssh/id_ed25519_github
- fi
+fi
 ```
 
-### 7.3 多仓库配置示例
+### 5.3 凭据安全要点
+
+- **私钥权限**：Linux/macOS 执行 `chmod 600 ~/.ssh/id_ed25519`，防止其他用户读取。
+- **PAT 不落盘**：不要把 PAT 写进脚本或提交到仓库；CI 环境用 GitHub Actions 的 `GITHUB_TOKEN` / secrets 代替个人 PAT。
+- **定期轮换**：PAT 到期前生成新令牌；SSH 密钥若疑泄露立即在 GitHub 上删除并重新生成。
+- **备份私钥**：把私钥加密备份到安全位置，换机时不必重新注册。
+
+### 5.4 故障诊断命令速查
+
+遇到连接问题，按顺序执行以下命令定位：
 
 ```bash
- # 个人仓库使用 SSH
- git remote set-url origin git@github.com-personal:username/personal-repo.git
- # 工作仓库使用 HTTPS
- git remote set-url origin https://github.com/company/work-repo.git
- # 检查配置
- git remote -v
+# 1. 详细查看 SSH 连接过程（关键：确认使用的密钥文件）
+ssh -vT git@github.com
+
+# 2. 确认私钥已加载
+ssh-add -l
+
+# 3. 测试远程仓库可读性（HTTPS / SSH 各试一次）
+git ls-remote https://github.com/username/repository.git
+git ls-remote git@github.com:username/repository.git
+
+# 4. 检查凭据配置
+git config --list | grep credential
+
+# 5. 检查远程地址是否用错协议
+git remote -v
 ```
 
-## 延伸阅读
+典型流程：先用 `ssh -vT` 看是"密钥被拒"还是"连接超时"；密钥被拒查公钥是否在 GitHub 上、私钥是否加载；连接超时查网络与防火墙。
 
-- [GitHub：SSH 密钥](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) <!-- nofollow -->
-- [GitHub：创建个人访问令牌](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) <!-- nofollow -->
-- [GitHub：使用 SSH 代理](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/using-ssh-agent-forwarding) <!-- nofollow -->
-- [Git 官方文档：凭据存储](https://git-scm.com/book/en/v2/Git-Tools-Credential-Storage) <!-- nofollow -->
+## 6. 常见错误与对策
 
-## 参考文献
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 权限被拒绝 | `Permission denied (publickey)` | 公钥未添加到 GitHub、私钥未加载到 ssh-agent、连接了错误的主机 | 检查 Settings → SSH and GPG keys 是否有该公钥；`ssh-add -l` 确认私钥已加载；确认始终用 `git@github.com` 而非你的用户名 |
+| 主机密钥验证失败 | `Host key verification failed` | 主机指纹不匹配（可能是中间人攻击或 known_hosts 混乱） | 对比 GitHub 官方公布的 SSH 密钥指纹，确认无误后再连接；必要时清理 `~/.ssh/known_hosts` 对应条目 |
+| 认证失败 | `Authentication failed` | HTTPS 下误用账户密码；PAT 过期或权限不足 | 重新生成 PAT 并粘贴；设置凭据管理器自动保存 |
+| PAT 过期 | 推送突然失败（401/403） | Classic token 设置了有效期 | 到期前生成新 PAT，用 `git credential-manager` 更新缓存 |
+| 多账户串号 | 提交身份混乱 | 多个密钥/PAT 管理混乱 | 用 SSH config 的 Host 别名区分；为不同账户设置不同 `user.email` |
+| 端口 22 被拦截 | `Connection timed out`（企业网络） | 防火墙阻止 SSH 22 端口 | 改用 HTTPS，或配置 SSH over HTTPS 端口 443（`~/.ssh/config` 中设置 `HostName ssh.github.com` + `Port 443`） |
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+## 7. 实战练习
 
-## 深度专题扩展
+### 练习 1：生成并添加 SSH 密钥（入门）
+- **题目描述**：生成一对 Ed25519 密钥，将公钥添加到 GitHub，并测试连接。
+- **提示**：`ssh-keygen -t ed25519 -C "你的邮箱"`；公钥在 Settings → SSH and GPG keys 添加。
+- **参考答案要点**：`ssh -T git@github.com` 输出 `Hi 用户名!` 即成功；注意私钥不要提交到任何仓库。
 
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
+### 练习 2：生成 PAT 并用 HTTPS 推送（入门）
+- **题目描述**：生成一个 60 天有效期的 Fine-grained token，仅授权一个测试仓库，用它完成一次推送。
+- **提示**：Fine-grained token 在 Developer settings → Personal access tokens 中生成。
+- **参考答案要点**：仓库访问权限选"Only select repositories"；推送时密码框粘贴 PAT；验证成功后删除令牌练习结束。
 
-### 13.1 GitHub Actions 深入
+### 练习 3：切换远程协议（进阶）
+- **题目描述**：把练习 1 中 SSH 克隆的仓库远程地址改为 HTTPS，再改回 SSH，观察 `git remote -v` 变化。
+- **提示**：`git remote set-url origin <新URL>`。
+- **参考答案要点**：改地址不影响本地历史；切换后推送用对应协议的认证方式。
 
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
+### 练习 4：配置多账户（综合）
+- **题目描述**：用 `~/.ssh/config` 配置个人和工作两个 Host 别名，分别克隆对应仓库并确认身份正确。
+- **提示**：按第 4 节配置；`git config user.email` 查看每个仓库的提交身份。
+- **参考答案要点**：`git clone git@github.com-personal:...` 和 `git clone git@github.com-work:...` 使用各自私钥；提交邮箱分别匹配对应账户。
 
-### 13.2 开源协作治理
+### 练习 5：故障排查演练（综合）
+- **题目描述**：人为制造一次认证失败（如删掉 ssh-agent 中已加载的私钥），用诊断命令定位并修复。
+- **提示**：`ssh -vT git@github.com` 查看详细连接过程；`ssh-add -l` 检查密钥。
+- **参考答案要点**：`ssh -v` 输出中查看使用哪个密钥文件、是否被拒绝；重新 `ssh-add` 加载私钥后恢复；HTTPS 场景检查 `git config --list | grep credential`。
 
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+## 8. 一句话记忆
+
+**SSH 像配好的钥匙——配一次长期免密；HTTPS 像门禁卡——发卡简单但要保管好 PAT 并定期换卡；高频开发选 SSH，偶尔访问选 HTTPS。**
+
+## 参考链接与延伸阅读
+
+- [GitHub 文档（官方中文）：使用 SSH 连接 GitHub](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh)
+- [GitHub 文档：测试 SSH 连接](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection)
+- [GitHub 文档：排查 Permission denied (publickey)](https://docs.github.com/zh/authentication/troubleshooting-ssh/error-permission-denied-publickey)
+- [GitHub 文档：创建个人访问令牌（PAT）](https://docs.github.com/zh/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+- [GitHub 文档：GitHub 的 SSH 密钥指纹](https://docs.github.com/zh/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints)
+
+### 延伸阅读
+
+- 2FA 与 PAT 的关系，见 002 篇《账户注册与双因素认证》。
+- gh CLI 自动管理凭据，见 020 篇《GitHub CLI》。
+- 仓库克隆与远程管理，见 003 篇《仓库创建、克隆、归档、删除》。

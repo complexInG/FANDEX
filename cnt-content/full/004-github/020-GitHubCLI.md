@@ -4,9 +4,9 @@ title: 'GitHub-CLI'
 module: github
 category: GitHub
 difficulty: intermediate
-description: 'GitHub CLI（gh）详解：命令行操作仓库、PR、Issue与Actions。'
+description: 'GitHub CLI（gh）详解：安装认证、仓库/PR/Issue/Actions 常用命令与工作流提速技巧。'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - github/密钥扫描
   - github/CodeQL代码扫描
@@ -16,184 +16,371 @@ prerequisites:
   - github/GitHub概述
 ---
 
-## 1. GitHub CLI 概述
+## 0. 从一个生活场景说起：GitHub 的"遥控器"
 
-### 1.1 什么是 gh
+看电视时，你很少走到电视机前按物理按钮，而是用**遥控器（GitHub CLI）** 懒洋洋地换台、调音量。GitHub CLI（命令 `gh`）就是 GitHub 网页版的"遥控器"：不用在浏览器里点来点去，在终端里敲一行命令，就能完成建仓库、提 PR、管 Issue、查 Actions 等几乎全部操作。
 
-GitHub CLI（`gh`）是 GitHub 官方命令行工具，在终端中直接操作 GitHub 功能。
+本篇采用**工具驱动**的结构：先安装"遥控器"（安装认证），再逐个"换台"（仓库/PR/Issue/Actions 等常用命令），最后分享把"遥控器"调教得更顺手的技巧（别名、扩展）。与 046-057 篇的 gh 专项命令速查相呼应，本篇侧重**整体上手路径与组合使用**。
 
-### 1.2 安装
+## 1. 安装与认证：拿到遥控器
+
+### 1.1 安装
 
 ```bash
-# macOS
+# Windows（winget）
+winget install --id GitHub.cli
+
+# macOS（Homebrew）
 brew install gh
 
-# Linux
+# Linux（Ubuntu/Debian）
 sudo apt install gh
 
-# Windows
-winget install GitHub.cli
-
-# 验证
+# 验证安装
 gh --version
 ```
 
-### 1.3 认证
+> Windows 除 winget 外，也可用 MSI 安装包或 Scoop 安装；macOS 还可通过第三方包管理器安装。安装后建议定期升级：Windows 用 `winget upgrade --id GitHub.cli`，macOS 用 `brew upgrade gh`，确保使用最新的命令与安全修复。
+
+### 1.2 登录认证
 
 ```bash
+# 启动交互式登录
 gh auth login
-# 选择 GitHub.com
-# 选择认证方式（浏览器 / Token）
+
+# 按提示选择：
+#   1) GitHub.com（或个人/企业服务器）
+#   2) 认证方式：浏览器登录（推荐）或粘贴 Token
+#   3) 选择 Git 操作协议：HTTPS 或 SSH
+
+# 查看登录状态
 gh auth status
 ```
 
-## 2. 仓库操作
+> 认证成功后，gh 会自动接管 Git 凭据（选择 HTTPS 时），`git push`/`git pull` 不再需要单独配置 PAT 或 SSH。官方把这称为"无需单独的凭据管理器"。
+
+### 1.3 获取帮助：--help 与官方手册
+
+gh 有完善的帮助体系，遇到不确定的命令先查帮助：
 
 ```bash
-# 创建仓库
+# 顶层帮助（列出所有命令族）
+gh help
+
+# 具体命令帮助
+gh pr create --help
+
+# 查看命令手册页
+gh help pr
+```
+
+> 官方资料：完整命令手册见 https://cli.github.com/manual/ ，每个子命令都有参数说明和示例。
+
+## 2. 换台一：仓库操作（gh repo）
+
+```bash
+# 创建仓库（--clone 表示同时克隆到本地）
 gh repo create my-project --public --clone
 gh repo create my-project --private
 
-# 克隆仓库
-gh repo clone user/repo
+# 克隆别人的仓库
+gh repo clone octo-org/octo-repo
 
-# 查看仓库信息
-gh repo view user/repo
+# 查看仓库信息（README 摘要）
+gh repo view octo-org/octo-repo
+# 在浏览器打开仓库
+gh repo view octo-org/octo-repo --web
 
-# Fork 仓库
-gh repo fork user/repo --clone
+# Fork 仓库并克隆
+gh repo fork octo-org/octo-repo --clone
 
-# 列出仓库
-gh repo list
+# 列出自己的仓库
 gh repo list --limit 50
-gh repo list user --language TypeScript
+gh repo list --language TypeScript
+
+# 归档 / 删除（危险操作，谨慎使用）
+gh repo archive OWNER/REPO --yes
+gh repo delete OWNER/REPO --yes
 ```
 
-## 3. Pull Request
+## 3. 换台二：Pull Request（gh pr）
 
 ```bash
-# 创建 PR
+# 创建 PR（--fill 用提交信息自动填充标题与描述）
 gh pr create --title "feat: add auth" --body "描述内容"
-gh pr create --fill    # 使用 commit 信息自动填充
+gh pr create --fill
 
-# 查看 PR
-gh pr list
+# 列出 / 查看 PR
 gh pr list --state open
 gh pr view 123
 
-# 检出 PR
+# 检出某 PR 到本地（自动切换分支）
 gh pr checkout 123
 
 # 审查 PR
 gh pr review 123 --approve
 gh pr review 123 --request-changes -b "需要修改"
 
-# 合并 PR
-gh pr merge 123 --merge
-gh pr merge 123 --squash
-gh pr merge 123 --rebase
+# 合并 PR（三种合并策略）
+gh pr merge 123 --merge     # 合并提交
+gh pr merge 123 --squash    # 压缩合并（推荐，历史干净）
+gh pr merge 123 --rebase    # 变基合并
+
+# 合并后自动删除远程分支
+gh pr merge 123 --squash --delete-branch
 ```
 
-## 4. Issue
+## 4. 换台三：Issue（gh issue）
 
 ```bash
 # 创建 Issue
 gh issue create --title "Bug: login fails" --body "描述"
+# 从文件读取描述
 gh issue create --title "Bug" --body-file bug-template.md
 
-# 查看 Issue
+# 列出 / 查看
 gh issue list
 gh issue list --label bug
+gh issue list --assignee @me
 gh issue view 123
 
-# 关闭 Issue
+# 关闭 / 重新打开
 gh issue close 123
-
-# 重新打开
 gh issue reopen 123
 ```
 
-## 5. Actions
+## 5. 换台四：Actions 与 Workflow（gh workflow / gh run）
 
 ```bash
-# 查看 Workflows
+# 列出仓库的工作流
 gh workflow list
 
-# 触发 Workflow
+# 手动触发工作流（可指定分支）
 gh workflow run ci.yml
 gh workflow run ci.yml --ref feature-branch
 
-# 查看 Run
+# 查看运行记录
 gh run list
 gh run view 123456
-gh run watch       # 实时监控
 
-# 查看 Logs
-gh run view 123456 --log
+# 实时跟随日志（Ctrl+C 停止）
+gh run watch
+
+# 只看失败日志
 gh run view 123456 --log-failed
 ```
 
-## 6. 其他命令
+## 6. 换台五：其他高频命令
 
 ```bash
-# Gist
+# Gist（代码片段）
 gh gist create file.txt
 gh gist list
 
-# Release
+# Release 发布
 gh release create v1.0.0 --title "v1.0.0" --notes "Release notes"
 gh release list
 gh release download v1.0.0
 
-# API 调用
-gh api repos/user/repo/issues
+# 直接调用 REST API
+gh api repos/owner/repo/issues
+# 调用 GraphQL
 gh api graphql -f query='{ viewer { login } }'
 
-# 扩展
+# 搜索代码 / 仓库 / Issue
+gh search code "TODO" --repo owner/repo
+gh search repos --topic machine-learning --limit 20
+
+# 扩展（如 Copilot CLI）
 gh extension install github/gh-copilot
 gh extension list
 ```
 
-## 7. 别名配置
+### 6.1 输出格式化与脚本化：--json + jq
+
+gh 默认输出给人看的文本，加 `--json` 可输出结构化数据，配合 `jq` 处理，适合脚本自动化：
 
 ```bash
-# 设置别名
+# 输出 PR 的编号、标题、状态
+gh pr list --json number,title,state
+
+# 用 jq 提取特定字段
+gh pr list --json number,title --jq '.[] | "\(.number) \(.title)"'
+
+# 输出仓库信息
+gh repo view owner/repo --json name,visibility,defaultBranchRef
+
+# 脚本中跳过交互（--yes、--repo 显式指定）
+gh issue close 12 --repo owner/repo --comment "已修复" --yes
+```
+
+> 官方常见用法示例：`gh issue list --assignee "@me"` 列出分配给你的议题，`gh pr list --author alice` 列出某人的 PR。
+
+### 6.2 gh search 搜索详解
+
+站内搜索也能在命令行完成，适合脚本化筛选：
+
+```bash
+# 搜索代码片段
+gh search code "TODO" --repo owner/repo
+
+# 搜索仓库（按语言/星标/主题筛选）
+gh search repos --language python --stars ">1000" --limit 20
+gh search repos --topic machine-learning --limit 10
+
+# 搜索 Issue 与 PR
+gh search issues --label bug --state open --repo owner/repo
+gh search prs --author alice --state merged
+
+# 结构化输出配合 jq
+gh search repos --topic golang --json fullName,stargazersCount \
+  --jq 'sort_by(-.stargazersCount)[0:5] | .[].fullName'
+```
+
+## 7. 把遥控器调顺手：别名与组合拳
+
+### 7.1 设置别名
+
+```bash
 gh alias set pc 'pr create --fill'
-gh alias set pm 'pr merge --squash'
+gh alias set pm 'pr merge --squash --delete-branch'
 gh alias set il 'issue list'
 
 # 使用别名
 gh pc    # 等价于 gh pr create --fill
 ```
 
-## 参考文献
+### 7.2 工作流组合示例
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+日常"开 PR"一条龙：
 
-## 延伸阅读
+```bash
+# 1. 从 main 创建分支
+git switch -c feat/add-login
+# 2. 开发提交后推送
+git push -u origin feat/add-login
+# 3. 一键创建 PR 并合并时删除分支
+gh pr create --fill
+gh pr merge --squash --delete-branch
+```
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
+"看板式"查看自己手头所有工作：
 
-## 深度专题扩展
+```bash
+gh status
+# 汇总：你创建的/分配给你的 PR 与 Issue 概览
+```
 
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
+### 7.3 多账户切换
 
-### 13.1 GitHub Actions 深入
+```bash
+# 查看当前账户
+gh auth status
+# 切换账户（按需登录第二个账号后）
+gh auth switch
+```
 
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
+### 7.4 命令补全与全局配置
 
-### 13.2 开源协作治理
+- **命令补全**：按 shell 生成补全脚本，Tab 键补全子命令与参数：
 
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+```bash
+# bash
+gh completion -s bash > ~/.gh_completion
+echo 'source ~/.gh_completion' >> ~/.bashrc
+# zsh
+gh completion -s zsh > "${fpath[1]}/_gh"
+# PowerShell
+gh completion -s powershell >> $PROFILE
+```
+
+- **全局配置**：`gh config` 管理默认设置（如默认仓库所有者、首选编辑器、Git 协议）。
+
+```bash
+# 设置默认 Git 协议为 SSH
+gh config set git_protocol ssh
+# 设置首选编辑器
+gh config set editor "code --wait"
+# 查看全部配置
+gh config list
+```
+
+### 7.5 与 046-057 系列的关系
+
+本篇是 gh 的**整体上手路径**；046-057 篇按命令族给出速查手册：
+
+| 主题 | 对应篇目 |
+| :--- | :--- |
+| 认证与多账户 | 046《Gh CLI 认证》 |
+| PR 管理 | 047《Gh PR 管理》 |
+| Issue 管理 | 048《Gh Issue 管理》 |
+| 仓库管理 | 049《Gh Repo 管理》 |
+| Release / Workflow / Gist | 050-052 |
+| 扩展 / API / 搜索 / 标签 / 别名 | 053-057 |
+
+遇到具体命令的完整参数时，查对应篇目或 `gh <命令> --help`。
+
+### 7.6 安全使用习惯
+
+- **不要用 sudo**：gh 认证信息存在用户目录，用 sudo 反而可能读到错误的配置。
+- **危险命令加确认**：`gh repo delete`、`gh release delete` 等破坏性命令习惯性带 `--yes` 前先确认仓库名。
+- **最小 scope**：认证时按需授权，`gh auth refresh` 只补缺的权限（如 `-s repo`、`-s workflow`），不图省事全选。
+- **secrets 不落地**：敏感信息通过仓库 secrets / 环境变量注入，不要写进 gh 脚本。
+- **定期检查**：`gh auth status` 定期查看账户与 scope，离职或换机后 `gh auth logout` 清理。
+
+## 8. 常见错误与对策
+
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 未认证执行命令 | `To use GitHub CLI, run gh auth login` | 尚未登录 | 运行 `gh auth login` 完成浏览器或 Token 认证 |
+| 权限不足 | `GraphQL: Resource not accessible` / 403 | 令牌 scope 不足（如未含 `repo`） | 用 `gh auth refresh -s repo,workflow` 重新授权所需 scope |
+| 命令作用域不对 | 提示 `no GitHub repository found` | 不在仓库目录内执行仓库相关命令 | `cd` 进入仓库目录，或用 `--repo OWNER/REPO` 显式指定 |
+| 推送需要 workflow 权限 | `gh auth status` 提示 scope 缺失 | 首次创建 workflow 文件推送被拒 | 重新登录时授权 `workflow` scope：`gh auth refresh -s workflow` |
+| 别名冲突 | `alias` 设置失败 | 别名与现有命令同名 | 换一个别名，或用 `gh alias delete <名称>` 清理 |
+| 交互提示卡住 | 脚本中命令等待输入 | 缺少 `--yes`/`--confirm` 等非交互参数 | 脚本化时补充 `--yes`、`--json` 等参数跳过交互 |
+
+## 9. 实战练习
+
+### 练习 1：安装并认证（入门）
+- **题目描述**：安装 gh，完成 `gh auth login`，用 `gh auth status` 确认登录状态。
+- **提示**：Windows 用 winget；认证选浏览器方式最省事。
+- **参考答案要点**：`gh --version` 有输出；`gh auth status` 显示已登录的账户名。
+
+### 练习 2：创建并克隆仓库（入门）
+- **题目描述**：用 gh 创建一个私有仓库并克隆到本地，再创建一个文件提交推送。
+- **提示**：`gh repo create demo --private --clone`。
+- **参考答案要点**：本地出现 demo 目录且与远程关联；推送后网页可见文件；体验"全程不打开浏览器"。
+
+### 练习 3：PR 一条龙（进阶）
+- **题目描述**：创建分支 → 修改文件 → 推送 → `gh pr create --fill` → `gh pr merge --squash --delete-branch`，全程命令行完成。
+- **提示**：按 7.2 组合拳；--fill 会用 commit 信息自动生成 PR 标题描述。
+- **参考答案要点**：PR 创建成功并显示编号；合并后远程分支被自动删除；`gh pr list` 无未合并 PR。
+
+### 练习 4：Issue 工作流（进阶）
+- **题目描述**：用 gh 创建一个带标签的 Issue，查看它，再关闭它；用 `gh issue list --label bug` 筛选验证。
+- **提示**：`gh issue create --title "..." --body "..." --label bug`。
+- **参考答案要点**：Issue 出现在列表并带 bug 标签；关闭后 `--state closed` 能查到记录。
+
+### 练习 5：工作流监控与 API（综合）
+- **题目描述**：给仓库配置一个简单的 CI 工作流，用 `gh workflow run` 手动触发、`gh run watch` 观察结果，并用 `gh api` 查询最近一次运行状态。
+- **提示**：工作流文件放 `.github/workflows/`；`gh api repos/OWNER/REPO/actions/runs --jq '.workflow_runs[0].status'`。
+- **参考答案要点**：手动触发成功；`gh run watch` 看到 job 完成；API 返回 running/completed 状态；体会 gh 与 Actions 的联动。
+
+## 10. 一句话记忆
+
+**gh 是 GitHub 的"遥控器"：一条命令搞定仓库、PR、Issue、Actions，认证一次长期免密，别名与扩展让它越用越顺手。**
+
+## 参考链接与延伸阅读
+
+- [GitHub 文档（官方中文）：关于 GitHub CLI](https://docs.github.com/zh/github-cli/github-cli/about-github-cli)
+- [GitHub 文档：GitHub CLI 快速入门](https://docs.github.com/zh/github-cli/github-cli/quickstart)
+- [GitHub CLI 手册（全部子命令）](https://cli.github.com/manual/)
+- [GitHub CLI 仓库（cli/cli）](https://github.com/cli/cli)
+
+### 延伸阅读
+
+- gh 认证与多账户详解，见 046 篇《Gh CLI 认证》。
+- gh PR 管理速查，见 047 篇《Gh PR 管理》。
+- gh Issue 管理速查，见 048 篇《Gh Issue 管理》。
+- gh 仓库/Release/Workflow/Gist/扩展/API 命令，见 049-057 篇。
+- 凭据与 PAT 的底层原理，见 002/004 篇。

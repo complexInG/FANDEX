@@ -4,9 +4,9 @@ title: Projects看板
 module: github
 category: GitHub
 difficulty: intermediate
-description: 'GitHub Projects看板：项目管理、自动化工作流与视图配置。'
+description: 'GitHub Projects深度解析：以"项目白板与便利贴"为主线，讲解表格/看板/时间线三种视图、自定义字段、内置自动化与洞察图表。'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - github/依赖安全选项
   - github/Fork工作流
@@ -16,174 +16,248 @@ prerequisites:
   - github/GitHub概述
 ---
 
-## 1. Projects 概述
+## 0. 从一块白板说起：Projects 就是团队的"项目白板 + 便利贴墙"
 
-### 1.1 什么是 GitHub Projects
+想象你们小组要办一场校园编程马拉松。没有电脑辅助的年代，大家会怎么管这件事？
 
-GitHub Projects 是内置的**项目管理工具**，支持看板视图、表格视图和路线图，可以关联 Issue、PR 和草稿。
+教室墙上挂一块大白板，画上几列：**待办 → 进行中 → 待验收 → 完成**。然后每个人把任务写在便利贴上，往相应列一贴。谁认领了任务，就把自己的便利贴拖到"进行中"；做完一张，撕下来贴到"完成"列。白板旁边还贴着截止日期、负责人、优先级小标记。
 
-### 1.2 Projects V2 特性
+这块白板解决的核心问题只有一个：**让所有人在一眼之间看清"现在做到哪了、接下来做什么"**。
 
-| 特性           | 说明                         |
-| :------------- | :--------------------------- |
-| **多视图**     | 看板、表格、路线图           |
-| **自定义字段** | 文本、数字、日期、单选、迭代 |
-| **自动化**     | 状态变更自动移动卡片         |
-| **过滤器**     | 按字段筛选和分组             |
-| **跨仓库**     | 聚合多个仓库的 Issue         |
+GitHub Projects（项目）就是这块白板的数字化升级版，而便利贴变成了 **Issue（议题）和 Pull Request（拉取请求）**。它不仅保留了"拖拽便利贴"的直观体验，还多了几个实体白板做不到的能力：数据自动同步、多维视图切换、统计图表、自动化流转。
 
-## 2. 创建项目
+本文就沿着"白板"这条线索，把 Projects 讲透。
 
-### 2.1 创建组织项目
+## 1. 直观理解：Projects 是什么
 
-1. 组织页面 → Projects → New project
-2. 选择模板（Board / Table / Roadmap）
-3. 添加仓库和团队
+### 1.1 一个项目长什么样
 
-### 2.2 创建仓库项目
+Projects 是 GitHub 内置的项目管理工具。它的核心是一张可定制的"大表"（背后是数据），但提供三种看它的"视角"（视图）：
 
-1. 仓库 → Projects → New project
-2. 自动关联当前仓库
+| 视图 | 长相 | 对应白板类比 | 适合场景 |
+| :--- | :--- | :--- | :--- |
+| **表格（Table）** | 像 Excel，每行一条任务，每列一个属性 | 白板旁边那张"任务登记表" | 批量编辑、筛选、排序 |
+| **看板（Board）** | 按"状态"分列的卡片墙 | 教室白板本体 | 日常拖拽流转 |
+| **时间线（Roadmap/Timeline）** | 按日期排的横条图 | 墙上贴的甘特图 | 规划里程碑、汇报进度 |
 
-## 3. 自定义字段
+三者看的是**同一批数据**，只是展示方式不同。这就好比同一份班级名单，既可以按身高排队，也可以按学号排队，还可以画成座位表——人还是那些人。
 
-### 3.1 字段类型
+### 1.2 它能管理什么
 
-| 类型              | 说明     | 示例               |
-| :---------------- | :------- | :----------------- |
-| **Text**          | 自由文本 | 备注、描述         |
-| **Number**        | 数字     | 优先级、故事点     |
-| **Date**          | 日期     | 截止日期           |
-| **Single select** | 单选     | 状态、类型         |
-| **Iteration**     | 迭代周期 | Sprint 1、Sprint 2 |
+Projects 里的"便利贴"有三种来源：
 
-### 3.2 推荐字段配置
+- **Issue**：任务、Bug、功能请求（最常用）；
+- **Pull Request**：代码改动；
+- **草稿条目（Draft）**：还没转成 Issue 的临时想法，直接在白板上写，比如"下一步要调研 X 方案"。
+
+## 2. 原理讲解：数据为什么是"活"的
+
+### 2.1 先直观理解
+
+普通便利贴墙的最大痛点：便利贴上的字和实际工作**不同步**。代码里 Bug 修好了，白板上还贴着"进行中"；任务改了负责人，白板没更新。
+
+Projects 用"**双向同步**"解决了这个问题。
+
+### 2.2 再讲原理
+
+当你把某个 Issue 添加到 Project 后，两者之间就建立了**直接引用关系**（官方文档称 projects 由你添加的 Issue 和 PR 构建，信息在变更时自动同步到视图和图表中）：
+
+- **Issue → 项目**：Issue 被关闭时，如果项目配置了内置工作流，卡片状态自动变为"完成"；
+- **项目 → Issue**：你在项目表格里改了负责人、里程碑，Issue 页面上同步生效；
+- **拖拽即修改**：在看板视图把卡片从"进行中"拖到"待验收"，本质上是修改了该条目的"Status 字段"，数据层完全一致。
+
+这种"一处修改、处处生效"的机制，是 Projects 与静态表格的本质区别。
+
+### 2.3 最后看示例
 
 ```
-Status: Backlog → Todo → In Progress → In Review → Done
-Priority:  Critical →  High →  Medium →  Low
-Type:  Bug →  Feature →  Chore →  Docs
-Sprint: Sprint 1, Sprint 2, Sprint 3...
-Estimate: 1, 2, 3, 5, 8, 13
+Issue #42：登录页按钮样式错位   ← 在仓库里创建的 Issue
+    │ 添加到项目
+    ▼
+Projects 条目
+    ├── Status 字段：In Progress（看板视图的"进行中"列）
+    ├── Priority 字段：High（自定义字段）
+    ├── Sprint 字段：Sprint 2（迭代字段）
+    └── 与 Issue #42 双向同步
 ```
 
-## 4. 自动化工作流
+## 3. 操作示例：从创建到投入使用
 
-### 4.1 内置自动化
+### 3.1 创建项目
 
-| 触发条件   | 自动操作                  |
-| :--------- | :------------------------ |
-| Issue 创建 | 添加到项目，状态设为 Todo |
-| PR 创建    | 状态设为 In Review        |
-| PR 合并    | 状态设为 Done             |
-| Issue 关闭 | 状态设为 Done             |
+**组织项目**（适合团队）：进入组织主页 → 点顶部 **Projects** 标签 → **New project** → 选择模板（内置模板有"Bug 追踪""团队待办"等）或从空白开始选 Table/Board/Roadmap 布局。
 
-### 4.2 GitHub Actions 自动化
+**用户/仓库项目**（适合个人）：个人主页或仓库页面 → **Projects** → **New project**。仓库项目会自动关联当前仓库。
+
+### 3.2 添加条目
+
+```text
+方法一：在项目页点 "+" → 搜索仓库里的 Issue / PR 添加
+方法二：打开 Issue 页面 → 右侧边栏 "Projects" 选择项目
+方法三：在项目里直接创建草稿条目（Draft）
+```
+
+### 3.3 配置自定义字段（白板上的"便利贴属性"）
+
+新建项目后，项目自带一个 `Status` 单选字段（Backlog → Todo → In Progress → In Review → Done 等默认选项）。团队通常还要加这些字段：
+
+| 字段类型 | 用途示例 | 白板类比 |
+| :--- | :--- | :--- |
+| **Single select（单选）** | 状态、优先级（Critical/High/Medium/Low）、类型（Bug/Feature/Docs） | 便利贴颜色 |
+| **Iteration（迭代）** | Sprint 1 / Sprint 2，支持设置休假期 | 白板上的周计划表 |
+| **Number（数字）** | 工作量估算（1/2/3/5/8/13） | 便利贴角落的工时 |
+| **Date（日期）** | 截止日期、目标发布日期 | 便利贴上的截止日 |
+| **Text（文本）** | 备注、验收标准 | 便利贴背面小字 |
+| **Milestone / Assignee** | 内置字段，直接引用 | 便利贴上的负责人签名 |
+
+官方文档说明：单个项目最多可添加 **50 个字段**，字段配置一次，团队所有人共享。
+
+## 4. 三种视图的切换与配置
+
+### 4.1 表格视图
+
+适合批量操作：每行一个条目，点击单元格即可修改字段，支持按任意列排序、筛选（如只看 `Sprint 2` 且 `Priority: High`）、按字段分组。
+
+```text
+| Title              | Status      | Priority | Sprint   | Assignee |
+| :----------------- | :---------- | :------- | :------- | :------- |
+| 登录页按钮错位     | In Progress | High     | Sprint 2 | 张三     |
+| API 限流文档       | Done        | Medium   | Sprint 1 | 李四     |
+| 性能监控告警       | Todo        | Low      | Sprint 3 | 王五     |
+```
+
+### 4.2 看板视图
+
+按"分组依据"（默认按 Status）分列，卡片可拖拽。想按负责人分组？把分组依据改成 Assignee 即可。拖拽卡片换组 = 修改字段值，这是看板最顺手的地方。
+
+### 4.3 时间线（Roadmap）视图
+
+把时间轴设为日期字段（如截止日期），每个条目变成一根横条，用于向团队和管理层展示里程碑进度。官方快速入门中，常用它"规划迭代、向协作者传达优先级和进度"。
+
+### 4.4 视图保存
+
+每个视图可以命名保存（如"我的待办""本轮迭代"），团队成员可以共享视图，也可以建个人私有视图。同一条数据，多种看法，互不干扰。
+
+## 5. 自动化：让白板自己动起来
+
+### 5.1 内置工作流（Built-in workflows）
+
+这是 Projects 最有价值的能力之一。配置路径：项目 → 顶部 **Workflows** → **Configure**。常用规则：
+
+| 触发条件 | 自动执行 | 白板类比 |
+| :--- | :--- | :--- |
+| Issue 刚添加时 | 设置状态为 Todo | 新便利贴自动贴到"待办"列 |
+| 对应的 PR 标记为 Ready for review | 状态改为 In Review | 有人喊"我做好了"，卡片自己挪过去 |
+| Issue / PR 被关闭（或 PR 合并） | 状态改为 Done | 任务做完，便利贴自动撕到"完成" |
+| 条目被重新打开 | 状态改回 Todo | 复活的任务自己回到待办列 |
+
+### 5.2 用 GitHub Actions 做更复杂的自动化
+
+内置工作流不够用时，可以用 Actions。经典场景：**给打上指定标签的 Issue 自动加入项目**。
 
 ```yaml
-# .github/workflows/project-automation.yml
-name: Project Automation
+# .github/workflows/add-to-project.yml
+name: Add issues to project
 on:
   issues:
-    types: [opened, labeled]
-  pull_request:
-    types: [opened]
-
+    types: [opened, labeled]        # Issue 新建或被打标签时触发
 jobs:
   add-to-project:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/add-to-project@v1.0.2
         with:
-          project-url: https://github.com/orgs/myorg/projects/1
+          project-url: https://github.com/orgs/your-org/projects/1
           github-token: ${{ secrets.PROJECT_TOKEN }}
-          labeled: bug, feature
+          labeled: bug, feature      # 只有带这些标签的 Issue 才加入
 ```
 
-### 4.3 GraphQL 自动化
+注意：`actions/add-to-project` 需要一个人格化令牌（PAT）或细粒度令牌，权限至少包含读写项目。
+
+### 5.3 用 GraphQL API 自动化（进阶）
 
 ```graphql
 mutation {
-  addProjectV2ItemById(input: { projectId: "PROJECT_ID", contentId: "ISSUE_ID" }) {
-    item {
-      id
-    }
+  addProjectV2ItemById(input: {
+    projectId: "PVT_xxxxxx",      # 项目 ID
+    contentId: "I_xxxxxx"         # Issue ID
+  }) {
+    item { id }
   }
 }
 ```
 
-## 5. 视图配置
+## 6. 洞察图表（Insights）：白板的"数据看板"
 
-### 5.1 看板视图
+项目 → **Insights** 标签可以基于项目数据生成图表，所有有项目查看权限的人都能看到。两类图表：
 
-按状态分列的拖拽式看板：
+- **当前图表（Current charts）**：快照式统计，比如"每个成员名下有多少条目""每个迭代分配了多少问题""按标签分布"；
+- **历史图表（Historical charts）**：随时间变化，比如默认的 **Burn up（燃尽）图**，展示"已完成工作 vs 剩余工作"随时间的变化，用来发现瓶颈、预测进度。
 
-```
-| Backlog | Todo | In Progress | In Review | Done |
-|---------|------|-------------|-----------|------|
-| Issue#5 | #3   | #1          | #2        | #4   |
-| Issue#8 | #6   |             |           | #7   |
-```
+官方提示：洞察**不追踪已归档或删除的条目**，所以想保留历史统计，别急着归档。
 
-### 5.2 表格视图
+## 7. 常见错误与对策表
 
-类似电子表格，支持排序、筛选和分组：
+| 常见错误 | 现象/报错 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 找不到新建项目入口 | 页面没有 New project 按钮 | 权限不足或无组织归属 | 组织项目需组织成员身份；个人项目在个人主页 Projects 下创建 |
+| 添加条目时搜索不到 Issue | 列表为空 | 项目权限未包含该仓库 | 在项目设置中添加仓库，或确认仓库归属 |
+| 改了 Issue 状态但项目没变 | 卡片状态不变 | 未配置内置工作流 | 项目 → Workflows → 开启"关闭时设为完成"等规则 |
+| 拖拽换列没生效 | 卡片弹回原列 | 分组的字段不是 Status | 确认看板按 Status 分组，拖拽本质是改字段值 |
+| Actions 自动化失败 | `Resource not accessible by integration` | 令牌权限不够 | 使用带 `read:project`/`write:project` 的 PAT，存在仓库 Secrets 中 |
+| 多人看到的视图不一致 | 各自字段不同 | 改了私有视图而非共享视图 | 保存视图时选择"保存到共享视图"（团队需要时可复制） |
+| 图表数据对不上 | Insights 缺条目 | 洞察不含已归档/已删除条目 | 统计期内不要归档条目，或使用筛选修正口径 |
 
-```
-| Title | Status | Priority | Sprint | Assignee |
-|-------|--------|----------|--------|----------|
-| Auth  | Done   | High     | S1     | Alice    |
-| API   | Active | Medium   | S2     | Bob      |
-```
+## 8. 实战练习
 
-### 5.3 路线图视图
+### 练习 1：创建你的第一个个人项目（入门）
 
-按时间线展示项目进度，适合展示里程碑。
+**题目描述**：用"团队待办（Team backlog）"模板创建一个个人项目，添加 3 条草稿条目，练习在三种视图间切换。
 
-## 6. Insights 与报告
+**提示**：个人主页 → Projects → New project → 选模板；草稿条目不用关联仓库，直接写文字。
 
-### 6.1 项目统计
+**参考答案要点**：创建后检查：表格视图能看到条目的 Title/Status/Assignee 列；看板视图按 Status 分列；时间线视图需要先给条目设置日期字段。把一条草稿拖到"In Progress"，验证视图联动。
 
-- 完成率
-- 燃尽图
-- 按标签/类型分布
-- 按成员工作量
+### 练习 2：把真实 Issue 拉进项目并配置字段（进阶）
 
-### 6.2 导出数据
+**题目描述**：在你自己的仓库中创建 3 个 Issue（如"修复登录 Bug""补充 API 文档""性能优化调研"），全部加入项目，并添加 Priority（单选）和 Sprint（迭代）两个自定义字段，给每个 Issue 赋值。
 
-```bash
-# 使用 GitHub CLI 导出
-gh project item-list 1 --owner myorg --format json > project.json
-```
+**提示**：字段配置入口在项目页顶部的"字段（Fields）"区域；迭代字段需要先创建 Sprint 1、Sprint 2。
 
-## 参考文献
+**参考答案要点**：Issue 加入项目后，在项目表格中为每条设置 Priority 和 Sprint；然后在 Issue 页面确认字段已同步显示——验证双向同步机制。再试一次：把某个 Issue 关闭，观察开启"Issue 关闭→Done"工作流后卡片状态自动变化。
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+### 练习 3：搭建团队看板流程（进阶）
 
-## 延伸阅读
+**题目描述**：模拟一个 3 人小团队（可以用你的账号 + 两个小号，或与同学组队）：创建组织项目，配置 Status 流程（Backlog→Todo→In Progress→In Review→Done），开启内置工作流，并按 Assignee 分组练习拖拽流转。
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
+**提示**：组织项目需要 GitHub 组织；拖动卡片换组等价于修改字段。
 
-## 深度专题扩展
+**参考答案要点**：验证内置工作流的三条典型规则：新 Issue 进项目自动设为 Todo；PR 进入待审自动改 In Review；合并/关闭自动 Done。注意：卡片拖拽流转要确认"分组依据"字段正确。
 
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
+### 练习 4：用洞察图表汇报进度（挑战）
 
-### 13.1 GitHub Actions 深入
+**题目描述**：在练习 3 的项目上，创建一张"当前图表"（按成员统计条目数）和一张"历史图表"（Burn up），模拟一周内逐步完成任务，观察曲线变化，写一段 100 字的进度汇报。
 
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
+**提示**：历史图表的 X 轴要设为"时间"；不要归档条目。
 
-### 13.2 开源协作治理
+**参考答案要点**：Burn up 图中"已完成"曲线应随时间上升；汇报模板："本周共 9 个任务，已完成 5 个，剩余 4 个集中在 Sprint 3；瓶颈在登录模块（2 个任务超期），建议下周优先处理。"
 
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+## 9. 一句话记忆
+
+**Projects 就是把团队白板搬进 GitHub：Issue 和 PR 是便利贴，表格/看板/时间线是三种看法，自定义字段是便利贴上的属性，内置工作流让便利贴自动流转——所有数据双向同步，一处改动处处生效。**
+
+## 10. 参考链接与延伸阅读
+
+### 权威资料（GitHub 官方中文文档）
+
+- 关于 Projects：https://docs.github.com/zh/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects
+- Projects 快速入门：https://docs.github.com/zh/issues/planning-and-tracking-with-projects/learning-about-projects/quickstart-for-projects
+- 更改视图布局（表格/看板/时间线切换）：https://docs.github.com/zh/issues/planning-and-tracking-with-projects/customizing-views-in-your-project/changing-the-layout-of-a-view
+- 关于项目洞察（Insights 图表）：https://docs.github.com/zh/issues/planning-and-tracking-with-projects/viewing-insights-from-your-project/about-insights-for-projects
+
+### 延伸阅读（站内文档）
+
+- Issue 模板、标签与里程碑，见 004-github 模块《Issues模板-标签与里程碑》。
+- GitHub Actions 触发方式，见 004-github 模块《Actions触发》。
+- 社区讨论与需求收集，见 004-github 模块《Discussions》。
+- 用 GraphQL 操作项目，见 004-github 模块《REST与GraphQL-API》。

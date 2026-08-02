@@ -6,27 +6,33 @@ category: Shell
 difficulty: intermediate
 description: '进程与作业控制：ps/top/kill、后台任务、nohup 与 timeout 限时运行'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - shell/005-EnvVariablesConfig
   - shell/003-TextProcessingTools
 prerequisites:
   - shell/002-CommandLineBasics
+  - shell/001-ShellBasics
 ---
-## 1. 进程基本概念
 
-进程是操作系统中的运行实例。每个进程有唯一 PID（进程号），并有父进程 PPID：
+## 1. 从"工厂车间"说起
 
-- 前台进程：占据终端，命令执行期间终端不可用
-- 后台进程：命令末尾加 `&`，终端可继续输入
-- 作业（job）：Shell 对"一条命令及其子进程"的管理单元，前台作业、后台作业可切换
+### 1.1 进程是什么
+
+想象一个工厂（操作系统），每台正在工作的机器就是一个**进程**：有机器编号（PID）、知道在干什么（命令行）、可以开也可以停。
+
+**进程是操作系统中的运行实例**。每个进程有唯一 PID（进程号），并有父进程 PPID：
+
+- **前台进程**：占据终端，命令执行期间终端不可用
+- **后台进程**：命令末尾加 `&`，终端可继续输入
+- **作业（job）**：Shell 对"一条命令及其子进程"的管理单元，前台作业、后台作业可切换
 
 ```bash
 echo $$                 # 当前 Shell 的 PID
 echo $PPID              # 当前 Shell 父进程的 PID
 ```
 
-讲解：`$$` 常用于生成临时文件名（如 `/tmp/tmp.$$`），避免多进程冲突。
+`$$` 常用于生成临时文件名（如 `/tmp/tmp.$$`），避免多进程冲突。
 
 ## 2. 查看进程：ps 与 top
 
@@ -47,7 +53,16 @@ USER   PID %CPU %MEM  VSZ  RSS TTY STAT START TIME COMMAND
 root     1  0.0  0.1 168M 13M ?    Ss   08:00 0:01 /sbin/init
 ```
 
-讲解：常用列含义：`PID` 进程号、`%CPU`/`%MEM` 占用率、`STAT` 状态（S 睡眠、R 运行、Z 僵尸、T 停止）、`TIME` 累计 CPU 时间。`pgrep` 按进程名取 PID，是脚本中"先查再杀"的标准前置命令。
+**常用列含义**：
+
+| 列 | 含义 |
+| --- | --- |
+| `PID` | 进程号 |
+| `%CPU` / `%MEM` | 占用率 |
+| `STAT` | 状态（S 睡眠、R 运行、Z 僵尸、T 停止） |
+| `TIME` | 累计 CPU 时间 |
+
+`pgrep` 按进程名取 PID，是脚本中"先查再杀"的标准前置命令。
 
 ### 2.2 top：动态监控
 
@@ -58,11 +73,11 @@ top -p 1234 -p 5678     # 只监控指定 PID
 htop                    # 交互式增强版（需安装）
 ```
 
-讲解：top 首屏为系统概览（负载、任务数、内存），下方为进程列表。`M` 按内存排序、`P` 按 CPU 排序、`k` 输入 PID 杀进程、`z` 高亮颜色。
+**top 交互快捷键**：`M` 按内存排序、`P` 按 CPU 排序、`k` 输入 PID 杀进程、`z` 高亮颜色。
 
 ## 3. 终止进程：kill
 
-kill 的本质是向进程发送"信号"，进程可以自行决定如何响应：
+**kill 的本质是向进程发送"信号"**，进程可以自行决定如何响应：
 
 | 信号 | 编号 | 行为 |
 | --- | --- | --- |
@@ -81,7 +96,13 @@ killall nginx            # 按进程名杀死所有匹配进程
 pkill -f "python main"   # 按命令行全文匹配
 ```
 
-讲解：优先用 `SIGTERM` 让程序自行清理（如保存状态、释放端口），无效时才升级为 `SIGKILL`。`kill -9` 会留下未清理的锁文件、socket 文件，是故障隐患。`pkill -f` 匹配完整命令行，比进程名更精准。
+**安全顺序**：
+
+1. 优先用 `SIGTERM`（15）让程序自行清理（保存状态、释放端口）
+2. 无效时才升级为 `SIGKILL`（9）
+3. `kill -9` 会留下未清理的锁文件、socket 文件，是故障隐患
+
+`pkill -f` 匹配完整命令行，比进程名更精准。
 
 ## 4. 后台任务与作业控制
 
@@ -99,7 +120,10 @@ jobs -l                  # 显示作业的 PID
 [2]-  运行中               python server.py > log.txt 2>&1 &
 ```
 
-讲解：后台任务的输出仍会打印到终端，因此通常配合重定向把输出写入文件。作业号 `[1]`、`[2]` 与 PID 不同，作业控制命令（bg/fg/kill %n）使用作业号。
+**要点**：
+
+- 后台任务的输出仍会打印到终端，因此通常配合重定向把输出写入文件
+- 作业号 `[1]`、`[2]` 与 PID 不同，作业控制命令（bg/fg/kill %n）使用作业号
 
 ### 4.2 bg、fg 与 Ctrl + Z
 
@@ -112,7 +136,9 @@ fg                       # 不带参数恢复最近一个作业
 kill %2                  # 终止作业 2（支持作业号）
 ```
 
-讲解：工作流程是"Ctrl + Z 暂停 → bg 放后台 → 继续做别的事"。`fg`/`bg`/`kill` 均可使用 `%作业号` 定位作业。注意：关闭终端后这些作业会收到 SIGHUP 被终止，需要 `nohup` 或 `disown` 保护。
+**工作流程**：`Ctrl + Z 暂停 → bg 放后台 → 继续做别的事`。`fg`/`bg`/`kill` 均可使用 `%作业号` 定位作业。
+
+**注意**：关闭终端后这些作业会收到 SIGHUP 被终止，需要 `nohup` 或 `disown` 保护。
 
 ## 5. 脱离终端运行
 
@@ -124,7 +150,8 @@ disown -h %1             # 让已启动的后台作业忽略 SIGHUP
 disown -a                # 忽略所有后台作业
 ```
 
-讲解：`nohup`（no hangup）让进程忽略挂断信号，即使关闭终端进程也不退出；输出默认写入 `nohup.out`，建议显式重定向到自己的日志文件。`disown` 则把作业从 Shell 作业表中移除，Shell 退出时不再给它发 SIGHUP。
+- `nohup`（no hangup）：让进程忽略挂断信号，即使关闭终端进程也不退出；输出默认写入 `nohup.out`，建议显式重定向到自己的日志文件
+- `disown`：把作业从 Shell 作业表中移除，Shell 退出时不再给它发 SIGHUP
 
 ### 5.2 setsid 与终端复用器
 
@@ -134,7 +161,8 @@ tmux new -s web          # 开启 tmux 会话（重连不中断）
 screen -S deploy         # 开启 screen 会话
 ```
 
-讲解：`setsid` 让进程成为新会话首领，连控制终端都没有。`tmux`/`screen` 是运维标配：在会话中跑长任务，断线重连后任务仍在，适合部署、编译等耗时操作。
+- `setsid`：让进程成为新会话首领，连控制终端都没有
+- `tmux`/`screen`：运维标配——在会话中跑长任务，断线重连后任务仍在，适合部署、编译等耗时操作
 
 ## 6. timeout：限时运行
 
@@ -144,7 +172,11 @@ timeout -k 5 10 ./slow_job.sh    # 10 秒后先发 TERM，5 秒后仍不退则 K
 timeout 30s curl -s https://api.example.com   # 请求限时
 ```
 
-讲解：`timeout` 防止命令"卡死"整个脚本，是脚本健壮性的关键工具。对可能无限等待的命令（网络请求、交互式程序）务必加超时。返回码 124 表示命令因超时被终止。
+**要点**：
+
+- `timeout` 防止命令"卡死"整个脚本，是脚本健壮性的关键工具
+- 对可能无限等待的命令（网络请求、交互式程序）务必加超时
+- 返回码 124 表示命令因超时被终止
 
 ## 7. 实战：一键重启服务
 
@@ -170,14 +202,43 @@ sleep 2
 pgrep -f "$SERVICE" > /dev/null && echo "启动成功" || echo "启动失败"
 ```
 
-讲解：生产环境的重启脚本必须"等进程真正退出再启动"，避免端口冲突。`|| true` 容忍"没有匹配进程"的正常情况（否则 set -e 会让脚本退出）；`$!` 保存刚启动后台进程的 PID。
+**要点**：
 
-## 8. 参考资源
+- 生产环境的重启脚本必须"等进程真正退出再启动"，避免端口冲突
+- `|| true` 容忍"没有匹配进程"的正常情况（否则 set -e 会让脚本退出）
+- `$!` 保存刚启动后台进程的 PID
 
-ps 手册：https://man7.org/linux/man-pages/man1/ps.1.html
+## 8. 常见误区
 
-kill 信号说明：https://man7.org/linux/man-pages/man7/signal.7.html
+**误区一：kill 就是"杀死"进程。** → kill 是"发信号"，默认是优雅终止（SIGTERM），进程可以清理后退出；只有 `kill -9` 才是强制杀死。
 
-tmux 官方文档：https://github.com/tmux/tmux/wiki
+**误区二：后台任务关了终端还能跑。** → 关闭终端会给后台任务发 SIGHUP，需要 `nohup` 或 `disown` 保护。
 
-Bash 作业控制：https://www.gnu.org/software/bash/manual/html_node/Job-Control.html
+**误区三：`kill -9` 是最快最安全的。** → 恰恰相反，`kill -9` 跳过清理会留下脏状态。先 TERM，无效再 KILL。
+
+**误区四：jobs 看不到就说明进程没了。** → jobs 只显示当前 Shell 的作业；别的终端/进程用 `ps` 查看。
+
+## 9. 实战练习
+
+1. **进程观察**：启动一个 `sleep 300 &`，用 ps、pgrep、jobs 三种方式观察它，理解 PID 与作业号的区别。
+
+2. **优雅停止**：写一个"优雅停止"脚本：对指定进程先发 TERM，等待 N 秒，仍存活再发 KILL。
+
+3. **脱离终端**：用 nohup 启动一个长任务，关闭终端重开，确认进程仍在运行。
+
+4. **限时保护**：用 timeout 保护一个可能卡死的命令，验证返回码 124 的处理。
+
+## 10. 参考资源
+
+- ps 手册：https://man7.org/linux/man-pages/man1/ps.1.html
+- kill 信号说明：https://man7.org/linux/man-pages/man7/signal.7.html
+- tmux 官方文档：https://github.com/tmux/tmux/wiki
+- Bash 作业控制：https://www.gnu.org/software/bash/manual/html_node/Job-Control.html
+
+## 11. 延伸阅读
+
+- 环境变量配置，见本模块《环境变量与配置文件》
+- 文本处理与日志分析，见本模块《文本处理三剑客》
+- 脚本调试，见本模块《脚本调试与严格模式》
+
+> **一句话记忆**：进程管理三板斧——`ps/top` 看进程、`kill` 发信号（先 TERM 后 KILL）、`nohup/tmux` 保后台；生产脚本记得"等进程真正退出再启动"。

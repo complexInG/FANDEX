@@ -148,7 +148,19 @@ registry = "sparse+https://rsproxy.cn/index/"
 
 问题三：编辑器无智能提示。确认已安装 rust-analyzer 并重新加载窗口；检查项目根目录是否有 Cargo.toml。
 
-## 8. 参考资源
+## 8. 实战练习
+
+1. **环境安装**：按本章步骤安装 Rust 工具链，运行 `rustc --version` 与 `cargo --version` 确认成功。
+
+2. **第一个程序**：用 `cargo new` 创建项目，把 `main.rs` 改为输出你的名字，`cargo run` 运行。
+
+3. **依赖体验**：在 `Cargo.toml` 中添加一个依赖（如 `serde = "1"`），运行 `cargo build`，观察 Cargo.lock 生成与依赖下载。
+
+4. **工具链练习**：对项目依次执行 `cargo check`、`cargo fmt`、`cargo clippy`，观察三个命令的差异与输出。
+
+5. **镜像配置**：如果依赖下载慢，按第 7 节配置国内镜像源，对比配置前后的下载速度。
+
+## 9. 参考资源
 
 rustup 官方文档：https://rustup.rs/
 
@@ -158,6 +170,8 @@ rust-analyzer 官方文档：https://rust-analyzer.github.io/
 
 《Rust 程序设计语言》环境安装章节：https://kaisery.github.io/trpl-zh-cn/ch01-00-getting-started.html
 
-## 9. 小结
+## 10. 小结
 
 环境搭建的核心是"rustup 管工具链、cargo 管项目、rust-analyzer 管编辑体验"。完成本课后，你已经能用 cargo 创建、编译、运行、测试 Rust 项目。下一步进入基础语法，学习变量、类型与函数。
+
+> **一句话记忆**：Rust 环境三件套——"rustup 装工具链、cargo 建项目、rust-analyzer 给智能提示"；日常开发循环是 `cargo check`（快速验证）→ `cargo clippy`（查质量）→ `cargo test`（验功能）。

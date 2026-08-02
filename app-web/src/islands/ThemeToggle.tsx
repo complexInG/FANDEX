@@ -114,7 +114,7 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
      * 始终渲染按钮以保留布局空间（避免水合后 CLS）：
      * - SSR 阶段：按钮透明不可点击（mounted=false）
      * - 客户端挂载后：opacity 过渡到 1，pointer-events 启用
-     * - whileTap/whileHover 由 Motion 驱动微交互（ark: 直接交互 150ms）
+     * - 悬停/按下微交互由 .fndx-icon-btn 统一 CSS 驱动（与全站图标按钮一致）
      */
     <MotionProvider>
       <motion.button
@@ -126,8 +126,6 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
         aria-label={theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'}
         tabIndex={mounted ? 0 : -1}
         aria-hidden={!mounted}
-        whileTap={{ scale: 0.85 }}
-        whileHover={{ scale: 1.08 }}
       >
         {/*
           AnimatePresence mode="wait"：日/月图标依次旋转交叉切换

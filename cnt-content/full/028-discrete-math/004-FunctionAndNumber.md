@@ -6,54 +6,65 @@ category: 离散数学
 difficulty: intermediate
 description: 函数定义与性质、单射/满射/双射、复合与逆函数、可数集与不可数集、Cantor定理、基数比较。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'discrete-math/谓词逻辑'
   - 'discrete-math/集合与关系'
   - 'discrete-math/图论基础'
   - 'discrete-math/图论进阶'
-prerequisites: []
+prerequisites:
+  - 'discrete-math/集合与关系'
 ---
 
-## 1. 函数定义与性质
+## 1. 从"自动售货机"说起
 
-### 1.1 函数的定义
+### 1.1 函数是什么
 
-设 $A$ 和 $B$ 是非空集合。$A$ 到 $B$ 的**函数**（映射）$f: A \to B$ 是从 $A$ 到 $B$ 的关系，满足：
+想象一台自动售货机：你投入一枚硬币（输入），它吐出一种饮料（输出）。**每个输入恰好对应一个输出**——这就是函数。
 
-1. **存在性**：$\forall a \in A, \exists b \in B, (a,b) \in f$
-2. **唯一性**：若 $(a,b_1) \in f$ 且 $(a,b_2) \in f$，则 $b_1 = b_2$
+**函数（映射）$f: A \to B$** 是从 $A$ 到 $B$ 的关系，满足：
 
-即每个 $a \in A$ 恰好对应一个 $b \in B$，记作 $f(a) = b$。
+1. **存在性**：$\forall a \in A, \exists b \in B, (a,b) \in f$（每个输入都有输出）
+2. **唯一性**：若 $(a,b_1) \in f$ 且 $(a,b_2) \in f$，则 $b_1 = b_2$（每个输入只有一个输出）
 
-- **定义域**：$\text{dom}(f) = A$
-- **值域**：$\text{ran}(f) = \{f(a) \mid a \in A\} \subseteq B$
+即每个 $a \in A$ **恰好对应一个** $b \in B$，记作 $f(a) = b$。
+
+**术语**：
+
+- **定义域**：$\text{dom}(f) = A$（投币口接受的硬币）
+- **值域**：$\text{ran}(f) = \{f(a) \mid a \in A\} \subseteq B$（实际能吐出的饮料）
 - **像**：$f(X) = \{f(a) \mid a \in X\}$（$X \subseteq A$）
 - **原像**：$f^{-1}(Y) = \{a \in A \mid f(a) \in Y\}$（$Y \subseteq B$）
 
 ### 1.2 函数的个数
 
-从 $A$ 到 $B$ 的函数总数：$|B|^{|A|}$
+从 $A$ 到 $B$ 的函数总数：$|B|^{|A|}$（每个 $a$ 有 $|B|$ 种选择）。
 
 若 $|A| = m$，$|B| = n$，则函数个数为 $n^m$。
 
-## 2. 单射、满射与双射
+## 2. 单射、满射与双射：函数的三种"品质"
 
 ### 2.1 定义
 
 设 $f: A \to B$：
 
-- **单射（injective）**：$f(a_1) = f(a_2) \Rightarrow a_1 = a_2$，即不同元素映射到不同值
-- **满射（surjective）**：$\text{ran}(f) = B$，即 $B$ 中每个元素都有原像
-- **双射（bijective）**：既是单射又是满射
+- **单射（injective）**：$f(a_1) = f(a_2) \Rightarrow a_1 = a_2$——**不同的人拿到不同的结果**（没有两个人得到同一瓶饮料）
+- **满射（surjective）**：$\text{ran}(f) = B$——**每种饮料都有人投过币**（值域 = 陪域）
+- **双射（bijective）**：既是单射又是满射——**一一对应**（每个人恰有一种饮料，每种饮料恰有一个人）
 
-### 2.2 判定
+### 2.2 判定（有限集）
 
-| 类型 | 有限集条件         | 逆否表述                                      |
-| ---- | ------------------ | --------------------------------------------- |
+| 类型 | 有限集条件 | 逆否表述 |
+| ---- | --- | --- |
 | 单射 | $\|A\| \leq \|B\|$ | $a_1 \neq a_2 \Rightarrow f(a_1) \neq f(a_2)$ |
-| 满射 | $\|A\| \geq \|B\|$ | $\forall b \in B, \exists a \in A, f(a) = b$  |
-| 双射 | $\|A\| = \|B\|$    | 一一对应                                      |
+| 满射 | $\|A\| \geq \|B\|$ | $\forall b \in B, \exists a \in A, f(a) = b$ |
+| 双射 | $\|A\| = \|B\|$ | 一一对应 |
+
+**直观理解**：
+
+- 单射：**5 个人投 6 种币，每人拿到不同饮料**（输出不重复）→ 输入数 ≤ 输出数
+- 满射：**6 种饮料都被买到过** → 输入数 ≥ 输出数
+- 双射：**人数 = 饮料数，且一一配对** → 相等
 
 ### 2.3 计数
 
@@ -69,7 +80,7 @@ prerequisites: []
 
 - **恒等函数**：$I_A: A \to A$，$I_A(a) = a$
 - **常值函数**：$f(a) = c$（$c$ 为固定值）
-- **特征函数**：$\chi_S: A \to \{0,1\}$，$\chi_S(a) = \begin{cases} 1 & a \in S \\ 0 & a \notin S \end{cases}$
+- **特征函数**：$\chi_S: A \to \{0,1\}$，$\chi_S(a) = \begin{cases} 1 & a \in S \\ 0 & a \notin S \end{cases}$（判断"在不在集合里"）
 
 ## 3. 复合与逆函数
 
@@ -79,177 +90,105 @@ prerequisites: []
 
 $$(g \circ f)(a) = g(f(a))$$
 
+**理解**：先过 $f$（A 到 B），再过 $g$（B 到 C）——像"两道工序"。
+
 **性质**：
 
-- 复合满足结合律：$(h \circ g) \circ f = h \circ (g \circ f)$
-- 复合不满足交换律：$g \circ f \neq f \circ g$（一般情况）
+- 复合满足**结合律**：$(h \circ g) \circ f = h \circ (g \circ f)$
+- 复合**不满足交换律**：$g \circ f \neq f \circ g$（一般情况，先做哪步顺序不能换）
 
-**保性**：
+**保性（重要）**：
 
 - $f$, $g$ 单射 $\Rightarrow$ $g \circ f$ 单射
 - $f$, $g$ 满射 $\Rightarrow$ $g \circ f$ 满射
-- $g \circ f$ 单射 $\Rightarrow$ $f$ 单射
-- $g \circ f$ 满射 $\Rightarrow$ $g$ 满射
+- $g \circ f$ 单射 $\Rightarrow$ $f$ 单射（往回推：第一步必须单射）
+- $g \circ f$ 满射 $\Rightarrow$ $g$ 满射（往回推：最后一步必须满射）
 
 ### 3.2 逆函数
 
-设 $f: A \to B$ 为双射，则**逆函数** $f^{-1}: B \to A$：
+设 $f: A \to B$ 为**双射**，则**逆函数** $f^{-1}: B \to A$：
 
 $$f^{-1}(b) = a \iff f(a) = b$$
 
+**关键**：只有**双射**才有逆函数（一一对应才能"倒过来"）。
+
 **性质**：
 
-- $f^{-1} \circ f = I_A$
-- $f \circ f^{-1} = I_B$
+- $f^{-1} \circ f = I_A$，$f \circ f^{-1} = I_B$
 - $(f^{-1})^{-1} = f$
-- $(g \circ f)^{-1} = f^{-1} \circ g^{-1}$
+- $(g \circ f)^{-1} = f^{-1} \circ g^{-1}$（**顺序反转**——穿衣服先穿衬衫再穿外套，脱衣服要先脱外套）
 
-**例**：$f: \mathbb{R} \to \mathbb{R}$，$f(x) = 2x + 1$。
+## 4. 基数：无限集的"大小"
 
-> $f$ 是双射。设 $y = 2x + 1$，则 $x = \frac{y-1}{2}$。
-> $f^{-1}(y) = \frac{y-1}{2}$。
+### 4.1 基数的概念
 
-### 3.3 左逆与右逆
+**基数（cardinality）** 是集合"大小"的度量。有限集的基数就是元素个数；无限集也有基数——**无限也有大小之分**！
 
-- **左逆**：$g \circ f = I_A$，则 $g$ 是 $f$ 的左逆。$f$ 有左逆 $\iff$ $f$ 是单射。
-- **右逆**：$f \circ g = I_B$，则 $g$ 是 $f$ 的右逆。$f$ 有右逆 $\iff$ $f$ 是满射。
-- $f$ 有双逆 $\iff$ $f$ 是双射。
+- **可数集**：与自然数集 $\mathbb{N}$ 一一对应的集合（"能一个一个数出来"）
+- **不可数集**：不能与 $\mathbb{N}$ 一一对应的集合
 
-## 4. 可数集与不可数集
+**关键直觉**：两个无限集可能"不一样大"。$\mathbb{Z}$（整数）和 $\mathbb{N}$ 一样大（可数），但 $\mathbb{R}$（实数）比 $\mathbb{N}$ "大"（不可数）。
 
-### 4.1 集合的等势
+### 4.2 常见可数集
 
-若存在双射 $f: A \to B$，则称 $A$ 与 $B$ **等势**，记作 $|A| = |B|$ 或 $A \sim B$。
+以下集合都与 $\mathbb{N}$ 一一对应（可数）：
 
-等势是等价关系。
+- 整数集 $\mathbb{Z}$
+- 有理数集 $\mathbb{Q}$（**惊讶**：有理数虽"稠密"但可数）
+- 有限个可数集的并
+- 可数个可数集的并（如所有有限字符串集合）
 
-### 4.2 可数集
+**$\mathbb{Q}$ 可数的证明思路**：把所有分数排成一个"矩阵"（分母行、分子列），按对角线"蛇形"走——这样每个分数都被"编号"了，说明 $\mathbb{Q}$ 可数。
 
-- **可数集**：与自然数集 $\mathbb{N}$ 等势的集合（即可以列举的无限集）
-- **至多可数集**：有限集或可数集
-- **不可数集**：不是至多可数的无限集
+### 4.3 Cantor 定理：实数不可数
 
-**可数集的例子**：
+**定理**：实数集 $\mathbb{R}$ 不可数。
 
-- $\mathbb{N} = \{0, 1, 2, \ldots\}$
-- $\mathbb{Z} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$（按 $0, 1, -1, 2, -2, \ldots$ 排列）
-- $\mathbb{Q}$（有理数集）：可用对角线法列举
+**证明（对角线论证法）**：假设 $(0,1)$ 区间内的实数可数，排列成 $a_1, a_2, a_3, \ldots$。构造一个新数 $b$，其第 $i$ 位小数与 $a_i$ 的第 $i$ 位不同。则 $b$ 不在列表中——矛盾！
 
-**证明 $\mathbb{Q}$ 可数**：
+**对角线论证的力量**：这是数学史上最著名的证明之一，它揭示了一个反直觉的事实：**无限集不是"一样大"的**。
 
-> 将正有理数排列为：
-> $$\begin{array}{ccccc} 1/1 & 1/2 & 1/3 & 1/4 & \cdots \\ 2/1 & 2/2 & 2/3 & 2/4 & \cdots \\ 3/1 & 3/2 & 3/3 & 3/4 & \cdots \\ \vdots & \vdots & \vdots & \vdots & \ddots \end{array}$$
-> 沿对角线列举（跳过重复值）即可。
+### 4.4 基数的比较与 Cantor 定理
 
-### 4.3 不可数集
+- $|\mathbb{N}| = \aleph_0$（阿列夫零，最小的无限基数）
+- $|\mathbb{R}| = 2^{\aleph_0}$（连续统基数）
 
-**定理（Cantor）**：$(0,1)$ 是不可数集。
+**Cantor 定理**：任何集合 $S$，都有 $|S| < |\mathcal{P}(S)|$（幂集严格更大）。
 
-> **对角线论证法**：
-> 假设 $(0,1)$ 可数，设其元素为 $a_1, a_2, a_3, \ldots$，其中
-> $a_1 = 0.d_{11}d_{12}d_{13}\cdots$
-> $a_2 = 0.d_{21}d_{22}d_{23}\cdots$
-> $a_3 = 0.d_{31}d_{32}d_{33}\cdots$
-> $\vdots$
-> 构造 $b = 0.b_1 b_2 b_3\cdots$，其中 $b_i \neq d_{ii}$（且 $b_i \neq 0, 9$）。
-> 则 $b \in (0,1)$ 但 $b \neq a_i$ 对所有 $i$，矛盾！
+**理解**：$S$ 的子集比 $S$ 的元素"多"——即使对无限集也成立。这保证了"无限之上还有更大的无限"（不存在"最大的无限集"）。
 
-**推论**：$\mathbb{R}$ 是不可数集。
+## 5. 常见误区
 
-## 5. Cantor 定理
+**误区一：函数值域等于陪域。** → 值域 ⊆ 陪域，只有满射才相等。值域是"实际输出"，陪域是"允许输出"。
 
-### 5.1 定理
+**误区二：有逆函数的条件是单射。** → 必须是**双射**（单射+满射）才有逆函数。单射只能定义"部分的逆"。
 
-对任意集合 $A$，$|A| < |\mathcal{P}(A)|$，即 $A$ 与其幂集不等势。
+**误区三：无限集都一样大。** → 错！$\mathbb{N}$、$\mathbb{Q}$ 可数（$\aleph_0$），$\mathbb{R}$ 不可数（$2^{\aleph_0}$）。Cantor 对角线法证明了这点。
 
-> **证明**：
->
-> - $|A| \leq |\mathcal{P}(A)|$：映射 $a \mapsto \{a\}$ 是单射。
-> - $|A| \neq |\mathcal{P}(A)|$：反证，设 $f: A \to \mathcal{P}(A)$ 为双射。
->   令 $B = \{a \in A \mid a \notin f(a)\}$，则 $B \subseteq A$，即 $B \in \mathcal{P}(A)$。
->   由 $f$ 为满射，存在 $b \in A$ 使 $f(b) = B$。
->   若 $b \in B$，则由 $B$ 的定义 $b \notin f(b) = B$，矛盾。
->   若 $b \notin B$，则由 $B$ 的定义 $b \in f(b) = B$，矛盾。
+**误区四：$|S| = |\mathcal{P}(S)|$。** → 永远 $|S| < |\mathcal{P}(S)|$（Cantor 定理），无限集也成立。
 
-### 5.2 推论
+## 6. 实战练习
 
-不存在"最大的"无限集。无限基数有无穷多个层级：
+1. **函数判定**：$f: \mathbb{Z} \to \mathbb{Z}$，$f(x) = x^2$。是单射吗？是满射吗？$f: \mathbb{Z} \to \mathbb{N}$ 呢？
 
-$$|\mathbb{N}| < |\mathcal{P}(\mathbb{N})| < |\mathcal{P}(\mathcal{P}(\mathbb{N}))| < \cdots$$
+2. **双射构造**：构造 $\mathbb{Z}$ 到 $\mathbb{N}$ 的双射（提示：把正数、负数、0 分别映射）。
 
-## 6. 基数比较
+3. **复合保性**：如果 $g \circ f$ 是双射，能推出 $f$ 或 $g$ 是双射吗？为什么？
 
-### 6.1 基数
+4. **可数性判断**：判断以下集合是否可数：①偶数集 ②自然数对的集合 $\mathbb{N} \times \mathbb{N}$ ③$[0,1]$ 区间内的无理数。
 
-**基数**是集合"大小"的度量，用 $|A|$ 或 $\overline{\overline{A}}$ 表示。
+5. **对角线论证**：用 Cantor 对角线法证明 $[0,1]$ 区间内的实数不可数。
 
-- 有限集的基数为其元素个数
-- $\aleph_0$（aleph-null）：$|\mathbb{N}|$，可数集的基数
-- $\mathfrak{c}$（连续统）：$|\mathbb{R}|$，连续统的基数
+## 7. 参考资源
 
-### 6.2 基数比较
+- MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
+- Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
+- Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
 
-$$|A| \leq |B| \iff \text{存在单射 } f: A \to B$$
+## 8. 延伸阅读
 
-$$|A| = |B| \iff \text{存在双射 } f: A \to B$$
+- 函数的集合基础，见本模块《集合与关系》
+- 函数在算法分析中的应用，见 023-algorithm 模块
+- 基数与组合计数，见本模块《组合数学》
 
-**Cantor-Bernstein 定理**：若 $|A| \leq |B|$ 且 $|B| \leq |A|$，则 $|A| = |B|$。
-
-即：若存在单射 $f: A \to B$ 和单射 $g: B \to A$，则存在双射 $h: A \to B$。
-
-**应用**：证明 $|(0,1)| = |\mathbb{R}|$。
-
-> $f: (0,1) \to \mathbb{R}$，$f(x) = \tan(\pi x - \pi/2)$ 是双射。
-
-### 6.3 基数运算
-
-$$|A| + |B| = |A \cup B| \quad (A \cap B = \emptyset)$$
-
-$$|A| \cdot |B| = |A \times B|$$
-
-$$|A|^{|B|} = |A^B| = |\{f \mid f: B \to A\}|$$
-
-**重要等式**：
-
-$$\aleph_0 + \aleph_0 = \aleph_0$$
-
-$$\aleph_0 \cdot \aleph_0 = \aleph_0$$
-
-$$2^{\aleph_0} = \mathfrak{c}$$
-
-### 6.4 连续统假设
-
-**连续统假设（CH）**：不存在基数 $\kappa$ 使得 $\aleph_0 < \kappa < 2^{\aleph_0}$。
-
-Gödel（1940）和 Cohen（1963）证明：CH 在 ZFC 公理系统中既不可证也不可否证，即 CH 独立于 ZFC。
-
-## 参考文献
-
-MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
-## 延伸阅读
-
-离散数学基础，见 028-discrete-math 模块文档。
-算法与图论，见 023-algorithm 模块。
-逻辑与数据库关系，见 019-sql 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供离散数学课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 数学归纳法
-
-基础情形 -> 归纳假设 -> 归纳步骤；变体：强归纳、结构归纳。
-典型证明：求和公式、树性质、算法正确性。
-循环不变量：归纳法在程序中的对应。
-常见错误：假设过强/基础遗漏。
-
-### 13.2 图论基础定理
-
-握手引理：所有顶点度数之和为边数两倍。
-树的等价定义：连通无环、n-1 条边、任意两点唯一路径。
-欧拉回路条件：连通且所有顶点度数为偶。
-四色定理与平面图（了解层面）。
+> **一句话记忆**：函数是"售货机"（每个输入恰好一个输出）——单射（输出不重复）、满射（每种输出都有）、双射（一一对应，才有逆函数）；基数是集合的"大小"：$\mathbb{N}$、$\mathbb{Q}$ 可数（$\aleph_0$），$\mathbb{R}$ 不可数（$2^{\aleph_0}$），Cantor 对角线法证明"无限也有大小之分"，且 $|S| < |\mathcal{P}(S)|$ 永远成立。

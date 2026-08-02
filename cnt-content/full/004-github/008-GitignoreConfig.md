@@ -4,9 +4,9 @@ title: Gitignore配置
 module: github
 category: GitHub
 difficulty: beginner
-description: .gitignore配置详解：忽略规则、全局配置与模板使用。
+description: '.gitignore配置详解：忽略规则清单、语法、优先级、全局配置与官方模板库使用。'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - github/README文件
   - github/分支模型与分支保护规则
@@ -16,104 +16,348 @@ prerequisites:
   - github/GitHub概述
 ---
 
-## 1. .gitignore 概述
+## 0. 先来一个生活场景：搬家打包清单
 
-### 1.1 为什么需要 .gitignore
+假设你要搬家。搬家师傅给你一个大箱子，让你把所有东西装进去。你会怎么做？
 
-`.gitignore` 指定 Git 应该**忽略的文件和目录**，避免将不必要的文件纳入版本控制。
+- 你不会把**垃圾桶里的果皮纸屑**装进去——那是垃圾，随时可以再产生。
+- 你不会把**旧快递盒、旧报纸**装进去——它们占了大量空间却没有价值。
+- 你更不会把**写了银行卡密码的纸条**装进去——万一箱子丢了，后果不堪设想。
+- 但你一定会在箱子里放一份**搬家清单**，告诉师傅"哪些东西不要装箱"。
 
-### 1.2 应该忽略的文件类型
+`.gitignore` 就是 Git 仓库的"搬家清单"。它是一份**排除清单**，明确告诉 Git："这个箱子（仓库）里，哪些文件不要追踪、不要提交、不要推到 GitHub 上"。
 
-| 类型         | 示例                       | 原因           |
-| :----------- | :------------------------- | :------------- |
-| **构建产物** | `dist/`、`build/`          | 可重新生成     |
-| **依赖目录** | `node_modules/`、`vendor/` | 体积大，可安装 |
-| **环境配置** | `.env`、`config.local`     | 包含敏感信息   |
-| **IDE 配置** | `.idea/`、`.vscode/`       | 个人偏好       |
-| **系统文件** | `.DS_Store`、`Thumbs.db`   | 操作系统生成   |
-| **日志文件** | `*.log`                    | 运行时生成     |
-| **临时文件** | `*.tmp`、`*.swp`           | 临时使用       |
+Git 默认会追踪目录里的所有文件。如果你不做任何声明，`node_modules`（几十万个依赖文件）、`__pycache__`（Python 缓存）、`.env`（含数据库密码的环境变量）都会被一股脑推送到 GitHub。这就好比把垃圾、旧报纸和密码纸条都装进了搬家箱。
 
-## 2. 语法规则
+本篇文章将按照"**清单**"的思路组织：先列出"什么东西不该装箱"（文件类型），再教你"怎么写清单"（语法），然后讲"多张清单谁说了算"（优先级），最后给出"现成的清单模板"。
 
-### 2.1 基本语法
+## 1. 先列清单：应该忽略的文件类型
+
+在动手写 `.gitignore` 之前，先搞清楚"什么文件不该进仓库"。下表是新手最常遇到的 7 大类：
+
+| 类型 | 示例 | 为什么要忽略 |
+| :--- | :--- | :--- |
+| **构建产物** | `dist/`、`build/`、`*.class` | 由源代码编译生成，任何时刻都可以重新构建 |
+| **依赖目录** | `node_modules/`、`vendor/`、`.venv/` | 体积巨大（可达几十万个文件），且可通过 `npm install` 等命令恢复 |
+| **环境配置** | `.env`、`config.local.js`、`secrets.json` | 通常包含数据库密码、API 密钥等敏感信息 |
+| **IDE 配置** | `.idea/`、`.vscode/`、`*.iml` | 属于个人编辑器偏好，不同开发者配置不同 |
+| **系统文件** | `.DS_Store`、`Thumbs.db` | 操作系统自动生成的缩略图/元数据文件 |
+| **日志文件** | `*.log`、`logs/` | 运行时产生，内容动态变化 |
+| **临时文件** | `*.tmp`、`*.swp`、`*~` | 编辑器或程序崩溃留下的临时残留 |
+
+### 1.1 一个记忆口诀
+
+> **"能再生的、能重装的、不能给别人看的、别人不需要的——都不要装箱。"**
+
+- 能再生：构建产物（dist/build）。
+- 能重装：依赖目录（node_modules 一条命令就能装回来）。
+- 不能给别人看：密钥、密码、Token。
+- 别人不需要：你的 IDE 设置、操作系统缓存。
+
+### 1.2 直观理解：一个 Node.js 项目装箱前 vs 装箱后
+
+```
+项目目录（未配置 .gitignore）          项目目录（已配置 .gitignore）
+├── package.json                    ├── package.json
+├── package-lock.json               ├── package-lock.json
+├── src/                            ├── src/
+├── node_modules/    ← 5万+文件      └── .gitignore
+├── dist/            ← 编译产物
+├── .env             ← 数据库密码
+└── .vscode/
+```
+
+右侧才是"干净"的仓库：只有源代码、配置文件清单和 `.gitignore` 本身。任何协作者克隆后执行 `npm install` 即可恢复完整环境。
+
+## 2. 怎么写清单：语法规则详解
+
+`.gitignore` 是一个纯文本文件，每行一条规则。Git 官方手册（gitignore(5)）对语法有精确的定义，下面按"先直观、后原理、再示例"的方式讲解。
+
+### 2.1 最基本的五条规则
 
 ```gitignore
-# 注释以 # 开头
+# 注释以 # 开头（这是注释行）
 
-# 忽略所有 .log 文件
+# 规则1：忽略所有 .log 结尾的文件（匹配任意目录层级）
 *.log
 
-# 忽略整个目录
+# 规则2：忽略 node_modules 目录（目录名后带斜杠，只匹配目录）
 node_modules/
-build/
 
-# 忽略特定文件
-.env
+# 规则3：忽略根目录下的 .env 文件
+/.env
+
+# 规则4：忽略特定文件
 config.local.json
 
-# 使用 ! 取反（不忽略）
-!important.log
-
-# 只忽略根目录的文件
-/TODO
-
-# 忽略所有目录中的文件
-**/temp/
+# 规则5：取反——前面忽略了所有 .log，但 debug.log 例外，要保留
+!debug.log
 ```
 
-### 2.2 Glob 模式
+逐条拆解：
 
-| 模式    | 含义           | 示例            |
-| :------ | :------------- | :-------------- |
-| `*`     | 匹配任意字符   | `*.log`         |
-| `**`    | 匹配任意目录   | `**/test.js`    |
-| `?`     | 匹配单个字符   | `file?.txt`     |
-| `[abc]` | 匹配括号内字符 | `file[123].txt` |
-| `[0-9]` | 匹配范围       | `file[0-9].txt` |
+| 写法 | 含义 | 原理说明 |
+| :--- | :--- | :--- |
+| `*.log` | 忽略所有 `.log` 文件 | `*` 匹配任意多个字符（但不能跨目录层级） |
+| `node_modules/` | 忽略所有名为 node_modules 的目录 | **结尾带斜杠**表示只匹配目录 |
+| `/.env` | 只忽略仓库根目录的 `.env` | **开头带斜杠**表示锚定在 `.gitignore` 所在目录 |
+| `!debug.log` | 例外保留 debug.log | `!` 开头表示取反（negation），必须放在对应忽略规则**之后** |
+| `config.local.json` | 忽略任意层级的同名文件 | 不带斜杠的模式会匹配所有层级 |
 
-### 2.3 优先级规则
+### 2.2 进阶：Glob 通配符
 
-- 后面的规则覆盖前面的
-- `!` 取反优先级低于忽略
-- 父目录被忽略后，子目录的 `!` 无效
+`.gitignore` 的匹配规则与 Git 的 fnmatch 机制一致，支持以下通配符：
+
+| 模式 | 含义 | 示例 | 匹配结果 |
+| :--- | :--- | :--- | :--- |
+| `*` | 匹配任意字符（不含 `/`） | `*.js` | `a.js`、`b/c.js`（后者在 `src/b/c.js` 这种场景下会匹配任意层级的 .js） |
+| `**` | 匹配任意层级目录 | `**/temp/` | `temp/`、`src/temp/`、`src/a/b/temp/` |
+| `?` | 匹配单个字符（不含 `/`） | `file?.txt` | `file1.txt`，不匹配 `file10.txt` |
+| `[abc]` | 匹配括号内任一字符 | `file[123].txt` | `file1.txt`、`file2.txt` |
+| `[0-9]` | 匹配字符范围 | `file[0-9].txt` | `file0.txt` ~ `file9.txt` |
+| `\` | 转义特殊字符 | `\#important.txt` | 匹配字面的 `#important.txt` |
+
+### 2.3 进阶：`**` 的三种位置
+
+`**` 是新手最容易用错的通配符，Git 官方文档给出了精确语义：
 
 ```gitignore
-# 忽略所有 .js 文件
-*.js
+# 场景1：开头 —— 匹配任意层级下的 foo 目录
+**/foo
 
-# 但不忽略 main.js
-!main.js
+# 场景2：中间 —— 匹配 a 与 b 之间任意层级
+a/**/b        # 匹配 a/b、a/x/b、a/x/y/b
 
-#  如果忽略整个目录，! 不生效
-build/
-!build/important.js  #  不生效！
+# 场景3：结尾 —— 等价于普通星号，匹配该层全部内容
+abc/**        # 等价于 abc/ 下的所有内容
 ```
 
-## 3. 多级 .gitignore
+### 2.4 最容易踩的坑：`!` 取反的"父目录陷阱"
 
-### 3.1 优先级
+Git 官方文档明确指出：**如果父目录被忽略，那么子目录的取反规则无效**。
+
+```gitignore
+# 错误示范：忽略了 build/ 目录，又想保留其中的 important.js
+build/
+!build/important.js    # 不会生效！
+
+# 正确写法：不忽略目录本身，只忽略目录里的内容
+build/*
+!build/important.js    # 生效
+```
+
+原理：Git 出于性能考虑不会列出被忽略的目录，因此目录内部的规则根本不会被检查。要想保留子文件，必须让父目录"可见"。
+
+## 3. 多张清单：优先级规则
+
+你的仓库里可能同时存在多份规则来源。Git 检查忽略规则时按以下优先级从高到低排列（来源级别高的覆盖级别低的；**同一级别内，后写的规则覆盖先写的**）：
+
+| 优先级 | 来源 | 说明 |
+| :--- | :--- | :--- |
+| 1（最高） | 命令行规则 | 如 `git ls-files --exclude` 传入的模式，仅本次命令生效 |
+| 2 | 目录层级中的 `.gitignore` | **越深的目录优先级越高** |
+| 3 | `$GIT_DIR/info/exclude` | 仓库本地规则，不随 clone 分发 |
+| 4（最低） | `core.excludesFile` 全局文件 | 对所有仓库生效 |
 
 ```mermaid
 flowchart TD
     T0[".gitignore（仓库根目录）"]
-    T1["src/.gitignore（src 目录）"]
-    T2["src/utils/.gitignore（更深层目录）"]
-    T3["docs/.gitignore（docs 目录）"]
-    T4["优先级：越深层的 .gitignore 优先级越高"]
-    T0 --> T1
-    T2 --> T3
+    T1["src/.gitignore（src 目录，优先级更高）"]
+    T2["src/utils/.gitignore（更深层，优先级最高）"]
+    T3["info/exclude（仓库本地）"]
+    T4["全局 .gitignore_global（所有仓库）"]
+    T0 --> T3
     T3 --> T4
 ```
 
-### 3.2 全局 .gitignore
+### 3.1 深层 .gitignore 覆盖浅层的例子
+
+```gitignore
+# 仓库根目录 .gitignore：忽略所有 .md
+*.md
+
+# src/.gitignore：src 目录下保留 README.md
+!README.md
+```
+
+效果：`根目录/README.md` 被忽略；`src/README.md` 由于 `src/.gitignore` 的取反规则生效，被正常追踪。同一目录内，规则按**自上而下**顺序判断，**后写的覆盖先写的**。
+
+## 4. 直接抄作业：常用模板
+
+GitHub 官方维护了一个模板仓库 [github/gitignore](https://github.com/github/gitignore)，收录了 100+ 种语言和工具的模板。以下三个模板是使用率最高的。
+
+### 4.1 Node.js 项目模板
+
+```gitignore
+# 依赖
+node_modules/
+
+# 构建产物
+dist/
+build/
+
+# 环境变量（绝对不要提交真实密钥！）
+.env
+.env.local
+.env.*.local
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# 编辑器
+.vscode/
+.idea/
+```
+
+### 4.2 Python 项目模板
+
+```gitignore
+# 字节码缓存
+__pycache__/
+*.py[cod]
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 打包产物
+dist/
+build/
+*.egg-info/
+
+# 环境变量
+.env
+
+# 测试与类型检查缓存
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+```
+
+### 4.3 Java 项目模板（Maven + IntelliJ IDEA）
+
+```gitignore
+# 编译产物
+*.class
+*.jar
+*.war
+
+# 构建目录
+/target/
+/build/
+
+# IDE 配置
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+```
+
+### 4.4 下载官方模板的三种方式
 
 ```bash
-# 设置全局 gitignore
-git config --global core.excludesfile ~/.gitignore_global
+# 方式1：GitHub 官方模板库（推荐）
+curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
-# ~/.gitignore_global 内容
+# 方式2：GitHub 官方 API
+curl -L https://api.github.com/gitignore/templates/Java
+
+# 方式3：gitignore.io 组合生成器（多技术栈组合）
+# 浏览器打开 https://www.toptal.com/developers/gitignore/api/java,maven,intellij
+```
+
+## 5. 亡羊补牢：已跟踪文件的处理
+
+`.gitignore` 有一个新手必须知道的特性：**它只对"尚未被跟踪"的文件生效**。如果一个文件已经被 `git commit` 过，再把它写进 `.gitignore` 也不会让 Git 停止跟踪它。
+
+### 5.1 停止跟踪但保留本地文件
+
+```bash
+# 从版本控制中移除（本地文件保留在磁盘上）
+git rm --cached .env
+git rm --cached -r node_modules/
+
+# 提交这次移除
+git commit -m "chore: 停止跟踪敏感与依赖文件"
+
+# 之后正常推送
+git push
+```
+
+### 5.2 临时忽略已跟踪文件的修改
+
+某些场景（例如本地配置文件随环境变化）不需要从仓库移除文件，只想让 Git 忽略它的改动：
+
+```bash
+# 临时忽略 config.local.js 的修改
+git update-index --assume-unchanged config.local.js
+
+# 查看哪些文件被标记了
+git ls-files -v | grep '^h'
+
+# 恢复跟踪修改
+git update-index --no-assume-unchanged config.local.js
+```
+
+### 5.3 验证忽略是否生效
+
+```bash
+# 查看哪些文件会被忽略（不真正删除）
+git status --ignored
+
+# 只查看被忽略的文件列表
+git status --ignored --short
+
+# 检查某个特定文件是否被忽略（0 表示会跟踪，1 表示被忽略）
+git check-ignore -v .env
+# 输出示例：.gitignore:2:/.env  .env
+# 格式：来源文件:行号:规则  目标文件
+```
+
+`git check-ignore -v` 是排查"为什么这个文件被忽略了"的利器，它会告诉你命中了哪一行规则。
+
+## 6. 全局配置：一份清单管所有仓库
+
+操作系统文件（`.DS_Store`、`Thumbs.db`）和 IDE 配置（`.idea/`、`.vscode/`）几乎在每一个仓库都会被忽略。与其在每个仓库重复写，不如配置一份**全局忽略文件**。
+
+### 6.1 Windows 配置全局忽略
+
+```powershell
+# 创建全局忽略文件（路径可自定义）
+New-Item $env:USERPROFILE\.gitignore_global -ItemType File
+
+# 配置 Git 使用它
+git config --global core.excludesfile "$env:USERPROFILE\.gitignore_global"
+```
+
+### 6.2 macOS / Linux 配置全局忽略
+
+```bash
+touch ~/.gitignore_global
+git config --global core.excludesfile ~/.gitignore_global
+```
+
+### 6.3 全局忽略文件推荐内容
+
+```gitignore
+# 操作系统生成文件
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器临时文件
 .idea/
 .vscode/
 *.swp
@@ -121,117 +365,114 @@ git config --global core.excludesfile ~/.gitignore_global
 *~
 ```
 
-## 4. 常用模板
+## 7. 常见错误与对策
 
-### 4.1 Node.js 项目
+| 错误现象 | 报错/表现 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 明明写了 `node_modules/`，`git push` 还是把依赖推上去了 | 仓库里能看到 `node_modules` | 文件在添加 `.gitignore` **之前**已被提交跟踪 | 执行 `git rm --cached -r node_modules/` 再提交 |
+| `!important.log` 写在 `*.log` 前面，取反不生效 | important.log 仍被忽略 | 取反规则必须写在对应的忽略规则**之后** | 调整顺序：先 `*.log` 后 `!important.log` |
+| 忽略了 `build/` 又想保留 `build/hot.js`，取反无效 | 子文件仍被忽略 | 父目录被忽略后 Git 不会检查其内部规则 | 改用 `build/*` + `!build/hot.js` |
+| 在 `.gitignore` 里写了 `/temp/`，其他目录的同名文件也被忽略了 | 表现不一致 | 对 `/temp/`（锚定根目录）与 `temp/`（匹配所有层级）的理解混淆 | 记住：**开头斜杠 = 锚定当前层级**，不带斜杠 = 匹配所有层级 |
+| `.env` 里的密钥还是被推送了，事后才发现 | 安全事故 | 忽略了 `.env` 但密钥硬编码在 `src/config.js` 中 | 全局搜索密钥（`git grep "sk_live"`），轮换密钥，并使用环境变量 + GitHub Secrets |
+| `git status` 不显示某文件，但 `git add` 报错 | `The following paths are ignored by one of your .gitignore files` | 想添加一个被忽略的文件 | 确认是否真的要添加；若要添加，用 `git add -f 文件名` 强制添加，或调整忽略规则 |
+
+## 8. 实战练习
+
+### 练习 1：为你的第一个 Node.js 项目写忽略清单（入门）
+
+**题目描述**：你新建了一个 Node.js 项目，目录中包含 `node_modules/`、`dist/`、`.env`、`.vscode/`、`package.json`、`src/index.js`。请写出一个最小可用的 `.gitignore`。
+
+**提示**：对照第 2.1 节的基本语法，逐类文件判断是否需要忽略。
+
+**参考答案要点**：
 
 ```gitignore
 node_modules/
 dist/
-build/
 .env
-.env.local
-*.log
-coverage/
-.nyc_output/
-```
-
-### 4.2 Python 项目
-
-```gitignore
-__pycache__/
-*.py[cod]
-*.egg-info/
-dist/
-.venv/
-.env
-.pytest_cache/
-.mypy_cache/
-```
-
-### 4.3 通用模板
-
-```gitignore
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.idea/
 .vscode/
-*.swp
-
-# 环境
-.env
-.env.local
-
-# 日志
-*.log
 ```
 
-## 5. 已跟踪文件的忽略
+### 练习 2：取反规则实战（进阶）
 
-### 5.1 停止跟踪已提交的文件
+**题目描述**：你的项目里 `*.md` 全被忽略，但根目录的 `README.md` 必须提交。同时 `logs/` 目录整体忽略，但其中的 `logs/.gitkeep`（用于保留空目录的占位文件）需要提交。请写出规则并说明顺序。
+
+**提示**：注意"父目录陷阱"，`logs/.gitkeep` 需要先让 `logs/` 内部可见。
+
+**参考答案要点**：
+
+```gitignore
+*.md
+!README.md
+
+# 忽略日志目录内容，但保留占位文件
+logs/*
+!logs/.gitkeep
+```
+
+### 练习 3：排查"为什么文件还在仓库里"（进阶）
+
+**题目描述**：你配置了 `.gitignore` 忽略 `build/`，但 `git push` 后仓库里依然有 `build/`。用命令排查问题并修复。
+
+**提示**：用 `git check-ignore -v build/app.js` 确认规则生效；再用 `git ls-files build/` 查看文件是否已被跟踪。
+
+**参考答案要点**：
 
 ```bash
-# 停止跟踪但保留本地文件
-git rm --cached .env
-git rm --cached -r node_modules/
+# 1. 确认规则生效
+git check-ignore -v build/app.js
 
-# 提交
-git commit -m "chore: remove tracked files from gitignore"
+# 2. 查看已被跟踪的文件
+git ls-files build/
+
+# 3. 若存在已跟踪文件，停止跟踪并提交
+git rm -r --cached build/
+git commit -m "chore: 移除已跟踪的构建产物"
+git push
 ```
 
-### 5.2 忽略已跟踪文件的修改
+### 练习 4：为 Python 项目配置全局忽略（综合）
+
+**题目描述**：你同时维护多个 Python 项目，希望把 `__pycache__/`、`.vscode/`、`.DS_Store` 统一在全局忽略，并在每个项目内只保留项目特定的规则（如 `.env`、`.venv/`）。请给出完整配置流程。
+
+**提示**：全局文件用 `git config --global core.excludesfile` 指定。
+
+**参考答案要点**：
 
 ```bash
-# 临时忽略修改
-git update-index --assume-unchanged config.local.js
+# 1. 配置全局忽略文件（Windows 示例）
+git config --global core.excludesfile "$env:USERPROFILE\.gitignore_global"
+# 内容：
+# __pycache__/
+# .vscode/
+# .DS_Store
 
-# 恢复跟踪
-git update-index --no-assume-unchanged config.local.js
+# 2. 项目内 .gitignore 只写项目特定内容
+# .venv/
+# .env
+# *.log
 
-# 查看被忽略的文件
-git ls-files -v | grep '^h'
+# 3. 验证
+git status --ignored
 ```
 
-## 6. gitignore 模板库
+## 9. 一句话记忆
 
-GitHub 提供了丰富的 gitignore 模板：[github/gitignore](https://github.com/github/gitignore)
+> **`.gitignore` 就是仓库的"搬家清单"——只列"不装什么"：能再生的构建产物、能重装的依赖、不能给别人看的密钥，以及别人不需要的 IDE 和系统文件。**
 
-```bash
-# 使用 curl 下载模板
-curl -o .gitignore https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
-```
+## 参考链接与延伸阅读
 
-## 参考文献
+### 官方文档
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+- Git 官方手册 gitignore(5)：https://git-scm.com/docs/gitignore
+- GitHub 官方模板库 github/gitignore：https://github.com/github/gitignore
+- GitHub 文档（中文）：https://docs.github.com/zh
+- gitignore.io 组合模板生成器：https://www.toptal.com/developers/gitignore
 
-## 延伸阅读
+### 延伸阅读
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- 分支模型与分支保护规则，见 004-github 模块 007 文档。
+- 开源许可证选择（LICENSE 文件的管理思路与 .gitignore 类似），见 004-github 模块 009 文档。
+- 依赖安全选项（锁定文件与 Dependabot 的配合使用），见 004-github 模块 010 文档。
+- Git 协作基础（git add / commit / push 流程），见 003-git 模块。
+- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

@@ -5,378 +5,344 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: GitHub 暂存与回退 的完整教学讲解。
+description: 以寄存柜与时光机类比驱动讲解 git stash 暂存系列与 git reset/revert/restore/clean 回退系列命令，覆盖软/混合/硬回退三档选择与撤销安全原则，适合零基础学习者。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related: []
 prerequisites: []
 ---
-## 暂存改动
+## 开篇：像寄存柜与时光机一样管理改动
 
-**基本写法：暂存当前改动**
-`git stash`
+在大型商场里，你拎着大包小包没法逛街。这时你走到**寄存柜**前，把东西暂存进去、拿走钥匙牌，轻装继续逛；逛完凭牌取回，东西原封不动。
+
+`git stash` 就是代码的"寄存柜"：当你工作到一半、还不能提交，但又必须切换分支或拉取代码时，把当前改动"暂存"起来，让工作区回到干净状态；办完事再"取回"改动，继续干活。
+
+而**时光机**大家都懂：回到过去、修正错误。`git reset` 就是 Git 的时光机——把分支指针拨回过去的某个提交。但它有三个"档位"：**软回退（只拨指针）、混合回退（连暂存区一起拨）、硬回退（连工作区一起拨）**，选错档位，后果天差地别。
+
+本篇采用**类比驱动**的叙事方式：以"寄存柜"讲透 stash，以"时光机"讲透 reset 及其安全替代品 revert，最后用 restore 和 clean 补齐"撤销三兄弟"。
+
+---
+
+## 一、寄存柜：git stash 暂存系列
+
+### 1.1 为什么需要寄存（典型场景）
+
 ```bash
-# 暂存工作区和暂存区的改动
+# 场景：正在开发登录功能（没写完，不想提交），但 main 分支有个紧急 Bug 要修
+git switch main        # 报错！有未提交的改动，切不过去
+
+# 解法：先把改动存起来
 git stash
+git switch main        # 成功切换，工作区干净
+# ...修复 Bug 并提交...
+git switch feature/login
+git stash pop          # 取回之前未写完的改动
 ```
 
----
+> 原理提示：`git stash` 把工作区和暂存区的改动打包成一个"暂存条目"存到 `refs/stash` 引用里，然后把工作区还原成与 HEAD 一致。注意：**它默认不包含未跟踪的新文件**（需要加 `-u`）。
 
-**基本写法：暂存并添加说明**
-`git stash push -m "<说明>"`
+### 1.2 暂存（存包）
+
 ```bash
-# 暂存改动并附上描述信息
+# 暂存当前所有已跟踪改动（最常用）
+git stash
+
+# 暂存并附上说明（好找）
 git stash push -m "登录功能开发中"
-```
 
----
-
-**基本写法：包含未跟踪文件**
-`git stash -u`
-```bash
-# 暂存改动同时包含未跟踪文件
+# 连同未跟踪文件一起暂存（新文件也存）
 git stash -u
-```
 
----
-
-**基本写法：包含所有文件**
-`git stash -a`
-```bash
-# 暂存所有改动（含忽略文件）
+# 连忽略文件也一起暂存（极少数情况用）
 git stash -a
-```
 
----
-
-**基本写法：保留暂存区**
-`git stash --keep-index`
-```bash
-# 暂存改动但保留暂存区内容
+# 暂存但保留暂存区内容（--keep-index）
 git stash --keep-index
 ```
 
----
+### 1.3 查看（看寄存柜里有什么）
 
-## 查看暂存
-
-**基本写法：查看暂存列表**
-`git stash list`
 ```bash
-# 列出所有暂存的改动
+# 列出所有暂存条目（stash@{0} 是最近的一个）
 git stash list
-```
+# 输出示例：
+# stash@{0}: On feature/login: 登录功能开发中
+# stash@{1}: On main: 样式调整
 
----
+# 查看最近暂存的改动摘要
+git stash show
 
-**基本写法：查看暂存详情**
-`git stash show stash@{<索引>}`
-```bash
 # 查看指定暂存的改动摘要
-git stash show stash@{0}
-```
+git stash show stash@{1}
 
----
-
-**基本写法：查看暂存差异详情**
-`git stash show -p stash@{<索引>}`
-```bash
-# 查看指定暂存的完整差异
+# 查看指定暂存的完整差异（-p 补丁格式）
 git stash show -p stash@{0}
 ```
 
----
+### 1.4 恢复（取包）
 
-**基本写法：查看最近暂存详情**
-`git stash show`
 ```bash
-# 查看最近一次暂存的改动摘要
-git stash show
-```
-
----
-
-## 恢复暂存
-
-**基本写法：恢复最近暂存**
-`git stash pop`
-```bash
-# 恢复最近暂存并删除该暂存记录
+# 恢复最近暂存并删除该条记录（最常用）
 git stash pop
-```
 
----
-
-**基本写法：恢复指定暂存**
-`git stash pop stash@{<索引>}`
-```bash
-# 恢复指定索引的暂存
+# 恢复指定暂存
 git stash pop stash@{1}
-```
 
----
-
-**基本写法：恢复但不删除暂存**
-`git stash apply`
-```bash
-# 恢复最近暂存但保留暂存记录
+# 恢复但不删除记录（想保留备份时用）
 git stash apply
-```
 
----
-
-**基本写法：恢复指定暂存不删除**
-`git stash apply stash@{<索引>}`
-```bash
-# 恢复指定暂存但保留记录
+# 恢复指定暂存且保留记录
 git stash apply stash@{1}
 ```
 
----
+> 对比记忆：**pop = 取包 + 退钥匙牌（删除记录）；apply = 取包但保留钥匙牌（记录还在）**。
 
-## 删除暂存
+### 1.5 删除（扔包）
 
-**基本写法：删除指定暂存**
-`git stash drop stash@{<索引>}`
 ```bash
-# 删除指定索引的暂存记录
+# 删除指定暂存记录
 git stash drop stash@{0}
-```
 
----
-
-**基本写法：清空所有暂存**
-`git stash clear`
-```bash
-# 删除所有暂存记录
+# 清空所有暂存记录
 git stash clear
-```
 
----
-
-**基本写法：从暂存创建分支**
-`git stash branch <分支名> stash@{<索引>}`
-```bash
-# 基于暂存创建新分支并恢复改动
+# 基于暂存创建新分支（处理"恢复时与当前分支冲突"的场景）
 git stash branch feature/recovery stash@{0}
 ```
 
 ---
 
-## 撤销工作区改动
+## 二、时光机：git reset 回退系列
 
-**基本写法：撤销工作区修改**
-`git restore <文件>`
+### 2.1 时光机原理：指针的三档回拨
+
+`git reset` 的本质是**把当前分支指针（以及可选的工作区/暂存区）移回过去的提交**。三个档位的区别，用"指针、暂存区、工作区"三件套来记：
+
+| 档位 | 命令 | 分支指针 | 暂存区 | 工作区 | 适用场景 |
+| --- | --- | --- | --- | --- | --- |
+| 软回退 | `git reset --soft <目标>` | 回退 | 保留 | 保留 | 想重新提交（改动留在暂存区） |
+| 混合回退 | `git reset --mixed <目标>`（默认） | 回退 | 回退 | 保留 | 想重新 add（改动留在工作区） |
+| 硬回退 | `git reset --hard <目标>` | 回退 | 回退 | 回退 | 彻底丢弃改动（危险） |
+
+### 2.2 三个档位的命令
+
 ```bash
-# 恢复文件到上次提交的状态
-git restore index.js
-```
-
----
-
-**基本写法：checkout 撤销修改**
-`git checkout -- <文件>`
-```bash
-# 旧写法撤销工作区修改
-git checkout -- index.js
-```
-
----
-
-**基本写法：撤销所有修改**
-`git restore .`
-```bash
-# 撤销当前目录所有改动
-git restore .
-```
-
----
-
-**基本写法：取消暂存**
-`git restore --staged <文件>`
-```bash
-# 将文件从暂存区移回工作区
-git restore --staged index.js
-```
-
----
-
-**基本写法：取消所有暂存**
-`git restore --staged .`
-```bash
-# 将所有文件从暂存区移回工作区
-git restore --staged .
-```
-
----
-
-## 回退提交
-
-**基本写法：软回退（保留改动）**
-`git reset --soft HEAD~1`
-```bash
-# 撤销上次提交保留改动在暂存区
+# 软回退：撤销上次提交，改动保留在暂存区（改完再提交）
 git reset --soft HEAD~1
-```
 
----
+# 混合回退（默认）：撤销提交和暂存，改动保留在工作区
+git reset HEAD~1
+# 或显式写：git reset --mixed HEAD~1
 
-**基本写法：混合回退（默认）**
-`git reset --mixed HEAD~1`
-```bash
-# 撤销上次提交保留改动在工作区
-git reset --mixed HEAD~1
-```
-
----
-
-**基本写法：硬回退（丢弃改动）**
-`git reset --hard HEAD~1`
-```bash
-# 撤销上次提交并丢弃所有改动
+# 硬回退：彻底回到上次提交的状态（所有未提交改动永久丢失）
 git reset --hard HEAD~1
-```
 
----
-
-**基本写法：回退到指定提交**
-`git reset --hard <提交ID>`
-```bash
-# 强制回退到指定提交
+# 回退到指定提交
 git reset --hard abc1234
-```
 
----
-
-**基本写法：回退单个文件**
-`git reset HEAD~1 <文件>`
-```bash
-# 仅回退指定文件到上次提交状态
+# 回退单个文件到上次提交状态（不影响其他文件）
 git reset HEAD~1 src/index.js
-```
 
----
-
-**基本写法：回退到远程分支状态**
-`git reset --hard origin/<分支名>`
-```bash
-# 重置本地分支到远程分支状态
+# 让本地分支与远程分支完全一致
 git reset --hard origin/main
 ```
 
+### 2.3 回退前必读的安全警告
+
+1. `--hard` 会**永久丢弃**工作区和暂存区的未提交改动，无法用 `git status` 找回，只能靠 `reflog` 抢救；
+2. 已 push 的提交不要用 reset 回退（历史分叉会坑队友），改用 `git revert`（见第三节）；
+3. 回退前养成习惯：先 `git stash` 或 `git branch backup` 备份当前状态。
+
 ---
 
-## 反向提交
+## 三、安全撤销：git revert 反向提交
 
-**基本写法：创建反向提交**
-`git revert <提交ID>`
+`git revert` 与 reset 的本质区别：**reset 是"抹掉历史"，revert 是"新增一个反向提交来抵消历史"**。revert 不改变已有提交，因此**可以安全用于已推送的远程提交**：
+
 ```bash
-# 创建一个新提交撤销指定提交的改动
+# 创建一个新提交，撤销指定提交的改动
 git revert abc1234
-```
 
----
+# 撤销最近一次提交
+git revert HEAD
 
-**基本写法：反向提交不自动提交**
-`git revert -n <提交ID>`
-```bash
-# 反向提交但不自动创建提交
+# 反向但不自动提交（先检查再手动提交）
 git revert -n abc1234
-```
 
----
-
-**基本写法：反向多个提交**
-`git revert <提交1>..<提交2>`
-```bash
-# 反向指定范围内的提交
+# 反向一个范围的提交
 git revert abc1234..def5678
 ```
 
+| 对比维度 | `git reset` | `git revert` |
+| --- | --- | --- |
+| 历史处理 | 移动指针（改写历史） | 新增提交（保留历史） |
+| 是否安全用于已推送提交 | 不安全 | 安全 |
+| 适用场景 | 本地未推送的提交 | 已推送的提交、公共分支 |
+| 命令形态 | `git reset --hard HEAD~1` | `git revert abc1234` |
+
 ---
 
-**基本写法：反向最近提交**
-`git revert HEAD`
+## 四、撤销工作区与暂存区：git restore
+
+`git restore` 是 Git 2.23+ 引入的"撤销专用命令"，把原本混在 `checkout`/`reset` 里的撤销职责独立出来，语义更清晰：
+
 ```bash
-# 撤销最近一次提交
-git revert HEAD
+# 撤销工作区修改（恢复到上次提交/暂存的状态）——危险，改动丢失
+git restore index.js
+
+# 旧写法（等价）
+git checkout -- index.js
+
+# 撤销当前目录所有工作区改动
+git restore .
+
+# 取消暂存（把文件从暂存区移回工作区，内容不丢）
+git restore --staged index.js
+
+# 取消所有暂存
+git restore --staged .
+
+# 从指定提交恢复文件
+git restore --source=abc1234 index.js
 ```
 
+> 记忆锚点：`git restore` 默认管**工作区**，加 `--staged` 管**暂存区**；`--source` 指定从哪个提交恢复。
+
 ---
 
-## 清理未跟踪文件
+## 五、清理未跟踪文件：git clean
 
-**基本写法：查看将被清理的文件**
-`git clean -n`
+`git stash` 和 `git reset` 都不管**未跟踪文件**，`git clean` 专门负责清理它们。**注意：它删除的文件无法恢复，务必先 `-n` 预览**：
+
 ```bash
-# 预览将被删除的未跟踪文件
+# 预览将被删除的未跟踪文件（安全模式，不实际删除）
 git clean -n
-```
 
----
-
-**基本写法：删除未跟踪文件**
-`git clean -f`
-```bash
-# 强制删除未跟踪的文件
+# 强制删除未跟踪文件
 git clean -f
-```
 
----
-
-**基本写法：删除未跟踪目录**
-`git clean -fd`
-```bash
-# 删除未跟踪的文件和目录
+# 删除未跟踪文件和目录
 git clean -fd
-```
 
----
-
-**基本写法：包含忽略文件清理**
-`git clean -fdx`
-```bash
-# 删除所有未跟踪文件含忽略文件
+# 连忽略文件（.gitignore 里的）一起删（最彻底，最危险）
 git clean -fdx
-```
 
----
-
-**基本写法：交互式清理**
-`git clean -i`
-```bash
-# 交互式选择要删除的文件
+# 交互式逐个确认
 git clean -i
 ```
 
-## 参考文献
+---
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+## 六、常见错误与对策表
+
+| 错误现象 | 报错信息（节选） | 原因分析 | 解决办法 |
+| --- | --- | --- | --- |
+| stash 后新文件不见了 | pop 后新建的文件没恢复 | stash 默认不含未跟踪文件 | 暂存时用 `git stash -u` |
+| pop 时冲突 | `CONFLICT (content): Merge conflict in ...` | 暂存的改动与当前工作区冲突 | 按 041 篇解决冲突；pop 失败不会删记录，解决后 `git stash drop` 手动清理 |
+| 误用 --hard 丢改动 | 工作区改动全部消失 | `--hard` 回退会丢弃未提交改动 | 立即用 `git reflog` + `git reset --hard <原ID>` 抢救 |
+| reset 后 push 被拒 | `! [rejected] ... (non-fast-forward)` | 回退的是已推送提交，历史分叉 | 改用 `git revert` 生成反向提交后再 push |
+| apply 与 pop 分不清 | 恢复后记录还在/没了 | 混淆两者语义 | pop 删记录、apply 留记录；按需选择 |
+| 误以为 reset 能找回 stash | stash clear 后想找回 | 已清空无记录 | 无解；clear 前用 `git stash list` 确认，或改用 drop 单条删除 |
+| clean 误删文件 | 文件被删且找不到 | 忘记先 `-n` 预览 | 养成先 `git clean -n` 预览再 `-f` 的习惯；无法恢复 |
+
+---
+
+## 七、实战练习
+
+### 练习 1：第一次寄存与取回（入门）
+
+**题目**：在分支上改一个文件但不提交，执行 `git stash`，用 `git status` 确认工作区干净，再 `git stash pop` 取回。
+
+**提示**：观察 stash 前后 `git status` 的变化。
+
+**参考答案要点**：
+
+```bash
+echo "改动" >> app.py
+git status                 # 有 modified
+git stash
+git status                 # clean（改动被寄存）
+git stash list             # 显示 stash@{0}
+git stash pop              # 改动恢复
+```
+
+### 练习 2：带说明的暂存与按索引恢复（入门）
+
+**题目**：连续暂存两次改动（各带说明），用 `git stash list` 查看，再分别用索引恢复指定的那条。
+
+**提示**：`stash@{0}` 是最新的。
+
+**参考答案要点**：
+
+```bash
+echo "A" >> f1.txt && git stash push -m "改动A"
+echo "B" >> f2.txt && git stash push -m "改动B"
+git stash list             # stash@{0} 改动B；stash@{1} 改动A
+git stash pop stash@{1}    # 恢复改动A
+```
+
+### 练习 3：三档回退大实验（核心）
+
+**题目**：制造两次提交，分别用 `--soft`、`--mixed`、`--hard` 回退一次，每次用 `git status` 观察暂存区和工作区的变化。
+
+**提示**：用三件套记忆——软(指针)、混(指针+暂存)、硬(指针+暂存+工作区)。
+
+**参考答案要点**：
+
+```bash
+git reset --soft HEAD~1     # 提交撤销，改动在暂存区（A 状态）
+git reset --mixed HEAD~1    # 提交+暂存撤销，改动在工作区（M 状态）
+git reset --hard HEAD~1     # 全部撤销，改动丢失
+```
+
+### 练习 4：revert 安全撤销已推送提交（进阶）
+
+**题目**：模拟一次"已推送"的坏提交，用 `git revert` 撤销它，观察历史中多了一个反向提交而不是被抹掉。
+
+**提示**：revert 适合公共历史；对比 reset 的区别。
+
+**参考答案要点**：
+
+```bash
+git log --oneline          # 记下坏提交 ID
+git revert abc1234
+git log --oneline          # 多了一个 Revert "..." 提交，原提交还在
+```
+
+### 练习 5：clean 安全清理（综合）
+
+**题目**：创建几个未跟踪的临时文件，先用 `git clean -n` 预览，确认无误后再 `-f` 删除；再用 `-fd` 处理未跟踪目录。
+
+**提示**：先预览后删除是铁律。
+
+**参考答案要点**：
+
+```bash
+echo "temp" > tmp.log
+mkdir tmp-dir && echo "x" > tmp-dir/x.txt
+git clean -n               # 预览：列出将被删除的文件
+git clean -f               # 删除未跟踪文件（tmp.log）
+git clean -fd              # 删除未跟踪目录（tmp-dir）
+```
+
+---
+
+## 八、一句话记忆
+
+**stash 是寄存柜（存：`stash push -u`，看：`stash list`，取：`pop` 删记录 / `apply` 留记录，清：`clear`）；reset 是时光机（软拨指针、混拨暂存、硬全拨——`--hard` 慎用，先 stash 备份）；已推送的提交用 `revert` 反向抵消；`restore` 撤工作区/暂存区，`clean` 清未跟踪——先 `-n` 预览再动手。**
+
+---
+
+## 参考链接
+
+- Git 官方文档（git stash，中文）：https://git-scm.com/docs/git-stash/zh_HANS-CN.html
+- Git 官方文档（git reset）：https://git-scm.com/docs/git-reset
+- Pro Git 中文版 2.4 撤销操作：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%92%A4%E9%94%80%E6%93%8D%E4%BD%9C
+- Pro Git 中文版 7.3 存储与清理：https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%98%E5%82%A8%E4%B8%8E%E6%B8%85%E7%90%86
 
 ## 延伸阅读
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- 误删/误 reset 后如何用 reflog 抢救，见上一篇 044-GitHistoryLog。
+- stash 与 pull 的组合用法（先收后拉再恢复），见 041-GitConflictResolve。
+- revert 与冲突解决流程，见 041-GitConflictResolve。
+- 关联文档：提交与推送，见 038-GitCommitPush；Git 协作基础，见 003-git 模块。

@@ -271,7 +271,7 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
           {visibleCount < cards.length && (
             <button
               type="button"
-              className="syntax-more"
+              className="syntax-more fndx-icon-btn fndx-icon-btn--labeled"
               onClick={() => setVisibleCount((current) => current + PAGE_SIZE)}
             >
               加载更多（剩余 {cards.length - visibleCount} 条）
@@ -323,7 +323,7 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
                   <span className="syntax-panel__lang">{selected.lang}</span>
                   <button
                     type="button"
-                    className="syntax-panel__copy"
+                    className="syntax-panel__copy fndx-icon-btn fndx-icon-btn--labeled"
                     aria-label={copiedId === selected.id ? '已复制' : '复制代码'}
                     onClick={() => void copyCode(selected.id, selected.code)}
                   >
@@ -351,14 +351,19 @@ export function SyntaxExplorer({ languages, base }: SyntaxExplorerProps) {
 
             {/* 面板底部：完整文档入口 + 关闭按钮 */}
             <div className="syntax-panel__footer">
-              <a className="syntax-panel__link" href={`${base}${active?.id}/`}>
+              <a
+                className="syntax-panel__link fndx-icon-btn fndx-icon-btn--labeled"
+                href={`${base}${active?.id}/`}
+              >
                 <span>查看 {active?.title} 完整文档</span>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />
                 </svg>
               </a>
-              <DialogPrimitive.Close className="syntax-panel__close">关闭</DialogPrimitive.Close>
+              <DialogPrimitive.Close className="syntax-panel__close fndx-icon-btn fndx-icon-btn--labeled">
+                关闭
+              </DialogPrimitive.Close>
             </div>
           </DialogPrimitive.Content>
         </DialogPrimitive.Portal>

@@ -4,9 +4,9 @@ title: Vite 构建工具概述
 module: vite
 category: Vite
 difficulty: beginner
-description: 'Vite 构建工具概述：开发服务器、HMR、依赖预构建、生产构建与工程配置'
+description: 'Vite 构建工具概述：从 webpack 痛点出发，理解原生 ESM、依赖预构建、HMR 原理与 Vite 8 的 Rolldown 统一引擎'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - javascript/JavaScript基础
   - typescript/TypeScript基础
@@ -15,215 +15,254 @@ related:
 prerequisites:
   - javascript/JavaScript基础
 ---
-## 1. Vite 是什么
 
-Vite（法语“快”的意思）是尤雨溪于 2020 年发布的下一代前端构建工具，2021 年起成为 Vue 官方推荐，随后被 React、Svelte、Astro 等生态广泛采用。它的核心创新是：开发环境基于原生 ES Modules，按需编译；生产环境基于 Rollup，深度优化。
+## 1. 从一个生活类比说起：快递分拣中心
 
-Vite 由两部分组成：
+先想象一个快递分拣中心。假设你从网上买了 10 件商品，分拣中心有两种处理方式：
 
-开发服务器：冷启动快、HMR 毫秒级；
+- **方式 A（一次性打包）**：分拣员把所有包裹全部拆开，重新按收货地址装进一辆大货车，全部装完才发车。如果这时你又加购了 1 件商品，不好意思，整车要卸下来重新装。
+- **方式 B（随到随发）**：每辆货车按目的地排队，哪个方向的包裹凑够了就先发；新加购的商品，只要送往同一条线路，直接补进下一班车，不影响已经发走的车。
 
-构建器：`vite build` 调用 Rollup 输出生产优化产物。
+传统打包器（如 webpack）开发时就像**方式 A**：不管页面是否需要，先把整个项目的所有文件打包成一个巨大的 bundle，浏览器一次性下载；你改一行代码，它就要把相关模块重新编译一遍，项目越大等待越久——这就是著名的"webpack 打包太慢"痛点。
 
-## 2. 为什么需要 Vite：打包器的困境
+Vite（法语"快"的意思，读作 /viːt/）就像**方式 B**：浏览器按需向开发服务器请求模块，服务器只处理"当前请求的那一个文件"，改一行代码只更新一个模块。本文就从这条思路出发，带你理解 Vite 为什么快、它内部做了什么。
 
-Webpack 等传统打包器在开发时把整个应用打包成 bundle，项目越大启动越慢；热更新也要重新打包受影响部分。Vite 利用浏览器原生 ESM 支持，让浏览器直接按需请求模块，服务器只转换单个文件，冷启动与 HMR 速度几乎与项目规模无关。
+## 2. 真实的痛点故事：等一次编译要喝几杯咖啡
 
-Vite 的工作流程：
+时间回到 2018-2020 年，前端工程化处于 webpack 主导的时代。一个中型项目（几百个页面模块、几十个 npm 依赖）的日常是这样的：
 
-第一，依赖预构建：node_modules 中的 CommonJS/多文件依赖用 esbuild 预打包为 ESM，缓存到 `node_modules/.vite`；
+1. 早上到公司，运行 `npm run dev`，盯着终端等 **30 秒到 3 分钟**的冷启动；
+2. 每次保存代码，触发热更新，又要等 **3-10 秒**（改到公共模块甚至触发全量重编译）；
+3. 项目超过 10 万行后，打包器单线程执行 JavaScript，速度肉眼可见地变慢。
 
-第二，源码按需转换：浏览器请求 `.vue`、`.tsx` 文件时，Vite 即时转译为浏览器可执行的 JS；
+这背后是打包器的固有缺陷：**开发阶段不该打包**。开发时我们只需要"浏览器能跑的代码"，而不是"最优化压缩的产物"。把"编译"和"打包"这两个本来可以分开的动作强行合并，就产生了大量无效等待。
 
-第三，HMR：模块图跟踪依赖，修改后只推送受影响的模块。
+Vite 的解法是一句话：**开发时让浏览器自己按需加载模块，服务器只做"翻译"**。这正是浏览器原生 ES Modules（ESM）带来的能力。
 
-## 3. 快速上手
+## 3. Vite 是什么
 
-```bash
-# 创建项目（react-ts 模板）
-pnpm create vite my-app --template react-ts
-cd my-app
-pnpm install
-pnpm dev      # 启动开发服务器（默认 5173）
-pnpm build    # 生产构建
-pnpm preview  # 预览构建产物
+Vite 是由 Vue 作者尤雨溪（Evan You）于 2020 年发布并开源的下一代前端构建工具，2021 年起成为 Vue 官方推荐，随后被 React、Svelte、Astro 等生态广泛采用。它由两大部分组成：
+
+| 组成 | 负责什么 | 关键能力 |
+| --- | --- | --- |
+| 开发服务器（dev server） | 本地开发阶段 | 冷启动快、HMR 毫秒级、按需编译 |
+| 构建器（bundler） | 生产构建阶段 | 打包、代码分割、压缩、生成优化产物 |
+
+两条管线分开设计，各司其职，这就是 Vite 的核心架构思想。理解"开发与生产是两套不同逻辑"，是理解 Vite 一切行为的总钥匙。
+
+## 4. 原理一：原生 ESM 与按需编译
+
+### 4.1 直观理解
+
+ES Modules 是 JavaScript 官方规定的模块标准。浏览器原生支持它：在 HTML 中写 `<script type="module">`，浏览器就会按 `import` 语句**自动、按需地**去网络上下载每一个模块文件，不需要任何打包器参与。
+
+```html
+<!-- index.html：浏览器原生支持的模块加载方式 -->
+<script type="module" src="/src/main.js"></script>
 ```
 
-## 4. 配置文件
+```js
+// main.js 被浏览器下载后，它 import 谁，浏览器就去下载谁
+import { renderHeader } from './components/Header.js'
+import { renderFooter } from './components/Footer.js'
 
-```ts
-// vite.config.ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'node:path'
-
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-    },
-  },
-  server: {
-    port: 5173,
-    proxy: {
-      // 开发环境代理 API 请求
-      '/api': 'http://localhost:8080',
-    },
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        // 手动分包：稳定依赖合并为一个 chunk
-        manualChunks: {
-          react: ['react', 'react-dom'],
-        },
-      },
-    },
-  },
-})
+renderHeader()
+renderFooter()
 ```
 
-讲解：alias 让 `@/` 指向 src；proxy 解决开发期跨域；manualChunks 控制产物分包。配置是 TypeScript 文件，自带类型提示。
+### 4.2 原理
 
-## 5. 环境变量与模式
+传统打包器在开发阶段会把所有源码打包成一个 bundle，浏览器拿到的是"成品大礼包"；Vite 反其道而行，开发阶段**不做打包**，浏览器直接请求哪个文件，Vite 才转换哪个文件：
 
-```bash
-# .env / .env.development / .env.production
-VITE_API_BASE=/api
-VITE_APP_TITLE=FANDEX
+```text
+传统方式：所有源码 -> 打包成一个 bundle -> 浏览器下载 -> 执行
+Vite 方式：浏览器按需请求每个模块 -> Vite 逐个转换 -> 浏览器执行
 ```
 
-只有 `VITE_` 前缀的变量会暴露给客户端代码：
+这样做的好处是：**冷启动速度与项目规模几乎无关**。项目从 10 个模块涨到 1000 个模块，首次启动依然是"浏览器发起第一个请求"那点时间，因为 Vite 不需要预先知道全部代码。
 
-```ts
-const api = import.meta.env.VITE_API_BASE
-const isProd = import.meta.env.PROD
+### 4.3 局限与补齐
+
+浏览器原生只能识别标准的 `.js` 文件，那 `.ts`、`.tsx`、`.vue` 怎么办？Vite 的 dev server 会拦截这些请求，在返回前把它们"翻译"成浏览器可执行的 JavaScript：
+
+```text
+浏览器请求 /src/App.tsx
+    -> Vite 服务器拦截
+    -> 用 Oxc 转译器把 TypeScript 转成 JavaScript
+    -> 返回给浏览器执行
 ```
 
-讲解：`import.meta.env` 是 Vite 注入的环境对象；敏感信息（密钥）绝不能放在 VITE_ 变量中。
+这个"翻译"是**单文件级别**的，只处理当前请求的文件，因此速度极快。Vite 8 中这个转译器是 Oxc（Rust 编写的编译器工具链），官方宣称 HMR 更新反映到浏览器的时间小于 50ms。
 
-## 6. 依赖优化与性能
+## 5. 原理二：依赖预构建
 
-### 6.1 预构建缓存
+### 5.1 直观理解
 
-依赖变化或配置修改后，删除 `node_modules/.vite` 并重启即可。CI 中缓存该目录可加速安装后的首次启动。
+浏览器能加载 ESM，但它加载不了 `import { useState } from 'react'` 这种**裸模块导入**（没有路径的导入）——浏览器不知道该去哪里找 `react`。另外，`node_modules` 里大量第三方包是 CommonJS 格式（`require` 写法），浏览器根本不认识；还有的包由成百上千个小文件组成，如果原样加载，浏览器要发起几百次请求，性能灾难。
 
-### 6.2 代码分割
+### 5.2 原理
 
-```ts
-// 动态导入：路由级分包
-const AdminPage = lazy(() => import('./pages/AdminPage'))
+Vite 在 dev server 启动时会扫描依赖，把 `node_modules` 中的第三方包**预先合并**成少数几个 ESM 文件，缓存在 `node_modules/.vite` 目录（Vite 8 中这一步骤由 Rolldown 执行）：
+
+```text
+依赖预构建的两大收益：
+1. 兼容性：CommonJS / UMD 格式的依赖转为浏览器可识别的 ESM
+2. 性能：把数百个小模块合并为一个大文件，浏览器一次请求即可加载
 ```
 
-### 6.3 产物分析
+依赖被重写为合法 URL 供浏览器加载：
 
-```bash
-pnpm add -D rollup-plugin-visualizer
+```text
+import { useState } from 'react'
+        ↓ 重写为
+import { useState } from '/node_modules/.vite/deps/react.js?v=3f2ebd01'
 ```
 
-在配置中启用后，构建会生成可视化报告，帮助定位超大 chunk。
+注意：预构建**只针对依赖**（`node_modules`），你自己的源码依然按需转换。若修改依赖版本或 Vite 版本导致缓存失效，删除 `node_modules/.vite` 目录后重启即可重建；也可以直接用 `vite --force` 强制重新预构建。
 
-## 7. Vite 与框架集成
+## 6. 原理三：模块热替换（HMR）
 
-官方插件：
+### 6.1 直观理解
 
-`@vitejs/plugin-react`：React Fast Refresh；
+没有 HMR 的开发是这样的：改一行 CSS，浏览器整页刷新，页面回到顶部，登录状态丢失，又要重新点一遍操作。HMR（Hot Module Replacement，模块热替换）让"只替换改动的那一个模块"，页面其他部分原封不动。
 
-`@vitejs/plugin-vue`：Vue SFC 支持；
+### 6.2 原理
 
-`@vitejs/plugin-legacy`：旧浏览器兼容（转换 + polyfill）。
+Vite 内部维护一张**模块依赖图**（module graph）。当你保存文件时：
 
-库模式（发布 npm 包）：
-
-```ts
-export default defineConfig({
-  build: {
-    lib: {
-      entry: 'src/index.ts',
-      formats: ['es', 'cjs'],
-      fileName: 'index',
-    },
-  },
-})
+```text
+1. 文件系统监听到变更
+2. 找到变更文件对应的模块，以及依赖它的所有模块（上游）
+3. 只把"受影响模块"的最新代码通过 WebSocket 推送给浏览器
+4. 浏览器执行替换，不动其他模块
 ```
 
-## 8. 测试与质量
+在开发环境，dev server 与浏览器之间建立了一条 WebSocket 长连接，这就是 HMR 能"秒级"生效的通信基础。框架级 HMR（如 React Fast Refresh、Vue SFC 热更新）由官方插件接入，脚手架模板已预先配置，无需手动设置。
 
-Vitest 与 Vite 共享配置，零配置接入：
+## 7. 原理四：生产构建——从 Rollup 到 Rolldown
 
-```ts
-// 测试文件 sum.test.ts
-import { describe, it, expect } from 'vitest'
-import { sum } from './sum'
+### 7.1 为什么生产环境要"打包"
 
-describe('sum', () => {
-  it('计算两个数之和', () => {
-    expect(sum(1, 2)).toBe(3)
-  })
-})
+开发时按需加载是为了"快"；但上线后，几百个模块意味着几百次网络请求，用户要等很久。生产构建要做的是**反过来**：把源码合并、压缩、分包，形成少量、体积小、可缓存的产物文件。这需要完整的模块图分析、Tree Shaking（摇树优化，删除未用代码）、代码分割等重型能力。
+
+### 7.2 双引擎时代的遗产与 Vite 8 的统一
+
+Vite 长期采用"双引擎"设计：
+
+| 阶段 | 引擎 | 语言 | 职责 |
+| --- | --- | --- | --- |
+| 开发（预构建 + 转译） | esbuild | Go | 依赖预打包、TS/JSX 转换 |
+| 生产（打包优化） | Rollup | JavaScript | 打包、分包、Tree Shaking |
+
+双引擎方案让 Vite 快速成长，但也带来代价：两套转换管线、两套插件系统、行为不一致的边缘案例越积越多。
+
+**2026 年 3 月 12 日发布的 Vite 8 终结了双引擎时代**：改用 **Rolldown**（VoidZero 团队用 Rust 编写的打包器）作为唯一打包引擎，配合 **Oxc**（Rust 编译器）做 JavaScript/TypeScript 转换。官方基准测试显示，一个 19,000 模块的项目，生产构建从 Rollup 的 40.1 秒降到 Rolldown 的 1.61 秒（约 25 倍）；实际公司案例中 Linear 的构建从 46 秒降到 6 秒。由于 Rolldown 兼容 Rollup 插件 API，绝大多数现有 Vite 插件无需修改即可工作。
+
+```text
+Vite 7 及之前：
+  开发：esbuild（依赖预打包 + TS/JSX 转换）
+  生产：Rollup（打包 + 代码分割 + Tree Shaking）
+  问题：两套插件系统、两套转换规则、行为偶有差异
+
+Vite 8：
+  开发 + 生产：Rolldown（统一打包）+ Oxc（解析/转译/压缩）
+  收益：一条流水线、一套插件 API、行为一致性
 ```
 
-质量门禁：`pnpm typecheck`（tsc --noEmit）+ `pnpm lint`（ESLint）+ `pnpm test`（Vitest）+ `pnpm build`。
+## 8. 一张图看懂 Vite 的完整工作流程
 
-## 9. 常见陷阱
+```text
+                        ┌─────────────────────────────┐
+                        │  源码：.vue / .tsx / .css    │
+                        └─────────────┬───────────────┘
+                                      │
+              开发（dev server）       │         生产（vite build）
+                                      │
+        ┌─────────────────────────────┼─────────────────────────────┐
+        │                             │                             │
+   浏览器按需请求模块            依赖预构建                  Rolldown 全量打包
+        │                        (Rolldown)                    (Rolldown + Oxc)
+        │                             │                             │
+   Vite 逐个转换(Oxc)          node_modules/.vite            分包 / 压缩 / Tree Shaking
+        │                             │                             │
+   HMR 只更新受影响模块           浏览器一次请求加载              输出 dist/ 优化产物
+```
 
-陷阱一：开发正常、构建失败。多为依赖使用了浏览器不支持的语法；配置 `build.target` 与插件。
+## 9. 常见错误与对策表
 
-陷阱二：路径别名在 TS 中报错。同步配置 tsconfig 的 paths。
+新手在使用 Vite 时最容易遇到以下问题：
 
-陷阱三：环境变量泄漏。只使用 VITE_ 前缀，敏感信息走服务端。
+| 序号 | 报错/现象 | 原因 | 解决办法 |
+| --- | --- | --- | --- |
+| 1 | 开发正常，`vite build` 却报错 | 依赖使用了浏览器不支持的新语法，而生产构建默认目标较新但不支持该语法；或 dev/build 两套管线行为差异 | 查看报错定位到具体依赖；通过 `build.target` 调整目标，或用 `@vitejs/plugin-legacy` 处理旧浏览器 |
+| 2 | 裸导入报错：`Failed to resolve import "lodash"` | 依赖未安装，或 import 路径写错 | 执行 `pnpm add lodash`，检查包名拼写 |
+| 3 | 修改 `vite.config.ts` 后配置不生效 | 部分插件、配置需要重启 dev server | 重启 `pnpm dev`；Vite 会自动重启大部分配置变更，但新增插件时建议手动重启 |
+| 4 | HMR 不生效，保存后整页刷新 | 模块未声明接受更新；或修改了 vite 配置/新增了插件 | 检查是否为 HMR 边界场景；重启 dev server 后重试 |
+| 5 | 部署后资源 404 | `base` 配置与部署路径不匹配（部署在子路径却用了默认 `/`） | 设置 `base: '/子路径/'`，参见 004 篇 |
+| 6 | 环境变量拿到 undefined | 变量未加 `VITE_` 前缀，或用了动态访问 `import.meta.env[key]` | 变量加 `VITE_` 前缀；使用完整字面量写法 `import.meta.env.VITE_X` |
 
-陷阱四：HMR 失效。修改 vite.config 或新增插件后需重启。
+## 10. 实战练习
 
-陷阱五：忽略 base 配置。部署到子路径时资源 404，设置 `base: '/repo-name/'`。
+### 练习 1：观察原生 ESM 的按需加载
 
-## 10. 参考资源
+**题目**：创建一个 `vanilla` 模板的 Vite 项目，打开浏览器开发者工具的 Network 面板，观察首次加载时浏览器请求了多少个 JS 文件。
 
-Vite 官方文档：https://cn.vitejs.dev/
+**提示**：请求的是单个文件（而不是一个打包后的 bundle）；新增一个 `import` 后刷新，观察多出的请求。
 
-Vite 生态列表：https://github.com/vitejs/awesome-vite
+**参考答案要点**：
+1. 创建项目：`pnpm create vite demo-01 --template vanilla`，安装依赖并 `pnpm dev`；
+2. Network 面板中可以看到 `/src/main.js` 等单个模块请求，浏览器逐个下载；
+3. 这就是原生 ESM 按需加载的直接证据，与传统打包器"一个 bundle"形成鲜明对比。
 
-Vitest：https://cn.vitest.dev/
+### 练习 2：理解依赖预构建缓存
 
-Rollup 文档：https://rollupjs.org/
+**题目**：找到 `node_modules/.vite` 目录，观察其中的文件；然后删除该目录并重启 `pnpm dev`，观察发生了什么。
 
-尚硅谷 Bilibili 空间：https://space.bilibili.com/302417610
+**提示**：`.vite` 中存放的是预构建后的依赖文件，文件名带有内容哈希。
 
-## 11. 小结
+**参考答案要点**：
+1. `.vite/deps` 下是合并后的依赖 ESM 文件，如 `react.js?v=xxx`；
+2. 删除后重启，终端会重新执行依赖预构建并重新生成目录；
+3. 结论：预构建缓存是"启动时生成、内容变化时失效"的，删除缓存目录是最通用的重置手段。
 
-Vite 用“原生 ESM + 按需编译”解决了开发体验问题，用 Rollup 保证生产质量。理解它的双引擎设计与配置项，是前端工程化的必修课。
+### 练习 3：对比 dev 与 build 的产物差异
 
-## 参考文献
+**题目**：写一个包含 3 个组件的页面，分别运行 `pnpm dev` 与 `pnpm build`，对比"浏览器实际加载的文件"与"dist 目录的产物结构"。
 
-Vite 官方文档：https://cn.vitejs.dev/
-Vite 插件市场：https://github.com/vitejs/awesome-vite
-Vitest：https://cn.vitest.dev/
-Rollup 文档：https://rollupjs.org/
+**提示**：dev 阶段浏览器按需请求源码；build 后 `dist/` 里是合并压缩后的产物。
 
-## 延伸阅读
+**参考答案要点**：
+1. dev 阶段：Network 面板中是分散的源码模块（含 HMR WebSocket 连接）；
+2. build 后：`dist/assets/` 下是带哈希的压缩产物（`index-xxx.js`、`index-xxx.css`）；
+3. 结论：Vite 开发与生产是两条完全不同的管线，这正是"开发要快、生产要优"的设计取舍。
 
-Astro 构建集成 Vite，见 055-astro 模块。
-前端框架工程化，见 011-react/010-vue3 模块。
-Monorepo 中的 Vite，见 057-pnpm-monorepo 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vite 课程。
+### 练习 4：改造一个项目中的 Tree Shaking 场景
 
-## 深度专题扩展
+**题目**：`import { a, b } from './utils.js'` 中 `utils.js` 导出 3 个函数，只使用其中 1 个。build 后查看产物体积，体会 Tree Shaking 的作用。
 
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
+**提示**：生产构建默认开启 Tree Shaking，未使用的导出不会被包含进产物。
 
-### 13.1 HMR 协议与模块图
+**参考答案要点**：
+1. 生产构建默认开启 Tree Shaking，未使用的导出不会被包含进产物；
+2. 通过产物搜索未使用函数的名称，确认其被删除；
+3. 结论：Vite（Rolldown）在生产构建中自动删除未使用代码，这是体积优化的基础。
 
-模块图：文件到模块的映射；变更触发依赖链分析。
-HMR API：import.meta.hot.accept/decline；框架插件自动接入。
-边界：非模块化脚本与 CSS 的更新策略；失效时整页 reload。
-调试：vite --debug 观察转换与更新日志。
+## 11. 一句话记忆
 
-### 13.2 构建优化实战
+Vite 的"快"来自三个设计：**开发时用浏览器原生 ESM 按需加载，依赖交给预构建合并，生产时用 Rolldown 全量优化——把"开发体验"和"生产质量"两条管线彻底分开**。
 
-代码分割：动态 import 路由级分包；manualChunks 聚合稳定依赖。
-资源优化：图片压缩、SVG 内联、字体子集。
-产物分析：rollup-plugin-visualizer 识别大块。
-缓存策略：文件哈希 + 长期缓存头。
+## 12. 参考链接与延伸阅读
+
+- Vite 官方文档（英文）：https://vite.dev/guide/
+- Vite 中文文档：https://cn.vite.dev/guide/
+- Vite 8.0 发布公告：https://vite.dev/blog/announcing-vite8.html
+- Vite 功能指南（ESM、HMR、TypeScript）：https://cn.vite.dev/guide/features
+- 为什么选择 Vite：https://cn.vite.dev/guide/why
+- Vite 生态插件目录（registry.vite.dev）：https://registry.vite.dev/
+
+延伸阅读：
+
+- 本模块 002 篇《Vite 快速上手与项目结构》：亲手跑通一个 Vite 项目；
+- 本模块 006 篇《开发服务器与 HMR》：深入 HMR 协议与模块图；
+- 本模块 009 篇《Vite 8 与 Rolldown》：Vite 8 架构变革深度解析；
+- Astro 框架底层即构建于 Vite 之上，见 055-astro 模块。

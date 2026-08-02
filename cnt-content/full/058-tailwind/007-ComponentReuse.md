@@ -4,9 +4,9 @@ title: Tailwind CSS 组件复用
 module: tailwind
 category: Tailwind CSS
 difficulty: intermediate
-description: 'Tailwind CSS 组件复用：@apply、@layer、@plugin 与组件封装'
+description: 'Tailwind CSS 组件复用方案对比：纯工具类组件封装 / @apply 提取 / CSS 变量组合，配 cva + clsx + tailwind-merge 工程化实践，附适用场景决策表'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - tailwind/003-UtilityCore
   - tailwind/005-ThemeCustomization
@@ -14,228 +14,412 @@ prerequisites:
   - tailwind/003-UtilityCore
 ---
 
-## 1. 复用的两种思路
+## 0. 先打个比方：从"预制菜"到"中央厨房"
 
-工具类写多了，会发现自己反复粘贴同一组类名。解决复用的路径有两条：
+你一定见过预制菜：把洗好的菜、配好的料包封装在一起，拆开就能下锅，省去每天洗菜切菜的重复劳动。做网站也类似——同一个"蓝色圆角按钮"可能出现在全站几十个地方，如果每次都重新写一遍那 8 个工具类，改一次样式就要全站搜索替换，维护成本极高。
 
-第一，组件级复用：在 React/Vue 中封装组件，类名写在组件内部，调用方只传 props。这是主流推荐方案；
+组件复用的本质，就是把"反复出现的工具类组合"沉淀为可复用的零件。就像餐饮行业的三种经营模式：
 
-第二，CSS 级复用：用 `@apply` 把一组工具类提取为一个自定义类。适合"无框架的纯 HTML 项目"或"工具类组合实在过长"的场景。
+- **菜品封装**：中央厨房把标准菜式做成半成品（对应：纯工具类组件封装）；
+- **调料包**：把固定的调料配比装成一包（对应：`@apply` 提取样式）；
+- **统一供应链**：所有餐厅从同一供应商进货、共用一套原材料标准（对应：CSS 变量组合 + 设计令牌）。
 
-两条路径可以并存：组件封装管结构，`@apply` 管样式沉淀。
+本篇文章采用**对比驱动**的讲法：把三种主流复用方案放在一起对比——各自的写法、原理、优劣、适用场景，最后给出工程化组合方案（cva + clsx + tailwind-merge）和一张决策速查表。
 
-## 2. @apply 组合工具类
+## 1. 三种复用方案总览
 
-```css
-@import "tailwindcss";
+先把三张"牌"摊开对比，心中有数再逐张细讲：
 
-@layer components {
-  .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700;
-  }
-}
-```
+| 维度 | 方案一：组件封装 | 方案二：@apply 提取 | 方案三：CSS 变量组合 |
+| --- | --- | --- | --- |
+| 载体 | React/Vue 组件代码 | CSS（@layer components） | CSS 变量 + 设计令牌 |
+| 典型语法 | `class="btn btn-primary"` | `@apply bg-blue-600 ...` | `bg-primary` + `var(--color-primary)` |
+| 是否依赖框架 | 是（组件框架） | 否（纯 CSS） | 否（纯 CSS） |
+| 变体支持 | 通过 props / cva | `@apply` 内可写 `dark:` 等 | 依赖令牌本身 |
+| 适用项目 | React/Vue 等组件化项目 | 纯 HTML / 服务端模板 | 需要主题切换 / 多端复用的项目 |
+| 可维护性 | 高（单一封装点） | 中（类名与 CSS 双处维护） | 高（改一处全站生效） |
+| 学习成本 | 低 | 中 | 低 |
 
-```html
-<button class="btn-primary">主按钮</button>
-<a href="#" class="btn-primary">作为链接使用</a>
-```
+**核心结论先行**：组件框架项目首选"组件封装"（配合 cva 管理变体）；纯 HTML 项目用 `@apply`；主题相关的取值交给"CSS 变量组合"。三者并不互斥，可以组合使用。
 
-讲解：`@apply` 把工具类"编译回"普通 CSS 规则。`.btn-primary` 封装了按钮的完整样式，使用时一行类名即可，且与组件框架无关。
+## 2. 方案一：纯工具类组件封装（推荐）
 
-`@apply` 支持变体与令牌引用：
+### 2.1 直观理解
 
-```css
-@layer components {
-  .card {
-    @apply rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900;
-  }
-}
-```
+组件封装就像中央厨房的"菜品封装"：把一组工具类写进组件内部，调用方只传 props，无需关心内部样式。类名只出现一次，改样式只改组件文件。
 
-讲解：`dark:` 变体可以出现在 `@apply` 内部，编译器会展开为对应的暗色规则。`@apply` 中也可以使用 `@theme` 定义的令牌类（如 `bg-primary`）。
-
-## 3. @layer 分层
-
-v4 用 `@layer` 管理层叠顺序，Tailwind 定义了四个内置层：
-
-| 层 | 内容 | 优先级（后者覆盖前者） |
-| --- | --- | --- |
-| `@layer theme` | 设计令牌（`--color-*` 等变量） | 1 |
-| `@layer base` | Preflight 重置、`@theme` 生成的基础样式 | 2 |
-| `@layer components` | `@apply` 提取的组件类 | 3 |
-| `@layer utilities` | 工具类 | 4 |
-
-```css
-@import "tailwindcss";
-
-@layer base {
-  /* 全局基础样式：作用于 base 层，位于工具类之下 */
-  body {
-    @apply antialiased text-gray-800;
-  }
-}
-
-@layer components {
-  .btn-primary { @apply ...; }
-}
-```
-
-讲解：组件类放进 `@layer components` 后，工具类（utilities 层）优先级更高，因此"元素同时有组件类和工具类"时，工具类会覆盖组件类，这符合直觉：覆盖细节时直接用工具类。
-
-## 4. @plugin 插件机制
-
-v4 用 `@plugin` 指令加载插件，替代 v3 的 `plugins` 配置项。插件可以注册工具类、组件类或自定义变体。
-
-```css
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
-@plugin "./my-plugin.js";
-```
-
-讲解：`@plugin` 可加载 npm 包或本地文件路径。官方常用插件包括排版插件 `@tailwindcss/typography`（美化长文阅读）与表单插件 `@tailwindcss/forms`（表单控件样式重置）。
-
-```js
-// my-plugin.js —— 注册一个自定义工具类
-import plugin from 'tailwindcss/plugin'
-
-export default plugin.withOptions(() => {
-  return {
-    utilities: {
-      '.text-balance': { 'text-wrap': 'balance' },
-    },
-  }
-})
-```
-
-讲解：插件 API 用于需要编程式注册类名的场景。绝大多数项目用不到自定义插件，优先考虑 `@utility`；只有需要"动态生成大量类名"或"发布可共享配置"时才写插件。
-
-## 5. @theme inline 的注意事项
-
-`@theme inline` 用于"令牌值引用其他令牌且需要内联展开"的场景：
-
-```css
-@theme inline {
-  --color-primary: var(--color-blue-600);
-}
-
-/* 对比普通 @theme：值为字面量，运行时不会跟随 blue-600 变化 */
-@theme {
-  --color-primary: var(--color-blue-600);
-}
-```
-
-讲解：`@theme inline` 把变量值直接内联到工具类声明处，不再保留变量引用链。适合"语义令牌引用基础令牌"且希望类名直接使用最终值的场景；普通 `@theme` 保留引用，适合需要运行时换肤。
-
-使用注意：
-
-第一，`@theme inline` 中的变量不会出现在最终的 `:root` 中，DevTools 里看不到该变量；
-
-第二，默认主题的变量内部使用 `@theme inline` 展开，以保证工具类取值稳定；
-
-第三，需要"类名渲染结果独立于 CSS 变量链"时使用 inline，其余情况用普通 `@theme`。
-
-## 6. @starting-style 入场动画
-
-`@starting-style` 是 CSS 原生规则，用于定义元素首次渲染（或 display 从 none 切换）前的起始样式，配合过渡实现入场动画。v4 工具类中可直接使用：
-
-```css
-@layer base {
-  @starting-style {
-    .fade-in {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-  }
-}
-
-@layer components {
-  .fade-in {
-    @apply transition-all duration-300;
-  }
-}
-```
-
-```html
-<div class="fade-in">页面加载时淡入上移</div>
-```
-
-讲解：`@starting-style` 声明"动画起点"，元素进入文档时从起点过渡到正常样式。与 JS 控制的显隐（display 切换）配合，可实现平滑的弹出面板动画，无需引入动画库。
-
-## 7. 与组件库配合
-
-### 7.1 组件库 + 工具类覆盖
-
-以 React 组件库（如 Headless UI、shadcn/ui）为例，其组件内部已定义基础样式，Tailwind 负责外观层：
+### 2.2 React 示例：按钮组件
 
 ```tsx
-import { Menu } from '@headlessui/react'
-
-export function Dropdown() {
-  return (
-    <Menu>
-      <Menu.Button className="rounded-md bg-gray-900 px-4 py-2 text-sm text-white">
-        选项
-      </Menu.Button>
-      <Menu.Items className="mt-2 w-48 rounded-lg border bg-white p-1 shadow-lg">
-        <Menu.Item>
-          {({ active }) => (
-            <a className={`block px-3 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}>
-              菜单项
-            </a>
-          )}
-        </Menu.Item>
-      </Menu.Items>
-    </Menu>
-  )
-}
-```
-
-讲解：Headless UI 只管理交互逻辑，外观全部由 Tailwind 类名驱动，`active` 状态通过回调类名动态拼接。这种"逻辑组件 + 样式工具类"的分工是主流实践。
-
-### 7.2 类名合并工具
-
-动态拼接类名时，用 `clsx` 与 `tailwind-merge` 保证类名不冲突：
-
-```tsx
-import { clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-export function Button({ variant = 'primary', className = '' }) {
+// Button.tsx —— 类名只在这里出现一次
+export function Button({ variant = 'primary', children }) {
   return (
     <button
-      className={twMerge(
-        'rounded-lg px-4 py-2 font-medium',
-        variant === 'primary' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800',
-        className,
-      )}
+      className={
+        variant === 'primary'
+          ? 'rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700'
+          : 'rounded-lg bg-gray-100 px-4 py-2 font-medium text-gray-800 hover:bg-gray-200'
+      }
     >
-      按钮
+      {children}
     </button>
   )
 }
 ```
 
-讲解：`twMerge` 能识别同一属性的工具类并保留最后一个，避免外部传入 `bg-red-500` 时与内部 `bg-blue-600` 冲突产生两条背景规则。
+```tsx
+// 使用处：只关心业务，不关心样式
+<Button variant="primary">提交</Button>
+<Button>取消</Button>
+```
 
-## 8. 复用决策速查
+### 2.3 为什么说"组件封装"是主流推荐
 
-| 场景 | 推荐方案 |
-| --- | --- |
-| 组件框架项目 | 组件封装 + 工具类（不写 @apply） |
-| 纯 HTML / 服务端模板 | `@apply` 提取组件类 |
-| 需要共享的复杂样式 | `@utility` 或插件 |
-| 官方插件能力（排版/表单） | `@plugin` 引入 |
-| 入场动画 | `@starting-style` + 过渡 |
+- **单一事实来源**：类名组合只存在组件文件里，全局搜索 `rounded-lg` 就能找到所有按钮；
+- **类型安全**：TypeScript 的 props 定义天然约束了调用方的取值范围；
+- **与框架生态契合**：React/Vue/Svelte 的组件模型就是为这种复用设计的。
 
-## 参考资源
+## 3. 方案二：@apply 提取样式
 
-Tailwind 官方 Functions & Directives：https://tailwindcss.com/docs/functions-and-directives
+### 3.1 直观理解
 
-@apply 文档：https://tailwindcss.com/docs/functions-and-directives#apply
+`@apply` 就像"调料包"：把一组工具类的"配方"装进一个自定义类名里，HTML 里写一个类名，编译时展开成整组样式。
 
-tailwind-merge：https://github.com/dcastil/tailwind-merge
+### 3.2 基础用法
 
-## 小结
+```css
+/* src/styles/global.css */
+@import "tailwindcss";
 
-组件复用没有银弹：框架项目优先组件封装，纯 HTML 项目用 `@apply` 提取，共享能力走 `@plugin`，动画用 `@starting-style`。工具类始终是最终的表达方式，复用只是把它们组织得更好。
+/* 在 components 层注册一个"半成品样式" */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-blue-600
+           px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700;
+  }
+}
+```
+
+```html
+<!-- 使用处：一行类名，即可获得整组样式 -->
+<button class="btn-primary">主按钮</button>
+<a href="#" class="btn-primary">作为链接使用</a>
+```
+
+### 3.3 原理：@apply 做了什么事
+
+`@apply` 不是运行时行为，而是**构建期的"宏展开"**：Tailwind 编译器在编译时把 `@apply` 后面的工具类逐个解析，把对应的 CSS 声明复制到 `.btn-primary` 规则里。你可以把编译结果想象成：
+
+```css
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: var(--color-blue-600);
+  /* ...其他声明 */
+}
+.btn-primary:hover { background-color: var(--color-blue-700); }
+```
+
+`@apply` 内部还可以写变体和令牌类：
+
+```css
+@layer components {
+  .card {
+    @apply rounded-xl border border-gray-200 bg-white p-6 shadow-sm
+           dark:border-gray-800 dark:bg-gray-900;
+  }
+}
+```
+
+### 3.4 注意：v4 中作用域样式里的 @apply
+
+在 v4 中，如果要在 CSS Modules、Vue `<style scoped>`、Svelte `<style>` 这类**作用域样式**里使用 `@apply`，需要通过 `@reference` 指令引入主题令牌，否则编译器不知道 `bg-blue-600` 等类对应的值：
+
+```css
+/* Button.module.css —— 作用域样式中使用 @apply 需要 @reference */
+@reference "../../styles/global.css";
+
+.btn {
+  @apply rounded-lg bg-blue-600 px-4 py-2 text-white;
+}
+```
+
+### 3.5 @apply 的适用与不适用
+
+- 适合：纯 HTML / 服务端模板项目；工具类组合确实过长、反复出现且不依赖框架的场景；
+- 不适合：组件框架项目——**官方建议直接在组件里写工具类**，因为组件本身就是最好的封装，额外写一层 `@apply` 反而造成"类名与 CSS 两处维护"。
+
+## 4. 方案三：CSS 变量组合（设计令牌）
+
+### 4.1 直观理解
+
+第三张牌最"隐形"却最根本：把颜色、间距、圆角等取值沉淀为设计令牌（承接第 5 篇），组件里全部使用语义类。这样"换肤"时只改令牌，所有组件自动跟随。
+
+### 4.2 示例
+
+```css
+/* 主题层：定义语义令牌 */
+@theme {
+  --color-primary: #1677ff;
+  --color-danger: #f5222d;
+  --radius-card: 12px;
+  --shadow-card: 0 2px 8px rgb(0 0 0 / 0.08);
+}
+```
+
+```html
+<!-- 组件层：只使用语义类，不出现具体色值 -->
+<button class="bg-primary text-white rounded-card px-4 py-2">提交</button>
+<div class="bg-white shadow-card rounded-card p-6">卡片</div>
+```
+
+### 4.3 与方案一、二的组合
+
+方案三的威力在于"打底"：它让方案一的组件 props 值和方案二的 `@apply` 内容都建立在稳定的语义令牌之上。例如按钮组件里写 `bg-primary` 而不是 `bg-blue-600`，未来品牌换色时组件代码零改动。
+
+## 5. 工程化组合：cva + clsx + tailwind-merge
+
+当组件出现多个维度（variant、size、状态）时，手工三元表达式会爆炸。业界（shadcn/ui 等主流实践）的标准答案是三个小工具组合使用。
+
+### 5.1 clsx：条件类名的可读写法
+
+`clsx` 是一个不到 300 字节的小库，支持字符串、对象、数组，自动过滤 `false`/`null`/`undefined`：
+
+```ts
+import { clsx } from 'clsx'
+
+// 写法一：逻辑与 —— 条件成立才拼接
+const a = clsx('px-4 py-2', isActive && 'bg-blue-600 text-white')
+
+// 写法二：对象 —— 键是类名，值是布尔条件
+const b = clsx({ 'bg-blue-600 text-white': isActive, 'opacity-50': isDisabled })
+```
+
+### 5.2 tailwind-merge：解决类名冲突
+
+有一个关键陷阱：**CSS 里最后定义的规则优先，与 HTML class 属性中字符串的顺序无关**。如果组件内部有 `bg-blue-600`，调用方传 `bg-red-500`，最终元素 class 是 `bg-blue-600 bg-red-500`，谁生效取决于编译产物顺序，结果不可预测。
+
+`tailwind-merge` 能识别 Tailwind 类的语义，**保留同组类中靠后的那一个**：
+
+```ts
+import { twMerge } from 'tailwind-merge'
+
+twMerge('bg-blue-600 text-white', 'bg-red-500')
+// => 'bg-red-500 text-white'（都是背景色，后者胜出）
+```
+
+### 5.3 cva：变体的一等公民
+
+`cva`（class-variance-authority）用声明式配置管理组件的多维度变体：
+
+```ts
+import { cva, type VariantProps } from 'class-variance-authority'
+
+// 定义按钮的变体体系：variant × size 两个维度
+const buttonVariants = cva(
+  // 基础样式：始终存在
+  'inline-flex items-center justify-center rounded-md font-medium transition-colors',
+  {
+    variants: {
+      variant: {
+        primary:   'bg-blue-600 text-white hover:bg-blue-700',
+        secondary: 'bg-gray-100 text-gray-800 hover:bg-gray-200',
+        danger:    'bg-red-500 text-white hover:bg-red-600',
+      },
+      size: {
+        sm: 'h-8 px-3 text-sm',
+        md: 'h-10 px-4 text-base',
+        lg: 'h-12 px-6 text-lg',
+      },
+    },
+    defaultVariants: {
+      variant: 'primary',
+      size: 'md',
+    },
+  },
+)
+
+// 提取类型：调用方 props 自动获得类型提示
+type ButtonProps = VariantProps<typeof buttonVariants>
+```
+
+### 5.4 组合成 cn()：完整组件
+
+把三者串起来，就得到 shadcn/ui 同款的标准写法：
+
+```ts
+// lib/utils.ts —— 全项目共享的 cn 工具函数
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+```tsx
+// Button.tsx —— 变体 + 外部覆盖两不误
+import { cn } from '@/lib/utils'
+import { buttonVariants } from './button-variants'
+
+export function Button({ variant, size, className, children }) {
+  return (
+    <button
+      className={cn(buttonVariants({ variant, size }), className)}
+    >
+      {children}
+    </button>
+  )
+}
+```
+
+```tsx
+// 使用处：可以精细化覆盖任意样式
+<Button variant="danger" size="lg" className="w-full dark:bg-red-400">
+  全宽危险按钮
+</Button>
+```
+
+工作流程说明：`cva` 负责按 variant/size 生成基础类名 → `clsx` 负责拼接条件类名 → `twMerge` 负责消除冲突（外部 `className` 的 `w-full` 不会与内部的宽度类打架）。
+
+## 6. 补充零件：@utility 自定义工具类
+
+如果需要一个"不属于任何组件、也不属于默认工具类"的新能力，v4 提供了 `@utility` 指令（上一篇文章介绍过）。它和 `@apply` 的区别在于：`@apply` 是"组合已有工具类"，`@utility` 是"创建全新的工具类"：
+
+```css
+/* 创建全新工具类：文字渐变 */
+@utility text-gradient {
+  background-image: linear-gradient(to right, #1677ff, #722ed1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+```
+
+```html
+<!-- 像内置工具类一样支持变体 -->
+<h2 class="text-gradient hover:opacity-80">渐变标题</h2>
+```
+
+## 7. 复用决策速查表
+
+| 场景 | 推荐方案 | 理由 |
+| --- | --- | --- |
+| React/Vue/Svelte 组件框架项目 | 组件封装 + 工具类（不写 @apply） | 组件本身就是封装层，避免双处维护 |
+| 组件有多种变体（primary/secondary/size） | cva + cn() | 声明式变体管理 + 类型安全 |
+| 需要允许调用方覆盖样式 | cn()（clsx + tailwind-merge） | 冲突可预测，后者胜出 |
+| 纯 HTML / 服务端模板项目 | `@apply` 提取组件类 | 无组件框架，CSS 是最合适的封装层 |
+| CSS Modules / Vue scoped 中用 @apply | `@reference` + `@apply` | 让作用域样式认识主题令牌 |
+| 全新的、不属于任何组件的工具能力 | `@utility` | 原生指令，支持变体 |
+| 品牌换色 / 多主题切换 | 设计令牌（方案三）打底 | 改一处、全站生效 |
+
+## 8. 常见错误与对策
+
+| 常见错误 | 报错 / 现象 | 原因 | 解决办法 |
+| --- | --- | --- | --- |
+| 组件内部与外部类名冲突（`bg-blue-600` + `bg-red-500`） | 颜色时对时错、结果不确定 | CSS 优先级取决于编译产物顺序，与 class 书写顺序无关 | 用 `twMerge` / `cn()` 合并类名 |
+| 在 CSS Modules 里用 `@apply` | 编译报错"找不到工具类" | 作用域样式不知道主题令牌 | 文件头部加 `@reference` 引入主题文件 |
+| 把 `@apply` 写进 `<style scoped>` 而缺 `@reference` | 类名解析失败 | 同上 | 同上 |
+| 组件项目里滥用 `@apply` 包一层类 | 类名与 CSS 双处维护，改一处漏一处 | 组件本身就是封装层，`@apply` 冗余 | 直接在组件里写工具类 |
+| 手写三元表达式拼接变体（`${v==='x'?'...':'...'}`） | 可读性差、容易写错 | 缺少变体管理工具 | 改用 cva |
+| `@apply` 里用了未定义的类名 | 编译报错 `Cannot apply unknown utility class` | 类名拼写错误或令牌未定义 | 检查拼写；自定义类先定义在 `@theme` 中 |
+| 忘记给组件加 `className` 透传 | 调用方无法覆盖样式 | 组件没有接收外部类名 | 组件 props 增加 `className` 并用 `cn()` 合并 |
+
+## 9. 实战练习
+
+### 练习 1：用组件封装提取按钮（入门）
+
+**题目**：写一个 React 按钮组件，把"蓝色圆角按钮"的整组工具类封装进去，支持 `variant` 参数切换主按钮/次按钮。
+
+**提示**：基础类 + 条件类名；不要求引入 cva，用三元表达式即可。
+
+**参考答案要点**：
+
+```tsx
+export function Button({ variant = 'primary', children }) {
+  const styles = variant === 'primary'
+    ? 'bg-blue-600 text-white hover:bg-blue-700'
+    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+  return <button className={`rounded-lg px-4 py-2 font-medium ${styles}`}>{children}</button>
+}
+```
+
+### 练习 2：用 @apply 提取卡片样式（入门）
+
+**题目**：在纯 HTML 项目中，用 `@apply` 提取一个 `.card` 类：白色背景、灰色边框、圆角 xl、内边距 6、默认阴影，并支持暗色模式（`dark:` 变体）。
+
+**提示**：放进 `@layer components`；`@apply` 内部可直接写 `dark:border-gray-800 dark:bg-gray-900`。
+
+**参考答案要点**：
+
+```css
+@layer components {
+  .card {
+    @apply rounded-xl border border-gray-200 bg-white p-6 shadow-sm
+           dark:border-gray-800 dark:bg-gray-900;
+  }
+}
+```
+
+### 练习 3：cn() 工具函数（进阶）
+
+**题目**：安装 `clsx` 和 `tailwind-merge`，编写 `cn()` 工具函数，并验证 `cn('bg-blue-600 text-white', 'bg-red-500')` 的结果。
+
+**提示**：`cn` 就是 `twMerge(clsx(...inputs))`；验证方式可以是单元测试或直接打印返回值。
+
+**参考答案要点**：
+
+```ts
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+// cn('bg-blue-600 text-white', 'bg-red-500') // => 'bg-red-500 text-white'
+```
+
+### 练习 4：cva 多维度变体按钮（挑战）
+
+**题目**：用 cva 定义按钮组件：`variant`（primary/secondary/danger）× `size`（sm/md/lg），并支持外部 `className` 覆盖。要求调用 `<Button variant="danger" size="lg" className="w-full">` 时样式正确。
+
+**提示**：`cva` 定义 `variants` 与 `defaultVariants`；组件内用 `cn(buttonVariants({ variant, size }), className)` 合并。
+
+**参考答案要点**：
+
+```ts
+const buttonVariants = cva('inline-flex items-center justify-center rounded-md font-medium',
+  {
+    variants: {
+      variant: {
+        primary: 'bg-blue-600 text-white hover:bg-blue-700',
+        danger:  'bg-red-500 text-white hover:bg-red-600',
+      },
+      size: {
+        sm: 'h-8 px-3 text-sm',
+        lg: 'h-12 px-6 text-lg',
+      },
+    },
+    defaultVariants: { variant: 'primary', size: 'sm' },
+  })
+
+function Button({ variant, size, className, children }) {
+  return <button className={cn(buttonVariants({ variant, size }), className)}>{children}</button>
+}
+```
+
+## 10. 一句话记忆
+
+**复用三板斧：组件封装管结构（框架项目首选）、`@apply` 管纯 CSS 沉淀、设计令牌管全局取值；工程化收尾用 `cva + cn()` 管变体和类名冲突——先定方案，再写代码。**
+
+## 参考链接与延伸阅读
+
+- Tailwind 官方函数与指令文档（@apply/@reference/@utility）：https://tailwindcss.com/docs/functions-and-directives
+- Tailwind 官方自定义样式指南：https://tailwindcss.com/docs/adding-custom-styles
+- class-variance-authority（GitHub）：https://cva.style/docs
+- tailwind-merge（GitHub）：https://github.com/dcastil/tailwind-merge
+- clsx（GitHub）：https://github.com/lukeed/clsx
+
+下一篇《Tailwind CSS v4 新特性》将带你按时间线回顾 v3 到 v4 的变化，理解这些复用语法背后的引擎与设计逻辑。

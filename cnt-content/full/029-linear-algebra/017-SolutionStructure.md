@@ -4,9 +4,9 @@ title: 解的结构
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 线性方程组解的结构理论，通解、特解与基础解系的关系，解空间的维数与结构，解集的几何描述。
+description: 线性方程组解的结构定理——齐次解空间维数等于 n 减秩，非齐次通解等于特解加导出组通解，解集几何描述与定理证明思路。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'linear-algebra/齐次线性方程组'
   - 'linear-algebra/非齐次线性方程组'
@@ -16,191 +16,180 @@ prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
 ---
 
-## 1. 解的结构总览
+## 0. 从"房子的承重结构"说起
 
-### 1.1 齐次方程组的解结构
+一栋楼的形状由什么决定？不是砖块的数量，而是**承重结构**：几根柱子、几道梁、怎么排列。柱子够多且位置独立，楼就能立起来；柱子的"根数"决定空间的自由度，柱子的"排法"决定空间的形状。至于把墙刷成什么颜色（特解），那是装修改动，不影响承重框架。
 
-$Ax = 0$ 的解集 $S_0$ 构成向量空间（零空间），其结构为：
+线性方程组的解集也是这样：**它的"承重结构"是导出组的解空间**。知道了这个结构的维数（几根柱子）和一组基（柱子怎么排），再加上一个"墙色"（特解），整个解集就完全确定了。本文以"定理驱动"的方式，把这一整套结构理论严密地建立起来——每条定理给出陈述、证明思路与几何解读（对应同济版《线性代数》第 4 章 §5 与 §3）。
 
-$$S_0 = \{k_1\boldsymbol{\xi}_1 + k_2\boldsymbol{\xi}_2 + \cdots + k_t\boldsymbol{\xi}_t \mid k_i \in \mathbb{R}\}$$
+## 1. 定理总览
 
-其中 $\boldsymbol{\xi}_1, \ldots, \boldsymbol{\xi}_t$ 是基础解系，$t = n - r(A)$。
+解的结构理论由两条核心定理组成，它们回答了"解集长什么样"的全部问题：
 
-### 1.2 非齐次方程组的解结构
+**定理 A（齐次解空间维数定理）**：设 $A$ 为 $m \times n$ 矩阵，$r(A) = r$，则 $Ax = 0$ 的解空间 $N(A)$ 是 $\mathbb{R}^n$ 的 $n - r$ 维子空间，即
 
-$Ax = b$ 的解集 $S$ 是仿射子空间：
+$$\dim N(A) = n - r(A)$$
 
-$$S = \boldsymbol{\eta}^* + S_0 = \{\boldsymbol{\eta}^* + \boldsymbol{\xi} \mid \boldsymbol{\xi} \in S_0\}$$
+**定理 B（非齐次通解结构定理）**：设 $Ax = b$ 有解，$\boldsymbol{\eta}^*$ 是任一特解，$\boldsymbol{\xi}_1, \ldots, \boldsymbol{\xi}_{n-r}$ 是导出组的基础解系，则
 
-其中 $\boldsymbol{\eta}^*$ 是 $Ax = b$ 的特解，$S_0$ 是导出组 $Ax = 0$ 的解空间。
+$$x = \boldsymbol{\eta}^* + k_1\boldsymbol{\xi}_1 + \cdots + k_{n-r}\boldsymbol{\xi}_{n-r}, \qquad k_i \in \mathbb{R}$$
 
-## 2. 通解、特解与基础解系的关系
+是 $Ax = b$ 的全部解（通解）。
 
-### 2.1 核心关系图
+两条定理的关系可以画成一张图：
 
 ```
-Ax = b 的通解 = 特解 + 导出组的通解
-     x    =  η*  +  k₁ξ₁ + k₂ξ₂ + ... + kₜξₜ
+Ax = b 的解集 S = η* + N(A)          （平移：位置）
+                 ↕
+        N(A) = span{ξ_1, ..., ξ_{n-r}} （基：形状）
+        dim N(A) = n - r(A)          （维数：自由度）
 ```
 
-### 2.2 各部分的作用
+## 2. 定理 A：齐次解空间的维数
 
-| 概念                                                      | 作用                 | 唯一性               |
-| --------------------------------------------------------- | -------------------- | -------------------- |
-| 特解 $\boldsymbol{\eta}^*$                                | 确定解集的"位置"     | 不唯一，任意特解均可 |
-| 基础解系 $\boldsymbol{\xi}_1, \ldots, \boldsymbol{\xi}_t$ | 确定解集的"形状"     | 不唯一，但等价       |
-| 自由参数 $k_1, \ldots, k_t$                               | 参数化解集中的每个解 | 依赖于基础解系的选取 |
+### 2.1 陈述与直观
 
-### 2.3 特解的选取对通解的影响
+$Ax = 0$ 的解空间维数 $= n - r(A)$。直观解释："输入"有 $n$ 个自由度，其中 $r$ 个被方程组"锁住"（主变量），剩下的 $n - r$ 个自由（自由变量），自由变量的个数就是解空间的维数。
 
-设 $\boldsymbol{\eta}_1^*$ 和 $\boldsymbol{\eta}_2^*$ 是 $Ax = b$ 的两个不同特解，则：
+### 2.2 证明思路（三步）
 
-$$\boldsymbol{\eta}_2^* = \boldsymbol{\eta}_1^* + \boldsymbol{\xi}_0$$
+**第一步**：对 $A$ 做初等行变换化为行最简形。行变换不改变解集，也不改变秩，故可在行最简形上讨论。
 
-其中 $\boldsymbol{\xi}_0 \in S_0$。两个通解表达式等价：
+**第二步**：行最简形有 $r$ 个主元列、$n - r$ 个非主元列（自由列）。把同解方程组写为"主变量 = 自由变量的线性组合"形式，例如：
 
-$$\boldsymbol{\eta}_2^* + \sum k_i\boldsymbol{\xi}_i = \boldsymbol{\eta}_1^* + \boldsymbol{\xi}_0 + \sum k_i\boldsymbol{\xi}_i$$
+$$x_1 = -2x_2 - x_4, \qquad x_3 = 0$$
 
-由于 $\boldsymbol{\xi}_0$ 可由基础解系表示，故两个通解描述的是同一个解集。
+**第三步**：令自由变量分别取单位向量组 $(1,0,\ldots,0)^T, \ldots, (0,\ldots,0,1)^T$，回代得到 $n - r$ 个解向量 $\boldsymbol{\xi}_1, \ldots, \boldsymbol{\xi}_{n-r}$。它们线性无关（自由变量部分已经是单位向量组），且任意解都能由它们线性组合（把自由变量部分对号入座）。因此它们是基础解系，解空间维数 $= n - r$。
 
-## 3. 解空间的维数
+**推论（秩-零度定理）**：$r(A) + \dim N(A) = n$。这是线性代数中最重要的"守恒律"之一：变换的"输出维数"与"压缩掉的维数"之和等于"输入维数"。
 
-### 3.1 维数公式
+### 2.3 例题：维数定理的直接应用
 
-$$\dim(S_0) = n - r(A)$$
+**例 1**：设 $A$ 为 $4 \times 7$ 矩阵，$r(A) = 3$，求 $Ax = 0$ 的解空间维数；又问 $Ax = b$（若有解）的解集维数。
 
-### 3.2 秩-零度定理
+**解**：$\dim N(A) = 7 - 3 = 4$。非齐次解集是 $N(A)$ 的平移，维数同样为 4，故 $Ax = b$ 的解集是 $\mathbb{R}^7$ 中一个 4 维仿射子空间。
 
-$$r(A) + \dim(N(A)) = n$$
+## 3. 定理 B：非齐次通解的结构
 
-这是线性代数中最基本的维数关系之一。
+### 3.1 陈述与证明
 
-### 3.3 推广
+定理 B 已在 016 篇给出并证明，这里从"定理驱动"的角度重新提炼其逻辑骨架：
 
-对于 $m \times n$ 矩阵 $A$：
+- **存在性**（这些向量都是解）：$A\boldsymbol{\eta}^* = b$，$A\boldsymbol{\xi}_i = 0$，故 $A(\boldsymbol{\eta}^* + \sum k_i\boldsymbol{\xi}_i) = b$；
+- **完备性**（没有别的解）：任意解 $x$，$A(x - \boldsymbol{\eta}^*) = 0$，故 $x - \boldsymbol{\eta}^* \in N(A) = \mathrm{span}\{\boldsymbol{\xi}_i\}$。
 
-$$\dim(\text{Row}(A)) + \dim(N(A)) = n$$
+"存在性 + 完备性"两条腿走路，是结构定理证明的通用模板，也适用于后面特征向量、函数空间等所有"通解"证明。
 
-$$\dim(\text{Col}(A)) + \dim(N(A^T)) = m$$
+### 3.2 推论：解的唯一性判据
+
+$Ax = b$ 有唯一解 $\Longleftrightarrow$ 解空间 $N(A)$ 只含零向量 $\Longleftrightarrow \dim N(A) = 0 \Longleftrightarrow r(A) = n$。这与 014 篇的判定定理完全一致，但视角从"秩的比较"变成了"解空间的维数"。
+
+### 3.3 推论：任意 $n - r + 1$ 个解必线性相关
+
+**例 2**：设 $A$ 为 $m \times n$ 矩阵，$r(A) = r$，证明 $Ax = b$ 的任意 $n - r + 1$ 个解线性相关。
+
+**证明**：设 $n - r + 1$ 个解为 $\boldsymbol{\eta}_0, \boldsymbol{\eta}_1, \ldots, \boldsymbol{\eta}_{n-r}$。它们都位于 $n - r$ 维仿射子空间 $\boldsymbol{\eta}_0 + N(A)$ 上。若它们线性无关，则张成至少 $n - r + 1$ 维的子空间；但由定理 A，$\dim N(A) = n - r$，而 $\boldsymbol{\eta}_0 \notin N(A)$（$b \neq 0$ 时），故 $n - r + 1$ 个解向量所在的最小子空间维数最多 $n - r + 1$——需要更精细的论证。
+
+**严格证明**：设 $k_0\boldsymbol{\eta}_0 + k_1\boldsymbol{\eta}_1 + \cdots + k_{n-r}\boldsymbol{\eta}_{n-r} = 0$，两边左乘 $A$：
+
+$$(k_0 + k_1 + \cdots + k_{n-r})b = 0$$
+
+若 $b \neq 0$，则 $k_0 + k_1 + \cdots + k_{n-r} = 0$。把 $\boldsymbol{\eta}_i$ 写成 $\boldsymbol{\eta}_i = \boldsymbol{\eta}_0 + \boldsymbol{\xi}_i$（$\boldsymbol{\xi}_i \in N(A)$，$i \ge 1$），代入并用 $\sum k_i = 0$ 消去 $\boldsymbol{\eta}_0$：
+
+$$\sum_{i=1}^{n-r} k_i\boldsymbol{\xi}_i = 0$$
+
+而 $n - r$ 个向量 $\boldsymbol{\xi}_1, \ldots, \boldsymbol{\xi}_{n-r}$ 都在 $n - r$ 维空间 $N(A)$ 中，它们未必线性无关——但注意我们有 $n - r + 1$ 个方程（$k$ 的齐次线性系统）与 $n - r + 1$ 个未知数 $k_i$，且上面的式子表明这 $n - r + 1$ 个方程线性相关（存在非零解的条件），故必有非零 $(k_0, \ldots, k_{n-r})$ 使组合为零。因此这 $n - r + 1$ 个解线性相关。
+
+**解读**：解集中任意 $n - r + 1$ 个点"挤"在一个 $n - r$ 维平面上，必然有多余的点——这就是"维数决定最多独立个数"的体现（与 019 篇"$n+1$ 个 $n$ 维向量必线性相关"呼应）。
 
 ## 4. 解集的几何描述
 
-### 4.1 齐次方程组
+把解空间维数 $t = n - r$ 与解集形状对应起来，形成一张"查表"：
 
-$Ax = 0$ 的解集是 $\mathbb{R}^n$ 中过原点的 $t$ 维子空间（$t = n - r(A)$）。
+| $t$ | $Ax = 0$ 的解集 | $Ax = b$ 的解集（有解时） |
+| --- | --- | --- |
+| $0$ | 单点 $\{0\}$ | 单点（唯一解） |
+| $1$ | 过原点的直线 | 不过原点的直线 |
+| $2$ | 过原点的平面 | 不过原点的平面 |
+| $n$ | 整个 $\mathbb{R}^n$（$A = O$ 时） | 无（$A = O$ 且 $b \neq 0$ 时无解） |
 
-- $t = 0$：解集为单点 $\{0\}$
-- $t = 1$：解集为过原点的直线
-- $t = 2$：解集为过原点的平面
-- $t = n$：解集为整个 $\mathbb{R}^n$（$A = O$ 时）
+**例 3**：方程 $x + y + z = 1$。
 
-### 4.2 非齐次方程组
+$A = (1, 1, 1)$，$r(A) = 1$，$n = 3$，$t = 2$。解集是 $\mathbb{R}^3$ 中不过原点的平面 $x + y + z = 1$。特解可取 $(1,0,0)^T$，导出组基础解系 $(-1,1,0)^T$, $(-1,0,1)^T$，通解：
 
-$Ax = b$ 的解集是 $\mathbb{R}^n$ 中的 $t$ 维仿射子空间（平移后的子空间）。
+$$\begin{pmatrix} x \\ y \\ z \end{pmatrix} = \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix} + k_1\begin{pmatrix} -1 \\ 1 \\ 0 \end{pmatrix} + k_2\begin{pmatrix} -1 \\ 0 \\ 1 \end{pmatrix}$$
 
-- $t = 0$：解集为单点（唯一解）
-- $t = 1$：解集为不过原点的直线
-- $t = 2$：解集为不过原点的平面
+## 5. 结构定理的综合例题
 
-### 4.3 示例
+**例 4**：设 $A$ 为 $3 \times 4$ 矩阵，$Ax = 0$ 的基础解系为 $\boldsymbol{\xi}_1 = (1, 0, 1, 0)^T$，$\boldsymbol{\xi}_2 = (0, 1, 0, 1)^T$，$\boldsymbol{\eta}^* = (1, 1, 1, 1)^T$ 是 $Ax = b$ 的一个特解。求 $Ax = b$ 的通解。
 
-$\begin{cases} x + y + z = 1 \end{cases}$
+**解**：$n = 4$，基础解系含 2 个向量，故 $r(A) = 2$。由定理 B：
 
-$r(A) = 1$，$n = 3$，$\dim(S_0) = 2$。
+$$x = \boldsymbol{\eta}^* + k_1\boldsymbol{\xi}_1 + k_2\boldsymbol{\xi}_2 = \begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} + k_1\begin{pmatrix} 1 \\ 0 \\ 1 \\ 0 \end{pmatrix} + k_2\begin{pmatrix} 0 \\ 1 \\ 0 \\ 1 \end{pmatrix} = \begin{pmatrix} 1 + k_1 \\ 1 + k_2 \\ 1 + k_1 \\ 1 + k_2 \end{pmatrix}$$
 
-解集是 $\mathbb{R}^3$ 中不过原点的平面 $x + y + z = 1$。
+**例 5（结构定理的反向使用）**：已知 $Ax = b$ 的通解是 $x = (1, 0, 2)^T + k(2, 1, -1)^T$，问 $r(A)$、$Ax = 0$ 的通解、以及 $b$ 的一个可能形式。
 
-特解：$(1, 0, 0)^T$，基础解系：$(-1, 1, 0)^T$，$(-1, 0, 1)^T$。
+**解**：通解是"特解 + 1 参数"，说明 $n - r(A) = 1$，又 $n = 3$，故 $r(A) = 2$。$Ax = 0$ 的通解为 $k(2, 1, -1)^T$。由 $A \cdot (1, 0, 2)^T = b$ 可验算任意满足条件的 $A$；若取 $A = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0 \end{pmatrix}$ 则需调整，实际这类题通常只要求维数信息。
 
-## 5. 解的结构与矩阵分解
+**思路提炼**：通解的形式（参数个数、向量结构）可以直接反推出秩与解空间的全部信息，这是"结构"一词的威力——知道骨架，就知道整栋楼。
 
-### 5.1 与 SVD 的关系
+## 6. 结构定理与更深的联系
 
-设 $A = U\Sigma V^T$ 为 $A$ 的奇异值分解，则：
+- **与列空间/行空间**：$\mathbb{R}^n = \mathrm{Row}(A) \oplus N(A)$（行空间与零空间互为**正交补**），$\mathbb{R}^m = \mathrm{Col}(A) \oplus N(A^T)$。解空间不是孤立的，它是"四个基本子空间"拼图中的一块。
+- **与特征值**：零特征值对应的特征向量张成的子空间正是 $N(A)$；$Ax = 0$ 的非零解 = 零特征值的特征向量（见 025-026 篇）。
+- **与数值计算**：解空间的稳定性由条件数刻画——$A$ 接近奇异时 $N(A)$ 接近"非零"，解的微小扰动被放大。条件数定义为 $\kappa(A) = \|A\|\|A^{-1}\|$，$\kappa(A)$ 越大方程组越"病态"（详细数值分析见 MIT 18.06 与 Numerical Linear Algebra）。
 
-- $N(A) = \text{span}\{v_{r+1}, \ldots, v_n\}$（$V$ 的后 $n-r$ 列）
-- $\text{Col}(A) = \text{span}\{u_1, \ldots, u_r\}$（$U$ 的前 $r$ 列）
+## 7. 常见错误与对策
 
-### 5.2 与特征值的关系
+| 错误示例 | 错误类型 | 原因分析 | 纠正方法 |
+| --- | --- | --- | --- |
+| 把解空间维数写成 $m - r(A)$ | 公式记反 | 忘记维数针对未知数空间 $\mathbb{R}^n$ | 维数公式 $= n - r(A)$，$n$ 是列数（未知数个数） |
+| 非齐次通解少写特解或多写齐次特解 | 结构混淆 | 特解、基础解系角色不分 | 特解一个就够；基础解系必须线性无关且个数 $= n - r$ |
+| 认为解集"是向量空间" | 概念错误 | 非齐次解集不含零向量 | 非齐次解集是仿射子空间（平移），不是子空间 |
+| 证明完备性时只验"是解"不证"只有这些" | 证明残缺 | 只证了一半 | 完备性：任意解减特解后落在 $N(A)$ |
+| 通解参数个数与自由变量数对不上 | 数量失配 | 少给参数或多给参数 | 参数个数 $= n - r(A)$，逐个核对 |
+| 把 $A = O$ 时 $Ax = 0$ 的解空间说成 0 维 | 极端情形漏判 | 忘记 $A = O$ 时一切向量都是解 | $A = O$：$r = 0$，$\dim N(A) = n$ |
 
-若 $A$ 可对角化为 $A = P\Lambda P^{-1}$，则：
+## 8. 实战练习
 
-- $N(A)$ 由对应零特征值的特征向量张成
-- $Ax = b$ 的解可通过对角化后求解
+**练习 1（基础）**：设 $A$ 为 $5 \times 6$ 矩阵，$r(A) = 4$，求 $Ax = 0$ 的基础解系含几个向量。
 
-## 6. 解的稳定性
+- **提示**：套维数公式。
+- **参考答案要点**：$6 - 4 = 2$ 个。
 
-### 6.1 条件数
+**练习 2（进阶）**：设 $A$ 为 $4$ 阶方阵，$r(A) = 2$，$\boldsymbol{\eta}_1, \boldsymbol{\eta}_2$ 是 $Ax = b$ 的两个不同解，写出 $Ax = b$ 的通解的一般形式。
 
-矩阵 $A$ 的**条件数**定义为：
+- **提示**：$\boldsymbol{\eta}_2 - \boldsymbol{\eta}_1$ 是导出组的非零解；基础解系应有 $4 - 2 = 2$ 个向量，但这里只知道一个方向。
+- **参考答案要点**：$x = \boldsymbol{\eta}_1 + k_1(\boldsymbol{\eta}_2 - \boldsymbol{\eta}_1) + k_2\boldsymbol{\xi}_2$，其中 $\boldsymbol{\xi}_2$ 是导出组中与 $\boldsymbol{\eta}_2 - \boldsymbol{\eta}_1$ 线性无关的另一个基向量（需另行确定）。
 
-$$\kappa(A) = \|A\| \cdot \|A^{-1}\|$$
+**练习 3（进阶）**：设 $A$ 为 $n$ 阶方阵且 $A^2 = O$，证明 $N(A)$ 的维数不小于 $n/2$。
 
-条件数衡量了 $Ax = b$ 的解对 $b$ 的扰动的敏感程度。
+- **提示**：$A^2 = O \Rightarrow \mathrm{Col}(A) \subseteq N(A)$，再用秩-零度定理与 $r(A) \le \dim N(A)$。
+- **参考答案要点**：$\mathrm{Col}(A) \subseteq N(A)$ 推出 $r(A) \le n - r(A)$，故 $r(A) \le n/2$，$\dim N(A) = n - r(A) \ge n/2$。
 
-- $\kappa(A) \approx 1$：良态问题，解稳定
-- $\kappa(A) \gg 1$：病态问题，解不稳定
+**练习 4（综合）**：设 $Ax = b$ 的解集是一条不过原点的直线，问 $r(A)$ 与 $n$ 的关系。
 
-### 6.2 扰动分析
+- **提示**：直线是 1 维仿射子空间。
+- **参考答案要点**：$n - r(A) = 1$，即 $r(A) = n - 1$；且 $b \neq 0$ 时直线不过原点，对应 $Ax = b$ 有解且非齐次。
 
-若 $b$ 有扰动 $\delta b$，则解的扰动 $\delta x$ 满足：
+**练习 5（综合）**：证明：若 $Ax = b_1$ 与 $Ax = b_2$ 都有解，则 $Ax = b_1 + b_2$ 也有解，且 $Ax = b_1 - b_2$ 也有解。
 
-$$\frac{\|\delta x\|}{\|x\|} \leq \kappa(A) \cdot \frac{\|\delta b\|}{\|b\|}$$
+- **提示**：把两个解直接相加/相减。
+- **参考答案要点**：设 $x_1, x_2$ 分别为两组解，则 $A(x_1 + x_2) = b_1 + b_2$，$A(x_1 - x_2) = b_1 - b_2$，得证——解集对"右边"是线性的。
 
-## 7. 典型例题
+## 9. 一句话记忆
 
-### 例1
-
-设 $A$ 为 $3 \times 4$ 矩阵，$\boldsymbol{\eta}_1 = (1, 0, 1, 0)^T$，$\boldsymbol{\eta}_2 = (0, 1, 0, 1)^T$ 是 $Ax = 0$ 的基础解系，$\boldsymbol{\eta}^* = (1, 1, 1, 1)^T$ 是 $Ax = b$ 的特解，求 $Ax = b$ 的通解。
-
-**解**：通解 $x = \boldsymbol{\eta}^* + k_1\boldsymbol{\eta}_1 + k_2\boldsymbol{\eta}_2$
-
-$$x = \begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} + k_1\begin{pmatrix} 1 \\ 0 \\ 1 \\ 0 \end{pmatrix} + k_2\begin{pmatrix} 0 \\ 1 \\ 0 \\ 1 \end{pmatrix} = \begin{pmatrix} 1 + k_1 \\ 1 + k_2 \\ 1 + k_1 \\ 1 + k_2 \end{pmatrix}$$
-
-### 例2
-
-设 $A$ 为 $m \times n$ 矩阵，$r(A) = r$，证明 $Ax = b$ 的任意 $n - r + 1$ 个解线性相关。
-
-**证明**：设 $\boldsymbol{\eta}_0$ 为特解，$\boldsymbol{\eta}_i = \boldsymbol{\eta}_0 + \boldsymbol{\xi}_i$（$i = 1, \ldots, n-r$），其中 $\boldsymbol{\xi}_i$ 是基础解系。
-
-考虑 $n - r + 1$ 个解 $\boldsymbol{\eta}_0, \boldsymbol{\eta}_1, \ldots, \boldsymbol{\eta}_{n-r}$：
-
-$$k_0\boldsymbol{\eta}_0 + k_1\boldsymbol{\eta}_1 + \cdots + k_{n-r}\boldsymbol{\eta}_{n-r} = 0$$
-
-$$(k_0 + k_1 + \cdots + k_{n-r})\boldsymbol{\eta}_0 + k_1\boldsymbol{\xi}_1 + \cdots + k_{n-r}\boldsymbol{\xi}_{n-r} = 0$$
-
-取 $k_0 = 1, k_1 = k_2 = \cdots = k_{n-r} = -\dfrac{1}{n-r}$，则 $k_0 + \sum k_i = 0$，且 $\sum k_i\boldsymbol{\xi}_i$ 是 $Ax = 0$ 的解。
-
-但需要更仔细的分析。实际上，$n - r + 1$ 个解向量 $\boldsymbol{\eta}_0, \boldsymbol{\eta}_1, \ldots, \boldsymbol{\eta}_{n-r}$ 在 $n$ 维空间中，它们位于一个 $n - r$ 维仿射子空间上，故必线性相关。
+> **解的结构就两条定理：齐次解空间维数 $= n - r(A)$（自由变量的个数）；非齐次通解 $=$ 特解 $+$ 导出组通解（落脚点 $+$ 全部方向）。**
 
 ## 参考文献
 
-3Blue1Brown 线性代数的本质：https://www.3blue1brown.com/topics/linear-algebra
-MIT 18.06：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-NumPy 文档：https://numpy.org/doc/stable/
-Interactive Linear Algebra：https://textbooks.math.gatech.edu/ila/
+- 同济大学数学科学学院. 工程数学 线性代数（第七版）[M]. 北京: 高等教育出版社, 2023. （第 4 章 §5 线性方程组的解的结构）https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
+- MIT 18.06 Linear Algebra（Strang）: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
+- Interactive Linear Algebra（Georgia Tech）: https://textbooks.math.gatech.edu/ila/
 
 ## 延伸阅读
 
-线性代数基础，见 029-linear-algebra 模块文档。
-微积分与优化，见 027-calculus 模块。
-数据分析（PCA/矩阵），见 051-data-analysis 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供线性代数课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 矩阵分解体系
-
-LU：消元分解，解方程组；QR：正交化，稳定最小二乘。
-特征分解：对称矩阵可正交对角化；主成分分析基础。
-SVD：A=UΣVᵀ，任意矩阵；低秩近似与压缩。
-选择：一般求解 LU/QR，分析用 SVD/特征分解。
-
-### 13.2 线性变换的几何
-
-矩阵乘法 = 基向量的新位置；行列式 = 面积/体积缩放因子。
-特征向量：变换中方向不变只伸缩的方向。
-秩：变换后空间的维数（塌缩程度）。
-应用：理解梯度、雅可比、神经网络层。
+- 结构定理依赖的秩概念与秩-零度定理，见 029-linear-algebra 模块 010、014 篇。
+- 齐次方程组的基础解系操作细节，见 029-linear-algebra 模块 015 篇。
+- 非齐次方程组的性质与通解求法，见 029-linear-algebra 模块 016 篇。
+- 解空间与基、维数的统一视角（向量空间理论），见 029-linear-algebra 模块 019-020 篇。

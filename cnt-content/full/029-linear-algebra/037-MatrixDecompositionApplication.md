@@ -4,9 +4,9 @@ title: 矩阵分解应用
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: advanced
-description: 矩阵分解在机器学习中的应用，包括PCA主成分分析、推荐系统中的矩阵分解、图像压缩与SVD、线性判别分析。
+description: 从"工具箱选对工具"的生活类比出发，总览对比 LU/QR/SVD/特征值分解四大分解的适用场景，并逐一讲解解方程组、最小二乘拟合、PCA 主成分分析、推荐系统、图像压缩中的落地应用与选型决策。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'linear-algebra/QR分解'
   - 'linear-algebra/奇异值分解SVD'
@@ -14,218 +14,242 @@ prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
 ---
 
-## 1. 主成分分析（PCA）
+## 0. 从生活场景说起：选对工具，事半功倍
 
-### 1.1 问题背景
+家里修东西，你得有工具箱：拧螺丝用螺丝刀，钉钉子用锤子，量水平用水平仪，裁玻璃用玻璃刀。**没有万能工具，只有合适的工具**——用锤子拧螺丝，螺丝坏了；用螺丝刀钉钉子，钉子弯了。
 
-给定 $m$ 个 $n$ 维数据点 $\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_m$，希望找到数据的低维表示，保留尽可能多的信息。
+矩阵分解也是这样一套"工具箱"。前面三篇我们分别学会了 LU 分解、QR 分解、SVD，加上更早学过的特征值分解，现在手上有四件工具。今天这篇是"应用总览"：回答两个关键问题——
 
-### 1.2 数学模型
+1. **每件工具擅长什么活**？（选型总览）
+2. **实际场景里怎么用**？（解方程组、最小二乘、PCA、推荐系统、图像压缩）
 
-1. 中心化：$\bar{\boldsymbol{x}} = \frac{1}{m}\sum_{i=1}^{m}\boldsymbol{x}_i$，$\tilde{\boldsymbol{x}}_i = \boldsymbol{x}_i - \bar{\boldsymbol{x}}$
+学完这篇，你不仅会用每个分解，还能像老工匠一样**一眼选出正确的工具**。
 
-2. 构造数据矩阵：$X = (\tilde{\boldsymbol{x}}_1, \tilde{\boldsymbol{x}}_2, \ldots, \tilde{\boldsymbol{x}}_m)^T$（$m \times n$）
+## 1. 四大分解总览：一件工具一张名片
 
-3. 协方差矩阵：$C = \frac{1}{m-1}X^TX$（$n \times n$ 实对称半正定矩阵）
+| 分解 | 公式 | 适用形状 | 核心能力 | 最擅长场景 |
+| ---- | ---- | -------- | -------- | ---------- |
+| LU 分解 | $A = LU$（或 $PA = LU$） | 方阵 | 消元记账，三角形回代极快 | 解线性方程组、求行列式、求逆 |
+| Cholesky 分解 | $A = LL^T$ | 正定方阵 | LU 的一半成本 | 正定方程组、协方差计算 |
+| QR 分解 | $A = QR$ | $m \geq n$ 任意列满秩 | 正交化，数值稳定 | 最小二乘、求特征值（QR 迭代） |
+| 特征值分解 | $A = Q\Lambda Q^T$ | 可对角化方阵 | 揭示"主方向" | 二次型化简、PCA、动力系统 |
+| SVD | $A = U\Sigma V^T$ | 任意矩阵 | 万能低秩近似 | 压缩、降噪、伪逆、推荐系统 |
 
-4. 对 $C$ 进行特征值分解：$C = V\Lambda V^T$
+**一句话选型口诀**：
 
-5. 选择前 $k$ 个最大特征值对应的特征向量，构成投影矩阵 $W = (\boldsymbol{v}_1, \ldots, \boldsymbol{v}_k)$
+- **要解精确方程组** → LU（快）；
+- **要解"过拟合"的最小二乘** → QR（稳）；
+- **要分析数据/压缩/降维** → SVD 或特征值分解；
+- **矩阵形状奇怪（长方、秩亏）** → 只有 SVD 兜底。
 
-6. 低维表示：$\boldsymbol{z}_i = W^T\tilde{\boldsymbol{x}}_i$
+## 2. 场景一：解线性方程组——LU 的主场
 
-### 1.3 与 SVD 的关系
+### 2.1 为什么选 LU
 
-对 $X$ 进行 SVD：$X = U\Sigma V^T$
+$A\boldsymbol{x} = \boldsymbol{b}$ 中 $A$ 是 $n$ 阶方阵且顺序主子式非零时，LU 分解一次、回代多次，总成本 $O(n^3) + k \cdot O(n^2)$（$k$ 为右端项个数）。对于同一系统多输入的工程问题（电网潮流、结构受力分析），这是性价比之王。
 
-则 $C = \frac{1}{m-1}V\Sigma^2 V^T$
+### 2.2 完整例题 1：多右端项批量求解
 
-PCA 的主成分方向就是 $V$ 的列向量，主成分的方差为 $\dfrac{\sigma_i^2}{m-1}$。
+用 LU 分解同时解 $A\boldsymbol{x} = \boldsymbol{b}_1$ 与 $A\boldsymbol{x} = \boldsymbol{b}_2$，其中
 
-### 1.4 方差解释比
+$$A = \begin{pmatrix} 2 & 1 \\ 4 & 3 \end{pmatrix}, \qquad \boldsymbol{b}_1 = \begin{pmatrix} 5 \\ 13 \end{pmatrix}, \qquad \boldsymbol{b}_2 = \begin{pmatrix} 1 \\ 5 \end{pmatrix}$$
 
-前 $k$ 个主成分解释的方差比例为：
+**解**：
 
-$$\rho_k = \frac{\sum_{i=1}^{k}\sigma_i^2}{\sum_{i=1}^{r}\sigma_i^2}$$
+**第 1 步**：分解一次（与右端项无关）：
 
-通常选择 $k$ 使 $\rho_k \geq 0.85$（或 $0.90, 0.95$）。
+$$A = \begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix}\begin{pmatrix} 2 & 1 \\ 0 & 1 \end{pmatrix} = LU$$
 
-### 1.5 PCA 的优缺点
+**第 2 步**：解 $\boldsymbol{b}_1$。前代 $L\boldsymbol{y} = \boldsymbol{b}_1$：$y_1 = 5$，$y_2 = 13 - 2 \times 5 = 3$；回代 $U\boldsymbol{x} = \boldsymbol{y}$：$x_2 = 3$，$x_1 = \frac{5 - 3}{2} = 1$。得 $\boldsymbol{x}^{(1)} = (1, 3)^T$。
 
-**优点**：
+**第 3 步**：解 $\boldsymbol{b}_2$（**分解不重做**）。前代：$y_1 = 1$，$y_2 = 5 - 2 = 3$；回代：$x_2 = 3$，$x_1 = \frac{1 - 3}{2} = -1$。得 $\boldsymbol{x}^{(2)} = (-1, 3)^T$。
 
-- 降维去相关
-- 保留最大方差
-- 无参数方法
+**工程要点**：两次求解只做了一次分解——这就是"一次制版、多次印刷"。
 
-**缺点**：
+### 2.3 LU 的边界
 
-- 线性方法，无法处理非线性结构
-- 主成分可能缺乏可解释性
-- 对异常值敏感
+- 顺序主子式为零 → 用 $PA = LU$（PLU 分解）兜底；
+- 矩阵接近奇异（条件数大）→ 解会"敏感"，此时可改用更稳的方法，或先用 SVD 检查条件数 $\kappa(A) = \sigma_{\max}/\sigma_{\min}$。
 
-## 2. 推荐系统中的矩阵分解
+## 3. 场景二：最小二乘拟合——QR 的主场
 
-### 2.1 问题背景
+### 3.1 问题
 
-用户-物品评分矩阵 $R$（$m \times n$）大部分元素缺失，需要预测缺失的评分。
+给出一组测量点 $(t_i, y_i)$（$i = 1, \ldots, m$，$m > n$），用 $n$ 元线性模型 $\boldsymbol{y} \approx A\boldsymbol{x}$ 拟合，求使残差平方和最小的 $\boldsymbol{x}$：
 
-### 2.2 基本模型
+$$\min_{\boldsymbol{x}}\|A\boldsymbol{x} - \boldsymbol{b}\|_2^2$$
 
-将评分矩阵分解为两个低秩矩阵的乘积：
+### 3.2 两种解法对比
 
-$$R \approx PQ^T$$
+| 方法 | 步骤 | 优点 | 缺点 |
+| ---- | ---- | ---- | ---- |
+| 正规方程 | 解 $A^TA\boldsymbol{x} = A^T\boldsymbol{b}$ | 简单、系统小 | $A^TA$ 平方条件数，病态时误差放大 |
+| QR 分解 | $A = QR$，回代 $R\boldsymbol{x} = Q^T\boldsymbol{b}$ | 数值稳定，无需计算 $A^TA$ | 分解成本略高 |
 
-其中 $P$ 为 $m \times k$（用户隐因子矩阵），$Q$ 为 $n \times k$（物品隐因子矩阵），$k \ll \min(m, n)$。
+**结论**：教材和工程实践一致推荐 **QR 方法**。北大《统计计算》讲义明确指出：直接解正规方程在条件数大时误差大，应"直接利用 $A$ 计算而不是对 $A^TA$ 计算"。
 
-### 2.3 目标函数
+### 3.3 完整例题 2：QR 最小二乘拟合直线
 
-$$\min_{P,Q} \sum_{(i,j) \in \Omega} (r_{ij} - \boldsymbol{p}_i^T\boldsymbol{q}_j)^2 + \lambda(\|P\|_F^2 + \|Q\|_F^2)$$
+用直线 $y = a + bt$ 拟合三个点 $(1, 1), (2, 2), (3, 4)$。
 
-其中 $\Omega$ 为已观测评分的集合，$\lambda$ 为正则化参数。
+**解**：模型写成 $\begin{pmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{pmatrix}\begin{pmatrix} a \\ b \end{pmatrix} \approx \begin{pmatrix} 1 \\ 2 \\ 4 \end{pmatrix}$，即 $A\boldsymbol{x} \approx \boldsymbol{b}$。
 
-### 2.4 求解方法
+035 篇例题 1 已给出 $A$ 的 QR 分解：$Q = \begin{pmatrix} \frac{1}{\sqrt{3}} & -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{3}} & 0 \\ \frac{1}{\sqrt{3}} & \frac{1}{\sqrt{2}} \end{pmatrix}$，$R = \begin{pmatrix} \sqrt{3} & 2\sqrt{3} \\ 0 & \sqrt{2} \end{pmatrix}$。
 
-**随机梯度下降（SGD）**：
+**第 1 步**：$Q^T\boldsymbol{b} = \left(\frac{7}{\sqrt{3}}, \frac{2}{\sqrt{2}}\right)^T$。
 
-$$\boldsymbol{p}_i \leftarrow \boldsymbol{p}_i + \eta(e_{ij}\boldsymbol{q}_j - \lambda\boldsymbol{p}_i)$$
+**第 2 步**：回代 $R\boldsymbol{x} = Q^T\boldsymbol{b}$：
 
-$$\boldsymbol{q}_j \leftarrow \boldsymbol{q}_j + \eta(e_{ij}\boldsymbol{p}_i - \lambda\boldsymbol{q}_j)$$
+$$b = \frac{2/\sqrt{2}}{\sqrt{2}} = 1, \qquad a = \frac{7/\sqrt{3} - 2\sqrt{3}\cdot 1}{\sqrt{3}} = \frac{7}{3} - 2 = \frac{1}{3}$$
 
-其中 $e_{ij} = r_{ij} - \boldsymbol{p}_i^T\boldsymbol{q}_j$，$\eta$ 为学习率。
+**结果**：拟合直线 $y = \frac{1}{3} + t$，残差平方和 $\left\|\begin{pmatrix} 1 \\ 2 \\ 4 \end{pmatrix} - \begin{pmatrix} \frac{4}{3} \\ \frac{7}{3} \\ \frac{10}{3} \end{pmatrix}\right\|^2 = \left(\frac{1}{3}\right)^2 + \left(\frac{1}{3}\right)^2 + \left(\frac{2}{3}\right)^2 = \frac{6}{9} = \frac{2}{3}$。
 
-**交替最小二乘（ALS）**：
+## 4. 场景三：PCA 主成分分析——SVD/特征值分解的主场
 
-固定 $Q$，求解 $P$；固定 $P$，求解 $Q$。交替进行直到收敛。
+### 4.1 问题背景
 
-### 2.5 SVD 与推荐系统
-
-截断 SVD 可以用于推荐系统，但需要处理缺失值。常用方法：
-
-1. 用均值填充缺失值后做 SVD
-2. 使用 SVD 的变体（如 SVD++）
-3. 直接优化低秩近似
-
-### 2.6 实际应用
-
-- Netflix Prize 竞赛中，矩阵分解方法是获胜算法的核心
-- Amazon、淘宝等电商的推荐系统
-- 音乐、视频推荐
-
-## 3. 图像压缩
-
-### 3.1 基本原理
-
-灰度图像可以表示为矩阵 $A$（$m \times n$），对 $A$ 进行 SVD：
-
-$$A = \sum_{i=1}^{r} \sigma_i \boldsymbol{u}_i \boldsymbol{v}_i^T$$
-
-保留前 $k$ 个奇异值：
-
-$$A_k = \sum_{i=1}^{k} \sigma_i \boldsymbol{u}_i \boldsymbol{v}_i^T$$
-
-### 3.2 压缩比
-
-原始存储：$m \times n$ 个数
-
-压缩后存储：$k(m + n + 1)$ 个数（$k$ 个 $\sigma_i$，$k$ 个 $\boldsymbol{u}_i$，$k$ 个 $\boldsymbol{v}_i$）
-
-压缩比：$\dfrac{mn}{k(m+n+1)}$
-
-### 3.3 压缩质量
-
-保留的奇异值越多，压缩质量越高：
-
-$$\frac{\|A - A_k\|_F}{\|A\|_F} = \sqrt{\frac{\sum_{i=k+1}^{r}\sigma_i^2}{\sum_{i=1}^{r}\sigma_i^2}}$$
-
-### 3.4 示例
-
-对于 $256 \times 256$ 的图像，取 $k = 50$：
-
-- 原始：$256 \times 256 = 65536$ 个数
-- 压缩后：$50 \times (256 + 256 + 1) = 25650$ 个数
-- 压缩比：约 $2.55:1$
-
-## 4. 线性判别分析（LDA）
-
-### 4.1 问题
-
-给定带标签的数据，找到投影方向使类间距离最大、类内距离最小。
+有 $m$ 个 $n$ 维数据点 $\boldsymbol{x}_1, \ldots, \boldsymbol{x}_m$（比如 $m$ 个用户的 $n$ 个行为指标）。希望找到**少数几个方向**，让数据投影上去后保留尽可能多的"信息"（方差）。
 
 ### 4.2 数学模型
 
-设 $S_B$ 为类间散布矩阵，$S_W$ 为类内散布矩阵，优化目标：
+1. **中心化**：$\bar{\boldsymbol{x}} = \frac{1}{m}\sum_{i}\boldsymbol{x}_i$，$\tilde{\boldsymbol{x}}_i = \boldsymbol{x}_i - \bar{\boldsymbol{x}}$；
+2. 构造数据矩阵 $X = (\tilde{\boldsymbol{x}}_1, \ldots, \tilde{\boldsymbol{x}}_m)^T$（$m \times n$）；
+3. 协方差矩阵 $C = \frac{1}{m-1}X^TX$（$n \times n$ 半正定）；
+4. 对 $C$ 做特征值分解 $C = V\Lambda V^T$（或对 $X$ 直接做 SVD：$X = U\Sigma V^T$，则 $C = \frac{1}{m-1}V\Sigma^2V^T$）；
+5. 取前 $k$ 个最大特征值对应的特征向量 $\boldsymbol{v}_1, \ldots, \boldsymbol{v}_k$ 作为投影方向；
+6. 低维表示 $\boldsymbol{z}_i = W^T\tilde{\boldsymbol{x}}_i$，$W = (\boldsymbol{v}_1, \ldots, \boldsymbol{v}_k)$。
 
-$$\max_{\boldsymbol{w}} \frac{\boldsymbol{w}^TS_B\boldsymbol{w}}{\boldsymbol{w}^TS_W\boldsymbol{w}}$$
+### 4.3 方差解释比：选几个主成分
 
-### 4.3 求解
+前 $k$ 个主成分解释的方差比例：
 
-广义特征值问题：$S_B\boldsymbol{w} = \lambda S_W\boldsymbol{w}$
+$$\rho_k = \frac{\sum_{i=1}^{k}\sigma_i^2}{\sum_{i=1}^{r}\sigma_i^2}$$
 
-若 $S_W$ 可逆：$S_W^{-1}S_B\boldsymbol{w} = \lambda\boldsymbol{w}$
+工程惯例：选 $k$ 使 $\rho_k \geq 0.85$（或 0.90/0.95）。若前 2 个方向就解释 90% 方差，数据就能画在平面上直接可视化。
 
-对 $S_W^{-1}S_B$ 进行特征值分解，取前 $k$ 个最大特征值对应的特征向量。
+### 4.4 PCA 的优缺点
 
-### 4.4 与 PCA 的比较
+**优点**：降维去相关、保留最大方差、无参数、有 SVD 高效实现。
+**缺点**：本质线性（无法捕捉非线性结构）；主成分可解释性差；对异常值敏感。
 
-| 特点       | PCA        | LDA                        |
-| ---------- | ---------- | -------------------------- |
-| 类型       | 无监督     | 有监督                     |
-| 目标       | 最大化方差 | 最大化类间/类内比          |
-| 适用场景   | 无标签数据 | 有标签数据                 |
-| 投影方向数 | 最多 $n$   | 最多 $c-1$（$c$ 为类别数） |
+## 5. 场景四：推荐系统——低秩分解的主场
 
-## 5. 其他应用
+### 5.1 问题
 
-### 5.1 自然语言处理
+用户-物品评分矩阵 $R$（$m \times n$）**大部分元素缺失**（用户只给看过的东西打分）。要预测缺失评分。
 
-- **潜在语义分析（LSA）**：对词-文档矩阵做 SVD，发现潜在语义结构
-- **词嵌入**：基于矩阵分解的词向量学习方法
+### 5.2 低秩模型
 
-### 5.2 信号处理
+假设 $k$ 个"隐因子"（如类型、风格、场景）能解释评分：
 
-- **降噪**：截断小奇异值去除噪声
-- **信号分离**：利用 SVD 分离混合信号
+$$R \approx PQ^T$$
 
-### 5.3 数值计算
+其中 $P$（$m \times k$）是用户隐因子矩阵，$Q$（$n \times k$）是物品隐因子矩阵，$k \ll \min(m, n)$。目标函数（仅对已观测集合 $\Omega$ 求和，加正则项防过拟合）：
 
-- **矩阵低秩近似**：Eckart-Young 定理保证 SVD 给出最优低秩近似
-- **条件数估计**：$\kappa(A) = \sigma_{\max}/\sigma_{\min}$
-- **有效秩**：根据奇异值分布确定矩阵的"有效秩"
+$$\min_{P,Q} \sum_{(i,j) \in \Omega} (r_{ij} - \boldsymbol{p}_i^T\boldsymbol{q}_j)^2 + \lambda(\|P\|_F^2 + \|Q\|_F^2)$$
 
-### 5.4 系统理论
+### 5.3 求解：SGD 与 ALS
 
-- **模型降阶**：用低秩近似简化高阶系统
-- **可控性与可观测性**：通过矩阵的秩分析系统性质
+- **随机梯度下降（SGD）**：每次随机挑一个观测 $(i, j)$，沿梯度走一步：$\boldsymbol{p}_i \leftarrow \boldsymbol{p}_i + \eta(e_{ij}\boldsymbol{q}_j - \lambda\boldsymbol{p}_i)$，$\boldsymbol{q}_j \leftarrow \boldsymbol{q}_j + \eta(e_{ij}\boldsymbol{p}_i - \lambda\boldsymbol{q}_j)$，其中 $e_{ij} = r_{ij} - \boldsymbol{p}_i^T\boldsymbol{q}_j$；
+- **交替最小二乘（ALS）**：固定 $Q$ 求 $P$（最小二乘闭式解），固定 $P$ 求 $Q$，交替迭代——每一步都是普通最小二乘，天然适合并行。
+
+### 5.4 与 SVD 的关系
+
+评分矩阵有大量缺失值时，**不能直接对 $R$ 做 SVD**（SVD 要求完整矩阵）。工程上：均值填充后做 SVD、用 SVD++ 等变体、或直接优化低秩近似（Eckart-Young 思想）。Netflix Prize 竞赛中，矩阵分解方法是获胜方案的核心组件；今天的电商、视频、音乐推荐系统普遍沿用这一思想。
+
+## 6. 场景五：图像压缩——截断 SVD 的主场
+
+### 6.1 原理
+
+灰度图是 $m \times n$ 矩阵。做 SVD 后写成秩 1 零件之和：
+
+$$A = \sum_{i=1}^{r}\sigma_i\boldsymbol{u}_i\boldsymbol{v}_i^T, \qquad A_k = \sum_{i=1}^{k}\sigma_i\boldsymbol{u}_i\boldsymbol{v}_i^T$$
+
+### 6.2 压缩比与质量
+
+- 存储量：原始 $mn$ 个数 vs 压缩后 $k(m + n + 1)$ 个数；
+- 压缩比：$\dfrac{mn}{k(m+n+1)}$；
+- 质量：$\dfrac{\|A - A_k\|_F}{\|A\|_F} = \sqrt{\dfrac{\sum_{i=k+1}^{r}\sigma_i^2}{\sum_{i=1}^{r}\sigma_i^2}}$。
+
+### 6.3 算例
+
+$256 \times 256$ 图像，取 $k = 50$：
+
+- 原始 $256 \times 256 = 65536$ 个数；
+- 压缩后 $50 \times (256 + 256 + 1) = 25650$ 个数；
+- 压缩比约 $2.55:1$，且由于自然图像奇异值衰减极快，视觉差异通常很小。
+
+## 7. 场景选择决策表（快速查询）
+
+| 你的问题 | 推荐工具 | 备选 | 一句话理由 |
+| -------- | -------- | ---- | ---------- |
+| 解方阵线性方程组 | LU / PLU | Cholesky（正定） | 快、一次分解多次回代 |
+| 解最小二乘问题 | QR | SVD | 稳定、不平方条件数 |
+| 求特征值 | QR 迭代 | 特征值分解 | 数值方法的标准底层 |
+| 降维（PCA） | SVD / 特征值分解 | — | 奇异值给出方差排序 |
+| 图像/数据压缩 | 截断 SVD | — | Eckart-Young 最优低秩近似 |
+| 处理奇异/长方矩阵 | SVD | 伪逆 | 唯一通用分解 |
+| 推荐系统补全评分 | 低秩分解（SVD 变体） | ALS/SGD | 缺失值场景的工程化方案 |
+
+## 8. 常见错误与对策
+
+| 错误示例 | 错误类型 | 出错原因 | 纠正方法 |
+| -------- | -------- | -------- | -------- |
+| 用 LU 解长方形（$m \neq n$）方程组 | 工具选错 | 忘了 LU 只适用于方阵 | 长方形用 QR 或 SVD |
+| 最小二乘无条件优先用正规方程 | 数值陷阱 | 只图公式简单 | 条件数大时改用 QR，避免平方条件数 |
+| 对缺失评分矩阵直接做 SVD | 方法误用 | 忘了 SVD 需要完整矩阵 | 先填充/用低秩模型直接优化 |
+| PCA 忘记先中心化 | 步骤遗漏 | 协方差公式前提被忽略 | 中心化是 PCA 第一步，否则第一主成分会被均值带偏 |
+| 压缩时把"保留的奇异值个数"与"压缩比"混为一谈 | 概念混淆 | 混淆指标 | $k$ 是保留数，压缩比是 $\frac{mn}{k(m+n+1)}$ |
+| 用特征值分解处理非方阵 | 工具越界 | 特征值只定义于方阵 | 非方阵一律用 SVD |
+| 选 $k$ 个主成分不看方差解释比 | 拍脑袋 | 没有量化依据 | 用 $\rho_k \geq 0.85$ 之类的阈值决策 |
+
+## 9. 实战练习
+
+### 练习 1（入门）：选工具
+
+下列场景分别该用哪种分解？（1）解 $3 \times 3$ 线性方程组；（2）拟合 100 个点到一条直线；（3）把 $200 \times 300$ 的图片压缩到 10% 存储。
+
+**提示**：按"解方程组 / 最小二乘 / 压缩"三类回忆。
+
+**参考答案要点**：（1）LU（方阵求解，快）；（2）QR（最小二乘，稳）；（3）截断 SVD（Eckart-Young 最优低秩近似）。
+
+### 练习 2（基础）：PCA 一步
+
+数据中心化后 $X^TX = \begin{pmatrix} 4 & 0 \\ 0 & 1 \end{pmatrix}$，求两个主成分方向与方差解释比 $\rho_1$。
+
+**提示**：$X^TX$ 已是特征分解形式。
+
+**参考答案要点**：特征值 $4, 1$，主成分方向 $\boldsymbol{e}_1 = (1, 0)^T$（方差 4）与 $\boldsymbol{e}_2 = (0, 1)^T$（方差 1）。$\rho_1 = \frac{4}{4+1} = 0.8$。
+
+### 练习 3（进阶）：压缩比计算
+
+$500 \times 400$ 图像取 $k = 60$，求压缩比。
+
+**提示**：$\dfrac{mn}{k(m+n+1)}$。
+
+**参考答案要点**：$\frac{500 \times 400}{60 \times 901} = \frac{200000}{54060} \approx 3.7:1$。
+
+### 练习 4（综合）：最小二乘 vs 正规方程
+
+$A = \begin{pmatrix} 1 & 1 \\ 1 & 1 + 10^{-8} \end{pmatrix}$ 列近似相关（病态），说明为什么 QR 比正规方程可靠。
+
+**提示**：比较 $\kappa(A)$ 与 $\kappa(A^TA) = \kappa(A)^2$。
+
+**参考答案要点**：$\kappa(A)$ 已很大（约 $10^8$），而正规方程求解涉及 $\kappa(A^TA) \approx \kappa(A)^2 = 10^{16}$，接近双精度浮点极限，舍入误差会把解"淹没"；QR 直接作用于 $A$，只承受 $\kappa(A)$ 的放大，结果可靠得多。
+
+## 10. 一句话记忆
+
+> **矩阵分解是工具箱：解方程找 LU，最小二乘找 QR，分析压缩降维找 SVD/特征分解——没有万能分解，只有"按任务选对分解"；而任何矩阵都能被 SVD 兜底（低秩近似、伪逆），这就是它被称为"瑞士军刀"的原因。**
 
 ## 参考文献
 
-3Blue1Brown 线性代数的本质：https://www.3blue1brown.com/topics/linear-algebra
-MIT 18.06：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-NumPy 文档：https://numpy.org/doc/stable/
-Interactive Linear Algebra：https://textbooks.math.gatech.edu/ila/
+1. 北京大学数学科学学院李东风，《统计计算》第 30 讲《正交三角分解》（正规方程数值缺陷与 QR 最小二乘的稳定性分析）：https://math.pku.edu.cn/teachers/lidf/docs/statcomp/html/_statcompbook/matrix-qr.html
+2. MIT 18.065 Matrix Methods in Data Analysis（Gilbert Strang），Lecture 7: Eckart-Young Theorem 与 PCA 联系：https://ickma2311.github.io/Math/MIT18.065/mit18065-lecture7-eckart-young.html
+3. MIT 18.06 Linear Algebra（Gilbert Strang），Spring 2010（LU/QR/SVD 全体系）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
+4. NumPy 文档（`linalg.svd`、`linalg.qr`、`linalg.lu`）：https://numpy.org/doc/stable/
 
 ## 延伸阅读
 
-线性代数基础，见 029-linear-algebra 模块文档。
-微积分与优化，见 027-calculus 模块。
-数据分析（PCA/矩阵），见 051-data-analysis 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供线性代数课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 矩阵分解体系
-
-LU：消元分解，解方程组；QR：正交化，稳定最小二乘。
-特征分解：对称矩阵可正交对角化；主成分分析基础。
-SVD：A=UΣVᵀ，任意矩阵；低秩近似与压缩。
-选择：一般求解 LU/QR，分析用 SVD/特征分解。
-
-### 13.2 线性变换的几何
-
-矩阵乘法 = 基向量的新位置；行列式 = 面积/体积缩放因子。
-特征向量：变换中方向不变只伸缩的方向。
-秩：变换后空间的维数（塌缩程度）。
-应用：理解梯度、雅可比、神经网络层。
+- 各分解的完整原理：LU（order 70）、QR（order 71）、SVD（order 72）。
+- 二次型与特征值分解的联系（二次曲面、正定），见《二次型的标准形》（order 60）与《正定二次型》（order 62）。
+- 数据分析中 PCA 的工程实现细节，见 051-data-analysis 模块。

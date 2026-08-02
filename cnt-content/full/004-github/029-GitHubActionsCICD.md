@@ -7,7 +7,7 @@ difficulty: intermediate
 title: 'GitHub Actions 与 CI/CD'
 module: github
 category: 'GitHub Advanced'
-description: 'GitHub Actions workflow 语法、市场使用、CI/CD 示例（Node/Java/Python）。'
+description: 'GitHub Actions 与 CI/CD 总纲：以智能工厂流水线为类比，讲透 CI/CD 概念、workflow 文件结构（name/on/jobs/steps）、Actions 市场使用与工程最佳实践。'
 author: Anonymous
 related:
   - github/PullRequest完整协作流程
@@ -16,1247 +16,485 @@ related:
   - github/常见问题排查
 prerequisites:
   - github/GitHub概述
-updated: '2026-08-01'
+updated: '2026-08-02'
 ---
-## 1. 背景
+## 0. 开始之前：一座"智能工厂流水线"的故事
 
-**GitHub Actions** 是内置于仓库的 **CI/CD（持续集成/持续交付）** 引擎：用 **YAML** 描述 **workflow（工作流）**，在 **runner（运行器）** 上执行 **job（任务）**。**GitHub Marketplace** 提供可复用的 **Action（动作）** 封装常见步骤。
-核心概念：**on** 触发条件、**jobs** 并行或依赖、**steps** 顺序执行、**${{ secrets.XXX }}** 读取密钥。
+想象一座现代化工厂：原材料进厂（代码提交），传送带把零件送到各个工位——质检工位自动检查（lint）、测试工位自动试运行（test）、组装工位打包成品（build）、发货工位把货送到客户（deploy）。整条流水线由一套**中央控制系统**自动调度：原料一到，各工位按顺序自动开工；质量不合格，立刻亮红灯拦截；货品信息全部记录在案。
 
-## 2. GitHub Actions 核心概念
+GitHub Actions 就是 GitHub 内置的这套"智能工厂流水线"——一套 **CI/CD（持续集成 / 持续交付）** 自动化平台。你只需要用 YAML 描述"工位清单"（workflow 工作流），GitHub 就会在云端"传送带"（runner 运行器）上自动完成：**构建、测试、打包、部署**，还能对仓库里的其他事件（开 Issue、发 Release）自动响应。
 
-### 2.1 工作流（Workflow）
+本文是 Actions 系列的**总纲**：先把 CI/CD 概念讲明白，再拆解 workflow 文件结构，最后给出 Actions 市场使用指南与最佳实践。后续各篇（触发器、矩阵、缓存、制品、环境）都是本篇某个环节的深入。
 
-工作流是一个可配置的自动化流程，由一个或多个任务（jobs）组成，定义在 `.github/workflows/` 目录下的 YAML 文件中。
+## 1. CI/CD 是什么：为什么每个仓库都需要
 
-### 2.2 任务（Job）
+### 1.1 CI（持续集成，Continuous Integration）
 
-任务是工作流中的一个独立单元，包含一系列步骤（steps）。任务默认并行执行，但可以通过 `needs` 关键字定义依赖关系。
+**核心思想**：频繁地把代码**合并**到主干，并在每次合并前**自动构建和测试**，尽早发现集成问题。
 
-### 2.3 步骤（Step）
+- 开发者在 PR 里提交代码 → 自动跑一遍测试 → 通过才能合并。
+- 好处：问题在几小时内暴露，而不是发布前一天才发现。
 
-步骤是任务中的一个操作，可以是：
+### 1.2 CD（持续交付/持续部署，Continuous Delivery/Deployment）
 
-- 使用市场中的 Action（`uses`）
-- 执行 shell 命令（`run`）
+**持续交付**：代码合并后自动准备好"随时可发布"的产物（构建 + 测试 + 打包）。
+**持续部署**：在持续交付基础上，把发布这一步也自动化——合并到 main 自动上生产。
 
-### 2.4 运行器（Runner）
-
-运行器是执行工作流的服务器，可以是：
-
-- GitHub 托管的运行器（如 `ubuntu-latest`、`windows-latest`、`macos-latest`）
-- 自托管运行器（自己搭建的服务器）
-
-### 2.5 动作（Action）
-
-动作是可复用的代码单元，封装了常见的步骤，可在 GitHub Marketplace 中找到。
-
-## 3. 工作流配置详解
-
-### 3.1 触发条件（on）
-
-```yaml
- # 基本触发条件
- on:
-  push:
-  branches: [main, develop]
-  paths-ignore: ['README.md', 'docs/**']
-  pull_request:
-  branches: [main]
-  # 定时触发
-  schedule:
-  - cron: '0 0 * * *' # 每天 UTC 时间 00:00 触发
-  # 手动触发
-  workflow_dispatch:
-  inputs:
-  environment:
-  description: '环境'
-  required:
-  default: 'staging'
-  # 其他工作流触发
-  workflow_run:
-  workflows: ['Build']
-  types: [completed]
+```
+CI：   代码提交 → 自动构建 → 自动测试 → 汇报结果
+CD：   CI 通过 → 自动打包 → 部署 staging → （审批）→ 部署生产
 ```
 
-### 3.2 任务配置（jobs）
+### 1.3 为什么用 GitHub Actions
+
+| 优势 | 说明 |
+| --- | --- |
+| 零配置接入 | 与 GitHub 仓库天然集成，不用单独搭服务器 |
+| 生态丰富 | GitHub Marketplace 有大量现成 Action 可复用 |
+| 免费用量 | 公开仓库免费，私有仓库有免费分钟额度 |
+| 事件驱动 | push、PR、Release、定时、外部 API 都能触发 |
+| 可观测 | Actions 页面可视化查看每次运行日志与状态 |
+
+## 2. 核心组件总览：认识流水线的"零件"
+
+GitHub 官方把 Actions 的组件划分为六个概念，层级从小到大依次是：
+
+```
+workflow（工作流）→ jobs（任务）→ steps（步骤）→ actions（动作）/ shell 命令
+                                        ↕
+                    runner（运行器：执行这些任务的机器）
+                    event（事件：触发流水线开动的信号）
+```
+
+| 组件 | 中文 | 说明 |
+| --- | --- | --- |
+| Workflow | 工作流 | 一个 `.github/workflows/*.yml` 文件就是一个可配置的自动化流程 |
+| Event | 事件 | 触发工作流的仓库活动（push、PR、schedule 等） |
+| Job | 任务 | 一组在同一运行器上按顺序执行的步骤；不同 job 默认并行 |
+| Step | 步骤 | job 内最小的执行单元：一条 shell 命令或一个 Action |
+| Action | 动作 | 可复用的扩展单元，封装常用操作（检出代码、装环境等） |
+| Runner | 运行器 | 执行 job 的虚拟机（GitHub 托管或自托管） |
+
+**理解要点**：job 内的 steps 按顺序执行、可以共享数据（同一台机器）；job 之间互相独立、默认并行，用 `needs` 声明依赖。
+
+## 3. workflow 文件结构：读懂流水线的"图纸"
+
+### 3.1 文件位置与命名
+
+工作流文件必须放在仓库根目录的固定文件夹中：
+
+```
+仓库根目录
+└── .github
+    └── workflows        # 固定目录名，不能改名
+        ├── ci.yml       # 每个 .yml 文件 = 一个独立工作流
+        ├── deploy.yml
+        └── nightly.yml
+```
+
+### 3.2 顶层结构总览
+
+一个标准的 workflow 文件由三大部分组成：
 
 ```yaml
- jobs:
-  # 任务名称
-  build:
-  # 运行器环境
-  runs-on: ubuntu-latest
-  # 环境变量
-  env:
-  NODE_ENV: production
-  # 矩阵策略
-  strategy:
-  matrix:
-  node-version: [18.x, 20.x]
-  os: [ubuntu-latest, windows-latest]
-  # 快速失败
-  fail-fast:
-  # 任务依赖
-  needs: [lint, test]
-  # 步骤
-  steps:
+name: CI                    # 1. 工作流名称（显示在 Actions 页面）
+
+on:                         # 2. 触发条件（什么时候跑）
+  push:
+    branches: [main]
+
+permissions:                # （可选）最小权限声明
+  contents: read
+
+jobs:                       # 3. 任务集合（要干什么）
+  build:                    #   job 标识
+    runs-on: ubuntu-latest  #   在什么机器上跑
+    steps:                  #   步骤列表（按顺序执行）
+      - uses: actions/checkout@v4
+      - run: npm ci
+```
+
+### 3.3 name 与 on
+
+```yaml
+name: CI                    # 页面展示名，建议起名清晰（如 "Build and Test"）
+on: [push, pull_request]    # 简写：多个事件
+```
+
+`on` 的详细配置（分支过滤、路径过滤、定时、手动触发）见《Actions 触发器》（030），这里不展开。
+
+### 3.4 jobs：任务编排
+
+```yaml
+jobs:
+  lint:                      # job 1：静态检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm run lint
+
+  test:                      # job 2：测试（依赖 lint 完成）
+    needs: lint              # 声明依赖：lint 成功后才跑 test
+    runs-on: ubuntu-latest
+    strategy:                # 矩阵：多版本并行测试
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci && npm test
+
+  deploy:                    # job 3：部署（依赖 test）
+    needs: test
+    if: github.ref == 'refs/heads/main'   # 仅 main 分支部署
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./deploy.sh
+```
+
+job 关键字段速查：
+
+| 字段 | 作用 |
+| --- | --- |
+| `runs-on` | 指定运行器（`ubuntu-latest` / `[self-hosted, linux]`） |
+| `needs` | 依赖其他 job，串行化 |
+| `strategy.matrix` | 矩阵并行（见 032） |
+| `if` | 条件执行 |
+| `timeout-minutes` | 超时控制（默认 360 分钟） |
+| `continue-on-error` | 失败不阻断（实验性任务常用） |
+| `env` | job 级环境变量 |
+
+### 3.5 steps：步骤详解
+
+step 只有两种形态：**运行命令**（`run`）或 **调用 Action**（`uses`）。
+
+```yaml
+steps:
+  # 形态一：调用市场 Action
   - name: Checkout code
-  uses: actions/checkout@v4
-  with:
-  fetch-depth: 0 # 完整克隆，包括标签
-  - name: Setup Node.js
-  uses: actions/setup-node@v4
-  with:
-  node-version: ${{ matrix.node-version }}
-  cache: npm
+    uses: actions/checkout@v4
+    with:                    # 给 Action 传参
+      fetch-depth: 0
+
+  # 形态二：运行 shell 命令
   - name: Install dependencies
-  run: npm ci
-  - name: Build
-  run: npm run build
+    run: |
+      npm ci
+      npm run build
+
+  # 条件步骤
+  - name: Deploy
+    if: github.ref == 'refs/heads/main'
+    run: ./deploy.sh
+
+  # 环境变量（步骤级）
+  - name: Print version
+    run: echo "VERSION=$VERSION"
+    env:
+      VERSION: 1.0.0
 ```
 
-### 3.3 步骤配置（steps）
+## 4. Actions 市场：站在巨人肩膀上
+
+### 4.1 在哪里找 Action
+
+GitHub Marketplace（https://github.com/marketplace?type=actions）是官方 Action 市场，也可以在 `uses: owner/repo@版本` 中直接引用任意公开仓库的 Action。
+
+### 4.2 高频 Action 清单（新手必备）
+
+| Action | 用途 |
+| --- | --- |
+| `actions/checkout` | 检出仓库代码（几乎每个工作流第一步） |
+| `actions/setup-node` | 配置 Node.js 环境 |
+| `actions/setup-python` | 配置 Python 环境 |
+| `actions/setup-java` | 配置 JDK（如 temurin） |
+| `actions/cache` | 缓存依赖加速（见 033） |
+| `actions/upload-artifact` | 上传构建产物（见 035） |
+| `actions/download-artifact` | 下载构建产物（见 035） |
+| `peaceiris/actions-gh-pages` | 部署静态站到 GitHub Pages |
+| `docker/login-action` | 登录容器镜像仓库 |
+| `docker/build-push-action` | 构建并推送 Docker 镜像 |
+
+### 4.3 版本固定：安全第一
+
+Action 用 `@版本` 引用，建议固定**主版本号**（`@v4`）甚至**提交 SHA**（`@a1b2c3d...`）：
 
 ```yaml
- steps:
-  # 使用市场中的 Action
-  - name: Checkout code
-  uses: actions/checkout@v4
-  # 带参数的 Action
-  - name: Setup Python
-  uses: actions/setup-python@v5
-  with:
-  python-version: '3.11'
-  # 执行 shell 命令
-  - name: Install dependencies
-  run: |
-  python -m pip install --upgrade pip
-  pip install -r requirements.txt
-  # 条件执行
-  - name: Deploy to production
-  if: github.ref == 'refs/heads/main'
-  run: ./deploy.sh
-  # 上传 artifact
-  - name: Upload build artifacts
-  uses: actions/upload-artifact@v4
-  with:
-  name: build
-  path: dist/
+- uses: actions/checkout@v4          # 主版本：随 v4.x 自动更新（推荐）
+# - uses: actions/checkout@<完整SHA> # 最高安全：完全锁定代码
 ```
 
-## 4. GitHub Marketplace 指南
+固定到 SHA 是官方安全加固建议——第三方 Action 若被篡改，固定 SHA 可避免意外执行恶意版本。
 
-### 4.1 查找 Action
+## 5. 完整 CI/CD 示例：三种语言的流水线
 
-1. 访问 [GitHub Marketplace](https://github.com/marketplace?type=actions)
-2. 使用搜索功能找到需要的 Action
-3. 查看 Action 的文档和使用示例
-
-### 4.2 常用 Action
-
-- **actions/checkout**：检出代码仓库
-- **actions/setup-node**：设置 Node.js 环境
-- **actions/setup-java**：设置 Java 环境
-- **actions/setup-python**：设置 Python 环境
-- **actions/upload-artifact**：上传构建产物
-- **actions/download-artifact**：下载构建产物
-- **actions/cache**：缓存依赖
-- **peaceiris/actions-gh-pages**：部署到 GitHub Pages
-- **docker/login-action**：登录 Docker 仓库
-- **docker/build-push-action**：构建和推送 Docker 镜像
-
-### 4.3 自定义 Action
-
-可以创建自己的 Action：
-
-1. 在仓库中创建 `action.yml` 文件
-2. 定义 Action 的输入、输出和运行环境
-3. 发布到 GitHub Marketplace
-
-## 5. 完整 CI/CD 示例
-
-### 5.1 Node.js 项目完整 CI/CD
+### 5.1 Node.js 完整流水线（lint → test → build → deploy）
 
 ```yaml
- name: Node.js CI/CD
- on:
+name: Node.js CI/CD
+on:
   push:
-  branches: [main, develop]
+    branches: [main]
   pull_request:
-  branches: [main, develop]
- jobs:
+    branches: [main]
+
+jobs:
   lint:
-  runs-on: ubuntu-latest
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/setup-node@v4
-  with:
-  node-version: '20.x'
-  cache: npm
-  - run: npm ci
-  - run: npm run lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+
   test:
-  runs-on: ubuntu-latest
-  strategy:
-  matrix:
-  node-version: [18.x, 20.x]
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/setup-node@v4
-  with:
-  node-version: ${{ matrix.node-version }}
-  cache: npm
-  - run: npm ci
-  - run: npm test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]        # 多版本测试
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ matrix.node-version }}, cache: npm }
+      - run: npm ci
+      - run: npm test
+
   build:
-  runs-on: ubuntu-latest
-  needs: [lint, test]
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/setup-node@v4
-  with:
-  node-version: '20.x'
-  cache: npm
-  - run: npm ci
-  - run: npm run build
-  - uses: actions/upload-artifact@v4
-  with:
-  name: build
-  path: dist/
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm run build
+      - uses: actions/upload-artifact@v4   # 产物上传，供部署用
+        with: { name: build, path: dist/ }
+
   deploy:
-  runs-on: ubuntu-latest
-  needs: build
-  if: github.ref == 'refs/heads/main'
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/download-artifact@v4
-  with:
-  name: build
-  path: dist/
-  - name: Deploy to GitHub Pages
-  uses: peaceiris/actions-gh-pages@v4
-  with:
-  github_token: ${{ secrets.GITHUB_TOKEN }}
-  publish_dir: ./dist
+    needs: build
+    if: github.ref == 'refs/heads/main'    # 仅 main 分支部署
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: build, path: dist/ }
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
 ```
 
-### 5.2 Java 项目完整 CI/CD
+### 5.2 Java（Maven）流水线
 
 ```yaml
- name: Java CI/CD
- on:
+name: Java CI/CD
+on:
   push:
-  branches: [main, develop]
-  pull_request:
-  branches: [main, develop]
- jobs:
+    branches: [main]
+jobs:
   build:
-  runs-on: ubuntu-latest
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/setup-java@v4
-  with:
-  distribution: temurin
-  java-version: '17'
-  cache: maven
-  - name: Build with Maven
-  run: mvn -B package --file pom.xml
-  - uses: actions/upload-artifact@v4
-  with:
-  name: jar
-  path: target/*.jar
-  deploy:
-  runs-on: ubuntu-latest
-  needs: build
-  if: github.ref == 'refs/heads/main'
-  steps:
-  - uses: actions/download-artifact@v4
-  with:
-  name: jar
-  path: target/
-  - name: Deploy to server
-  run: |
-  # 部署脚本
-  echo "Deploying to production server"
-  # scp target/*.jar user@server:/path/to/deploy/
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven                 # 内置 Maven 缓存
+      - run: mvn -B package --file pom.xml
+      - uses: actions/upload-artifact@v4
+        with: { name: jar, path: target/*.jar }
 ```
 
-### 5.3 Python 项目完整 CI/CD
+### 5.3 Python 流水线
 
 ```yaml
- name: Python CI/CD
- on:
+name: Python CI/CD
+on:
   push:
-  branches: [main, develop]
-  pull_request:
-  branches: [main, develop]
- jobs:
-  lint:
-  runs-on: ubuntu-latest
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/setup-python@v5
-  with:
-  python-version: '3.11'
-  - run: |
-  python -m pip install --upgrade pip
-  pip install flake8
-  flake8 .
+    branches: [main]
+jobs:
   test:
-  runs-on: ubuntu-latest
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/setup-python@v5
-  with:
-  python-version: '3.11'
-  - run: |
-  python -m pip install --upgrade pip
-  pip install pytest
-  if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-  pytest
-  deploy:
-  runs-on: ubuntu-latest
-  needs: [lint, test]
-  if: github.ref == 'refs/heads/main'
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/setup-python@v5
-  with:
-  python-version: '3.11'
-  - run: |
-  python -m pip install --upgrade pip
-  pip install setuptools wheel twine
-  python setup.py sdist bdist_wheel
-  twine upload --repository pypi dist/* -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install -r requirements.txt || true
+      - run: pytest
 ```
 
 ## 6. 环境变量与密钥管理
 
-### 6.1 环境变量
+### 6.1 环境变量（env）
+
+支持工作流级、job 级、step 级三层：
 
 ```yaml
-# 工作流级环境变量
-env:
+env:                          # 工作流级
   NODE_ENV: production
-  API_URL: https://api.example.com
+
 jobs:
   build:
-  # 任务级环境变量
-  env:
-  BUILD_VERSION: 1.0.0
-  steps:
-    - name: Print environment variables
-  run: |
-  echo "NODE_ENV: $NODE_ENV"
-  echo "API_URL: $API_URL"
-  echo "BUILD_VERSION: $BUILD_VERSION"
-  # 使用 GitHub 上下文
-  echo "Repository: ${{ github.repository }}"
-  echo "Branch: ${{ github.ref }}"
+    env:                      # job 级
+      BUILD_VERSION: 1.0.0
+    steps:
+      - name: Print env
+        run: |
+          echo "$NODE_ENV / $BUILD_VERSION"
+          echo "分支: ${{ github.ref }}"     # 上下文变量
 ```
 
-### 6.2 密钥管理
+### 6.2 密钥（Secrets）
 
-1. **Repository secrets**：在仓库的 **Settings → Secrets and variables → Actions** 中设置
-2. **Environment secrets**：在环境的设置中设置，更安全
-3. **使用密钥**：
+- **仓库级 secrets**：Settings → Secrets and variables → Actions，所有工作流可用。
+- **环境级 secrets**：环境设置里配置，更安全（见 036）。
+- 使用方式：`${{ secrets.XXX }}`，日志中自动打码。
 
 ```yaml
- steps:
+steps:
   - name: Deploy
-  run: ./deploy.sh
-  env:
-  API_KEY: ${{ secrets.API_KEY }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-```
-
-## 7. 常见问题与解决方案
-
-### 7.1 构建失败
-
-#### 7.1.1 依赖安装失败
-
-- **问题**：依赖安装超时或失败
-- **解决方案**：
-
-1.  使用缓存减少依赖安装时间
-2.  检查网络连接
-3.  确认依赖源是否可用
-4.  增加超时时间
-
-#### 7.1.2 测试失败
-
-- **问题**：测试用例失败
-- **解决方案**：
-
-1.  查看测试日志，了解失败原因
-2.  修复代码中的问题
-3.  确保测试环境与开发环境一致
-
-### 7.2 性能问题
-
-#### 7.2.1 构建时间过长
-
-- **问题**：构建时间超过限制或影响开发效率
-- **解决方案**：
-
-1.  使用缓存
-2.  并行执行任务
-3.  优化构建脚本
-4.  使用自托管运行器
-
-#### 7.2.2 缓存失效
-
-- **问题**：依赖变更后缓存未更新
-- **解决方案**：
-
-1.  使用动态缓存键
-2.  定期清理缓存
-3.  依赖变更时更新缓存键
-
-### 7.3 权限问题
-
-#### 7.3.1 密钥权限不足
-
-- **问题**：构建过程中无法访问密钥
-- **解决方案**：
-
-1.  确认密钥已正确设置
-2.  检查 workflow 权限设置
-3.  确保密钥名称正确
-
-#### 7.3.2 访问外部服务失败
-
-- **问题**：无法访问外部 API 或服务
-- **解决方案**：
-
-1.  检查网络连接
-2.  确认 API 密钥有效
-3.  检查外部服务状态
-
-## 8. 最佳实践
-
-### 8.1 工作流设计
-
-- **模块化**：将不同功能拆分为多个工作流
-- **并行执行**：利用矩阵策略和并行任务提高效率
-- **依赖管理**：使用 `needs` 明确任务依赖关系
-- **条件执行**：使用 `if` 条件控制任务执行
-
-### 8.2 安全性
-
-- **密钥管理**：使用 Repository secrets 或 Environment secrets
-- **权限控制**：最小化 workflow 权限
-- **代码扫描**：集成 CodeQL 等代码扫描工具
-- **安全依赖**：使用 Dependabot 自动更新依赖
-
-### 8.3 可维护性
-
-- **版本固定**：固定 Action 版本，避免意外变更
-- **注释**：为复杂工作流添加注释
-- **文档**：记录工作流的用途和维护指南
-- **测试**：测试工作流的各个部分
-
-### 8.4 性能优化
-
-- **缓存**：缓存依赖和构建产物
-- **并行**：并行执行测试和构建
-- **最小化**：只执行必要的步骤
-- **自托管运行器**：对于大型项目使用自托管运行器
-
-## 9. 实际应用案例
-
-### 9.1 开源项目案例
-
-#### 9.1.1 案例描述
-
-- **项目**：一个前端库
-- **需求**：自动测试、构建和发布
-
-#### 9.1.2 实现
-
-1. **测试**：在 PR 时运行单元测试和集成测试
-2. **构建**：合并到 main 分支时构建
-3. **发布**：打标签时自动发布到 npm
-
-### 9.2 企业项目案例
-
-#### 9.2.1 案例描述
-
-- **项目**：企业内部应用
-- **需求**：自动测试、构建、部署到多环境
-
-#### 9.2.2 实现
-
-1. **测试**：PR 时运行测试
-2. **构建**：合并到 develop 分支时构建
-3. **部署**：
-
-- 合并到 develop 分支：部署到开发环境
-- 合并到 main 分支：部署到测试环境
-- 打标签：部署到生产环境
-
-## 10. GitHub Pages 部署
-
-### 10.1 启用 GitHub Pages
-
-1. 进入仓库 **Settings** > **Pages**
-2. 选择源分支（通常是 `gh-pages` 或 `main`）
-3. 选择目录（通常是 `/` 或 `/docs`）
-4. 点击 **Save**
-
-### 10.2 自动部署到 GitHub Pages
-
-```yaml
- name: Deploy to GitHub Pages
- on:
-  push:
-  branches: [ main ]
- jobs:
-  deploy:
-  runs-on: ubuntu-latest
-  permissions:
-  contents: write
-  steps:
-  - uses: actions/checkout@v4
-  - name: Set up Node.js
-  uses: actions/setup-node@v4
-  with:
-  node-version: 20
-  cache: 'npm'
-  - name: Install dependencies
-  run: npm install
-  - name: Build
-  run: npm run build
-  - name: Deploy to GitHub Pages
-  uses: peaceiris/actions-gh-pages@v4
-  with:
-  github_token: ${{ secrets.GITHUB_TOKEN }}
-  publish_dir: ./dist
-```
-
-### 10.3 使用 GitHub Actions 官方 Pages 部署
-
-```yaml
- name: Deploy Pages
- on:
-  push:
-  branches: [ main ]
- permissions:
-  contents: read
-  pages: write
-  id-token: write
- jobs:
-  build:
-  runs-on: ubuntu-latest
-  steps:
-  - uses: actions/checkout@v4
-  - uses: actions/configure-pages@v5
-  - uses: actions/upload-pages-artifact@v3
-  with:
-  path: ./dist
-  deploy:
-  needs: build
-  runs-on: ubuntu-latest
-  environment:
-  name: github-pages
-  url: ${{ steps.deployment.outputs.page_url }}
-  steps:
-  - uses: actions/deploy-pages@v4
-  id: deployment
-```
-
-## 11. 与其他 CI/CD 工具对比
-
-| 工具           | 优势                                   | 劣势                 |
-| -------------- | -------------------------------------- | -------------------- |
-| GitHub Actions | 与 GitHub 集成紧密、易于配置、市场丰富 | 私有仓库有分钟数限制 |
-| Jenkins        | 高度可定制、插件丰富、无限制           | 搭建和维护成本高     |
-| GitLab CI/CD   | 与 GitLab 集成紧密、功能强大           | 学习曲线较陡         |
-| CircleCI       | 速度快、配置简单、支持 Docker          | 价格较高             |
-| Travis CI      | 配置简单、历史悠久                     | 功能相对有限         |
-
-## 11. 延伸阅读
-
-- [Workflow syntax](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions) <!-- nofollow -->
-- [GitHub Actions documentation](https://docs.github.com/en/actions) <!-- nofollow -->
-- [GitHub Marketplace](https://github.com/marketplace?type=actions) <!-- nofollow -->
-- [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions) <!-- nofollow -->
-
-## 工作流文件结构
-
-**基本写法：工作流文件命名**
-`.github/workflows/<名称>.yml`
-```bash
-# 工作流文件必须放在此目录下
-mkdir -p .github/workflows
-```
-
----
-
-**基本写法：基本工作流定义**
-`name: <工作流名称>`
-```yaml
-# 工作流名称
-name: CI
-on: [push, pull_request]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: echo "Hello"
-```
-
----
-
-**基本写法：触发条件配置**
-`on: <触发事件>`
-```yaml
-# push 时触发
-on:
-  push:
-    branches: [ main, develop ]
-```
-
----
-
-**基本写法：多事件触发**
-`on: [<事件1>, <事件2>]`
-```yaml
-# 多种事件触发工作流
-on: [push, pull_request, workflow_dispatch]
-```
-
----
-
-**基本写法：手动触发**
-`on: workflow_dispatch`
-```yaml
-# 允许手动触发工作流
-on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: '部署环境'
-        default: 'staging'
-```
-
----
-
-**基本写法：定时触发**
-`on: schedule`
-```yaml
-# 每天凌晨 2 点执行（UTC 时间）
-on:
-  schedule:
-    - cron: '0 2 * * *'
-```
-
----
-
-## 知识讲解与要点分析（原作业配置）
-
-**基本写法：指定运行环境**
-`runs-on: <操作系统>`
-```yaml
-# 在最新版 Ubuntu 上运行
-runs-on: ubuntu-latest
-```
-
----
-
-**基本写法：多操作系统矩阵**
-`strategy: matrix`
-```yaml
-# 在多个操作系统上运行测试
-strategy:
-  matrix:
-    os: [ubuntu-latest, windows-latest, macos-latest]
-runs-on: ${{ matrix.os }}
-```
-
----
-
-**基本写法：多版本矩阵**
-`strategy: matrix`
-```yaml
-# 在多个 Node.js 版本上测试
-strategy:
-  matrix:
-    node-version: [18, 20, 22, 24]
-```
-
----
-
-**基本写法：失败时继续**
-`strategy: fail-fast`
-```yaml
-# 矩阵中一个失败不取消其他
-strategy:
-  fail-fast: false
-  max-parallel: 4
-```
-
----
-
-**基本写法：作业依赖关系**
-`needs: <作业名>`
-```yaml
-# deploy 作业依赖 build 作业
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "build"
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "deploy"
-```
-
----
-
-## 步骤与动作
-
-**基本写法：检出代码**
-`uses: actions/checkout@v4`
-```yaml
-# 检出仓库代码到工作目录
-steps:
-  - uses: actions/checkout@v4
-```
-
----
-
-**基本写法：设置 Node.js 环境**
-`uses: actions/setup-node@v4`
-```yaml
-# 配置 Node.js 运行环境
-steps:
-  - uses: actions/setup-node@v4
-    with:
-      node-version: '22'
-      cache: 'npm'
-```
-
----
-
-**基本写法：设置 Python 环境**
-`uses: actions/setup-python@v5`
-```yaml
-# 配置 Python 运行环境
-steps:
-  - uses: actions/setup-python@v5
-    with:
-      python-version: '3.13'
-```
-
----
-
-**基本写法：设置 Java 环境**
-`uses: actions/setup-java@v4`
-```yaml
-# 配置 JDK 环境
-steps:
-  - uses: actions/setup-java@v4
-    with:
-      distribution: 'temurin'
-      java-version: '21'
-```
-
----
-
-**基本写法：运行命令**
-`run: <命令>`
-```yaml
-# 执行 shell 命令
-steps:
-  - run: npm install
-  - run: npm test
-```
-
----
-
-**基本写法：多行命令**
-`run: |`
-```yaml
-# 执行多行命令
-steps:
-  - run: |
-      npm install
-      npm run build
-      npm test
-```
-
----
-
-**基本写法：指定 shell 类型**
-`shell: <shell>`
-```yaml
-# 指定使用 PowerShell 运行
-steps:
-  - run: Write-Host "Hello"
-    shell: pwsh
-```
-
----
-
-## 环境变量与密钥
-
-**基本写法：设置环境变量**
-`env: <变量名>: <值>`
-```yaml
-# 设置工作流级环境变量
-env:
-  NODE_ENV: production
-jobs:
-  build:
+    run: ./deploy.sh
     env:
-      CI: true
+      API_KEY: ${{ secrets.API_KEY }}       # 不要硬编码密钥
 ```
 
----
+## 7. 最佳实践清单
 
-**基本写法：使用密钥**
-`secrets.<密钥名>`
-```yaml
-# 使用仓库配置的密钥
-steps:
-  - run: npm publish
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-```
+### 7.1 结构设计
 
----
+- **一个仓库多个工作流**：CI、部署、定时任务拆开，互不影响。
+- **needs 明确依赖**：能并行的 job 就并行，需要结果的用 `needs` 串行。
+- **if 控制分支**：构建/测试全分支跑，部署只 main 跑。
+- **路径过滤**：只改文档时不触发 CI（见 030 的 paths-ignore）。
 
-**基本写法：步骤级环境变量**
-`run: <命令> env: <变量>: <值>`
-```yaml
-# 仅在特定步骤设置环境变量
-steps:
-  - run: echo $SECRET_VALUE
-    env:
-      SECRET_VALUE: ${{ secrets.MY_SECRET }}
-```
+### 7.2 安全
 
----
-
-**基本写法：使用上下文变量**
-`${{ <上下文> }}`
-```yaml
-# 使用 GitHub 上下文信息
-steps:
-  - run: echo "Branch is ${{ github.ref }}"
-  - run: echo "Actor is ${{ github.actor }}"
-```
-
----
-
-## 缓存与产物
-
-**基本写法：缓存依赖**
-`uses: actions/cache@v4`
-```yaml
-# 缓存 npm 依赖加速构建
-steps:
-  - uses: actions/cache@v4
-    with:
-      path: ~/.npm
-      key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-```
-
----
-
-**基本写法：上传构建产物**
-`uses: actions/upload-artifact@v4`
-```yaml
-# 上传构建结果
-steps:
-  - uses: actions/upload-artifact@v4
-    with:
-      name: build-output
-      path: dist/
-```
-
----
-
-**基本写法：下载产物**
-`uses: actions/download-artifact@v4`
-```yaml
-# 下载之前上传的产物
-steps:
-  - uses: actions/download-artifact@v4
-    with:
-      name: build-output
-```
-
----
-
-**基本写法：条件步骤**
-`if: <条件>`
-```yaml
-# 仅在 main 分支执行
-steps:
-  - run: npm run deploy
-    if: github.ref == 'refs/heads/main'
-```
-
----
-
-## gh CLI 管理工作流
-
-**基本写法：查看工作流列表**
-`gh workflow list`
-```bash
-# 列出仓库的所有工作流
-gh workflow list
-```
-
----
-
-**基本写法：查看工作流详情**
-`gh workflow view <工作流名>`
-```bash
-# 查看指定工作流的详情
-gh workflow view CI
-```
-
----
-
-**基本写法：查看工作流文件**
-`gh workflow view <工作流名> --yaml`
-```bash
-# 查看工作流的 YAML 内容
-gh workflow view CI --yaml
-```
-
----
-
-**基本写法：手动触发工作流**
-`gh workflow run <工作流>`
-```bash
-# 手动触发指定工作流
-gh workflow run CI
-```
-
----
-
-**基本写法：指定分支触发**
-`gh workflow run <工作流> --ref <分支>`
-```bash
-# 在指定分支上触发工作流
-gh workflow run CI --ref develop
-```
-
----
-
-**基本写法：带参数触发**
-`gh workflow run <工作流> -f <参数>=<值>`
-```bash
-# 传入参数触发工作流
-gh workflow run deploy.yml -f environment=production
-```
-
----
-
-**基本写法：禁用工作流**
-`gh workflow disable <工作流>`
-```bash
-# 禁用指定工作流
-gh workflow disable CI
-```
-
----
-
-**基本写法：启用工作流**
-`gh workflow enable <工作流>`
-```bash
-# 启用被禁用的工作流
-gh workflow enable CI
-```
-
----
-
-## 运行记录管理
-
-**基本写法：查看运行列表**
-`gh run list`
-```bash
-# 列出工作流运行记录
-gh run list
-```
-
----
-
-**基本写法：按工作流筛选**
-`gh run list --workflow <工作流>`
-```bash
-# 查看指定工作流的运行记录
-gh run list --workflow CI
-```
-
----
-
-**基本写法：按状态筛选**
-`gh run list --status <状态>`
-```bash
-# 查看失败的运行记录
-gh run list --status failure
-```
-
----
-
-**基本写法：限制返回数量**
-`gh run list --limit <数量>`
-```bash
-# 限制返回的运行记录数量
-gh run list --limit 10
-```
-
----
-
-**基本写法：查看运行详情**
-`gh run view <运行ID>`
-```bash
-# 查看指定运行的详细信息
-gh run view 123456
-```
-
----
-
-**基本写法：查看失败日志**
-`gh run view <运行ID> --log-failed`
-```bash
-# 查看运行失败的日志
-gh run view 123456 --log-failed
-```
-
----
-
-**基本写法：查看完整日志**
-`gh run view <运行ID> --log`
-```bash
-# 查看运行的完整日志
-gh run view 123456 --log
-```
-
----
-
-**基本写法：实时监控运行**
-`gh run watch <运行ID>`
-```bash
-# 实时监控运行直到完成
-gh run watch 123456
-```
-
----
-
-**基本写法：重新运行**
-`gh run rerun <运行ID>`
-```bash
-# 重新运行指定的工作流
-gh run rerun 123456
-```
-
----
-
-**基本写法：仅重跑失败的作业**
-`gh run rerun <运行ID> --failed`
-```bash
-# 仅重新运行失败的作业
-gh run rerun 123456 --failed
-```
-
----
-
-**基本写法：取消运行中的工作流**
-`gh run cancel <运行ID>`
-```bash
-# 取消正在运行的工作流
-gh run cancel 123456
-```
-
----
-
-**基本写法：删除运行记录**
-`gh run delete <运行ID>`
-```bash
-# 删除指定的工作流运行记录
-gh run delete 123456
-```
-## 工作流基本结构
-
-**基本用法:定义工作流**
-`name: <名称>` (`.github/workflows/*.yml`)
-
-```yaml
-# 工作流名称
-name: CI
-
-# 触发条件
-on: [push, pull_request]
-
-# 任务集合
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: npm install
-      - run: npm test
-```
-
----
-
-## jobs 任务定义
-
-**基本用法:定义任务依赖**
-`jobs.<id>.needs`
-
-```yaml
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "build"
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "test"
-  deploy:
-    needs: [build, test]
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "deploy"
-```
-
----
-
-**基本用法:设置运行环境**
-`jobs.<id>.runs-on`
-
-```yaml
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    # 自定义环境变量
-    env:
-      NODE_ENV: production
-    # 超时设置
-    timeout-minutes: 30
-    # 失败时继续
-    continue-on-error: false
-```
-
----
-
-## steps 步骤
-
-**基本用法:引用 Action**
-`uses: <action>@<版本>`
-
-```yaml
-steps:
-  # 检出代码
-  - uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
-  # 设置 Node 环境
-  - uses: actions/setup-node@v4
-    with:
-      node-version: '20'
-      cache: 'npm'
-  # 缓存依赖
-  - uses: actions/cache@v4
-    with:
-      path: ~/.npm
-      key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-```
-
----
-
-**基本用法:运行命令**
-`run: <命令>`
-
-```yaml
-steps:
-  - name: 安装依赖
-    run: npm ci
-
-  - name: 多行命令
-    run: |
-      npm run build
-      npm run test
-
-  - name: 条件执行
-    if: github.ref == 'refs/heads/main'
-    run: npm run deploy
-
-  - name: 设置环境变量
-    run: echo "VERSION=1.0" >> $GITHUB_ENV
-```
-
----
-
-## with 传参
-
-**基本用法:给 Action 传参**
-`with: <键>: <值>`
-
-```yaml
-- uses: actions/checkout@v4
-  with:
-    ref: develop
-    submodules: true
-
-- uses: actions/upload-artifact@v4
-  with:
-    name: build-output
-    path: dist/
-    retention-days: 7
-```
-
----
-
-## 权限与并发
-
-**基本用法:设置权限**
-`permissions:`
+- **最小权限**：用 `permissions` 声明只读默认，按需放开：
 
 ```yaml
 permissions:
   contents: read
   pull-requests: write
-  issues: write
 ```
 
----
+- **密钥入库**：所有密钥放 Secrets，代码里绝不硬编码。
+- **固定版本**：Action 固定主版本或 SHA。
+- **开启 CodeQL**：集成代码扫描（见 019 篇）。
 
-**基本用法:并发控制**
-`concurrency:`
+### 7.3 性能
+
+- **缓存依赖**：`setup-node` 内置 cache 或 `actions/cache`（见 033）。
+- **矩阵并行**：多 OS / 多版本并行测试（见 032）。
+- **产物按需**：制品设置合理保留期（见 035）。
+- **超时兜底**：job 设 `timeout-minutes`，防止死循环烧分钟数。
+
+### 7.4 可维护性
+
+- 工作流文件**命名清晰**（`ci.yml`、`deploy.yml`、`nightly-security-scan.yml`）。
+- 复杂逻辑加**中文注释**。
+- 使用 `gh workflow list`、`gh run list` 查看状态与历史（见 gh CLI 篇）。
+
+## 8. 常见错误与对策
+
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| --- | --- | --- | --- |
+| 工作流不触发 | 推了代码没反应 | `on` 写错、文件名不在 `.github/workflows/`、默认分支问题 | 核对文件路径与 `on` 语法；确认已合入默认分支 |
+| YAML 缩进错误 | `Invalid workflow file` | 缩进不一致（GitHub 报错红叉） | 用空格缩进（禁用 Tab），检查层级 |
+| `uses: xxx` 找不到 | `Unable to resolve action` | 拼写/版本错误，或仓库不存在 | 核对 `owner/repo@版本`，去 Marketplace 复制 |
+| 密钥为空 | secrets 取不到值 | 密钥名拼错、作用域不对（仓库级 vs 环境级） | 检查 Secrets 配置与 `${{ secrets.XXX }}` 拼写 |
+| job 并行导致乱序 | 部署先于测试完成 | 未用 `needs` 声明依赖 | 下游 job 加 `needs: [lint, test]` |
+| 私有仓库超分钟额度 | 任务排队/被拒 | 私有仓库有免费分钟限制 | 用缓存/矩阵并行优化；或自托管运行器 |
+| 只改文档也跑 CI | 浪费分钟数 | 没做路径过滤 | 加 `paths-ignore: ['docs/**', '*.md']` |
+
+## 9. 实战练习
+
+### 练习 1：搭建最小编译流水线
+
+**题目**：写一个工作流：任何 push 都触发，在 ubuntu 上依次执行 checkout → `npm ci` → `npm test`。
+
+**提示**：`on: push`；一个 job 三步。
+
+**参考答案要点**：
 
 ```yaml
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+name: CI
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm test
 ```
 
----
+### 练习 2：串行任务编排
 
-## 参考文献
+**题目**：把练习 1 拆成 lint、test、deploy 三个 job，要求按顺序执行，且 deploy 只在 main 分支运行。
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+**提示**：`needs` 串联；`if: github.ref == 'refs/heads/main'`。
 
-## 延伸阅读
+**参考答案要点**：
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
+```yaml
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm run lint
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm test
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./deploy.sh
+```
+
+### 练习 3：在 Marketplace 找一个部署 Action 并用起来
+
+**题目**：把静态站点 `dist/` 部署到 GitHub Pages，采用市场 Action。
+
+**提示**：`peaceiris/actions-gh-pages@v4`，传 `github_token` 与 `publish_dir`。
+
+**参考答案要点**：
+
+```yaml
+- name: Deploy to GitHub Pages
+  uses: peaceiris/actions-gh-pages@v4
+  with:
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    publish_dir: ./dist
+```
+
+### 练习 4：给流水线做"体检"优化
+
+**题目**：你的 CI 平均要 8 分钟，其中 npm 安装占 5 分钟。请列出至少 3 条优化方案并说明原理。
+
+**提示**：回顾缓存、矩阵、路径过滤、超时控制。
+
+**参考答案要点**：1) 启用 `cache: npm`（setup-node 内置缓存）把依赖安装降到秒级——避免重复下载；2) 加 `paths-ignore` 过滤纯文档改动，减少无谓运行；3) lint 与 test 拆为并行 job 缩短总时长；4) 为 job 设 `timeout-minutes` 防止卡死；5) 若仍是私有仓库高频使用，评估自托管运行器成本。
+
+## 10. 一句话记忆
+
+**GitHub Actions 是仓库内置的"智能工厂"：用 `.github/workflows/*.yml` 描述 name/on/jobs/steps，事件一响，流水线自动跑完构建、测试、部署，全程可观测、可复用、可控制。**
+
+## 参考链接与延伸阅读
+
+- GitHub 官方：了解 GitHub Actions（核心组件总览）：https://docs.github.com/zh/actions/learn-github-actions/understanding-github-actions
+- GitHub 官方：工作流语法参考（name/on/jobs/steps 完整语法）：https://docs.github.com/zh/actions/using-workflows/workflow-syntax-for-github-actions
+- GitHub 官方：查找和自定义操作（Marketplace 指南）：https://docs.github.com/zh/actions/learn-github-actions/finding-and-customizing-actions
+- GitHub 官方：Actions 安全加固（固定 SHA、最小权限）：https://docs.github.com/zh/actions/security-guides/security-hardening-for-github-actions
+- 延伸：触发事件详解，见《Actions 触发器》（030）
+- 延伸：多环境并行测试，见《Actions 矩阵构建》（032）
+- 延伸：依赖加速、产物传递、环境部署，分别见 033 / 035 / 036

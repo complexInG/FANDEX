@@ -6,389 +6,258 @@ difficulty: beginner
 title: 'GitHub 概述'
 module: github
 category: GitHub
-description: 'GitHub 平台核心功能与协作开发流程。'
+description: 'GitHub 平台核心功能与协作开发流程：从注册账户、创建仓库到第一次提交的完整旅程。'
 author: fanquanpp
 related:
   - github/账户注册与双因素认证(2FA)
   - 'github/仓库创建-克隆-归档-删除'
 prerequisites: []
-updated: '2026-08-01'
----
-## 1. GitHub 概述 (Overview)
-
-**GitHub** 是全球最大的代码托管与协作开发平台，成立于 2008 年，2018 年被 Microsoft 收购。它基于 **Git** 分布式版本控制系统，为开发者提供代码托管、协作、CI/CD、项目管理等一站式服务。截至 2025 年，GitHub 拥有超过 1 亿开发者和 4 亿+ 仓库。
-
-### 1.1 核心功能
-
-| 功能             | 描述                                    | 优势                           |
-| :--------------- | :-------------------------------------- | :----------------------------- |
-| **代码托管**     | 基于 Git 的仓库托管，支持公开和私有仓库 | 代码安全存储，版本可追溯       |
-| **Pull Request** | 代码审查与合并流程，支持在线讨论和审查  | 保证代码质量，促进团队协作     |
-| **Issues**       | 问题跟踪与任务管理，支持标签、里程碑    | 统一管理 Bug 和功能需求        |
-| **Actions**      | 内置 CI/CD 自动化工作流                 | 自动构建、测试、部署           |
-| **Pages**        | 静态网站托管服务                        | 免费部署项目文档和个人网站     |
-| **Codespaces**   | 基于云的开发环境                        | 随时随地编写代码，无需本地配置 |
-| **Copilot**      | AI 辅助编程工具                         | 智能代码补全，提高开发效率     |
-| **Projects**     | 看板式项目管理工具                      | 可视化任务进度，灵活组织工作   |
-
-### 1.2 GitHub 发展历程
-
-| 时间 | 事件                                |
-| :--- | :---------------------------------- |
-| 2008 | GitHub 成立，提供 Git 仓库托管服务  |
-| 2011 | 用户数突破 100 万                   |
-| 2012 | 获得 A 轮融资 1 亿美元              |
-| 2016 | 推出 GitHub Pages 和 GitHub Desktop |
-| 2018 | Microsoft 以 75 亿美元收购 GitHub   |
-| 2019 | 推出 GitHub Actions（CI/CD）        |
-| 2020 | 代码仓库数量突破 2 亿               |
-| 2021 | 推出 GitHub Copilot 技术预览        |
-| 2022 | GitHub Copilot 正式发布             |
-| 2023 | 推出 GitHub Copilot Chat            |
-| 2025 | 用户数突破 1 亿                     |
-
-### 1.3 GitHub 与 Git 的区别
-
-| 方面             | Git                | GitHub                    |
-| :--------------- | :----------------- | :------------------------ |
-| **类型**         | 分布式版本控制系统 | 代码托管与协作平台        |
-| **运行方式**     | 本地命令行工具     | 基于 Web 的云服务         |
-| **核心功能**     | 版本控制、分支管理 | 代码托管、协作、CI/CD     |
-| **是否需要网络** | 否（本地操作）     | 是（远程同步）            |
-| **费用**         | 免费开源           | 免费基础版 + 付费高级功能 |
-
-## 2. 账户与计划 (Plans & Pricing)
-
-### 2.1 账户类型
-
-- **个人账户 (Personal Account)**: 适合个人开发者，免费使用
-- **组织账户 (Organization)**: 适合团队和企业，支持权限管理
-
-### 2.2 订阅计划
-
-| 计划           | 价格        | 主要特性                               |
-| :------------- | :---------- | :------------------------------------- |
-| **Free**       | 免费        | 无限公开/私有仓库，2,000 CI/CD 分钟/月 |
-| **Pro**        | $4/月       | 高级代码审查，3,000 CI/CD 分钟/月      |
-| **Team**       | $4/用户/月  | 组织权限管理，3,000 CI/CD 分钟/月      |
-| **Enterprise** | $21/用户/月 | SAML SSO，50,000 CI/CD 分钟/月         |
-
-### 2.3 免费计划限制
-
-- 私有仓库协作者上限：无限制
-- GitHub Actions 分钟数：2,000 分钟/月
-- GitHub Packages 存储：500 MB
-- GitHub Codespaces：120 核心小时/月
-
-## 3. 仓库基础 (Repository Basics)
-
-### 3.1 仓库类型
-
-- **公开仓库 (Public)**: 所有人可见，适合开源项目
-- **私有仓库 (Private)**: 仅授权用户可见，适合商业项目
-- **内部仓库 (Internal)**: 组织内部可见（Enterprise 计划）
-
-### 3.2 仓库结构
-
-```mermaid
-flowchart TD
-    T0["my-project/"]
-    T1[".github/            # GitHub 特定配置"]
-    T2["workflows/      # GitHub Actions 工作流"]
-    T3["ISSUE_TEMPLATE/ # Issue 模板"]
-    T4["PULL_REQUEST_TEMPLATE.md"]
-    T5["src/                # 源代码"]
-    T6["docs/               # 文档"]
-    T7["tests/              # 测试"]
-    T8[".gitignore          # Git 忽略规则"]
-    T9["LICENSE             # 开源许可证"]
-    T10["README.md           # 项目说明"]
-    T0 --> T1
-    T4 --> T5
-    T4 --> T6
-    T4 --> T7
-    T4 --> T8
-    T4 --> T9
-    T4 --> T10
-```
-
-### 3.3 重要文件
-
-| 文件                 | 作用                       |
-| :------------------- | :------------------------- |
-| `README.md`          | 项目说明文档，仓库首页显示 |
-| `.gitignore`         | 指定 Git 忽略的文件和目录  |
-| `LICENSE`            | 开源许可证                 |
-| `CONTRIBUTING.md`    | 贡献指南                   |
-| `CODE_OF_CONDUCT.md` | 行为准则                   |
-| `SECURITY.md`        | 安全策略                   |
-
-## 4. 协作开发流程 (Collaboration Workflow)
-
-### 4.1 基本协作流程
-
-1. **Fork** 仓库到个人账户
-2. **Clone** 到本地开发环境
-3. **创建分支** 进行功能开发
-4. **提交代码** 并推送到远程
-5. **创建 Pull Request** 请求合并
-6. **代码审查** 团队成员审查代码
-7. **合并代码** 审查通过后合并到主分支
-
-### 4.2 分支策略
-
-| 策略            | 描述                                        | 适用场景     |
-| :-------------- | :------------------------------------------ | :----------- |
-| **GitHub Flow** | 基于主分支创建功能分支，PR 合并             | 持续部署项目 |
-| **Git Flow**    | 包含 develop、feature、release、hotfix 分支 | 版本发布项目 |
-| **Trunk-Based** | 所有人在主分支上开发，使用特性开关          | 高频发布项目 |
-
-### 4.3 代码审查最佳实践
-
-- PR 保持小规模，便于审查
-- 编写清晰的 PR 描述
-- 使用代码注释标记审查意见
-- 及时回复审查意见
-- 合并前确保 CI 通过
-
-## 5. 常用快捷操作 (Tips & Tricks)
-
-### 5.1 键盘快捷键
-
-| 快捷键 | 功能                    |
-| :----- | :---------------------- |
-| `.`    | 在 Web 编辑器中打开仓库 |
-| `T`    | 文件搜索                |
-| `W`    | 分支切换                |
-| `L`    | 跳转到指定行            |
-| `B`    | 查看 Blame 信息         |
-| `?`    | 显示所有快捷键          |
-
-### 5.2 Markdown 技巧
-
-- 使用 `[ ]` 和 `[x]` 创建任务列表
-- 使用 `@mention` 提及用户或团队
-- 使用 `#issue` 引用 Issue
-- 使用 `commit_sha` 引用提交
-
-### 5.3 搜索语法
-
-```
-language:python stars:>1000   # Python 项目，星标超过 1000
-topic:react fork:true         # React 主题，包含 Fork
-owner:facebook path:src       # Facebook 仓库，src 目录下
-```
-
-## 6. 生态与集成 (Ecosystem)
-
-### 6.1 GitHub 生态工具
-
-| 工具                  | 用途              |
-| :-------------------- | :---------------- |
-| **GitHub CLI (gh)**   | 命令行操作 GitHub |
-| **GitHub Desktop**    | 图形化 Git 客户端 |
-| **GitHub Mobile**     | 移动端管理仓库    |
-| **GitHub Codespaces** | 云端开发环境      |
-| **GitHub Copilot**    | AI 编程助手       |
-| **GitHub Packages**   | 包注册与托管      |
-| **GitHub Registry**   | 容器镜像托管      |
-
-### 6.2 第三方集成
-
-- **CI/CD**: Jenkins, CircleCI, Travis CI
-- **监控**: Datadog, New Relic, Sentry
-- **通信**: Slack, Microsoft Teams, Discord
-- **项目管理**: Jira, Linear, Asana
-
-## 7. 学习路径 (Learning Path)
-
-### 7.1 入门阶段
-
-1. 注册 GitHub 账户并配置 2FA
-2. 创建第一个仓库
-3. 学习 Git 基本操作
-4. 编写 README 和文档
-
-### 7.2 进阶阶段
-
-1. 掌握 Pull Request 工作流
-2. 使用 GitHub Actions 自动化
-3. 配置分支保护规则
-4. 参与 Issue 讨论
-
-### 7.3 高级阶段
-
-1. 搭建 CI/CD 流水线
-2. 使用 GitHub Pages 部署站点
-3. 开发 GitHub Actions 插件
-4. 管理大型开源项目
-
-## 8. 总结
-
-GitHub 是现代软件开发的基础设施，掌握其核心功能对开发者至关重要。从基础的代码托管到高级的 CI/CD 自动化，GitHub 提供了完整的开发协作工具链。
-
-### 8.1 关键要点
-
-- **版本控制**: Git 是基础，GitHub 是平台
-- **协作开发**: Pull Request 是核心协作流程
-- **自动化**: GitHub Actions 实现 CI/CD
-- **安全**: 2FA 和分支保护保障代码安全
-- **开源**: GitHub 是全球最大的开源社区
-
+updated: '2026-08-02'
 ---
 
-## 仓库信息
+## 0. 从一个生活场景说起：GitHub 就像一座"代码图书馆"
 
-**基本用法:查看仓库设置**
-`gh repo view <仓库>`
+想象你第一次走进一家大型图书馆：有图书上架区（存放书籍）、检索台（查找书籍）、阅览室（阅读书籍）、以及"读者留言墙"（讨论书籍）。**GitHub 就是为程序员建造的这座图书馆**，只不过"书籍"换成了代码仓库，"读者留言"换成了 Issue 和 Pull Request。
+
+但 GitHub 又比图书馆多了一样东西——**它是活的**。图书馆里的书只能读不能改，而 GitHub 上的代码仓库可以被复制、修改、合并，还能记录每一次修改是谁、在什么时候、为什么做的。这正是它被称为"程序员社交平台"的原因：全球超过 1 亿开发者在这里存放代码、协作开发、交流学习。
+
+本文将以**一位新手开发者"小明"的完整旅程**为主线：注册账户 → 认识首页 → 创建第一个仓库 → 完成第一次提交 → 发起第一个 Pull Request，带你走一遍 GitHub 的核心功能。
+
+## 1. 第一站：GitHub 是什么
+
+### 1.1 直观理解
+
+- **代码托管**：把你的代码"上传"到云端，随时随地可以下载，不用担心硬盘损坏。
+- **版本记录**：每一次修改都留下"快照"，改坏了可以随时回退到任意历史版本。
+- **协作平台**：多个人可以同时在同一个项目上工作，互不干扰，最后合并成果。
+- **开源社区**：全球大量知名项目（Linux、React、Vue、Python 等）都托管在 GitHub 上，你可以免费阅读、学习甚至参与贡献。
+
+### 1.2 原理讲解：Git 与 GitHub 的分工
+
+先理解两个容易混淆的概念：
+
+| 方面 | Git | GitHub |
+| :--- | :--- | :--- |
+| 本质 | 分布式版本控制系统（软件） | 基于 Git 的代码托管平台（云服务） |
+| 运行位置 | 本地命令行工具 | 互联网上的网站服务 |
+| 核心能力 | 在本地记录文件每次修改、支持分支与合并 | 在云端保存仓库、提供协作/CI/CD 等能力 |
+| 是否需要联网 | 否，纯本地操作 | 是，拉取与推送需要联网 |
+
+可以这样理解：**Git 是你的"日记本"（本地记录），GitHub 是"图书馆"（云端的公共/私有存档）**。你平时写代码用 Git 在本地记账，需要分享或备份时再推送到 GitHub。
+
+### 1.3 发展历程快览
+
+| 时间 | 里程碑 |
+| :--- | :--- |
+| 2008 | GitHub 成立，提供 Git 仓库托管服务 |
+| 2018 | 微软以 75 亿美元收购 GitHub |
+| 2019 | 推出 GitHub Actions（CI/CD 自动化） |
+| 2020 | 代码仓库数量突破 2 亿 |
+| 2022 | GitHub Copilot 正式发布（AI 编程助手） |
+| 2023 | 要求贡献代码的用户启用 2FA 双因素认证 |
+| 2025 | 用户数突破 1 亿，仓库数超过 4 亿 |
+
+## 2. 第二站：注册账户（旅程起点）
+
+打开 https://github.com/ ，点击 **Sign up**，依次填写邮箱、密码、用户名即可完成注册（详细步骤见 002 篇《账户注册与双因素认证》）。
+
+注册完成后建议立即做三件事：
+
+1. **验证邮箱**：GitHub 会发送验证邮件，未验证邮箱将无法创建仓库等基础操作。
+2. **设置 2FA**：2023 年 3 月起 GitHub 要求贡献代码的用户必须启用双因素认证，这是保护账户的第一道防线。
+3. **完善个人资料**：设置头像、姓名和简介，让他人更容易识别你。
+
+## 3. 第三站：认识你的首页
+
+登录后的首页包含几个关键区域：
+
+- **个人 Profile**：展示你的头像、简介、置顶仓库和贡献图（contributions graph，绿色小格子记录你每天的提交活跃度）。
+- **News Feed**：展示你关注的用户和仓库的最新动态。
+- **顶部分区**：`Pull requests`（待审查的拉取请求）、`Issues`（分配给你或你参与的问题）、`Notifications`（通知）、`Explore`（探索发现）。
+
+## 4. 第四站：创建第一个仓库（hello-world）
+
+按照 GitHub 官方"你好，世界"教程，创建第一个仓库：
+
+### 4.1 网页端创建
+
+1. 点击页面右上角的 **+** → **New repository**。
+2. 仓库名称输入 `hello-world`，描述输入"我的第一个仓库"。
+3. 可见性选择 **Public**（公开）或 **Private**（私有）。
+4. 勾选 **Add a README file**（初始化一个说明文档）。
+5. 点击 **Create repository**。
+
+创建成功后，你会进入仓库主页。**仓库（repository）就是项目容器**，里面可以放代码文件、文档、图片，同时绑定 Issue、Pull Request、Actions 等协作功能。
+
+### 4.2 认识仓库关键文件
+
+| 文件 | 作用 |
+| :--- | :--- |
+| `README.md` | 项目说明文档，自动显示在仓库首页，是访客的第一印象 |
+| `.gitignore` | 声明哪些文件不需要 Git 跟踪（如编译产物、密钥文件） |
+| `LICENSE` | 开源许可证，规定他人如何使用你的代码 |
+| `CONTRIBUTING.md` | 贡献指南，告诉他人如何参与项目 |
+| `.github/` | 存放 GitHub 特殊配置（Actions 工作流、Issue 模板等） |
+
+### 4.3 命令行创建（GitHub CLI 方式）
+
+如果你已安装 `gh`（见 020 篇），也可以直接在终端创建：
 
 ```bash
-# 查看仓库详情
-gh repo view owner/repo
-
-# 以 JSON 输出
-gh repo view owner/repo --json name,visibility,defaultBranchRef
+# 创建公开仓库并克隆到本地
+gh repo create hello-world --public --clone
+# 或创建私有仓库
+gh repo create hello-world --private
 ```
 
----
+## 5. 第五站：完成第一次提交（Commit）
 
-**基本用法:修改仓库设置**
-`gh repo edit <仓库>`
+**提交（commit）** 就像给当前所有文件拍一张"快照"，并写下"这张快照改了什么"。以下用命令行完成第一次提交：
 
 ```bash
-# 修改描述
-gh repo edit owner/repo --description "项目描述"
+# 1. 进入仓库目录
+cd hello-world
 
-# 修改主页地址
-gh repo edit owner/repo --homepage "https://example.com"
+# 2. 配置本地身份（邮箱必须是 GitHub 已验证邮箱）
+git config --global user.name "xiaoming"
+git config --global user.email "xiaoming@example.com"
 
-# 切换可见性
-gh repo edit owner/repo --visibility public
-gh repo edit owner/repo --visibility internal
+# 3. 新建一个文件
+echo "# Hello World" > hello.md
 
-# 启用 issues 与 wiki
-gh repo edit owner/repo --enable-issues --enable-wiki
+# 4. 把文件加入暂存区（staging area）
+git add hello.md
 
-# 关闭项目功能
-gh repo edit owner/repo --enable-projects=false
+# 5. 提交，-m 后面是提交说明
+git commit -m "docs: add hello markdown file"
+
+# 6. 推送到 GitHub 远程仓库（-u 建立本地与远程的关联）
+git push -u origin main
 ```
 
----
+执行完第 6 步，刷新 GitHub 仓库页面，就能看到 `hello.md` 文件了。**本地 → 暂存区 → 本地仓库 → 远程仓库**，这就是一次完整的提交旅程。
 
-## 仓库生命周期
+## 6. 第六站：发起第一个 Pull Request（协作核心）
 
-**基本用法:归档仓库**
-`gh repo archive <仓库>`
+Pull Request（PR，拉取请求）是 GitHub 协作的精髓：**你请求把某个分支的改动合并进另一个分支**，合并前可以讨论、审查、跑自动化检查。
+
+### 6.1 PR 协作流程（简明版）
 
 ```bash
-# 把仓库设为只读归档
-gh repo archive owner/repo --yes
+# 1. 从 main 创建功能分支（详细见 007 篇分支模型）
+git checkout -b feature/add-intro
+
+# 2. 修改代码并提交
+git add .
+git commit -m "feat: add project intro"
+git push -u origin feature/add-intro
 ```
 
----
+3. 在 GitHub 仓库页面点击 **Compare & pull request**。
+4. 确认 `base`（目标分支，通常是 main）和 `compare`（来源分支）正确。
+5. 填写标题和描述，点击 **Create pull request**。
+6. 邀请同事审查，审查通过后点击 **Merge pull request** 合并。
 
-**基本用法:取消归档**
-`gh repo unarchive <仓库>`
+> 完整流程见 027 篇《Pull Request 完整协作流程》。
 
-```bash
-# 恢复归档仓库为可写
-gh repo unarchive owner/repo --yes
+### 6.2 与 PR 配套的协作功能
+
+| 功能 | 一句话说明 |
+| :--- | :--- |
+| Issues | 记录 Bug、功能需求、任务（详见 017 篇） |
+| Actions | 自动化 CI/CD，如推送后自动跑测试（详见 029 篇） |
+| Projects | 看板式项目管理，可视化任务进度 |
+| Discussions | 社区讨论区，适合长期话题沉淀 |
+| Wiki | 项目文档中心 |
+| Releases | 发布版本，附下载包与更新说明 |
+
+## 7. 第七站：GitHub 的账户类型与订阅计划
+
+### 7.1 账户类型
+
+- **个人账户（Personal account）**：每个开发者的身份标识，可以属于多个组织。
+- **组织账户（Organization）**：适合团队与企业，支持成员管理、权限分级、审计日志。
+
+### 7.2 订阅计划（个人账户）
+
+| 计划 | 价格 | 核心特性 |
+| :--- | :--- | :--- |
+| Free | 免费 | 无限公开/私有仓库，2,000 Actions 分钟/月，Codespaces 120 核心小时/月 |
+| Pro | $4/月 | 高级代码审查工具，3,000 Actions 分钟/月 |
+| Team | $4/用户/月 | 组织权限管理，代码所有者（CODEOWNERS）等 |
+| Enterprise | $21/用户/月 | SAML SSO、审计日志、更多安全合规能力 |
+
+### 7.3 高效探索：搜索语法与快捷键
+
+GitHub 的站内搜索能力非常强大，学会几招就能快速找到目标代码或仓库：
+
+```text
+language:python stars:>1000        # Python 项目，星标超过 1000
+topic:react fork:true              # React 主题，且包含 Fork
+owner:facebook path:src            # Facebook 仓库的 src 目录下
+is:pr is:merged author:alice       # alice 已合并的 PR
 ```
 
----
+网页端常用的键盘快捷键：
 
-**基本用法:删除仓库**
-`gh repo delete <仓库>`
+| 快捷键 | 功能 |
+| :--- | :--- |
+| `.` | 在 Web 编辑器中打开当前仓库 |
+| `T` | 文件搜索 |
+| `W` | 分支切换 |
+| `L` | 跳转到指定行 |
+| `B` | 查看 Blame（每行代码的最后修改者） |
+| `?` | 显示全部快捷键帮助 |
 
-```bash
-# 删除仓库(危险操作)
-gh repo delete owner/repo --yes
-```
+## 8. 常见错误与对策
 
----
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 提交者身份未配置 | `Please tell me who you are` | 未设置 `user.name` 和 `user.email` | 执行 `git config --global user.name "你的名字"` 和 `git config --global user.email "你的邮箱"` |
+| 推送被拒绝 | `Authentication failed` | 使用了旧密码而非 PAT，或令牌过期 | 生成新的个人访问令牌（PAT）代替密码（详见 002/004 篇） |
+| 邮箱未验证 | 无法创建仓库 | 注册后未点击邮件验证链接 | 检查收件箱，点击 GitHub 发送的验证链接 |
+| 提交没显示在贡献图上 | 贡献图空白 | 本地 `user.email` 与 GitHub 账户邮箱不一致 | 使用 GitHub 已验证邮箱重新配置并提交 |
+| 推错分支 | PR 合到了错误的 base | 未确认 base/compare 分支 | 创建 PR 时检查页面顶部的 base repository 和 branch |
+| 仓库找不到 | `Repository not found` | 仓库私有、URL 错误或已被删除 | 确认 URL 拼写、检查可见性与访问权限 |
 
-## 仓库元数据
+## 9. 实战练习
 
-**基本用法:管理 topics**
-`gh repo edit <仓库> --add-topic`
+### 练习 1：注册并完善账户（入门）
+- **题目描述**：注册 GitHub 账户，完成邮箱验证，设置头像和简介，并启用 2FA。
+- **提示**：注册入口 https://github.com/signup；2FA 推荐使用 TOTP 验证器 App（如 Google Authenticator）。
+- **参考答案要点**：邮箱验证成功后可创建仓库；2FA 设置路径为 Settings → Password and authentication；务必保存恢复码（见 002 篇）。
 
-```bash
-# 添加 topic 标签
-gh repo edit owner/repo --add-topic vue --add-topic frontend
+### 练习 2：创建第一个仓库（入门）
+- **题目描述**：创建名为 `my-first-repo` 的私有仓库，勾选 README 初始化，然后在网页上编辑 README 并提交。
+- **提示**：仓库右上角 **+** → New repository；编辑文件后点击 **Commit changes**。
+- **参考答案要点**：私有仓库只有你和受邀协作者可见；README 内容自动展示在仓库首页。
 
-# 移除 topic
-gh repo edit owner/repo --remove-topic legacy
+### 练习 3：命令行完成首次提交（进阶）
+- **题目描述**：克隆 `my-first-repo` 到本地，新建 `notes.md` 文件，完成 add/commit/push 三步操作，并在 GitHub 上确认文件已出现。
+- **提示**：`git clone` 需要仓库 URL；克隆后先 `cd my-first-repo`。
+- **参考答案要点**：`git clone https://github.com/你的用户名/my-first-repo.git`；`git add notes.md`；`git commit -m "docs: add notes"`；`git push origin main`。
 
-# 清空 topics
-gh repo edit owner/repo --clear-topics
-```
+### 练习 4：走一遍 PR 流程（综合）
+- **题目描述**：在 `my-first-repo` 中从 main 创建分支 `feature/add-about`，添加 `about.md`，推送后发起一个 PR 并合并。
+- **提示**：按 6.1 小节的命令行步骤操作；推送后页面会提示创建 PR。
+- **参考答案要点**：`git checkout -b feature/add-about` → 修改 → `git push -u origin feature/add-about` → 网页上 Compare & pull request → Merge。合并后可删除该功能分支，保持仓库整洁。
 
----
+## 10. 一句话记忆
 
-## 部署密钥
+**GitHub 是程序员存放代码、记录版本、协作开发的"代码图书馆"：Git 负责本地记账，GitHub 负责云端存档与协作，而 Pull Request 是协作的大门。**
 
-**基本用法:添加部署密钥**
-`gh repo deploy-key add <文件>`
+## 参考链接与延伸阅读
 
-```bash
-# 添加只读部署密钥
-gh repo deploy-key add ~/.ssh/deploy.pub -t "CI deploy key"
+- [GitHub 文档（官方中文）：入门指南](https://docs.github.com/zh/get-started/onboarding/getting-started-with-your-github-account)
+- [GitHub 文档：你好，世界（Hello World 教程）](https://docs.github.com/zh/get-started/start-your-journey/hello-world)
+- [GitHub 文档：仓库快速入门](https://docs.github.com/zh/repositories/creating-and-managing-repositories/quickstart-for-repositories)
+- [GitHub 文档：GitHub 计划与定价](https://docs.github.com/zh/get-started/learning-about-github/githubs-plans)
+- [GitHub 文档：关于 GitHub 和 Git](https://docs.github.com/zh/get-started/start-your-journey/about-github-and-git)
 
-# 添加可写部署密钥
-gh repo deploy-key add ~/.ssh/deploy.pub -t "write key" --allow-write
+### 延伸阅读
 
-# 列出部署密钥
-gh repo deploy-key list
-
-# 删除密钥
-gh repo deploy-key delete <key-id>
-```
-
----
-
-## 通过 API 操作
-
-**基本用法:调用 API 修改设置**
-`gh api repos/<owner>/<repo> -X PATCH`
-
-```bash
-# 修改默认分支
-gh api repos/owner/repo -X PATCH -f default_branch=main
-
-# 启用自动删除分支
-gh api repos/owner/repo -X PATCH -F delete_branch_on_merge=true
-```
-
----
-
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
-
-## 延伸阅读
-
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- 账户安全与 2FA，见 002 篇《账户注册与双因素认证》。
+- 仓库的创建、克隆、归档与删除，见 003 篇。
+- 分支模型与分支保护规则，见 007 篇。
+- Pull Request 完整协作流程，见 027 篇。
+- GitHub CLI 命令行操作，见 020 篇。

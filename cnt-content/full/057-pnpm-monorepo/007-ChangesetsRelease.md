@@ -6,21 +6,36 @@ category: pnpm 与 Monorepo
 difficulty: intermediate
 description: 'changesets 版本管理：变更记录、版本 bump、CHANGELOG 生成与 npm 发布流程'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - pnpm-monorepo/004-WorkspaceProtocol
   - pnpm-monorepo/005-CatalogManagement
   - pnpm-monorepo/008-MonorepoPractice
 prerequisites:
   - pnpm-monorepo/003-WorkspaceSetup
+  - pnpm-monorepo/004-WorkspaceProtocol
 ---
-## 1. changesets 是什么
 
-changesets 是 Monorepo 版本管理与发布的社区标准方案。它把"发版"拆成两个环节：开发者在 PR 中记录变更意图（changeset），发版时统一计算各包的新版本并生成 CHANGELOG。
+## 1. 从"图书再版"说起
 
-### 1.1 解决的问题
+### 1.1 一个出版社的困境
 
-手工维护多包版本号容易出错：漏改某个依赖该包的版本引用、CHANGELOG 缺失、版本号冲突。changesets 用"变更集文件 + 自动版本计算"消除这些问题，并与 `workspace:` 协议发布转换天然配合。
+想象一家出版社（Monorepo）出版多本图书（包）。每次再版（发版），编辑（你）都要手工做一堆事：
+
+- 每本书的版本号要改（漏改一本，旧版就还在卖）
+- 每本书的"改版说明"（CHANGELOG）要写（漏写读者就不知道改了什么）
+- 书 A 的内容引用了书 B，B 改版后 A 的引用也要同步更新（漏改就引用了不存在的版本）
+
+**手工管理多包版本号的三个痛点**：漏改某个依赖该包的版本引用、CHANGELOG 缺失、版本号冲突。
+
+### 1.2 changesets 的解法
+
+**changesets 是 Monorepo 版本管理与发布的社区标准方案**。它把"发版"拆成两个环节：
+
+1. **开发期**：开发者在 PR 中记录变更意图（changeset）——"我改了哪个包、什么级别的变更"
+2. **发版期**：统一计算各包的新版本并生成 CHANGELOG——自动、可追溯
+
+它与 `workspace:` 协议发布转换（见 004 篇）天然配合，形成从代码合并到 npm 上线的完整闭环。
 
 ## 2. 安装与配置
 
@@ -29,7 +44,7 @@ pnpm add -D @changesets/cli -w
 pnpm changeset init
 ```
 
-讲解：`init` 生成 `.changeset/config.json` 与 README。config.json 是发布行为的唯一配置入口。
+`init` 生成 `.changeset/config.json` 与 README。config.json 是发布行为的唯一配置入口：
 
 ```json
 // .changeset/config.json
@@ -46,7 +61,14 @@ pnpm changeset init
 }
 ```
 
-讲解：`access: "public"` 表示发布公开包（私有 scope 包需配合 npm 组织账号）；`baseBranch` 指明主分支名，用于计算变更范围；`updateInternalDependencies: "patch"` 表示内部依赖的 workspace 引用随版本变更同步更新到 patch 级别。
+**关键字段**：
+
+| 字段 | 含义 |
+| :--- | :--- |
+| `access: "public"` | 发布公开包（私有 scope 包需配合 npm 组织账号） |
+| `baseBranch` | 主分支名，用于计算变更范围 |
+| `updateInternalDependencies` | 内部依赖的 workspace 引用随版本变更同步更新的级别 |
+| `fixed` / `linked` | 必须同版本发布的包组配置（谨慎使用） |
 
 ## 3. 记录变更：changeset add
 
@@ -58,7 +80,7 @@ pnpm changeset
 pnpm changeset add
 ```
 
-讲解：进入交互式界面：选择本次变更涉及哪些包、选择 bump 级别（major/minor/patch）、填写变更说明。完成后在 `.changeset/` 目录生成一个随机命名的 markdown 文件。
+进入交互式界面：选择本次变更涉及哪些包 → 选择 bump 级别（major/minor/patch）→ 填写变更说明。完成后在 `.changeset/` 目录生成一个随机命名的 markdown 文件。
 
 ### 3.2 changeset 文件结构
 
@@ -71,9 +93,11 @@ pnpm changeset add
 新增 ID 格式化工具函数，修复 web 端日期显示问题。
 ```
 
-讲解：frontmatter 中 `包名: 级别` 声明各包的版本提升类型；正文是变更说明，会被写入 CHANGELOG。多个 PR 各带一个 changeset 文件，互不冲突。
+- **frontmatter**：`包名: 级别` 声明各包的版本提升类型
+- **正文**：变更说明，会被写入 CHANGELOG
+- **互不冲突**：多个 PR 各带一个 changeset 文件
 
-### 3.3 bump 级别选择
+### 3.3 bump 级别选择（SemVer）
 
 | 级别 | 触发条件 | 版本变化 |
 | ---- | ---- | ---- |
@@ -81,7 +105,7 @@ pnpm changeset add
 | minor | 新增功能，向后兼容 | 1.0.0 → 1.1.0 |
 | patch | 修复 bug，向后兼容 | 1.0.0 → 1.0.1 |
 
-讲解：遵循语义化版本（SemVer）。不破坏兼容的新特性用 minor，bug 修复用 patch；破坏性 API 变更必须 major。
+**关键**：遵循语义化版本（SemVer）。不破坏兼容的新特性用 minor，bug 修复用 patch；**破坏性 API 变更必须 major**——这是对使用者的承诺。
 
 ## 4. 版本管理：changeset version
 
@@ -91,14 +115,20 @@ pnpm changeset add
 pnpm changeset version
 ```
 
-讲解：消费所有待处理的 changeset 文件：更新各包 package.json 版本号、生成/追加 CHANGELOG.md、移除已处理的 changeset 文件。如果包 A 被包 B 以 `workspace:*` 引用，B 的依赖版本引用会同步更新。
+**它做什么**：
+
+1. 消费所有待处理的 changeset 文件
+2. 更新各包 package.json 版本号
+3. 生成/追加 CHANGELOG.md
+4. 移除已处理的 changeset 文件
+5. 如果包 A 被包 B 以 `workspace:*` 引用，B 的依赖版本引用会同步更新
 
 ```bash
 git add .
 git commit -m "chore: version packages"
 ```
 
-讲解：version 只是修改版本元数据，不会发布；版本变更应作为一个独立 commit 提交，通常由 CI 自动完成。
+**注意**：version 只是修改版本元数据，**不会发布**；版本变更应作为一个独立 commit 提交，通常由 CI 自动完成。
 
 ## 5. 发布：changeset publish
 
@@ -106,7 +136,7 @@ git commit -m "chore: version packages"
 pnpm changeset publish
 ```
 
-讲解：按依赖拓扑顺序对"版本号高于 registry 中已有版本"的包执行 `pnpm publish`。发布时 pnpm 会把 `workspace:*` 转换为真实版本号（见 004 篇），消费者可正常安装。
+按依赖拓扑顺序对"版本号高于 registry 中已有版本"的包执行 `pnpm publish`。发布时 pnpm 会把 `workspace:*` 转换为真实版本号（见 004 篇），消费者可正常安装。
 
 ### 5.1 发布前置条件
 
@@ -121,9 +151,10 @@ pnpm changeset publish
 }
 ```
 
-讲解：私有 scope（`@fandex/*`）发布到 npm 默认私有，需在 publishConfig 中声明 `access: "public"`。同时确认登录状态：`pnpm publish` 需要 npm 认证，pnpm 11 已原生实现登录/发布流程，不再依赖 npm CLI。
+- 私有 scope（`@fandex/*`）发布到 npm 默认私有，需在 `publishConfig` 中声明 `access: "public"`
+- 需确认登录状态：pnpm 11 已原生实现登录/发布流程，不再依赖 npm CLI
 
-## 6. CI 自动化
+## 6. CI 自动化：完整发布流水线
 
 标准的发布流水线分为两个 Job：
 
@@ -154,22 +185,48 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
-讲解：changesets/action 检测 main 上存在待处理 changeset 时：先执行 version（创建"版本发布"PR 或直接提交），随后执行 publish 发布到 npm，并自动创建 GitHub Release。
+**工作流**：changesets/action 检测 main 上存在待处理 changeset 时 → 先执行 version（创建"版本发布"PR 或直接提交）→ 随后执行 publish 发布到 npm → 自动创建 GitHub Release。
 
 ## 7. 最佳实践
 
-第一，每个 PR 都应附带 changeset；不涉及发版的改动（如文档）可运行 `pnpm changeset add --empty` 生成空 changeset 跳过发布。
+**第一**，每个 PR 都应附带 changeset；不涉及发版的改动（如文档）可运行 `pnpm changeset add --empty` 生成空 changeset 跳过发布。
 
-第二，fixed 与 linked 配置用于"必须同版本发布"的包组（fixed 强制同版本、linked 仅同步 bump），谨慎使用。
+**第二**，`fixed` 与 `linked` 配置用于"必须同版本发布"的包组（fixed 强制同版本、linked 仅同步 bump），谨慎使用。
 
-第三，发布 tag：`changeset version` 默认不打 Git tag，可在 CI 中 `pnpm changeset tag` 补打，便于回滚定位。
+**第三**，发布 tag：`changeset version` 默认不打 Git tag，可在 CI 中 `pnpm changeset tag` 补打，便于回滚定位。
 
-## 8. 参考资源
+**第四**，把"是否需要发版"当成设计决策：每个 PR 合并前想清楚"这次变更影响哪些包、什么级别"——人的判断力花在级别上，版本号计算交给工具。
 
-Changesets 官方文档：https://changesets-docs.vercel.app/
+## 8. 常见误区
 
-Changesets GitHub 仓库：https://github.com/changesets/changesets
+**误区一：changesets 是"发版工具"而已。** → 它更是"变更记录系统"——让每次变更的影响可追溯、可审计，这是 Monorepo 协作的根基。
 
-## 9. 小结
+**误区二：忘记加 changeset 没关系。** → 没加 changeset 的变更不会被发版，改的东西永远进不了 npm——CI 应当强制检查。
 
-changesets 让 Monorepo 发版可追溯、可自动化：开发期提交变更集，合并后 CI 统一计算版本、生成 CHANGELOG、按拓扑发布。配合 pnpm 的 `workspace:` 协议转换，形成从代码合并到 npm 上线的完整闭环。
+**误区三：patch 也能包含新功能。** → 语义化版本的核心承诺：patch 只修 bug。塞入新功能会破坏使用者的版本预期。
+
+**误区四：发布后发现问题只能回滚版本。** → 正确做法是发一个**修复版本**（如 1.2.4），而不是撤回已发布的 1.2.3（npm 不允许同版本覆盖）。
+
+## 9. 实战练习
+
+1. **记录变更**：模拟给 `@fandex/utils` 加一个新函数（minor），执行 `pnpm changeset` 创建一个 changeset 文件，检查其结构。
+
+2. **版本计算**：执行 `pnpm changeset version`，观察各包版本号与 CHANGELOG 的变化，验证 `workspace:*` 引用同步更新。
+
+3. **CI 配置**：为你的仓库编写 release.yml（参考第 6 节），配置 GITHUB_TOKEN 与 NPM_TOKEN secrets。
+
+4. **发布演练**：在 npm 私有 registry（如 Verdaccio）上完整演练一次 changesets 发布流程。
+
+## 10. 参考资源
+
+- Changesets 官方文档：https://changesets-docs.vercel.app/
+- Changesets GitHub 仓库：https://github.com/changesets/changesets
+- 语义化版本规范：https://semver.org/lang/zh-CN/
+
+## 11. 延伸阅读
+
+- 版本转换机制，见本模块《workspace 协议与内部依赖》
+- 版本统一管理，见本模块《catalog 依赖目录管理》
+- 完整工程落地，见本模块《Monorepo 实战》
+
+> **一句话记忆**：changesets 让 Monorepo 发版可追溯、可自动化——开发期提交变更集（记录"改了什么、什么级别"），合并后 CI 统一计算版本、生成 CHANGELOG、按拓扑发布，形成从代码合并到 npm 上线的完整闭环。

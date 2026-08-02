@@ -431,6 +431,71 @@
 }
 
 /* ===================================================================
+   代码主题装饰类 · Playground 变体专属
+   =================================================================== */
+
+/* 尖括号对 · 代码语法符号（< >），左右各一枚，构成编程语境 */
+.geo-bracket-pair {
+  position: absolute;
+  top: 12%;
+  left: 3%;
+  width: 230px;
+  height: 130px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 230 130' preserveAspectRatio='none'><path d='M40,12 L14,65 L40,118' fill='none' stroke='%233366cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.7'/><path d='M190,12 L216,65 L190,118' fill='none' stroke='%233366cc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.35'/><path d='M70,52 L84,65 L70,78' fill='none' stroke='%23e05a2b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.4'/></svg>");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+[data-theme='dark'] .geo-bracket-pair {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 230 130' preserveAspectRatio='none'><path d='M40,12 L14,65 L40,118' fill='none' stroke='%236ea8fe' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.75'/><path d='M190,12 L216,65 L190,118' fill='none' stroke='%236ea8fe' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.4'/><path d='M70,52 L84,65 L70,78' fill='none' stroke='%23f09070' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.45'/></svg>");
+}
+
+/* 终端方块 · 迷你终端窗口：标题栏圆点 + 提示符行 */
+.geo-terminal-block {
+  position: absolute;
+  bottom: 12%;
+  right: 4%;
+  width: 170px;
+  height: 104px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.65;
+  border: 1px solid var(--geo-line);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-bg-card) 42%, transparent);
+}
+
+/* 标题栏：三个圆点 + 底部细分隔线 */
+.geo-terminal-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  border-bottom: 1px solid var(--geo-line);
+  background-image:
+    radial-gradient(circle at 11px 10px, var(--geo-red) 2.5px, transparent 3px),
+    radial-gradient(circle at 26px 10px, var(--geo-wave) 2.5px, transparent 3px),
+    radial-gradient(circle at 41px 10px, var(--geo-curve) 2.5px, transparent 3px);
+}
+
+/* 提示符行：命令行风格文本 */
+.geo-terminal-block::after {
+  content: '> run playground';
+  position: absolute;
+  top: 28px;
+  left: 14px;
+  font-family: var(--font-family-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--color-fg-tertiary);
+}
+
+/* ===================================================================
    移动端响应式 · 隐藏重型装饰保留轻量点缀
    =================================================================== */
 @media (max-width: 768px) {
@@ -443,7 +508,9 @@
   .geo-dots-radial,
   .geo-chevron-stack,
   .geo-pulse-ring,
-  .geo-float-block {
+  .geo-float-block,
+  .geo-bracket-pair,
+  .geo-terminal-block {
     display: none;
   }
   .geo-ripple-tr {

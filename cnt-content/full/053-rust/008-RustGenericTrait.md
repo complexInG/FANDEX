@@ -14,9 +14,9 @@ prerequisites:
   - rust/006-RustErrorHandling
 ---
 
-## 1. 泛型：为多种类型写一份代码
+## 1. 从"万能插座"说起：泛型
 
-泛型（Generic）让函数与类型对"任意类型"工作，编译时再针对每个具体类型生成专用代码（单态化，monomorphization），运行时零开销。
+想象一个万能插座：无论插头是两脚还是三脚、圆形还是方形，都能插进去用。**泛型（Generic）就是代码世界的"万能插座"**——让函数与类型对"任意类型"工作，编译时再针对每个具体类型生成专用代码（单态化，monomorphization），运行时零开销。
 
 ```rust
 fn largest<T: PartialOrd>(list: &[T]) -> &T {
@@ -256,7 +256,19 @@ fn main() {
 
 讲解：`T: Display + Clone` 表示 T 必须同时实现两个 trait（多约束）；参数 `&T` 是借用，内部需要所有权时用 clone。泛型函数最常见的三个关键词组合：`Display`（打印）、`Clone`（复制）、借用引用（避免移动）。
 
-## 6. 参考资源
+## 6. 实战练习
+
+1. **泛型函数**：写一个泛型函数 `find_max`，返回切片中的最大值（约束 `T: PartialOrd`），分别用整数、浮点、字符数组验证。
+
+2. **Trait 设计**：定义一个 `Area` trait（`fn area(&self) -> f64`），为 `Circle` 和 `Rectangle` 实现，写一个接受 `&impl Area` 的函数打印面积。
+
+3. **Trait 对象**：把练习 2 改为返回 `Box<dyn Area>`，体会静态分发与动态分发的区别。
+
+4. **derive 实践**：定义一个 `User` 结构体，`#[derive(Debug, Clone, PartialEq, Default)]`，测试每个派生 trait 的用法。
+
+5. **生命周期**：写一个 `choose` 函数（两个引用返回较大的），手写 `'a` 标注；尝试不标注观察编译器报错。
+
+## 7. 参考资源
 
 TRPL 第 10 章（泛型、Trait 与生命周期）：https://kaisery.github.io/trpl-zh-cn/ch10-00-generics.html
 
@@ -264,6 +276,8 @@ TRPL 第 17 章（Trait 对象）：https://kaisery.github.io/trpl-zh-cn/ch17-00
 
 Rust 参考（Trait）：https://doc.rust-lang.org/reference/items/traits.html
 
-## 7. 小结
+## 8. 小结
 
 泛型解决"对多种类型写一份代码"，Trait 定义"行为的接口"，生命周期保证"引用不悬垂"。三者组合让 Rust 既能写出抽象代码，又保持零运行时开销与内存安全。下一步进入测试与调试，学会验证自己的代码。
+
+> **一句话记忆**：Rust 抽象三件套——"泛型（`<T>`）对多种类型写一份代码、Trait（`impl ... for`）定义行为接口、生命周期（`'a`）保证引用不悬垂"；需要多态时，编译期选泛型（静态分发）、运行期选 `Box<dyn Trait>`（动态分发）。

@@ -26,7 +26,10 @@
     transition:
       opacity var(--motion-duration-normal) var(--motion-easing-out),
       background-color var(--motion-duration-instant) var(--motion-easing-out),
-      color var(--motion-duration-instant) var(--motion-easing-out);
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      box-shadow var(--motion-duration-normal) var(--motion-easing-out),
+      transform var(--motion-duration-instant) var(--motion-easing-out);
   }
 
   /* 客户端挂载完成：淡入并启用交互 */
@@ -41,4 +44,3 @@
     outline-offset: 2px;
   }
 }
-

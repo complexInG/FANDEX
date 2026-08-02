@@ -4,9 +4,9 @@ title: 多维随机变量典型例题
 module: 'probability-statistics'
 category: 'comp-sci'
 difficulty: intermediate
-description: 多维随机变量部分的典型例题精选，涵盖联合分布、边缘分布、条件分布、独立性、和的分布与极值分布。
+description: 多维随机变量部分的典型例题精选，涵盖联合分布、边缘分布、条件分布、独立性、和的分布与极值分布的综合应用。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'probability-statistics/随机变量的独立性'
   - 'probability-statistics/和的分布与极值分布'
@@ -16,9 +16,20 @@ prerequisites:
   - 'probability-statistics/样本空间与事件'
 ---
 
+## 0. 从一个生活场景说起：多维度的数据分析
+
+给一个人画像，只看身高（一维 $X$）太单薄；加上体重（二维 $(X, Y)$）、再考虑"体重是否随身高变化"（关系），才接近完整。数据分析师的日常工作，就是对"多维度数据"做四种操作：看整体（联合分布）、看单维度（边缘分布）、加条件（条件分布）、判断维度之间是否独立（独立性），以及把维度"运算"出新指标（和、极值）。
+
+本文是"**应用驱动**"的综合例题篇：不重复概念，而是用一组由浅入深的应用题，把《联合分布》《边缘分布》《条件分布》《独立性》《和的分布与极值分布》的全部知识点串起来。每题都给出完整解题步骤，做题时请遵循统一的"四步法"：
+
+1. **定类型**：离散型还是连续型？给出的是分布律表还是密度函数？
+2. **画区域**：连续型先画非零区域，确定积分限；
+3. **选工具**：求边缘用积分/求和，求条件用除法，判断独立用乘积比较；
+4. **验结果**：边缘密度积分等于 1，条件密度对另一变量积分等于 1。
+
 ## 1. 联合分布与边缘分布
 
-### 例题1
+### 例题 1（边缘密度：正确的积分限）
 
 设 $(X, Y)$ 的联合密度为
 
@@ -26,13 +37,21 @@ $$f(x, y) = \begin{cases} e^{-y}, & 0 < x < y < +\infty \\ 0, & \text{其他} \e
 
 求边缘密度 $f_X(x)$ 和 $f_Y(y)$。
 
-**解**：
+**解**：区域 $\{0 < x < y\}$ 不是矩形（$x$ 的上限被 $y$ 牵着走），积分限必须由区域决定。
+
+对 $f_X(x)$：固定 $x$，$y$ 从 $x$ 到 $+\infty$：
 
 $$f_X(x) = \int_x^{+\infty} e^{-y} \, dy = e^{-x}, \quad x > 0$$
 
-$$f_Y(y) = \int_0^y e^{-y} \, dx = ye^{-y}, \quad y > 0$$
+对 $f_Y(y)$：固定 $y$，$x$ 从 $0$ 到 $y$：
 
-### 例题2
+$$f_Y(y) = \int_0^y e^{-y} \, dx = y e^{-y}, \quad y > 0$$
+
+检验：$\displaystyle\int_0^\infty e^{-x} dx = 1$，$\displaystyle\int_0^\infty y e^{-y} dy = \Gamma(2) = 1$，都正确。
+
+**要点**：算边缘密度时，谁是被"积掉"的变量，积分限就由另一变量的取值范围决定，千万不要把区域丢在一边。
+
+### 例题 2（区域上的概率：画图定积分）
 
 设 $(X, Y)$ 的联合密度为
 
@@ -40,125 +59,114 @@ $$f(x, y) = \begin{cases} 8xy, & 0 < x < y < 1 \\ 0, & \text{其他} \end{cases}
 
 求 $P(X + Y > 1)$。
 
-**解**：
+**解**：区域为三角形 $0 < x < y < 1$，事件 $X + Y > 1$ 与三角形交集即 $x$ 从 $1-y$ 到 $y$，$y$ 从 $\dfrac{1}{2}$ 到 $1$：
 
-$$P(X + Y > 1) = \int_{1/2}^1 \int_{1-x}^1 8xy \, dy \, dx + \int_0^{1/2} \int_{1-x}^1 8xy \, dy \, dx$$
+$$P(X + Y > 1) = \int_{1/2}^{1} \int_{1-y}^{y} 8xy \, dx \, dy = \int_{1/2}^{1} 8y \cdot \left.\frac{x^2}{2}\right|_{1-y}^{y} \, dy$$
 
-实际上，$X + Y > 1$ 在三角形 $0 < x < y < 1$ 中的区域为：
+$$= \int_{1/2}^{1} 4y \left[y^2 - (1-y)^2\right] dy = \int_{1/2}^{1} 4y(2y - 1) \, dy = \int_{1/2}^{1} (8y^2 - 4y) \, dy$$
 
-$$P(X + Y > 1) = \int_{1/2}^1 \int_{1-y}^y 8xy \, dx \, dy = \int_{1/2}^1 8y \cdot \frac{y^2 - (1-y)^2}{2} \, dy$$
+$$= \left[\frac{8y^3}{3} - 2y^2\right]_{1/2}^{1} = \frac{8}{3} - 2 - \left(\frac{1}{3} - \frac{1}{2}\right) = \frac{5}{6}$$
 
-$$= \int_{1/2}^1 4y(2y - 1) \, dy = \int_{1/2}^1 (8y^2 - 4y) \, dy = \left[\frac{8y^3}{3} - 2y^2\right]_{1/2}^1 = \frac{8}{3} - 2 - \frac{1}{3} + \frac{1}{2} = \frac{5}{6}$$
+**要点**：涉及"区域上的概率"时，先画联合密度的非零区域，再画事件区域，取交集定积分限。
 
 ## 2. 条件分布
 
-### 例题3
+### 例题 3（独立情形：条件密度等于边缘密度）
 
-设 $(X, Y)$ 的联合密度为
+设 $(X, Y)$ 服从单位正方形 $0 < x < 1, 0 < y < 1$ 上的均匀分布，求条件密度 $f_{X \mid Y}(x \mid y)$ 和 $E(X \mid Y = y)$。
 
-$$f(x, y) = \begin{cases} 1, & 0 < x < 1, 0 < y < 1 \\ 0, & \text{其他} \end{cases}$$
-
-求条件密度 $f_{X \mid Y}(x \mid y)$ 和 $E(X \mid Y = y)$。
-
-**解**：$f_Y(y) = 1$（$0 < y < 1$），故
+**解**：$f(x, y) = 1$（$0<x<1, 0<y<1$），$f_Y(y) = 1$（$0<y<1$）。
 
 $$f_{X \mid Y}(x \mid y) = \frac{f(x, y)}{f_Y(y)} = 1, \quad 0 < x < 1$$
 
-即在 $Y = y$ 条件下，$X \sim U(0, 1)$，$E(X \mid Y = y) = \dfrac{1}{2}$。
+即在 $Y = y$ 条件下 $X \sim U(0, 1)$，条件期望 $E(X \mid Y = y) = \dfrac{1}{2}$。条件分布等于边缘分布——这正是独立性（矩形区域 + 密度可分离）。
 
-### 例题4
+### 例题 4（条件概率的计算）
 
 设 $(X, Y)$ 的联合密度为
 
-$$f(x, y) = \begin{cases} 2e^{-2y}, & 0 < x < 1, y > 0 \\ 0, & \text{其他} \end{cases}$$
+$$f(x, y) = \begin{cases} 2e^{-2y}, & 0 < x < 1,\ y > 0 \\ 0, & \text{其他} \end{cases}$$
 
 求 $P(X > 0.5 \mid Y = 1)$。
 
-**解**：
+**解**：边缘密度 $f_Y(y) = \displaystyle\int_0^1 2e^{-2y} dx = 2e^{-2y}$（$y > 0$）。
 
-$$f_Y(y) = \int_0^1 2e^{-2y} \, dx = 2e^{-2y}, \quad y > 0$$
+$$f_{X \mid Y}(x \mid y) = \frac{2e^{-2y}}{2e^{-2y}} = 1, \quad 0 < x < 1$$
 
-$$f_{X \mid Y}(x \mid y) = \frac{f(x, y)}{f_Y(y)} = 1, \quad 0 < x < 1$$
+$$P(X > 0.5 \mid Y = 1) = \int_{0.5}^{1} 1 \, dx = 0.5$$
 
-$$P(X > 0.5 \mid Y = 1) = \int_{0.5}^1 1 \, dx = 0.5$$
+**要点**：条件密度是 $y$ 的"切片"，条件概率只需在 $x$ 轴上积分。
 
 ## 3. 独立性判定
 
-### 例题5
+### 例题 5（连续型：区域先行）
 
 设 $(X, Y)$ 的联合密度为
 
-$$f(x, y) = \begin{cases} \dfrac{3}{2}x, & 0 < x < 1, -x < y < x \\ 0, & \text{其他} \end{cases}$$
+$$f(x, y) = \begin{cases} \dfrac{3}{2}x, & 0 < x < 1,\ -x < y < x \\ 0, & \text{其他} \end{cases}$$
 
 判断 $X$ 与 $Y$ 是否独立。
 
-**解**：非零区域 $\{(x, y) : 0 < x < 1, -x < y < x\}$ 不是矩形，故 $X$ 与 $Y$ 不独立。
+**解**：非零区域 $\{(x, y): 0 < x < 1,\ -x < y < x\}$ 是"V 形"区域，$y$ 的范围依赖 $x$，**不是矩形**，故 $X$ 与 $Y$ 不独立。
 
-验证：
+（完整验证）$f_X(x) = \displaystyle\int_{-x}^{x} \frac{3}{2}x \, dy = 3x^2$（$0<x<1$）；
 
-$$f_X(x) = \int_{-x}^x \frac{3}{2}x \, dy = 3x^2, \quad 0 < x < 1$$
+$$f_Y(y) = \int_{|y|}^{1} \frac{3}{2}x \, dx = \frac{3}{4}(1 - y^2), \quad -1 < y < 1$$
 
-$$f_Y(y) = \int_{|y|}^1 \frac{3}{2}x \, dx = \frac{3}{4}(1 - y^2), \quad -1 < y < 1$$
+$$f_X(x) f_Y(y) = 3x^2 \cdot \frac{3}{4}(1 - y^2) = \frac{9x^2(1-y^2)}{4} \neq \frac{3}{2}x$$
 
-$$f_X(x) f_Y(y) = 3x^2 \cdot \frac{3}{4}(1 - y^2) = \frac{9x^2(1 - y^2)}{4} \neq \frac{3}{2}x$$
-
-### 例题6
+### 例题 6（离散型：找零概率格）
 
 设 $(X, Y)$ 的联合分布律为：
 
-| $X \backslash Y$ |       -1       |       0        |       1        |
-| :--------------: | :------------: | :------------: | :------------: |
-|        -1        | $\dfrac{1}{8}$ | $\dfrac{1}{8}$ | $\dfrac{1}{8}$ |
-|        0         | $\dfrac{1}{8}$ |      $0$       | $\dfrac{1}{8}$ |
-|        1         | $\dfrac{1}{8}$ | $\dfrac{1}{8}$ | $\dfrac{1}{8}$ |
+| $X \backslash Y$ | -1     | 0      | 1      |
+| :--------------: | :----: | :----: | :----: |
+| -1               | 1/8    | 1/8    | 1/8    |
+| 0                | 1/8    | 0      | 1/8    |
+| 1                | 1/8    | 1/8    | 1/8    |
 
 判断 $X$ 与 $Y$ 是否独立。
 
-**解**：$P(X = 0) = \dfrac{1}{4}$，$P(Y = 0) = \dfrac{1}{4}$，但 $P(X = 0, Y = 0) = 0 \neq \dfrac{1}{16}$，故不独立。
+**解**：$P(X = 0) = \dfrac{2}{8}$，$P(Y = 0) = \dfrac{2}{8}$。若独立则 $P(X=0, Y=0) = \dfrac{1}{16}$，但表中为 $0$，故不独立。
+
+**要点**：离散型独立性判定找"零概率格"最快——联合概率为 0 而两个边缘概率都为正，乘积必大于 0。
 
 ## 4. 和的分布
 
-### 例题7
+### 例题 7（两个均匀分布之和：分段卷积）
 
-设 $X \sim U(0, 1)$，$Y \sim U(0, 1)$，且 $X$ 与 $Y$ 独立，求 $Z = X + Y$ 的密度。
+设 $X \sim U(0, 1)$，$Y \sim U(0, 1)$ 独立，求 $Z = X + Y$ 的密度。
 
-**解**：
+**解**：卷积公式 $f_Z(z) = \displaystyle\int_{-\infty}^{+\infty} f_X(x) f_Y(z - x) dx$，非零条件 $0 < x < 1$ 且 $0 < z-x < 1$。
 
-$$f_Z(z) = \int_{-\infty}^{+\infty} f_X(x) f_Y(z - x) \, dx$$
+- $0 < z < 1$：$x$ 从 $0$ 到 $z$，$f_Z(z) = z$；
+- $1 \le z < 2$：$x$ 从 $z-1$ 到 $1$，$f_Z(z) = 2 - z$。
 
-当 $0 < z < 1$ 时：$f_Z(z) = \displaystyle\int_0^z 1 \cdot 1 \, dx = z$
+$$f_Z(z) = \begin{cases} z, & 0 < z < 1 \\ 2 - z, & 1 \le z < 2 \\ 0, & \text{其他} \end{cases}$$
 
-当 $1 \leq z < 2$ 时：$f_Z(z) = \displaystyle\int_{z-1}^1 1 \cdot 1 \, dx = 2 - z$
+### 例题 8（泊松可加性的证明）
 
-$$f_Z(z) = \begin{cases} z, & 0 < z < 1 \\ 2 - z, & 1 \leq z < 2 \\ 0, & \text{其他} \end{cases}$$
-
-### 例题8
-
-设 $X \sim P(\lambda_1)$，$Y \sim P(\lambda_2)$，且 $X$ 与 $Y$ 独立，证明 $Z = X + Y \sim P(\lambda_1 + \lambda_2)$。
+设 $X \sim P(\lambda_1)$，$Y \sim P(\lambda_2)$ 独立，证明 $Z = X + Y \sim P(\lambda_1 + \lambda_2)$。
 
 **证明**：
 
-$$P(Z = k) = \sum_{i=0}^{k} P(X = i) P(Y = k - i) = \sum_{i=0}^{k} \frac{\lambda_1^i e^{-\lambda_1}}{i!} \cdot \frac{\lambda_2^{k-i} e^{-\lambda_2}}{(k-i)!}$$
-
-$$= \frac{e^{-(\lambda_1 + \lambda_2)}}{k!} \sum_{i=0}^{k} \frac{k!}{i!(k-i)!} \lambda_1^i \lambda_2^{k-i} = \frac{(\lambda_1 + \lambda_2)^k e^{-(\lambda_1 + \lambda_2)}}{k!}$$
+$$P(Z = k) = \sum_{i=0}^{k} \frac{\lambda_1^i e^{-\lambda_1}}{i!} \cdot \frac{\lambda_2^{k-i} e^{-\lambda_2}}{(k-i)!} = \frac{e^{-(\lambda_1+\lambda_2)}}{k!} \sum_{i=0}^k \binom{k}{i} \lambda_1^i \lambda_2^{k-i} = \frac{(\lambda_1+\lambda_2)^k e^{-(\lambda_1+\lambda_2)}}{k!}$$
 
 故 $Z \sim P(\lambda_1 + \lambda_2)$。
 
 ## 5. 极值分布
 
-### 例题9
+### 例题 9（并联系统：最大值分布）
 
-设系统由 5 个独立工作的元件并联而成，每个元件的寿命 $T_i \sim \text{Exp}(0.1)$（单位：小时），求系统寿命超过 20 小时的概率。
+设系统由 5 个独立工作的元件并联而成，每个元件寿命 $T_i \sim \text{Exp}(0.1)$（小时），求系统寿命超过 20 小时的概率。
 
-**解**：并联系统寿命 $T = \max(T_1, T_2, \cdots, T_5)$。
+**解**：并联系统 $T = \max(T_1, \cdots, T_5)$。
 
-$$P(T > 20) = 1 - P(T \leq 20) = 1 - [P(T_1 \leq 20)]^5 = 1 - (1 - e^{-2})^5$$
+$$P(T > 20) = 1 - P(T \le 20) = 1 - \left[1 - e^{-2}\right]^5 \approx 1 - 0.8647^5 \approx 0.5167$$
 
-$$= 1 - (1 - 0.1353)^5 = 1 - 0.8647^5 \approx 1 - 0.4833 = 0.5167$$
+### 例题 10（均匀分布的最大最小值密度）
 
-### 例题10
-
-设 $X_1, X_2, \cdots, X_n$ 独立同分布，$X_i \sim U(0, 1)$，求 $M = \max(X_1, \cdots, X_n)$ 和 $N = \min(X_1, \cdots, X_n)$ 的密度函数。
+设 $X_1, \cdots, X_n$ 独立同分布，$X_i \sim U(0, 1)$，求 $M = \max$ 与 $N = \min$ 的密度。
 
 **解**：
 
@@ -166,82 +174,137 @@ $$F_M(x) = x^n, \quad f_M(x) = nx^{n-1}, \quad 0 < x < 1$$
 
 $$F_N(x) = 1 - (1-x)^n, \quad f_N(x) = n(1-x)^{n-1}, \quad 0 < x < 1$$
 
-## 综合题知识点讲解
+## 6. 综合提高题
 
-### 例题11
+### 例题 11（差分布：分布函数法）
 
 设 $(X, Y)$ 的联合密度为
 
 $$f(x, y) = \begin{cases} 2, & 0 < y < x < 1 \\ 0, & \text{其他} \end{cases}$$
 
-求 $Z = X - Y$ 的密度函数。
+求 $Z = X - Y$ 的密度。
 
-**解**：$Z$ 的取值范围为 $(0, 1)$。
+**解**：$Z$ 取值范围 $(0, 1)$。对 $0 < z < 1$，先求补事件概率：
 
-$$F_Z(z) = P(X - Y \leq z) = \iint_{x - y \leq z} f(x, y) \, dx \, dy$$
+$$P(X - Y > z) = \int_z^1 \int_0^{x-z} 2 \, dy \, dx = \int_z^1 2(x - z) \, dx = (1 - z)^2$$
 
-当 $0 < z < 1$ 时：
+$$F_Z(z) = 1 - (1-z)^2, \qquad f_Z(z) = 2(1 - z), \quad 0 < z < 1$$
 
-$$P(X - Y > z) = \int_z^1 \int_0^{x-z} 2 \, dy \, dx = \int_z^1 2(x-z) \, dx = (1-z)^2$$
+**要点**：直接求 $P(X - Y \le z)$ 积分较繁，先求补事件再取补，往往更简单。
 
-$$F_Z(z) = 1 - (1-z)^2$$
+### 例题 12（商的分布：变量替换 + 雅可比）
 
-$$f_Z(z) = 2(1-z), \quad 0 < z < 1$$
+设 $X$、$Y$ 独立，$X \sim \text{Exp}(1)$，$Y \sim \text{Exp}(1)$，求 $Z = \dfrac{X}{X + Y}$ 的分布。
 
-### 例题12
+**解**：令 $U = X + Y$，$V = \dfrac{X}{X+Y}$，反解 $X = UV$，$Y = U(1 - V)$。
 
-设 $X$ 与 $Y$ 独立，$X \sim \text{Exp}(1)$，$Y \sim \text{Exp}(1)$，求 $Z = \dfrac{X}{X + Y}$ 的分布。
+雅可比行列式：
 
-**解**：令 $U = X + Y$，$V = \dfrac{X}{X + Y}$，则 $X = UV$，$Y = U(1-V)$。
+$$|J| = \left|\det \begin{pmatrix} \partial x/\partial u & \partial x/\partial v \\ \partial y/\partial u & \partial y/\partial v \end{pmatrix}\right| = \left|\det \begin{pmatrix} v & u \\ 1-v & -u \end{pmatrix}\right| = |-uv - u(1-v)| = u$$
 
-Jacobian 行列式为 $|J| = u$。
+联合密度（$u > 0$，$0 < v < 1$）：
 
-联合密度：
+$$f_{U,V}(u, v) = f_X(uv) f_Y(u(1-v)) \cdot u = e^{-uv} e^{-u(1-v)} u = u e^{-u}$$
 
-$$f_{U,V}(u, v) = f_X(uv) f_Y(u(1-v)) \cdot u = e^{-uv} \cdot e^{-u(1-v)} \cdot u = ue^{-u}, \quad u > 0, 0 < v < 1$$
+$$f_V(v) = \int_0^{+\infty} u e^{-u} \, du = 1, \quad 0 < v < 1$$
 
-$$f_V(v) = \int_0^{+\infty} ue^{-u} \, du = 1, \quad 0 < v < 1$$
+故 $Z \sim U(0, 1)$。两个独立指数变量之比的分量服从均匀分布——这是均匀分布与指数分布之间一个漂亮的"隐藏联系"。
 
-故 $Z \sim U(0, 1)$。
+### 例题 13（圆域均匀分布：不独立）
 
-### 例题13
+设 $(X, Y)$ 服从单位圆 $D = \{(x, y): x^2 + y^2 \le 1\}$ 上的均匀分布，判断 $X$ 与 $Y$ 是否独立。
 
-设 $(X, Y)$ 服从区域 $D = \{(x, y) : x^2 + y^2 \leq 1\}$ 上的均匀分布，判断 $X$ 与 $Y$ 是否独立。
-
-**解**：
-
-$$f(x, y) = \begin{cases} \dfrac{1}{\pi}, & x^2 + y^2 \leq 1 \\ 0, & \text{其他} \end{cases}$$
+**解**：$f(x, y) = \dfrac{1}{\pi}$（圆内），区域不是矩形，故不独立。验证：
 
 $$f_X(x) = \int_{-\sqrt{1-x^2}}^{\sqrt{1-x^2}} \frac{1}{\pi} \, dy = \frac{2\sqrt{1-x^2}}{\pi}, \quad -1 < x < 1$$
 
-同理 $f_Y(y) = \dfrac{2\sqrt{1-y^2}}{\pi}$。
-
 $$f_X(x) f_Y(y) = \frac{4\sqrt{(1-x^2)(1-y^2)}}{\pi^2} \neq \frac{1}{\pi}$$
 
-故 $X$ 与 $Y$ 不独立。
+### 例题 14（平方和分布）
 
-### 例题14
+设 $X_1, \cdots, X_n$ 独立同分布，$X_i \sim N(0, 1)$，求 $Y = \sum_{i=1}^n X_i^2$ 的分布。
 
-设 $X_1, X_2, \cdots, X_n$ 独立同分布，$X_i \sim N(0, 1)$，求 $Y = \sum_{i=1}^n X_i^2$ 的分布。
+**解**：每个 $X_i^2 \sim \chi^2(1)$，由 $\chi^2$ 分布可加性，$Y = \sum X_i^2 \sim \chi^2(n)$。这是数理统计中"卡方分布"的起源（详见《三大分布》）。
 
-**解**：每个 $X_i^2 \sim \chi^2(1)$，由 $\chi^2$ 分布的可加性：
+### 例题 15（$t$ 分布的雏形）
 
-$$Y = \sum_{i=1}^n X_i^2 \sim \chi^2(n)$$
+设 $X \sim N(0, 1)$，$Y \sim N(0, 1)$ 独立，求 $Z = \dfrac{X}{|Y|}$ 的分布。
 
-### 例题15
+**解**：$Y^2 \sim \chi^2(1)$，故 $Z = \dfrac{X}{\sqrt{Y^2 / 1}}$ 服从 $t(1)$ 分布，即柯西分布（密度 $\dfrac{1}{\pi(1+z^2)}$，期望不存在）。
 
-设 $X \sim N(0, 1)$，$Y \sim N(0, 1)$，且 $X$ 与 $Y$ 独立，求 $Z = \dfrac{X}{\sqrt{Y^2}}$ 的分布。
+## 7. 解题套路小结
 
-**解**：$Y^2 \sim \chi^2(1)$，故 $Z = \dfrac{X}{\sqrt{Y^2/1}} = \dfrac{X}{|Y|}$。
+| 问什么 | 用什么 | 关键提醒 |
+| --- | --- | --- |
+| 边缘密度/分布律 | 对另一个变量积分/求和 | 积分限由非零区域决定，画图定限 |
+| 条件密度 | $f(x,y) \div f_Y(y)$ | 分母是**边缘密度**，不是别的 |
+| 区域上的概率 | 联合密度在事件区域积分 | 事件区域与支撑集取交集 |
+| 是否独立 | $p_{ij} = p_{i\cdot}p_{\cdot j}$ 或 $f = f_X f_Y$ | 连续型别忘了"矩形区域"前提 |
+| 和的分布 | 卷积公式/可加性 | 先确认独立；分段定限 |
+| 最大/最小 | $F_M = \prod F_i$，$F_N = 1-\prod(1-F_i)$ | 最大值"交"，最小值先取补 |
 
-由 $t$ 分布的定义，$\dfrac{X}{\sqrt{Y^2/1}} \sim t(1)$，即 $Z \sim t(1)$（柯西分布）。
+## 8. 常见错误与对策
+
+| 错误示例 | 错误类型 | 原因分析 | 纠正方法 |
+| --- | --- | --- | --- |
+| 边缘密度积分限凭感觉写 | 计算错误 | 没有先画非零区域 | 固定一个变量，看另一个变量在区域内的活动范围 |
+| 条件密度用错分母 | 概念混淆 | 把 $f_X(x)$ 当成 $f_Y(y)$ 用 | 分母必须是与"条件变量"对应的边缘密度 |
+| 判定独立时忽略区域形状 | 条件遗漏 | 只看密度是否可分离 | 分解法三要件：可分离 + 矩形 + 区域可分解 |
+| 卷积分段漏一段 | 计算错误 | 只讨论了 $z$ 的一个区间 | 先解不等式组找 $z$ 的分界点，再逐段积分 |
+| 求 $P(X - Y > z)$ 与 $P(X - Y \le z)$ 混淆 | 方向颠倒 | 补事件关系没理清 | $P(X-Y \le z) = 1 - P(X-Y > z)$，画图确认哪一侧满足条件 |
+| 变量替换忘记乘雅可比 | 因子遗漏 | 二维变量替换要换面积元 | $f_{U,V} = f_{X,Y}(\cdots) \cdot |J|$，$|J|$ 是对 $(u,v)$ 的偏导数行列式 |
+
+## 9. 实战练习
+
+### 练习 1（边缘密度）
+
+设 $f(x, y) = \begin{cases} \dfrac{1}{8}(x + y), & 0 < x < 2,\ 0 < y < 2 \\ 0, & \text{其他} \end{cases}$，求 $f_X(x)$、$f_Y(y)$ 并判断独立性。
+
+**提示**：矩形区域，密度含 $x+y$ 项。
+
+**参考答案要点**：$f_X(x) = \dfrac{1}{8}(2x + 2) = \dfrac{x+1}{4}$（$0<x<2$），$f_Y(y)$ 同理；$f_X(x)f_Y(y) = \dfrac{(x+1)(y+1)}{16} \neq \dfrac{x+y}{8}$，不独立。
+
+### 练习 2（条件分布）
+
+设 $f(x, y) = \begin{cases} 2, & 0 < y < x < 1 \\ 0, & \text{其他} \end{cases}$，求 $f_{Y \mid X}(y \mid x)$ 与 $P(Y > 0.5 \mid X = 0.8)$。
+
+**提示**：$f_X(x) = 2x$。
+
+**参考答案要点**：$f_{Y\mid X}(y\mid x) = \dfrac{2}{2x} = \dfrac{1}{x}$，$0<y<x$；$P(Y > 0.5 \mid X = 0.8) = \displaystyle\int_{0.5}^{0.8} \frac{1}{0.8} dy = \frac{3}{8} = 0.375$。
+
+### 练习 3（和分布）
+
+设 $X \sim U(0, 1)$，$Y \sim \text{Exp}(1)$ 独立，求 $Z = X + Y$ 的密度。
+
+**提示**：卷积，注意 $0 < x < 1$ 与 $z - x > 0$，按 $0<z<1$、$z \ge 1$ 分段。
+
+**参考答案要点**：$0<z<1$：$f_Z(z) = \displaystyle\int_0^z e^{-(z-x)}dx = 1 - e^{-z}$；$z\ge 1$：$f_Z(z) = \displaystyle\int_0^1 e^{-(z-x)}dx = e^{-z}(e - 1)$。
+
+### 练习 4（极值分布）
+
+设 $X_1, X_2$ 独立同分布，$X_i \sim U(0, 1)$，求 $M = \max(X_1, X_2)$ 的密度及 $P(M > 0.9)$。
+
+**提示**：$F_M(x) = x^2$。
+
+**参考答案要点**：$f_M(x) = 2x$（$0<x<1$）；$P(M > 0.9) = 1 - 0.9^2 = 0.19$。
+
+### 练习 5（综合）
+
+设 $f(x, y) = \begin{cases} cxy, & 0 < x < y < 1 \\ 0, & \text{其他} \end{cases}$。（1）求 $c$；（2）判断独立性；（3）求 $P(X + Y > 1)$。
+
+**提示**：规范性求 $c$；区域为三角形判不独立；画图求区域概率。
+
+**参考答案要点**：（1）$\int_0^1\int_0^y cxy\, dx\, dy = c\int_0^1 \frac{y^3}{2}dy = \frac{c}{8} = 1 \Rightarrow c = 8$；（2）三角形区域，不独立；（3）$P = \int_{1/2}^1\int_{1-y}^{y} 8xy\, dx\, dy = \int_{1/2}^1 4y(2y-1)dy = \dfrac{5}{6}$。
+
+## 10. 一句话记忆
+
+多维随机变量题只有一个通用流程：**定类型 → 画区域 → 选工具（边缘积分、条件除法、独立乘积、卷积求和）→ 验结果**，把每个工具用在正确的"维度"上。
 
 ## 参考文献
 
-Khan Academy 统计：https://zh.khanacademy.org/math/statistics-probability
-Seeing Theory：https://seeing-theory.brown.edu/
-OpenIntro Statistics：https://www.openintro.org/book/os/
-StatQuest（B站/YouTube）：https://www.youtube.com/@statquest
+- 盛骤, 谢式千, 潘承毅. 概率论与数理统计（第六版）[M]. 高等教育出版社, 2026. 第三章"多维随机变量及其分布"习题三. https://www.hep.com.cn/book/show/3b2dd87a-7531-4610-97e6-071eb302d813
+- 多维随机变量及其分布学习笔记（含卷积公式与 max/min 分布例题）. https://note.eternity1005.top/blog/Math/Probability%20Theory%20and%20Mathematical%20Statistics/Chapter%203/
+- 概率论复习笔记——卷积公式. https://blog.csdn.net/jyfan0806/article/details/84729422
 
 ## 延伸阅读
 

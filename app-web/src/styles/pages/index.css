@@ -514,17 +514,23 @@
     gap: var(--space-inline-xs);
   }
 
-  /* 导航按钮：基础样式由 .fndx-icon-btn 统一提供（透明背景 + 无边框 + 统一悬停）
-   * 此处仅保留 30px 紧凑尺寸覆盖与按压反馈 */
+  /* 导航按钮：基础样式与统一特效由 .fndx-icon-btn 提供，
+   * 此处仅保留 30px 紧凑尺寸覆盖与方向性图标位移（左右滚动方向提示） */
   .category-nav-btn {
     /* display/align/background/color/border/transition/hover/focus 均由 .fndx-icon-btn 提供 */
     width: 30px;
     height: 30px;
-    cursor: pointer;
   }
 
-  .category-nav-btn:active {
-    transform: scale(0.92);
+  /* 方向性图标微位移：向左/向右滚动按钮悬停时图标沿滚动方向平移（与上下篇导航一致） */
+  @media (hover: hover) {
+    .category-nav-btn[data-nav='-1']:hover svg {
+      transform: translateX(-2px) scale(1.08);
+    }
+
+    .category-nav-btn[data-nav='1']:hover svg {
+      transform: translateX(2px) scale(1.08);
+    }
   }
 
   /* ============================================================

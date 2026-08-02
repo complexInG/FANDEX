@@ -6,9 +6,9 @@ difficulty: intermediate
 title: 分支模型与分支保护规则
 module: github
 category: 'GitHub Basics'
-description: 分支模型设计、保护规则配置与强制策略。
+description: 分支模型设计（GitHub Flow / Git Flow）、保护规则配置与强制策略。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - github/协作开发规范
   - github/README文件
@@ -17,651 +17,246 @@ related:
 prerequisites:
   - github/GitHub概述
 ---
-## 2. 分支模型详解
 
-### 2.1 Git Flow 分支模型
+## 0. 从一个生活场景说起：主干道与支路
 
-Git Flow 是一种较为复杂的分支模型，适合有明确发布周期的软件项目。
+想象一座城市：**主干道（main 分支）** 必须时刻畅通，任何驶入主干道的车辆（代码）都要经过**收费站（Code Review）** 和**检查站（CI 状态检查）**；**支路（feature 分支）** 是施工区，工人们（开发者）在这里安心施工；**匝道（Pull Request）** 是支路汇入主干道的入口，不合格的车辆进不了主干道；**交警（分支保护规则）** 负责强制执行这一切——禁止直接从支路冲上主干道，违者拦下。
 
-#### 2.1.1 核心分支
+这个"交通模型"就是**分支模型 + 分支保护规则**：先用**模型**规划"道路怎么修"，再用**保护规则**确保"车辆不能乱闯"。本篇采用**模型驱动**的结构，先讲两种主流分支模型，再讲如何用保护规则把模型强制落地。
 
-- **main/master**：生产环境分支，存放稳定的已发布代码
-- **develop**：开发集成分支，存放最新的开发代码
-- **feature/**\*：功能分支，从 develop 分支创建，完成后合并回 develop
-- **release/**\*：发布分支，从 develop 分支创建，用于预发布准备
-- **hotfix/**\*：热修复分支，从 main/master 分支创建，用于紧急修复生产问题
+## 1. 原理讲解：为什么要分分支
 
-#### 2.1.2 Git Flow 工作流程
+### 1.1 不分分支的代价
 
-1. 从 develop 分支创建 feature 分支
-2. 在 feature 分支上进行开发
-3. 完成开发后，将 feature 分支合并回 develop
-4. 当 develop 分支积累了足够的功能，创建 release 分支
-5. 在 release 分支上进行测试和修复
-6. 完成后，将 release 分支合并回 main/master 和 develop
-7. 如有生产问题，从 main/master 创建 hotfix 分支
-8. 修复完成后，将 hotfix 分支合并回 main/master 和 develop
+如果 10 个人都直接往 `main` 推送：冲突频繁、代码不可审查、main 随时处于"半成品"状态——没人敢说"main 现在可以发布"。**分支的本质是把"开发中"和"可发布"两种状态隔离在不同的"车道"上**。
 
-### 2.2 GitHub Flow 分支模型
+### 1.2 分支模型的角色
 
-GitHub Flow 是一种简化的分支模型，适合持续交付和 Web 服务项目。
+| 概念 | 生活类比 | 作用 |
+| :--- | :--- | :--- |
+| main | 主干道 | 始终可部署的稳定分支 |
+| feature/* | 施工支路 | 功能开发，完成后经 PR 并入主线 |
+| release/* | 试运行线路 | 发布前的测试与修复 |
+| hotfix/* | 应急抢险通道 | 线上紧急缺陷修复 |
+| develop | 汇集线路 | 集成所有已完成功能的开发分支 |
 
-#### 2.2.1 核心分支
+## 2. 模型一：GitHub Flow（轻量，推荐起步）
 
-- **main**：默认分支，始终保持可部署状态
-- **feature 分支**：从 main 分支创建，用于开发新功能或修复问题
+### 2.1 核心思想
 
-#### 2.2.2 GitHub Flow 工作流程
+GitHub 官方推荐的模型，**只有一个长期分支 `main`**，且始终可部署：
 
-1. 从 main 分支创建 feature 分支
-2. 在 feature 分支上进行开发
-3. 提交代码并推送到远程仓库
-4. 打开 Pull Request 进行代码审查
-5. 通过审查后，将 feature 分支合并回 main
-6. 合并后立即部署到生产环境
+1. 从 `main` 创建功能分支 → 2. 在功能分支开发并提交 → 3. 推送到远程 → 4. 发起 PR 审查 → 5. 合并回 `main` → 6. 合并后立即部署。
 
-### 2.3 分支模型对比
+### 2.2 适用场景
 
-| 特性     | Git Flow                                      | GitHub Flow         |
-| -------- | --------------------------------------------- | ------------------- |
-| 分支数量 | 多（main, develop, feature, release, hotfix） | 少（main, feature） |
-| 适合项目 | 有明确发布周期的软件                          | 持续交付的 Web 服务 |
-| 学习成本 | 高                                            | 低                  |
-| 部署频率 | 较低                                          | 较高                |
-| 复杂度   | 复杂                                          | 简单                |
+持续交付的 Web 服务、中小团队、快速迭代项目。优点是简单易学、部署频率高；缺点是不适合需要长期维护多个版本的项目。
 
-## 3. GitHub 分支保护规则配置
+### 2.3 GitHub Flow 实操
 
-### 3.1 配置路径
+```bash
+# 1. 确保本地 main 最新
+git checkout main
+git pull origin main
 
-路径：**Settings → Branches → Branch protection rules → Add rule**
+# 2. 创建并切换到功能分支
+git checkout -b feature/add-login
 
-### 3.2 详细配置选项
+# 3. 开发、提交、推送
+git add .
+git commit -m "feat: add login"
+git push -u origin feature/add-login
 
-#### 3.2.1 基本设置
+# 4. 在 GitHub 上创建 PR，审查合并
+# 5. 合并后清理本地分支
+git checkout main
+git pull origin main
+git branch -d feature/add-login
+```
 
-- **Branch name pattern**：分支名称模式，如 `main`、`release/*` 等
-- **Protect matching branches**：启用分支保护
+## 3. 模型二：Git Flow（完整，适合版本发布）
 
-#### 3.2.2 合并规则
+### 3.1 核心分支
 
-- **Require a pull request before merging**：禁止直接推送，强制通过 PR 合并
-- **Require approvals**：设置最少审查人数，可选择是否需要 CODEOWNERS 批准
-- **Dismiss stale pull request approvals when new commits are pushed**：当有新提交时，撤销之前的批准
-- **Require review from Code Owners**：要求代码所有者审查
-- **Restrict who can dismiss pull request reviews**：限制谁可以撤销 PR 审查
+| 分支 | 说明 |
+| :--- | :--- |
+| `main` | 生产环境稳定代码，只接受 release/hotfix 合并 |
+| `develop` | 开发集成分支，feature 合并到这里 |
+| `feature/*` | 从 develop 创建，完成后合并回 develop |
+| `release/*` | 从 develop 创建，用于发布前测试，完成后合并回 main 和 develop |
+| `hotfix/*` | 从 main 创建，紧急修复生产问题，完成后合并回 main 和 develop |
 
-#### 3.2.3 状态检查
+### 3.2 工作流程
 
-- **Require status checks to pass before merging**：要求状态检查通过才能合并
-- **Require branches to be up to date before merging**：要求分支在合并前与基础分支同步
-- **Status checks that are required**：选择需要通过的状态检查
+1. 从 `develop` 创建 `feature/*` → 2. 开发完成合并回 `develop` → 3. 积累足够功能后从 `develop` 切 `release/*` → 4. 在 release 分支测试修复 → 5. 合并回 `main` 并打 tag → 6. 同时合并回 `develop` → 7. 线上紧急问题从 `main` 切 `hotfix/*` 修复。
 
-#### 3.2.4 分支操作限制
+### 3.3 Git Flow 实操
 
-- **Restrict who can push to matching branches**：限制谁可以向匹配的分支推送
-- **Allow force pushes**：是否允许强制推送
-- **Allow deletions**：是否允许删除分支
-- **Include administrators**：是否对管理员同样生效
+```bash
+# 从 develop 创建功能分支
+git checkout develop
+git pull origin develop
+git checkout -b feature/add-login
 
-### 3.3 配置示例
+# 开发完成后合并回 develop
+git checkout develop
+git merge feature/add-login
 
-#### 3.3.1 生产分支（main/master）配置
+# 准备发布
+git checkout -b release/v1.0.0
+# 测试修复后合并到 main 并打标签
+git checkout main
+git merge release/v1.0.0
+git tag v1.0.0
+git checkout develop
+git merge release/v1.0.0
 
-- \[支持] Require a pull request before merging
-- \[支持] Require approvals (2 人)
-- \[支持] Require status checks to pass before merging
-- \[支持] Require branches to be up to date before merging
-- \[支持] Include administrators
-- \[不支持] Allow force pushes
-- \[不支持] Allow deletions
+# 线上紧急热修复
+git checkout main
+git checkout -b hotfix/security-patch
+# 修复后合并回 main 和 develop，打 tag v1.0.1
+```
 
-#### 3.3.2 开发分支（develop）配置
+## 4. 模型对比：怎么选
 
-- \[支持] Require a pull request before merging
-- \[支持] Require approvals (1 人)
-- \[支持] Require status checks to pass before merging
-- \[支持] Require branches to be up to date before merging
-- \[支持] Include administrators
-- \[不支持] Allow force pushes
-- \[不支持] Allow deletions
+| 特性 | GitHub Flow | Git Flow |
+| :--- | :--- | :--- |
+| 长期分支数量 | 1（main） | 2（main + develop） |
+| 分支复杂度 | 低 | 高 |
+| 学习成本 | 低 | 高 |
+| 部署频率 | 高（持续部署） | 较低（版本节奏发布） |
+| 多版本并行维护 | 困难 | 支持（release/hotfix） |
+| 适用项目 | Web 服务、快速迭代 | 有明确发布周期的软件 |
 
-#### 3.3.3 功能分支（feature/\*）配置
+**选择建议**：团队新起步、项目持续部署 → GitHub Flow；产品有版本节奏、需长期维护多个版本 → Git Flow。
 
-- \[不支持] Require a pull request before merging
-- \[不支持] Require approvals
-- \[不支持] Require status checks to pass before merging
-- \[不支持] Include administrators
-- \[支持] Allow force pushes
-- \[支持] Allow deletions
+### 4.1 其他分支策略一览
 
-## 4. CODEOWNERS 配置
+除两大主流模型外，还有两种常见策略值得了解：
 
-### 4.1 CODEOWNERS 文件位置
+| 策略 | 核心思想 | 适用场景 |
+| :--- | :--- | :--- |
+| Trunk-Based（主干开发） | 所有人都直接开发 main，用特性开关（feature flag）控制上线 | 高频发布、大规模团队协作 |
+| Release Flow（发布流） | 在 GitHub Flow 基础上增加 release 分支管理发布周期 | 有明确发布节奏且需快速迭代的产品 |
 
-CODEOWNERS 文件可以放在以下位置：
+- **Trunk-Based** 优点是无合并负担、部署频繁；缺点是依赖完善的测试与特性开关体系，不适合初学者团队。
+- **Release Flow** 是 GitHub 官方在 GitHub Flow 之外推荐的另一种模式：功能开发合入 main，需要发版时从 main 切 release 分支做版本化发布。
 
-- 仓库根目录：`.github/CODEOWNERS`
-- 仓库根目录：`CODEOWNERS`
-- `docs/` 目录：`docs/CODEOWNERS`
+## 5. 分支保护规则：让模型强制落地
 
-### 4.2 CODEOWNERS 语法
+光有模型不执行等于没有。**分支保护规则（branch protection rules）** 在 GitHub 上强制执行：
+
+路径：仓库 **Settings → Branches → Branch protection rules → Add rule**。
+
+### 5.1 常用规则项
+
+| 规则 | 作用 |
+| :--- | :--- |
+| Branch name pattern | 匹配要保护的分支（如 `main`、`release/*`，支持 fnmatch 通配符） |
+| Require a pull request before merging | 禁止直接推送，所有改动必须走 PR |
+| Require approvals | 至少 N 人批准才能合并 |
+| Require status checks to pass | 所有 CI 检查通过才能合并 |
+| Require branches to be up to date | 合并前必须与基础分支同步 |
+| Require review from Code Owners | 需要 CODEOWNERS 指定的人审查 |
+| Restrict who can push | 限制谁可以直接推送 |
+| Allow force pushes / deletions | 是否允许强推与删除（生产分支建议禁用） |
+
+### 5.2 推荐配置模板
+
+**main 分支（最严格）**：
+
+- 必须 PR 合并 + 至少 2 人批准 + 所有状态检查通过 + 禁止强推 + 禁止删除 + 对管理员同样生效。
+
+**develop 分支（中等）**：
+
+- 必须 PR 合并 + 至少 1 人批准 + 状态检查通过。
+
+**feature/* 分支（宽松）**：
+
+- 不设保护，开发者自由操作，合并后自动删除。
+
+> 注意：状态检查只能选**已运行过至少一次**的检查，否则下拉框里看不到该检查项；GitHub 官方也提醒，各工作流中 job 名称必须唯一，否则状态检查结果会歧义、卡住合并。
+
+### 5.3 其他保护机制：Rulesets 与 CODEOWNERS
+
+- **Rulesets（规则集）**：较新的替代方案，支持把多条规则打包应用于整个分支/标签，比单条保护规则更易管理。
+- **CODEOWNERS**：在 `.github/CODEOWNERS` 中按路径指定负责人，改动该路径文件时自动要求对应负责人审查：
 
 ```gitignore
- # 语法：模式 @团队或用户
- # 整个仓库的所有者
- *
- # 特定目录的所有者
- /
- /
- # 特定文件类型的所有者
- *
- *
- # 特定文件的所有者
- README.md @maintainer # README.md 文件变更需要 maintainer 审查
+# .github/CODEOWNERS
+# 整个仓库的默认所有者
+* @maintainer
+# src/ 目录需要前端团队审查
+/src/ @frontend-team
+# 安全相关文件必须安全负责人审查
+SECURITY.md @security-lead
 ```
 
-### 4.3 CODEOWNERS 匹配规则
-
-- 匹配顺序：从上到下，找到第一个匹配的规则即生效
-- 更具体的模式优先于更通用的模式
-- 以 `#` 开头的行是注释
-- 空行被忽略
-
-## 5. 分支操作实战
-
-### 5.1 GitHub Flow 分支操作
-
-```bash
- # 1. 确保本地 main 分支是最新的
- git checkout main
- git pull origin main
- # 2. 创建并切换到 feature 分支
- git checkout -b feature/add-login
- # 3. 进行开发并提交代码
- git add .
- git commit -m "Add login functionality"
- # 4. 推送到远程仓库（首次推送）
- git push -u origin feature/add-login
- # 5. 后续推送
- git push
- # 6. 完成开发后，在 GitHub 上打开 PR
- # 7. 通过审查后，合并 PR
- # 8. 清理本地分支
- git checkout main
- git pull origin main
- git branch -d feature/add-login
-```
-
-### 5.2 Git Flow 分支操作
-
-```bash
- # 1. 从 develop 分支创建 feature 分支
- git checkout develop
- git pull origin develop
- git checkout -b feature/add-login
- # 2. 开发完成后，合并回 develop
- git checkout develop
- git merge feature/add-login
- # 3. 创建 release 分支
- git checkout -b release/v1.0.0
- # 4. 完成发布准备后，合并到 main 和 develop
- git checkout main
- git merge release/v1.0.0
- git tag v1.0.0
- git checkout develop
- git merge release/v1.0.0
- # 5. 处理热修复
- git checkout main
- git checkout -b hotfix/security-patch
- git checkout main
- git merge hotfix/security-patch
- git tag v1.0.1
- git checkout develop
- git merge hotfix/security-patch
-```
+### 5.4 合并策略：与保护规则配套的最后一环
 
-## 6. 常见问题与解决方案
+分支保护管"能不能合"，合并策略管"怎么合"，两者配套使用：
 
-### 6.1 状态检查问题
+| 策略 | 历史形态 | 使用建议 |
+| :--- | :--- | :--- |
+| Create a merge commit | 保留全部提交 + 一个合并提交 | 需要保留完整开发过程 |
+| Squash and merge | 压缩为一个提交 | 功能分支提交琐碎时最常用 |
+| Rebase and merge | 线性历史，无合并提交 | 追求干净线性的提交图 |
 
-#### 6.1.1 状态检查名称错误
+在仓库 **Settings → General → Merge button** 中可以只开放允许的策略（例如团队统一只用 Squash）。配合保护规则中的 "Require branches to be up to date"，能保证合入 main 的代码永远基于最新主干。
 
-- **问题**：Actions job 改名后，保护规则里的旧名称不生效，导致 PR 永远等不到「绿灯」
-- **解决方案**：
+## 6. 常见错误与对策
 
-1.  在 GitHub 上查看最新的状态检查名称
-2.  更新分支保护规则中的状态检查名称
-3.  重新运行 CI 检查
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 直接推送 main 被拒 | `You are not allowed to push code to this branch` | main 开启了"必须 PR 合并"保护 | 创建功能分支 → 发起 PR → 审查通过后合并 |
+| 状态检查名称不匹配 | PR 永远等不到绿灯 | Actions job 改名后保护规则仍是旧名称 | 在 PR 页面查看实际检查名称，更新保护规则 |
+| 强制推送被禁止 | `You're not allowed to force push` | 保护规则禁用了 force push | 遵守规则走 PR 流程；确需强推时联系管理员评估后放开 |
+| 无法批准自己的 PR | GitHub 界面无 Approve 按钮 | GitHub 不允许作者自审自批 | 邀请团队成员审查；配置 CODEOWNERS 指定审查者 |
+| 保护规则不生效 | 管理员仍能绕过 | 未勾选 "Include administrators" | 在规则中勾选"对管理员同样生效" |
+| 找不到所需检查项 | 状态检查下拉列表没有目标项 | 该检查从未运行过 | 先推送代码让检查运行一次，之后即可勾选为 required |
 
-#### 6.1.2 状态检查超时
+## 7. 实战练习
 
-- **问题**：CI 检查超时，导致 PR 无法合并
-- **解决方案**：
+### 练习 1：体验 GitHub Flow 全流程（入门）
+- **题目描述**：在测试仓库中走一遍 GitHub Flow：main → feature 分支 → 提交推送 → 创建 PR → 合并 → 删除分支。
+- **提示**：按 2.3 小节命令行操作。
+- **参考答案要点**：完整走完"创建分支→开发→PR→合并→清理"循环；观察合并后 main 始终保持可部署状态。
 
-1.  检查 CI 配置，优化构建时间
-2.  增加 CI 超时时间
-3.  考虑将大型测试拆分为多个任务
+### 练习 2：为 main 配置保护规则（进阶）
+- **题目描述**：为仓库 main 分支添加保护规则：必须 PR 合并、至少 1 人批准、禁止强推，然后尝试直接推送 main 验证被拦截。
+- **提示**：Settings → Branches → Add rule；Branch name pattern 填 `main`。
+- **参考答案要点**：配置后直接 `git push origin main` 会收到权限拒绝提示；改用 PR 流程后正常合并。
 
-### 6.2 分支操作问题
+### 练习 3：编写 CODEOWNERS（进阶）
+- **题目描述**：创建 `.github/CODEOWNERS`，让 `docs/` 目录变更需要指定人审查，并验证 PR 会自动请求该人审查。
+- **提示**：语法 `路径 @用户名`；`/docs/ @alice`。
+- **参考答案要点**：推送 CODEOWNERS 后，改动 docs/ 的 PR 会自动把指定用户加为审查者。
 
-#### 6.2.1 强制推送被禁止
+### 练习 4：对比两种模型（综合）
+- **题目描述**：用文档或图示对比 GitHub Flow 与 Git Flow 在同一项目上的分支演进，说明各自适合什么团队。
+- **提示**：关注长期分支数量、release/hotfix 的处理差异。
+- **参考答案要点**：GitHub Flow 单 main + 短命 feature 分支；Git Flow 有 main/develop/release/hotfix 五类分支；持续部署选前者，版本节奏发布选后者。
 
-- **问题**：尝试强制推送时收到错误
-- **解决方案**：
+### 练习 5：规则集配置（综合）
+- **题目描述**：用 Rulesets 为 `release/*` 分支创建一条规则：要求 2 人批准 + 状态检查通过，并验证对 `release/v1.0.0` 生效。
+- **提示**：Settings → Rules → Rulesets → New ruleset；目标分支模式 `release/*`。
+- **参考答案要点**：规则集匹配模式支持通配符；创建一个 release 分支并推送验证规则生效。
 
-1.  对于保护的分支，避免使用强制推送
-2.  如果确实需要，联系仓库管理员临时允许强制推送
-3.  考虑使用 `git push --force-with-lease` 代替 `git push --force`
+## 8. 一句话记忆
 
-#### 6.2.2 分支合并冲突
+**分支模型决定"路怎么修"（GitHub Flow 轻、Git Flow 全），分支保护决定"车怎么管"（PR 是收费站，CI 是检查站，强推与直推都被拦下），模型 + 规则共同保证 main 始终安全可用。**
 
-- **问题**：PR 合并时出现冲突
-- **解决方案**：
+## 参考链接与延伸阅读
 
-1.  在本地解决冲突：
+- [GitHub 文档（官方中文）：GitHub Flow](https://docs.github.com/zh/get-started/using-github/github-flow)
+- [GitHub 文档：关于受保护分支](https://docs.github.com/zh/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
+- [GitHub 文档：管理分支保护规则](https://docs.github.com/zh/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule)
+- [GitHub 文档：关于规则集（Rulesets）](https://docs.github.com/zh/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
+- [GitHub 文档：关于 CODEOWNERS](https://docs.github.com/zh/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
+- [Git Flow 经典文章（Vincent Driessen）](https://nvie.com/posts/a-successful-git-branching-model/)
 
-```bash
- git checkout feature-branch
- git pull origin main
- # 解决冲突
- git add .
- git commit -m "Resolve merge conflicts"
- git push
-```
+### 延伸阅读
 
-2.  使用 GitHub 网页界面解决冲突
-
-### 6.3 权限问题
-
-#### 6.3.1 无法推送至保护分支
-
-- **问题**：收到「You are not allowed to push code to this branch」错误
-- **解决方案**：
-
-1.  确认是否有推送权限
-2.  对于保护的分支，使用 PR 流程而不是直接推送
-3.  联系仓库管理员调整权限
-
-#### 6.3.2 无法批准自己的 PR
-
-- **问题**：GitHub 不允许作者批准自己的 PR
-- **解决方案**：
-
-1.  邀请团队成员审查 PR
-2.  确保 CODEOWNERS 配置正确
-
-## 7. 最佳实践
-
-### 7.1 分支命名规范
-
-- **feature 分支**：`feature/功能描述`，如 `feature/add-login`
-- **bugfix 分支**：`bugfix/问题描述`，如 `bugfix/fix-login-error`
-- **hotfix 分支**：`hotfix/问题描述`，如 `hotfix/security-patch`
-- **release 分支**：`release/版本号`，如 `release/v1.0.0`
-
-### 7.2 合并策略
-
-- **默认分支**：选择一种合并策略并保持一致
-- **Squash merge**：将多个提交压缩为一个，保持历史简洁
-- **Merge commit**：保留所有提交历史
-- **Rebase and merge**：将提交重新基于目标分支，创建线性历史
-
-### 7.3 分支保护策略
-
-- **生产分支（main/master）**：最严格的保护，要求多人审查和所有状态检查通过
-- **开发分支（develop）**：中等保护，要求至少一人审查和状态检查通过
-- **功能分支（feature/\*）**：最少保护，允许开发者自由操作
-
-### 7.4 CI/CD 集成
-
-- **状态检查**：配置必要的 CI 检查，如代码质量、单元测试、构建等
-- **部署流水线**：设置自动化部署流程，确保合并到 main 分支后自动部署
-- **环境隔离**：使用不同的环境（开发、测试、生产）进行部署
-
-### 7.5 团队协作
-
-- **CODEOWNERS**：为不同模块设置明确的代码所有者
-- **PR 模板**：使用 PR 模板，确保 PR 包含必要的信息
-- **分支清理**：定期清理已合并的分支，保持仓库整洁
-- **文档**：记录分支模型和工作流程，确保团队成员理解并遵循
-
-## 8. 实际应用案例
-
-### 8.1 大型开源项目
-
-#### 8.1.1 案例描述
-
-- **项目**：一个大型前端框架
-- **分支模型**：Git Flow
-- **保护规则**：
-- `main` 分支：要求 2 人审查，所有 CI 检查通过
-- `develop` 分支：要求 1 人审查，所有 CI 检查通过
-- `release/*` 分支：要求 2 人审查，所有 CI 检查通过
-
-#### 8.1.2 工作流程
-
-1. 贡献者从 `develop` 分支创建 feature 分支
-2. 完成开发后，打开 PR 到 `develop` 分支
-3. 经过审查和 CI 检查后，合并到 `develop`
-4. 当准备发布时，从 `develop` 创建 `release/*` 分支
-5. 在 `release/*` 分支上进行测试和修复
-6. 完成后，合并到 `main` 和 `develop`
-7. 如有紧急问题，从 `main` 创建 hotfix 分支
-
-### 8.2 中小型团队项目
-
-#### 8.2.1 案例描述
-
-- **项目**：一个 Web 应用
-- **分支模型**：GitHub Flow
-- **保护规则**：
-- `main` 分支：要求 1 人审查，所有 CI 检查通过
-
-#### 8.2.2 工作流程
-
-1. 开发者从 `main` 分支创建 feature 分支
-2. 完成开发后，打开 PR 到 `main` 分支
-3. 经过审查和 CI 检查后，合并到 `main`
-4. 合并后自动部署到生产环境
-
-## 9. 延伸阅读
-
-- [GitHub Flow 指南](https://docs.github.com/en/get-started/using-github/github-flow) <!-- nofollow -->
-- [Git Flow 工作流](https://nvie.com/posts/a-successful-git-branching-model/) <!-- nofollow -->
-- [GitHub 分支保护规则文档](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/about-protected-branches) <!-- nofollow -->
-- [CODEOWNERS 文档](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) <!-- nofollow -->
-
-## 创建分支
-
-**基本写法：创建新分支**
-`git branch <分支名>`
-```bash
-# 创建新分支但不切换
-git branch feature/login
-```
-
----
-
-**基本写法：创建并切换分支**
-`git switch -c <分支名>`
-```bash
-# 创建新分支并立即切换
-git switch -c feature/login
-```
-
----
-
-**基本写法：checkout 方式创建并切换**
-`git checkout -b <分支名>`
-```bash
-# 旧写法创建并切换分支
-git checkout -b feature/login
-```
-
----
-
-**基本写法：从指定提交创建分支**
-`git switch -c <分支名> <提交ID>`
-```bash
-# 从指定提交点创建新分支
-git switch -c hotfix abc1234
-```
-
----
-
-**基本写法：从远程分支创建**
-`git switch -c <本地分支> origin/<远程分支>`
-```bash
-# 基于远程分支创建本地分支
-git switch -c feature origin/feature
-```
-
----
-
-**基本写法：创建追踪远程分支**
-`git switch --track origin/<远程分支>`
-```bash
-# 创建并追踪同名远程分支
-git switch --track origin/feature
-```
-
----
-
-## 查看分支
-
-**基本写法：查看本地分支**
-`git branch`
-```bash
-# 列出所有本地分支
-git branch
-```
-
----
-
-**基本写法：查看所有分支**
-`git branch -a`
-```bash
-# 列出本地和远程所有分支
-git branch -a
-```
-
----
-
-**基本写法：查看远程分支**
-`git branch -r`
-```bash
-# 仅列出远程分支
-git branch -r
-```
-
----
-
-**基本写法：查看分支追踪信息**
-`git branch -vv`
-```bash
-# 查看分支追踪关系和最新提交
-git branch -vv
-```
-
----
-
-**基本写法：按最新提交排序**
-`git branch --sort=-committerdate`
-```bash
-# 按最近提交时间排序分支
-git branch --sort=-committerdate
-```
-
----
-
-**基本写法：查看已合并分支**
-`git branch --merged`
-```bash
-# 查看已合并到当前分支的分支
-git branch --merged
-```
-
----
-
-**基本写法：查看未合并分支**
-`git branch --no-merged`
-```bash
-# 查看未合并到当前分支的分支
-git branch --no-merged
-```
-
----
-
-## 切换分支
-
-**基本写法：切换到指定分支**
-`git switch <分支名>`
-```bash
-# 切换到指定分支（推荐写法）
-git switch main
-```
-
----
-
-**基本写法：checkout 切换分支**
-`git checkout <分支名>`
-```bash
-# 旧写法切换分支
-git checkout main
-```
-
----
-
-**基本写法：切换到上一个分支**
-`git switch -`
-```bash
-# 快速切换到上次所在的分支
-git switch -
-```
-
----
-
-**基本写法：checkout 切换上一分支**
-`git checkout -`
-```bash
-# 旧写法切换到上一个分支
-git checkout -
-```
-
----
-
-**基本写法：切换到远程分支**
-`git switch <远程分支名>`
-```bash
-# 自动追踪同名远程分支并切换
-git switch origin/feature
-```
-
----
-
-## 删除分支
-
-**基本写法：删除已合并分支**
-`git branch -d <分支名>`
-```bash
-# 删除已合并的本地分支
-git branch -d feature/login
-```
-
----
-
-**基本写法：强制删除分支**
-`git branch -D <分支名>`
-```bash
-# 强制删除未合并的分支
-git branch -D feature/abandoned
-```
-
----
-
-**基本写法：删除远程分支**
-`git push origin --delete <分支名>`
-```bash
-# 删除远程仓库的分支
-git push origin --delete old-feature
-```
-
----
-
-**基本写法：删除远程分支（替代方式）**
-`git push origin :<分支名>`
-```bash
-# 通过推送空分支删除远程分支
-git push origin :old-feature
-```
-
----
-
-## 重命名分支
-
-**基本写法：重命名当前分支**
-`git branch -m <新名>`
-```bash
-# 重命名当前所在分支
-git branch -m main
-```
-
----
-
-**基本写法：重命名指定分支**
-`git branch -m <旧名> <新名>`
-```bash
-# 重命名指定分支
-git branch -m old-name new-name
-```
-
----
-
-**基本写法：重命名远程分支**
-`git push origin :<旧名> <新名>`
-```bash
-# 删除旧远程分支并推送新名分支
-git push origin :old-feature new-feature
-```
-
----
-
-**基本写法：设置新上游**
-`git branch -u origin/<新名>`
-```bash
-# 为重命名后的分支设置新的追踪关系
-git branch -u origin/new-feature
-```
-
----
-
-## 分支关联管理
-
-**基本写法：设置上游分支**
-`git branch --set-upstream-to=origin/<分支名>`
-```bash
-# 为当前分支设置远程追踪
-git branch --set-upstream-to=origin/main
-```
-
----
-
-**基本写法：设置上游（短写法）**
-`git branch -u origin/<分支名>`
-```bash
-# 设置当前分支的远程追踪
-git branch -u origin/main
-```
-
----
-
-**基本写法：取消上游关联**
-`git branch --unset-upstream`
-```bash
-# 移除当前分支的远程追踪关系
-git branch --unset-upstream
-```
-
----
-
-**基本写法：查看所有分支的追踪关系**
-`git branch -vv`
-```bash
-# 显示各分支的远程追踪状态
-git branch -vv
-```
-
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
-
-## 延伸阅读
-
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
+- 分支命令操作速查（创建/切换/删除/重命名），见 037-045 篇 Git 模块文档。
+- 团队协作规范（提交信息/PR 模板/审查清单），见 005 篇《协作开发规范》。
+- 代码所有者自动分配审查，见 025 篇《CODEOWNERS》。

@@ -4,9 +4,9 @@ title: Vite 快速上手与项目结构
 module: vite
 category: Vite
 difficulty: beginner
-description: 'Vite 快速上手：创建项目、目录结构、三个核心命令与 ESM 加速原理'
+description: 'Vite 快速上手：手把手创建项目、读懂目录结构、掌握 dev/build/preview 三个核心命令与 ESM 加速原理'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - vite/003-ConfigFile
   - vite/004-StaticAssets
@@ -14,31 +14,60 @@ related:
 prerequisites:
   - javascript/005-ControlFlow
 ---
-## 1. 写在前面
 
-Vite 是目前主流的下一代前端构建工具。本文面向零基础读者，目标是：花 10 分钟跑通一个 Vite 项目，并理解它"为什么快"。阅读本文前建议先通读 001 篇《Vite 构建工具概述》，掌握基本概念。
+## 1. 写在前面：像第一次开火做饭一样开始
 
-动手之前，请确认环境满足两个条件：
+想象你第一次进厨房做饭。你不需要先成为大厨，只需要按步骤来：开火（点火）、热锅（预热）、下食材（倒入代码）、起锅（产出结果）。做饭最怕的不是"不会做"，而是**在错误的环节做错误的事**——比如菜还没熟就关火，或者油锅还没热就下菜。
+
+跑通一个 Vite 项目也是如此。本文是一篇**操作向导**，不追求一次讲透所有原理，而是带你按 7 个步骤亲手跑通"创建项目 → 启动开发 → 修改页面 → 生产构建 → 本地预览"的完整流程。跟着做一遍，比读十遍理论有用。阅读本文前建议先通读 001 篇《Vite 构建工具概述》，了解基本概念；本系列采用 Vite 8（2026 年 3 月发布的最新大版本）。
+
+## 2. 第 0 步：检查灶台——环境准备
+
+做饭前要先确认炉子能点火。动手之前，请先确认环境满足两个条件：
 
 | 环境项 | 要求 | 说明 |
 | --- | --- | --- |
-| Node.js | 20.19+ 或 22.12+ | Vite 8 要求较新的 Node 版本，可用 `node -v` 检查 |
+| Node.js | 20.19+ 或 22.12+ | Vite 8 要求较新的 Node 版本，用 `node -v` 检查 |
 | 包管理器 | pnpm 9+ / npm 10+ / yarn 4+ | 本文统一使用 pnpm |
 
-Vite 官方文档（中文）：https://cn.vite.dev/
-
-## 2. 创建第一个项目
-
-使用官方脚手架命令，一行代码即可创建项目：
+在终端中依次执行检查命令：
 
 ```bash
-# 交互式创建：会提示输入项目名、选择框架与语言
+node -v        # 应输出 v20.19.0 或更高（如 v22.x）
+pnpm -v        # 应输出 9.x 或更高；若提示不存在，先安装 Node 后执行 corepack enable
+```
+
+如果 `pnpm` 不可用（常见于 Windows 环境），安装 Node.js 之后执行一次 `corepack enable` 即可启用 Node 内置的 pnpm。
+
+## 3. 第 1 步：点火——创建项目
+
+使用官方脚手架 `create-vite`，一行命令即可创建项目。有两种方式：
+
+```bash
+# 方式一：交互式创建（推荐新手）
+# 会依次提示输入项目名、选择框架与 TypeScript 选项
 pnpm create vite my-vite-app
-# 直接指定框架模板，跳过交互
+
+# 方式二：直接指定模板，跳过交互
 pnpm create vite my-vite-app --template react-ts
 ```
 
-讲解：`pnpm create vite` 会拉取官方模板到 `my-vite-app` 目录。第二条命令通过 `--template` 直接指定模板，常见模板有 `vanilla`（原生 JS）、`vanilla-ts`、`vue`、`vue-ts`、`react`、`react-ts`、`svelte-ts` 等。Vite 8 还支持通过 `--template` 组合前端框架与后端框架（如 `--template react-ts-nest`）。
+官方支持的模板预设（create-vite 9.x）：
+
+| JavaScript | TypeScript | 说明 |
+| --- | --- | --- |
+| vanilla | vanilla-ts | 纯原生 JavaScript/TypeScript，无框架 |
+| vue | vue-ts | Vue 3 框架 |
+| react / react-compiler | react-ts / react-compiler-ts | React 框架（compiler 为开启 React Compiler 的变体） |
+| preact | preact-ts | 轻量级 React 兼容框架 |
+| lit | lit-ts | Lit Web Components |
+| svelte | svelte-ts | Svelte 框架 |
+| solid | solid-ts | Solid 框架 |
+| qwik | qwik-ts | Qwik 框架 |
+
+讲解：`pnpm create vite` 会拉取官方模板代码到 `my-vite-app` 目录。如果希望在当前目录就地创建，可以用 `.` 作为项目名（`pnpm create vite .`）。本文以下操作以 `react-ts` 模板为例，但你完全可以选择 `vanilla` 或 `vue-ts`——核心步骤完全一致。
+
+## 4. 第 2 步：热锅——安装依赖
 
 进入项目并安装依赖：
 
@@ -47,98 +76,77 @@ cd my-vite-app
 pnpm install
 ```
 
-讲解：脚手架只生成骨架，依赖需要单独安装。安装完成后即可运行，无需任何额外配置。
+讲解：脚手架只生成项目骨架（源码 + 配置文件），第三方依赖需要单独安装。执行 `pnpm install` 后，终端会输出依赖解析与安装进度，完成后项目即可运行。此时可以打开编辑器（如 VS Code / Trae IDE）把项目目录加进来，方便后续编辑。
 
-## 3. 项目目录结构
+## 5. 第 3 步：认识厨房布局——项目目录结构
 
 以 `react-ts` 模板为例，核心文件如下：
 
 ```text
 my-vite-app/
-├── index.html          # 页面入口 HTML（唯一的 HTML 文件）
-├── package.json        # 依赖与脚本
-├── vite.config.ts      # Vite 配置文件（本模块 003 篇详解）
-├── tsconfig.json       # TypeScript 配置
-├── public/             # 公共静态资源（本模块 004 篇详解）
+├── index.html          # 页面入口 HTML（唯一的 HTML 文件，位于项目根目录）
+├── package.json        # 依赖与脚本定义
+├── vite.config.ts      # Vite 配置文件（003 篇详解）
+├── tsconfig.json       # TypeScript 编译配置
+├── tsconfig.app.json   # 应用代码的 TS 配置（模板拆分出来的）
+├── public/             # 公共静态资源，原样复制（004 篇详解）
 └── src/
     ├── main.tsx        # 应用入口，挂载到 #root
     ├── App.tsx         # 根组件
-    ├── App.css         # 组件样式
-    └── assets/         # 需要构建处理的资源
+    ├── App.css         # 根组件样式
+    ├── index.css       # 全局样式
+    └── assets/         # 需要构建处理的资源（图片、字体等）
 ```
 
-讲解：注意 `index.html` 位于项目根目录而非 `src` 内，这是 Vite 与传统脚手架（如 CRA）的重要差异。`index.html` 中通过 `<script type="module" src="/src/main.tsx">` 引用源码入口，浏览器会直接以原生 ESM 方式加载它。
+请特别注意：**`index.html` 位于项目根目录，而不是 `src` 内**。这是 Vite 与传统脚手架（如 Create React App）的重要差异。`index.html` 是整个应用的入口，其中通过 `<script type="module">` 引用源码入口：
 
 ```html
 <!-- index.html（模板默认内容节选） -->
-<div id="root"></div>
-<script type="module" src="/src/main.tsx"></script>
+<!doctype html>
+<html lang="zh-CN">
+  <body>
+    <div id="root"></div>
+    <!-- type="module" 告诉浏览器：这是 ES 模块，按模块规范加载 -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
 ```
 
-讲解：`type="module"` 告诉浏览器按 ES Module 规范加载脚本。`src/main.tsx` 中再通过 `import` 递归引用其他模块，Vite 的开发服务器会拦截并即时转换这些请求。
+讲解：`type="module"` 让浏览器以原生 ES Module 方式加载脚本。`src/main.tsx` 中再通过 `import` 递归引用其他模块，浏览器按需发起请求，Vite 的开发服务器会拦截并即时转换这些请求（原理详见 001 篇第 4 节）。
 
-## 4. 三个核心命令
-
-脚手架在 `package.json` 中预置了脚本，全部围绕三个命令展开：
-
-```json
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  }
-}
-```
-
-| 命令 | 对应脚本 | 作用 | 产物 |
-| --- | --- | --- | --- |
-| `pnpm dev` | `vite` | 启动开发服务器，默认端口 5173 | 无（内存中运行） |
-| `pnpm build` | `vite build` | 生产构建，生成优化产物 | `dist/` 目录 |
-| `pnpm preview` | `vite preview` | 本地预览构建产物 | 读取 `dist/` |
-
-三者关系可以用一句话概括：**开发用 dev，上线前 build，验证产物用 preview**。
+## 6. 第 4 步：下食材——启动开发服务器
 
 ```bash
-pnpm dev       # 终端会输出 Local: http://localhost:5173/
-pnpm build     # 输出 dist/ 及每个 chunk 的体积报告
-pnpm preview   # 以 4173 端口预览 dist/ 产物
+pnpm dev
 ```
 
-讲解：`preview` 模拟生产环境的静态服务器，专门用于检查 build 产物是否正确（资源路径、分包、CDN 部署等），避免"本地正常、上线 404"。
-
-## 5. 为什么快：ESM 与依赖预构建
-
-Vite 的"快"来自两项核心技术，理解它们比记住命令更重要。
-
-### 5.1 原生 ES Modules：按需编译
-
-传统打包器（如 Webpack）在启动时会把整个项目打包成一个 bundle，项目越大启动越慢。Vite 反其道而行：开发阶段**不打包**，浏览器直接通过 `<script type="module">` 加载源码，Vite 只对"浏览器当前请求的那个文件"做即时转换。
+启动成功后，终端会输出类似下面的信息：
 
 ```text
-传统方式：所有源码 -> 打包成一个 bundle -> 浏览器下载
-Vite 方式：浏览器按需请求每个模块 -> Vite 逐个转换 -> 浏览器执行
+  VITE v8.x.x  ready in 300 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.1.5:5173/
 ```
 
-讲解：因此冷启动速度与项目规模几乎无关，只取决于浏览器并发请求模块的速度。修改代码后也只重传被影响的模块，这就是 HMR 毫秒级响应的基础。
+在浏览器打开 `http://localhost:5173/`，你会看到模板默认页面。此时做两件事：
 
-### 5.2 依赖预构建
+1. **观察终端**：访问时终端会打印请求日志（如 `→ /src/main.tsx`），这就是"浏览器按需请求、Vite 逐个转换"的现场；
+2. **观察端口**：如果 5173 被占用，Vite 会自动改用 5174、5175……无需手动处理。
 
-`node_modules` 中的第三方依赖大多不是浏览器可直接加载的 ESM（可能是 CommonJS，或由成百上千个小文件组成）。Vite 在启动时会用打包器把这些依赖**预构建**成单个 ESM 文件，缓存在 `node_modules/.vite` 目录。
-
-```text
-依赖预构建的两大收益：
-1. 兼容性：CommonJS / UMD 依赖转为浏览器可识别的 ESM
-2. 性能：数百个小模块合并为一个请求，浏览器只需加载一次
+```bash
+# 其他常用启动选项
+pnpm dev --port 3000     # 指定端口
+pnpm dev --open          # 启动后自动打开浏览器
+pnpm dev --host          # 允许局域网其他设备通过 IP 访问
 ```
 
-讲解：预构建只针对 `node_modules`，源码仍按需转换。若修改依赖版本或升级 Vite，缓存可能失效，删除 `node_modules/.vite` 后重启即可重建。
+## 7. 第 5 步：调口味——修改第一个页面
 
-## 6. 修改第一个页面
-
-打开 `src/App.tsx`，替换为以下内容（JS 项目则用 `.js`）：
+打开 `src/App.tsx`，替换为以下内容（JS 项目则对应编辑 `src/App.js`）：
 
 ```tsx
+// src/App.tsx
 import './App.css'
 
 function App() {
@@ -153,22 +161,161 @@ function App() {
 export default App
 ```
 
-讲解：保存文件后观察浏览器——页面内容即时更新且不会丢失状态，这正是 Vite 的 HMR 特性（006 篇详述）。`import './App.css'` 直接在组件中引入样式，Vite 会自动处理。
+保存文件，然后观察浏览器：页面内容**即时更新**，且输入框内容、滚动位置等页面状态不会丢失——这正是 Vite 的 HMR（模块热替换）特性，其原理见 001 篇第 6 节，深入内容见 006 篇。
 
-## 7. 常见问题
+再做一个实验：把 `<h1>` 的文本改回来，再改一下 `src/App.css` 中的背景色，体会"改代码 → 保存 → 页面秒变"的开发节奏。
 
-问题一：端口被占用。`pnpm dev` 会自动改用下一个可用端口（5174、5175...），无需处理。
+## 8. 第 6 步：起锅——生产构建
 
-问题二：Windows 上 pnpm 不可用。安装 Node.js 后执行 `corepack enable` 启用内置 pnpm。
+开发模式追求"快"，生产模式追求"优"。当你的应用开发完成准备上线时，执行：
 
-问题三：模板默认内容太多。删除 `src` 下不需要的文件与 `public` 中的 logo，保持目录干净。
+```bash
+pnpm build
+```
 
-问题四：编辑器报模块找不到。先确认 `pnpm install` 执行成功，再重启编辑器让 TS 服务重新加载。
+构建完成后，终端会输出产物清单与体积报告：
 
-## 8. 参考资源
+```text
+dist/ 目录已生成
+assets/
+├── index-3f2b1c2a.js    # JS 产物（自动加内容哈希）
+├── index-8a9d0f2e.css   # CSS 产物
+└── vite-6a7b8c9d.svg    # 图片等静态资源
+index.html                # 最终 HTML
+```
 
-Vite 官方文档：https://vite.dev/guide/
+讲解：`pnpm build` 调用 Rolldown（Vite 8 的统一打包引擎）对全部源码做打包、代码分割、压缩与 Tree Shaking，输出到 `dist/` 目录。文件名中的哈希基于内容生成——内容不变文件名不变，配合服务器缓存即可实现"内容更新后用户自动加载新版本"。
 
-Vite 中文文档：https://cn.vite.dev/guide/
+## 9. 第 7 步：试菜——本地预览构建产物
 
-create-vite 模板列表：https://github.com/vitejs/vite/tree/main/packages/create-vite
+```bash
+pnpm preview
+```
+
+讲解：`preview` 启动一个静态文件服务器（默认端口 4173）来模拟生产环境，专门用于**检查 build 产物是否正确**——资源路径、分包结果、CDN 部署效果等。它能帮你避免"本地正常、上线 404"的经典事故。它与 `dev` 的本质区别：dev 提供的是源码转换服务，preview 提供的是 `dist/` 的静态托管。
+
+## 10. 三个核心命令总览
+
+脚手架在 `package.json` 中预置了脚本，全部围绕三个命令展开：
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}
+```
+
+| 命令 | 对应脚本 | 作用 | 端口 | 产物 |
+| --- | --- | --- | --- | --- |
+| `pnpm dev` | `vite` | 启动开发服务器（按需编译 + HMR） | 5173 | 无（内存中运行） |
+| `pnpm build` | `vite build` | 生产构建（打包、压缩、优化） | 无 | `dist/` 目录 |
+| `pnpm preview` | `vite preview` | 本地预览构建产物 | 4173 | 读取 `dist/` |
+
+三者关系可以用一句话概括：**开发用 dev，上线前 build，验证产物用 preview**。这是 Vite 项目日常开发的黄金三步。
+
+## 11. 为什么快：一次看懂 ESM 与依赖预构建
+
+（详见 001 篇第 4-5 节，这里只做操作视角的速览。）
+
+- **按需编译**：浏览器原生 ESM 支持让 dev server 只需转换"当前请求的文件"，冷启动与项目规模无关；
+- **依赖预构建**：`node_modules` 中的依赖在启动时被 Rolldown 预合并为 ESM 并缓存到 `node_modules/.vite`，浏览器一次请求即可加载；
+- **HMR**：只推送被修改模块的新代码，改动秒级生效。
+
+排查问题时可以记住两个"重来"命令：
+
+```bash
+pnpm dev --force     # 强制重新预构建依赖（解决依赖缓存异常）
+rm -rf node_modules/.vite   # Windows 下用 Remove-Item -Recurse -Force
+pnpm dev             # 删除缓存目录后重启，效果同上
+```
+
+## 12. 常见错误与对策表
+
+| 序号 | 报错/现象 | 原因 | 解决办法 |
+| --- | --- | --- | --- |
+| 1 | `'pnpm' 不是内部或外部命令` | pnpm 未启用（Windows 常见） | 安装 Node.js 后执行 `corepack enable` |
+| 2 | 提示 Node 版本过低，创建或启动失败 | Node 版本低于 20.19+ / 22.12+ | 升级 Node 到受支持版本（建议 LTS 22.x） |
+| 3 | 端口被占用 | 5173 已被其他进程使用 | 无需处理，Vite 会自动顺延端口；或 `pnpm dev --port 3000` 指定 |
+| 4 | 编辑器报"找不到模块 react" | 依赖未安装或编辑器未重新加载 | 确认 `pnpm install` 成功；重启编辑器让 TS 服务重新加载 |
+| 5 | 页面打不开 `http://localhost:5173/` | dev server 未启动成功，或浏览器代理设置异常 | 查看终端输出确认 `ready`；检查代理软件是否拦截 localhost |
+| 6 | build 产物部署后白屏/404 | `base` 未按部署路径配置 | 在 `vite.config.ts` 设置 `base: '/子路径/'`，见 004 篇 |
+| 7 | 模板默认内容太多 | 脚手架自带演示页面与 logo | 按需删除 `src` 下不需要的文件与 `public/vite.svg`，保持目录干净 |
+
+## 13. 实战练习
+
+### 练习 1：无框架快速建站（vanilla 模板）
+
+**题目**：用 `vanilla` 模板创建一个项目，把默认页面改成展示"FANDEX 编程学习平台"标题的简单页面。
+
+**提示**：`pnpm create vite my-site --template vanilla`；页面内容在 `index.html`，逻辑在 `src/main.js`。
+
+**参考答案要点**：
+1. 创建项目、`pnpm install`、`pnpm dev`；
+2. 修改 `index.html` 中的 `<h1>` 文本为"FANDEX 编程学习平台"；
+3. 保存后浏览器自动热更新，无需刷新即可看到新标题。
+
+### 练习 2：体验 HMR 的状态保持
+
+**题目**：在页面中加一个输入框，输入内容后修改其他代码，观察输入框内容是否丢失；对比手动刷新（F5）的区别。
+
+**提示**：HMR 只替换变更模块；整页刷新会重置所有状态。
+
+**参考答案要点**：
+1. 在 `App.tsx` 中添加 `<input placeholder="试试输入内容" />`；
+2. 输入文字后修改 `App.css` 的背景色——输入框内容保留（HMR 生效）；
+3. 手动刷新浏览器——输入框内容清空。由此理解 HMR 的价值。
+
+### 练习 3：构建产物体检
+
+**题目**：执行 `pnpm build` 后，打开 `dist/index.html`，逐个检查其中引用的 JS/CSS 文件是否都存在于 `dist/assets/` 中。
+
+**提示**：`dist` 就是将要部署到服务器的全部内容；用 `pnpm preview` 验证产物可访问。
+
+**参考答案要点**：
+1. `dist/index.html` 中引用 `assets/index-xxx.js` 与 `assets/index-xxx.css`；
+2. 在 `dist/assets/` 中能找到同名文件；
+3. 用 `pnpm preview` 访问 `http://localhost:4173/`，页面正常渲染，说明产物完整。
+
+### 练习 4：局域网联调
+
+**题目**：用 `pnpm dev --host` 启动开发服务器，尝试用手机（与电脑同一 Wi-Fi）访问终端输出的 Network 地址。
+
+**提示**：`--host` 后 Vite 监听所有网卡地址，终端会输出形如 `http://192.168.x.x:5173/` 的地址。
+
+**参考答案要点**：
+1. 执行 `pnpm dev --host`，终端出现 `Network: http://192.168.x.x:5173/`；
+2. 手机浏览器打开该地址，能访问到开发中的页面；
+3. 注意：手机无法访问时检查电脑防火墙是否放行 5173 端口。
+
+### 练习 5：把已有静态网页改造成 Vite 项目
+
+**题目**：你手头有一个纯静态小网页（`index.html` + `style.css` + `main.js`，普通 `<script>` 标签引用），把它改造成一个能跑 `pnpm dev` / `pnpm build` 的 Vite 项目。
+
+**提示**：采用 11.1 节的手动安装方式；把 CSS/JS 移入 `src/`，HTML 的脚本引用改为 `<script type="module" src="/src/main.js">`。
+
+**参考答案要点**：
+1. 新建项目目录：`pnpm init`，再 `pnpm add -D vite`，补上 `dev/build/preview` 三个 scripts；
+2. 原 `index.html` 保留在根目录，把 `style.css`、`main.js` 移入 `src/`；
+3. 修改 `<script>` 标签为 `<script type="module" src="/src/main.js">`，页面中的 JS 改为用 `import './style.css'` 引入样式；
+4. `pnpm dev` 验证页面正常、`pnpm build` 验证能产出 `dist/`，改造完成。
+
+## 14. 一句话记忆
+
+**创建项目、安装依赖、`pnpm dev` 开发、`pnpm build` 上线、`pnpm preview` 验货——Vite 项目的日常就是这"三令五步"，而它的快来自浏览器原生 ESM 的按需加载**。
+
+## 15. 参考链接与延伸阅读
+
+- Vite 官方入门指南：https://cn.vite.dev/guide/
+- create-vite 模板列表：https://github.com/vitejs/vite/tree/main/packages/create-vite
+- 在线体验 Vite（vite.new）：https://vite.new/
+- Vite 为什么快（设计动机）：https://cn.vite.dev/guide/why
+
+延伸阅读：
+
+- 本模块 001 篇《Vite 构建工具概述》：理解按需编译与依赖预构建的原理；
+- 本模块 003 篇《Vite 配置文件详解》：学会修改端口、别名、代理；
+- 本模块 004 篇《Vite 静态资源处理》：搞清 public 与 src/assets 的区别；
+- 本模块 006 篇《开发服务器与 HMR》：深入热更新机制。

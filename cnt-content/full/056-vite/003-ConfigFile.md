@@ -4,9 +4,9 @@ title: Vite 配置文件详解
 module: vite
 category: Vite
 difficulty: beginner
-description: 'vite.config.ts 详解：defineConfig、路径别名、环境变量与 loadEnv'
+description: 'vite.config.ts 详解：defineConfig、plugins、路径别名、开发服务器代理与构建选项，用"不配 vs 配 vs 配好"三段对比讲透'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - vite/002-QuickStart
   - vite/006-DevServerHMR
@@ -14,7 +14,20 @@ related:
 prerequisites:
   - vite/002-QuickStart
 ---
-## 1. 配置文件是什么
+
+## 1. 从汽车仪表盘与方向盘说起
+
+想象你买了一辆新车。出厂时它就能开（这相当于 Vite 的"零配置开箱即用"），但你要真正舒适地驾驶，需要做三件事：
+
+1. **看懂仪表盘**：速度表、油量表、故障灯——这些数据告诉你车当前的状态（对应 Vite 的启动日志、构建报告）；
+2. **调整座椅和后视镜**：每个人的身高坐姿不同（对应端口、别名、代理等个性化设置）；
+3. **设定行车电脑**：经济模式/运动模式的切换（对应开发环境与生产环境的差异化配置）。
+
+如果什么都不调（不配），车能开，但未必顺心；如果调得乱七八糟（配错），可能比不配更糟；只有理解每一项的作用再动手（配好），才算真正掌控了这辆车。**vite.config.ts 就是这辆车的方向盘与仪表盘的集合**——它决定 Vite 在"哪个端口启动、如何解析路径、用哪些插件、构建产物长什么样"。
+
+本文采用**对比驱动**的写法：每一节都用"不配 vs 配 vs 配好"三档来展示，让你不仅知道"怎么配"，更知道"为什么要配"。
+
+## 2. 配置文件是什么
 
 Vite 的几乎所有行为（端口、别名、插件、构建选项）都可以通过项目根目录下的配置文件控制。Vite 会自动加载以下位置之一的文件（按优先级从高到低）：
 
@@ -24,52 +37,111 @@ Vite 的几乎所有行为（端口、别名、插件、构建选项）都可以
 | `vite.config.mjs` | 纯 ESM 的 JS 配置 |
 | `vite.config.js` | 普通 JS 配置（须为 ESM 或 CJS） |
 
-官方推荐一律使用 `vite.config.ts`：配置文件本身就是 TS 文件，编辑器能给出全量的选项提示与校验，这是 Vite 开箱即用的开发者体验。
+官方推荐一律使用 `vite.config.ts`：配置文件本身就是 TS 文件，编辑器能给出全量选项的补全与校验，这是 Vite 开箱即用的开发者体验。
 
 ```bash
-# 也可显式指定配置文件位置
+# 也可以显式指定配置文件位置（多项目共享配置时常用）
 vite --config my-config.ts
 ```
 
-讲解：配置文件的路径解析规则是"从进程当前工作目录向上查找"，通常放在项目根目录。修改配置文件后 Vite 会自动重启 dev server，无需手动操作。
+讲解：配置文件的查找规则是"从进程当前工作目录向上查找"，通常放在项目根目录。修改配置文件后 Vite 会自动重启 dev server，无需手动操作（少数插件注册类变更除外，见第 8 节错误表）。
 
-## 2. defineConfig：让配置拥有类型提示
+## 3. 第一组对比：不配 vs 配 vs 配好（defineConfig）
 
-直接导出对象也能工作，但更推荐用 `defineConfig` 包裹：
+### 不配
+
+```ts
+// 不创建 vite.config.ts：Vite 以默认配置运行
+// 默认端口 5173、默认根目录、默认构建输出 dist/
+```
+
+### 配（基础版）
 
 ```ts
 // vite.config.ts
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  root: '.',          // 项目根目录
-  base: '/',          // 公共基础路径（部署到子路径时修改）
-  plugins: [],
+  root: '.',          // 项目根目录（默认值就是当前目录）
+  base: '/',          // 公共基础路径（部署到子路径时修改，见 004 篇）
+  plugins: [],        // 插件列表
 })
 ```
 
-讲解：`defineConfig` 的实质是一个透传函数——它不改变对象内容，只是让 TypeScript 推断出配置对象的类型，从而获得补全与报错能力。它还可以接收**函数**，实现按环境返回不同配置：
+### 配好（进阶版）
+
+`defineConfig` 的实质是一个**透传函数**——它不改变对象内容，只是让 TypeScript 推断出配置对象的类型，从而获得补全与报错能力。它还支持接收**函数**，按环境返回不同配置：
 
 ```ts
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ command, mode }) => {
-  // command: 'serve'（dev）| 'build'
-  // mode: 'development' | 'production' 或自定义模式
+  // command: 'serve'（pnpm dev）| 'build'（pnpm build）
+  // mode: 'development' | 'production'，或自定义模式
   const isBuild = command === 'build'
   return {
     define: {
+      // 把"是否构建"注入为全局常量，源码中可直接使用
       __BUILD__: JSON.stringify(isBuild),
     },
   }
 })
 ```
 
-讲解：函数形式适合"开发与构建行为差异较大"的项目。`command` 区分 dev/build，`mode` 对应环境变量模式（见第 5 节），两者是最常用的两个入参。
+讲解：函数形式适合"开发与构建行为差异较大"的项目。`command` 区分 dev/build，`mode` 对应环境变量模式（见第 7 节），两者是最常用的两个入参。记住一个原则：**配置要放在离它职责最近的地方**——全局行为用顶层选项，开发专属行为放 `server`，构建专属行为放 `build`。
 
-## 3. resolve.alias：路径别名
+## 4. plugins：给汽车加装设备
 
-`@/` 指向 `src/` 是最常见的别名配置，能彻底告别 `../../` 这种相对路径地狱：
+### 不配
+
+```ts
+export default defineConfig({
+  // 不配插件：Vite 只处理原生能力（TS 转译、CSS、静态资源）
+})
+```
+
+### 配（框架必须）
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'   // React 官方插件
+import vue from '@vitejs/plugin-vue'       // Vue 官方插件（二选一）
+
+export default defineConfig({
+  plugins: [react()],
+})
+```
+
+### 配好（按需叠加）
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { visualizer } from 'rollup-plugin-visualizer' // 构建体积分析
+
+export default defineConfig({
+  plugins: [
+    react(),
+    // 体积分析插件：构建后生成 dist/stats.html，可视化每个 chunk 的体积
+    visualizer({ open: true }),
+  ],
+})
+```
+
+讲解：插件的常见用途——`@vitejs/plugin-react`（React Fast Refresh 热刷新）、`@vitejs/plugin-vue`（Vue 单文件组件支持）、`@vitejs/plugin-legacy`（旧浏览器兼容，转换语法并注入 polyfill）、`visualizer`（产物体积可视化）。Vite 8 中 `@vitejs/plugin-react` 已基于 Oxc 实现（不再依赖 Babel，依赖体积从约 45MB 降至约 8MB）。寻找更多插件可以浏览官方插件目录 registry.vite.dev。
+
+## 5. resolve：路径解析的"导航系统"
+
+### 不配
+
+```ts
+// 不配别名：所有相对路径 import，层级深了会出现 ../../../../ 地狱
+import Header from '../../../../components/Header'
+```
+
+### 配（基础版：路径别名）
 
 ```ts
 // vite.config.ts
@@ -79,6 +151,7 @@ import path from 'node:path'
 export default defineConfig({
   resolve: {
     alias: {
+      // '@' 指向 src 目录，从此告别相对路径
       '@': path.resolve(__dirname, 'src'),
       '@components': path.resolve(__dirname, 'src/components'),
     },
@@ -86,9 +159,24 @@ export default defineConfig({
 })
 ```
 
-讲解：`__dirname` 在 ESM 配置中不可直接用，Vite 8 会在内部把配置转译为 CJS 执行，因此直接使用即可。别名生效后，`import Header from '@/components/Header'` 等价于相对路径引入。
+### 配好（Vite 8 原生 tsconfig paths + 双端同步）
 
-**关键联动**：Vite 的别名只影响运行与构建，不影响 TypeScript 的类型检查。必须同步配置 `tsconfig.json`，否则编辑器报"找不到模块"：
+Vite 8 新增了**原生 tsconfig 路径解析**：不再需要安装 `vite-tsconfig-paths` 插件，直接在配置中开启即可自动读取 `tsconfig.json` 的 `paths`：
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  resolve: {
+    // 开启后自动解析 tsconfig.json 中的 paths（Vite 8 新特性）
+    // 注意：有轻微性能开销，官方默认关闭，按需开启
+    tsconfigPaths: true,
+  },
+})
+```
+
+**关键联动**：无论用哪种方式，都要保证 Vite 与 TypeScript"两套机制同步"。Vite 的别名影响运行与构建，不影响类型检查；`tsconfig.json` 的 `paths` 影响类型检查。二者缺一不可：
 
 ```json
 {
@@ -102,11 +190,61 @@ export default defineConfig({
 }
 ```
 
-讲解：`tsconfig.json` 中的 `paths` 与 Vite 的 `alias` 是两套独立机制，修改任一处都要记得同步另一处。这是初学者最常见的报错来源之一。
+讲解：`resolve.alias` 的值使用**文件系统绝对路径**（相对路径不会按预期工作）。别名生效后，`import Header from '@/components/Header'` 等价于相对路径引入。`tsconfig.json` 的 `paths` 与 Vite 的 `alias` 是两套独立机制，修改任一处都要记得同步另一处——这是初学者最常见的报错来源之一。
 
-## 4. 环境变量：import.meta.env 与 .env 文件
+## 6. server：开发服务器的"行车电脑"
 
-### 4.1 .env 文件
+### 不配
+
+```ts
+// 不配 server：端口 5173、仅本机可访问、跨域请求直接失败
+```
+
+### 配（基础版：端口与自动打开）
+
+```ts
+// vite.config.ts
+export default defineConfig({
+  server: {
+    port: 3000,     // 指定开发端口（被占用时仍会自动顺延）
+    open: true,     // 启动后自动打开浏览器
+  },
+})
+```
+
+### 配好（代理解决跨域 + 局域网访问）
+
+```ts
+// vite.config.ts
+export default defineConfig({
+  server: {
+    port: 3000,
+    open: true,
+    host: true,     // 监听所有网卡，允许局域网设备访问
+    proxy: {
+      // 开发环境代理：解决前端调后端接口的跨域问题
+      // 浏览器请求 /api/xxx -> 转发到 http://localhost:8080/xxx
+      '/api': {
+        target: 'http://localhost:8080',  // 后端服务地址
+        changeOrigin: true,               // 修改请求头中的 Origin
+        rewrite: (path) => path.replace(/^\/api/, ''), // 去掉 /api 前缀
+      },
+    },
+  },
+})
+```
+
+讲解：代理是开发期跨域的官方解法——浏览器同源策略会拦截 `http://localhost:3000` 页面直连 `http://localhost:8080` 的接口，而通过 Vite 代理，浏览器只请求同源的 `/api/xxx`，由 Vite 在服务端转发，绕开同源限制。Vite 8 还新增 `server.forwardConsole`：把浏览器控制台日志转发到终端（对使用 AI 编程助手时自动开启，方便在终端看到客户端报错）。注意：代理只在开发环境生效，生产环境需由 nginx 等反向代理配置。
+
+## 7. 环境变量与模式：多套配置一键切换
+
+### 不配
+
+```ts
+// 不配环境变量：所有环境共用一份配置，无法区分开发/测试/生产
+```
+
+### 配（.env 系列文件）
 
 在项目根目录创建 `.env` 系列文件，Vite 启动时自动加载：
 
@@ -122,23 +260,19 @@ VITE_DEBUG=true
 VITE_APP_TITLE=FANDEX-Prod
 ```
 
-讲解：只有以 `VITE_` 前缀开头的变量会暴露给客户端代码，其余变量只在配置文件中可见。这是刻意设计的安全边界——**密钥、Token 等敏感信息绝不能放进 VITE_ 变量**，否则会出现在最终产物中。
-
-### 4.2 在代码中使用
+### 配好（代码中使用 + 类型声明 + 配置读取）
 
 ```ts
 // 任意源码文件
-const apiBase = import.meta.env.VITE_API_BASE
-const isProd = import.meta.env.PROD      // 内置：是否生产环境
-const isDev = import.meta.env.DEV        // 内置：是否开发环境
-const mode = import.meta.env.MODE        // 内置：当前模式名
+const apiBase = import.meta.env.VITE_API_BASE   // 自定义变量
+const isProd = import.meta.env.PROD             // 内置：是否生产环境
+const isDev = import.meta.env.DEV               // 内置：是否开发环境
+const mode = import.meta.env.MODE               // 内置：当前模式名
 ```
 
-讲解：`import.meta.env` 由 Vite 在编译时静态替换为实际值，因此必须使用完整字面量写法（不能写成 `import.meta.env[key]` 动态取值，那样无法被替换）。
+讲解：只有以 `VITE_` 前缀开头的变量会暴露给客户端代码，其余变量只在配置文件中可见。这是刻意设计的安全边界——**密钥、Token 等敏感信息绝不能放进 VITE_ 变量**，否则会原样出现在最终产物中。`import.meta.env` 由 Vite 在编译时**静态替换**为实际值，因此必须使用完整字面量写法（不能写成 `import.meta.env[key]` 动态取值，那样无法被替换）。
 
-### 4.3 类型声明
-
-新建 `src/vite-env.d.ts`，为自定义变量补充类型：
+为自定义变量补充类型提示（新建 `src/vite-env.d.ts`）：
 
 ```ts
 /// <reference types="vite/client" />
@@ -153,23 +287,19 @@ interface ImportMeta {
 }
 ```
 
-讲解：`vite/client` 类型声明提供了 `import.meta.env` 的内置字段与静态资源导入的类型。自定义的 VITE_ 变量按上述方式声明后，编辑器就能给出类型提示。
-
-## 5. loadEnv：在配置文件中读取环境变量
-
-`.env` 变量默认只对**客户端代码**可见。若配置本身（如代理目标、CDN 地址）也需要读取环境变量，就要用 `loadEnv` 手动加载：
+若**配置文件本身**（如代理目标、CDN 地址）也需要读取环境变量，用 `loadEnv` 手动加载：
 
 ```ts
 // vite.config.ts
 import { defineConfig, loadEnv } from 'vite'
 
 export default defineConfig(({ mode }) => {
-  // 从项目根目录加载 .env 系列文件（含 .env.[mode] 覆盖）
+  // 从项目根目录加载 .env 系列文件（含 .env.[mode] 覆盖基础文件）
   const env = loadEnv(mode, process.cwd(), '')
   return {
     server: {
       proxy: {
-        // 配置文件中读取 VITE_API_BASE，实现代理目标可配置化
+        // 代理目标从环境变量读取，实现"一套配置、多环境切换"
         '/api': {
           target: env.VITE_API_BASE,
           changeOrigin: true,
@@ -180,11 +310,7 @@ export default defineConfig(({ mode }) => {
 })
 ```
 
-讲解：`loadEnv(mode, envDir, prefix)` 的第三个参数是前缀过滤，传 `''` 表示加载全部变量（默认只加载 `VITE_` 前缀）；第二个参数 `process.cwd()` 指定 `.env` 所在目录。注意配置文件加载的 `.env` 与暴露给客户端的两者互不影响。
-
-## 6. 环境模式（Mode）与 --mode 参数
-
-`mode` 决定加载哪套 `.env` 文件：默认 `dev` 对应 `development`，`build` 对应 `production`。可以自定义模式跑出"测试环境"产物：
+自定义模式构建"测试环境"产物：
 
 ```bash
 # 构建时使用 .env.staging（需提前创建该文件）
@@ -193,20 +319,78 @@ vite build --mode staging
 
 讲解：`--mode staging` 会加载 `.env.staging` 与 `.env`（基础文件始终加载），同时 `import.meta.env.MODE` 变为 `'staging'`。多环境部署（dev / staging / prod）通常用这种方式管理。
 
-## 7. 常见陷阱
+## 8. 常见错误与对策表
 
-陷阱一：改了 `.env` 不生效。环境变量在 dev server 启动时读取，修改后需重启。
+| 序号 | 报错/现象 | 原因 | 解决办法 |
+| --- | --- | --- | --- |
+| 1 | 编辑器报"找不到模块 '@/xxx'" | Vite 的 `alias` 与 `tsconfig.json` 的 `paths` 未同步 | 同时配置两处；Vite 8 可直接用 `resolve.tsconfigPaths: true` 统一管理 |
+| 2 | 改了 `.env` 不生效 | 环境变量在 dev server 启动时读取 | 修改 `.env` 后重启 `pnpm dev` |
+| 3 | `import.meta.env.VITE_X` 拿到 undefined | 变量未加 `VITE_` 前缀，或用动态访问 `import.meta.env[key]` | 变量加前缀；使用完整字面量写法 |
+| 4 | 配置修改后行为未变化 | 某些插件注册类变更需要手动重启 | 重启 `pnpm dev`（加 `--force` 可顺带重置依赖缓存） |
+| 5 | 局域网手机访问不了开发页面 | `host` 未开启或防火墙拦截 | `server.host: true` 后检查防火墙放行端口 |
+| 6 | 生产环境接口请求仍报跨域 | `server.proxy` 只在开发环境生效 | 生产环境在 nginx/网关配置反向代理 |
+| 7 | 自定义变量在代码中无类型提示 | 未在 `vite-env.d.ts` 声明 | 按第 7 节方式补充 `ImportMetaEnv` 接口 |
 
-陷阱二：别名与 tsconfig 不同步。报"找不到模块"时先检查 `paths` 是否与 `alias` 一致。
+## 9. 实战练习
 
-陷阱三：敏感信息泄漏。任何 `VITE_` 前缀变量都会进入产物，密钥必须放服务端。
+### 练习 1：从零配置一个常用工程配置
 
-陷阱四：动态访问环境变量。`import.meta.env['VITE_X']` 不会被替换，返回 undefined。
+**题目**：创建一个 `vanilla-ts` 项目，在 `vite.config.ts` 中配置：端口 5173、启动自动打开浏览器、`@` 别名指向 `src`，并在 `tsconfig.json` 同步 `paths`。
 
-## 8. 参考资源
+**提示**：别名用 `path.resolve(__dirname, 'src')`；TS 侧用 `baseUrl` + `paths`。
 
-Vite 配置文档：https://vite.dev/config/
+**参考答案要点**：
+1. `vite.config.ts` 中配置 `server: { port: 5173, open: true }` 与 `resolve.alias`；
+2. `tsconfig.json` 中配置 `"baseUrl": "."` 与 `"paths": { "@/*": ["src/*"] }`；
+3. 在任意源码中使用 `import x from '@/utils/format'` 验证别名生效。
 
-Vite 环境变量与模式：https://vite.dev/guide/env-and-mode
+### 练习 2：配置开发代理对接假后端
 
-Vite 中文文档：https://cn.vite.dev/
+**题目**：本地用 `node` 起一个返回 JSON 的 8080 端口服务，为 Vite 配置 `/api` 代理，并在页面中通过 `fetch('/api/user')` 获取数据展示。
+
+**提示**：`server.proxy['/api']` 指向 `http://localhost:8080`；`rewrite` 视后端路由决定是否去掉 `/api` 前缀。
+
+**参考答案要点**：
+1. 简单假后端：`node -e "require('http').createServer((req,res)=>{res.end(JSON.stringify({name:'FANDEX'}))}).listen(8080)"`；
+2. 配置 proxy 后，页面 `fetch('/api/user')` 成功拿到数据；
+3. 在浏览器 Network 面板确认请求发往 5173 端口的 `/api/user`，而非直接跨域。
+
+### 练习 3：用环境变量区分多环境
+
+**题目**：创建 `.env`、`.env.development`、`.env.production` 三个文件，分别定义不同的 `VITE_APP_TITLE`，在页面显示它，验证不同命令下显示不同的标题。
+
+**提示**：`pnpm dev` 加载 `.env.development`，`pnpm build` 加载 `.env.production`；页面用 `import.meta.env.VITE_APP_TITLE`。
+
+**参考答案要点**：
+1. 三份 .env 文件分别设置 `VITE_APP_TITLE=默认版/开发版/生产版`；
+2. `pnpm dev` 时页面显示"开发版"；
+3. `pnpm build && pnpm preview` 时显示"生产版"；验证完成后再构建前记得删除 `.env.production` 中的测试值（如不需要）。
+
+### 练习 4：用 --mode 自定义环境
+
+**题目**：创建 `.env.staging`，运行 `vite build --mode staging`，观察 `import.meta.env.MODE` 的值与加载的环境变量。
+
+**提示**：`--mode staging` 会加载 `.env.staging` 覆盖同名变量，MODE 变为 'staging'。
+
+**参考答案要点**：
+1. `.env.staging` 中定义 `VITE_API_BASE=https://staging.example.com/api`；
+2. `pnpm build --mode staging` 后，产物中 API 地址为 staging 地址；
+3. 结论：多环境（dev/staging/prod）部署的核心就是 `--mode` + `.env.[mode]` 的组合。
+
+## 10. 一句话记忆
+
+**vite.config.ts 是 Vite 的方向盘：`defineConfig` 拿类型提示，`plugins` 装能力，`resolve` 管寻路，`server` 管开发，`build` 管产物，`VITE_` 前缀管环境——所有配置都遵循"默认可用、按需调整、两套机制同步"**。
+
+## 11. 参考链接与延伸阅读
+
+- Vite 配置参考（全量选项）：https://cn.vite.dev/config/
+- Vite 环境变量与模式：https://cn.vite.dev/guide/env-and-mode
+- Vite 共享配置选项（root/base/plugins/resolve 等）：https://cn.vite.dev/config/shared-options
+- Vite 插件目录 registry.vite.dev：https://registry.vite.dev/
+
+延伸阅读：
+
+- 本模块 002 篇《Vite 快速上手与项目结构》：配置文件在项目中的位置与作用；
+- 本模块 004 篇《Vite 静态资源处理》：`base` 与部署路径的完整关系；
+- 本模块 007 篇《构建与代码分割》：`build.rollupOptions` 的深度用法；
+- 本模块 009 篇《Vite 8 与 Rolldown》：Vite 8 配置项的迁移变化。

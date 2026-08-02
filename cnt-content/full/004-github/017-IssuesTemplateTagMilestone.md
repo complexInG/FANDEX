@@ -6,7 +6,7 @@ difficulty: intermediate
 title: 'Issues 模板、标签与里程碑'
 module: github
 category: 'GitHub Advanced'
-description: 'Issues 模板配置、Labels、Milestones、自动化关闭关键词与项目板衔接。'
+description: 'Issues 模板配置、Labels 标签体系、Milestones 里程碑管理、自动化关闭关键词与项目板衔接。'
 author: Anonymous
 related:
   - github/AI编程助手
@@ -15,415 +15,296 @@ related:
   - github/CodeQL代码扫描
 prerequisites:
   - github/GitHub概述
-updated: '2026-08-01'
+updated: '2026-08-02'
 ---
 
-## 1. 背景
+## 0. 从一个生活场景说起：意见箱与工单系统
 
-**Issue（议题）** 用于跟踪缺陷、功能请求与讨论。**模板（template）** 统一报告格式，降低沟通成本；**Labels（标签）** 分类与筛选；**Milestones（里程碑）** 聚合版本目标与进度。
+想象一家公司在大堂放了一个**意见箱**：起初大家随手写纸条，内容五花八门——有吐槽、有报障、有提建议，字迹潦草、信息不全，客服根本没法处理。后来公司升级成**工单系统**：每张工单必须填"问题类型、紧急程度、复现步骤、期望结果"；系统给工单打上**分类标签**（故障/建议/行政），并按**月度目标**统计解决进度。公司顿时高效起来。
 
-## 2. Issue 模板详解
+GitHub 的 **Issues** 就是这套"工单系统"：**Issue 模板** 统一填写格式，**Labels（标签）** 分类筛选，**Milestones（里程碑）** 聚合进度。本篇采用**清单驱动**的结构，以"可照做的清单"为主线，教你搭好这套问题跟踪体系。
 
-### 2.1 模板类型
+## 1. 原理讲解：Issue 体系三件套
 
-GitHub 支持多种类型的 Issue 模板：
+| 组件 | 生活类比 | 作用 |
+| :--- | :--- | :--- |
+| Issue 模板 | 工单格式 | 让报告者按标准填写，信息完整可处理 |
+| Labels | 分类标签 | 一眼看清类型、优先级、状态 |
+| Milestones | 月度目标 | 聚合一批 Issue，跟踪版本/迭代进度 |
 
-- **Bug 报告**：用于报告软件缺陷
-- **功能请求**：用于提出新功能建议
-- **问题讨论**：用于一般性讨论
-- **文档更新**：用于文档相关的问题
-- **自定义模板**：根据项目需求创建特定模板
+三者配合：**模板保证"输入规范"，标签保证"分类清晰"，里程碑保证"目标可见"**。
 
-### 2.2 模板配置
+## 2. 清单一：Issue 模板配置
 
-#### 2.2.1 文件结构
+### 2.1 目录结构清单
 
-在仓库根目录创建 `.github/ISSUE_TEMPLATE/` 目录，然后添加相应的模板文件：
+在仓库创建 `.github/ISSUE_TEMPLATE/` 目录，放入模板文件：
 
-```mermaid
-flowchart TD
-    T0[".github/"]
-    T1["ISSUE_TEMPLATE/"]
-    T2["bug_report.md"]
-    T3["feature_request.md"]
-    T4["question.md"]
-    T5["config.yml"]
-    T0 --> T1
-    T1 --> T2
-    T1 --> T3
-    T1 --> T4
-    T1 --> T5
+```text
+.github/
+├── ISSUE_TEMPLATE/
+│   ├── bug_report.md        # Bug 报告模板
+│   ├── feature_request.md   # 功能请求模板
+│   ├── question.md          # 提问模板（可选）
+│   └── config.yml           # 模板选择页配置
 ```
 
-#### 2.2.2 YAML 前置元数据
+### 2.2 Bug 报告模板（可直接使用）
 
-每个模板文件都需要包含 YAML 前置元数据：
-
-```markdown
-- name: 模板名称
-  about: 模板用途
-  title: "[前缀] 标题"
-  labels: 标签1, 标签2
-  assignees: 处理人
--
-```
-
-#### 2.2.3 完整模板示例
-
-#### 2.2.3.1 Bug 报告模板
+每个模板文件开头用 YAML frontmatter 声明元数据，后面是 Markdown 正文：
 
 ```markdown
-- name: Bug 报告
-  about: 报告可复现的缺陷
-  title: "[BUG] "
-  labels: bug
-  templates: bug_report.md
-  assignees: ""
--
+---
+name: Bug 报告
+about: 报告可复现的缺陷
+title: "[BUG] "
+labels: bug
+assignees: ''
+---
 
-## 环境
-
--
--
--
+## 环境信息
+- 操作系统：
+- 浏览器/版本：
+- 应用版本：
 
 ## 复现步骤
-
-1.  打开应用
-2.  点击 X 按钮
-3.  输入 Y
-4.  观察结果
+1.
+2.
+3.
 
 ## 期望行为
-
-描述你期望看到的结果
+（描述你期望的结果）
 
 ## 实际行为
-
-描述实际发生的情况
+（描述实际发生的情况）
 
 ## 截图
-
-如果适用，请添加截图来帮助解释问题
+（如有，请附截图）
 
 ## 额外信息
-
-任何其他相关信息
 ```
 
-#### 2.2.3.2 功能请求模板
+### 2.3 功能请求模板（可直接使用）
 
 ```markdown
-- name: 功能请求
-  about: 建议新功能
-  title: "[FEATURE] "
-  labels: enhancement
-  templates: feature_request.md
-  assignees: ""
--
+---
+name: 功能请求
+about: 建议新功能
+title: "[FEATURE] "
+labels: enhancement
+assignees: ''
+---
 
 ## 功能描述
-
-简要描述你希望添加的功能
+（简要描述希望添加的功能）
 
 ## 问题背景
-
-解释为什么需要这个功能，它解决了什么问题
+（解释为什么需要这个功能，它解决什么问题）
 
 ## 实现建议
-
-描述你希望如何实现这个功能
+（描述希望如何实现）
 
 ## 额外信息
-
-任何其他相关信息
 ```
 
-### 2.3 模板配置文件
-
-使用 `config.yml` 文件可以自定义 Issue 模板选择界面：
+### 2.4 模板选择页配置（config.yml）
 
 ```yaml
- blank_issues_enabled: false
- contact_links:
-  - name: 社区支持
-  url: https://github.com/org/repo/discussions
-  about: 对于一般问题，请使用讨论区
-  - name: 文档
-  url: https://docs.example.com
-  about: 查看官方文档
+blank_issues_enabled: false
+contact_links:
+  - name: 社区讨论
+    url: https://github.com/org/repo/discussions
+    about: 一般问题请到讨论区提问
+  - name: 官方文档
+    url: https://docs.example.com
+    about: 先查文档，避免重复提问
 ```
 
-## 3. 标签管理
+> 设置 `blank_issues_enabled: false` 后，用户必须从模板中选择一种创建 Issue，空模板被禁用。
 
-### 3.1 标签类型
+## 3. 清单二：标签体系（Labels）
 
-常见的标签类型包括：
+### 3.1 建议标签分类清单
 
-- **类型标签**：`bug`、`enhancement`、`documentation`、`question`
-- **优先级标签**：`high-priority`、`medium-priority`、`low-priority`
-- **状态标签**：`needs-triage`、`in-progress`、`review-needed`、`fixed`
-- **难度标签**：`good-first-issue`、`help-wanted`、`difficult`
-- **模块标签**：`frontend`、`backend`、`database`、`api`
+| 分类 | 标签示例 | 用途 |
+| :--- | :--- | :--- |
+| 类型 | `bug`、`enhancement`、`documentation`、`question` | 这是什么问题 |
+| 优先级 | `priority:high`、`priority:medium`、`priority:low` | 多紧急 |
+| 状态 | `needs-triage`、`in-progress`、`review-needed` | 处理到哪一步 |
+| 难度 | `good-first-issue`、`help-wanted` | 适合谁来做 |
+| 模块 | `frontend`、`backend`、`api`、`database` | 涉及哪个模块 |
 
-### 3.2 标签最佳实践
+> `good first issue` 是 GitHub 官方推荐的引导新手标签：标了它，新手可以在仓库的 "Good first issues" 筛选器里找到合适任务，开源项目常用它培养贡献者。
 
-- **命名规范**：使用小写字母，单词之间用连字符连接
-- **颜色一致性**：为同类标签使用相似的颜色
-- **描述清晰**：为每个标签添加描述，说明其用途
-- **数量控制**：保持标签数量合理，避免过多标签
-- **团队统一**：在组织内统一标签命名和使用规范
+### 3.2 标签使用规范清单
 
-### 3.3 标签管理工具
+- **命名**：小写字母 + 连字符，如 `good-first-issue`。
+- **颜色**：同类标签用相似颜色（优先级用红/黄/绿渐变）。
+- **数量**：控制在 20-30 个以内，避免膨胀。
+- **描述**：每个标签配一句用途说明，避免歧义。
+- **统一**：组织内统一命名规范，跨仓库通用。
 
-- **GitHub 网页界面**：在仓库的 Issues 页面管理标签
-- **GitHub CLI**：使用 `gh label` 命令管理标签
-- **GitHub Actions**：使用自动化工具自动管理标签
+### 3.3 命令行管理标签
 
-## 4. 里程碑管理
-
-### 4.1 里程碑创建
-
-1. 访问仓库的 Issues 页面
-2. 点击 **Milestones** 选项卡
-3. 点击 **New milestone** 按钮
-4. 填写里程碑名称、描述和截止日期
-5. 点击 **Create milestone** 按钮
-
-### 4.2 里程碑使用
-
-- **关联 Issue**：在创建或编辑 Issue 时，选择相应的里程碑
-- **关联 PR**：在创建或编辑 PR 时，选择相应的里程碑
-- **跟踪进度**：里程碑页面会显示完成百分比
-- **管理截止日期**：定期更新里程碑的截止日期
-
-### 4.3 里程碑最佳实践
-
-- **命名规范**：使用版本号（如 `v1.0.0`）或迭代名称（如 `Sprint 1`）
-- **合理范围**：每个里程碑包含适量的 Issue，避免过多或过少
-- **明确目标**：为每个里程碑设置明确的目标和交付物
-- **定期检查**：定期检查里程碑进度，及时调整计划
-
-## 5. 自动化工具
-
-### 5.1 GitHub Actions 自动化
-
-#### 5.1.1 自动打标签
-
-```yaml
- name: Label issues and PRs
- on:
-  issues:
-  types: [opened, edited]
-  pull_request:
-  types: [opened, edited]
- jobs:
-  label:
-  runs-on: ubuntu-latest
-  steps:
-  - uses: actions/labeler@v5
-  with:
-  repo-token: "${{ secrets.GITHUB_TOKEN }}"
+```bash
+# 列出标签
+gh label list
+# 创建标签
+gh label create bug --description "代码缺陷" --color d73a4a
+# 修改标签
+gh label edit bug --description "可复现的缺陷" --color d73a4a
+# 删除标签
+gh label delete bug --yes
 ```
 
-#### 5.1.2 自动分配 Issue
+## 4. 清单三：里程碑（Milestones）
+
+### 4.1 创建里程碑清单
+
+1. 仓库 **Issues → Milestones** → **New milestone**。
+2. 填写**标题**（建议版本号或迭代名，如 `v1.0.0`、`Sprint 12`）、**描述**、**截止日期**。
+3. 创建后把相关 Issue/PR 关联到里程碑（在 Issue 右侧栏选择）。
+
+### 4.2 使用里程碑的收益
+
+- 里程碑页面自动显示**完成百分比**（已关闭 / 总数）。
+- 接近截止日期时高亮提醒，便于规划。
+- 同一里程碑内的 Issue 聚合到一次发布中，发布后统一验证关闭。
+
+### 4.3 里程碑规划建议
+
+- 一个里程碑装 **10-20 个** Issue 比较合理，避免"过大无法交付"或"过小没有意义"。
+- 每个里程碑有明确**目标与交付物**，拒绝把无关任务塞进来。
+- 定期检查进度，发现无法按时完成时及时裁剪范围或调整日期。
+
+### 4.4 Issue 撰写与维护最佳实践清单
+
+无论用不用模板，以下习惯都能提升 Issue 的可处理性：
+
+- **搜索先于创建**：开新 Issue 前先搜仓库，避免重复工单；重复的直接链接到旧 Issue 并关闭。
+- **标题即结论**：用"现象一句话"做标题，如 `[BUG] 登录页在 Safari 下表单无法提交`，而不是"求助"。
+- **描述五要素**：环境 / 复现步骤 / 期望行为 / 实际行为 / 截图（Bug 类必填）。
+- **善用 Markdown**：用任务列表 `- [ ]` 拆分子任务，用 `@mention` 通知负责人，用 `#123` 交叉引用关联 Issue。
+- **及时更新状态**：解决后关闭并简要说明"在 #PR 中修复"；长期搁置的 Issue 定期 triage（分类处理）。
+
+## 5. 清单四：自动化与衔接
+
+### 5.1 自动关闭 Issue 关键词
+
+在 **commit message 或 PR 描述**中写入以下关键词，合并 PR 时会自动关闭对应 Issue：
+
+- `Fixes #123`
+- `Closes #123`
+- `Resolves #123`
+- `Closes #123, #456`（同时关闭多个）
+
+> 注意：只有 PR 合并到**默认分支**时才会触发自动关闭；fork 仓库需使用跨仓库引用格式。
+
+### 5.2 GitHub Actions 自动打标签
 
 ```yaml
-name: Auto assign issues
+name: Label issues
 on:
   issues:
-  types: [opened]
+    types: [opened]
 jobs:
-  assign:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/assign@v1
-  with:
-  repo-token: '${{ secrets.GITHUB_TOKEN }}'
-  assignees: 'username1, username2'
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/labeler@v5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/labeler.yml
 ```
 
-### 5.2 第三方工具
+配合 `.github/labeler.yml` 按路径/标题关键词自动分配标签。
 
-- **Dependabot**：自动检测和更新依赖
-- **CodeQL**：自动代码质量检查
-- **Probot**：可自定义的 GitHub 机器人
-- **ZenHub**：增强的项目管理功能
+### 5.3 自动分配 Issue
 
-## 6. 项目板与 Issues 集成
+```yaml
+name: Auto assign
+on:
+  issues:
+    types: [opened]
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: pozil/auto-assign-issue@v2
+        with:
+          assignees: dev-team
+          numOfAssignee: 1
+```
 
-### 6.1 项目板创建
+### 5.4 与项目板（Projects）衔接
 
-1. 访问仓库的 Projects 页面
-2. 点击 **New project** 按钮
-3. 选择模板或创建空白项目
-4. 配置项目板列（如 To Do, In Progress, Review, Done）
+把 Issue 拖入项目板（To Do / In Progress / Review / Done 列），通过移动卡片更新状态，看板即"工单流转墙"——新工单进 To Do，认领后进 In Progress，修复合并后进 Done 并自动关闭。
 
-### 6.2 工作流程
+### 5.5 安全漏洞上报：Security advisories
 
-- **添加 Issue**：将 Issue 拖放到相应的列
-- **设置状态**：通过移动卡片来更新 Issue 状态
-- **跟踪进度**：查看项目板上的整体进度
-- **团队协作**：团队成员可以实时看到项目状态
+**不要在公开 Issue 中报告安全漏洞**——漏洞细节一旦公开，等于给攻击者递刀。正确做法：
 
-## 7. 常见问题与解决方案
+1. 在仓库创建 `SECURITY.md`，说明漏洞上报渠道（建议用"私密漏洞报告"功能，见 019/018 篇）。
+2. 维护者通过 **Security → Security advisories** 创建私有通告，与报告者私密沟通细节。
+3. 修复发布后，再选择公开通告并登记 CVE 编号。
 
-### 7.1 Issue 模板问题
+## 6. 常见错误与对策
 
-#### 7.1.1 模板不显示
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 模板不显示 | 新建 Issue 时没有模板选项 | 模板路径错误或 YAML frontmatter 语法错误 | 确认文件在 `.github/ISSUE_TEMPLATE/` 下；检查 `---` 块格式；确认仓库启用了 Issues 功能 |
+| 空模板无法禁用 | 用户仍可开空白 Issue | config.yml 未配置或格式错误 | 配置 `blank_issues_enabled: false` 并推送到默认分支 |
+| 自动关闭不生效 | 合并后 Issue 仍开着 | 关键词未写进 PR 描述/提交信息；PR 未合并到默认分支 | 在 PR 描述写 `Closes #123`；确认合并到默认分支 |
+| 标签过多难管理 | 标签列表失控 | 无规范随意创建 | 清理合并相似标签；按第 3.2 节规范统一命名 |
+| 里程碑进度不准 | 完成百分比与实情不符 | 部分 Issue 未关联里程碑或状态未更新 | 把所有相关 Issue 关联到里程碑；及时关闭已解决的 Issue |
+| Actions 自动化失败 | 打标签/分配任务工作流报错 | GITHUB_TOKEN 权限不足或 workflow 语法错误 | 检查 `permissions` 字段；查看 Actions 日志定位语法问题 |
 
-- **问题**：创建 Issue 时看不到模板选项
-- **解决方案**：
+## 7. 实战练习
 
-1.  检查模板文件路径是否正确（`.github/ISSUE_TEMPLATE/`）
-2.  检查模板文件的 YAML 前置元数据是否正确
-3.  确认仓库的 Issues 功能是否已启用
-4.  尝试使用 GitHub 网页向导重新设置模板
+### 练习 1：创建第一个 Issue（入门）
+- **题目描述**：在你自己的仓库中创建一个 Bug Issue，按模板格式填写环境、复现步骤、期望/实际行为，并打上 `bug` 标签。
+- **提示**：Issues → New issue；如果仓库还没有模板，可以先手动按 2.2 节格式填写。
+- **参考答案要点**：Issue 包含完整五要素（环境/步骤/期望/实际/截图）；标签正确；提交后出现在 Issue 列表。
 
-#### 7.1.2 模板内容不完整
+### 练习 2：搭建 Issue 模板（进阶）
+- **题目描述**：为仓库创建 `bug_report.md` 和 `feature_request.md` 两个模板及 config.yml，推送后验证新建 Issue 出现模板选择页。
+- **提示**：按第 2 节目录结构与文件内容创建。
+- **参考答案要点**：推送后点击 New issue 看到模板选择界面；选择 Bug 报告后表单已按模板预填。
 
-- **问题**：模板缺少必要的字段
-- **解决方案**：
+### 练习 3：设计标签体系（进阶）
+- **题目描述**：用 `gh label` 命令为仓库创建"类型 + 优先级 + 难度"三组共 6 个标签，并删除一个不需要的默认标签。
+- **提示**：`gh label create <名称> --description "..." --color <颜色>`。
+- **参考答案要点**：创建 `bug/enhancement/priority:high/priority:low/good-first-issue/help-wanted`；删除冗余默认标签；`gh label list` 验证。
 
-1.  检查模板文件内容是否完整
-2.  根据项目需求添加或修改字段
-3.  测试模板是否能正常使用
+### 练习 4：里程碑管理（综合）
+- **题目描述**：创建里程碑 `v0.1-alpha`（截止日期设一周后），把 3 个 Issue 关联进去，随后依次关闭观察完成百分比变化。
+- **提示**：Milestones → New milestone；在 Issue 右侧栏选择里程碑。
+- **参考答案要点**：关闭 0 个显示 0%，关闭 1 个显示 33%，全部关闭显示 100%；体会里程碑的进度跟踪价值。
 
-### 7.2 标签与里程碑问题
+### 练习 5：自动关闭与自动打标签（综合）
+- **题目描述**：配置 Actions 自动打标签工作流，并创建一个关联 `Fixes #N` 的 PR，合并后验证 Issue 自动关闭。
+- **提示**：按 5.1/5.2 小节；`#N` 换成你的 Issue 编号。
+- **参考答案要点**：PR 描述含 `Fixes #N` 且合并到默认分支后，Issue 自动变为 Closed；Actions 工作流为新 Issue 自动打上预设标签。
 
-#### 7.2.1 标签过多
+## 8. 一句话记忆
 
-- **问题**：仓库中标签数量过多，难以管理
-- **解决方案**：
+**Issue 是"工单"，模板保证工单填得全，标签让工单分得清，里程碑让目标看得见，Actions 让流转自动化——四件套齐了，问题跟踪不再靠吼。**
 
-1.  清理冗余或不常用的标签
-2.  合并相似的标签
-3.  建立标签使用规范
+## 参考链接与延伸阅读
 
-#### 7.2.2 里程碑进度不准确
+- [GitHub 文档（官方中文）：配置 Issue 模板](https://docs.github.com/zh/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
+- [GitHub 文档：创建议题](https://docs.github.com/zh/issues/tracking-your-work-with-issues/creating-an-issue)
+- [GitHub 文档：管理标签](https://docs.github.com/zh/issues/using-labels-and-milestones-to-track-work/managing-labels)
+- [GitHub 文档：关于里程碑](https://docs.github.com/zh/issues/using-labels-and-milestones-to-track-work/about-milestones)
+- [GitHub 文档：使用关键词自动关闭议题](https://docs.github.com/zh/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
 
-- **问题**：里程碑的完成百分比与实际情况不符
-- **解决方案**：
+### 延伸阅读
 
-1.  确保所有相关 Issue 都已关联到里程碑
-2.  及时更新 Issue 状态
-3.  定期检查里程碑进度
-
-### 7.3 自动化问题
-
-#### 7.3.1 GitHub Actions 失败
-
-- **问题**：自动打标签或分配 Issue 的 Actions 失败
-- **解决方案**：
-
-1.  检查 Actions 日志，了解失败原因
-2.  确认 GITHUB_TOKEN 权限是否正确
-3.  检查 workflow 文件语法是否正确
-
-#### 7.3.2 自动关闭 Issue 不生效
-
-- **问题**：使用关键词后 Issue 没有自动关闭
-- **解决方案**：
-
-1.  确认关键词格式是否正确
-2.  确认 PR 是否合并到默认分支
-3.  对于 fork 仓库，确认是否使用了正确的跨仓库引用格式
-
-## 8. 最佳实践
-
-### 8.1 Issue 管理
-
-- **搜索先于创建**：创建新 Issue 前，先搜索是否已有相关 Issue
-- **清晰描述**：提供详细、准确的 Issue 描述
-- **及时更新**：定期更新 Issue 状态和进展
-- **合理分类**：使用标签和里程碑对 Issue 进行分类
-- **关闭策略**：定期清理已解决或过时的 Issue
-
-### 8.2 团队协作
-
-- **CONTRIBUTING.md**：提供贡献指南，说明如何报告 Issue
-- **模板标准化**：使用统一的 Issue 模板
-- **标签规范**：建立团队统一的标签使用规范
-- **里程碑规划**：合理规划里程碑，避免过度承诺
-- **定期回顾**：定期回顾 Issue 处理情况，改进流程
-
-### 8.3 安全与隐私
-
-- **安全漏洞**：使用 Security advisories 而非公开 Issue
-- **敏感信息**：避免在 Issue 中包含敏感信息
-- **隐私保护**：尊重用户隐私，不公开用户信息
-- **访问控制**：合理设置仓库访问权限
-
-## 9. 实际应用案例
-
-### 9.1 开源项目案例
-
-#### 9.1.1 案例描述
-
-- **项目**：一个流行的开源库
-- **规模**： hundreds of contributors
-- **Issue 管理**：使用多种模板和标签
-
-#### 9.1.2 实践
-
-1. **模板**：使用 bug 报告、功能请求、文档更新等模板
-2. **标签**：使用类型、优先级、状态等标签
-3. **里程碑**：按版本号设置里程碑
-4. **自动化**：使用 GitHub Actions 自动打标签和分配 Issue
-5. **项目板**：使用项目板跟踪开发进度
-
-### 9.2 企业项目案例
-
-#### 9.2.1 案例描述
-
-- **项目**：企业内部应用
-- **团队**：10 人开发团队
-- **流程**：敏捷开发
-
-#### 9.2.2 实践
-
-1. **模板**：定制化的 Issue 模板，包含项目特定字段
-2. **标签**：与企业流程对应的标签
-3. **里程碑**：按 sprint 设置里程碑
-4. **自动化**：集成企业内部工具
-5. **项目板**：与敏捷流程对应，包含 To Do, In Progress, Review, Done 等列
-
-## 10. 延伸阅读
-
-- [Configuring issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests) <!-- nofollow -->
-- [Managing labels](https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/managing-labels) <!-- nofollow -->
-- [Managing milestones](https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/about-milestones) <!-- nofollow -->
-- [About project boards](https://docs.github.com/en/issues/organizing-your-work-with-project-boards/about-project-boards) <!-- nofollow -->
-- [GitHub Actions documentation](https://docs.github.com/en/actions) <!-- nofollow -->
-
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
-
-## 延伸阅读
-
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- gh CLI 管理 Issue 与标签的命令速查，见 048 篇《Gh Issue 管理》与 056 篇《Gh Label》。
+- 项目看板（Projects）使用，见 012 篇《Projects 看板》。
+- 社区健康文件（CONTRIBUTING 等），见 026 篇《社区健康文件》。
+- 安全漏洞上报（Security advisories），见 019/018 篇。

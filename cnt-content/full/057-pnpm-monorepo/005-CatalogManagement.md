@@ -6,21 +6,33 @@ category: pnpm 与 Monorepo
 difficulty: intermediate
 description: 'catalog 协议：pnpm-workspace.yaml 目录配置、catalogMode 与依赖版本统一'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - pnpm-monorepo/003-WorkspaceSetup
   - pnpm-monorepo/004-WorkspaceProtocol
   - pnpm-monorepo/007-ChangesetsRelease
 prerequisites:
   - pnpm-monorepo/003-WorkspaceSetup
+  - pnpm-monorepo/002-PnpmCore
 ---
-## 1. 什么是 catalog
 
-catalog（依赖目录）是 pnpm 的工作空间特性：把常用依赖的版本范围集中定义在 `pnpm-workspace.yaml` 中，各包通过 `catalog:` 协议引用。它是依赖版本的"单一事实来源"。
+## 1. 从"公司统一采购"说起
 
-### 1.1 解决版本漂移问题
+### 1.1 版本漂移的烦恼
 
-Monorepo 中多个包使用同一依赖时，若各自手写版本，容易出现一个包用 `react@^18.3.0`、另一个用 `react@^19.0.0` 的漂移局面。catalog 让所有包指向同一份版本定义，升级时只需改一处。
+想象一家公司有多个部门（多个包），每个部门自己采购办公用品（依赖）。
+
+**没有统一采购时**：A 部门买了"Windows 10"的电脑、B 部门买了"Windows 11"、C 部门还在用"Windows 7"。运维（你）想统一系统，得一个个部门去沟通、升级——而且升级了 A 部门，B 部门可能不兼容。
+
+**这就是版本漂移**：Monorepo 中多个包使用同一依赖时，若各自手写版本，容易出现一个包用 `react@^18.3.0`、另一个用 `react@^19.0.0` 的局面。
+
+### 1.2 catalog 的解法
+
+**catalog（依赖目录）是 pnpm 的工作空间特性**：把常用依赖的版本范围**集中定义**在 `pnpm-workspace.yaml` 中，各包通过 `catalog:` 协议引用。它是依赖版本的"**单一事实来源**"。
+
+- 所有包指向同一份版本定义
+- 升级时只需改一处（pnpm-workspace.yaml）
+- 全工作空间同步生效
 
 ## 2. catalog 的配置与引用
 
@@ -38,7 +50,10 @@ catalog:
   vite: ^6.0.0
 ```
 
-讲解：顶层 `catalog` 字段定义的是名为 `default` 的目录。版本范围使用语义化版本写法，与 package.json 中直接书写完全等价。
+**要点**：
+
+- 顶层 `catalog` 字段定义的是名为 `default` 的目录
+- 版本范围使用语义化版本写法，与 package.json 中直接书写完全等价
 
 ### 2.2 通过 catalog: 协议引用
 
@@ -56,7 +71,10 @@ catalog:
 }
 ```
 
-讲解：`catalog:` 是 `catalog:default` 的简写，pnpm 解析时等价于写上 `^19.0.0`。`catalog:` 协议可用于 dependencies、devDependencies、peerDependencies、optionalDependencies 以及 pnpm-workspace.yaml 的 overrides。
+**要点**：
+
+- `catalog:` 是 `catalog:default` 的简写，pnpm 解析时等价于写上 `^19.0.0`
+- `catalog:` 协议可用于 dependencies、devDependencies、peerDependencies、optionalDependencies 以及 pnpm-workspace.yaml 的 overrides
 
 ### 2.3 具名 catalog（catalogs）
 
@@ -81,7 +99,7 @@ catalogs:
 }
 ```
 
-讲解：`catalog:react18` 显式指定使用名为 react18 的目录。默认目录与具名目录可以共存；迁移完成后再逐步收敛到单一版本。
+**要点**：`catalog:react18` 显式指定使用名为 react18 的目录。默认目录与具名目录可以共存；迁移完成后再逐步收敛到单一版本。
 
 ## 3. catalogMode：严格模式
 
@@ -102,7 +120,7 @@ catalog:
 catalogMode: strict
 ```
 
-讲解：开启 strict 后，如果某个包 `pnpm add` 了 catalog 中不存在的依赖（或不在目录版本范围内），安装直接失败，从工具层面杜绝版本漂移。`prefer` 适合从零散版本向 catalog 迁移的过渡期。
+**strict 模式的价值**：如果某个包 `pnpm add` 了 catalog 中不存在的依赖（或不在目录版本范围内），安装直接失败——**从工具层面杜绝版本漂移**。`prefer` 适合从零散版本向 catalog 迁移的过渡期。
 
 ### 3.1 手动添加目录条目
 
@@ -115,7 +133,7 @@ pnpm add react --filter @fandex/web
 pnpm -r update
 ```
 
-讲解：`pnpm update` 会按 catalog 中的范围更新 lockfile；版本范围的变更只需改 pnpm-workspace.yaml 一处，再执行一次 update 即可让整个工作空间同步。
+**要点**：`pnpm update` 会按 catalog 中的范围更新 lockfile；版本范围的变更只需改 pnpm-workspace.yaml 一处，再执行一次 update 即可让整个工作空间同步。
 
 ## 4. 在 overrides 中使用 catalog
 
@@ -126,7 +144,7 @@ overrides:
   react: catalog:react18
 ```
 
-讲解：overrides 强制统一依赖树中某包的解析版本，常用于修复安全漏洞或处理依赖冲突；catalog 协议让 overrides 与包声明保持同一版本来源。
+**要点**：overrides 强制统一依赖树中某包的解析版本，常用于修复安全漏洞或处理依赖冲突；catalog 协议让 overrides 与包声明保持同一版本来源。
 
 ## 5. 发布时的版本转换
 
@@ -139,24 +157,52 @@ overrides:
 "react": "^18.2.0"
 ```
 
-讲解：转换保证消费者从 registry 安装时拿到的是标准版本范围，与其他包管理器完全兼容。仓库内文件不受影响。
+**要点**：转换保证消费者从 registry 安装时拿到的是标准版本范围，与其他包管理器完全兼容。仓库内文件不受影响。
 
 ## 6. 最佳实践
 
-第一，框架级依赖（react、vue、typescript、vite）优先进默认 catalog，确保全工作空间一致。
+**第一**，框架级依赖（react、vue、typescript、vite）优先进默认 catalog，确保全工作空间一致。
 
-第二，严格模式下新依赖先进 catalog 再引用，避免绕过统一版本管理。
+**第二**，严格模式下新依赖先进 catalog 再引用，避免绕过统一版本管理。
 
-第三，迁移旧项目时用 `prefer` 模式过渡，逐步收敛，再切回 `manual` 或 `strict`。
+**第三**，迁移旧项目时用 `prefer` 模式过渡，逐步收敛，再切回 `manual` 或 `strict`。
 
-第四，catalog 与 workspace 协议搭配：内部包引用用 `workspace:*`，外部依赖版本用 `catalog:`，两者分工明确。
+**第四**，catalog 与 workspace 协议搭配使用，分工明确：
 
-## 7. 参考资源
+| 引用对象 | 用什么协议 |
+| :--- | :--- |
+| 内部包引用（兄弟包） | `workspace:*` |
+| 外部依赖版本（npm 包） | `catalog:` |
 
-pnpm catalogs 官方文档（中文）：https://pnpm.io/zh/catalogs
+## 7. 常见误区
 
-pnpm 设置参考（catalogMode）：https://pnpm.io/settings
+**误区一：catalog 会强制所有包用完全相同的版本。** → catalog 定义的是"版本范围"（如 `^19.0.0`），同一范围解析出的具体版本一致；需要强制锁定时用 strict 模式。
 
-## 8. 小结
+**误区二：升级版本要改每个包。** → 只需改 `pnpm-workspace.yaml` 中的 catalog 一处，然后 `pnpm -r update`。
 
-catalog 把依赖版本集中为可复用的常量，配合 `catalog:` 协议与 `catalogMode` 严格模式，从工具层面保证 Monorepo 依赖版本统一，减少合并冲突、简化升级流程。它是 pnpm 10+ 中最重要的工作空间增强特性。
+**误区三：catalog 只能放 dependencies。** → 它可以用于 dependencies、devDependencies、peerDependencies、overrides 等所有依赖位置。
+
+**误区四：用了 catalog 就不需要 workspace 协议了。** → 两者分工不同：catalog 管"外部依赖版本"，workspace 管"内部包引用"，配合使用才完整。
+
+## 8. 实战练习
+
+1. **配置 catalog**：为你的 workspace 配置默认 catalog（react、typescript、vite 三个依赖），把各包中的版本号改为 `catalog:` 协议。
+
+2. **升级实验**：把 catalog 中 react 从 `^18.0.0` 改为 `^19.0.0`，执行 `pnpm -r update`，验证全工作空间同步升级。
+
+3. **strict 实验**：开启 `catalogMode: strict`，尝试 `pnpm add` 一个 catalog 中不存在的依赖，观察报错并理解严格模式的意义。
+
+4. **具名 catalog**：设计一个迁移场景（react17/react18 共存），用 `catalogs` 具名目录实现，并说明迁移完成后的收敛策略。
+
+## 9. 参考资源
+
+- pnpm catalogs 官方文档（中文）：https://pnpm.io/zh/catalogs
+- pnpm 设置参考（catalogMode）：https://pnpm.io/settings
+
+## 10. 延伸阅读
+
+- workspace 基础配置，见本模块《工作空间配置》
+- 内部包引用协议，见本模块《workspace 协议与内部依赖》
+- 发版时的版本管理，见本模块《changesets 版本管理与发布》
+
+> **一句话记忆**：catalog 把依赖版本集中为"单一事实来源"，配合 `catalog:` 协议与 `catalogMode: strict`，从工具层面保证 Monorepo 依赖版本统一——升级只改一处，漂移从源头杜绝。

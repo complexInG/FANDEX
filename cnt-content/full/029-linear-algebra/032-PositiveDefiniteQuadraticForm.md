@@ -4,9 +4,9 @@ title: 正定二次型
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: advanced
-description: 正定二次型与正定矩阵的定义，正定的判定条件（顺序主子式、特征值、合同），正定矩阵的性质。
+description: 从"能量恒正"的生活类比出发，系统讲解正定二次型与正定矩阵的定义、五种判定方法（特征值、顺序主子式、合同、惯性指数、Cholesky 分解）、正定矩阵的性质与半正定，并配完整例题与实战练习。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'linear-algebra/二次型的标准形'
   - 'linear-algebra/二次型的规范形'
@@ -16,93 +16,125 @@ prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
 ---
 
+## 0. 从生活场景说起：能量恒正的系统才是稳定的
+
+初中物理告诉我们：弹簧被拉伸 $x$ 长度后，弹性势能是 $E = \frac{1}{2}kx^2$，其中 $k > 0$ 是劲度系数。这个能量的特点是：**只要弹簧偏离平衡位置（$x \neq 0$），能量就严格为正**；只有回到平衡点（$x = 0$），能量才等于零。所以弹簧放在那儿不动，永远是最稳定的状态。
+
+再想一个反面例子：一个小球放在**倒扣的碗顶**上，稍微一碰就会滚走。如果把"位置偏差"写成二次函数，这个函数的"能量"在偏离平衡时反而是**负的**（或者随方向不同可正可负）——系统不稳定。
+
+把"能量恒正"这个直觉数学化，就是本节的主题：
+
+**对任意非零 $\boldsymbol{x}$，如果 $f(\boldsymbol{x}) = \boldsymbol{x}^TA\boldsymbol{x}$ 恒大于 0，就说这个二次型是正定的，矩阵 $A$ 是正定矩阵。**
+
+判断一个系统稳不稳定（正不正定），就是我们今天的核心任务。物理上这叫"能量判定"，数学上有一整套工具箱——**五种判定方法**，学会它们，你就掌握了"体检报告"的全部指标。
+
 ## 1. 正定二次型的定义
 
-### 1.1 定义
+### 1.1 直觉先行
 
-设 $f(\boldsymbol{x}) = \boldsymbol{x}^TA\boldsymbol{x}$ 为实二次型，若对任意 $\boldsymbol{x} \neq \mathbf{0}$，都有 $f(\boldsymbol{x}) > 0$，则称 $f$ 为**正定二次型**，$A$ 为**正定矩阵**。
+一元情形：$f(x) = ax^2$，$a > 0$ 时对任意 $x \neq 0$ 有 $f(x) > 0$——这就是最简单的"正定"。
 
-### 1.2 其他类型的定义
+多元情形：$f(x_1, x_2) = x_1^2 + 2x_2^2$，任意 $(x_1, x_2) \neq (0, 0)$ 都有 $f > 0$，正定。而 $f = x_1^2 - x_2^2$ 就不是：取 $(1, 0)$ 得 $f = 1 > 0$，取 $(0, 1)$ 得 $f = -1 < 0$，可正可负，称为**不定**。
 
-| 类型   | 条件                                                                                            | 矩阵       |
-| ------ | ----------------------------------------------------------------------------------------------- | ---------- |
-| 正定   | $\boldsymbol{x} \neq 0 \Rightarrow f(\boldsymbol{x}) > 0$                                       | 正定矩阵   |
-| 负定   | $\boldsymbol{x} \neq 0 \Rightarrow f(\boldsymbol{x}) < 0$                                       | 负定矩阵   |
-| 半正定 | $f(\boldsymbol{x}) \geq 0$                                                                      | 半正定矩阵 |
-| 半负定 | $f(\boldsymbol{x}) \leq 0$                                                                      | 半负定矩阵 |
-| 不定   | 存在 $\boldsymbol{x}_1, \boldsymbol{x}_2$ 使 $f(\boldsymbol{x}_1) > 0, f(\boldsymbol{x}_2) < 0$ | 不定矩阵   |
+### 1.2 定义：标准化的说法
 
-### 1.3 负定与正定的关系
+设 $f(\boldsymbol{x}) = \boldsymbol{x}^TA\boldsymbol{x}$ 为实二次型（$A$ 为实对称矩阵），若对任意 $\boldsymbol{x} \neq \mathbf{0}$ 都有 $f(\boldsymbol{x}) > 0$，则称 $f$ 为**正定二次型**，$A$ 为**正定矩阵**。
 
-$A$ 负定 $\iff$ $-A$ 正定
+### 1.3 五大类型一览
 
-## 2. 正定的判定条件
+| 类型 | 条件（$\boldsymbol{x} \neq \mathbf{0}$） | 矩阵名称 | 规范形 |
+| ---- | -------------------------------------- | -------- | ------ |
+| 正定 | $f(\boldsymbol{x}) > 0$ | 正定矩阵 | $y_1^2 + \cdots + y_n^2$ |
+| 负定 | $f(\boldsymbol{x}) < 0$ | 负定矩阵 | $-y_1^2 - \cdots - y_n^2$ |
+| 半正定 | $f(\boldsymbol{x}) \geq 0$ | 半正定矩阵 | $y_1^2 + \cdots + y_p^2$（$p < n$） |
+| 半负定 | $f(\boldsymbol{x}) \leq 0$ | 半负定矩阵 | $-y_1^2 - \cdots - y_p^2$（$p < n$） |
+| 不定 | 存在 $\boldsymbol{x}_1, \boldsymbol{x}_2$ 使 $f(\boldsymbol{x}_1) > 0$，$f(\boldsymbol{x}_2) < 0$ | 不定矩阵 | 既有 $+1$ 又有 $-1$ |
 
-### 2.1 特征值判别法
+**简化记忆**：看规范形就够——全正号是正定，全负号是负定，有正有负是不定，带零且无负号是半正定。
 
-$A$ 正定 $\iff$ $A$ 的所有特征值都为正数。
+### 1.4 负定与正定的关系
 
-**证明**：$A$ 正交对角化为 $A = Q\Lambda Q^T$，$\boldsymbol{x}^TA\boldsymbol{x} = \boldsymbol{y}^T\Lambda\boldsymbol{y} = \lambda_1y_1^2 + \cdots + \lambda_ny_n^2 > 0$（$\boldsymbol{y} \neq 0$）$\iff$ 所有 $\lambda_i > 0$。
+$A$ 负定 $\iff$ $-A$ 正定。所以研究正定就够了，负定只是"变个号"。
 
-### 2.2 顺序主子式判别法（Sylvester 准则）
+## 2. 五种判定方法（核心章节）
 
-$A$ 正定 $\iff$ $A$ 的所有顺序主子式都为正。
+### 2.1 方法一：特征值判别法
+
+**$A$ 正定 $\iff$ $A$ 的所有特征值都是正数。**
+
+**直观理解**：正交变换 $A = Q\Lambda Q^T$ 下，$f = \lambda_1y_1^2 + \cdots + \lambda_ny_n^2$。要保证"每个非零方向上都为正"，必须所有系数（特征值）都为正。
+
+**说明**：这个方法理论最简洁，但实际要解特征方程，手算成本高，通常作为验证手段或理论工具。
+
+### 2.2 方法二：顺序主子式判别法（Sylvester 准则，最常用）
+
+**$A$ 正定 $\iff$ $A$ 的所有顺序主子式都为正**：
 
 $$\Delta_1 = a_{11} > 0, \quad \Delta_2 = \begin{vmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{vmatrix} > 0, \quad \ldots, \quad \Delta_n = |A| > 0$$
 
+其中 $\Delta_k$ 是 $A$ 的左上角 $k$ 阶子式。
+
+**为什么好用**：只算行列式，不需求特征值，手算首选。
+
 **示例**：判断 $A = \begin{pmatrix} 2 & -1 \\ -1 & 2 \end{pmatrix}$ 是否正定。
 
-$\Delta_1 = 2 > 0$，$\Delta_2 = 4 - 1 = 3 > 0$，故 $A$ 正定。
+$\Delta_1 = 2 > 0$，$\Delta_2 = 2 \times 2 - (-1) \times (-1) = 3 > 0$，故 $A$ 正定。实际上特征值为 $1, 3$，验证了方法一。
 
-### 2.3 合同判别法
+### 2.3 方法三：合同判别法
 
-$A$ 正定 $\iff$ $A$ 合同于单位矩阵 $I$
+**$A$ 正定 $\iff$ $A$ 合同于单位矩阵 $I$**，即存在可逆矩阵 $C$ 使得 $C^TAC = I$。
 
-即存在可逆矩阵 $C$，使得 $C^TAC = I$。
+**直观理解**：规范形全是 $+1$ 就是单位矩阵，正定"本质上就是单位矩阵换了套坐标"。
 
-### 2.4 惯性指数判别法
+### 2.4 方法四：惯性指数判别法
 
-$A$ 正定 $\iff$ 正惯性指数 $p = n$（$A$ 为 $n$ 阶）
+**$A$ 正定 $\iff$ 正惯性指数 $p = n$**（$A$ 为 $n$ 阶），等价地规范形为 $y_1^2 + \cdots + y_n^2$。这是方法三的"指数版"表述。
 
-### 2.5 Cholesky 分解判别法
+### 2.5 方法五：Cholesky 分解判别法
 
-$A$ 正定 $\iff$ $A$ 可以分解为 $A = LL^T$（$L$ 为可逆下三角矩阵）
+**$A$ 正定 $\iff$ $A$ 可以分解为 $A = LL^T$（$L$ 为对角线为正的下三角矩阵）**。
 
-### 2.6 判定方法总结
+这是数值计算中最常用的判定：对 $A$ 尝试做 Cholesky 分解，若中途出现"被开方数为负"，立即判定不正定。现代软件（如 Python 的 `numpy.linalg.cholesky`）就是这么做的。详见《LU 分解》一文的 Cholesky 部分。
 
-| 判定方法     | 条件                   |
-| ------------ | ---------------------- |
-| 特征值法     | 所有特征值 $> 0$       |
-| 顺序主子式法 | 所有 $\Delta_k > 0$    |
-| 合同法       | 合同于 $I$             |
-| 惯性指数法   | $p = n$                |
-| Cholesky 法  | $A = LL^T$（$L$ 可逆） |
+### 2.6 五种方法对照表
+
+| 判定方法 | 条件 | 适用场景 |
+| -------- | ---- | -------- |
+| 特征值法 | 所有特征值 $> 0$ | 理论证明、验证 |
+| 顺序主子式法 | 所有 $\Delta_k > 0$ | 手算、含参数问题 |
+| 合同法 | 合同于 $I$ | 理论推导 |
+| 惯性指数法 | $p = n$ | 与规范形联动 |
+| Cholesky 法 | $A = LL^T$（$L$ 可逆） | 数值计算、编程 |
 
 ## 3. 正定矩阵的性质
 
-### 3.1 基本性质
+### 3.1 基本性质（正定矩阵的"体检指标"）
 
-1. 正定矩阵一定是对称矩阵
-2. 正定矩阵一定可逆（$|A| > 0$）
-3. 正定矩阵的主对角线元素都为正（$a_{ii} > 0$）
-4. 正定矩阵的行列式为正
+1. 正定矩阵一定是对称矩阵（定义要求）；
+2. 正定矩阵一定可逆，且 $|A| > 0$；
+3. 正定矩阵的主对角线元素都为正：$a_{ii} > 0$（取 $\boldsymbol{x} = \boldsymbol{e}_i$ 即得 $\boldsymbol{e}_i^TA\boldsymbol{e}_i = a_{ii} > 0$）；
+4. 正定矩阵的所有顺序主子式为正（Sylvester 准则）。
 
-### 3.2 运算性质
+**注意**：这些是正定的**必要条件**而非充分条件。例如 $\begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}$ 对角线全正，但特征值为 $3, -1$，并不正定。
 
-1. $A$ 正定，$k > 0$，则 $kA$ 正定
-2. $A, B$ 正定，则 $A + B$ 正定
-3. $A$ 正定，则 $A^{-1}$ 正定
-4. $A$ 正定，则 $A^k$ 正定（$k$ 为正整数）
-5. $A$ 正定，$C$ 可逆，则 $C^TAC$ 正定
+### 3.2 运算性质（正定的"保值运算"）
 
-### 3.3 注意
+1. $A$ 正定，$k > 0$，则 $kA$ 正定；
+2. $A, B$ 正定，则 $A + B$ 正定；
+3. $A$ 正定，则 $A^{-1}$ 正定；
+4. $A$ 正定，则 $A^k$（$k$ 为正整数）正定；
+5. $A$ 正定，$C$ 可逆，则 $C^TAC$ 正定（合同保值）；
+6. $A$ 正定，则 $A$ 可作 Cholesky 分解 $A = LL^T$。
 
-- $A, B$ 正定，$AB$ 未必正定（$AB$ 未必对称）
-- $A, B$ 正定且 $AB = BA$，则 $AB$ 正定
+### 3.3 容易踩的坑
 
-### 3.4 与内积的关系
+- $A, B$ 正定，**$AB$ 未必正定**（$AB$ 甚至未必对称）；
+- 只有当 $AB = BA$ 时，$AB$ 才正定；
+- "对角线元素全正 + 行列式为正"**不能**推出正定（三阶及以上还需检查二阶顺序主子式）。
 
-$A$ 正定 $\iff$ $(\boldsymbol{x}, \boldsymbol{y})_A = \boldsymbol{x}^TA\boldsymbol{y}$ 定义了 $\mathbb{R}^n$ 上的内积。
+### 3.4 与内积的关系（进阶）
+
+$A$ 正定 $\iff$ $(\boldsymbol{x}, \boldsymbol{y})_A = \boldsymbol{x}^TA\boldsymbol{y}$ 定义了 $\mathbb{R}^n$ 上的一个内积。这是正定矩阵在泛函分析、机器学习（核方法）中被反复使用的原因——"正定 = 能定义长度和夹角"。
 
 ## 4. 半正定矩阵
 
@@ -110,98 +142,132 @@ $A$ 正定 $\iff$ $(\boldsymbol{x}, \boldsymbol{y})_A = \boldsymbol{x}^TA\boldsy
 
 $A$ 半正定 $\iff$ 以下任一条件成立：
 
-1. 所有特征值 $\geq 0$
-2. 正惯性指数 $p = r(A)$（无负惯性指数）
-3. 存在矩阵 $B$ 使得 $A = B^TB$
+1. 所有特征值 $\geq 0$；
+2. 正惯性指数 $p = r(A)$（没有负惯性指数，即规范形无 $-1$）；
+3. 存在矩阵 $B$ 使得 $A = B^TB$。
 
 ### 4.2 半正定与正定的关系
 
-$A$ 正定 $\iff$ $A$ 半正定且 $|A| \neq 0$
+**$A$ 正定 $\iff$ $A$ 半正定且 $|A| \neq 0$**。
 
-## 5. 典型例题
+**应用提醒**：机器学习中协方差矩阵 $\frac{1}{m-1}X^TX$ 一定半正定（因为 $X^TX = (X)^T(X)$），这是"方差不为负"的代数本质；数据线性无关时它才是正定矩阵。
 
-### 例1
+## 5. 完整例题详解
+
+### 例 1（判定）：顺序主子式法
 
 判断 $f = 5x_1^2 + x_2^2 + 5x_3^2 + 4x_1x_2 - 8x_1x_3 - 4x_2x_3$ 的正定性。
 
-**解**：
+**解**：写出矩阵（交叉项系数取半）：
 
 $$A = \begin{pmatrix} 5 & 2 & -4 \\ 2 & 1 & -2 \\ -4 & -2 & 5 \end{pmatrix}$$
 
-$\Delta_1 = 5 > 0$
+计算顺序主子式：
 
-$\Delta_2 = 5 - 4 = 1 > 0$
+$$\Delta_1 = 5 > 0$$
 
-$\Delta_3 = |A| = 5(5-4) - 2(10-8) + (-4)(-4+4) = 5 - 4 + 0 = 1 > 0$
+$$\Delta_2 = \begin{vmatrix} 5 & 2 \\ 2 & 1 \end{vmatrix} = 5 - 4 = 1 > 0$$
 
-所有顺序主子式为正，$A$ 正定。
+$$\Delta_3 = |A| = 5(1 \cdot 5 - (-2)(-2)) - 2(2 \cdot 5 - (-2)(-4)) + (-4)(2 \cdot (-2) - 1 \cdot (-4))$$
 
-### 例2
+$$= 5(5 - 4) - 2(10 - 8) + (-4)(-4 + 4) = 5 - 4 + 0 = 1 > 0$$
 
-设 $A$ 为 $n$ 阶正定矩阵，$B$ 为 $n$ 阶实对称矩阵，证明：存在可逆矩阵 $P$，使得 $P^TAP = I$ 且 $P^TBP = \Lambda$（对角矩阵）。
+所有顺序主子式为正，由 Sylvester 准则，$f$ **正定**。
 
-**证明**：$A$ 正定，存在可逆矩阵 $C$ 使得 $C^TAC = I$。
+### 例 2（证明）：$A^TA$ 的正定性
 
-令 $B_1 = C^TBC$，$B_1$ 仍为实对称矩阵，可正交对角化：$Q^TB_1Q = \Lambda$。
+设 $A$ 为 $m \times n$ 矩阵（$m \geq n$），$r(A) = n$（列满秩），证明 $A^TA$ 正定。
 
-取 $P = CQ$，则：
+**证明**：$A^TA$ 是 $n$ 阶实对称矩阵。对任意 $\boldsymbol{x} \neq \mathbf{0}$：
 
-$P^TAP = Q^TC^TACQ = Q^TIQ = I$
+$$\boldsymbol{x}^T(A^TA)\boldsymbol{x} = (A\boldsymbol{x})^T(A\boldsymbol{x}) = \|A\boldsymbol{x}\|^2 \geq 0$$
 
-$P^TBP = Q^TC^TBCQ = Q^TB_1Q = \Lambda$
+关键是 $\|A\boldsymbol{x}\|^2$ 什么时候严格大于 0。由于 $r(A) = n$，齐次方程组 $A\boldsymbol{x} = \mathbf{0}$ 只有零解，故 $\boldsymbol{x} \neq \mathbf{0}$ 时 $A\boldsymbol{x} \neq \mathbf{0}$，$\|A\boldsymbol{x}\|^2 > 0$。
 
-### 例3
+所以对任意非零 $\boldsymbol{x}$ 都有 $\boldsymbol{x}^T(A^TA)\boldsymbol{x} > 0$，$A^TA$ **正定**。
 
-设 $A$ 为 $m \times n$ 矩阵（$m \geq n$），$r(A) = n$，证明 $A^TA$ 正定。
+**点评**：这个结论是"协方差矩阵正定""正规方程可解"的理论根基，值得背下来：**列满秩 $\Rightarrow$ $A^TA$ 正定**。
 
-**证明**：$A^TA$ 为 $n$ 阶实对称矩阵。
+### 例 3（参数）：求参数范围
 
-对任意 $\boldsymbol{x} \neq 0$：$\boldsymbol{x}^T(A^TA)\boldsymbol{x} = (A\boldsymbol{x})^T(A\boldsymbol{x}) = \|A\boldsymbol{x}\|^2 \geq 0$
+判断 $f = x_1^2 + 4x_2^2 + x_3^2 + 2tx_1x_2 + 2x_1x_3 + 6x_2x_3$ 的正定性。
 
-由 $r(A) = n$，$A\boldsymbol{x} = 0$ 只有零解，故 $\boldsymbol{x} \neq 0$ 时 $A\boldsymbol{x} \neq 0$，$\|A\boldsymbol{x}\|^2 > 0$。
+**解**：矩阵
 
-$A^TA$ 正定。
+$$A = \begin{pmatrix} 1 & t & 1 \\ t & 4 & 3 \\ 1 & 3 & 1 \end{pmatrix}$$
 
-### 例4
+顺序主子式：
 
-设 $A$ 为 $n$ 阶正定矩阵，证明 $A + A^{-1} \geq 2I$（即 $A + A^{-1} - 2I$ 半正定）。
+$$\Delta_1 = 1 > 0$$
 
-**证明**：$A$ 正定，存在正交矩阵 $Q$ 使得 $Q^TAQ = \text{diag}(\lambda_1, \ldots, \lambda_n)$，$\lambda_i > 0$。
+$$\Delta_2 = \begin{vmatrix} 1 & t \\ t & 4 \end{vmatrix} = 4 - t^2 > 0 \Rightarrow |t| < 2$$
 
-$Q^T(A + A^{-1} - 2I)Q = \text{diag}(\lambda_1 + 1/\lambda_1 - 2, \ldots, \lambda_n + 1/\lambda_n - 2)$
+$$\Delta_3 = |A| = 1(4 - 9) - t(t - 3) + 1(3t - 4) = -5 - t^2 + 3t + 3t - 4 = -t^2 + 6t - 9 = -(t-3)^2$$
 
-由 AM-GM 不等式：$\lambda_i + 1/\lambda_i \geq 2$（$\lambda_i > 0$），等号在 $\lambda_i = 1$ 时成立。
+$\Delta_3 = -(t-3)^2 \leq 0$ 对一切 $t$ 成立，等号仅在 $t = 3$ 时取到。但 $t = 3$ 时 $\Delta_2 = 4 - 9 = -5 < 0$，依然不满足正定条件。
 
-故每个对角元素 $\geq 0$，$A + A^{-1} - 2I$ 半正定。
+**结论**：对任何 $t$，$f$ 都不正定。
+
+**点评**：参数题的关键是让**每个顺序主子式**都大于 0，只要有一个做不到，就直接判定"不正定"，无需再纠结。
+
+## 6. 常见错误与对策
+
+| 错误示例 | 错误类型 | 出错原因 | 纠正方法 |
+| -------- | -------- | -------- | -------- |
+| 只验证 $a_{ii} > 0$ 就断言正定 | 必要条件当充分条件 | 把必要条件当充分条件 | 必须检查所有顺序主子式或全部特征值 |
+| 三阶矩阵只检查 $\Delta_1, \Delta_3$ | 漏检 | 以为 $\Delta_2$ 不重要 | Sylvester 准则要求**所有** $\Delta_k > 0$，一个不能少 |
+| 交叉项系数不取半就写矩阵 | 系数错误 | 忘记翻译规则 | $a_{ij}$（$i \neq j$）= 交叉项系数一半 |
+| 用 $|A| > 0$ 判定半正定 | 判定混淆 | 半正定允许 $|A| = 0$ | 半正定看特征值 $\geq 0$ 或 $A = B^TB$ |
+| 断言"$A, B$ 正定则 $AB$ 正定" | 命题错误 | 忽略对称性 | $AB$ 可能不对称；只有 $AB = BA$ 时才成立 |
+| 证明 $A^TA$ 正定时不验证列满秩 | 证明漏洞 | 忽略 $\boldsymbol{x} \neq \mathbf{0}$ 时 $A\boldsymbol{x}$ 可能为 0 | 用 $r(A) = n$ 说明 $A\boldsymbol{x} = 0$ 只有零解 |
+
+## 7. 实战练习
+
+### 练习 1（入门）：判定正定
+
+判断 $A = \begin{pmatrix} 3 & 1 \\ 1 & 2 \end{pmatrix}$ 是否正定。
+
+**提示**：用顺序主子式法，只需算两个行列式。
+
+**参考答案要点**：$\Delta_1 = 3 > 0$，$\Delta_2 = 6 - 1 = 5 > 0$，正定。
+
+### 练习 2（基础）：参数范围
+
+求使 $f = x_1^2 + x_2^2 + x_3^2 + 2\lambda x_1x_2 + 2x_1x_3 + 2\mu x_2x_3$ 正定的 $\lambda, \mu$ 条件。
+
+**提示**：$\Delta_2 = 1 - \lambda^2$，$\Delta_3$ 是关键——算出来是 $-( \lambda - \mu)^2$。
+
+**参考答案要点**：$\Delta_1 = 1 > 0$；$\Delta_2 = 1 - \lambda^2 > 0 \Rightarrow |\lambda| < 1$；$\Delta_3 = |A| = 1(1-\mu^2) - \lambda(\lambda - \mu) + 1(\lambda\mu - 1) = 2\lambda\mu - \lambda^2 - \mu^2 = -(\lambda - \mu)^2 \leq 0$。$\Delta_3$ 不可能为正，故**不存在**使 $f$ 正定的 $(\lambda, \mu)$。
+
+### 练习 3（进阶）：正定与半正定
+
+设 $A$ 为 $n$ 阶正定矩阵，$B$ 为 $n$ 阶半正定矩阵，证明 $A + B$ 正定。
+
+**提示**：对任意 $\boldsymbol{x} \neq \mathbf{0}$，拆成 $\boldsymbol{x}^TA\boldsymbol{x} + \boldsymbol{x}^TB\boldsymbol{x}$ 分别处理。
+
+**参考答案要点**：$\boldsymbol{x}^T(A+B)\boldsymbol{x} = \boldsymbol{x}^TA\boldsymbol{x} + \boldsymbol{x}^TB\boldsymbol{x}$。$A$ 正定给出第一项 $> 0$，$B$ 半正定给出第二项 $\geq 0$，和 $> 0$，故 $A + B$ 正定。
+
+### 练习 4（综合）：矩阵证明
+
+设 $A$ 为 $n$ 阶正定矩阵，证明存在可逆矩阵 $B$ 使得 $A = B^TB$。
+
+**提示**：用合同判别法：正定 $\Rightarrow$ 存在可逆 $C$ 使 $C^TAC = I$，然后反解 $A$。
+
+**参考答案要点**：由 $C^TAC = I$ 得 $A = (C^{-1})^TC^{-1}$，令 $B = C^{-1}$ 即得 $A = B^TB$。反过来，若 $A = B^TB$ 且 $B$ 可逆，则 $\boldsymbol{x}^TA\boldsymbol{x} = \|B\boldsymbol{x}\|^2 > 0$，正定。
+
+## 8. 一句话记忆
+
+> **正定二次型 = "能量恒正"的二次型：判定它就看五种体检指标——特征值全正、顺序主子式全正、合同于单位阵、正惯性指数满格、能做 Cholesky 分解，其中手算最常用的是"顺序主子式全正"（Sylvester 准则）。**
 
 ## 参考文献
 
-3Blue1Brown 线性代数的本质：https://www.3blue1brown.com/topics/linear-algebra
-MIT 18.06：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-NumPy 文档：https://numpy.org/doc/stable/
-Interactive Linear Algebra：https://textbooks.math.gatech.edu/ila/
+1. 同济大学数学科学学院（编），《线性代数》（第七版），高等教育出版社——第五章"二次型"，含正定二次型的定义、Sylvester 准则与正定矩阵性质。
+2. 线性代数知识库（kmath.cn）"正定二次型"相关条目：http://kb.kmath.cn/kbase/detail.aspx?id=1394
+3. MIT 18.06 Linear Algebra（Gilbert Strang），Spring 2010——Lecture 20 起关于正定矩阵（positive definite matrices）的讲解：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
+4. NumPy 文档（Cholesky 分解的数值实现）：https://numpy.org/doc/stable/reference/generated/numpy.linalg.cholesky.html
 
 ## 延伸阅读
 
-线性代数基础，见 029-linear-algebra 模块文档。
-微积分与优化，见 027-calculus 模块。
-数据分析（PCA/矩阵），见 051-data-analysis 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供线性代数课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 矩阵分解体系
-
-LU：消元分解，解方程组；QR：正交化，稳定最小二乘。
-特征分解：对称矩阵可正交对角化；主成分分析基础。
-SVD：A=UΣVᵀ，任意矩阵；低秩近似与压缩。
-选择：一般求解 LU/QR，分析用 SVD/特征分解。
-
-### 13.2 线性变换的几何
-
-矩阵乘法 = 基向量的新位置；行列式 = 面积/体积缩放因子。
-特征向量：变换中方向不变只伸缩的方向。
-秩：变换后空间的维数（塌缩程度）。
-应用：理解梯度、雅可比、神经网络层。
+- 正定的判定依赖标准形与规范形，见《二次型的标准形》（order 60）与《二次型的规范形》（order 61）。
+- Cholesky 分解是正定矩阵的"专属分解"，其计算细节见《LU 分解》（order 70）。
+- 正定二次型在多元函数极值、优化中的应用，见《二次型典型例题》（order 63）与 027-calculus 模块。

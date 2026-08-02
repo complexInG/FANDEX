@@ -6,7 +6,7 @@ difficulty: intermediate
 title: 'Pull Request 完整协作流程'
 module: github
 category: 'GitHub Advanced'
-description: 'Pull Request 完整生命周期：Fork、分支、提交、推送、审查、合并到同步上游。'
+description: 'Pull Request 完整生命周期：创建分支、提交推送、发起 PR、审查、合并到关闭与同步上游。'
 author: Anonymous
 related:
   - github/代码所有者
@@ -15,394 +15,261 @@ related:
   - github/GitHubActions与CICD
 prerequisites:
   - github/GitHub概述
-updated: '2026-08-01'
+updated: '2026-08-02'
 ---
 
-## 1. 背景
+## 0. 从一个生活场景说起：完整走一遍"交作业"流程
 
-**PR（Pull Request，拉取请求）** 是 GitHub 上请求将某分支合并入目标分支的审查单元，承载 **diff（差异）**、**讨论**、**审查意见** 与 **CI 结果**。开源常见流程：**Fork（复刻）** 上游仓库到个人空间，在 **fork** 上开发后向上游提 PR。
+想象你写一篇小组报告：先把草稿放到共享文件夹的**独立子文件夹**（创建分支）→ 写完初稿（提交推送）→ 通过系统提交"审阅申请"（创建 PR）→ 老师批注修改意见（代码审查）→ 你逐条修改后重新提交（更新 PR）→ 老师签字通过（批准）→ 归档进主文件夹（合并）→ 关闭审阅记录（关闭 Issue）。
 
-## 2. PR 生命周期详解
+**Pull Request（PR）就是软件开发里的这套"交作业"流程**。本篇采用**流程驱动**的结构，按照"创建分支 → 提交推送 → 发起 PR → 审查 → 修改 → 合并 → 关闭清理 → 同步上游"的真实顺序，完整走一遍 PR 协作全流程。
 
-### 2.1 准备阶段
+## 1. 原理讲解：PR 到底是什么
 
-#### 2.1.1 Fork 仓库
+### 1.1 直观理解
 
-1. 访问上游仓库页面
-2. 点击右上角的 **Fork** 按钮
-3. 选择要 Fork 到的目标账号
-4. 等待 Fork 完成，得到 `your-user/upstream-repo` 副本
+PR（拉取请求）是**请求把某个分支的改动合并进另一个分支**的"审查单元"。它承载：
 
-#### 2.1.2 克隆仓库
+- **diff（差异）**：改动了哪些文件、哪些行。
+- **讨论区**：审查者与作者的对话记录。
+- **审查意见**：逐行评论、批准/请求修改。
+- **CI 结果**：自动化检查（测试、构建）的通过情况。
 
-```bash
- # 使用 SSH 克隆（推荐）
- git clone git@github.com:your-user/upstream-repo.git
- # 或使用 HTTPS 克隆
- git clone https://github.com/your-user/upstream-repo.git
- # 进入仓库目录
- cd upstream-repo
-```
+### 1.2 两种典型场景
 
-#### 2.1.3 添加上游远程
+| 场景 | 流程 | 适用 |
+| :--- | :--- | :--- |
+| 团队内部 | 直接在同一仓库建分支 → PR 合并到 main | 有写权限的成员 |
+| 开源贡献 | Fork 上游仓库 → 在 fork 开发 → 跨仓库 PR | 外部贡献者 |
 
-```bash
- git remote add upstream https://github.com/ORIGINAL_OWNER/REPO.git
- # 验证远程仓库配置
- git remote -v
-```
+> 开源贡献的 Fork 流程详见 011 篇《Fork 工作流》，本篇以**团队内部**为主线，结尾补充 Fork 差异点。
 
-#### 2.1.4 创建功能分支
+### 1.3 为什么不用直接推送
+
+直接推 main 没有审查、没有讨论记录、无法拦截低级错误。PR 把"开发中"与"可合并"之间加了一道**人工 + 自动化双重闸门**。
+
+## 2. 阶段一：准备（分支与远程）
 
 ```bash
- # 确保本地 main 分支是最新的
- git checkout main
- git pull upstream main
- # 创建并切换到功能分支
- git checkout -b feature/功能描述
+# 1. 确保本地 main 最新
+git checkout main
+git pull origin main
+
+# 2. 创建功能分支（命名规范见 005 篇）
+git checkout -b feat/add-login
+
+# 3. 开发完成，提交（使用约定式提交）
+git add .
+git commit -m "feat: add login page"
+
+# 4. 推送并设置上游追踪
+git push -u origin feat/add-login
 ```
 
-### 2.2 开发阶段
+> 分支从**最新的 main** 创建，能大幅减少合并冲突。推送后 GitHub 仓库页会显示黄色横幅"Compare & pull request"。
 
-#### 2.2.1 提交代码
+## 3. 阶段二：发起 PR
+
+### 3.1 网页操作
+
+1. 点击 **Compare & pull request**（或 Pull requests → New pull request）。
+2. **base** 选目标分支（上游的 `main`），**compare** 选功能分支（`feat/add-login`）——这一步最容易出错，务必确认页面顶部的 base repository 和 base branch。
+3. 填写标题与描述（参考模板见 005 篇）。
+4. 右侧栏可：指派审查者（Reviewers）、关联 Issue（Development）、打标签、选里程碑。
+5. 点击 **Create pull request**。
+
+### 3.2 关联 Issue 自动关闭
+
+在描述中写入 `Closes #12`，合并时会自动关闭 Issue #12。
+
+### 3.3 用 gh 创建
 
 ```bash
- # 添加修改的文件
- git add .
- # 提交代码（遵循提交信息规范）
- git commit -m "feat: 添加登录功能"
- # 推送到远程 fork
- git push -u origin feature/功能描述
+gh pr create --title "feat: add login" --body "Closes #12"
+# 或 --fill 用提交信息自动填充
+gh pr create --fill
 ```
 
-### 2.3 PR 创建阶段
+## 4. 阶段三：代码审查
 
-#### 2.3.1 打开 PR
+### 4.1 审查者的操作
 
-1. 访问你的 fork 仓库页面
-2. 点击 **Compare & pull request** 按钮
-3. 选择 **base** 分支（上游仓库的目标分支，通常是 main）
-4. 选择 **compare** 分支（你的功能分支）
-5. 填写 PR 标题和描述
-6. 点击 **Create pull request** 按钮
+1. 收到 PR 通知，进入 PR 页面看 **Files changed** 标签页。
+2. 逐行阅读 diff，在具体行上留下评论。
+3. 对 PR 做出三种结论之一：
 
-#### 2.3.2 PR 描述模板
+| 结论 | 含义 | 后续 |
+| :--- | :--- | :--- |
+| Comment | 仅评论，不阻塞 | 作者可选择性回复 |
+| Approve | 批准合并 | 满足其他条件即可合并 |
+| Request changes | 请求修改 | 作者必须修改后重新请求审查 |
 
-```markdown
-## 功能描述
+### 4.2 作者的配合
 
-简要描述本次 PR 的功能或修复内容。
-
-## 实现细节
-
--
--
--
-
-## 关联 Issue
-
--
--
-
-## 测试说明
-
--
--
-
-## 其他信息
-
-任何其他需要说明的信息。
-```
-
-### 2.4 代码审查阶段
-
-#### 2.4.1 审查流程
-
-1. 维护者收到 PR 通知
-2. 维护者或指定的审查者进行代码审查
-3. 审查者可以：
-
-- 批准 PR（Approve）
-- 请求修改（Request Changes）
-- 发表评论（Comment）
-
-4. 作者根据审查意见进行修改
-5. 修改后推送到同一分支，PR 会自动更新
-6. 重复上述过程，直到 PR 被批准
-
-#### 2.4.2 审查技巧
-
-**审查者**：
-
-- 关注代码质量和安全性
-- 检查是否符合项目规范
-- 提供具体的改进建议
-- 及时回复评论
-  **作者**：
-- 积极响应审查意见
-- 提供清晰的修改说明
-- 保持 PR 专注于一个功能
-- 及时更新 PR 描述
-
-### 2.5 合并阶段
-
-#### 2.5.1 合并策略
-
-GitHub 提供三种合并策略：
-
-1. **Create a merge commit**：创建一个新的合并提交，保留所有提交历史
-2. **Squash and merge**：将所有提交压缩为一个提交，保持历史简洁
-3. **Rebase and merge**：将提交重新基于目标分支，创建线性历史
-
-#### 2.5.2 合并操作
-
-1. 确保所有状态检查通过
-2. 确保所有审查都已批准
-3. 选择合适的合并策略
-4. 点击 **Merge pull request** 按钮
-5. 可选：删除已合并的功能分支
-
-### 2.6 后续阶段
-
-#### 2.6.1 清理分支
+- 对每条评论**逐条回复**：修改说明或解释原因。
+- 修改代码后推送到**同一分支**，PR 自动更新，审查者重新审查。
+- 回复评论时可用 `@用户名` 通知审查者"已修改，请复核"。
 
 ```bash
- # 删除本地已合并分支
- git checkout main
- git branch -d feature/功能描述
- # 删除远程 fork 上的功能分支
- git push origin --delete feature/功能描述
+# 作者根据意见修改
+git add .
+git commit -m "fix: address review feedback"
+git push
 ```
 
-#### 2.6.2 同步上游
+> 小提示：功能分支合入前，如果 main 有了新提交，先 `git pull origin main` 同步再推，可避免合并时冲突。
+
+## 5. 阶段四：合并
+
+### 5.1 三种合并策略
+
+| 策略 | 效果 | 适用 |
+| :--- | :--- | :--- |
+| Create a merge commit | 保留全部提交历史，多一个合并提交 | 希望保留开发过程 |
+| Squash and merge | 全部压缩成一个提交，历史最干净 | 功能分支提交琐碎时（最常用） |
+| Rebase and merge | 线性历史，不产生合并提交 | 追求整洁线性历史 |
+
+### 5.2 合并操作
+
+1. 确认所有**状态检查（CI）通过**（绿灯）。
+2. 确认所有审查已批准（若配置了分支保护）。
+3. 点击 **Merge pull request**，可选勾选 **Delete branch** 自动删除已合并分支。
+4. 合并后，PR 描述中关联的 Issue 自动关闭。
+
+### 5.3 命令行合并
 
 ```bash
- # 拉取上游最新代码
- git fetch upstream
- git checkout main
- git merge upstream/main
- # 更新你的 fork
- git push origin main
+gh pr merge 12 --squash --delete-branch
 ```
 
-## 3. PR 描述最佳实践
+### 5.4 进阶合并机制：Draft PR、自动合并与合并队列
 
-### 3.1 标题规范
-
-- 简洁明了，概括 PR 的主要内容
-- 使用语义化前缀，如 `feat:`, `fix:`, `docs:`, `chore:` 等
-- 长度控制在 50 个字符以内
-
-### 3.2 内容规范
-
-- 详细描述 PR 的目的和实现
-- 提供足够的上下文信息
-- 关联相关的 Issue
-- 说明测试情况
-- 提供截图或演示（如果适用）
-
-### 3.3 关联 Issue
-
-使用关键词自动关闭 Issue：
-
-- `Closes #123`
-- `Fixes #123`
-- `Resolves #123`
-- `Closes #123, #456`（同时关闭多个 Issue）
-
-## 4. 代码审查指南
-
-### 4.1 审查内容
-
-- **代码质量**：可读性、可维护性、性能
-- **功能正确性**：是否实现了预期功能
-- **安全性**：是否存在安全漏洞
-- **测试覆盖**：是否有足够的测试
-- **规范符合性**：是否符合项目规范
-
-### 4.2 审查评论类型
-
-- **问题（Problem）**：需要修复的问题
-- **建议（Suggestion）**：改进代码的建议
-- **疑问（Question）**：对代码的疑问
-- **赞赏（Praise）**：对好代码的肯定
-
-### 4.3 审查评论格式
-
-```markdown
--
--
--
-```
-
-## 5. 常见问题与解决方案
-
-### 5.1 PR 相关问题
-
-#### 5.1.1 Base 分支选择错误
-
-- **问题**：PR 对到了 fork 的 `main` 而非上游，导致合错仓库
-- **解决方案**：
-
-1.  关闭当前 PR
-2.  重新打开 PR，确保选择正确的 base 分支
-3.  检查 PR 页面顶部的 `base repository` 和 `base branch` 是否正确
-
-#### 5.1.2 大范围无关改动
-
-- **问题**：格式化整库会使 diff 不可读，审查困难
-- **解决方案**：
-
-1.  撤销格式化改动
-2.  单独创建一个 PR 用于格式化
-3.  确保当前 PR 只包含相关功能改动
-
-#### 5.1.3 合并冲突
-
-- **问题**：PR 与目标分支存在冲突
-- **解决方案**：
+- **Draft PR（草稿 PR）**：功能还没完成时创建，标记为草稿，明确"暂不可合并"。适合早期征求反馈。准备就绪后点 **Ready for review** 转正。
 
 ```bash
- # 在本地解决冲突
- git checkout feature/功能描述
- git pull upstream main
- # 解决冲突
- git add .
- git commit -m "Resolve merge conflicts"
- git push
+# 创建草稿 PR
+gh pr create --title "feat: big refactor" --body "WIP" --draft
 ```
 
-#### 5.1.4 状态检查失败
+- **自动合并（Auto-merge）**：PR 满足全部合并条件（审查通过、CI 通过）后自动执行合并，不用人等按钮。
 
-- **问题**：CI 检查失败，导致 PR 无法合并
-- **解决方案**：
+```bash
+# 标记 PR 在条件满足时自动合并
+gh pr merge 12 --squash --auto
+```
 
-1.  查看 CI 日志，了解失败原因
-2.  修复问题
-3.  重新推送代码，触发 CI 检查
+- **合并队列（Merge queue）**：团队协作繁忙时，PR 全部汇入队列，按序逐个验证合并，避免"合一个、坏一批"。
 
-### 5.2 协作相关问题
+> 这些机制与分支保护规则配合使用（见 007 篇）：保护规则定义"什么条件能合"，自动合并/合并队列负责"条件满足就合"。
 
-#### 5.2.1 审查延迟
+## 6. 阶段五：关闭与清理
 
-- **问题**：PR 提交后长时间没有审查
-- **解决方案**：
+```bash
+# 删除本地已合并分支
+git checkout main
+git pull origin main
+git branch -d feat/add-login
 
-1.  礼貌地提醒审查者
-2.  检查是否有未解决的评论
-3.  确保 PR 描述清晰完整
+# 删除远程分支（若合并时未自动删除）
+git push origin --delete feat/add-login
+```
 
-#### 5.2.2 审查意见分歧
+> 若 PR 最终**未合并而被关闭**（如需求取消）：直接在 PR 页面点 **Close pull request** 即可，本地分支删除同理。
 
-- **问题**：审查者和作者对代码有不同意见
-- **解决方案**：
+## 7. 阶段六：Fork 场景的差异与同步上游
 
-1.  进行讨论，理解对方的观点
-2.  寻找共同点，达成共识
-3.  如果无法达成共识，寻求第三方调解
+Fork 场景与团队内部唯一区别在于**远程来源**：
 
-## 6. 最佳实践
+```bash
+# 1. Fork 后克隆自己的 fork
+git clone git@github.com:your-name/upstream-repo.git
+cd upstream-repo
 
-### 6.1 PR 管理
+# 2. 添加"上游"远程（原始仓库）
+git remote add upstream git@github.com:original-owner/upstream-repo.git
+git remote -v   # origin=你的 fork，upstream=原仓库
 
-- **保持小而专注**：每个 PR 只解决一个问题或实现一个功能
-- **使用 Draft PR**：对于未完成但需要早期反馈的工作
-- **及时更新**：根据审查意见及时修改代码
-- **定期同步**：保持本地分支与上游同步，避免冲突
+# 3. 开发前先同步上游最新
+git fetch upstream
+git checkout main
+git merge upstream/main
+git push origin main
 
-### 6.2 审查流程
+# 4. 创建分支开发，推送后到 GitHub 点 "Compare & pull request"
+# 5. 提交 PR 时 base 选原仓库 main，compare 选你的分支
+```
 
-- **设定审查时间**：为审查者设定合理的审查时间
-- **使用 CODEOWNERS**：自动分配审查者
-- **提供上下文**：在 PR 描述中提供足够的上下文信息
-- **鼓励讨论**：积极参与代码审查讨论
+### 7.1 Fork PR 的常见坑
 
-### 6.3 团队协作
+- **忘了同步上游**：fork 落后于上游时提 PR，diff 可能包含大量过时代码——先 `git fetch upstream` 再合并同步。
+- **base 选错仓库**：Fork 场景的 base 是**原仓库**（不是你的 fork），compare 才是你的分支。
+- **CI 权限受限**：部分开源项目要求维护者批准后才能运行 fork 的 Actions 工作流（"first-time contributor" 场景）。
+- **提交身份**：确保 fork 仓库提交邮箱与你 GitHub 账户一致，避免贡献统计丢失。
 
-- **建立 PR 模板**：为团队创建标准化的 PR 模板
-- **制定审查指南**：明确审查标准和流程
-- **定期回顾**：定期回顾 PR 流程，寻找改进空间
-- **鼓励贡献**：对贡献者表示感谢，鼓励更多贡献
+## 8. 常见错误与对策
 
-## 7. 实际应用案例
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| base 分支选错 | PR 合并进了错误仓库/分支 | 未核对页面顶部的 base repository/branch | 关闭错误 PR，重新创建；确认 base 是目标仓库的目标分支 |
+| 大范围无关改动 | diff 几百个文件，审查困难 | 把格式化/重构混进了功能 PR | 撤销无关改动；格式化单独开一个 PR |
+| 合并冲突 | `This branch has conflicts` | 与目标分支改动重叠 | 本地 `git pull origin main` 解决冲突后 `git push`；或用网页冲突编辑器 |
+| CI 检查失败 | 状态检查红叉，无法合并 | 测试/构建/语法未通过 | 查看 CI 日志定位问题，修复后重新推送 |
+| 无法合并 | Merge 按钮灰色 | 分支保护规则未满足（缺批准/缺检查） | 补齐审查与状态检查；确认分支与 main 已同步 |
+| 审查长期无回应 | PR 无人问津 | 未指派审查者或描述不清 | 明确指派 Reviewers；补全 PR 描述与测试说明 |
 
-### 7.1 开源项目贡献
+### 8.1 安全审查要点（供审查者使用）
 
-#### 7.1.1 案例描述
+审查时除了功能正确性，重点检查以下安全隐患：
 
-- **项目**：一个流行的前端库
-- **贡献者**：首次贡献的开发者
-- **PR**：修复一个 bug
+- **敏感信息**：diff 中是否出现 `.env`、密钥、Token、连接串、个人信息。
+- **依赖风险**：依赖升级是否引入破坏性变更或已知漏洞（配合 Dependabot 提醒，见 016 篇）。
+- **权限控制**：新接口/新功能是否缺少权限校验，是否存在越权访问。
+- **注入风险**：字符串拼接 SQL/命令/HTML 的地方是否做了参数化或转义。
+- **错误处理**：异常是否被静默吞掉，是否会泄露内部堆栈信息。
 
-#### 7.1.2 流程
+## 9. 实战练习
 
-1. Fork 项目仓库
-2. 克隆到本地
-3. 创建 bugfix 分支
-4. 修复 bug
-5. 编写测试
-6. 推送代码
-7. 打开 PR
-8. 响应审查意见
-9. PR 被合并
-10. 同步上游代码
+### 练习 1：完成一次最小 PR（入门）
+- **题目描述**：在个人仓库从 main 创建分支，修改 README，推送后创建 PR 并合并。
+- **提示**：按第 2-5 节流程；合并策略选 Squash。
+- **参考答案要点**：走完"分支→提交→PR→合并"四步；合并后 main 上出现对应改动；PR 显示 Merged 状态。
 
-### 7.2 团队内部协作
+### 练习 2：练习 Request changes 审查（进阶）
+- **题目描述**：和同伴结对，A 创建 PR，B 用 Request changes 提出一条修改意见，A 修改后重新请求审查并最终批准合并。
+- **提示**：B 在 Files changed 具体行留评论；A 回复评论后推新提交，再 @B 复核。
+- **参考答案要点**：体验"请求修改 → 修改推送 → PR 自动更新 → 批准合并"的完整反馈循环。
 
-#### 7.2.1 案例描述
+### 练习 3：冲突处理演练（进阶）
+- **题目描述**：两人先后修改同一文件的同一区域，第二个人推送时制造冲突，然后本地解决并推送。
+- **提示**：`git pull origin main` 后手动编辑冲突标记 `<<<<<<<` / `=======` / `>>>>>>>`。
+- **参考答案要点**：解决冲突后 `git add` + `git commit` + `git push`；PR 恢复可合并状态。
 
-- **团队**：一个 5 人的开发团队
-- **项目**：内部 Web 应用
-- **PR**：实现一个新功能
+### 练习 4：Squash 与 Merge 对比（综合）
+- **题目描述**：同一功能分别用 Merge commit 和 Squash and merge 合并两次，用 `git log --oneline` 对比 main 历史差异。
+- **提示**：先在测试仓库操作，观察两种历史形态。
+- **参考答案要点**：Merge 保留每个开发提交；Squash 只剩一个干净提交；体会为什么团队常用 Squash。
 
-#### 7.2.2 流程
+### 练习 5：Fork 同步演练（综合）
+- **题目描述**：Fork 一个公开仓库，克隆后配置 upstream，模拟上游新增提交后同步自己的 fork。
+- **提示**：按第 7 节命令；同步后 `git push origin main` 让 GitHub 上的 fork 也更新。
+- **参考答案要点**：`git fetch upstream && git merge upstream/main` 后本地 main 含上游新提交；推送后 GitHub fork 显示 "This branch is not behind the upstream"。
 
-1. 从 main 分支创建 feature 分支
-2. 实现功能
-3. 推送代码
-4. 打开 PR，指定审查者
-5. 审查者进行代码审查
-6. 作者根据审查意见修改
-7. 所有审查通过后合并
-8. 部署到测试环境
-9. 测试通过后部署到生产环境
-10. 清理分支
+## 10. 一句话记忆
 
-## 8. 延伸阅读
+**PR 全流程六步走：分支开发 → 推送 → 发起 PR（核对 base）→ 审查修改 → 合并（Squash 最常用）→ 清理关闭；Fork 场景多配一个 upstream 远程同步即可。**
 
-- [About pull requests](https://docs.github.com/en/pull-requests) <!-- nofollow -->
-- [Creating a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) <!-- nofollow -->
-- [About code review](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews) <!-- nofollow -->
-- [Merging a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request) <!-- nofollow -->
+## 参考链接与延伸阅读
 
-## 参考文献
+- [GitHub 文档（官方中文）：创建拉取请求](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+- [GitHub 文档：关于 PR 审查](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews)
+- [GitHub 文档：合并拉取请求](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request)
+- [GitHub 文档：关联 PR 与 Issue（自动关闭关键词）](https://docs.github.com/zh/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
+- [GitHub 文档：你好，世界（PR 工作流入门教程）](https://docs.github.com/zh/get-started/start-your-journey/hello-world)
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+### 延伸阅读
 
-## 延伸阅读
-
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- Fork 工作流详解，见 011 篇《Fork 工作流》。
+- 分支模型与保护规则（PR 的闸门配置），见 007 篇《分支模型与分支保护规则》。
+- 协作规范（Commit 信息/PR 模板/审查清单），见 005 篇《协作开发规范》。
+- CODEOWNERS 自动指派审查者，见 025 篇。
+- gh 命令行操作 PR 速查，见 047 篇《Gh PR 管理》。

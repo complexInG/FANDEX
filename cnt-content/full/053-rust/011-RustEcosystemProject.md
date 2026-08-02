@@ -282,7 +282,19 @@ curl http://localhost:3000/todos
 
 部署提示：Rust 静态编译，`cargo build --release` 后单二进制即可部署；配合 `docker run` 或 systemd 即可上线。
 
-## 8. 参考资源
+## 8. 实战练习
+
+1. **Hello 服务**：用 axum 搭建一个返回 `Hello, {name}!` 的服务（路径参数），用 curl 验证。
+
+2. **待办 API**：按第 6 节的骨架，给待办 API 增加"删除待办"和"标记完成"两个接口。
+
+3. **serde 练习**：定义 `ServerConfig` 结构体，支持从 JSON 和 TOML 两种格式反序列化，测试缺省字段与重命名字段。
+
+4. **CLI 工具**：用 clap 实现一个"文件统计工具"（`-f` 输入文件、`-v` 详细模式），输出行数/词数/字符数。
+
+5. **完整项目**：把待办 API 改为使用 sqlx + SQLite 持久化，体会"内存状态 → 数据库状态"的演进。
+
+## 9. 参考资源
 
 axum 官方文档：https://docs.rs/axum
 
@@ -294,6 +306,12 @@ tracing 文档：https://docs.rs/tracing
 
 crates.io：https://crates.io/
 
-## 9. 小结
+Rust 服务端开发指南：https://github.com/rust-in-action
+
+## 10. 小结
 
 axum（路由）+ serde（数据）+ clap（CLI）+ tracing（日志）构成了 Rust 服务端开发的核心组合。本篇的待办 API 演示了从零搭建一个可运行服务的完整流程。至此，从环境搭建到生态实战的 Rust 系列学习路径已全部完成——用实战项目巩固知识，是进阶的不二法门。
+
+**回顾完整学习路径**：环境搭建（002）→ 基础语法（003）→ 所有权（004）→ 结构体/枚举（005）→ 错误处理（006）→ 集合迭代器（007）→ 泛型 Trait（008）→ 测试调试（009）→ 异步（010）→ 生态实战（011）。每一环都为下一环铺路，建议按顺序学习并完成各章练习。
+
+> **一句话记忆**：Rust 服务端四件套——"axum 管路由、serde 管数据、clap 管参数、tracing 管日志"；用它们组合出的待办 API 是生产级骨架（`Arc<Mutex<Store>>` + Router + Json），curl 一发即验。

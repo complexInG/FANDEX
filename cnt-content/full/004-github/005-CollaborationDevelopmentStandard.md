@@ -6,7 +6,7 @@ difficulty: intermediate
 title: 协作开发规范
 module: github
 category: 'GitHub Advanced'
-description: '协作开发规范：Commit Message、PR 模板、代码审查清单、CLA/DCO 合规。'
+description: '协作开发规范：Commit Message 约定、分支命名、PR 模板、代码审查清单与 CLA/DCO 合规。'
 author: Anonymous
 related:
   - 'github/仓库创建-克隆-归档-删除'
@@ -15,431 +15,278 @@ related:
   - github/分支模型与分支保护规则
 prerequisites:
   - github/GitHub概述
-updated: '2026-08-01'
+updated: '2026-08-02'
 ---
 
-## 1. 背景
+## 0. 从一个生活场景说起：团队协作公约
 
-规模化协作依赖 **可检索的提交历史**、**可执行的审查流程** 与 **法律层面的贡献授权**。**Conventional Commits（约定式提交）** 广泛用于生成 **CHANGELOG**；**PR 模板** 减少来回询问；**CLA（贡献者许可协议）** 与 **DCO（开发者来源证书）** 用于明确 **IP（知识产权）** 归属。
+想象一个 10 人合租的厨房：如果每个人用完厨具随手乱放、做完菜不贴标签、买了食材不登记，厨房很快会乱成一团。于是大家制定一份**协作公约**：刀具放哪、调料贴标签、垃圾谁倒。公约不是限制自由，而是让每个人都知道"该怎么做"，减少摩擦、提高效率。
 
-## 2. Commit Message 约定
+软件团队的协作开发也是同一个道理。**GitHub 协作开发规范**就是团队的"厨房公约"：统一的提交信息格式、分支命名规则、PR 模板、代码审查清单、贡献授权协议。本篇采用**规范驱动**的结构，围绕"约定（Convention）→ 落地（Practice）→ 合规（Compliance）"三层讲解。
 
-### 2.1 标准格式
+## 1. 原理讲解：为什么需要协作规范
+
+### 1.1 三个痛点
+
+- **提交历史不可读**：`fix bug`、`update`、`asdf` 这类提交信息三个月后没人看得懂，无法回溯"这次改了什么、为什么改"。
+- **审查低效**：没有 PR 模板，审查者要反复追问背景、影响范围、测试情况。
+- **法律风险**：开源项目接收外部贡献，若不明确知识产权归属，日后可能引发版权纠纷。
+
+### 1.2 规范解决什么
+
+| 痛点 | 对应规范 | 效果 |
+| :--- | :--- | :--- |
+| 提交历史混乱 | Commit Message 约定 | 可检索、可自动生成 CHANGELOG |
+| 分支混乱 | 分支命名规范 | 见名知义，知道分支在做什么 |
+| PR 信息缺失 | PR 模板 | 审查者一次拿到所有上下文 |
+| 审查走过场 | 代码审查清单 | 正确性、安全性、可维护性全覆盖 |
+| 贡献权属不明 | CLA / DCO | 明确代码知识产权归属 |
+
+## 2. Commit Message 约定：让历史可读
+
+### 2.1 标准格式（Conventional Commits）
 
 ```
- <type>(<scope>): <subject>
- <body>
- <footer>
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
 ```
 
-### 2.2 类型说明
+### 2.2 类型（Type）说明
 
-| 类型     | 描述                               | 示例                                         |
-| -------- | ---------------------------------- | -------------------------------------------- |
-| feat     | 新功能                             | `feat(auth): add refresh token rotation`     |
-| fix      | 修复 bug                           | `fix(api): handle 429 from upstream`         |
-| docs     | 文档更新                           | `docs(readme): clarify install steps`        |
-| style    | 代码风格（格式调整，不影响功能）   | `style: format code with prettier`           |
-| refactor | 代码重构（不添加功能，不修复 bug） | `refactor: extract common utility functions` |
-| test     | 测试相关                           | `test: add unit tests for auth module`       |
-| chore    | 构建过程或辅助工具变动             | `chore: update dependencies`                 |
-| perf     | 性能优化                           | `perf: optimize database query`              |
-| revert   | 回滚更改                           | `revert: revert commit abc123`               |
+| 类型 | 含义 | 示例 |
+| :--- | :--- | :--- |
+| feat | 新功能 | `feat(auth): add refresh token rotation` |
+| fix | 修复 bug | `fix(api): handle 429 from upstream` |
+| docs | 文档更新 | `docs(readme): clarify install steps` |
+| style | 代码风格（不影响功能） | `style: format code with prettier` |
+| refactor | 重构（不加功能不修 bug） | `refactor: extract common utility` |
+| test | 测试相关 | `test: add unit tests for auth module` |
+| chore | 构建/工具变动 | `chore: update dependencies` |
+| perf | 性能优化 | `perf: optimize database query` |
+| revert | 回滚 | `revert: revert commit abc123` |
 
-### 2.3 作用域（Scope）
+### 2.3 撰写要点
 
-- 可选，用于指定变更的模块或组件
-- 建议使用语义化的模块名称，如 `auth`、`api`、`ui` 等
+- **Subject（主题）**：不超过 50 字符，用祈使句（"add" 而非 "added"），英文小写开头，结尾不加句号。
+- **Scope（作用域）**：可选，标出模块名，如 `auth`、`api`、`ui`。
+- **Body（正文）**：每行不超过 72 字符，说明变更的原因和影响。
+- **Footer（页脚）**：`BREAKING CHANGE:` 标记破坏性变更；`Closes #123` 关联 Issue；`Signed-off-by:` 用于 DCO 签名。
 
-### 2.4 主题（Subject）
-
-- 简短描述变更内容（不超过 50 个字符）
-- 使用祈使句（如 "add" 而非 "added"）
-- 英文小写开头（团队可统一使用中文）
-- 结尾不要加句号
-
-### 2.5 正文（Body）
-
-- 可选，详细描述变更内容
-- 每行不超过 72 个字符
-- 说明变更的原因和影响
-
-### 2.6 页脚（Footer）
-
-- 可选，包含以下信息：
-- **Breaking Change**：使用 `BREAKING CHANGE:` 前缀说明破坏性变更
-- **关联 Issue**：使用 `Closes #123` 或 `Resolves #123` 关联相关 Issue
-- **DCO 签名**：使用 `Signed-off-by: Name <email@example.com>` 进行 DCO 签名
-
-### 2.7 示例
+### 2.4 完整示例
 
 ```text
- feat(auth): add refresh token rotation
- Implement refresh token rotation to improve security.
- this change requires clients to handle token rotation properly.
- breakING CHANGE: Clients must now handle refresh token rotation.
- Closes #456
- Signed-off-by: John Doe <john@example.com>
+feat(auth): add refresh token rotation
+
+Implement refresh token rotation to improve security.
+Clients must now handle token rotation properly.
+
+BREAKING CHANGE: Clients must now handle refresh token rotation.
+Closes #456
+Signed-off-by: John Doe <john@example.com>
 ```
 
-### 2.8 工具支持
+### 2.5 配套工具
 
-- **commitizen**：交互式提交信息生成工具
-- **commitlint**：提交信息验证工具
-- **standard-version**：基于提交信息生成 CHANGELOG
+- **commitizen**：交互式生成规范提交信息。
+- **commitlint**：提交时校验格式，不符合即拦截。
+- **standard-version / semantic-release**：根据提交类型自动生成 CHANGELOG 与版本号。
 
-## 3. PR 模板配置
+## 3. 分支命名与 PR 规范
 
-### 3.1 创建 PR 模板
+### 3.1 分支命名规范
 
-在仓库根目录创建 `.github/pull_request_template.md` 文件：
+```
+<type>/<description>
+```
+
+示例：`feat/add-login`、`fix/api-error-handling`、`docs/update-readme`。
+
+> 分支规范与 Commit 类型保持一致，看到分支名就知道它在做什么、属于哪类改动。
+
+### 3.2 PR 模板：放在 `.github/pull_request_template.md`
 
 ```markdown
 ## 背景
-
 简要描述本次 PR 的背景和目的。
 
 ## 关联 Issue
-
--
--
+- Closes #123
 
 ## 变更说明
+- 新增登录接口
+- 修复 token 刷新逻辑
 
--
--
--
-
-## 实现细节
-
--
--
--
-
-## 测试
-
--
--
--
-
-1. 步骤 1
-2. 步骤 2
+## 测试情况
+- 单元测试：通过
+- 手工验证：本地启动验证登录流程
 
 ## 检查清单
-
--
--
--
--
--
-
-## 其他说明
-
-如有其他需要说明的内容，请在此处补充。
+- [ ] 代码符合项目规范
+- [ ] 无敏感信息（密钥/密码）
+- [ ] 测试已补充
+- [ ] README 已同步更新
 ```
 
-### 3.2 分支命名规范
+创建模板后，仓库中的每个新 PR 都会自动预填该结构，审查者不必反复追问基本信息。
 
-```
- <type>/<description>
-```
+### 3.3 PR 标题与描述最佳实践
 
-- **type**：feat、fix、docs、refactor 等
-- **description**：简短描述分支目的
-  示例：
-- `feat/add-login`
-- `fix/api-error-handling`
-- `docs/update-readme`
+- 标题沿用 `feat(auth): ...` 格式，便于自动生成 CHANGELOG。
+- 描述说明"改了什么 + 为什么改 + 怎么验证"。
+- 用 `Closes #123` 关联 Issue，合并时自动关闭对应 Issue。
+- 涉及 UI 改动附截图；破坏性变更明确标注。
 
-### 3.3 PR 标题规范
-
-```
- <type>(<scope>): <subject>
-```
-
-与 Commit Message 格式一致，便于自动生成 CHANGELOG。
-
-### 3.4 PR 描述最佳实践
-
-- 清晰描述变更内容和原因
-- 提供测试步骤和预期结果
-- 如有破坏性变更，明确说明
-- 关联相关 Issue
-- 如有需要，提供截图或演示链接
-
-## 4. Code Review 流程
+## 4. 代码审查（Code Review）规范
 
 ### 4.1 审查者职责
 
-- 理解 PR 的目的和实现
-- 检查代码质量和安全性
-- 提供建设性反馈
-- 确保测试覆盖充分
-- 验证变更符合项目规范
+- 理解 PR 目的，先读描述再读代码。
+- 按清单检查正确性、安全性、可维护性、性能、测试覆盖。
+- 给出**具体可执行**的反馈，而不是空泛的"看不懂"。
+- 确认 CI 状态检查通过后再批准。
 
-### 4.2 审查清单
+### 4.2 审查清单（可直接复制使用）
 
-#### 4.2.1 正确性
+**正确性**：逻辑正确、边界情况处理、错误处理完善、并发安全。
 
-- [ ] 代码逻辑正确
-- [ ] 边界情况处理
-- [ ] 错误处理完善
-- [ ] 并发安全
-- [ ] 事务一致性
+**安全性**：无注入漏洞、无路径遍历、无敏感信息泄露、依赖无已知漏洞、权限控制正确。
 
-#### 4.2.2 安全性
+**可维护性**：风格一致、命名规范、注释充分、无重复代码、模块化设计。
 
-- [ ] 无注入漏洞
-- [ ] 无路径遍历
-- [ ] 无敏感信息泄露
-- [ ] 依赖无安全漏洞（使用 Dependabot）
-- [ ] 权限控制正确
+**测试**：单元/集成测试覆盖、测试用例合理、边界用例存在。
 
-#### 4.2.3 可维护性
+### 4.3 反馈类型
 
-- [ ] 代码风格一致
-- [ ] 命名规范
-- [ ] 注释充分
-- [ ] 无重复代码
-- [ ] 模块化设计
+| 反馈类型 | 含义 | 示例 |
+| :--- | :--- | :--- |
+| 必须修改 | 存在严重问题，不修不能合并 | "这里缺少空指针判断，会崩溃" |
+| 建议修改 | 可优化，不阻塞合并 | "建议把这段提取为公共函数" |
+| 疑问 | 需要作者解释 | "这里的超时时间是刻意设置的吗？" |
+| 赞赏 | 值得肯定 | "这个错误处理写得很严谨" |
 
-#### 4.2.4 性能
+### 4.4 审查流程（七步）
 
-- [ ] 无性能瓶颈
-- [ ] 无 N+1 查询
-- [ ] 资源使用合理
-- [ ] 缓存策略适当
+1. 分配审查者（CODEOWNERS 自动分配或手动指定）→ 2. 检查 PR 描述与变更范围 → 3. 逐行审查 → 4. 跑测试验证无回归 → 5. 反馈并等待修改 → 6. 复核确认 → 7. 选择合并策略合并。
 
-#### 4.2.5 测试
+## 5. CLA 与 DCO：贡献授权的两种方案
 
-- [ ] 单元测试覆盖
-- [ ] 集成测试覆盖
-- [ ] 测试用例合理
+### 5.1 概念对比
 
-### 4.3 审查反馈类型
+| 特性 | CLA（贡献者许可协议） | DCO（开发者来源证书） |
+| :--- | :--- | :--- |
+| 本质 | 正式法律协议，明确知识产权归属 | 轻量声明，签名确认有权提交 |
+| 复杂度 | 高（需律师参与起草） | 低（一个 `Signed-off-by` 签名） |
+| 法律约束力 | 强 | 中等 |
+| 适用场景 | 大型项目、企业项目 | 开源项目、中小型项目 |
 
-- **必须修改**：代码存在严重问题，必须修复
-- **建议修改**：代码可以改进，建议优化
-- **疑问**：对代码有疑问，需要作者解释
-- **赞赏**：代码写得好，值得肯定
+### 5.2 CLA 落地
 
-### 4.4 审查流程
+- 使用 **CLA Assistant** 等 GitHub App：贡献者首次提 PR 时自动弹出协议，签署后才可合并。
+- 分为**个人 CLA** 与**企业 CLA**（员工代表公司贡献时签署）。
 
-1. **分配审查者**：使用 CODEOWNERS 自动分配或手动指定
-2. **初步审查**：检查 PR 描述和变更范围
-3. **代码审查**：逐行审查代码
-4. **测试验证**：运行测试确保无回归
-5. **反馈沟通**：提供反馈并等待作者修改
-6. **最终批准**：确认所有问题已解决
-7. **合并 PR**：选择合适的合并策略
+### 5.3 DCO 落地
 
-## 5. CLA 与 DCO
+1. 提交时用 `git commit -s` 自动附加签名行：
 
-### 5.1 CLA（贡献者许可协议）
+```bash
+git commit -s -m "feat(auth): add refresh token rotation"
+# 提交信息中自动包含：
+# Signed-off-by: 你的名字 <your@email.com>
+```
 
-#### 5.1.1 什么是 CLA
+2. 用 GitHub Action（如 `actions/dco`）在 CI 中校验每个提交是否带签名，未签名则检查失败。
 
-CLA 是贡献者与项目所有者之间的法律协议，明确贡献的知识产权归属，保护项目和贡献者双方的权益。
+```yaml
+# .github/workflows/dco.yml
+name: DCO Check
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/dco@v2
+```
 
-#### 5.1.2 类型
+> 补签历史提交：`git rebase --signoff` 可给旧提交补上签名。
 
-- **个人 CLA**：适用于个人贡献者
-- **企业 CLA**：适用于企业员工代表公司贡献
+### 5.4 文档规范与团队落地清单
 
-#### 5.1.3 配置
+规范要落地，配套文档不可少。在仓库中维护以下"健康文件"（详见 026 篇《社区健康文件》）：
 
-1. **选择 CLA 工具**：
+| 文件 | 作用 |
+| :--- | :--- |
+| `README.md` | 项目概述、安装、使用说明 |
+| `CONTRIBUTING.md` | 贡献指南：如何提 Issue、如何开发、如何提交 PR |
+| `CODE_OF_CONDUCT.md` | 社区行为准则 |
+| `SECURITY.md` | 安全漏洞上报流程 |
+| `CODEOWNERS` | 按模块指定代码审查负责人（详见 025 篇） |
 
-- **CLA Assistant**：GitHub App，自动管理 CLA 签署
-- **CLA Hub**：另一个流行的 CLA 管理工具
+**团队落地五步**：
 
-2. **配置步骤**：
+1. 先定 Commit 规范与分支命名规范，写入 README 或 CONTRIBUTING。
+2. 配置 PR 模板与 Issue 模板，用工具（commitlint/DCO Action）强制校验。
+3. 主分支开启保护规则，要求 PR 合并 + 审查 + CI 通过（详见 007 篇）。
+4. 用 CODEOWNERS 把关键模块的审查责任落到具体人。
+5. 每季度回顾一次流程，根据痛点迭代规范。
 
-- 安装 CLA Assistant GitHub App
-- 创建 CLA 文档
-- 在仓库中配置 CLA 检查
+## 6. 常见错误与对策
 
-### 5.2 DCO（开发者来源证书）
+| 常见错误 | 报错/现象 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 提交信息不规范 | 被 commitlint 拦截 | 未遵循约定式提交格式 | 按 `<type>(<scope>): <subject>` 重写；用 commitizen 交互生成 |
+| PR 描述太敷衍 | 审查者反复追问 | 没写背景、影响、测试 | 使用 PR 模板，按"背景/变更/测试/清单"填写 |
+| DCO 检查失败 | CI 红叉：missing Signed-off-by | 提交未加签名 | `git commit -s` 重新提交；历史提交用 `git rebase --signoff` 补签 |
+| 分支命名随意 | 分支堆积难维护 | 无命名规范 | 统一 `<type>/<description>`；合并后及时删除分支 |
+| 审查意见无回应 | PR 长时间无人跟进 | 作者未回复或修改 | 作者及时回复每条评论；设置提醒；必要时礼貌催促 |
+| 合并冲突反复出现 | PR 冲突不断 | 功能分支长期未同步 main | 定期 `git pull origin main` 同步；保持 PR 小而聚焦 |
 
-#### 5.2.1 什么是 DCO
+## 7. 实战练习
 
-DCO 是一种轻量级的贡献者协议，通过在提交信息中添加 `Signed-off-by` 行来确认贡献者有权提交代码。
+### 练习 1：写一个规范提交（入门）
+- **题目描述**：在你自己的测试仓库中完成一次 `fix` 类型提交，包含 scope、Closes 关键词，并验证格式。
+- **提示**：参考 2.4 示例；`git commit -m "fix(cart): fix price calculation error\n\nCloses #12"`。
+- **参考答案要点**：类型 + 作用域 + 主题齐全；提交后 `git log --oneline` 检查显示格式正确。
 
-#### 5.2.2 配置
+### 练习 2：为仓库配置 PR 模板（进阶）
+- **题目描述**：在仓库中创建 `.github/pull_request_template.md`，推送到 GitHub 后发起一个测试 PR 验证模板生效。
+- **提示**：模板内容按第 3.2 节结构；推送后 New pull request 页面应自动带出模板。
+- **参考答案要点**：新建文件 → commit → push → 打开新 PR 看到预填模板即成功。
 
-1. **启用 DCO 检查**：
+### 练习 3：体验 commitlint 校验（进阶）
+- **题目描述**：在本地仓库安装 commitlint 并配置约定式提交规则，尝试提交一条不符合格式的信息，观察拦截效果。
+- **提示**：`npm init -y` 后安装 `@commitlint/cli @commitlint/config-conventional`，用 husky 挂 pre-commit 钩子。
+- **参考答案要点**：非法提交被拦截并提示错误格式；按提示修正后可提交。
 
-- 使用 `actions/dco` GitHub Action
-- 在 `.github/workflows/dco.yml` 中配置
+### 练习 4：配置 DCO 检查（综合）
+- **题目描述**：为仓库添加 `actions/dco` 工作流，提交一个不带签名的 commit 观察 CI 失败，再用 `git commit -s` 修复。
+- **提示**：按 5.3 配置；不带签名推送 → 看 Actions 失败 → 用 `--amend -s` 补签后强推。
+- **参考答案要点**：DCO 工作流识别缺少 `Signed-off-by` 的提交并置为失败；补签后 CI 通过。
 
-2. **DCO 工作流**：
+### 练习 5：模拟一次完整 Code Review（综合）
+- **题目描述**：和一位同学结对，A 提一个含已知小缺陷的 PR，B 按第 4.2 节清单审查并给出"必须修改 + 建议修改"两类反馈，A 修改后重新提交。
+- **提示**：审查时先看 PR 描述再看 diff；反馈要具体到行号。
+- **参考答案要点**：完成"提 PR → 审查 → 修改 → 复核 → 合并"全流程；体会规范如何让反馈高效。
 
-- 贡献者使用 `git commit -s` 签署提交
-- DCO Action 验证每个提交是否有签名
-- 无签名的提交将导致 CI 失败
+## 8. 一句话记忆
 
-### 5.3 CLA 与 DCO 对比
+**协作规范就是团队的"厨房公约"：提交信息让历史可读，PR 模板让审查高效，审查清单把好质量关，CLA/DCO 明确权属，四者共同支撑可持续的团队协作。**
 
-| 特性       | CLA                | DCO                |
-| ---------- | ------------------ | ------------------ |
-| 复杂度     | 高                 | 低                 |
-| 法律约束力 | 强                 | 中等               |
-| 实施难度   | 中等               | 低                 |
-| 适用场景   | 大型项目、企业项目 | 开源项目、小型项目 |
+## 参考链接与延伸阅读
 
-## 6. 团队协作规范
+- [Conventional Commits（约定式提交规范）](https://www.conventionalcommits.org/zh-hans/)
+- [GitHub 文档（官方中文）：拉取请求协作指南](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests)
+- [GitHub 文档：关于 PR 审查](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews)
+- [Google 工程实践文档：Code Review 指南](https://google.github.io/eng-practices/review/)
+- [Open Source Guides：法律与许可证](https://opensource.guide/zh-hans/legal/)
 
-### 6.1 分支管理
+### 延伸阅读
 
-- **main/master**：主分支，保持稳定可发布状态
-- **develop**：开发分支，集成新功能
-- **feature/**：功能分支，开发新功能
-- **fix/**：修复分支，修复 bug
-- **release/**：发布分支，准备发布
-- **hotfix/**：热修复分支，紧急修复生产问题
-
-### 6.2 代码风格
-
-- **统一代码风格**：使用 ESLint、Prettier 等工具
-- **编码规范**：制定团队编码规范文档
-- **代码审查**：确保代码符合风格要求
-
-### 6.3 文档规范
-
-- **README.md**：项目概述、安装、使用说明
-- **CONTRIBUTING.md**：贡献指南
-- **CODE_OF_CONDUCT.md**：行为准则
-- **SECURITY.md**：安全漏洞上报流程
-- **API 文档**：使用 JSDoc、Swagger 等工具生成
-
-### 6.4 会议规范
-
-- **站会**：每日 15 分钟，同步进度和问题
-- **评审会**：定期代码评审会议
-- **规划会**： Sprint 规划和回顾
-- **技术分享**：定期技术分享会议
-
-## 7. 常见问题与解决方案
-
-### 7.1 Commit Message 问题
-
-- **问题**：提交信息不规范
-- **解决方案**：
-
-1.  使用 commitizen 工具生成规范的提交信息
-2.  配置 commitlint 进行提交信息验证
-3.  定期代码审查时检查提交信息
-
-### 7.2 PR 审核延迟
-
-- **问题**：PR 审核不及时
-- **解决方案**：
-
-1.  明确审核责任和时间要求
-2.  使用 CODEOWNERS 自动分配审核者
-3.  建立审核优先级机制
-
-### 7.3 DCO 签名缺失
-
-- **问题**：提交缺少 DCO 签名导致 CI 失败
-- **解决方案**：
-
-1.  使用 `git commit -s` 重新提交
-2.  对历史提交使用 `git rebase --signoff` 签名
-3.  配置 Git 客户端默认使用 `-s` 选项
-
-### 7.4 合并冲突
-
-- **问题**：PR 合并时出现冲突
-- **解决方案**：
-
-1.  及时同步上游分支
-2.  使用 `git rebase` 解决冲突
-3.  小批量提交减少冲突概率
-
-### 7.5 代码质量问题
-
-- **问题**：代码质量不符合要求
-- **解决方案**：
-
-1.  建立代码质量标准
-2.  使用静态代码分析工具
-3.  加强代码审查力度
-
-## 8. 实际应用案例
-
-### 8.1 开源项目
-
-- **Vue.js**：使用 Conventional Commits 和 DCO
-- **React**：使用 PR 模板和 CODEOWNERS
-- **Node.js**：使用 CLA 和严格的代码审查
-
-### 8.2 企业项目
-
-- **大型电商平台**：使用 Git Flow 分支管理和 CLA
-- **SaaS 产品**：使用 GitHub Actions 自动化测试和部署
-- **金融系统**：使用严格的代码审查和安全检查
-
-## 9. 工具集成
-
-### 9.1 GitHub 工具
-
-- **GitHub Actions**：自动化测试、构建和部署
-- **Dependabot**：自动更新依赖
-- **Code Scanning**：代码安全扫描
-- **Secret Scanning**：敏感信息扫描
-
-### 9.2 第三方工具
-
-- **SonarQube**：代码质量分析
-- **Snyk**：依赖安全扫描
-- **Jira**：项目管理和 Issue 跟踪
-- **Slack**：团队沟通和通知
-
-## 10. 最佳实践总结
-
-- **统一规范**：制定并执行统一的协作规范
-- **自动化**：使用工具自动化流程和检查
-- **透明沟通**：保持团队沟通透明和及时
-- **持续改进**：定期回顾和优化协作流程
-- **尊重贡献者**：感谢和尊重每一位贡献者
-
-## 11. 延伸阅读
-
-- [Conventional Commits](https://www.conventionalcommits.org/) <!-- nofollow -->
-- [GitHub 协作指南](https://docs.github.com/en/github/collaborating-with-pull-requests) <!-- nofollow -->
-- [Code Review 最佳实践](https://google.github.io/eng-practices/review/) <!-- nofollow -->
-- [CLA 与 DCO 比较](https://opensource.guide/legal/#contributor-license-agreements) <!-- nofollow -->
-- [Git 分支管理策略](https://nvie.com/posts/a-successful-git-branching-model/) <!-- nofollow -->
-
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
-
-## 延伸阅读
-
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 GitHub Actions 深入
-
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
-
-### 13.2 开源协作治理
-
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+- 分支模型与保护规则落地，见 007 篇《分支模型与分支保护规则》。
+- 团队健康文件（CONTRIBUTING/CODE_OF_CONDUCT），见 026 篇《社区健康文件》。
+- 代码所有者（CODEOWNERS）自动分配审查者，见 025 篇。
+- PR 全流程实操，见 027 篇《Pull Request 完整协作流程》。

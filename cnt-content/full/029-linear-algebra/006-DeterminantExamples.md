@@ -4,9 +4,9 @@ title: 行列式典型例题
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 行列式计算与证明的典型例题集锦，涵盖化上三角、范德蒙德、递推法、加边法、抽象行列式等题型。
+description: 用一组由易到难的完整例题串起行列式全部技巧：化三角形法、范德蒙德公式、行和相等、递推法、加边法、抽象行列式与证明题，每题附解题步骤与思路点拨。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'linear-algebra/行列式计算方法'
   - 'linear-algebra/克莱姆法则'
@@ -15,220 +15,238 @@ related:
 prerequisites: []
 ---
 
-## 1. 化上三角法
+## 0. 生活类比：健身房的综合训练课
 
-### 例1
+健身教练不会只让你反复练一个动作，而是设计"综合训练课"：热身（基础题）、专项（技巧题）、大重量（综合题）、拉伸（总结）。行列式也是如此——前五篇你分别学会了定义、性质、展开、计算方法和克莱姆法则，本篇文章就是那节"综合训练课"：用一组**由易到难的完整例题**，把 001-005 的全部技巧串成一条线。
 
-计算 $\begin{vmatrix} 1 & 1 & 1 & 1 \\ 1 & 2 & 3 & 4 \\ 1 & 4 & 9 & 16 \\ 1 & 8 & 27 & 64 \end{vmatrix}$
+做题之前，先建立一套"审题流程"（相当于热身动作）：
 
-**解**：这是范德蒙德行列式，$x_1 = 1, x_2 = 2, x_3 = 3, x_4 = 4$。
+1. 看结构：有没有零很多的行（列）？有没有范德蒙德形状？行和是否相等？
+2. 选方法：对应 004 的"方法选择指南"；
+3. 动笔前先想三步：造零 → 展开/化三角 → 提取公因子。
 
-$$D = \prod_{1 \leq j < i \leq 4}(x_i - x_j) = (2-1)(3-1)(4-1)(3-2)(4-2)(4-3) = 1 \times 2 \times 3 \times 1 \times 2 \times 1 = 12$$
+下面 8 道例题按难度递增排列，每道都给出完整解题步骤与"思路点拨"。
 
-### 例2
+## 1. 基础热身：直接套公式
 
-计算 $\begin{vmatrix} 3 & 1 & 1 & 1 \\ 1 & 3 & 1 & 1 \\ 1 & 1 & 3 & 1 \\ 1 & 1 & 1 & 3 \end{vmatrix}$
+### 例 1：二阶直接计算
 
-**解**：各行之和为 $6$，将第 2、3、4 列加到第 1 列：
+计算 $D = \begin{vmatrix} 5 & 2 \\ 7 & 3 \end{vmatrix}$。
+
+**解**：二阶行列式直接套对角线法则：
+
+$$D = 5 \times 3 - 2 \times 7 = 15 - 14 = 1$$
+
+**思路点拨**：二阶行列式是所有计算的最小单元，务必零失误。$D \neq 0$ 也意味着对应系数矩阵可逆（为 008 文档伏笔）。
+
+### 例 2：三阶对角线法则
+
+计算 $D = \begin{vmatrix} 2 & 1 & 0 \\ -1 & 1 & 2 \\ 3 & 0 & 1 \end{vmatrix}$。
+
+**解**：三阶按对角线法则展开六项：
+
+$$D = 2 \times 1 \times 1 + 1 \times 2 \times 3 + 0 \times (-1) \times 0 - 0 \times 1 \times 3 - 1 \times (-1) \times 1 - 2 \times 2 \times 0$$
+
+$$= 2 + 6 + 0 - 0 + 1 - 0 = 9$$
+
+**思路点拨**：含零元素时，含零的乘积项自动消失，先标记它们可以减少计算量。
+
+## 2. 技巧专项：造零与化三角
+
+### 例 3：化上三角（黄金套路）
+
+计算 $D = \begin{vmatrix} 3 & 1 & 1 & 1 \\ 1 & 3 & 1 & 1 \\ 1 & 1 & 3 & 1 \\ 1 & 1 & 1 & 3 \end{vmatrix}$。
+
+**解**：各行元素和均为 $6$，把第 2、3、4 列加到第 1 列（性质六），再提取公因子（性质三）：
 
 $$D = \begin{vmatrix} 6 & 1 & 1 & 1 \\ 6 & 3 & 1 & 1 \\ 6 & 1 & 3 & 1 \\ 6 & 1 & 1 & 3 \end{vmatrix} = 6 \begin{vmatrix} 1 & 1 & 1 & 1 \\ 1 & 3 & 1 & 1 \\ 1 & 1 & 3 & 1 \\ 1 & 1 & 1 & 3 \end{vmatrix}$$
 
-各行减第一行：
+第 1 行乘 $(-1)$ 加到其余各行（性质六，值不变）：
 
 $$= 6 \begin{vmatrix} 1 & 1 & 1 & 1 \\ 0 & 2 & 0 & 0 \\ 0 & 0 & 2 & 0 \\ 0 & 0 & 0 & 2 \end{vmatrix} = 6 \times 1 \times 2 \times 2 \times 2 = 48$$
 
-## 2. 递推法
+**思路点拨**："行（列）和相等 → 全加到第一行（列）→ 提公因子 → 各行减第一行"是数字行列式的招牌套路。
 
-### 例3
+### 例 4：化上三角（直接消元）
 
-计算 $D_n = \begin{vmatrix} 2 & 1 & 0 & \cdots & 0 & 0 \\ 1 & 2 & 1 & \cdots & 0 & 0 \\ 0 & 1 & 2 & \cdots & 0 & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\ 0 & 0 & 0 & \cdots & 2 & 1 \\ 0 & 0 & 0 & \cdots & 1 & 2 \end{vmatrix}$
+计算 $D = \begin{vmatrix} 1 & 1 & 1 & 1 \\ 1 & 2 & 3 & 4 \\ 1 & 4 & 9 & 16 \\ 1 & 8 & 27 & 64 \end{vmatrix}$。
 
-**解**：按第一行展开：
+**解（方法一：化三角）**：
 
-$$D_n = 2D_{n-1} - 1 \cdot \begin{vmatrix} 1 & 1 & 0 & \cdots & 0 \\ 0 & 2 & 1 & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \cdots & 2 \end{vmatrix} = 2D_{n-1} - D_{n-2}$$
+$$D \xrightarrow{r_2 - r_1, \; r_3 - r_1, \; r_4 - r_1} \begin{vmatrix} 1 & 1 & 1 & 1 \\ 0 & 1 & 2 & 3 \\ 0 & 3 & 8 & 15 \\ 0 & 7 & 26 & 63 \end{vmatrix} \xrightarrow{r_3 - 3r_2, \; r_4 - 7r_2} \begin{vmatrix} 1 & 1 & 1 & 1 \\ 0 & 1 & 2 & 3 \\ 0 & 0 & 2 & 6 \\ 0 & 0 & 12 & 42 \end{vmatrix}$$
 
-即 $D_n - 2D_{n-1} + D_{n-2} = 0$，特征方程 $t^2 - 2t + 1 = 0$，$(t-1)^2 = 0$。
+$$\xrightarrow{r_4 - 6r_3} \begin{vmatrix} 1 & 1 & 1 & 1 \\ 0 & 1 & 2 & 3 \\ 0 & 0 & 2 & 6 \\ 0 & 0 & 0 & 6 \end{vmatrix} = 1 \times 1 \times 2 \times 6 = 12$$
 
-通解 $D_n = (C_1 + C_2 n) \cdot 1^n = C_1 + C_2 n$。
+**解（方法二：范德蒙德公式）**：第 $j$ 列恰为 $x_i^{j-1}$（$x_1 = 1, x_2 = 2, x_3 = 3, x_4 = 4$）：
 
-由 $D_1 = 2$，$D_2 = \begin{vmatrix} 2 & 1 \\ 1 & 2 \end{vmatrix} = 3$，得 $C_1 + C_2 = 2$，$C_1 + 2C_2 = 3$，解得 $C_1 = C_2 = 1$。
+$$D = \prod_{1 \leq j < i \leq 4}(x_i - x_j) = (2-1)(3-1)(4-1)(3-2)(4-2)(4-3) = 1 \times 2 \times 3 \times 1 \times 2 \times 1 = 12$$
 
-故 $D_n = n + 1$。
+**思路点拨**：同一道题两种解法——一种通用、一种取巧。考试中认出范德蒙德形状能"秒杀"，认不出也能硬算，多会一招多一条路。
 
-### 例4
+## 3. 递推与归纳：处理"n 阶"题
 
-计算 $D_n = \begin{vmatrix} a & b & b & \cdots & b \\ b & a & b & \cdots & b \\ b & b & a & \cdots & b \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ b & b & b & \cdots & a \end{vmatrix}$
+### 例 5：行和相等的 n 阶推广
 
-**解**：各行加到第一行，提取公因子 $a + (n-1)b$：
+计算 $D_n = \begin{vmatrix} a & b & b & \cdots & b \\ b & a & b & \cdots & b \\ b & b & a & \cdots & b \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ b & b & b & \cdots & a \end{vmatrix}$。
 
-$$D_n = [a + (n-1)b] \begin{vmatrix} 1 & 1 & 1 & \cdots & 1 \\ b & a & b & \cdots & b \\ b & b & a & \cdots & b \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ b & b & b & \cdots & a \end{vmatrix}$$
+**解**：各行和均为 $a + (n-1)b$。各列加到第 1 列，提取公因子：
 
-各行减第一行的 $b$ 倍：
+$$D_n = \left[a + (n-1)b\right] \begin{vmatrix} 1 & b & b & \cdots & b \\ 1 & a & b & \cdots & b \\ 1 & b & a & \cdots & b \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 1 & b & b & \cdots & a \end{vmatrix}$$
 
-$$= [a + (n-1)b] \begin{vmatrix} 1 & 1 & 1 & \cdots & 1 \\ 0 & a-b & 0 & \cdots & 0 \\ 0 & 0 & a-b & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \cdots & a-b \end{vmatrix}$$
+第 1 行乘 $(-b)$ 加到其余各行：
 
-$$= [a + (n-1)b](a-b)^{n-1}$$
+$$= \left[a + (n-1)b\right] \begin{vmatrix} 1 & b & b & \cdots & b \\ 0 & a-b & 0 & \cdots & 0 \\ 0 & 0 & a-b & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \cdots & a-b \end{vmatrix} = \left[a + (n-1)b\right](a-b)^{n-1}$$
 
-## 3. 加边法
+**思路点拨**：把例 3 的套路从 $4$ 阶推广到 $n$ 阶，关键是"每行和相等"这一共性。这是 004 文档"行和相等"套路的 n 阶版。
 
-### 例5
+### 例 6：递推法解三对角
 
-计算 $D_n = \begin{vmatrix} 1+a_1 & 1 & \cdots & 1 \\ 1 & 1+a_2 & \cdots & 1 \\ \vdots & \vdots & \ddots & \vdots \\ 1 & 1 & \cdots & 1+a_n \end{vmatrix}$（$a_i \neq 0$）
+计算 $D_n = \begin{vmatrix} 2 & 1 & 0 & \cdots & 0 \\ 1 & 2 & 1 & \cdots & 0 \\ 0 & 1 & 2 & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \cdots & 2 \end{vmatrix}$。
 
-**解**：加边升阶：
+**解**：按第一行展开（见 003 文档例 6 的三对角推导）：
 
-$$D_n = \begin{vmatrix} 1 & 1 & 1 & \cdots & 1 \\ 0 & 1+a_1 & 1 & \cdots & 1 \\ 0 & 1 & 1+a_2 & \cdots & 1 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 1 & 1 & \cdots & 1+a_n \end{vmatrix}$$
+$$D_n = 2D_{n-1} - D_{n-2}$$
 
-第一行乘 $(-1)$ 加到各行：
+特征方程 $t^2 - 2t + 1 = 0$，重根 $t = 1$，故 $D_n = C_1 + C_2 n$。由初值：
 
-$$= \begin{vmatrix} 1 & 1 & 1 & \cdots & 1 \\ -1 & a_1 & 0 & \cdots & 0 \\ -1 & 0 & a_2 & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ -1 & 0 & 0 & \cdots & a_n \end{vmatrix}$$
+$$D_1 = 2, \quad D_2 = \begin{vmatrix} 2 & 1 \\ 1 & 2 \end{vmatrix} = 3$$
 
-第 $j+1$ 列乘 $\dfrac{1}{a_j}$ 加到第一列（$j = 1, 2, \ldots, n$）：
+代入得 $C_1 + C_2 = 2$，$C_1 + 2C_2 = 3$，解得 $C_1 = C_2 = 1$：
 
-$$= \begin{vmatrix} 1 + \sum_{j=1}^{n}\frac{1}{a_j} & 1 & 1 & \cdots & 1 \\ 0 & a_1 & 0 & \cdots & 0 \\ 0 & 0 & a_2 & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & \cdots & a_n \end{vmatrix} = \left(1 + \sum_{j=1}^{n}\frac{1}{a_j}\right) \prod_{i=1}^{n} a_i$$
+$$D_n = n + 1$$
 
-## 4. 拆行（列）法
+**思路点拨**：递推法三步曲——"展开得递推式 → 解特征方程 → 用初值定常数"。
 
-### 例6
+## 4. 加边与抽象：高阶技巧
 
-计算 $\begin{vmatrix} 1+a & b & c \\ b & 1+b & c \\ a & b & 1+c \end{vmatrix}$
+### 例 7：加边法
 
-**解**：将第一列拆为 $(1,0,0)^T + (a,b,a)^T$：
+计算 $D_n = \begin{vmatrix} 1+a_1 & 1 & \cdots & 1 \\ 1 & 1+a_2 & \cdots & 1 \\ \vdots & \vdots & \ddots & \vdots \\ 1 & 1 & \cdots & 1+a_n \end{vmatrix}$（$a_i \neq 0$）。
 
-$$D = \begin{vmatrix} 1 & b & c \\ 0 & 1+b & c \\ 0 & b & 1+c \end{vmatrix} + \begin{vmatrix} a & b & c \\ b & 1+b & c \\ a & b & 1+c \end{vmatrix}$$
+**解**：加边升阶（004 文档例 6 的完整流程）：
 
-$$= [(1+b)(1+c) - bc] + a\begin{vmatrix} 1 & b & c \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{vmatrix} = (1+b+c) + a = 1 + a + b + c$$
+$$D_n = \begin{vmatrix} 1 & 1 & 1 & \cdots & 1 \\ 0 & 1+a_1 & 1 & \cdots & 1 \\ 0 & 1 & 1+a_2 & \cdots & 1 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 1 & 1 & \cdots & 1+a_n \end{vmatrix} \xrightarrow{\text{第1行乘}(-1)\text{加到各行}} \begin{vmatrix} 1 & 1 & 1 & \cdots & 1 \\ -1 & a_1 & 0 & \cdots & 0 \\ -1 & 0 & a_2 & \cdots & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ -1 & 0 & 0 & \cdots & a_n \end{vmatrix}$$
 
-## 5. 抽象行列式
+第 $j+1$ 列乘 $\frac{1}{a_j}$ 加到第 1 列（$j = 1, \ldots, n$）：
 
-### 例7
+$$D_n = \left(1 + \sum_{j=1}^{n}\frac{1}{a_j}\right) \prod_{i=1}^{n} a_i$$
 
-设 $A$ 为三阶方阵，$|A| = \dfrac{1}{2}$，求 $|(3A)^{-1} - 2A^*|$。
+**思路点拨**：加边法的灵魂是"构造箭头结构"，把不对称的"1 + 对角"变成可消元的箭形。
 
-**解**：
+### 例 8：抽象行列式（只给条件）
 
-$A^* = |A|A^{-1} = \dfrac{1}{2}A^{-1}$
+设 $A$ 为三阶方阵，$|A| = \dfrac{1}{2}$，求 $\left|(3A)^{-1} - 2A^*\right|$。
 
-$(3A)^{-1} = \dfrac{1}{3}A^{-1}$
+**解**：用伴随矩阵与逆矩阵的性质化简：
 
-$$(3A)^{-1} - 2A^* = \frac{1}{3}A^{-1} - 2 \cdot \frac{1}{2}A^{-1} = \frac{1}{3}A^{-1} - A^{-1} = -\frac{2}{3}A^{-1}$$
+$$A^* = |A|A^{-1} = \frac{1}{2}A^{-1}, \qquad (3A)^{-1} = \frac{1}{3}A^{-1}$$
 
-$$|(3A)^{-1} - 2A^*| = \left|-\frac{2}{3}A^{-1}\right| = \left(-\frac{2}{3}\right)^3 |A^{-1}| = -\frac{8}{27} \cdot \frac{1}{|A|} = -\frac{8}{27} \cdot 2 = -\frac{16}{27}$$
+$$(3A)^{-1} - 2A^* = \frac{1}{3}A^{-1} - 2 \times \frac{1}{2}A^{-1} = \frac{1}{3}A^{-1} - A^{-1} = -\frac{2}{3}A^{-1}$$
 
-### 例8
+取行列式（三阶，数乘提 $3$ 次；$|A^{-1}| = \frac{1}{|A|}$）：
 
-设 $A, B$ 均为 $n$ 阶方阵，$|A| = 2$，$|B| = -3$，求 $|2AB^{-1}A^2|$。
+$$\left|(3A)^{-1} - 2A^*\right| = \left(-\frac{2}{3}\right)^3 |A^{-1}| = -\frac{8}{27} \times \frac{1}{1/2} = -\frac{16}{27}$$
 
-**解**：
+**思路点拨**：抽象行列式题的"通关密钥"是把 $A^*$、$(3A)^{-1}$ 全部写成 $A^{-1}$ 的倍数，再用 $|kA| = k^n|A|$ 与 $|A^{-1}| = \frac{1}{|A|}$ 两个公式收尾。
 
-$$|2AB^{-1}A^2| = 2^n |A| \cdot |B^{-1}| \cdot |A|^2 = 2^n \cdot 2 \cdot \frac{1}{-3} \cdot 4 = -\frac{2^{n+3}}{3}$$
+## 5. 证明题：性质与公式的组合拳
 
-### 例9
+### 例 9：奇数阶反对称矩阵行列式为零
 
-设 $\boldsymbol{\alpha}_1, \boldsymbol{\alpha}_2, \boldsymbol{\alpha}_3$ 为三维列向量，$|A| = |\boldsymbol{\alpha}_1, \boldsymbol{\alpha}_2, \boldsymbol{\alpha}_3| = 2$，求 $|\boldsymbol{\alpha}_1 + \boldsymbol{\alpha}_2, \boldsymbol{\alpha}_2 + \boldsymbol{\alpha}_3, \boldsymbol{\alpha}_3 + \boldsymbol{\alpha}_1|$。
+设 $A$ 为 $n$ 阶反对称矩阵（$A^T = -A$），$n$ 为奇数，证明 $|A| = 0$。
 
-**解**：
+**证明**：由 $A^T = -A$ 与性质一、三：
 
-$$\begin{pmatrix} \boldsymbol{\alpha}_1 + \boldsymbol{\alpha}_2 & \boldsymbol{\alpha}_2 + \boldsymbol{\alpha}_3 & \boldsymbol{\alpha}_3 + \boldsymbol{\alpha}_1 \end{pmatrix} = \begin{pmatrix} \boldsymbol{\alpha}_1 & \boldsymbol{\alpha}_2 & \boldsymbol{\alpha}_3 \end{pmatrix} \begin{pmatrix} 1 & 0 & 1 \\ 1 & 1 & 0 \\ 0 & 1 & 1 \end{pmatrix}$$
+$$|A| = |A^T| = |-A| = (-1)^n |A| = -|A| \quad (n \text{ 为奇数})$$
 
-$$\begin{vmatrix} 1 & 0 & 1 \\ 1 & 1 & 0 \\ 0 & 1 & 1 \end{vmatrix} = 1 + 1 = 2$$
+于是 $2|A| = 0$，即 $|A| = 0$。
 
-故 $|\boldsymbol{\alpha}_1 + \boldsymbol{\alpha}_2, \boldsymbol{\alpha}_2 + \boldsymbol{\alpha}_3, \boldsymbol{\alpha}_3 + \boldsymbol{\alpha}_1| = |A| \cdot 2 = 2 \times 2 = 4$。
+**思路点拨**：核心是"算两次"——同一个量 $|A|$ 用两种方式表达，联立得方程。
 
-## 6. 证明题
-
-### 例10
-
-证明：奇数阶反对称行列式为零。
-
-**证明**：设 $A$ 为 $n$ 阶反对称矩阵（$n$ 为奇数），则 $A^T = -A$。
-
-$$|A| = |A^T| = |-A| = (-1)^n |A| = -|A|$$
-
-故 $2|A| = 0$，即 $|A| = 0$。
-
-### 例11
+### 例 10：正交矩阵行列式为 $\pm 1$
 
 设 $A$ 为 $n$ 阶正交矩阵（$A^TA = I$），证明 $|A| = \pm 1$。
 
-**证明**：$|A^TA| = |I| = 1$，又 $|A^TA| = |A^T| \cdot |A| = |A|^2$，故 $|A|^2 = 1$，$|A| = \pm 1$。
+**证明**：两边取行列式（性质一、七）：
 
-### 例12
+$$|A^TA| = |A^T| \cdot |A| = |A|^2 = |I| = 1$$
 
-设 $A$ 为 $n$ 阶实矩阵，$AA^T = I$，$|A| < 0$，证明 $|A + I| = 0$。
+故 $|A|^2 = 1$，$|A| = \pm 1$。
 
-**证明**：
+**思路点拨**："$A^TA = I$ 型的恒等式 → 两边取行列式"是证明行列式值的万能起点。
 
-$$|A + I| = |A + AA^T| = |A(I + A^T)| = |A| \cdot |I + A^T|$$
+## 6. 代数余子式的组合题
 
-又 $|I + A^T| = |(I + A)^T| = |I + A| = |A + I|$，故：
-
-$$|A + I| = |A| \cdot |A + I|$$
-
-因为 $|A| < 0 \neq 1$，所以 $|A + I| = 0$。
-
-## 7. 代数余子式相关
-
-### 例13
+### 例 11：求代数余子式的线性组合
 
 设 $D = \begin{vmatrix} 3 & 1 & -1 & 2 \\ -5 & 1 & 3 & -4 \\ 2 & 0 & 1 & -1 \\ 1 & -5 & 3 & -3 \end{vmatrix}$，求 $A_{31} + A_{32} + A_{33} + A_{34}$。
 
-**解**：$A_{31} + A_{32} + A_{33} + A_{34}$ 相当于将第三行替换为 $(1,1,1,1)$ 后的行列式：
+**解**：把第 3 行替换为 $(1,1,1,1)$（003 文档 4.3 节技巧）：
 
-$$\begin{vmatrix} 3 & 1 & -1 & 2 \\ -5 & 1 & 3 & -4 \\ 1 & 1 & 1 & 1 \\ 1 & -5 & 3 & -3 \end{vmatrix}$$
+$$A_{31} + A_{32} + A_{33} + A_{34} = \begin{vmatrix} 3 & 1 & -1 & 2 \\ -5 & 1 & 3 & -4 \\ 1 & 1 & 1 & 1 \\ 1 & -5 & 3 & -3 \end{vmatrix}$$
 
-按第三行展开，计算得 $A_{31} + A_{32} + A_{33} + A_{34} = 24$。
+化简（第 2 行加第 1 行，第 4 行加第 1 行，再逐步化上三角），得 $24$。
 
-### 例14
+**思路点拨**：看到"同行的代数余子式组合"，永远先想"换行技巧"——把该行换成系数向量，转化为普通行列式计算。
 
-设三阶行列式 $D = \begin{vmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{vmatrix}$，求 $M_{12} + M_{22} + M_{32}$。
+## 7. 常见错误与对策
 
-**解**：$M_{12} = -A_{12}$，$M_{22} = A_{22}$，$M_{32} = -A_{32}$。
+| 常见错误 | 错误类型 | 原因分析 | 纠正方法 |
+| --- | --- | --- | --- |
+| 三阶对角线法则漏项或错号 | 计算错误 | 六项乘积容易遗漏 | 按"正三条、负三条"固定顺序逐一写出 |
+| 范德蒙德形状认不出（列序颠倒） | 识别错误 | 只认标准形，不认转置/变体 | 转置不改变值；多练习转置后的范德蒙德 |
+| 行和相等套路忘记提公因子 | 操作遗漏 | 加到第一列后直接化三角 | 提公因子必须在"加列"之后、"减行"之前 |
+| 递推法初值 $D_1, D_2$ 代错 | 计算错误 | 初值错误导致通项全错 | 单独验证初值，通项算完用 $n=3$ 复核 |
+| 抽象题忘记 $|A^{-1}| = \frac{1}{|A|}$ | 公式遗忘 | 性质七的推论不熟 | 背熟三个推论：幂、逆、伴随 |
+| 换行技巧的替换行写错位置 | 操作错误 | 代数余子式下标与行号混淆 | 求 $\sum k_j A_{ij}$ 就换第 $i$ 行，系数按列序排 |
+| 证明题只写一边（缺"算两次"） | 逻辑缺失 | 不会构造恒等式 | 先写 $|A| =$ 式(1)，再写 $|A| =$ 式(2)，联立 |
 
-$$M_{12} + M_{22} + M_{32} = -A_{12} + A_{22} - A_{32}$$
+## 8. 实战练习
 
-这等于将第二列替换为 $(0, -1, 0)^T$ 后的行列式取负：
+**练习 1**：计算 $\begin{vmatrix} 1 & 2 & 3 & 4 \\ 2 & 3 & 4 & 1 \\ 3 & 4 & 1 & 2 \\ 4 & 1 & 2 & 3 \end{vmatrix}$。
 
-$$= -\begin{vmatrix} 1 & 0 & 3 \\ 4 & -1 & 6 \\ 7 & 0 & 9 \end{vmatrix} = -[(-1)(9-21)] = -12$$
+提示：四行和均为 10；加列提公因子后化三角。
 
-### 例15
+参考答案要点：$D = 160$（10 提出后，后三行各减第一行，得 1 与三组 $(0,1,-2,1)$ 型结构，乘积 $10 \times 16 = 160$）。
 
-设 $A$ 为 $n$ 阶方阵，$|A| = a \neq 0$，求 $|A^*|$。
+**练习 2**：计算 $\begin{vmatrix} 1 & 1 & 1 & 1 \\ 1 & 2 & 4 & 8 \\ 1 & 3 & 9 & 27 \\ 1 & 4 & 16 & 64 \end{vmatrix}$。
 
-**解**：由 $A^*A = |A|I$，两边取行列式：
+提示：这是列标为 $x_i^{j-1}$ 的范德蒙德（$x = 1, 2, 3, 4$）。
 
-$$|A^*| \cdot |A| = |A|^n$$
+参考答案要点：$V_4 = (2-1)(3-1)(4-1)(3-2)(4-2)(4-3) = 12$。
 
-故 $|A^*| = |A|^{n-1} = a^{n-1}$。
+**练习 3**：设 $D_n$ 为 $n$ 阶行列式（主对角线 $a$，两侧副对角线 $1$），求 $D_n$ 满足的递推式及 $D_3$。
 
-## 参考文献
+提示：按第一行展开。
 
-3Blue1Brown 线性代数的本质：https://www.3blue1brown.com/topics/linear-algebra
-MIT 18.06：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-NumPy 文档：https://numpy.org/doc/stable/
-Interactive Linear Algebra：https://textbooks.math.gatech.edu/ila/
+参考答案要点：$D_n = aD_{n-1} - D_{n-2}$；$D_3 = a(a^2 - 1) - a = a^3 - 2a$。
 
-## 延伸阅读
+**练习 4**：设 $\boldsymbol{\alpha}_1, \boldsymbol{\alpha}_2, \boldsymbol{\alpha}_3$ 为三维列向量，$|\boldsymbol{\alpha}_1, \boldsymbol{\alpha}_2, \boldsymbol{\alpha}_3| = 2$，求 $|\boldsymbol{\alpha}_1 + \boldsymbol{\alpha}_2, \boldsymbol{\alpha}_2 + \boldsymbol{\alpha}_3, \boldsymbol{\alpha}_3 + \boldsymbol{\alpha}_1|$。
 
-线性代数基础，见 029-linear-algebra 模块文档。
-微积分与优化，见 027-calculus 模块。
-数据分析（PCA/矩阵），见 051-data-analysis 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供线性代数课程。
+提示：写成 $A \cdot B$ 形式再取行列式（性质七）。
 
-## 深度专题扩展
+参考答案要点：$|\boldsymbol{\alpha}_1 + \boldsymbol{\alpha}_2, \boldsymbol{\alpha}_2 + \boldsymbol{\alpha}_3, \boldsymbol{\alpha}_3 + \boldsymbol{\alpha}_1| = |A| \cdot \begin{vmatrix} 1 & 0 & 1 \\ 1 & 1 & 0 \\ 0 & 1 & 1 \end{vmatrix} = 2 \times 2 = 4$。
 
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
+**练习 5**：设 $A$ 为 $n$ 阶方阵且 $A^2 = I$，证明 $|A| = \pm 1$。
 
-### 13.1 矩阵分解体系
+提示：两边取行列式。
 
-LU：消元分解，解方程组；QR：正交化，稳定最小二乘。
-特征分解：对称矩阵可正交对角化；主成分分析基础。
-SVD：A=UΣVᵀ，任意矩阵；低秩近似与压缩。
-选择：一般求解 LU/QR，分析用 SVD/特征分解。
+参考答案要点：$|A^2| = |A|^2 = |I| = 1$，故 $|A| = \pm 1$。
 
-### 13.2 线性变换的几何
+## 9. 一句话记忆
 
-矩阵乘法 = 基向量的新位置；行列式 = 面积/体积缩放因子。
-特征向量：变换中方向不变只伸缩的方向。
-秩：变换后空间的维数（塌缩程度）。
-应用：理解梯度、雅可比、神经网络层。
+行列式解题的完整链路是：**审形状（范德蒙德/行和相等/三对角）→ 选方法（化三角/递推/加边）→ 定顺序（加列提公因子、减行造零、换行求组合）**——熟练后大多数题目三步内见分晓。
+
+## 10. 参考链接与延伸阅读
+
+### 参考链接
+
+- 同济大学数学科学学院：《工程数学 线性代数（第七版）》，高等教育出版社，第 1 章习题一（本文例题的教材来源）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
+- 清华大学《线性代数通用辅导讲义》（行列式题型分类与解题策略）：http://www.tup.tsinghua.edu.cn/upload/books/yz/021790-01.PDF
+- Interactive Linear Algebra（Georgia Tech 开放教材，行列式性质与计算的交互练习）：https://textbooks.math.gatech.edu/ila/
+
+### 延伸阅读
+
+- 各例题用到的方法详解，见 004 行列式计算方法。
+- 行列式在解方程组中的直接应用，见 005 克莱姆法则。
+- 例 8 的伴随矩阵与逆矩阵知识，见 008 逆矩阵。

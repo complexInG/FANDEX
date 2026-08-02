@@ -6,19 +6,21 @@ category: pnpm 与 Monorepo
 difficulty: intermediate
 description: 'workspace: 协议用法、本地包引用与发布时版本转换'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - pnpm-monorepo/003-WorkspaceSetup
   - pnpm-monorepo/005-CatalogManagement
   - pnpm-monorepo/007-ChangesetsRelease
 prerequisites:
   - pnpm-monorepo/003-WorkspaceSetup
+  - pnpm-monorepo/002-PnpmCore
 ---
-## 1. 什么是 workspace 协议
 
-`workspace:` 是 pnpm（以及 yarn berry）在 package.json 中声明"依赖本仓库内另一个包"的专用协议。它让包之间的引用在开发时解析到本地源码目录，而不是去 npm registry 下载。
+## 1. 从"指路"说起：为什么需要 workspace 协议
 
-### 1.1 为什么不能直接写版本号
+### 1.1 一个联调场景
+
+假设 `@fandex/web`（应用）要使用 `@fandex/utils`（同仓库的共享库）。你第一反应是写：
 
 ```json
 {
@@ -28,7 +30,13 @@ prerequisites:
 }
 ```
 
-讲解：这样写，pnpm 会去 registry 查找 `@fandex/utils@^1.0.0`。如果该包从未发布，安装直接失败；即便发布了，版本也可能与本地源码不同步，违背"本地改完立即生效"的联调需求。工作空间内部引用必须使用 `workspace:` 协议。
+**问题来了**：pnpm 看到 `^1.0.0`，会去 npm registry 查找 `@fandex/utils@^1.0.0`。如果这个包从未发布，安装直接失败；即便发布过，版本也可能与本地源码不同步——你改了 utils 的代码，web 引用的却是 registry 上的旧版。
+
+**我们需要的是**："web 引用仓库里那个 utils，而不是 registry 上的 utils"。这就是 `workspace:` 协议存在的意义。
+
+### 1.2 什么是 workspace 协议
+
+**`workspace:` 是 pnpm（以及 yarn berry）在 package.json 中声明"依赖本仓库内另一个包"的专用协议**。它让包之间的引用在开发时解析到**本地源码目录**，而不是去 npm registry 下载。
 
 ## 2. 协议形式与语义
 
@@ -47,9 +55,13 @@ prerequisites:
 }
 ```
 
-讲解：`workspace:*` 最常用，表示"只要本地有这个包就用它"；`workspace:^` 在发布后语义与 `^x.y.z` 等价，适合希望对共享包小版本升级敏感的库。开发阶段三者都解析到本地目录，行为差异只体现在发布产物中。
+**三种形式的异同**：
 
-## 3. 本地包引用示例
+- **开发阶段**：三者行为一致，都解析到本地包
+- **发布之后**：`workspace:*` 变成精确版本 `1.2.3`；`workspace:^` 变成 `^1.2.3`（允许小版本升级）；`workspace:~` 变成 `~1.2.3`（只允许补丁升级）
+- **最常用**：`workspace:*`，表示"只要本地有这个包就用它"
+
+## 3. 本地包引用实战
 
 ### 3.1 添加内部依赖
 
@@ -58,7 +70,7 @@ prerequisites:
 pnpm add @fandex/utils --filter @fandex/web
 ```
 
-讲解：pnpm 检测到 `@fandex/utils` 是工作空间内的包，会自动写入 `workspace:*`，并把 node_modules 中对应目录符号链接到本地源码，改动即时生效。
+pnpm 检测到 `@fandex/utils` 是工作空间内的包，会自动写入 `workspace:*`，并把 node_modules 中对应目录符号链接到本地源码，改动即时生效。
 
 ### 3.2 引用共享包代码
 
@@ -77,7 +89,10 @@ packages/
 import { formatId } from '@fandex/utils';
 ```
 
-讲解：无需构建 utils 即可被 web 引用——只要构建工具（Vite、tsc）能解析符号链接到源码即可。若共享包需要先编译（如发布 CommonJS），则需要 `--topological build` 保证依赖先构建。
+**要点**：
+
+- 无需构建 utils 即可被 web 引用——只要构建工具（Vite、tsc）能解析符号链接到源码即可
+- 若共享包需要先编译（如发布 CommonJS），则需要 `--topological build` 保证依赖先构建
 
 ### 3.3 peerDependencies 场景
 
@@ -94,7 +109,7 @@ import { formatId } from '@fandex/utils';
 }
 ```
 
-讲解：peer 依赖声明"我要求对方环境里有 react"，devDependencies 中的 workspace 引用用于本地开发测试。
+**解读**：peer 依赖声明"我要求对方环境里有 react"；devDependencies 中的 workspace 引用用于本地开发测试。
 
 ## 4. 发布时版本转换
 
@@ -110,33 +125,97 @@ import { formatId } from '@fandex/utils';
 "@fandex/utils": "1.2.3"
 ```
 
-讲解：这一机制让"开发时用本地、发布后用真实版本"无缝衔接。用户从 registry 安装你的包时得到的是标准语义化版本依赖，任何包管理器（npm/yarn/pnpm）都能正常解析。转换只发生在发布产物中，仓库内文件不会被改写。
+**这套机制的价值**：
+
+- **开发时**：用本地（改完即生效）
+- **发布后**：用真实版本（消费者可正常安装）
+- **转换只发生在发布产物中，仓库内文件不会被改写**
+- 消费者用 npm/yarn/pnpm 都能正常解析（因为是标准语义化版本）
 
 ## 5. 内部依赖与幽灵依赖
 
-工作空间包之间同样遵循严格隔离：web 引用 utils，但 utils 依赖的 lodash 对 web 不可见。web 若直接 import lodash，必须在自己的 package.json 中显式声明：
+工作空间包之间同样遵循严格隔离（见 002 篇）：web 引用 utils，但 **utils 依赖的 lodash 对 web 不可见**。web 若直接 import lodash，必须在自己的 package.json 中显式声明：
 
 ```bash
 # 正确做法：谁使用谁声明
 pnpm add lodash --filter @fandex/web
 ```
 
-讲解：包间依赖是"代码依赖"与"依赖关系"两层。即便 utils 被链接到 web 的 node_modules，utils 的依赖树也不会向 web 暴露。保持每个包依赖自包含，是避免 Monorepo 幽灵依赖的关键。
+**关键认知**：包间依赖是"代码依赖"与"依赖关系"两层。
 
-## 6. 常见问题
+- 即便 utils 被链接到 web 的 node_modules（代码依赖成立）
+- utils 的依赖树也不会向 web 暴露（依赖关系不成立）
+- 保持每个包依赖自包含，是避免 Monorepo 幽灵依赖的关键
 
-问题一：循环依赖。A 依赖 B、B 依赖 A，拓扑构建无法排序。解决：重新分层，抽取共同依赖到更底层的 C。
+## 6. 常见问题与陷阱
 
-问题二：误用 `file:` 协议。`file:../utils` 是复制/链接目录的快照语义，发布时不会转换版本，还会破坏符号链接结构。内部引用一律使用 `workspace:`。
+### 6.1 循环依赖
 
-问题三：版本不一致告警。多个包声明了不同版本的同一共享包，可运行 `pnpm why <包名>` 排查来源，再用 catalog 统一（见 005 篇）。
+**现象**：A 依赖 B、B 依赖 A，拓扑构建无法排序。
 
-## 7. 参考资源
+**解决**：重新分层，抽取共同依赖到更底层的 C：
 
-pnpm workspace 协议官方文档：https://pnpm.io/zh/workspaces
+```
+A ─┐        A ─→ C
+B ─┘   =>   B ─→ C
+```
 
-pnpm 过滤与 workspace 脚本：https://pnpm.io/zh/scripts
+### 6.2 误用 file: 协议
 
-## 8. 小结
+```json
+// 错误：file: 是复制/链接目录的快照语义
+"@fandex/utils": "file:../utils"
+```
 
-`workspace:*` 是 Monorepo 内部依赖的"正确打开方式"：开发时链接本地源码、发布时自动转换为真实版本。配合 `--filter` 精准管理每个包的依赖，配合 `--topological` 保证构建顺序，即可搭建健康的内部依赖体系。
+**问题**：
+
+- `file:` 发布时不会转换版本
+- 会破坏符号链接结构（按目录快照处理）
+
+**正确做法**：内部引用一律使用 `workspace:`。
+
+### 6.3 版本不一致告警
+
+多个包声明了不同版本的同一共享包：
+
+```bash
+# 排查来源
+pnpm why <包名>
+```
+
+再用 catalog 统一（见 005 篇）。
+
+### 6.4 共享包改了不生效
+
+**现象**：改了 utils 源码，web 里没反应。
+
+**可能原因**：
+
+- web 的构建工具没有解析符号链接到源码（需要配置 alias）
+- 共享包需要先构建（tsc 输出 dist），web 引用的是 dist 而非 src
+- 缓存未清除
+
+**排查**：先确认 web 的 import 路径指向哪里（源码 or dist），再检查构建配置。
+
+## 7. 实战练习
+
+1. **搭建引用链**：在 workspace 中创建 `packages/utils`（导出 `formatId` 函数）和 `apps/web`（使用该函数），通过 `workspace:*` 引用并成功运行。
+
+2. **发布验证**：对 `packages/utils` 执行 `pnpm pack`，查看生成的产物里 `workspace:*` 是否被替换为真实版本号。
+
+3. **幽灵依赖排查**：web 直接 import 一个 utils 的间接依赖（如 lodash），观察 pnpm 下的报错，然后正确修复（在 web 中显式声明）。
+
+4. **peer 设计**：设计一个 React 组件库包，用 peerDependencies 声明 react，用 devDependencies 提供本地测试版本，并说明这样设计的原因。
+
+## 8. 参考资源
+
+- pnpm workspace 协议官方文档：https://pnpm.io/zh/workspaces
+- pnpm 过滤与 workspace 脚本：https://pnpm.io/zh/scripts
+
+## 9. 延伸阅读
+
+- workspace 的底层机制，见本模块《pnpm 核心特性》
+- 版本统一管理，见本模块《catalog 依赖目录管理》
+- 发版时的版本转换，见本模块《changesets 版本管理与发布》
+
+> **一句话记忆**：`workspace:*` 是 Monorepo 内部依赖的"正确打开方式"——开发时链接本地源码（改完即生效）、发布时自动转换为真实版本；同时记住"谁使用谁声明"，让每个包的依赖自包含。

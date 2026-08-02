@@ -67,7 +67,10 @@
   transition:
     opacity var(--transition-base),
     background-color var(--motion-duration-instant) var(--motion-easing-out),
-    color var(--motion-duration-instant) var(--motion-easing-out);
+    color var(--motion-duration-instant) var(--motion-easing-out),
+    border-color var(--motion-duration-instant) var(--motion-easing-out),
+    box-shadow var(--motion-duration-normal) var(--motion-easing-out),
+    transform var(--motion-duration-instant) var(--motion-easing-out);
 }
 
 /* 代码块悬停时复制按钮完全显示 */

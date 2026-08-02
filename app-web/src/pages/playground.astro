@@ -5,12 +5,19 @@
  * 功能概述：
  *   - 提供前端效果实验与编程算法练习两个入口
  *   - 展示本地作品库统计、存储用量与最近记录（由 PlaygroundHub 岛组件加载）
+ *
+ * 美术对齐：
+ *   - 完全复用站点 Hero 体系（styles/pages/index.css）：
+ *     渐变残影标题 + 统计行 + SVG 波浪描边功能入口，与首页/语法速览/学习路线一致
+ *   - 使用专属几何装饰变体 playground（网格 + 尖括号 + 终端方块），保持统一但不照搬
  *   - 所有数据仅保存在用户浏览器本地
  */
 import HomeLayout from '@/components/HomeLayout.astro'
 import SEO from '@/components/SEO.astro'
+import GeoBgDecor from '@/components/GeoBgDecor.astro'
 import PlaygroundHub from '@/islands/playground/PlaygroundHub'
 import { SITE } from '@/lib/constants'
+import '@/styles/pages/index.css'
 import '@/styles/islands/playground.css'
 
 const base = import.meta.env.BASE_URL
@@ -24,7 +31,64 @@ const base = import.meta.env.BASE_URL
     canonical={`${SITE.url}${base}playground/`}
     type="website"
   />
-  <div class="pg-page">
+
+  <div class="home-page">
+    <!-- 几何背景装饰：playground 专属变体（网格 + 尖括号 + 终端方块） -->
+    <GeoBgDecor variant="playground" />
+
+    <!-- Hero 区域：复用站点美术（渐变残影标题 + 统计 + SVG 描边入口） -->
+    <section class="hero">
+      <h1 class="hero-title" data-text="在线编程">
+        <span class="hero-title-fan">在线</span><span class="hero-title-dex">编程</span>
+      </h1>
+      <p class="hero-desc">
+        两个实验入口：前端效果实验与编程算法练习。
+        所有作品和记录只保存在当前浏览器本地，刷新不丢失。
+      </p>
+
+      <div class="hero-stats-row">
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">2</span>
+            <span class="stat-label">模式</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">8</span>
+            <span class="stat-label">题目</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">5</span>
+            <span class="stat-label">语言</span>
+          </div>
+        </div>
+
+        <!-- 功能入口：站点同款纯文字按钮 + SVG 波浪描边动画 -->
+        <nav class="hero-entries" aria-label="功能入口">
+          <a href={base} class="entry-btn" data-tooltip="返回首页" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">首页</span>
+          </a>
+          <a href={`${base}syntax/`} class="entry-btn" data-tooltip="语法快速查阅" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">语法速览</span>
+          </a>
+          <a href={`${base}learning-path/`} class="entry-btn" data-tooltip="系统化学习路线" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">学习路线</span>
+          </a>
+        </nav>
+      </div>
+    </section>
+
+    <!-- 实验入口卡片 + 本地数据 + 最近记录（客户端岛组件） -->
     <PlaygroundHub client:load />
   </div>
 </HomeLayout>

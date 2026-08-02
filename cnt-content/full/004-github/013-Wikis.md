@@ -4,9 +4,9 @@ title: Wikis
 module: github
 category: GitHub
 difficulty: beginner
-description: 'GitHub Wikis详解：项目文档管理、编辑与协作。'
+description: 'GitHub Wikis深度解析：围绕"团队知识沉淀"场景，讲解 Wiki 的启用、页面组织、侧边栏页脚、本地克隆编辑与维护最佳实践。'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - github/Fork工作流
   - github/Projects看板
@@ -16,137 +16,255 @@ prerequisites:
   - github/GitHub概述
 ---
 
-## 1. Wikis 概述
+## 0. 从一个场景说起：团队知识都去哪了
 
-### 1.1 什么是 GitHub Wikis
+你的社团要做一个校园二手交易平台，10 个人分了三组：前端、后端、测试。三个月过去了，你发现一个可怕的现象：
 
-GitHub Wikis 是仓库内置的**文档系统**，适合存放项目文档、教程和设计文档。
+- 后端组长离职，他脑子里那套"数据库怎么设计的、为什么这么设计"的决策理由，随着他的离开一起消失了；
+- 新人小周接手前端，只能靠翻聊天记录和问人，同一个问题被问了五遍；
+- 项目验收时，评审问"你们的接口文档在哪"，全组面面相觑——散落在三份不同的共享文档里，版本还对不上。
 
-### 1.2 Wiki vs README
+这就是**知识沉淀缺失**的典型症状：知识只存在于个别人的脑子里和聊天记录里，项目越做越大，知识越散越碎。
 
-| 特性     | README     | Wiki             |
-| :------- | :--------- | :--------------- |
-| **位置** | 仓库根目录 | 独立的 Wiki 区域 |
-| **内容** | 项目概览   | 详细文档         |
-| **编辑** | 提交代码   | 独立编辑         |
-| **结构** | 单文件     | 多页面           |
-| **权限** | 同仓库权限 | 可独立配置       |
+GitHub 仓库自带一个解决这个问题的"知识库"区域——**Wiki（维基）**。本文围绕"团队知识沉淀"这个场景，讲解 Wiki 怎么用、怎么组织、怎么长期维护。
 
-## 2. 启用和配置
+## 1. 场景判断：什么时候该用 Wiki
+
+### 1.1 先直观理解
+
+Wiki 是每个 GitHub 仓库自带的文档托管区域，适合放**长篇幅、多页面、需要持续积累**的文档。它的定位一句话可以概括：**README 讲"是什么"，Wiki 讲"怎么做、为什么这么设计"**。
+
+### 1.2 再对照场景
+
+| 内容类型 | 放哪 | 场景举例 |
+| :--- | :--- | :--- |
+| 项目一句话介绍、快速开始 | README | "这是什么、怎么跑起来" |
+| 使用教程、设计文档、架构说明 | Wiki | "数据库为什么这么设计""部署手册" |
+| API 自动生成的参考文档 | docs 目录 + 工具生成 | 类型定义、接口签名 |
+| 讨论与问答 | Discussions / Issues | "这个功能该不该做""我遇到了 Bug" |
+
+具体来说，出现以下情况之一，就该考虑开 Wiki 了：
+
+- 新成员加入时，需要一份"从零到能干活"的文档；
+- 团队经常重复解释同一个问题；
+- 设计决策（为什么用这个方案而不是另一个）无处记录；
+- 文档超过 5 个页面，README 已经塞不下。
+
+### 1.3 最后看示例
+
+```
+README.md                 ← "这是什么"（一页）
+Wiki
+├── Home.md               ← 首页：知识库入口/目录
+├── Getting-Started.md    ← 新人上手指南
+├── Architecture.md       ← 架构设计与决策记录（ADR）
+├── Database-Design.md    ← 数据库设计说明
+├── Deployment.md         ← 部署手册
+├── Meeting-Notes.md      ← 会议纪要归档
+└── _Sidebar.md           ← 全局侧边栏导航
+```
+
+## 2. 启用与权限配置
 
 ### 2.1 启用 Wiki
 
-1. 仓库 Settings → Features → Wikis → 勾选
-2. 访问 `https://github.com/user/repo/wiki`
+仓库默认开启了 Wiki 功能。如果没看到 **Wiki** 标签页：
+
+1. 进入仓库 **Settings（设置）**；
+2. 找到 **Features（功能）** 区，勾选 **Wikis**；
+3. 回到仓库主页，顶部就会出现 Wiki 标签，访问地址为 `https://github.com/你的用户名/仓库名/wiki`。
 
 ### 2.2 权限设置
 
-| 选项                   | 说明           |
-| :--------------------- | :------------- |
-| **Public**             | 所有人可编辑   |
-| **Collaborators only** | 仅协作者可编辑 |
+在 Settings → Features → Wiki 下方可以设置谁能编辑：
 
-## 3. 创建和编辑页面
+| 选项 | 说明 | 适用场景 |
+| :--- | :--- | :--- |
+| **Restrict editing to collaborators only（仅协作者可编辑）** | 只有有写权限的人能改 Wiki | 团队内部文档、私有仓库 |
+| **Anyone on GitHub can edit（任何人都可编辑）** | 公开仓库中所有人都能贡献 | 开源项目文档众包 |
+
+提示：如果希望搜索引擎收录 Wiki 内容，GitHub 官方说明——**只有配置为"禁止公开编辑"且星标数达到 500 的公开仓库 Wiki 才会被搜索引擎索引**。普通 Wiki 内容对搜索并不友好，需要被收录的内容建议用 GitHub Pages 发布。
+
+## 3. 创建和组织 Wiki 页面
 
 ### 3.1 创建首页
 
-访问 Wiki 页面，点击 "Create the first page"
+第一次进入 Wiki 页，点击 **Create the first page（创建第一页）**。首页默认文件名是 `Home.md`。建议首页就做"入口"：一段简短介绍 + 指向各页面的链接树。
 
 ### 3.2 添加新页面
 
-1. Wiki → New Page
-2. 输入标题和内容
-3. 选择编辑模式（Markdown 推荐）
+1. Wiki 页面右上角点 **New Page（新建页面）**；
+2. 标题栏输入页面标题（标题会成为文件名，如 `Getting-Started` → `Getting-Started.md`）；
+3. 编辑模式默认是 Markdown，也可以从下拉框切换为其他格式（如 Textile、Asciidoc）；
+4. 填写"编辑消息"（类似提交信息），点击 **Save Page** 保存。
 
-### 3.3 侧边栏
+### 3.3 页面间链接
 
-创建 `_Sidebar.md` 文件自定义导航：
+Wiki 里链接其他页面，推荐用双括号语法，渲染后自动生成链接：
+
+```markdown
+了解更多请访问 [[架构设计]] 和 [[部署手册]]。
+```
+
+### 3.4 侧边栏（_Sidebar.md）
+
+侧边栏显示在 Wiki 所有页面右侧，是全局导航。创建方法：Wiki 主页 → **Add a custom sidebar（添加自定义侧边栏）**，编辑 `_Sidebar.md`：
 
 ```markdown
 **文档导航**
 
-- [[首页]]
-- [[安装指南]]
-- [[API 文档]]
-  - [[认证 API]]
-  - [[用户 API]]
-- [[常见问题]]
+- [[Home|首页]]
+- [[Getting-Started|新人上手]]
+- [[Architecture|架构设计]]
+  - [[Frontend-Design|前端设计]]
+  - [[Backend-Design|后端设计]]
+- [[Deployment|部署手册]]
+- [[FAQ|常见问题]]
 ```
 
-### 3.4 页脚
+### 3.5 页脚（_Footer.md）
 
-创建 `_Footer.md` 文件：
+页脚显示在每个页面底部，适合放版权、更新说明、反馈入口。创建方法与侧边栏类似（**Add a custom footer**）：
 
 ```markdown
 ---
 
-文档最后更新于 2026-06-14
-如有问题请提交 [Issue](../../issues)
+文档最后更新于 2026-08-02
+发现错误？请提交 [Issue](../../issues) 或直接编辑本页。
 ```
 
-## 4. 本地编辑 Wiki
+## 4. 本地编辑：Wiki 其实是个 Git 仓库
 
-### 4.1 克隆 Wiki
+### 4.1 原理
+
+Wiki 页面支持在网页上直接编辑，但它的底层是一个**独立的 Git 仓库**（和你项目的主仓库分开）。这意味着你可以像管理代码一样管理文档：克隆、分支、提交、推送。
+
+### 4.2 克隆 Wiki
 
 ```bash
-# Wiki 是独立的 Git 仓库
-git clone https://github.com/user/repo.wiki.git
+# 克隆格式：仓库名后加 .wiki.git
+git clone https://github.com/你的用户名/你的仓库.wiki.git
+cd 你的仓库.wiki
 
-# 目录结构
-repo.wiki/
-├── Home.md           ← 首页
-├── _Sidebar.md       ← 侧边栏
-├── _Footer.md        ← 页脚
-├── Installation.md   ← 自定义页面
-└── API-Reference.md  ← 自定义页面
+# 目录结构示例
+# Home.md            ← 首页
+# _Sidebar.md        ← 侧边栏
+# _Footer.md         ← 页脚
+# Getting-Started.md ← 自定义页面
 ```
 
-### 4.2 本地编辑并推送
+### 4.3 本地编辑并推送
 
 ```bash
-cd repo.wiki
-vim API-Reference.md
+# 修改页面
+vim Deployment.md
+
+# 提交并推送（注意分支通常是 master）
 git add .
-git commit -m "docs: update API reference"
+git commit -m "docs: 更新部署手册，补充回滚步骤"
 git push origin master
 ```
 
-## 5. 最佳实践
+### 4.4 命名注意事项（官方明确提醒）
 
-- 首页作为目录，链接到其他页面
-- 使用 `_Sidebar.md` 统一导航
-- 文档与代码变更同步更新
-- 使用 Wiki 记录设计决策和架构
-- 长文档拆分为多个页面
+- 文件名就是页面标题，扩展名决定渲染方式：`foo.md` / `foo.markdown` 用 Markdown 渲染，`foo.textile` 用 Textile；
+- **页面标题中不要使用这些字符**：`\ / : * ? " < > |`，否则部分操作系统的用户无法正常处理文件名；
+- 多人协作时可以建分支，但**只有推送到默认分支的修改才会生效展示**。
 
-## 参考文献
+## 5. 维护最佳实践：让知识库"活"下去
 
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
+Wiki 最大的敌人是"写完就忘"。以下实践能让文档持续更新：
 
-## 延伸阅读
+- **首页当目录**：首页只做导航，不堆正文，所有知识按主题拆页；
+- **统一侧边栏**：用 `_Sidebar.md` 维持全局导航，新增页面后及时登记；
+- **文档随代码走**：接口变了，当天就更新对应页面，约定"改代码的人负责改文档"；
+- **记录决策**：架构选型、方案权衡写进"决策记录（ADR）"页面，格式固定为"背景→方案→理由→代价"；
+- **定期体检**：每轮迭代结束，安排 30 分钟清理过期页面、合并重复内容；
+- **明确权限**：团队内部仓库一律"仅协作者可编辑"，避免内容被误改。
 
-GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
-Git 协作基础，见 003-git 模块。
-DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。
+## 6. 常见错误与对策表
 
-## 深度专题扩展
+| 常见错误 | 现象/报错 | 原因 | 解决办法 |
+| :--- | :--- | :--- | :--- |
+| 找不到 Wiki 标签 | 仓库顶部没有 Wiki 页签 | 功能被关闭 | Settings → Features → 勾选 Wikis |
+| 页面标题含特殊字符 | 克隆后部分文件无法检出 | 标题含 `\ / : * ? " < > \|` | 去掉这些字符再重命名页面 |
+| 本地改了不生效 | 网页上还是旧内容 | 推到了非默认分支 | 确认推送目标是默认分支（master/main） |
+| 链接 404 | 双括号链接点开是空页 | 目标页面尚未创建 | 先创建目标页面，再检查文件名大小写 |
+| 内容不显示 | 一片空白或渲染异常 | 扩展名与内容格式不匹配 | 内容用 Markdown 就存为 `.md`，并检查语法 |
+| 文档与代码脱节 | 页面内容过时 | 没有维护机制 | 采用"改代码者同步改文档"约定 + 定期体检 |
+| Wiki 太多页打不开 | 部分页面访问缓慢 | 官方对 Wiki 有软限制（约 5000 个文件） | 超过规模改用 GitHub Pages 或 docs 目录 |
 
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
+## 7. 实战练习
 
-### 13.1 GitHub Actions 深入
+### 练习 1：开通并创建首页（入门）
 
-事件驱动：push、pull_request、schedule、workflow_dispatch；on 支持过滤路径与分支。
-上下文：github（事件数据）、env、secrets、needs（任务依赖）；表达式与函数。
-安全：第三方 action 固定 SHA；权限默认最小；OIDC 换取云凭证。
-缓存与性能：actions/cache、并发控制、矩阵并行。
+**题目描述**：在你自己的仓库里启用 Wiki，创建首页 `Home.md`，用 5 行以内的话介绍项目，并列出未来要补充的 3 个页面计划。
 
-### 13.2 开源协作治理
+**提示**：第一次进入 Wiki 页点 "Create the first page"；首页用链接列表充当目录。
 
-CONTRIBUTING 定义贡献路径；Issue 标签（good first issue）引导新手。
-维护者时间管理：合并队列、自动化 triage、定期发布。
-社区健康：行为准则执行、讨论区沉淀、感谢贡献。
-安全披露：SECURITY.md + 私密漏洞报告流程。
+**参考答案要点**：
+
+```markdown
+# 校园二手交易平台
+
+本 Wiki 是本项目的知识库，供全体成员查阅。
+
+- [[Getting-Started|新人上手指南]]
+- [[Architecture|架构设计]]
+- [[Deployment|部署手册]]
+```
+要点：首页只做导航不写正文；页面链接用双括号语法。
+
+### 练习 2：搭建完整的页面骨架（进阶）
+
+**题目描述**：继续练习 1，创建 `_Sidebar.md` 侧边栏和 `_Footer.md` 页脚，再新建 2 个内容页面（如"开发环境搭建""接口约定"），填写真实内容。
+
+**提示**：侧边栏和页脚的创建入口在 Wiki 首页；页面之间用双括号链接互连。
+
+**参考答案要点**：侧边栏包含全部页面链接并分组；页脚包含"最近更新日期 + 反馈 Issue 链接"；新页面内容至少包含"是什么、怎么用、注意事项"三段，并让页面互相可跳转。
+
+### 练习 3：本地克隆并推送一个页面（进阶）
+
+**题目描述**：把 Wiki 克隆到本地，用编辑器新增一个 `Troubleshooting.md`（常见问题排查）页面，提交并推送，然后在网页上确认出现新页面。
+
+**提示**：克隆地址是 `仓库名.wiki.git`；默认分支通常是 `master`。
+
+**参考答案要点**：
+
+```bash
+git clone https://github.com/你的用户名/你的仓库.wiki.git
+cd 你的仓库.wiki
+# 编写 Troubleshooting.md 后
+git add Troubleshooting.md
+git commit -m "docs: 新增常见问题排查页"
+git push origin master
+```
+要点：推送后刷新 Wiki 页面验证；提交信息遵循 `docs:` 前缀。
+
+### 练习 4：制定团队文档维护规则（挑战）
+
+**题目描述**：给练习 1-3 的 Wiki 制定一份"维护公约"（100-200 字），包括：谁负责、什么时候更新、过期页面怎么处理、新页面怎么登记到侧边栏。把公约写入 `_Footer.md` 或首页置顶。
+
+**提示**：参考第 5 节的最佳实践清单，把规则写成可执行、可检查的条款。
+
+**参考答案要点**：公约示例："1. 改接口者当日更新对应页面；2. 每次迭代结束做 30 分钟文档体检；3. 新页面创建后必须在 _Sidebar.md 登记；4. 页面标注最后更新人，连续两轮迭代未更新视为待审。责任人：组长。"
+
+## 8. 一句话记忆
+
+**Wiki 是仓库自带的"项目百科"：README 讲是什么，Wiki 讲怎么做和为什么这么设计；用首页做目录、侧边栏做导航、页脚做版权与反馈，把它当独立 Git 仓库来维护，知识才能持续沉淀。**
+
+## 9. 参考链接与延伸阅读
+
+### 权威资料（GitHub 官方中文文档）
+
+- 关于 Wiki：https://docs.github.com/zh/communities/documenting-your-project-with-wikis/about-wikis
+- 添加或编辑 Wiki 页面：https://docs.github.com/zh/communities/documenting-your-project-with-wikis/adding-or-editing-wiki-pages
+- 为 Wiki 创建页脚或侧边栏：https://docs.github.com/zh/communities/documenting-your-project-with-wikis/creating-a-footer-or-sidebar-for-your-wiki
+- 查看 Wiki 的变更历史：https://docs.github.com/zh/communities/documenting-your-project-with-wikis/viewing-a-wikis-history-of-changes
+
+### 延伸阅读（站内文档）
+
+- README 与 Wiki 的分工，见 004-github 模块《README文件》。
+- 从 Issue 到 PR 的协作流程，见 004-github 模块《PullRequest完整协作流程》。
+- 社区问答与公告，见 004-github 模块《Discussions》。
+- 用 GitHub Pages 发布可被搜索引擎收录的文档站，见 004-github 模块《GitHubPages多站点方案》。
