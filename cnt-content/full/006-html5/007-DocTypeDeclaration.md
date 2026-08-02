@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: DOCTYPE与HTML Living Standard
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'html5/005-HTML5FormValidation'
   - 'html5/006-HTML5MultimediaCanvasDrawing'
@@ -15,6 +15,12 @@ related:
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
+## 0. 直觉：DOCTYPE 是网页的“身份证”
+
+你打开一份文件时，系统靠扩展名知道该用哪个软件。浏览器打开网页时，靠第一行的 `<!DOCTYPE html>` 知道“这是一份现代 HTML 文档，请按标准模式渲染”。
+
+没有这行声明，浏览器会退回到十多年前的“怪异模式”，同样的 CSS 可能变得完全不同。所以 DOCTYPE 虽然只有一行，却是每张网页的标配。
 
 ## 1. DOCTYPE 声明
 
@@ -34,6 +40,12 @@ DOCTYPE（Document Type Declaration）是 HTML 文档的第一行，用于告知
   </body>
 </html>
 ```
+
+**讲解：**
+
+- `<!DOCTYPE html>` 必须位于文档第一行，连前面的空行或注释都不能有；
+- 它不是 HTML 标签，而是一条“处理指令”，浏览器读取后进入标准渲染模式；
+- 大小写不敏感，社区习惯统一大写。
 
 ### 1.2 DOCTYPE 的历史演变
 
@@ -64,6 +76,12 @@ if (document.compatMode === 'CSS1Compat') {
   console.log('怪异模式');
 }
 ```
+
+**讲解：**
+
+- `document.compatMode` 返回当前渲染模式，`CSS1Compat` 表示标准模式；
+- `QuirksMode` 表示怪异模式，此时盒模型等行为与标准不同；
+- 调试 CSS 布局异常时，先检查这一项可以排除“DOCTYPE 缺失”的干扰。
 
 ## 2. HTML Living Standard
 
@@ -99,65 +117,36 @@ if (document.compatMode === 'CSS1Compat') {
 - 永远在文档首行声明 DOCTYPE
 - 推荐大写 `<!DOCTYPE html>`
 - 使用 W3C Markup Validation Service 验证
-## DOCTYPE 声明
 
-**HTML5 文档类型声明**
-`<!DOCTYPE html>`
-```html
-<!-- 文档首行声明,触发标准模式 -->
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <title>文档类型声明示例</title>
-  </head>
-  <body>
-    <p>这是一个 HTML5 文档</p>
-  </body>
-</html>
-```
+## 4. 动手试试
 
-**DOCTYPE 历史版本对照**
+1. 新建一个 `test.html`，第一行写 `<!DOCTYPE html>`，用浏览器打开后按 F12 查看控制台；
+2. 在控制台输入 `document.compatMode`，确认返回 `CSS1Compat`（标准模式）；
+3. 删除第一行 DOCTYPE，刷新页面再执行一次，对比 `compatMode` 的变化；
+4. 进阶挑战：在怪异模式下给元素设置 `width: 100px; padding: 20px;`，观察实际占宽与标准模式的区别。
 
-| 版本             | DOCTYPE 声明                                                    |
-| ---------------- | --------------------------------------------------------------- |
-| HTML 2.0         | `<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">`            |
-| HTML 4.01 Strict | `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "...">`      |
-| XHTML 1.0        | `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "...">` |
-| HTML5            | `<!DOCTYPE html>`                                               |
+## 5. 核心知识点
 
----
+> 一句话记住 DOCTYPE：文档首行写 DOCTYPE，标准模式有保证；`compatMode` 查状态，怪异模式要提防。
 
-## 渲染模式检测
+- `<!DOCTYPE html>` 是 HTML5 的极简声明，触发标准渲染模式；
+- 缺少或写错 DOCTYPE 会进入怪异模式，导致盒模型、字体、图片间距等行为异常；
+- HTML5 不再引用 DTD，声明只有一行，无需记忆复杂的 PUBLIC 字符串；
+- `document.compatMode` 可检测当前渲染模式；
+- HTML 是 WHATWG 维护的“活标准”，持续演进、向后兼容。
 
-**渲染模式分类**
+## 6. 注意事项与改进建议
 
-| 模式             | 触发条件            | 特点                         |
-| ---------------- | ------------------- | ---------------------------- |
-| 标准模式         | 存在有效的 DOCTYPE  | 按 W3C 标准渲染              |
-| 怪异模式         | 缺少 DOCTYPE 或无效 | 模拟旧浏览器行为             |
-| 几乎标准模式     | 某些过渡型 DOCTYPE  | 除表格单元格高度外按标准渲染 |
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| DOCTYPE 前有内容 | 注释、BOM 或空行导致声明失效 | 确保 `<!DOCTYPE html>` 是文件的第一个字节序列 |
+| 使用旧版长 DOCTYPE | 冗余且可能触发几乎标准模式 | 统一使用 HTML5 极简声明 |
+| 用 `XHTML` 式自闭合 | 对 HTML5 无意义且易出错 | 按 HTML5 语法书写 |
+| 忽略怪异模式 | 同一套 CSS 在不同模式渲染不同 | 排查布局问题时先确认 `compatMode` |
 
-**JavaScript 检测当前模式**
-`document.compatMode`
-```javascript
-// 检测当前渲染模式
-if (document.compatMode === 'CSS1Compat') {
-  console.log('标准模式');
-} else {
-  console.log('怪异模式');
-}
-```
+## 7. 扩展学习
 
----
-
-## HTML Living Standard 新特性时间线
-
-| 年份 | 新增特性                              |
-| ---- | ------------------------------------- |
-| 2020 | `loading="lazy"`                      |
-| 2021 | `<dialog>` 元素、`popover` 属性       |
-| 2022 | Container Queries、`:has()` 选择器    |
-| 2023 | View Transitions API、`<search>` 元素 |
-| 2024 | CSS Anchor Positioning                |
-| 2025 | Declarative Shadow DOM                |
+- 元数据：`html5/009-MetadataCharacterEncoding` 学习 charset 与编码声明优先级；
+- 渲染原理：`html5/031-CriticalRenderingPathAndResourceLoading` 理解解析与渲染流程；
+- 盒模型差异：`css/002-CSS3BoxModelDetailed` 中怪异模式与标准模式的对比；
+- 标准动态：持续关注 WHATWG HTML Living Standard 更新日志。
