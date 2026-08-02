@@ -91,3 +91,35 @@ npx lighthouse https://example.com --view
 # Performance → 录制 → 分析渲染时间
 # Coverage → 查看 CSS 使用率
 ```
+
+## 动手试试
+
+1. 用 Performance 面板录制页面加载，找出阻塞解析的脚本；
+2. 把业务脚本改成 `defer`，对比首屏时间；
+3. 将首屏关键 CSS 内联，观察 LCP 变化；
+4. 进阶挑战：用 `preload` 预加载字体并对比。
+
+## 核心知识点
+
+> 一句话记住渲染路径：HTML 建 DOM、CSS 建 CSSOM、合成渲染树再布局绘制；CSS 阻塞渲染、脚本阻塞解析、图片不阻塞解析。
+
+- 五步：解析 HTML → 构建 CSSOM → 渲染树 → 布局 → 绘制；
+- CSS 是渲染阻塞资源，应内联关键样式；
+- 普通 `<script>` 阻塞解析，用 `defer`/`async`；
+- `preload` 关键资源，`prefetch` 未来资源；
+- LCP/CLS 是验证指标。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 脚本阻塞 | 首屏白屏 | defer/async |
+| CSS 外链过多 | 渲染延迟 | 关键内联 + 异步加载 |
+| 滥用 preload | 带宽挤占 | 只 preload 首屏资源 |
+| 大图无尺寸 | CLS | 设置宽高 |
+
+## 扩展学习
+
+- 渲染路径：`html5/031-CriticalRenderingPathAndResourceLoading`；
+- 性能：`css/042-CSSPerformanceOptimizationDetailed`；
+- 指标：`javascript/059-CoreWebVitalsAndPerformanceMetrics`。

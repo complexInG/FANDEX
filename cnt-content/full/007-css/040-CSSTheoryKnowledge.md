@@ -373,3 +373,35 @@ CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
 CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
 CSS 函数与变量，见 007-css/022-Function 文档。
 HTML 结构与语义，见 006-html5 模块。
+
+## 动手试试
+
+1. 用层叠上下文知识解释一个 z-index 失效案例；
+2. 画出标准盒模型与怪异盒模型的差异；
+3. 用 BFC 解决一次外边距塌陷；
+4. 进阶挑战：解释 `:where()` 与 `:is()` 的优先级差异。
+
+## 核心知识点
+
+> 一句话记住 CSS 理论：层叠（优先级+来源）、盒模型（content/padding/border/margin）、格式化上下文（BFC/IFC）、包含块与定位，是四大基石。
+
+- 层叠：来源、优先级、顺序、!important、@layer；
+- 盒模型：content-box 与 border-box；
+- BFC：触发条件与三大作用；
+- 定位与包含块：relative/absolute/fixed 参照系；
+- 继承与初始值：可继承属性列表；
+- 单位与计算：px/rem/%/vw 与 calc。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 只背不验 | 概念与实际脱节 | 用 DevTools 验证 |
+| 混淆 BFC/IFC | 布局理解偏差 | 对比行内/块级上下文 |
+| 忽略包含块 | fixed 异常 | 理解 transform 副作用 |
+
+## 扩展学习
+
+- 盒模型：`css/002-CSS3BoxModelDetailed`；
+- 优先级：`css/007-PriorityCalculation`；
+- 层叠上下文：`css/012-StackingContext`。

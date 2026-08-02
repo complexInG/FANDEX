@@ -627,3 +627,36 @@ canvas.addEventListener('mouseout', () => {
 
 Canvas 是 HTML5 提供的强大绘图 API，通过 JavaScript 可以在网页上创建各种图形、动画和交互效果。Canvas 具有像素级控制、丰富的绘图 API、动画支持和交互性等特点，适用于创建游戏、数据可视化、图像处理等应用。
 通过学习 Canvas 的基础操作、进阶特性和性能优化技巧，你可以创建各种复杂的图形和动画效果。在实际开发中，应根据具体需求选择合适的技术方案，并遵循相关的最佳实践，以创建高性能、可维护的 Canvas 应用。
+
+## 动手试试
+
+1. 在 Canvas 上画一个矩形、一个圆形和一行文字；
+2. 用 `requestAnimationFrame` 让图形动起来；
+3. 实现鼠标绘制（按下画线、松开停止）；
+4. 进阶挑战：用 `toBlob` 导出画布为 PNG。
+
+## 核心知识点
+
+> 一句话记住 Canvas：`getContext('2d')` 拿画笔，`fillRect`/路径/`arc` 画图形，`requestAnimationFrame` 做动画，像素级控制。
+
+- Canvas 是像素画布，SVG 是矢量；
+- 上下文 API：矩形、路径、文本、图像；
+- 动画：清除 → 更新 → 重绘循环；
+- 交互：鼠标事件 + 坐标换算；
+- 导出：`toDataURL`/`toBlob`；
+- 性能：减少每帧的绘制范围。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 忘记 beginPath | 路径粘连 | 每组图形前调用 |
+| 尺寸用 CSS 控制 | 模糊 | 用 width/height 属性 |
+| setInterval 动画 | 掉帧 | requestAnimationFrame |
+| 跨域图片导出 | 画布污染 | CORS 或同源资源 |
+
+## 扩展学习
+
+- 完整 Canvas：`html5/006-HTML5MultimediaCanvasDrawing`；
+- 动画：`css/017-CSSAnimationTransition`；
+- SVG 对比：`html5/015-SVG`。

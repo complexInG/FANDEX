@@ -386,3 +386,36 @@ progress {
   border-color: color-mix(in srgb, #007bff, black 20%);
 }
 ```
+
+## 动手试试
+
+1. 用 `:has()` 实现“含图片的卡片放大”；
+2. 用 `@layer` 重构一次样式覆盖；
+3. 用 `color-mix()` 混合两个颜色；
+4. 进阶挑战：用原生嵌套重写一段 Sass 代码。
+
+## 核心知识点
+
+> 一句话记住 CSS 新特性：`:has()` 父选择器、`@layer` 分层、容器查询、原生嵌套、`color-mix()`、`@property` 组成现代 CSS 工具箱。
+
+- `:has()`：按子结构选父元素；
+- `@layer`：声明式优先级分层；
+- 容器查询：组件按容器响应；
+- 原生嵌套：无需预处理器；
+- `color-mix()`/`oklch`：现代颜色；
+- `@property`：注册变量支持动画；
+- `view-transition`：页面过渡。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 新特性兼容性 | 老浏览器不支持 | @supports + 兜底 |
+| :has 性能 | 复杂匹配慢 | 简化选择器 |
+| 一次性全用 | 项目风险大 | 渐进采用 |
+
+## 扩展学习
+
+- 特性检测：`css/024-FeatureQuery`；
+- 容器查询：`css/020-ContainerQuery`；
+- 颜色：`css/050-ModernColorSpace`。

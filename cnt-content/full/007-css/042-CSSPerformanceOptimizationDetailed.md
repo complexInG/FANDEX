@@ -377,3 +377,36 @@ npx postcss styles.css -u cssnano -o styles.min.css
   background: #6c757d;
 }
 ```
+
+## 动手试试
+
+1. 用 Performance 面板找出“样式重算”耗时最高的页面；
+2. 把高频动画从布局属性改为 transform/opacity；
+3. 用 `content-visibility: auto` 优化长列表；
+4. 进阶挑战：用 Lighthouse 对比优化前后的 Performance 分数。
+
+## 核心知识点
+
+> 一句话记住 CSS 性能：避免重排（layout）、减少重绘（paint）、动画走合成层（transform/opacity）、样式尽量静态。
+
+- 选择器性能：避免深层后代与通配符；
+- 重排触发：布局属性（width/left）高频改动；
+- 合成层：transform/opacity 不触发布局；
+- `will-change` 预声明；
+- `content-visibility` 跳过屏外渲染；
+- 样式量：压缩、去冗余、拆分关键 CSS。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 动画改布局属性 | 每帧重排 | transform/opacity |
+| 滥用 will-change | 内存占用 | 只对确实动画的元素 |
+| 选择器过深 | 匹配慢 | 类名扁平化 |
+| 忽略长列表 | 渲染卡顿 | content-visibility 或虚拟列表 |
+
+## 扩展学习
+
+- 渲染路径：`css/035-CriticalRenderPathOptimization`；
+- 指标：`javascript/059-CoreWebVitalsAndPerformanceMetrics`；
+- 动画：`css/017-CSSAnimationTransition`。

@@ -310,3 +310,36 @@ Sitemap: https://example.com/sitemap.xml
 | SSG      | 最佳       | 构建时生成静态 HTML    |
 | CSR      | 较差       | 需要额外处理（预渲染） |
 | ISR      | 良好       | 增量静态再生           |
+
+## 动手试试
+
+1. 检查你的页面是否只有一个 `h1`，标题层级是否连续；
+2. 给文章页补全 `title`、`description` 与结构化数据；
+3. 用富媒体结果测试工具验证 JSON-LD；
+4. 进阶挑战：做一份 SEO 检查清单并在真实页面走查。
+
+## 核心知识点
+
+> 一句话记住 SEO 语义：语义化标签建大纲，标题层级连续，`alt`/`description` 补语义，结构化数据拿富媒体摘要。
+
+- 语义标签：header/main/article/section 构建大纲；
+- 标题：每页一个 h1，层级不跳级；
+- 元数据：title/description/canonical；
+- 图片：描述性 alt；
+- 结构化数据：JSON-LD + Schema.org；
+- 链接：语义化文案与站内结构。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 标题跳级 | 大纲断裂 | 按层级使用 |
+| 图片无 alt | 图片搜索丢失 | 描述性 alt |
+| 结构化数据与内容不符 | 被判作弊 | 数据与页面一致 |
+| 忽视移动端 | 排名下降 | 响应式 + viewport |
+
+## 扩展学习
+
+- 语义：`html5/003-SemanticTag`；
+- 元数据：`html5/009-MetadataCharacterEncoding`；
+- 结构化数据：`html5/026-MicrodataJSONLD`。

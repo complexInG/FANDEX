@@ -274,3 +274,36 @@ export default defineConfig({
   alt="描述"
 />
 ```
+
+## 动手试试
+
+1. 用 `srcset` + `sizes` 做响应式图片，用 Network 面板验证不同设备加载的图片；
+2. 用 `<picture>` 实现“手机竖图、桌面横图”；
+3. 给首屏图加 `preload`，其余加 `lazy`；
+4. 进阶挑战：用 `object-fit: cover` 统一缩略图比例。
+
+## 核心知识点
+
+> 一句话记住响应式图片：`srcset` 给候选、`sizes` 说宽度、`picture` 换场景、`lazy` 延迟加载、`alt` 不能少。
+
+- `srcset`：候选图 + `w`/`x` 描述符；
+- `sizes`：声明显示宽度，浏览器择优；
+- `<picture>` + `<source media>`：按条件换图；
+- 格式：AVIF/WebP 体积更小；
+- `loading="lazy"` 非首屏；
+- 始终提供 `alt`。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 全部 lazy | 首屏变慢 | 首屏 eager |
+| 无 sizes | 浏览器猜错 | 显式声明 |
+| 格式单一 | 流量浪费 | 多格式 source |
+| 缺 alt | 无障碍损失 | 描述性 alt |
+
+## 扩展学习
+
+- 完整教程：`html5/013-ImageResponsiveImage`；
+- 对象适配：`css/058-CSSObjectFit`；
+- 性能：`javascript/059-CoreWebVitalsAndPerformanceMetrics`。

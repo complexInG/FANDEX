@@ -96,3 +96,34 @@ export default defineConfig({
 | 定制性   | 高           | 更高   |
 | 生态     | 最大         | 增长中 |
 | 学习曲线 | 中等         | 中等   |
+
+## 动手试试
+
+1. 用工具类（如 `.text-center`、`.mt-4`）搭建一个卡片；
+2. 对比“语义类 + 组件样式”与“原子类”两种写法的可维护性；
+3. 在 Tailwind 中体验原子化工作流；
+4. 进阶挑战：用 @apply 抽取重复工具类组合。
+
+## 核心知识点
+
+> 一句话记住原子化：一个类只做一件事（`.flex`、`.p-4`），组合成 UI；HTML 变长但 CSS 不增长。
+
+- 原子类 = 单一职责的工具类；
+- 优点：无样式冗余、改动局部化、设计约束统一；
+- 缺点：HTML 类名冗长、组件样式散落；
+- 代表：Tailwind CSS、UnoCSS；
+- 可配合组件封装缓解可读性问题。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 类名泛滥 | HTML 难读 | 组件封装 + @apply |
+| 与 BEM 混用 | 风格冲突 | 项目统一一种策略 |
+| 动态拼接类名 | 样式丢失 | 使用完整类名或 safelist |
+
+## 扩展学习
+
+- Tailwind：`tailwind/003-UtilityCore`；
+- BEM：`css/032-BEMNamingMethodology`；
+- 架构：`css/039-CSSArchitectureMethodology`。

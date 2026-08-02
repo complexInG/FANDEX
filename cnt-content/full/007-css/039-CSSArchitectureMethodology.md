@@ -412,3 +412,36 @@ function Card({ variant, children }) {
   复用抽象 → OOCSS（结构与皮肤分离）
   主题系统 → CSS 变量
 ```
+
+## 动手试试
+
+1. 为现有项目画一张样式架构图：reset、基础、组件、工具分层；
+2. 用 BEM 重构一个组件的类名；
+3. 用 `@layer` 声明分层并验证覆盖；
+4. 进阶挑战：制定团队 CSS 规范（命名、分层、lint）。
+
+## 核心知识点
+
+> 一句话记住 CSS 架构：分层（reset/基础/组件/工具）+ 命名规范（BEM）+ 工具链（lint/变量），让样式可预测、可维护。
+
+- 分层：reset、设计令牌、基础、组件、工具类；
+- 命名：BEM/OOCSS/原子化，团队统一；
+- 设计令牌：颜色/间距/字号走变量；
+- 工具链：Stylelint、Prettier、PostCSS；
+- 覆盖策略：`@layer` 优于 `!important`；
+- 文档化组件样式入口。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 无分层 | 覆盖全靠 !important | 建立 @layer 体系 |
+| 命名混乱 | 样式不可预测 | 统一 BEM |
+| 魔法值泛滥 | 改版困难 | 设计令牌 |
+| 无 lint | 风格漂移 | 接入 Stylelint |
+
+## 扩展学习
+
+- BEM：`css/032-BEMNamingMethodology`；
+- @layer：`css/025-CascadeLayer`；
+- 变量：`css/023-CSSVariableCustomAttribute`。

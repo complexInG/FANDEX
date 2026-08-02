@@ -582,3 +582,34 @@ flowchart TD
 **解决方案**：提供 Flexbox fallback
 **问题**：响应式设计在某些设备上显示异常
 **解决方案**：使用设备模拟器测试，调整断点
+
+## 动手试试
+
+1. 在 React 中用内联 style 对象设置样式，观察动态值能力；
+2. 引入 styled-components，用组件方式写样式；
+3. 对比 CSS-in-JS 与 CSS Modules 的动态主题实现；
+4. 进阶挑战：用 CSS 变量 + CSS-in-JS 做主题切换。
+
+## 核心知识点
+
+> 一句话记住 CSS-in-JS：样式写在 JS 里，动态值天然支持、作用域隔离、可组件化；代价是运行时开销与 SSR 配置。
+
+- 形式：内联对象、styled-components、Emotion；
+- 优点：动态值、局部作用域、随组件卸载；
+- 缺点：运行时开销、调试需标记、SSR 复杂；
+- 与 CSS 变量结合可做主题；
+- 现代框架常混用 CSS Modules 与 CSS-in-JS。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 渲染期生成样式 | 性能开销 | 优先静态样式 + 变量 |
+| SSR 闪烁 | 首屏无样式 | 配置 babel 插件/抽取 |
+| 组件库样式覆盖 | 优先级混乱 | 明确 API 与变量入口 |
+
+## 扩展学习
+
+- React：`react/` 模块组件样式；
+- 模块化：`css/034-CSSModules`；
+- 架构：`css/039-CSSArchitectureMethodology`。

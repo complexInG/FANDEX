@@ -105,3 +105,34 @@ BEM（Block Element Modifier）是一种 CSS 命名方法论，提高样式可�
 | SMACSS | 分类命名                    | 按功能分层 |
 | OOCSS  | 结构与皮肤分离              | 复用性高   |
 | ITCSS  | 倒三角分层                  | 优先级管理 |
+
+## 动手试试
+
+1. 把一个“卡片”组件按 BEM 命名：`.card`、`.card__title`、`.card--featured`；
+2. 把导航改写成 BEM 结构；
+3. 检查你的项目中是否还有“标签+类”混合命名；
+4. 进阶挑战：对比 BEM 与 CSS Modules 的隔离方案。
+
+## 核心知识点
+
+> 一句话记住 BEM：Block 独立块、Element 双下划线、Modifier 双连字符；命名即文档，层级扁平化。
+
+- Block：独立组件（`.card`）；
+- Element：块的组成部分（`.card__title`）；
+- Modifier：状态或变体（`.card--active`）；
+- 好处：无嵌套、优先级稳定、可读性好；
+- 缺点：类名长，需配合工具（如短横线命名）。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 嵌套过深 | 类名冗长 | Element 不嵌套 Element |
+| 混用命名风格 | 维护混乱 | 全库统一 BEM |
+| 用标签选择器 | 与 BEM 冲突 | 只用类选择器 |
+
+## 扩展学习
+
+- 架构：`css/039-CSSArchitectureMethodology`；
+- 模块化：`css/034-CSSModules`；
+- 原子化：`css/033-CSSAtomic`。
