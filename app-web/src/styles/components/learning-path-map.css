@@ -57,6 +57,33 @@
     color: var(--color-fg-secondary);
   }
 
+  /* 键盘快捷键提示条 */
+  .lp-map__shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    font-size: 0.7rem;
+    color: var(--color-fg-tertiary);
+  }
+
+  .lp-map__shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .lp-map__shortcut kbd {
+    padding: 1px 6px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 2px;
+    background: var(--color-bg-card);
+    font-family: var(--font-family-mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    color: var(--color-fg-secondary);
+  }
+
   /* ============================================================
    * 画布
    * ============================================================ */
@@ -272,14 +299,14 @@
     fill: color-mix(in oklch, var(--lp-color) 6%, var(--color-bg-card));
   }
 
-  /* 悬停微抬升：SVG g 使用 fill-box 变换，避免位移方向错乱 */
-  .lp-node {
+  /* 悬停微抬升：作用于内层 .lp-node__lift，不覆盖外层定位 transform（避免节点跳位/抽搐） */
+  .lp-node__lift {
     transform-box: fill-box;
     transform-origin: center;
     transition: transform var(--motion-duration-fast) var(--motion-easing-out);
   }
 
-  .lp-node--hovered {
+  .lp-node--hovered .lp-node__lift {
     transform: translateY(-2px);
   }
 

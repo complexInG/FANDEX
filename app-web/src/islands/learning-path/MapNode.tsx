@@ -116,7 +116,10 @@ export default function MapNode(props: Props) {
       }}
       {...commonProps}
     >
-      <NodeBody {...props} />
+      {/* 悬停抬升层：CSS transform 只作用于内层 g，避免覆盖外层定位 transform 导致节点跳位 */}
+      <g className="lp-node__lift">
+        <NodeBody {...props} />
+      </g>
     </g>
   );
 }

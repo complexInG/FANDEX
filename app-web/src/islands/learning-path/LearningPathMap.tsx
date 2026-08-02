@@ -60,6 +60,12 @@ export default function LearningPathMap({ tech, base }: Props) {
     setHoverId(id);
   }, []);
 
+  /** 清空选中与悬停（Esc 快捷键） */
+  const handleClearSelection = useCallback(() => {
+    setSelectedId(null);
+    setHoverId(null);
+  }, []);
+
   /** 折叠/展开阶段 */
   const handleToggleStage = useCallback((id: string) => {
     setCollapsedStageIds((prev) => {
@@ -92,6 +98,15 @@ export default function LearningPathMap({ tech, base }: Props) {
         />
       </div>
 
+      {/* 键盘快捷键提示条 */}
+      <div className="lp-map__shortcuts" aria-label="键盘快捷键">
+        <span className="lp-map__shortcut"><kbd>+</kbd>/<kbd>-</kbd> 缩放</span>
+        <span className="lp-map__shortcut"><kbd>0</kbd>/<kbd>F</kbd> 适应视口</span>
+        <span className="lp-map__shortcut"><kbd>R</kbd> 复位</span>
+        <span className="lp-map__shortcut"><kbd>方向键</kbd> 平移</span>
+        <span className="lp-map__shortcut"><kbd>Esc</kbd> 关闭详情</span>
+      </div>
+
       {/* 画布 + 详情面板 */}
       <div className="lp-map__body">
         <MapCanvas
@@ -106,6 +121,7 @@ export default function LearningPathMap({ tech, base }: Props) {
           onHoverNode={handleHoverNode}
           onToggleStage={handleToggleStage}
           onScaleChange={setScale}
+          onClearSelection={handleClearSelection}
         />
         <MapDetailPanel
           node={panelNode}

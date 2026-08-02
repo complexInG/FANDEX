@@ -62,6 +62,8 @@ interface Props {
   onToggleStage: (id: string) => void;
   /** 缩放百分比回传（rAF 节流） */
   onScaleChange?: (percent: number) => void;
+  /** 关闭详情面板（Esc 快捷键） */
+  onClearSelection?: () => void;
 }
 
 /** 缩放范围 */
@@ -94,6 +96,7 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
     onHoverNode,
     onToggleStage,
     onScaleChange,
+    onClearSelection,
   },
   ref,
 ) {
@@ -270,41 +273,76 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
     }
   };
 
-  /** 键盘操作：+/- 缩放、0 适应、方向键平移 */
-  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const t = transformRef.current;
-    switch (event.key) {
-      case '+':
-      case '=':
-        zoomAt(window.innerWidth / 2, window.innerHeight / 2, 1.2);
-        break;
-      case '-':
-        zoomAt(window.innerWidth / 2, window.innerHeight / 2, 1 / 1.2);
-        break;
-      case '0':
-        fit();
-        break;
-      case 'ArrowLeft':
-        t.x += 48;
-        applyTransform();
-        break;
-      case 'ArrowRight':
-        t.x -= 48;
-        applyTransform();
-        break;
-      case 'ArrowUp':
-        t.y += 48;
-        applyTransform();
-        break;
-      case 'ArrowDown':
-        t.y -= 48;
-        applyTransform();
-        break;
-      default:
-        return;
-    }
-    event.preventDefault();
-  };
+  /** 页面级键盘快捷键：+/- 缩放、0/F 适应视口、R 复位、方向键平移、Esc 关闭详情 */
+  useEffect(() => {
+    const mapRoot = containerRef.current?.closest('.lp-map');
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      // 输入类元素与修饰键组合不接管，避免与浏览器/无障碍快捷键冲突
+      if (target && /^(INPUT|TEXTAREA|SELECT)$/i.test(target.tagName)) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      const t = transformRef.current;
+      const isArrow = event.key.startsWith('Arrow');
+      // 方向键仅在焦点位于地图区域内时接管，避免破坏页面滚动
+      if (isArrow && (!mapRoot || !mapRoot.contains(target))) return;
+
+      const container = containerRef.current;
+      switch (event.key) {
+        case '+':
+        case '=': {
+          if (!container) return;
+          const { width: vw, height: vh } = viewportSize(container);
+          zoomAt(vw / 2, vh / 2, 1.2);
+          break;
+        }
+        case '-': {
+          if (!container) return;
+          const { width: vw, height: vh } = viewportSize(container);
+          zoomAt(vw / 2, vh / 2, 1 / 1.2);
+          break;
+        }
+        case '0':
+        case 'f':
+        case 'F':
+          fit();
+          break;
+        case 'r':
+        case 'R':
+          reset();
+          break;
+        case 'Escape':
+          onClearSelection?.();
+          break;
+        case 'ArrowLeft':
+          t.x += 48;
+          applyTransform();
+          break;
+        case 'ArrowRight':
+          t.x -= 48;
+          applyTransform();
+          break;
+        case 'ArrowUp':
+          t.y += 48;
+          applyTransform();
+          break;
+        case 'ArrowDown':
+          t.y -= 48;
+          applyTransform();
+          break;
+        default:
+          return;
+      }
+      event.preventDefault();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [zoomAt, fit, reset, applyTransform, onClearSelection]);
+
+  /** 进入页面即聚焦画布，方向键/缩放快捷键立即可用（编程式聚焦不触发 :focus-visible） */
+  useEffect(() => {
+    containerRef.current?.focus({ preventScroll: true });
+  }, []);
 
   return (
     <div
@@ -312,8 +350,7 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
       ref={containerRef}
       tabIndex={0}
       role="application"
-      aria-label={`${tech.title} 学习路线思维导图，支持拖拽平移与滚轮缩放`}
-      onKeyDown={onKeyDown}
+      aria-label={`${tech.title} 学习路线思维导图，支持拖拽平移、滚轮缩放；快捷键：+/- 缩放、0/F 适应视口、R 复位、方向键平移、Esc 关闭详情`}
     >
       <svg
         className="lp-canvas__svg"
