@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: Markdown 段落与换行的基本语法和最佳实践。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'markdown/001-SyntaxGuide'
   - 'markdown/002-HeadingSyntax'
@@ -14,6 +14,11 @@ related:
   - 'markdown/005-CommonMarkSpec'
 prerequisites: []
 ---
+
+> **认知导入（Layer 0 生存层）**
+> 前置知识：002 标题语法。
+> 边界说明：段落与换行是 Markdown 的“第一性原理”——空白（空行、行尾空格）就是语法；学不会，你会反复遇到“看起来对但没生效”。
+> 强制练习：写两段文字（中间不加空行）再刷新预览；补上空行再刷新，对比差异。再在行尾敲两个空格后回车写第二行，观察软换行效果。
 
 ## 1. 引言
 
@@ -202,13 +207,6 @@ public class Hello {
 - 保持文档布局的一致性和可读性
 - 合理使用空行，避免过多或过少
 
-```
-
-```
-
-```
-
-```
 ## 段落
 
 **单行写法：单行段落**
@@ -267,7 +265,7 @@ public class Hello {
 
 **换行写法：代码块前后加空行**
 `<文本>\n\n```<语言>\n<代码>\n```\n\n<文本>`
-```markdown
+````markdown
 正文内容
 
 ```python
@@ -275,7 +273,7 @@ print("Hello!")
 ```
 
 另一个段落
-```
+````
 
 ## 延伸阅读
 Markdown 基础语法，见 002-markdown 模块文档。

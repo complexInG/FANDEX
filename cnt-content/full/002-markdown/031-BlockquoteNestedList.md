@@ -6,10 +6,15 @@ category: 工具链
 difficulty: beginner
 description: Markdown 引用与嵌套列表语法速查 的完整教学讲解。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related: []
 prerequisites: []
 ---
+
+> **认知导入（Layer 1 进阶层）**
+> 前置知识：006 列表语法。
+> 边界说明：引用（`>`）用于转述与摘录；嵌套列表依赖缩进，缩进不一致会破坏层级。
+> 强制练习：用 `>` 写一段引用，再在引用内嵌套一个列表；调整缩进观察层级变化。
 
 ## 基础引用
 

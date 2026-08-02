@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: CommonMark规范详解：标准化Markdown的定义、解析规则与一致性测试。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'markdown/003-ParagraphLineBreak'
   - 'markdown/004-BasicTextFormat'
@@ -15,6 +15,7 @@ prerequisites:
   - 'markdown/001-SyntaxGuide'
 ---
 
+> **Layer 2 专业层标注**：本篇讲 CommonMark 规范的解析器原理，属于高级话题。零基础学习者可完全跳过，直接学 Layer 0/1 的语法文档即可。
 
 ## 1. CommonMark 概述
 

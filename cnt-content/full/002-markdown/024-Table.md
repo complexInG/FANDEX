@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: 表格语法、对齐方式与复杂表格处理。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'markdown/022-VCSPRCollaboration'
   - 'markdown/023-CodeBlockSyntaxHighlight'
@@ -15,6 +15,11 @@ related:
 prerequisites:
   - 'markdown/001-SyntaxGuide'
 ---
+
+> **认知导入（Layer 1 进阶层）**
+> 前置知识：003 段落与换行。
+> 边界说明：表格适合“对比型”信息；分隔行 `|---|---|` 的列数要和表头一致，否则列会错位。
+> 强制练习：手写一个三列表格（表头 + 两行数据），刻意让分隔行少一列，观察渲染错位。
 
 ## 1. 基本表格语法
 

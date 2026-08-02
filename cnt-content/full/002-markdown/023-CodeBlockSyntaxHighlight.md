@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: 行内代码、围栏代码块、语言标注与高亮配置。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'markdown/021-ImageCDNAcceleration'
   - 'markdown/022-VCSPRCollaboration'
@@ -15,6 +15,11 @@ related:
 prerequisites:
   - 'markdown/001-SyntaxGuide'
 ---
+
+> **认知导入（Layer 1 进阶层）**
+> 前置知识：Layer 0 五篇。
+> 边界说明：代码块是技术文档的核心能力；三个反引号开闭必须成对，语言名写在开头的反引号后。
+> 强制练习：用三个反引号包一段代码，并在开头写 `javascript` 观察语法高亮；删掉一个反引号观察代码块“吞掉”后续内容。
 
 ## 1. 行内代码 (Inline Code)
 
@@ -629,13 +634,11 @@ hello();
 
 **换行写法：使用四个反引号包围含三个反引号的代码**
 ` ```` \n```<代码> \n```` `
-```markdown
-````
+````markdown
 ```
 代码块中包含三个反引号
 ```
 ````
-```
 
 ---
 

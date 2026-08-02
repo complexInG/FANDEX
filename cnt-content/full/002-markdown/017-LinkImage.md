@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: 行内链接、引用链接、图片嵌入与脚注。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'markdown/015-Mermaid'
   - 'markdown/016-EditorFeature'
@@ -15,6 +15,11 @@ related:
 prerequisites:
   - 'markdown/001-SyntaxGuide'
 ---
+
+> **认知导入（Layer 0 生存层）**
+> 前置知识：006 列表语法。
+> 边界说明：链接与图片让文档从“文字”变成“网页内容”；图片路径写错时渲染为占位图，这是最常见的报错场景。
+> 强制练习：写一个链接 `[文字](https://example.com)` 和一个本地图片 `![alt](images/a.png)`；故意把图片路径写错，观察占位效果。
 
 ## 1. 链接 (Links)
 

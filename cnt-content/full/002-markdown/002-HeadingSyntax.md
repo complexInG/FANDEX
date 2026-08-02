@@ -6,13 +6,18 @@ category: 工具链
 difficulty: intermediate
 description: ATX 与 Setext 风格标题与目录生成。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'markdown/001-SyntaxGuide'
   - 'markdown/003-ParagraphLineBreak'
   - 'markdown/004-BasicTextFormat'
 prerequisites: []
 ---
+
+> **认知导入（Layer 0 生存层）**
+> 前置知识：无需前置，直接开始。
+> 边界说明：学完本节你能写出层级分明的标题；学不会，后续所有文档的结构都会乱。
+> 强制练习：打开编辑器输入 `# 你好` 和 `## 小节`，观察标题大小；再把 `#` 后面的空格删掉，观察标题是否失效——空格是语法的一部分。
 
 ## ATX 风格标题
 
@@ -172,6 +177,7 @@ Markdown 支持 6 级标题，通过 `#` 的数量区分层级，**`#`** **后�
 
 ```markdown
 # 一级标题
+```
 
 ### 3.2 注意事项
 

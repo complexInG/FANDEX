@@ -6,10 +6,12 @@ category: 工具链
 difficulty: beginner
 description: Markdown Frontmatter YAML 语法速查 的完整教学讲解。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related: []
 prerequisites: []
 ---
+
+> **Layer 2 专业层标注**：Frontmatter 用于文档工程化（本仓库就在用），写普通笔记可跳过。
 
 ## 基础语法
 

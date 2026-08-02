@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: Markdown 基础文本格式：斜体、粗体、删除线等。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'markdown/002-HeadingSyntax'
   - 'markdown/003-ParagraphLineBreak'
@@ -15,6 +15,11 @@ related:
 prerequisites:
   - 'markdown/001-SyntaxGuide'
 ---
+
+> **认知导入（Layer 0 生存层）**
+> 前置知识：003 段落与换行。
+> 边界说明：加粗/斜体是最常用的行内格式，写文档、写笔记都靠它。
+> 强制练习：输入 `**你好**` 和 `*你好*`，观察加粗与斜体；然后删除一个 `*`，观察格式失效——成对符号必须完整。
 
 ## 1. 引言
 

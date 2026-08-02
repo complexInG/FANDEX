@@ -6,10 +6,12 @@ category: 工具链
 difficulty: beginner
 description: Markdown HTML 内嵌 的完整教学讲解。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related: []
 prerequisites: []
 ---
+
+> **上下文说明**：HTML 是 Markdown 的“逃生舱”——Markdown 写不了的复杂布局可以用 HTML 覆盖。前提是先掌握基础语法（Layer 0/1），否则会陷入“两种语法混在一起改不动”的困境。另外，内嵌 HTML 会原样输出到页面，请注意内容安全（不要插入不可信的 HTML）。
 
 ## 基础 HTML 嵌入
 

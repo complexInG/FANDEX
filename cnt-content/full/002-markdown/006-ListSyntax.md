@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: 有序列表、无序列表、任务列表与嵌套规则。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'markdown/004-BasicTextFormat'
   - 'markdown/005-CommonMarkSpec'
@@ -14,6 +14,11 @@ related:
 prerequisites:
   - 'markdown/001-SyntaxGuide'
 ---
+
+> **认知导入（Layer 0 生存层）**
+> 前置知识：003 段落与换行。
+> 边界说明：列表是“并列信息”的默认表达，学会它才能写清单、目录、步骤。
+> 强制练习：分别用 `-` 和 `1.` 写三行列表；把第二行缩进两个空格，观察它变成子项（嵌套列表）。
 
 ## 1. 无序列表 (Unordered Lists)
 
