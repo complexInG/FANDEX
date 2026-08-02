@@ -26,6 +26,12 @@ prerequisites:
 
 ---
 
+## 0. 直觉：谁更“具体”，谁说了算
+
+两个选择器同时命中同一个元素，浏览器听谁的？规则可以概括为一句话：**选择器越具体，优先级越高；同样具体时，后写的赢**。
+
+具体程度按“ID > 类 > 标签”排序：`#main` 比 `.card` 具体，`.card` 比 `div` 具体。`!important` 是“掀桌子”的例外，`@layer` 和 `:where()` 则是现代 CSS 用来“重新排座次”的工具。
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 CSS 1（1996）：优先级的雏形
@@ -567,6 +573,8 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
+**讲解：** 四元组 `(内联, ID, 类, 元素)` 从左到右比较，第一个不同的数字决定胜负：`#main .text p` 是 (0,1,1,1)，胜过 (0,0,1,0)；内联样式是 (1,0,0,0)，除 `!important` 外最高。
+
 ### 4.2 `!important` 与来源排序
 
 ```html
@@ -632,6 +640,8 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </body>
 </html>
 ```
+
+**讲解：** `:is()` 的优先级取参数列表中的最高者（示例中与 `.card .title` 相同，后写胜出）；`:where()` 优先级恒为 0，适合“可被业务规则随时覆盖”的默认样式。
 
 ### 4.4 `@layer` 分层管理
 
@@ -2124,3 +2134,41 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 - [ ] 验证用户样式表（如可访问性设置）的影响
 - [ ] 使用 Stylelint 检查优先级上限
 - [ ] 编写 Playwright 视觉回归测试
+
+## 9. 本章综合挑战（选做）
+
+1. 写出 `#main .card:hover a` 的四元组并手工计算；
+2. 用 `:where()` 写一套“可被覆盖的默认样式”，再验证业务类能否覆盖；
+3. 用 `@layer` 把 reset、框架、组件、工具类分成四层，确认优先级顺序；
+4. 用 DevTools 的 Computed 面板找出一条被覆盖的声明，解释覆盖原因。
+
+## 10. 核心知识点
+
+> 一句话记住优先级：四元组从左比（内联、ID、类、元素），第一个不同即定胜负；`!important` 反转，`@layer` 排座次，`:where()` 归零。
+
+- 优先级四元组：(内联, ID, 类, 元素)，逐位比较；
+- 相同优先级按“出现顺序”，后写覆盖先写；
+- `!important` 反转来源排序，但应尽量避免；
+- `:is()` 取参数中最高优先级，`:where()` 恒为 0；
+- `@layer` 让“层顺序”优先于选择器权重；
+- 内联样式高于一切选择器（除 `!important`）；
+- 调试用 DevTools Computed 面板 + 手工计算交叉验证。
+
+## 11. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 用 `!important` 救火 | 优先级体系崩塌 | 查权重与层顺序，从源头修正 |
+| 深层选择器 | 权重失控、难覆盖 | 用类名扁平化（BEM） |
+| 不了解 `@layer` 顺序 | 工具类覆盖失败 | 声明层顺序：reset < framework < utilities |
+| 滥用 `:is()` | 权重意外抬高 | 需要归零覆盖时用 `:where()` |
+| 内联样式 + JS 混用 | 调试困难 | 用 CSS 变量与类切换状态 |
+| 忽略用户样式表 | 可访问性设置被覆盖 | 避免 `!important`，尊重用户样式 |
+
+## 12. 扩展学习
+
+- 层叠进阶：`css/025-CascadeLayer`；
+- 选择器：`css/003-CSS3SelectorSystem`、`css/006-PseudoClassPseudoElement`；
+- 作用域：`css/048-ScopeAtRule`；
+- 工程实践：BEM（`css/032-BEMNamingMethodology`）与 CSS Modules（`css/034-CSSModules`）；
+- 框架对照：Tailwind 的工具类优先级设计（`tailwind/` 模块）。
