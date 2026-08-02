@@ -179,22 +179,6 @@ set -a; source .env; set +a
 
 **陷阱四：修改配置文件不生效。** 改了 `~/.bashrc` 后未 `source` 也未重开终端。
 
-## 9. 实战练习
-
-1. **PATH 实验**：临时在 PATH 前面加一个目录（如 `/opt/mybin`），在里面放一个自定义脚本，验证优先级。重启终端后确认配置不丢失（写入 .bashrc）。
-
-2. **默认值练习**：写一个脚本，读取 `PORT` 环境变量，未设置时默认 8080，`CONFIG_FILE` 必须设置否则报错退出。
-
-3. **启动文件分析**：查看你的 `~/.bashrc` 和 `~/.profile`，说出哪些是环境变量、哪些是别名/函数，验证加载顺序。
-
-4. **.env 实践**：创建一个 .env 文件（含 DB_HOST、DB_PASSWORD），用 `set -a; source .env; set +a` 加载，写一个读取这些变量的脚本。
-
-## 10. 参考资源
-
-- Bash 参数扩展官方文档：https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
-- Bash 启动文件说明：https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html
-- 环境变量编程实践（12 Factor）：https://12factor.net/zh_cn/config
-
 ## 11. 延伸阅读
 
 - 环境变量在脚本调试中的应用，见本模块《脚本调试与严格模式》

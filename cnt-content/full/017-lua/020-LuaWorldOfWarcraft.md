@@ -807,17 +807,7 @@ SlashCmdList["CHATFILTER"] = function(msg)
 end
 ```
 
-## 参考文献
-
-Lua 官方文档：https://www.lua.org/docs.html
-Lua 5.4 参考手册：https://www.lua.org/manual/5.4/
-LuaJIT：https://luajit.org/
-OpenResty 文档：https://openresty.org/cn/
-Redis EVAL 文档：https://redis.io/docs/latest/develop/programming/
-
 ## 延伸阅读
-
 Lua 与 Redis 脚本，见 022-redis 模块相关文档。
 Lua 与 OpenResty 网关，见 031-devops 模块相关文档。
 游戏开发与脚本扩展，见 017-lua 模块文档。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Lua 课程。

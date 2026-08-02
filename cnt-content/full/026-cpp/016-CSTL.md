@@ -143,18 +143,6 @@ C++26 草案继续完善：
 - `std::execution` Sender/Receiver 模型：与算法库集成的异步并行
 - Hazard Pointer 与 RCU 在并行算法中的应用
 
-### 1.6 关键提案与文献
-
-- **N3411 (Hoberock, 2012)**：*Working Draft, Technical Specification for C++ Extensions for Parallelism*，并行算法奠基
-- **N4128 (Niebler, 2014)**：*Ranges for the Standard Library, Rev 1*，Ranges 提案初版
-- **P0024R0 (Hoberock, 2015)**：*Parallel Algorithms TS*，纳入 C++17
-- **P0789R0 (Niebler, 2017)**：*Range Adaptors and Utilities*
-- **P0896R4 (Niebler, 2018)**：*The One Ranges Proposal*，C++20 Ranges 最终形态
-- **P2210R2 (Niebler, 2021)**：*Superior String Splitting*，`std::views::split` 重构
-- **P2322R6 (Niebler, 2022)**：*`ranges::fold`*，C++23 折叠算法
-- **P2302R4 (Kalb, 2021)**：*`ranges::contains`*
-- **P2447R4 (Lakos, 2022)**：*`views::repeat`*
-
 ### 1.7 与其他语言的横向对比
 
 | 特性 | C++ STL | Rust Iterator | Java Stream | Python itertools | C# LINQ |
@@ -1394,8 +1382,6 @@ std::vector<int> schedule(const std::vector<Task>& tasks) {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（Remember/Understand）
 
 **题目 1**：列举 STL 算法的 5 大分类，各举 2 个例子。
@@ -1597,8 +1583,6 @@ long long sum_fibonacci(std::size_t n) {
 }
 ```
 
-## 10. 参考文献
-
 ### 10.1 标准文档
 
 - ISO/IEC 14882:2023 *Information technology — Programming languages — C++*，§25 Algorithms library，§26 Ranges
@@ -1628,15 +1612,6 @@ long long sum_fibonacci(std::size_t n) {
 - Stroustrup, Bjarne. *The C++ Programming Language*. 4th ed., Addison-Wesley, 2013.（Chapter 31: STL）
 - Meyers, Scott. *Effective STL*. Addison-Wesley, 2001.
 - Josuttis, Nicolai. *C++23 - The Complete Guide*. 2023.
-
-### 10.5 在线资源
-
-- cppreference.com *Algorithms library*: https://en.cppreference.com/w/cpp/algorithm
-- cppreference.com *Ranges library*: https://en.cppreference.com/w/cpp/ranges
-- Stroustrup *C++20 Ranges*: https://www.stroustrup.com/C++20FAQ.html#ranges
-- Sutter, Herb *GotW #294: Parallel Algorithms*: https://herbsutter.com/
-
-## 11. 延伸阅读
 
 ### 11.1 进阶书籍
 

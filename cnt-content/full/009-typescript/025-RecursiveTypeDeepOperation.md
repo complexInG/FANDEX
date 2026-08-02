@@ -1850,8 +1850,6 @@ type User = z.infer<typeof UserSchema>;
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. TypeScript 4.5 引入的____优化使得尾位置的递归调用不再增加栈深度，识别条件是递归调用必须出现在条件类型的____。
@@ -1877,56 +1875,6 @@ type User = z.infer<typeof UserSchema>;
 6. DeepPartial 使用 `____?` 修饰符使属性可选，DeepRequired 使用 `____?` 修饰符移除可选性。
    - **答案**：`-?`；`?`
    - **Bloom**：apply
-
-### 选择题知识点讲解
-
-1. 下列关于 TypeScript 递归类型的描述，正确的是？
-   - A. TypeScript 4.5 之前完全不支持递归类型
-   - B. TypeScript 4.5 引入尾递归优化后，所有递归类型都不再有深度限制
-   - C. TypeScript 4.1 引入了递归条件类型，但深度限制约 50 层；4.5 引入尾递归优化可显著提升尾位置递归的深度上限
-   - D. 递归类型只能用于条件类型，不能用于映射类型
-   - **答案**：C
-   - **Bloom**：understand
-
-2. 下列哪个递归类型定义会触发 "Type instantiation is excessively deep" 错误（输入长字符串）？
-   - A. `type Reverse<S, Acc extends string = ''> = S extends \`${infer C}${infer R}\` ? Reverse<R, \`${C}${Acc}\`> : Acc;`
-   - B. `type Reverse<S> = S extends \`${infer C}${infer R}\` ? \`${Reverse<R>}${C}\` : S;`
-   - C. `type Len<T extends any[], Acc extends any[] = []> = T extends [infer _, ...infer R] ? Len<R, [...Acc, 0]> : Acc['length'];`
-   - D. `type Join<T extends string[], Acc extends string = ''> = T extends [infer F extends string, ...infer R] ? Join<R, \`${Acc}${F}\`> : Acc;`
-   - **答案**：B
-   - **Bloom**：analyze
-
-3. 关于 DeepReadonly<T> 中排除函数类型的原因，下列描述最准确的是？
-   - A. 函数类型不能作为 readonly 对象的属性
-   - B. 函数本身是不可变的，无需 readonly 包装；若不排除，TS 会将函数错误地展开为 `{ readonly [K in keyof Function]: ... }`，导致类型推断失败
-   - C. 排除函数是为了避免循环引用
-   - D. 函数类型的 keyof 操作会产生 never，无需递归
-   - **答案**：B
-   - **Bloom**：analyze
-
-4. 在处理 JSON 类型推导时，下列哪种类型不能通过 `JSON.parse` 的返回类型直接推导？
-   - A. string
-   - B. number
-   - C. undefined
-   - D. boolean
-   - **答案**：C
-   - **Bloom**：evaluate
-
-5. 关于 TypeScript 递归类型的循环引用处理，下列描述错误的是？
-   - A. TypeScript 类型系统支持 lazy evaluation，可以处理部分循环引用
-   - B. 递归类型在展开时若检测到循环，会自动退化为 any
-   - C. WeakMap 类型可以用作循环引用的"逃逸舱"
-   - D. 通过条件类型的守卫可以避免无限递归
-   - **答案**：B
-   - **Bloom**：evaluate
-
-6. 下列哪种构造**会**破坏尾递归优化的尾位置识别？
-   - A. `T extends X ? Recurse<Y> : Z`
-   - B. `T extends X ? Recurse<Y> : Recurse<Z>`
-   - C. `T extends X ? \`${Recurse<Y>}\` : Z`
-   - D. `T extends X ? Recurse<Y> : never`
-   - **答案**：C
-   - **Bloom**：analyze
 
 ### 18.3 代码修复题
 
@@ -2072,42 +2020,6 @@ type DeepOmit<T, K extends keyof T> = Omit<T, K>;
 
 ---
 
-## 19. 参考文献
-
-1. Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In *28th European Conference on Object-Oriented Programming (ECOOP 2014)*. LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-
-2. Rosenwasser, D. 2021. Announcing TypeScript 4.5. Microsoft Developer Blog. Available at: https://devblogs.microsoft.com/typescript/announcing-typescript-4-5/
-
-3. Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press, Cambridge, MA, USA. Chapter 20: Recursive Types.
-
-4. Appel, A. W. and Felty, A. P. 2004. A semantic model of types and machine instructions for proof-carrying code. *ACM Transactions on Programming Languages and Systems* 26, 3 (May 2004), 551–582. DOI: https://doi.org/10.1145/982158.982163
-
-5. Xi, H. and Pfenning, F. 1999. Dependent types in practical programming. In *Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '99)*. ACM, 214–227. DOI: https://doi.org/10.1145/292540.292560
-
-6. Brandt, M. and Henglein, F. 1998. Coinductive axiomatization of recursive type equality and subtyping. *Fundamenta Informaticae* 33, 4 (1998), 309–344. DOI: https://doi.org/10.3233/FI-1998-33401
-
-7. TypeScript Team. 2024. TypeScript Handbook: Recursive Types. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html
-
-8. Danielsson, N. A. and Altenkirch, T. 2010. Subtyping, declaratively. In *Proceedings of the 10th International Conference on Mathematics of Program Construction (MPC 2010)*. LNCS 6120, 100–118. DOI: https://doi.org/10.1007/978-3-642-13321-3_8
-
-9. Fu, P. and Komendantskaya, E. 2017. Type-based termination of recursion in Haskell. In *Proceedings of the 26th European Symposium on Programming (ESOP 2017)*. LNCS 10201, 384–410. DOI: https://doi.org/10.1007/978-3-662-54434-1_15
-
-10. Cardelli, L. and Wegner, P. 1985. On understanding types, data abstraction, and polymorphism. *ACM Computing Surveys* 17, 4 (Dec. 1985), 471–523. DOI: https://doi.org/10.1145/6041.6042
-
-11. Amadio, R. M. and Cardelli, L. 1993. Subtyping recursive types. *ACM Transactions on Programming Languages and Systems* 15, 4 (Sept. 1993), 575–631. DOI: https://doi.org/10.1145/155183.155231
-
-12. Liskov, B. H. and Wing, J. M. 1994. A behavioral notion of subtyping. *ACM Transactions on Programming Languages and Systems* 16, 6 (Nov. 1994), 1811–1841. DOI: https://doi.org/10.1145/197320.197383
-
-13. Hosoya, H. and Pierce, B. C. 2003. Regular expression types for XML. *ACM Transactions on Programming Languages and Systems* 25, 4 (July 2003), 439–470. DOI: https://doi.org/10.1145/380796.380798
-
-14. Tabareau, N., Tanter, É., and Sozeau, M. 2018. Equations for the working Coq user. In *Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2018)*. ACM, 97–111. DOI: https://doi.org/10.1145/3167081
-
-15. Czajka, Ł. 2018. A new proof of the undecidability of the halting problem. *arXiv preprint* arXiv:1804.00215. Available at: https://arxiv.org/abs/1804.00215
-
----
-
-## 20. 延伸阅读
-
 ### 20.1 官方文档
 
 - TypeScript Handbook: Conditional Types — https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
@@ -2126,12 +2038,6 @@ type DeepOmit<T, K extends keyof T> = Omit<T, K>;
 - ts-toolbelt — https://github.com/millsp/ts-toolbelt
 - utility-types — https://github.com/piotrwitek/utility-types
 - zod — https://github.com/colinhacks/zod
-
-### 20.4 社区资源
-
-- Type-Level TypeScript — https://type-level-typescript.com/
-- TypeScript Type Challenges — https://github.com/type-challenges/type-challenges
-- Effective TypeScript — https://effectivetypescript.com/
 
 ### 20.5 相关 FANDEX 文档
 
@@ -2312,8 +2218,6 @@ flowchart TD
 ```
 
 ---
-
-## 附录 E：自测清单
 
 ### E.1 基础概念
 

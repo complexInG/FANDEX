@@ -1337,7 +1337,6 @@ it('支付超时应自动重试', 0, async () => {
 2. **超时与重试是网络请求的必备**：移动网络不稳定，必须有容错机制
 3. **回归测试防止回退**：修复后必须补充测试用例，避免同类问题再次出现
 
-## 知识讲解与要点分析（原习题）
 
 ### 基础题
 
@@ -1451,34 +1450,6 @@ it('createUser 在 API 返回 400 时应抛出异常', 0, async () => {
 **习题 6**：论述"测试覆盖率 100% 是否等于无 Bug"，结合 Dijkstra 定理。
 
 **参考答案要点**：覆盖率 100% 仅表示所有行/分支被执行过，不等于所有输入都被验证。Dijkstra 定理指出"测试只能证明错误存在，不能证明错误不存在"。覆盖率 100% 的代码仍可能有：未考虑的边界值、错误的预期值、Mock 与真实实现的契约偏离。变异测试（Mutation Testing）可以评估测试强度：随机修改代码，看测试是否能检测到。
-
-## 参考文献
-
-[1] Dijkstra, E. W. 1969. *The Humble Programmer*. Communications of the ACM 15, 10 (Oct. 1972), 859–866. DOI: https://doi.org/10.1145/355604.361591
-
-[2] Beck, K. 2002. *Test-Driven Development: By Example*. Addison-Wesley Professional, Boston, MA, USA.
-
-[3] Cohn, M. 2009. *Succeeding with Agile: Software Development Using Scrum*. Addison-Wesley Professional, Boston, MA, USA.
-
-[4] Meszaros, G. 2007. *xUnit Test Patterns: Refactoring Test Code*. Addison-Wesley Professional, Boston, MA, USA.
-
-[5] Beck, K. and Gamma, E. 1998. *Test infected: Programmers love writing tests*. Java Report 3, 7 (July 1998), 37–50.
-
-[6] Hetzel, B. 1988. *The Complete Guide to Software Testing*. 2nd ed. QED Information Sciences, Wellesley, MA, USA.
-
-[7] Weyuker, E. J. and Ostrand, T. J. 1980. *Theories of Program Testing and the Application of Revealing Subdomains*. IEEE Transactions on Software Engineering SE-6, 3 (May 1980), 236–246. DOI: https://doi.org/10.1109/TSE.1980.234506
-
-[8] Goodenough, J. B. and Gerhart, S. L. 1975. *Toward a Theory of Test Data Selection*. IEEE Transactions on Software Engineering SE-1, 2 (June 1975), 156–173. DOI: https://doi.org/10.1109/TSE.1975.234436
-
-[9] Andrews, J. H., Briand, L. C., and Labiche, Y. 2005. *Is Mutation an Appropriate Tool for Testing Experiments?* In *Proceedings of the 27th International Conference on Software Engineering (ICSE '05)*. ACM, New York, NY, USA, 402–411. DOI: https://doi.org/10.1145/1062455.1062530
-
-[10] Pyhajarvi, M., Kervinen, J., and Mantyla, M. V. 2022. *The Impact of Test Coverage on Defect Density: A Large-Scale Empirical Study*. Empirical Software Engineering 27, 4 (Aug. 2022), Article 112. DOI: https://doi.org/10.1007/s10664-022-10140-5
-
-[11] Zhu, H., Hall, P. A. V., and May, J. H. R. 1997. *Software Unit Test Coverage and Adequacy*. ACM Computing Surveys 29, 4 (Dec. 1997), 366–427. DOI: https://doi.org/10.1145/267580.267590
-
-[12] RTCA. 2011. *DO-178C: Software Considerations in Airborne Systems and Equipment Certification*. RTCA, Washington, DC, USA.
-
-## 延伸阅读
 
 ### 官方文档
 

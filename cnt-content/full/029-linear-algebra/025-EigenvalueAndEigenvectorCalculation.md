@@ -4,12 +4,11 @@ title: 特征值与特征向量计算
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 特征值与特征向量的定义，特征方程与特征多项式，特征值与特征向量的计算步骤与方法（含重根情形），代数重数与几何重数，含 0 基础类比、完整例题、常见错误对策与实战练习。
+description: 特征值与特征向量的定义，特征方程与特征多项式，特征值与特征向量的计算步骤与方法（含重根情形），代数重数与几何重数，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/施密特正交化'
-  - 'linear-algebra/向量空间典型例题'
   - 'linear-algebra/特征值性质'
   - 'linear-algebra/矩阵对角化'
 prerequisites:
@@ -215,58 +214,6 @@ $$1 \leq m_g(\lambda_i) \leq m_a(\lambda_i)$$
 | 忘记检验 $A\boldsymbol{x} = \lambda\boldsymbol{x}$ | 流程缺失 | 只信计算 | 每题至少验一个特征向量，代入即知对错 |
 | 用 $\text{tr}$ 和 $|A|$ 反推特征值时重根计数错 | 概念混淆 | 不知道计重数 | $n$ 阶矩阵恰有 $n$ 个特征值（计入代数重数），迹与行列式按重数累加 |
 
-## 8. 实战练习
-
-### 练习1（基础：二阶矩阵）
-
-求 $A = \begin{pmatrix} 3 & -1 \\ -1 & 3 \end{pmatrix}$ 的特征值与特征向量。
-
-**提示**：特征多项式 $(\lambda-3)^2 - 1 = 0$；两个特征值互异，各对应一个特征向量方向。
-
-**参考答案要点**：$\lambda_1 = 2$，$\boldsymbol{x}_1 = (1, 1)^T$；$\lambda_2 = 4$，$\boldsymbol{x}_2 = (1, -1)^T$。检验：$A(1,1)^T = (2,2)^T$。
-
-### 练习2（进阶：三阶矩阵）
-
-求 $A = \begin{pmatrix} 0 & 0 & 1 \\ 0 & 1 & 0 \\ 1 & 0 & 0 \end{pmatrix}$（置换矩阵）的特征值与特征向量。
-
-**提示**：这是交换 $x_1$ 与 $x_3$ 的置换矩阵，是正交矩阵，特征值模为 1；行列式展开可利用 $|\lambda I - A|$ 的稀疏结构。
-
-**参考答案要点**：$|\lambda I - A| = (\lambda - 1)^2(\lambda + 1)$。$\lambda = 1$（二重）：特征向量 $(1, 0, 1)^T$ 与 $(0, 1, 0)^T$；$\lambda = -1$：特征向量 $(1, 0, -1)^T$。
-
-### 练习3（进阶：上三角矩阵）
-
-不展开行列式，直接写出 $A = \begin{pmatrix} 2 & 5 & 7 \\ 0 & 3 & 6 \\ 0 & 0 & -1 \end{pmatrix}$ 的特征值，并求属于 $\lambda = 2$ 的特征向量。
-
-**提示**：上三角矩阵特征值即主对角线元素；求特征向量仍要解 $(A - 2I)\boldsymbol{x} = 0$。
-
-**参考答案要点**：特征值 $2, 3, -1$。$(A - 2I)\boldsymbol{x} = 0$ 即 $\begin{cases} 5x_2 + 7x_3 = 0 \\ x_2 + 6x_3 = 0 \\ -3x_3 = 0 \end{cases}$，得 $x_3 = x_2 = 0$，$\boldsymbol{x} = k(1, 0, 0)^T$。
-
-### 练习4（综合：含参数特征值）
-
-设 $A = \begin{pmatrix} 1 & a \\ a & 1 \end{pmatrix}$ 的特征值为 $4$ 和 $-2$，求 $a$。
-
-**提示**：先展开 $|\lambda I - A| = (\lambda - 1 - a)(\lambda - 1 + a)$，特征值为 $1 \pm a$；再与 $4, -2$ 匹配，或用 $\text{tr}(A) = 2$ 与 $|A| = 1 - a^2$ 联立检验。
-
-**参考答案要点**：特征值 $\lambda = 1 \pm a$。由 $1 + a = 4$ 且 $1 - a = -2$，解得 $a = 3$。复核：$\text{tr}(A) = 2 = 4 + (-2)$，$|A| = 1 - 9 = -8 = 4 \times (-2)$，全部吻合。
-
-### 练习5（挑战：几何重数判定）
-
-设 $A = \begin{pmatrix} a & 0 & 0 \\ 0 & b & 1 \\ 0 & 0 & b \end{pmatrix}$。讨论 $a, b$ 满足什么条件时，特征值 $b$ 的几何重数等于代数重数。
-
-**提示**：$b$ 的代数重数为 2（当 $a \neq b$ 时 $b$ 是二重根，当 $a = b$ 时 $b$ 是三重根）；几何重数 $= 3 - r(A - bI)$。
-
-**参考答案要点**：$a \neq b$ 时：$A - bI = \begin{pmatrix} a-b & 0 & 0 \\ 0 & 0 & 1 \\ 0 & 0 & 0 \end{pmatrix}$，$r = 2$，几何重数 1 < 2，不满足；$a = b$ 时：$r(A - bI) = 1$，几何重数 2，满足（此时 $b$ 为三重根但只配出 2 个无关特征向量，整体仍不可对角化，见 027 篇讨论）。
-
 ## 9. 一句话记忆
 
 **特征值解特征方程 $|\lambda I - A| = 0$，特征向量解齐次方程组 $(\lambda I - A)\boldsymbol{x} = \mathbf{0}$；先算特征值（可用迹与行列式复核），再对每个特征值求基础解系，重根要数清重数。**
-
-## 参考链接与延伸阅读
-
-- 同济大学数学科学学院《工程数学 线性代数（第七版）》，高等教育出版社，第 5 章 §2 方阵的特征值与特征向量（定义、特征方程、计算例题的权威来源）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- Purdue University《Linear Algebra and its Applications》（Lay 教材讲义，§5.1 特征向量与特征值，含特征方程与计算）：https://www.math.purdue.edu/~xu1121/Sec5.1
-- MIT 18.06 Linear Algebra（Strang 第 21-22 讲特征值与特征向量、对角化）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- 3Blue1Brown 线性代数的本质（特征向量与特征值的几何直觉）：https://www.3blue1brown.com/topics/linear-algebra
-- Interactive Linear Algebra（Georgia Tech，§5.1 特征向量与特征值）：https://textbooks.math.gatech.edu/ila/
-
-延伸阅读：行列式定义与几何意义（前置知识）；特征值性质（迹、行列式与特征值的关系）；矩阵对角化（特征向量配齐后的应用）；实对称矩阵的对角化（重根特征向量的正交化处理）。

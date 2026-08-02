@@ -250,19 +250,10 @@ $n$ 个变元有 $2^n$ 个极小项，第 $i$ 个极小项 $m_i$ 对应使公式
 > 消解 $\neg p \lor q$ 与 $\neg q$：得 $\neg p$。
 > 消解 $\neg p$ 与 $p$：得 $\square$（空子句）。证毕。
 
-## 参考文献
-
-MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
 ## 延伸阅读
-
 离散数学基础，见 028-discrete-math 模块文档。
 算法与图论，见 023-algorithm 模块。
 逻辑与数据库关系，见 019-sql 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供离散数学课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

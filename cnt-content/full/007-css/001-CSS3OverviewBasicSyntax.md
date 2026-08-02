@@ -699,11 +699,3 @@ CSS3 是现代网页设计的重要组成部分，提供了丰富的特性和功
 ## 延伸阅读
 
 - [HTML5](html5/overview-and-semantics)
-
-## 参考文献
-
-MDN CSS 文档：https://developer.mozilla.org/zh-CN/docs/Web/CSS
-CSS 规范（W3C）：https://www.w3.org/Style/CSS/
-CSS-Tricks：https://css-tricks.com/
-Can I use：https://caniuse.com/
-Tailwind CSS：https://tailwindcss.com/

@@ -315,53 +315,9 @@ cloudflared tunnel --url http://localhost:3000
 | 本地调试收不到 | 投递全部超时 | GitHub 无法访问 localhost | 用内网穿透暴露公网 URL |
 | 请求被伪造 | 恶意 POST 触发了部署 | 未设置 Secret 或未验证签名 | 设置强随机 Secret；验证 X-Hub-Signature-256 后再处理 |
 
-## 8. 实战练习
-
-### 练习 1：创建第一个 Webhook（入门）
-
-**题目描述**：为你的仓库创建一个 Webhook：订阅 `push` 和 `release` 事件，Content type 选 JSON，设置 Secret 为 `mysecret123`，Payload URL 指向 `https://api.example.com/webhook`。
-
-**提示**：网页界面五个配置项；保存后 GitHub 会自动发送 `ping` 事件验证。
-
-**参考答案要点**：Settings → Webhooks → Add webhook，依次填写 Payload URL、Content type（application/json）、Secret、Events（勾选 push 与 release）、Active 启用。保存后查看 Recent deliveries 应有一条 ping 投递，状态 2xx 表示配置成功。
-
-### 练习 2：读懂 Payload（入门）
-
-**题目描述**：你的服务器收到一条 `push` 事件的 Payload，包含 `ref: "refs/heads/main"`、`commits: [{message: "fix: 修复登录 bug"}]`、`sender.login: "octocat"`。请提取三个关键信息并说明它们代表什么。
-
-**提示**：对照第 4 节的字段注释。
-
-**参考答案要点**：1. `ref` = 推送的目标分支（main）；2. `commits` = 本次推送包含的提交（修复了登录 bug）；3. `sender.login` = 触发推送的用户（octocat）。这些信息足以支撑"按分支触发部署、记录提交人"的业务逻辑。
-
-### 练习 3：实现签名验证（进阶）
-
-**题目描述**：用 Node.js 实现一个签名验证函数，要求：使用原始请求体、HMAC-SHA256、恒定时间比较，并在验签失败时返回 401。
-
-**提示**：参考第 5.3 节的模板，注意 `express.raw()` 与 `crypto.timingSafeEqual`。
-
-**参考答案要点**：1. 路由用 `express.raw({ type: 'application/json' })` 保证原始字节；2. `verifyWebhook(payload, signature, secret)` 用 `crypto.createHmac('sha256', secret).update(payload).digest('hex')` 计算期望值，拼上 `sha256=` 前缀；3. 用 `crypto.timingSafeEqual` 比较两个 Buffer；4. 不一致返回 `res.status(401)`。
-
-### 练习 4：设计事件驱动的 CI 通知（进阶）
-
-**题目描述**：设计一个 Webhook 应用：PR 被合并到 main 后自动触发生产构建通知；构建由 GitHub Actions 完成，Webhook 仅负责"PR 合并 → 通知部署团队"。请列出订阅的事件、Payload 中要用到的字段与处理逻辑。
-
-**提示**：PR 合并事件即 `pull_request` 的 `action: "closed"` 且 `merged: true`。
-
-**参考答案要点**：1. 订阅 `pull_request` 事件；2. 处理逻辑判断 `action === "closed" && payload.pull_request.merged === true && payload.pull_request.base.ref === "main"`；3. 满足条件后调用团队通知接口（钉钉/企业微信/邮件）；4. 处理逻辑做到幂等（用 PR number + merged_at 去重），返回 200。
-
-### 练习 5：Webhook 故障排查（综合）
-
-**题目描述**：你的 Webhook 连续 3 次投递失败（状态码 500），且每次失败后业务被重复触发了一次。请定位两个问题并给出修复方案。
-
-**提示**：500 = 服务器处理异常；重复触发 = 重试机制 + 非幂等处理。
-
-**参考答案要点**：问题一：服务器代码抛异常（如 JSON.parse 失败或数据库错误），排查 Recent deliveries 的响应体与服务器日志修复异常；问题二：GitHub 自动重试导致业务重复执行，给处理逻辑加幂等（按 `X-GitHub-Delivery` 或事件指纹去重，重复投递直接返回 200 不再处理）。
-
 ## 9. 一句话记忆
 
 > **Webhook 是 GitHub 的"杂志订阅"——你填好地址（URL）、选好刊物（事件）、约定暗号（Secret），GitHub 出刊即送（事件即推）；收到后先验暗号（签名），再拆信（Payload），最后回执（2xx），全程无需轮询。**
-
-## 参考链接与延伸阅读
 
 ### 官方文档
 
@@ -371,8 +327,6 @@ cloudflared tunnel --url http://localhost:3000
 - 创建 Webhooks：https://docs.github.com/zh/webhooks/using-webhooks/creating-webhooks
 
 ### 延伸阅读
-
 - REST 与 GraphQL API（Webhook 的"反面"——主动拉取），见 004-github 模块 021 文档。
 - GitHub Actions（工作流 `workflow_run` 事件与 Webhook 联动），见 004-github 模块 029 文档。
 - GitHub CLI（用 gh api 管理 Webhook），见 004-github 模块 020 文档。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

@@ -1650,8 +1650,6 @@ typedef struct Point {
 double distance(const Point *a, const Point *b);
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：以下代码的输出是什么？说明理由。
@@ -1810,111 +1808,6 @@ int main(void) {
 
 **解析讲解**：可能输出 "no overflow"。因为 `x + 1` 在 `x = INT_MAX` 时是 UB（有符号溢出），编译器可假设 UB 不发生，即假设 `x + 1 > x` 恒成立，从而删除整个 `if` 分支。使用 `-fwrapv` 选项可强制有符号溢出回绕，此时输出 "overflow detected"。
 
-### 9.3 思考题
-
-**习题 8**：为什么 C 语言保留大量未定义行为？如果消除所有 UB，C 会变成什么？
-
-**解析讲解**：
-
-C 保留 UB 的原因：
-
-1. **性能**：编译器基于 UB 假设的优化可显著提升性能（如删除溢出检查、别名分析）。
-2. **可移植性**：不同平台的硬件行为不同（如整数溢出、空指针解引用），C 标准不强制特定行为，让编译器选择。
-3. **历史兼容**：大量遗留代码依赖特定 UB 行为，移除 UB 会破坏兼容性。
-
-若消除所有 UB：
-
-- C 变成类似 Rust 的安全语言，需引入运行期检查（性能下降）。
-- 编译器优化空间大幅缩小。
-- 需重新设计类型系统、内存模型。
-
-**习题 9**：为什么 C/C++ 互操作需要 `extern "C"`？背后的名称修饰机制是什么？
-
-**解析讲解**：
-
-C++ 通过名称修饰（name mangling）将函数签名编码到符号名中，以支持函数重载、名字空间、模板等特性。例如：
-
-- `void f(int)` 在 GCC 下修饰为 `_Z1fi`。
-- `void f(double)` 在 GCC 下修饰为 `_Z1fd`。
-
-C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码直接调用 C 函数，链接器找不到修饰后的符号名，报 "undefined reference" 错误。
-
-`extern "C"` 告诉 C++ 编译器按 C 规则生成符号名（不修饰），使 C++ 代码能调用 C 库。反向也成立：C 代码能调用 `extern "C"` 修饰的 C++ 函数。
-
-**习题 10**：动态链接的延迟绑定（lazy binding）如何工作？有何优缺点？
-
-**解析讲解**：
-
-延迟绑定工作流程（ELF + PLT/GOT）：
-
-1. 首次调用外部函数时，跳转到 PLT 存根。
-2. 存根从 GOT 读取地址，初始时指向解析器。
-3. 解析器调用 `_dl_runtime_resolve`，根据重定位表查找实际地址。
-4. 将实际地址写入 GOT，跳转到函数。
-5. 后续调用直接通过 GOT 跳转。
-
-**优点**：
-
-- 启动速度快（仅解析实际调用的符号）。
-- 减少运行时不必要的符号解析开销。
-
-**缺点**：
-
-- 首次调用较慢（需解析）。
-- 安全风险（GOT 覆写攻击）。
-- 难以调试（符号地址在运行时确定）。
-
-可用 `RTLD_NOW` 或 `-Wl,-z,now` 强制立即绑定（提升安全性）。
-
-**习题 11**：什么是伪共享（false sharing）？如何避免？
-
-**解析讲解**：
-
-伪共享：多个线程频繁修改位于同一缓存行（通常 64 字节）的不同变量，导致缓存行在 CPU 间反复失效与同步，性能急剧下降。
-
-避免方法：
-
-1. **缓存行对齐**：使用 `alignas(64)` 或 `__attribute__((aligned(64)))` 使每个变量独占缓存行。
-2. **填充结构体**：在变量后添加填充字节。
-3. **线程局部存储**：使用 `_Thread_local` 让每个线程有独立副本。
-4. **减少共享**：重构算法减少线程间共享数据。
-
-## 10. 参考文献
-
-1. ISO/IEC 9899:2024 (C23). *Programming languages — C*. International Organization for Standardization, 2024.
-
-2. ISO/IEC 9899:2018 (C17). *Programming languages — C*. International Organization for Standardization, 2018.
-
-3. ISO/IEC 9899:2011 (C11). *Programming languages — C*. International Organization for Standardization, 2011.
-
-4. Kernighan, B. W., & Ritchie, D. M. (1988). *The C Programming Language* (2nd ed.). Prentice Hall.
-
-5. System V Application Binary Interface. AMD64 Architecture Processor Supplement (Draft Version 1.0). System V ABI Working Group, 2018.
-
-6. Microsoft. *x64 calling convention*. Microsoft Learn, 2023.
-
-7. ARM. *Procedure Call Standard for the Arm 64-bit Architecture (AArch64)*. ARM IHI 0055F, 2023.
-
-8. RISC-V International. *RISC-V Calling Conventions*. RISC-V ELF and ABI Specifications, 2023.
-
-9. Levine, J. R. (2000). *Linkers and Loaders*. Morgan Kaufmann.
-
-10. Drepper, U. (2011). *How to Write Shared Libraries*. Red Hat, Inc.
-
-11. Bryant, R. E., & O'Hallaron, D. R. (2015). *Computer Systems: A Programmer's Perspective* (3rd ed.). Pearson. (CMU 15-213/15-513 教材)
-
-12. Kerrisk, M. (2010). *The Linux Programming Interface: A Linux and UNIX System Programming Handbook*. No Starch Press.
-
-13. Seacord, R. C. (2013). *Effective C: An Introduction to Professional C Programming*. No Starch Press.
-
-14. ISO/IEC JTC1/SC22/WG14. *C Defect Report Summary*. http://www.open-std.org/jtc1/sc22/wg14/
-
-15. GCC Team. *GCC Online Documentation*. https://gcc.gnu.org/onlinedocs/
-
-16. LLVM Project. *Clang Language Extensions*. https://clang.llvm.org/docs/LanguageExtensions.html
-
-## 11. 延伸阅读
-
 ### 11.1 标准与规范
 
 - **ISO C 标准草案**（N3096 C23 草案）：免费获取的最新 C 标准草案，几乎与正式版一致。
@@ -1931,14 +1824,6 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 - **《C Interfaces and Implementations》**：David Hanson 著，C 接口设计艺术。
 - **《21st Century C》**：Ben Klemens 著，现代 C（C11/C17）实践。
 - **《Effective C》**：Robert Seacord 著，CERT 中心专家撰写的 C 安全编程。
-
-### 11.3 在线资源
-
-- **cppreference.com**：C/C++ 标准库参考，包含 C23 新特性。
-- **gcc.gnu.org/onlinedocs**：GCC 编译器文档，详细描述扩展与优化选项。
-- **clang.llvm.org/docs**：Clang 编译器文档，包含 sanitizer 使用指南。
-- **ldrtl.sourceforge.net**：Linux 动态链接器实现文档。
-- **maskray.me**：博客，深入分析 ELF、链接器、ABI 等底层主题。
 
 ### 11.4 视频课程
 
@@ -1980,15 +1865,6 @@ C 不进行名称修饰，符号名与源码一致（如 `f`）。若 C++ 代码
 - **GPU ABI**：CUDA、OpenCL、SYCL 等异构计算的 ABI 设计。
 - **可信执行环境 ABI**：SGX、TrustZone 等安全执行环境的接口规范。
 - **微内核 ABI**：seL4、Fuchsia Zircon 等微内核的系统调用 ABI。
-
-### 11.9 实践练习建议
-
-1. **手写链接器**：实现一个简单的 ELF 链接器，理解符号解析与重定位。
-2. **ABI 兼容性测试**：使用不同 GCC 版本编译同一库，验证 ABI 兼容性。
-3. **UB 检测**：在自己的项目中集成 UBSan，修复所有报告的 UB。
-4. **跨平台移植**：将一个 C 项目移植到不同架构（x86-64、ARM64、RISC-V），处理字节序与对齐问题。
-5. **C/Rust 互操作**：用 Rust 重写一个 C 库的部分模块，保持 ABI 兼容。
-6. **微基准测试**：测量不同调用约定、对齐方式、缓存行填充对性能的影响。
 
 ### 11.10 总结
 

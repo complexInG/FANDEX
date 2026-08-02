@@ -1833,65 +1833,6 @@ class CollaborativeWhiteboard {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：HarmonyOS 分布式 KVStore 单条目最大支持多少数据？
-
-- A. 1 MB
-- B. 4 MB
-- C. 8 MB
-- D. 16 MB
-
-**解析讲解**：C
-
-**解析讲解**：HarmonyOS 4.0 起，`distributedKVStore` 单条目最大支持 8MB。HarmonyOS 1.0 时为 1MB，2.0 提升到 4MB，3.0 起稳定在 8MB。超过限制会抛出 15100003 错误码。
-
-**常见疑问 2**：以下哪种冲突解决策略能保证无数据丢失？
-
-- A. LWW (Last Write Wins)
-- B. FIFO (First In First Out)
-- C. CRDT 合并
-- D. 默认策略
-
-**解析讲解**：C
-
-**解析讲解**：CRDT（Conflict-free Replicated Data Type）通过数学结构保证合并的交换律、结合律、幂等性，永远不会丢失数据。LWW 在时钟不同步时会丢失并发写入；FIFO 保留最早写入，可能丢失更新；默认策略即 LWW。
-
-**常见疑问 3**：`distributedDataObject` 与 `distributedKVStore` 的核心区别是什么？
-
-- A. 前者持久化，后者不持久化
-- B. 前者不持久化，后者持久化
-- C. 前者仅本地，后者跨设备
-- D. 两者完全相同
-
-**解析讲解**：B
-
-**解析讲解**：`distributedDataObject` 是内存级数据对象，不持久化，应用退出即销毁，适合临时状态（如游戏进度、白板）；`distributedKVStore` 是持久化 KV 存储，写入即落盘，适合持久业务数据。
-
-**常见疑问 4**：以下哪个 `SecurityLevel` 表示"硬件 TEE 加密，仅本机可见"？
-
-- A. S0
-- B. S1
-- C. S3
-- D. S4
-
-**解析讲解**：D
-
-**解析讲解**：S4 是顶级保护，使用 AES-256 + 硬件 TEE（Trusted Execution Environment），仅本机可见，不参与跨设备同步。S0 无保护，S1 低级保护，S2 中级保护，S3 高级保护。
-
-**常见疑问 5**：分布式 RdbStore 的增量同步基于以下哪个机制？
-
-- A. 操作日志（OpLog）
-- B. rowid + 时间戳
-- C. MVCC 多版本
-- D. 全量对比
-
-**解析讲解**：B
-
-**解析讲解**：HarmonyOS 分布式 RdbStore 基于 `rowid + last_modified` 字段做增量同步，同步时查询 `WHERE last_modified > last_sync_ts`，仅传输变更行。删除采用墓碑标记（deleted=1）。
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：HarmonyOS 分布式数据采用 ______ 一致性模型，保证网络分区时可用性。
@@ -2061,59 +2002,6 @@ class DistributedCounter {
 }
 ```
 
-### 9.4 思考题
-
-**常见疑问 13**：在弱网环境下（如地铁中），HarmonyOS 分布式数据的最终一致性可能延迟数分钟甚至数小时。请设计一个用户友好的 UI 反馈机制，让用户感知到"同步中"状态。
-
-1. **状态指示器**：在标题栏显示同步状态图标（已同步/同步中/同步失败/离线）。
-2. **本地操作回执**：本地写入立即显示"已保存"，同步完成后变更为"已同步"。
-3. **冲突可视化**：检测到冲突时弹窗提示用户选择保留哪个版本。
-4. **离线模式开关**：用户可主动切换到"仅本地"模式，避免无谓同步尝试。
-5. **同步历史**：记录同步日志，用户可查看"上次同步时间"。
-6. **重试策略**：失败后指数退避重试（1s, 2s, 4s, ...），上限 5 分钟。
-
-**常见疑问 14**：为什么 HarmonyOS 选择最终一致性而非强一致性？请从 CAP 定理、用户体验、网络条件三个角度论证。
-
-1. **CAP 定理**：网络分区不可避免（P 必选），强一致（C）会牺牲可用性（A），导致网络差时应用不可用。
-2. **用户体验**：用户期望"立即响应"，强一致会阻塞本地写入，体验差；最终一致允许本地立即可读，体验流畅。
-3. **网络条件**：移动网络下网络中断频繁，强一致会让应用频繁不可用；最终一致允许离线操作，恢复后合并。
-4. **场景匹配**：HarmonyOS 多设备协同多为个人数据（笔记、设置、状态），对实时一致性要求低，最终一致足够。
-
-**常见疑问 15**：假设你要设计一个跨设备多人协作文档编辑器，会选择 `distributedKVStore` 还是 `distributedDataObject`？为什么？如何处理文档冲突？
-
-选择 `distributedDataObject` + CRDT，理由：
-
-1. **实时性**：协作文档要求毫秒级同步，`distributedDataObject` 延迟 10ms，KVStore 30ms+。
-2. **冲突避免**：CRDT（如 RGA、Logoot）天然支持文本合并，无需应用层冲突解决。
-3. **临时状态**：协作会话期间状态在内存，会话结束持久化到 KVStore 或 RdbStore。
-
-冲突处理：
-- 文本块用 RGA（Replicated Growable Array）CRDT。
-- 富文本样式用 LWW-Register。
-- 图片附件用分布式文件，引用路径用 OR-Set。
-- 历史版本用 OpLog，支持撤销/重做。
-
-**常见疑问 16**：HarmonyOS 的"同账号自动同步"边界设计（即仅同账号设备自动同步）有哪些优点与局限？在什么场景下需要突破这一边界？
-
-**优点**：
-1. **安全**：账号即信任边界，避免未授权设备访问。
-2. **简洁**：用户无需配置，登录账号即同步。
-3. **隐私**：个人数据不会泄露到家庭其他成员设备。
-
-**局限**：
-1. **家庭共享场景受限**：家人间共享照片、待办需另建机制。
-2. **企业协同需独立账号**：员工用公司账号登录，个人数据混入。
-3. **临时协作困难**：与陌生人临时共享白板需切换账号。
-
-**突破场景**：
-1. **家庭共享**：通过 `dataShareExtensionAbility` 显式授权共享。
-2. **企业 MDM**：通过设备管理 API 配置企业设备圈。
-3. **临时协作**：扫码建立临时会话，会话结束即解除信任。
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Vogels, W. (2009). Eventually consistent. *Communications of the ACM*, 52(1), 40-44. https://doi.org/10.1145/1435417.1435432
@@ -2144,8 +2032,6 @@ class DistributedCounter {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 1. **《Designing Data-Intensive Applications》** - Martin Kleppmann
@@ -2170,21 +2056,6 @@ class DistributedCounter {
 3. **"CRDTs: Consistency Without Concurrency Control"** - RR 6956, INRIA 2009
 4. **"Conflict-Free Replicated Data Types for Asynchronous Collaborative Editing"** - OPODIS 2018
 5. **"HarmonyOS Distributed Soft Bus: A Unified Communication Abstraction for Multi-Device Ecosystems"** - Huawei Technical Report 2023
-
-### 11.3 在线资源
-
-1. **HarmonyOS Developer 官方文档**: https://developer.huawei.com/consumer/cn/doc/harmonyos-guides
-2. **OpenHarmony 开源项目**: https://www.openharmony.cn/
-3. **OpenHarmony DistributedDataMgr 源码**: https://gitee.com/openharmony/distributeddatamgr
-4. **DSoftBus 协议规范**: https://gitee.com/openharmony/communication_dsoftbus
-5. **Awesome HarmonyOS**: https://github.com/Awesome-HarmonyOS
-6. **CRDT 论文合集**: https://crdt.tech/
-7. **Lamport 时钟原理**: https://lamport.org/
-8. **Martin Kleppmann 博客**: https://martin.kleppmann.com/
-9. **分布式系统课程 MIT 6.5840**: https://pdos.csail.mit.edu/6.824/
-10. **CMU 15-721 数据库系统**: https://15721.courses.cs.cmu.edu/
-
----
 
 ## 附录 A：术语表
 

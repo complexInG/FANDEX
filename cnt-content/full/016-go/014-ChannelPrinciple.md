@@ -1402,82 +1402,6 @@ func (p *WatchPlan) Start() <-chan *WatchResult {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 下列关于 channel 的描述，哪个是正确的？
-
-A. unbuffered channel 的 send 与 recv 可以任意顺序完成
-B. closed channel 的 recv 永远返回零值
-C. nil channel 的 send 会立即返回
-D. 向 closed channel 发送会阻塞
-
-**解析讲解**：A
-
-**解析讲解**：
-
-- A 正确：unbuffered channel 的 send 与 recv 是同步会合（rendezvous），但 send 与 recv 都可能先发起，另一方就绪后完成
-- B 错误：closed channel 的 recv 先返回 buf 中剩余数据，buf 空后才返回零值
-- C 错误：nil channel 的 send 永久阻塞
-- D 错误：向 closed channel 发送会 panic，不阻塞
-
----
-
-**Q2.** select 中 default case 的作用是？
-
-A. 当所有 case 都阻塞时执行 default
-B. 当所有 case 都已就绪时执行 default
-C. default case 永远不执行
-D. default case 必须放在最后
-
-**解析讲解**：A
-
-**解析讲解**：default case 在所有其他 case 都未就绪时立即执行，使 select 非阻塞。
-
----
-
-**Q3.** Go runtime 如何避免 select 中多个 channel 操作的死锁？
-
-A. 按字母顺序加锁
-B. 按 channel 地址升序加锁
-C. 按代码中 case 顺序加锁
-D. 使用全局锁
-
-**解析讲解**：B
-
-**解析讲解**：`selectgo` 按 `*hchan` 地址升序加锁，所有 select 都遵守同一顺序，避免循环等待。
-
----
-
-**Q4.** 下列哪种操作会触发 panic？
-
-A. 从 nil channel recv
-B. 向 nil channel send
-C. 从 closed channel recv
-D. 向 closed channel send
-
-**解析讲解**：D
-
-**解析讲解**：
-
-- A、B：永久阻塞，不 panic
-- C：返回零值，不 panic
-- D：panic "send on closed channel"
-
----
-
-**Q5.** `close` 操作的语义不包括？
-
-A. 唤醒所有 `recvq` 中的 goroutine
-B. 唤醒所有 `sendq` 中的 goroutine
-C. 阻止后续 send 操作
-D. 阻止后续 recv 操作
-
-**解析讲解**：D
-
-**解析讲解**：close 后仍可 recv（先返回 buf 中数据，再返回零值），只是不能 send。
-
 ### 填空题知识点讲解
 
 **Q1.** `hchan` 结构中，`buf` 字段是 ____ 类型的指针，仅当 channel 是 ____ 时才使用。
@@ -1666,83 +1590,6 @@ func main() {
 }
 ```
 
-### 9.4 思考题
-
-**Q1.** 为什么 Go 选择 CSP 模型而非 Actor 模型？两者的本质区别是什么？
-
-**参考答案要点**：
-
-- **CSP 关注 channel，Actor 关注 process**：CSP 中 channel 是第一公民，process 是匿名的；Actor 中 process 有 PID，是第一公民
-- **Go 选择 CSP 的原因**：
-  - channel 是组合性更好的原语（可传递、可关闭、有方向性）
-  - 不需要 process 注册/查找机制
-  - 与 Go 的类型系统契合（channel 是 first-class type）
-- **Actor 的优势**：
-  - 天然支持分布式（PID 可跨节点）
-  - 容错模型更成熟（supervisor 树）
-  - 状态封装更彻底
-
----
-
-**Q2.** unbuffered channel 的"直接传递"优化路径为何能减少一次内存拷贝？请从 runtime 实现角度分析。
-
-**参考答案要点**：
-
-- 传统路径：sender → buf → receiver，两次 memmove
-- 直接传递路径：sender → receiver 栈，一次 memmove
-- 实现：`sendDirect` 函数直接将数据 memmove 到 recv goroutine 的 `sudog.elem` 指向的地址（即 recv 调用者的栈变量地址）
-- 安全性：因为 recv goroutine 在 `gopark` 状态，其栈不会移动（Go 的栈扩张机制只在 goroutine 运行时触发）
-
----
-
-**Q3.** select 的伪随机选择算法是否公平？在什么情况下会产生统计偏差？
-
-**参考答案要点**：
-
-- **理论公平性**：`fastrandn` 是均匀分布的伪随机数，N 个 case 就绪时每个被选中概率为 $1/N$
-- **实际偏差**：
-  - `fastrandn` 在 Go 1.x 中是 LCG 算法，统计性较差
-  - 短时间内的 select 调用可能表现出模式
-  - 在 ARM64 等架构上 `fastrandn` 实现不同，偏差可能更大
-- **Go 1.21+ 改进**：runtime 默认使用更高质量的 PCG 算法
-- **不建议依赖**：若需严格公平，需自行实现 weighted round-robin
-
----
-
-**Q4.** 为什么 Go channel 不支持"读取多个值"（如 `<-ch` 返回所有 buf 内容）？这种设计有什么权衡？
-
-**参考答案要点**：
-
-- **FIFO 语义**：channel 是单值 FIFO 队列，"读取多个"会破坏语义
-- **背压控制**：单值 recv 让消费者控制速率；批量 recv 可能导致消费者被淹没
-- **替代方案**：发送 `[]T` 切片，或用 `chan []T` 类型
-- **权衡**：
-  - 优点：实现简单、语义清晰
-  - 缺点：批量场景下需额外封装，吞吐量受限
-
----
-
-**Q5.** 设计一个支持优先级的 channel（高优先级消息优先处理）。如何实现？
-
-**参考答案要点**：
-
-- **方案 A：双 channel + select**
-  - `highCh`、`lowCh`，select 优先检查 highCh
-  - 缺点：select 不支持优先级，需用 `default` trick 模拟
-- **方案 B：优先级队列 + 信号 channel**
-  - 用 `container/heap` 维护优先级队列
-  - channel 只作为通知信号（`struct{}`）
-  - 优点：严格优先级；缺点：需 mutex 保护队列
-- **方案 C：多级反馈队列（MLFQ）**
-  - 多个 channel，按优先级轮询
-  - 类似 OS 调度器设计
-
-参考实现：`nsqio/nsq` 的 priority queue、`kubernetes/client-go` 的 workqueue。
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档与规范
 
 [1] Google LLC. 2024. The Go Programming Language Specification. (February 2024). Retrieved July 20, 2026 from https://go.dev/ref/spec#Channel_types. DOI: 10.25385/golang/spec-1.22.
@@ -1781,8 +1628,6 @@ func main() {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 推荐书籍
 
 - **C. A. R. Hoare.** *Communicating Sequential Processes*. Prentice-Hall, 1985. ISBN 978-0-13-153271-7.
@@ -1802,16 +1647,6 @@ func main() {
 - **Brookes, S. D., Hoare, C. A. R., and Roscoe, A. W.** "A Theory of Communicating Sequential Processes." *JACM* 31, 3 (1984), 560–599. DOI: 10.1145/828.833.
 - **Milner, R., Parrow, J., and Walker, D.** "A Calculus of Mobile Processes, I/II." *Information and Computation* 100, 1 (1992), 1–77. DOI: 10.1016/0890-5401(92)90008-4.
 - **Pike, R.** "Go at Google: Language Design in the Service of Software Engineering." (2012). Talk at ECOOP 2012.
-
-### 11.3 在线资源
-
-- **Go Blog: Share Memory By Communicating** — https://go.dev/blog/codelab-share
-- **Go Blog: Pipelines and cancellation** — https://go.dev/blog/pipelines
-- **Go Blog: Go Concurrency Patterns: Timing out, moving on** — https://go.dev/blog/concurrency-timeouts
-- **Go Blog: Go Concurrency Patterns: Context** — https://go.dev/blog/context
-- **Dave Cheney: Concurrency design patterns** — https://dave.cheney.net/2016/08/20/context-and-structs
-- **Bilibili: 深入理解 Go Channel** — https://www.bilibili.com/video/BV1rJ411b7Pq
-- **Sourcegraph: Go chan.go source** — https://sourcegraph.com/github.com/golang/go/-/blob/src/runtime/chan.go
 
 ### 11.4 进阶主题
 

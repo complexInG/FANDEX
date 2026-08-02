@@ -1535,10 +1535,6 @@ const pipeline = Channel.pipeTo(producer, consumer);
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-> 习题按 Bloom 分类法分级，覆盖记忆、理解、应用、分析、评价、创造六个层次。
-
 ### 填空题知识点讲解
 
 1. **[remember]** 在 TypeScript 中，函数参数在 strictFunctionTypes 启用后处于____位置，子类型关系会____。
@@ -1550,63 +1546,6 @@ const pipeline = Channel.pipeTo(producer, consumer);
 4. **[understand]** TypeScript 5.0 引入的 `out T` 修饰符表示 T 是____型变位置，`in T` 表示____型变位置，`in out T` 表示____。
 
 5. **[remember]** Liskov 替换原则要求子类型方法的____不能加强，____不能减弱。
-
-### 选择题知识点讲解
-
-1. **[understand]** 下列哪个泛型修饰符组合表示"不变"（invariance）？
-
-   - A. `out T`
-   - B. `in T`
-   - C. `in out T`
-   - D. `T`（无修饰符）
-
-   答案：C
-
-2. **[analyze]** 关于 TypeScript 中 `strictFunctionTypes` 的描述，正确的是？
-
-   - A. 启用后所有函数都会被严格逆变检查
-   - B. 启用后只有泛型函数参数会严格逆变检查，方法参数仍保持双变
-   - C. 禁用后函数返回类型也会变为逆变
-   - D. 启用后数组将变为不变类型
-
-   答案：B
-
-3. **[understand]** 下列哪种类型构造子 $F$ 满足"协变"？
-
-   - A. $F(T) = (T) \to \text{void}$（参数为 T 的函数）
-   - B. $F(T) = \text{void} \to T$（返回 T 的函数）
-   - C. $F(T) = \{ \text{get}: () \to T, \text{set}: (T) \to \text{void} \}$（可读写容器）
-   - D. $F(T) = (T) \to T$（输入输出都是 T 的函数）
-
-   答案：B
-
-4. **[evaluate]** 以下代码在 strictFunctionTypes 下哪一行会报错？
-
-   ```typescript
-   type F1 = (x: Animal) => void;
-   type F2 = (x: Dog) => void;
-   const dogHandler: F2 = (x) => console.log(x.breed);
-   const a: F1 = dogHandler;       // (1)
-   const b: F2 = (a as F2);         // (2)
-   const c: F1 = (x: Animal) => console.log(x.name); // (3)
-   const d: F2 = c;                 // (4)
-   ```
-
-   - A. 第 (1) 行
-   - B. 第 (2) 行
-   - C. 第 (3) 行
-   - D. 第 (4) 行
-
-   答案：D
-
-5. **[analyze]** 以下代码哪一项不会触发数组协变陷阱？
-
-   - A. `const a: Animal[] = dogs; a.push(cat);`
-   - B. `const a: readonly Animal[] = dogs; a.push(cat);`
-   - C. `const a: Animal[] = [...dogs]; a.push(cat);`
-   - D. `const a: ReadonlyArray<Animal> = dogs; a[0] = cat;`
-
-   答案：C（显式复制，不影响原数组）
 
 ### 15.3 代码修复题（code-fix）
 
@@ -1743,42 +1682,6 @@ const pipeline = Channel.pipeTo(producer, consumer);
 
 ---
 
-## 16. 参考文献
-
-1. Cardelli, L. and Wegner, P. 1985. On understanding types, data abstraction, and polymorphism. *ACM Computing Surveys* 17, 4 (Dec. 1985), 471–523. DOI: https://doi.org/10.1145/6041.6042
-
-2. Liskov, B. H. and Wing, J. M. 1994. A behavioral notion of subtyping. *ACM Transactions on Programming Languages and Systems* 16, 6 (Nov. 1994), 1811–1841. DOI: https://doi.org/10.1145/197320.197383
-
-3. Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press, Cambridge, MA, USA. ISBN: 978-0-262-16209-8.
-
-4. Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In *28th European Conference on Object-Oriented Programming (ECOOP 2014)*. LIPIcs 33, Article 257, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-
-5. Riba, C. 2008. On the incompleteness of the calculus of constructions with subtyping. In *Proceedings of the 23rd Conference on the Mathematical Foundations of Programming Semantics (MFPS XXIII)*. Electronic Notes in Theoretical Computer Science 215, 131–149. DOI: https://doi.org/10.1016/j.entcs.2008.06.027
-
-6. Appel, A. W. and Felty, A. P. 2004. A semantic model of types and machine instructions for proof-carrying code. *ACM Transactions on Programming Languages and Systems* 26, 3 (May 2004), 551–582. DOI: https://doi.org/10.1145/982158.982163
-
-7. Reynolds, J. C. 1974. Towards a theory of type structure. In *Proceedings of the Colloque sur la Programmation (Programming Symposium)*. LNCS 19, 408–425. DOI: https://doi.org/10.1007/3-540-06859-7_148
-
-8. Reynolds, J. C. 1983. Types, abstraction and parametric polymorphism. In *Information Processing 83*, 513–523.
-
-9. Cook, W. R., Hill, W. L., and Canning, P. S. 1990. Inheritance is not subtyping. In *Proceedings of the 17th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '90)*, 125–135. DOI: https://doi.org/10.1145/96709.96721
-
-10. Castagna, G., Ghelli, G., and Longo, G. 1995. A calculus for overloaded functions with subtyping. *Information and Computation* 117, 2 (Mar. 1995), 235–278. DOI: https://doi.org/10.1006/inco.1995.1042
-
-11. Igarashi, A., Pierce, B. C., and Wadler, P. 2001. Featherweight Java: a minimal core calculus for Java and GJ. *ACM Transactions on Programming Languages and Systems* 23, 3 (May 2001), 396–450. DOI: https://doi.org/10.1145/503502.503505
-
-12. Amin, N., Grütter, S., Odersky, M., Rompf, T., and Stucki, S. 2016. The essence of dependent object types. In *A List of Successes That Can Change the World*. LNCS 9600, 1–19. DOI: https://doi.org/10.1007/978-3-319-30936-1_1
-
-13. Bierman, G., Parkinson, M., and Pitts, A. 2003. MJ: An imperative core calculus for Java and Java with effects. Technical Report UCAM-CL-TR-563, University of Cambridge.
-
-14. TypeScript Team. 2024. *TypeScript Handbook: Variance Annotations*. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/2/variance-annotations.html
-
-15. Rosenwasser, D. 2023. *TypeScript 5.0 Release Notes: Variance Annotations*. Microsoft. Available at: https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/
-
----
-
-## 17. 延伸阅读
-
 ### 17.1 书籍
 
 - **《Types and Programming Languages》**——Benjamin C. Pierce，MIT Press 2002。第 15 章"Subtyping"系统化讲解子类型理论，是型变讨论的圣经。
@@ -1800,13 +1703,6 @@ const pipeline = Channel.pipeTo(producer, consumer);
 - **effect**（https://github.com/Effect-TS/effect）：函数式效应系统库，其 Channel 与 Stream 抽象深度使用型变。
 - **fp-ts**（https://github.com/gcanti/fp-ts）：TypeScript 函数式编程库，Functor/Contravariant 类型类是型变的直接体现。
 - **io-ts**（https://github.com/gcanti/io-ts）：运行时类型验证库，与静态类型形成协变关系。
-
-### 17.4 在线资源
-
-- **TypeScript Handbook: Variance Annotations**（https://www.typescriptlang.org/docs/handbook/2/variance-annotations.html）——官方文档对 in/out 修饰符的说明。
-- **TypeScript Handbook: Type Compatibility**（https://www.typescriptlang.org/docs/handbook/type-compatibility.html）——官方对子类型化规则的总结。
-- **Microsoft DevBlogs: TypeScript 5.0 Release**（https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/）——TypeScript 5.0 发布说明，含型变注释设计动机。
-- **TypeScript Deep Dive: Variance**（https://basarat.gitbook.io/typescript/type-system/variance）——Basarat Ali Syed 的 TypeScript 进阶教程中的型变章节。
 
 ### 17.5 视频课程
 
@@ -1877,23 +1773,3 @@ flowchart TD
 | TS2416 | Property 'X' in type 'Y' is not assignable to the same property in base type 'Z'. | 方法重写型变失败 | 检查返回类型协变与参数逆变 |
 | TS2554 | Expected N arguments, but got M. | 参数数量型变失败 | 检查可选参数与剩余参数 |
 | TS2741 | Property 'X' is missing in type 'Y' but required in type 'Z'. | 结构子类型化失败 | 补全缺失的必选属性 |
-
-## 附录 E：自测清单
-
-阅读本文后，请用以下清单自测掌握程度：
-
-- [ ] 我能口述四种型变关系的数学定义
-- [ ] 我能解释函数子类型化规则 S-Fun 的两个前提条件
-- [ ] 我能区分方法语法与函数属性语法的型变差异
-- [ ] 我能在 tsconfig.json 中正确配置 strictFunctionTypes
-- [ ] 我能用 in/out 修饰符为泛型接口添加型变注释
-- [ ] 我能识别数组协变陷阱并给出修复方案
-- [ ] 我能解释 React onClick 回调为何在 strictFunctionTypes 下报错
-- [ ] 我能设计一个类型安全的发布-订阅系统，正确利用逆变
-- [ ] 我能比较 TypeScript、Scala、Java、C# 的型变机制差异
-- [ ] 我能引用至少 3 篇型变相关的学术论文
-
-如能勾选 8 项以上，表示已达到 MIT/Stanford/CMU 教学水准的理解层次。
-
----
-

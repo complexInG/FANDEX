@@ -2006,101 +2006,6 @@ Concorde 证明 NP-Hard 问题在大规模下也可精确求解（虽然最坏�
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1** 下列哪个陈述是 Baker-Gill-Solovay 1975 定理的内容？
-
-A. P ≠ NP
-B. 存在 oracle A 使 P^A = NP^A，存在 oracle B 使 P^B ≠ NP^B
-C. NP ≠ PSPACE
-D. NP = co-NP
-
-**解析讲解**：B
-
-**解析讲解**：Baker-Gill-Solovay 1975《Relativizations of the P=?NP Question》SICOMP 4(4):431-442 证明了对 oracle 的相对化结果不一致，因此相对化技术无法解决 P vs NP。
-
----
-
-**题目 2** Savitch 定理的内容是？
-
-A. NSPACE(f(n)) = DSPACE(f(n))
-B. NSPACE(f(n)) ⊆ DSPACE(f(n)^2)
-C. NTIME(f(n)) ⊆ DTIME(2^f(n))
-D. PSPACE = NPSPACE
-
-**解析讲解**：B
-
-**解析讲解**：Savitch 1970 证明 NSPACE(f(n)) ⊆ DSPACE(f(n)^2)，蕴含 PSPACE = NPSPACE。
-
----
-
-**题目 3** PCP 定理的标准形式是？
-
-A. NP = PCP[O(n), O(1)]
-B. NP = PCP[O(log n), O(1)]
-C. NP = PCP[O(1), O(log n)]
-D. NP = PCP[poly(n), O(1)]
-
-**解析讲解**：B
-
-**解析讲解**：PCP 定理（Arora-Safra 1998）证明 NP = PCP[O(log n), O(1)]，即 NP 证明可用 $O(\log n)$ 随机位与 $O(1)$ 次证明查询验证。
-
----
-
-**题目 4** 关于 Ladner 定理，下列哪个正确？
-
-A. P = NP 蕴含 NP-intermediate 存在
-B. P ≠ NP 蕴含 NP-intermediate 存在
-C. NP-intermediate 是 NP 完全
-D. NP-intermediate 不存在
-
-**解析讲解**：B
-
-**解析讲解**：Ladner 1975 证明若 P ≠ NP，则存在 NP-intermediate 问题（在 NP 中但既非 P 也非 NPC）。
-
----
-
-**题目 5** Christofides 算法的近似比是？
-
-A. 1
-B. 1.5
-C. 2
-D. $\ln n$
-
-**解析讲解**：B
-
-**解析讲解**：Christofides 1976 给出度量 TSP 的 1.5-近似算法，使用 MST + 最小权重完美匹配 + Euler 回路。
-
----
-
-**题目 6** Sleator-Tarjan 1985 证明 LRU 的竞争比是？
-
-A. 1
-B. $O(\log k)$
-C. $k$
-D. $k^2$
-
-**解析讲解**：C
-
-**解析讲解**：Sleator-Tarjan 1985 证明对容量 k 的缓存，LRU 是 k-竞争的。
-
----
-
-**题目 7** 哪种证明技术被 Baker-Gill-Solovay 屏障阻拦？
-
-A. 对角线法
-B. 概率方法
-C. 摊还分析
-D. 归约法
-
-**解析讲解**：A
-
-**解析讲解**：对角线法是相对化技术（relativizing technique），被 Baker-Gill-Solovay 1975 屏障阻拦。
-
----
-
 ### 填空题知识点讲解
 
 **题目 1** Turing 1936 证明的不可判定问题是 ____。
@@ -2256,8 +2161,6 @@ P vs NP 是 Clay 数学研究所 2000 年设立的千禧年大奖问题之一，
 
 ---
 
-## 11. 参考文献
-
 ### 11.1 经典论文
 
 1. **Turing, Alan M.** (1936). "On Computable Numbers, with an Application to the Entscheidungsproblem." *Proceedings of the London Mathematical Society* s2-42(1):230-265. DOI:10.1112/plms/s2-42.1.230
@@ -2321,22 +2224,6 @@ P vs NP 是 Clay 数学研究所 2000 年设立的千禧年大奖问题之一，
 29. **Motwani, Rajeev; Raghavan, Prabhakar** (1995). *Randomized Algorithms*. Cambridge University Press. ISBN 978-0521474658
 
 30. **Nisan, Noam; Ronen, Amir** (2001). "Algorithmic Mechanism Design." *Games and Economic Behavior* 35(1-2):166-196. DOI:10.1006/game.1999.0790
-
-### 11.3 在线资源与数据库
-
-31. **Complexity Zoo** (2026). *A Comprehensive Database of Computational Complexity Classes*. https://complexityzoo.net/Complexity_Zoo. Accessed 2026-07-20. 由 Scott Aaronson 创建，整合 500+ 复杂性类的形式化定义与已知关系
-
-32. **Clay Mathematics Institute** (2000). *Millennium Prize Problems: P vs NP*. https://www.claymath.org/millennium/p-vs-np/. Accessed 2026-07-20. 七大千禧年大奖问题之一，奖金 100 万美元
-
-33. **SAT Competition** (2026). *Annual SAT Solver Competition*. https://satcompetition.org/. Accessed 2026-07-20. 自 2002 年起年度举办，推动 CDCL 求解器工业级发展
-
-34. **DIMACS** (1992-2026). *Center for Discrete Mathematics and Theoretical Computer Science*. https://dimacs.rutgers.edu/. Accessed 2026-07-20. 算法理论研究的核心机构，NP 完全性研讨会的发起方
-
-35. **Stanford CS254** (2026). *Computational Complexity*. https://web.stanford.edu/class/cs254/. Accessed 2026-07-20. Stanford 研究生复杂性理论课程
-
-36. **MIT 6.045J** (2026). *Automata, Computability, and Complexity*. https://ocw.mit.edu/courses/6-045j-automata-computability-and-complexity-spring-2011/. Accessed 2026-07-20. MIT 可计算性与复杂性经典课程
-
-## 12. 延伸阅读
 
 ### 12.1 在线课程
 

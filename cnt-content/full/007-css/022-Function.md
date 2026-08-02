@@ -384,32 +384,12 @@ CSS 函数让样式表具备计算能力：`calc()` 做差值，`min/max` 做边
 
 颜色函数的演进方向是感知均匀与可计算：`oklch` 让色相旋转更自然，`color-mix` 让派生色自动化。设计系统的维护成本因此大幅下降。
 
-## 10. 参考文献
-
-W3C, CSS Values and Units Module Level 4（calc/min/max/clamp）, 访问日期 2026-08-01, https://www.w3.org/TR/css-values-4/
-
-W3C, CSS Color Module Level 4（color-mix、oklch）, 访问日期 2026-08-01, https://www.w3.org/TR/css-color-4/
-
-W3C, CSS Custom Properties for Cascading Variables Level 1, 访问日期 2026-08-01, https://www.w3.org/TR/css-variables-1/
-
-MDN Web Docs, CSS 函数索引, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Functions
-
-MDN Web Docs, Using CSS custom properties, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties
-
 ## 11. 延伸阅读
-
 深色模式与媒体查询的配合，见本模块 019-MediaQuery 文档；
-
 圆角与阴影等外观属性，见本模块 018-BorderRadius 文档；
-
 网格布局中的函数用法，见 007-css 模块的 Grid 相关文档；
-
 Sass 预处理器函数对比，见 007-css 模块的预处理器文档；
-
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 CSS 进阶与工程化课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前端实战课程。
-
 ---
-
 ### 1. calc() 函数
 
 ```css
@@ -1061,4 +1041,3 @@ li::before {
   content: counters(section, ".") " ";
 }
 ```
-

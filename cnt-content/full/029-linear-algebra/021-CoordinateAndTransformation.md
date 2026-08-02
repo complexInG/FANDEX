@@ -4,7 +4,7 @@ title: 坐标与坐标变换
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 向量在基下的坐标，基变换与过渡矩阵，坐标变换公式，不同基下坐标的关系，含 0 基础类比、完整例题、常见错误对策与实战练习。
+description: 向量在基下的坐标，基变换与过渡矩阵，坐标变换公式，不同基下坐标的关系，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
@@ -139,8 +139,6 @@ $$\boldsymbol{\alpha} = Ex = Fy = (EP)y = E(Py)$$
 - 公式里 $P$ 是"旧到新"的过渡矩阵，若题目给的是"新到旧"的过渡矩阵 $Q$，则坐标公式要换成 $x = Q^{-1}y$，务必看清题干。
 - 常考题型：已知 $E, F$ 两组基 + 一个向量 $\boldsymbol{\alpha}$，先求 $P = E^{-1}F$，再代 $y = P^{-1}x$，两步合一。
 
-## 4. 典型例题
-
 ### 例1（求过渡矩阵）
 
 设 $\boldsymbol{\varepsilon}_1 = (1, 0, 0)^T$，$\boldsymbol{\varepsilon}_2 = (1, 1, 0)^T$，$\boldsymbol{\varepsilon}_3 = (1, 1, 1)^T$，$\boldsymbol{\eta}_1 = (1, 0, 1)^T$，$\boldsymbol{\eta}_2 = (0, 1, 0)^T$，$\boldsymbol{\eta}_3 = (0, 0, 1)^T$，求由 $\boldsymbol{\varepsilon}_1, \boldsymbol{\varepsilon}_2, \boldsymbol{\varepsilon}_3$ 到 $\boldsymbol{\eta}_1, \boldsymbol{\eta}_2, \boldsymbol{\eta}_3$ 的过渡矩阵。
@@ -210,58 +208,6 @@ $$\frac{3}{2}\boldsymbol{\alpha}_1 + \frac{1}{2}\boldsymbol{\alpha}_2 + \frac{5}
 | 把向量坐标与基向量的坐标混为一谈 | 概念混淆 | 没分清"谁的坐标" | 明确对象：$\boldsymbol{\alpha}$ 的坐标 = 它按基展开的组合系数 |
 | 求坐标后不做还原检验 | 流程缺失 | 只求结果不求验证 | 算完坐标后用 $\sum x_i\boldsymbol{\varepsilon}_i$ 还原原向量，能快速发现错误 |
 
-## 6. 实战练习
-
-### 练习1（基础：求坐标）
-
-设 $\boldsymbol{\varepsilon}_1 = (1, 2)^T$，$\boldsymbol{\varepsilon}_2 = (2, 1)^T$，求向量 $\boldsymbol{\alpha} = (4, 5)^T$ 在此基下的坐标。
-
-**提示**：设 $\boldsymbol{\alpha} = x_1\boldsymbol{\varepsilon}_1 + x_2\boldsymbol{\varepsilon}_2$，解二元一次方程组，或直接用 $x = E^{-1}\boldsymbol{\alpha}$。
-
-**参考答案要点**：$E = \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}$，$E^{-1} = -\frac{1}{3}\begin{pmatrix} 1 & -2 \\ -2 & 1 \end{pmatrix}$，$x = \begin{pmatrix} 2 \\ 1 \end{pmatrix}$。检验：$2(1,2) + (2,1) = (4, 5)$。
-
-### 练习2（进阶：过渡矩阵与坐标变换）
-
-设 $\boldsymbol{\varepsilon}_1, \boldsymbol{\varepsilon}_2$ 为 $\mathbb{R}^2$ 的一组基，新基满足 $\boldsymbol{\eta}_1 = \boldsymbol{\varepsilon}_1 + \boldsymbol{\varepsilon}_2$，$\boldsymbol{\eta}_2 = \boldsymbol{\varepsilon}_1 - \boldsymbol{\varepsilon}_2$。若 $\boldsymbol{\alpha}$ 在新基下的坐标为 $(1, -1)^T$，求 $\boldsymbol{\alpha}$ 在旧基下的坐标。
-
-**提示**：过渡矩阵 $P = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$（列是 $\boldsymbol{\eta}$ 在 $\boldsymbol{\varepsilon}$ 下的坐标），用 $x = Py$。
-
-**参考答案要点**：$x = Py = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}\begin{pmatrix} 1 \\ -1 \end{pmatrix} = \begin{pmatrix} 0 \\ 2 \end{pmatrix}$。
-
-### 练习3（进阶：含参数判断基）
-
-问 $k$ 取何值时，$\boldsymbol{\alpha}_1 = (1, k, 0)^T$，$\boldsymbol{\alpha}_2 = (k, 1, 0)^T$，$\boldsymbol{\alpha}_3 = (0, 0, 1)^T$ 构成 $\mathbb{R}^3$ 的一组基？
-
-**提示**：三个三维向量构成基 $\iff$ 行列式非零；先对前两行做初等变换化简行列式。
-
-**参考答案要点**：$|A| = \begin{vmatrix} 1 & k & 0 \\ k & 1 & 0 \\ 0 & 0 & 1 \end{vmatrix} = 1 - k^2$，故 $k \neq \pm 1$ 时构成基；$k = \pm 1$ 时秩降为 2。
-
-### 练习4（综合：两步变换）
-
-设 $\boldsymbol{\alpha}$ 在基 $\boldsymbol{\varepsilon}_1, \boldsymbol{\varepsilon}_2$ 下的坐标为 $(3, 4)^T$，先从 $\boldsymbol{\varepsilon}$ 到 $\boldsymbol{\eta}$ 的过渡矩阵为 $P_1 = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}$，再从 $\boldsymbol{\eta}$ 到 $\boldsymbol{\zeta}$ 的过渡矩阵为 $P_2 = \begin{pmatrix} 1 & 0 \\ 1 & 1 \end{pmatrix}$。求 $\boldsymbol{\alpha}$ 在 $\boldsymbol{\zeta}$ 基下的坐标。
-
-**提示**：两步合成一步，由 $\boldsymbol{\varepsilon}$ 到 $\boldsymbol{\zeta}$ 的过渡矩阵是 $P_1P_2$（注意顺序：$(\boldsymbol{\zeta}) = (\boldsymbol{\varepsilon})P_1P_2$），坐标用逆矩阵。
-
-**参考答案要点**：$P_1P_2 = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}$，$z = (P_1P_2)^{-1}x = \begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix}\begin{pmatrix} 3 \\ 4 \end{pmatrix} = \begin{pmatrix} -1 \\ 5 \end{pmatrix}$。
-
-### 练习5（挑战：三维完整流程）
-
-设 $\boldsymbol{\varepsilon}_1 = (1, 1, 0)^T$，$\boldsymbol{\varepsilon}_2 = (1, 0, 1)^T$，$\boldsymbol{\varepsilon}_3 = (0, 1, 1)^T$，$\boldsymbol{\eta}_1 = (1, 0, 0)^T$，$\boldsymbol{\eta}_2 = (0, 1, 0)^T$，$\boldsymbol{\eta}_3 = (0, 0, 1)^T$。求由 $\boldsymbol{\varepsilon}$ 到 $\boldsymbol{\eta}$ 的过渡矩阵，并求 $\boldsymbol{\beta} = (1, 2, 3)^T$ 在 $\boldsymbol{\varepsilon}$ 基下的坐标。
-
-**提示**：此处旧基是 $\boldsymbol{\varepsilon}$，新基 $\boldsymbol{\eta}$ 是自然基；$P = E^{-1}F = E^{-1}$；注意坐标公式中 $x$（旧基坐标）$= Py$。
-
-**参考答案要点**：$E = \begin{pmatrix} 1 & 1 & 0 \\ 1 & 0 & 1 \\ 0 & 1 & 1 \end{pmatrix}$，$|E| = -2 \neq 0$。$P = E^{-1} = \frac{1}{2}\begin{pmatrix} 1 & 1 & -1 \\ 1 & -1 & 1 \\ -1 & 1 & 1 \end{pmatrix}$。$\boldsymbol{\beta}$ 在 $\boldsymbol{\varepsilon}$ 基下的坐标为 $P\boldsymbol{\beta} = \frac{1}{2}(1+2-3, 1-2+3, -1+2+3)^T = (0, 1, 2)^T$。检验：$0\boldsymbol{\varepsilon}_1 + 1\boldsymbol{\varepsilon}_2 + 2\boldsymbol{\varepsilon}_3 = (1, 2, 3)^T$。
-
 ## 7. 一句话记忆
 
 **同一向量在不同基下坐标不同，坐标按"基的逆方向"变换：基变用 $P$，坐标变用 $P^{-1}$——基变正向，坐标变逆向。**
-
-## 参考链接与延伸阅读
-
-- 同济大学数学科学学院《工程数学 线性代数（第七版）》，高等教育出版社，第 6 章 §3 基变换与坐标变换（权威教材，概念表述与例题来源）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- MIT 18.06 Linear Algebra（Gilbert Strang，第 5 讲转置、置换与向量空间；坐标与基变换相关内容）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- Interactive Linear Algebra（Georgia Tech，§4.6 基与基变换）：https://textbooks.math.gatech.edu/ila/
-- 3Blue1Brown 线性代数的本质（基变换与坐标变换的可视化）：https://www.3blue1brown.com/topics/linear-algebra
-- NumPy 文档（`numpy.linalg.inv`、`numpy.linalg.solve` 可验证坐标计算）：https://numpy.org/doc/stable/
-
-延伸阅读：线性相关性、基与维数（前置知识）；内积与正交性、施密特正交化（后续内容，将自然基推广为标准正交基）；矩阵对角化（本篇坐标变换思想在特征值部分的深化应用）。

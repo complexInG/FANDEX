@@ -1514,8 +1514,6 @@ export default myLib;
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 1. **概念理解**：解释命名空间与模块的根本区别，说明为何 TypeScript 官方推荐在新项目中使用模块而非命名空间。
@@ -1612,41 +1610,6 @@ export default myLib;
     - 检测循环依赖
     - 返回解析路径或错误
 
-## 参考文献
-
-1. Ecma International. (2015). *ECMAScript 2015 Language Specification: Modules*. ECMA-262, 6th Edition. https://262.ecma-international.org/6.0/
-
-2. Ecma International. (2024). *ECMAScript 2024 Language Specification: Modules*. ECMA-262, 15th Edition. https://262.ecma-international.org/15.0/
-
-3. Microsoft. (2024). *TypeScript Handbook: Modules*. https://www.typescriptlang.org/docs/handbook/modules.html
-
-4. Microsoft. (2024). *TypeScript Handbook: Namespaces*. https://www.typescriptlang.org/docs/handbook/namespaces.html
-
-5. Microsoft. (2024). *TypeScript Handbook: Module Resolution*. https://www.typescriptlang.org/docs/handbook/module-resolution.html
-
-6. Microsoft. (2024). *TypeScript Handbook: Declaration Files*. https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
-
-7. CommonJS Organization. (2009). *CommonJS Modules Specification 1.1.1*. https://wiki.commonjs.org/wiki/Modules/1.1.1
-
-8. Miller, J. (2014). *Asynchronous Module Definition (AMD) Specification*. https://github.com/amdjs/amdjs-api/blob/master/AMD.md
-
-9. Node.js Foundation. (2024). *Node.js Documentation: Packages*. https://nodejs.org/api/packages.html
-
-10. Webpack Contributors. (2024). *Webpack Documentation: Tree Shaking*. https://webpack.js.org/guides/tree-shaking/
-
-11. Bierman, G., Abadi, M., & Torgersen, M. (2014). *Understanding TypeScript*. Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP '14), 257-281. https://doi.org/10.1007/978-3-662-44202-9_11
-
-12. Watt, C. (2023). *ESM in Node.js: A complete guide*. Node.js Documentation. https://nodejs.org/api/esm.html
-
 ## 延伸阅读
-
-- **TypeScript Deep Dive: Modules**：https://basarat.gitbook.io/typescript/project/modules — 深入讲解 TypeScript 模块系统。
-- **Node.js ESM Documentation**：https://nodejs.org/api/esm.html — Node.js 官方 ESM 文档，包含互操作细节。
-- **Webpack Tree Shaking Guide**：https://webpack.js.org/guides/tree-shaking — Webpack 的 Tree-shaking 实现原理。
-- **Rollup Documentation**：https://rollupjs.org/guide/en — Rollup 的模块打包原理，ESM 优先。
-- **tsup**：https://tsup.egoist.dev — 基于 esbuild 的零配置 TypeScript 构建工具，支持多格式。
-- **unbuild**：https://github.com/unjs/unbuild — 另一个流行的 TypeScript 库构建工具。
 - *JavaScript: The Definitive Guide*（David Flanagan 著）：第 13 章深入讲解 JavaScript 模块系统。
-- *Exploring ES6*（Axel Rauschmayer 著）：https://exploringjs.com/es6/ch_modules.html — ESM 的完整指南。
 - *You Don't Know JS: ES6 & Beyond*（Kyle Simpson 著）：第 3 章讲解模块系统的演进。
-- **DefinitelyTyped**：https://github.com/DefinitelyTyped/DefinitelyTyped — 社区维护的 TypeScript 类型声明仓库，学习声明文件的最佳实践。

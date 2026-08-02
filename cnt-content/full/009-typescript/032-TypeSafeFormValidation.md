@@ -1530,8 +1530,6 @@ function saveState(state: PersistedState) {
 - 使用 `.partial()` 表达"该步骤可能尚未填写"的语义。
 - 验证失败时优雅降级，清除损坏数据而非崩溃。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 1. **概念理解**：解释 TypeScript 静态类型在运行时被擦除的原因，并说明这对表单验证意味着什么。
@@ -1596,39 +1594,5 @@ function saveState(state: PersistedState) {
     - 大数组验证（10000 个元素）
     - 写出测试代码并分析结果
 
-## 参考文献
-
-1. Carter, A. (2020). *Zod: TypeScript-first schema validation with static type inference*. GitHub. https://github.com/colinhacks/zod
-
-2. Giulio, G. (2017). *io-ts: Runtime type system for IO decoding/encoding*. GitHub. https://github.com/gcanti/io-ts
-
-3. Quelhas, R. (2022). *Valibot: The modular and functional schema library*. GitHub. https://github.com/fabian-hiller/valibot
-
-4. Epstein, J. (2014). *Yup: Dead simple Object schema validation*. GitHub. https://github.com/jquense/yup
-
-5. Korobov, E. (2011). *Ajv: Another JSON Schema Validator*. GitHub. https://github.com/ajv-validator/ajv
-
-6. Pierce, B. C. (2002). *Types and programming languages*. MIT Press. https://doi.org/10.7551/mitpress/4236.001.0001
-
-7. Pierce, B. C. (2004). *Advanced topics in types and programming languages*. MIT Press. https://doi.org/10.7551/mitpress/4236.001.0001
-
-8. Wadler, P., & Blott, S. (1989). *How to make ad-hoc polymorphism less ad hoc*. Proceedings of the 16th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '89), 60-76. https://doi.org/10.1145/75277.75283
-
-9. Minsky, Y., Madhavapeddy, A., & Hickey, J. (2013). *Real-world OCaml: Functional programming for the masses*. O'Reilly Media. (Chapter on phantom types and runtime validation.)
-
-10. Chlipala, A. (2013). *Certified programming with dependent types*. MIT Press. https://doi.org/10.7551/mitpress/9153.001.0001
-
-11. JSON Schema Organization. (2020). *JSON Schema Specification, Draft 2020-12*. https://json-schema.org/draft/2020-12/json-schema-validation.html
-
-12. Microsoft. (2024). *TypeScript Handbook: Type narrowing*. https://www.typescriptlang.org/docs/handbook/2/narrowing.html
-
 ## 延伸阅读
-
-- **tRPC 文档**：https://trpc.io/docs — 端到端类型安全的 RPC 框架，与 zod 深度集成。
-- **react-hook-form 文档**：https://react-hook-form.com — 高性能表单库，支持 Schema resolver。
-- **fp-ts 文档**：https://gcanti.github.io/fp-ts — 函数式编程库，io-ts 的基础。
-- **effect/schema**：https://effect.website/docs/schema/introduction — Effect 生态的 Schema 库，与 io-ts 理念相近但更强大。
-- **TypeScript 类型体操**：https://github.com/type-challenges/type-challenges — 通过练习深入理解类型系统，有助于理解 Schema 库的类型推导原理。
-- **Runtype**：https://github.com/pelotom/runtypes — 另一个类型安全的运行时验证库，API 风格与 io-ts 类似。
-- *Software Foundations*（Pierce 等著）：https://softwarefoundations.cis.upenn.edu — 用 Coq 讲解类型系统与程序验证，深入理解形式化基础。
 - *Domain Modeling Made Functional*（Scott Wlaschin 著）：用 F# 讲解领域建模与类型驱动设计，理念可迁移到 TypeScript。

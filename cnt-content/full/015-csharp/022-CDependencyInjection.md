@@ -2105,12 +2105,3 @@ var host = Host.CreateDefaultBuilder(args)
 | `InvalidOperationException: A circular dependency was detected` | 循环依赖 | 重构设计，打破循环 |
 | `InvalidOperationException: Cannot consume scoped service from singleton` | Captive Dependency | 改用 IServiceScopeFactory |
 | `InvalidOperationException: No service for type` | 类型不匹配 | 检查注册的接口与实现 |
-
-## 附录 C：参考资源
-
-- [官方文档：.NET 中的依赖注入](https://learn.microsoft.com/dotnet/core/extensions/dependency-injection)
-- [官方文档：ASP.NET Core 中的依赖注入](https://learn.microsoft.com/aspnet/core/fundamentals/dependency-injection)
-- [Martin Fowler：Inversion of Control Containers and the Dependency Injection pattern](https://martinfowler.com/articles/injection.html)
-- [Microsoft.Extensions.DependencyInjection 源码](https://github.com/dotnet/runtime/tree/main/src/libraries/Microsoft.Extensions.DependencyInjection)
-- [Scrutor 项目](https://github.com/khellang/Scrutor)
-- [Autofac 文档](https://autofac.org/)

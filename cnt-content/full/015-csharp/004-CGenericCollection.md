@@ -1895,8 +1895,6 @@ public sealed record WindowStats(int ActiveUsers, decimal TotalAmount, int Order
 
 **扩展**：若需多级窗口（1min、5min、1hour），可使用多个聚合器实例，或采用层级降采样（downsampling）模式。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 1. **类型推断**：给定方法签名 `static T Find<T>(IEnumerable<T> source, Func<T, bool> predicate)`，分析调用 `Find(new[] { "a", "bb", "ccc" }, s => s.Length > 1)` 时编译器如何推断 `T`。
@@ -1952,42 +1950,6 @@ public sealed record WindowStats(int ActiveUsers, decimal TotalAmount, int Order
 
 10. **并发哈希表设计**：分析 `ConcurrentDictionary` 的分段锁设计，对比 `Dictionary` + 全局锁的性能。给定 8 核 CPU、1000 万次写入，预测两种方案的吞吐量比例。
     - 参考答案要点：`ConcurrentDictionary` 在 .NET 5+ 改为细粒度锁（每个桶独立锁或无锁读取 + CAS 写入），并发度随核数线性扩展。`Dictionary` + 锁在 8 核下吞吐量约为 `ConcurrentDictionary` 的 1/4 至 1/8（锁竞争导致串行化）。实测可设计 Benchmark 验证。
-
-## 参考文献
-
-以下文献按 ACM Reference Format 排列，含 DOI 链接：
-
-- Kennedy, A. and Syme, D. 2001. Design and implementation of generics for the .NET Common Language Runtime. In Proceedings of the ACM SIGPLAN 2001 conference on Programming language design and implementation (PLDI '01). Association for Computing Machinery, New York, NY, USA, 1–12. DOI: https://doi.org/10.1145/378795.378797
-
-- Kennedy, A. and Syme, D. 2004. Generics for C# and .NET CLR. Science of Computer Programming 58, 1-2 (Nov. 2005), 1–42. DOI: https://doi.org/10.1016/j.scico.2005.08.001
-
-- Bruce, K., Cardelli, L., Castagna, G., the EFPL Group, Leavens, G. T., and Pierce, B. 1995. On binary methods. Theory and Practice of Object Systems 1, 3 (1995), 221–242. DOI: https://doi.org/10.1002/1096-9942(1995)1:3%3C221::AID-TAPO3%3E3.0.CO;2-Y
-
-- Cormen, T. H., Leiserson, C. E., Rivest, R. L., and Stein, C. 2009. Introduction to Algorithms (3rd ed.). MIT Press, Cambridge, MA, USA. Chapter 11: Hash Tables, 253–285. DOI: https://doi.org/10.5555/1614191
-
-- Knuth, D. E. 1998. The Art of Computer Programming, Volume 3: Sorting and Searching (2nd ed.). Addison-Wesley Professional, Reading, MA, USA. Chapter 6.4: Hashing, 513–558. DOI: https://doi.org/10.5555/280635
-
-- Okasaki, C. 1999. Purely Functional Data Structures. Cambridge University Press, Cambridge, UK. Chapter 7: Red-Black Trees, 23–29. DOI: https://doi.org/10.1017/CBO9780511530104
-
-- Appel, A. W. and Gonçalves, C. 1993. Hash-consing garbage collection. Technical Report CS-TR-412-93. Princeton University, Princeton, NJ, USA. DOI: https://doi.org/10.21236/ADA265364
-
-- Bagwell, P. 2002. Ideal Hash Trees. Technical Report. École Polytechnique Fédérale de Lausanne, Lausanne, Switzerland. DOI: https://doi.org/10.1.1/14.9315
-
-- Steensgaard, B. 1996. Points-to analysis in almost linear time. In Proceedings of the 23rd ACM SIGPLAN-SIGACT symposium on Principles of programming languages (POPL '96). Association for Computing Machinery, New York, NY, USA, 32–41. DOI: https://doi.org/10.1145/237721.237727
-
-- Tardieu, O. 2006. A deterministic polynomial-time scheme for cooperative thread scheduling. In Proceedings of the 31st ACM SIGPLAN-SIGACT symposium on Principles of Programming Languages (POPL '04). Association for Computing Machinery, New York, NY, USA, 322–333. DOI: https://doi.org/10.1145/964001.964027
-
-- Bierman, G. M., Parkinson, M. J., and Pitts, A. M. 2003. MJ: An imperative core calculus for Java and Java with effects. Technical Report UCAM-CL-TR-563. University of Cambridge, Computer Laboratory, Cambridge, UK. DOI: https://doi.org/10.48456/tr-563
-
-- Microsoft Corporation. 2024. .NET Runtime Collections Implementation Reference. Microsoft Learn. Available at: https://learn.microsoft.com/dotnet/api/system.collections.generic
-
-- Ecma International. 2023. Standard ECMA-334: C# Language Specification (6th edition). Ecma International, Geneva, Switzerland. DOI: https://doi.org/10.1.1/14.9315.ecma334
-
-- Wirth, N. 1986. Algorithms and Data Structures. Prentice Hall, Englewood Cliffs, NJ, USA. Chapter 4: Dynamic Information Structures, 159–207. DOI: https://doi.org/10.5555/5333
-
-- Aho, A. V., Hopcroft, J. E., and Ullman, J. D. 1983. Data Structures and Algorithms. Addison-Wesley, Reading, MA, USA. Chapter 5: Hashing, 135–155. DOI: https://doi.org/10.5555/5702
-
-## 延伸阅读
 
 ### 官方文档
 

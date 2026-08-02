@@ -1085,8 +1085,6 @@ VS Code 的 TextMate 语法引擎使用 Unicode 属性转义：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **习题 1**（Remember，难度 1）：Unicode 属性转义语法使用小写 `p` 与大写 `P` 分别表示正向与否定匹配，二者必须配合 ______ 标志才能生效。
@@ -1094,26 +1092,6 @@ VS Code 的 TextMate 语法引擎使用 Unicode 属性转义：
 **习题 2**（Remember，难度 2）：在 Unicode 通用类别中，字母（Letter）的简写是 ______，大写字母是 ______，其他字母（如中文、日文）是 ______。
 
 **习题 3**（Understand，难度 3）：ES2018 之前的 JavaScript 正则中，`\w` 等价于字符类 ______，因此无法匹配中文、阿拉伯文等非 ASCII 字母。
-
-### 选择题知识点讲解
-
-**习题 4**（Understand，难度 3）：下列哪个正则能够匹配中文汉字「你好」，且不会误匹配日文片假名「カ」？
-- A. `/\p{L}/u`
-- B. `/\p{Script=Han}/u`
-- C. `/\p{Script=Hiragana}/u`
-- D. `/[一-龥]/`
-
-**习题 5**（Analyze，难度 4）：对于字符串 `'café 123 ＡＢＣ Ⅳ'`，执行 `/\p{N}+/gu` 匹配的结果是？
-- A. `['123']`
-- B. `['123', 'ＡＢＣ']`
-- C. `['123', 'Ⅳ']`
-- D. `['123', 'Ⅳ']`，但 `ＡＢＣ` 不匹配
-
-**习题 6**（Evaluate，难度 4）：下列哪种属性转义最适合用于过滤用户输入中的 Emoji？
-- A. `\p{Emoji}`
-- B. `\p{Emoji_Presentation}`
-- C. `\p{Extended_Pictographic}`
-- D. `\p{Symbol}`
 
 ### 9.3 代码修正题
 
@@ -1143,34 +1121,6 @@ validatePassword('Pässwörd1');
 
 ---
 
-## 10. 参考文献
-
-按 ACM Reference Format 列出本篇引用的主要文献：
-
-1. Ecma International. 2018. _ECMAScript 2018 Language Specification (ECMA-262, 9th Edition)_. Ecma International. DOI: 10.1145/3178987. URL: https://www.ecma-international.org/publications/standards/Ecma-262.htm
-
-2. The Unicode Consortium. 2024. _The Unicode Standard, Version 15.1.0_. The Unicode Consortium. URL: https://www.unicode.org/versions/Unicode15.1.0/
-
-3. Mathias Bynens, Daniel Ehrenberg, and Brian Terlson. 2017. _Proposal: Unicode Property Escapes (TC39 Stage 4)_. TC39 ECMAScript Proposals. URL: https://github.com/tc39/proposal-regexp-unicode-property-escapes
-
-4. Mark Davis and Laurentiu Iancu. 2024. _Unicode Technical Standard #18: Unicode Regular Expressions_. The Unicode Consortium. URL: https://www.unicode.org/reports/tr18/
-
-5. MDN Web Docs. 2025. _Unicode character class escape: \p{...}, \P{...}_. Mozilla Developer Network. URL: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape
-
-6. Henning Gunther, Martin Lange, and Peter Lammich. 2019. On the Complexity of Regular Expression Matching with Unicode Property Escapes. _Proceedings of the ACM on Programming Languages_ 3, OOPSLA (2019), 1-28. DOI: 10.1145/3360581
-
-7. Mathias Bynens. 2017. Unicode property escapes in JavaScript regular expressions. _Personal Blog_. URL: https://mathiasbynens.be/notes/es-unicode-property-escapes (accessed July 20, 2026)
-
-8. V8 Development Team. 2025. _V8 RegExp Engine Internals: Irregexp Unicode Property Handling_. V8 Developer Documentation. URL: https://v8.dev/blog
-
-9. Anderson, L. W., and Krathwohl, D. R. (Eds.). 2001. _A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives_. Longman.
-
-10. Davis, M. 2009. _Unicode Text Segmentation (UAX #29)_. The Unicode Consortium. URL: https://www.unicode.org/reports/tr29/
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Friedl, J. E. F. _Mastering Regular Expressions_ (3rd Edition). O'Reilly Media, 2006. —— 正则表达式领域经典著作，第 3 章详解 Unicode 属性匹配
@@ -1191,14 +1141,6 @@ validatePassword('Pässwörd1');
 - **`@babel/plugin-proposal-unicode-property-regex`**：Babel 插件，将 Unicode 属性转义转译为兼容形式
 - **`safe-regex2`**（https://github.com/davisjam/safe-regex）：检测潜在的回溯灾难正则
 - **`re2`**（https://github.com/google/re2）：Google 的高性能正则引擎，使用 Thompson NFA，避免回溯
-
-### 11.4 在线资源
-
-- **Unicode 字符数据库**：https://www.unicode.org/ucd/ —— 官方 UCD 数据
-- **Unicode 属性浏览器**：https://util.unicode.org/UnicodeJsps/ —— 在线查询字符属性
-- **Regex 101**：https://regex101.com/ —— 在线正则测试（支持 Unicode 属性）
-- **Regexr**：https://regexr.com/ —— 在线正则学习与测试
-- **TC39 提案追踪**：https://github.com/tc39/proposals —— ECMAScript 提案动态
 
 ### 11.5 标准文档
 

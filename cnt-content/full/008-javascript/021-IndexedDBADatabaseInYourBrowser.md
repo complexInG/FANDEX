@@ -1587,57 +1587,6 @@ VS Code Web 使用 IndexedDB：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 13.1 习题 1（fill-blank，remember）
-
-**题目**：IndexedDB 是一种 ______ 型数据库，所有读写操作必须在 ______ 中执行，且 API 为 ______ 以避免阻塞主线程。
-
-**解析讲解**：NoSQL/事务、事务、异步
-
-**解析讲解**：IndexedDB 是事务型 NoSQL 数据库，与 Web SQL 的关系型不同。所有读写必须包裹在事务中以保证 ACID。API 异步设计避免阻塞主线程，与 localStorage 的同步 API 形成对比。
-
-### 13.2 习题 2（fill-blank，understand）
-
-**题目**：IndexedDB 使用 ______ 事件触发 schema 升级，通过 ______ 方法创建对象存储，使用 ______ 方法创建索引；事务的隔离级别默认为 ______。
-
-**解析讲解**：onupgradeneeded、createObjectStore、createIndex、readwrite/readonly
-
-**解析讲解**：schema 升级只能在 `onupgradeneeded` 回调中进行；`createObjectStore` 与 `createIndex` 必须在该回调内调用；事务隔离基于对象存储锁，readwrite 串行、readonly 可并发。
-
-### 13.3 习题 3（choice，understand）
-
-**解析讲解**：D
-
-**解析讲解**：D 项错误——readonly 事务可与 readwrite 事务并发访问同一对象存储，但 readwrite 之间必须串行。IndexedDB 锁粒度基于对象存储，readwrite 事务按作用域字典序排序获取锁以避免死锁。
-
-### 13.4 习题 4（choice，analyze）
-
-**解析讲解**：D
-
-**解析讲解**：IndexedDB 每次写入需创建事务，存在固定开销（1-5ms），不适合每秒数百次的小数据高频写入。应使用内存缓冲批量写入，或考虑其他机制。
-
-### 13.5 习题 5（code-fix，apply）
-
-**解析讲解**：原代码同步返回 `request.result`，但 IndexedDB 是异步 API，需用 Promise 封装在 `onsuccess` 回调中 resolve 结果。
-
-### 13.6 习题 6（code-fix，evaluate）
-
-**解析讲解**：原实现为每条数据创建独立事务，性能极差。修复后使用单事务批量插入并分片，避免事务过长被浏览器中止。
-
-### 13.7 习题 7（open-ended，create）
-
-**评分要点**：
-
-1. 设计 notes（笔记）、pendingOps（待同步操作）、revisions（历史版本）、syncMeta（同步元数据）四个对象存储
-2. 使用 syncStatus 字段标记同步状态
-3. 给出 LWW（简单但易丢数据）与 CRDT（复杂但保证收敛）的权衡
-4. 设计多字段索引支持复杂查询
-5. 使用 IDBKeyRange 与游标实现分页与全文搜索
-6. 处理存储配额检测、自动清理旧版本、数据压缩
-
----
-
 ## 14. 实战项目：离线优先邮件客户端
 
 ### 14.1 项目目标
@@ -2019,21 +1968,6 @@ async function exportToCSV(storeName) {
 ```
 
 ---
-
-## 17. 参考文献
-
-1. **Marathe, N. and Sicking, J. 2026.** Indexed Database API 3.0. W3C. https://www.w3.org/TR/IndexedDB-3/
-2. **Marathe, N. 2015.** Indexed Database API 1.0 - W3C Recommendation. W3C. https://www.w3.org/TR/2015/REC-IndexedDB-20150108/
-3. **Sicking, J. 2010.** IndexedDB Proposal: Async API and Rationale. W3C WebApps Working Group. https://www.w3.org/TR/IndexedDB/
-4. **Flanagan, D. 2020.** JavaScript: The Definitive Guide (7th Edition). O'Reilly Media. DOI: 10.5555/3372471
-5. **Härder, T. and Reuter, A. 1983.** Principles of Transaction-Oriented Database Recovery. ACM Computing Surveys 15, 4, 287-317. DOI: 10.1145/289.291
-6. **Ramakrishnan, R. and Gehrke, J. 2003.** Database Management Systems (3rd Edition). McGraw-Hill.
-7. **MDN Web Docs. 2025.** IndexedDB API. Mozilla Developer Network. https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
-8. **Archibald, J. 2015.** IndexedDB: A Database in Your Browser. web.dev. https://web.dev/articles/indexeddb
-
----
-
-## 18. 延伸阅读
 
 ### 18.1 官方文档与规范
 

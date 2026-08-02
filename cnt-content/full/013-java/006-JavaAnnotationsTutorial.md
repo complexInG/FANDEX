@@ -1658,8 +1658,6 @@ public class TypeAnnotationFuture {
 
 未来 Java 可能内置更多类型注解检查器，实现 Scala/Haskell 级别的类型安全。
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **1.（remember）** Java 枚举在编译期被翻译为继承自____类的 final 子类，每个枚举常量是此类的一个 public static final 实例。
@@ -1669,38 +1667,6 @@ public class TypeAnnotationFuture {
 **3.（apply）** `EnumSet` 基于____实现，每个枚举常量占 1 bit，集合运算通过位运算完成。
 
 **4.（understand）** 自定义注解元素类型限定为基本类型、____、Class、枚举、注解、上述类型的一维数组。
-
-### 选择题知识点讲解
-
-**1.（apply）** 下列哪种方式可以正确实现枚举的策略模式？
-
-A. `enum Op { ADD { public int apply(int a, int b) { return a + b; } }, SUB { public int apply(int a, int b) { return a - b; } }; public abstract int apply(int a, int b); }`
-
-B. `enum Op { ADD, SUB; int apply(int a, int b) { return 0; } }`
-
-C. `enum Op { ADD(int a, int b) { return a + b; }, SUB(int a, int b) { return a - b; } }`
-
-D. `enum Op { ADD = (a, b) -> a + b, SUB = (a, b) -> a - b; }`
-
-**2.（analyze）** 关于 EnumSet 的内部实现，下列哪项描述最准确？
-
-A. EnumSet 基于哈希表实现，与 HashSet 类似
-
-B. EnumSet 基于位向量（bit vector）实现，枚举常量对应一个 bit
-
-C. EnumSet 基于红黑树实现，按枚举序号排序
-
-D. EnumSet 基于链表实现，保留插入顺序
-
-**3.（evaluate）** 下列关于 Java 注解与 Python 装饰器的对比，哪项是错误的？
-
-A. Java 注解是元数据，被动消费；Python 装饰器是高阶函数，主动包装
-
-B. Java 注解类型安全，编译期检查；Python 装饰器运行时动态执行
-
-C. Java 注解处理器在编译期生成代码；Python 装饰器在运行时修改函数
-
-D. Java 注解与 Python 装饰器在功能上完全等价，可互相替代
 
 ### 10.3 代码修正题
 
@@ -1759,20 +1725,12 @@ public class MyProcessor extends AbstractProcessor {
 
 **3.（analyze）** 分析 Lombok 与 AutoValue 在实现机制、兼容性、生成代码质量上的差异。如果你是新项目的技术负责人，会选择哪个方案？为什么？
 
-## 11. 参考答案
-
 ### 填空题知识点讲解
 
 1. **java.lang.Enum**。JLS §8.9 规定所有枚举类型隐式继承 `java.lang.Enum`，编译器合成 final 子类。
 2. **CLASS**，**RUNTIME**。`RetentionPolicy` 枚举定义 SOURCE/CLASS/RUNTIME，仅 RUNTIME 策略的注解会被 JVM 加载到 Class 对象中。
 3. **位向量**（bit vector）。RegularEnumSet 用 long，JumboEnumSet 用 long[]，每个 bit 对应一个枚举常量。
 4. **String**。注解元素类型限定为：基本类型、String、Class、枚举、注解、上述一维数组。
-
-### 选择题知识点讲解
-
-1. **A**。通过抽象方法 + 实例级重写实现策略模式，每个常量是匿名子类。B 仅有一个通用 apply，无策略；C 语法非法；D 枚举常量不支持直接赋 lambda。
-2. **B**。RegularEnumSet 与 JumboEnumSet 都基于 long/long[] 位向量实现，每个枚举常量占 1 bit。
-3. **D**。Java 注解与 Python 装饰器在功能上不等价：注解是被动元数据，装饰器是主动高阶函数，二者设计哲学根本不同。
 
 ### 11.3 代码修正题
 
@@ -1872,8 +1830,6 @@ AutoValue 通过标准 JSR 269 生成新源文件（`AutoValue_User.java`），�
 
 新项目我会选 AutoValue，因为：(1) 标准 API 保证未来 JDK 兼容；(2) 生成代码可调试可阅读；(3) IDE 不需额外插件；(4) 与 record（Java 16）协同良好。
 
-## 12. 参考文献
-
 ### 12.1 标准与规范
 
 1. JSR 201 Expert Group. 2004. JSR 201: Extending the Java Programming Language with Enumerations, Autoboxing, and Enhanced for Loops. Java Community Process. https://www.jcp.org/en/jsr/detail?id=201
@@ -1911,8 +1867,6 @@ AutoValue 通过标准 JSR 269 生成新源文件（`AutoValue_User.java`），�
 14. Project Lombok. 2024. Lombok Documentation. https://projectlombok.org/
 
 15. Google Inc. 2024. AutoValue User Guide. https://github.com/google/auto/blob/main/value/userguide/index.md
-
-## 13. 延伸阅读
 
 ### 13.1 关联模块
 

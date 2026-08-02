@@ -877,8 +877,6 @@ public class InstrumentedChatService {
 
 **关键决策**：使用 Flink 状态后端缓存最近行为；DJL Predictor 每任务实例独立。
 
-## 知识讲解与要点分析（原习题）
-
 ### 选择题
 
 **1. 下列哪个库是 AWS 推出的框架无关的 Java 深度学习库？**
@@ -1040,48 +1038,6 @@ public class ChatController {
 }
 ```
 
-## 知识讲解与要点分析（原思考题）
-
-**1.** 为什么工业界常采用"Python 训练 + Java 推理"的双语言架构？这种架构的核心挑战是什么？
-
-**参考答案**：(1) 训练阶段 Python 生态远超 Java（PyTorch、TF、JAX 等研究工具链完善）；(2) 推理阶段 Java 企业级特性（Spring、JFR、强类型、运维生态）更适合生产部署；(3) 通过 ONNX 作为模型交换格式解耦训练与推理。核心挑战：模型格式转换（PyTorch → ONNX）可能损失精度或算子不支持；双团队协作成本；版本对齐复杂。
-
-**2.** 假设你需要部署一个 LLM 服务，QPS 1000，单次调用平均 3 秒。如何选择线程模型？
-
-**参考答案**：(1) 传统平台线程：每请求占一线程，1000 QPS × 3s = 3000 并发线程，远超 JVM 平台线程上限（通常数百至数千）。不可行。(2) 虚拟线程（JDK 21+）：每请求一虚拟线程，3000 虚拟线程轻量（每线程 KB 级），底层少量平台线程调度。可行。(3) WebFlux + Reactor：非阻塞 IO，少量事件循环线程处理万级并发。可行，但需要全栈响应式编程。结论：JDK 21+ 优先虚拟线程；若已有 WebFlux 基础设施可继续使用 Reactor。
-
-**3.** 解释"JNI 边界开销"对 JVM 推理性能的影响，并给出两种缓解方案。
-
-**参考答案**：JNI 边界开销指 Java 调用 native（C++/CUDA）函数时的固定开销，约 10–100μs/次。影响：频繁小批量推理时，JNI 开销可能占总延迟 30%。缓解方案：(1) 增大批处理量，摊薄 JNI 开销；(2) 使用 GraalVM 的 LLVM 后端，部分模型可直接编译为 JVM 字节码，减少 JNI；(3) 模型蒸馏，将大模型压缩为小模型减少调用次数；(4) 多模型合并（multi-task model），单次 JNI 调用处理多任务。
-
-## 参考文献
-
-[1] Amazon Web Services. 2019. *Deep Java Library (DJL) Documentation*. AWS, Seattle, WA, USA. Available at: https://djl.ai
-
-[2] Microsoft. 2020. *ONNX Runtime Java API*. Microsoft, Redmond, WA, USA. Available at: https://onnxruntime.ai/docs/get-started/with-java.html
-
-[3] Pivotal Software. 2024. *Spring AI Reference Documentation*. VMware, Palo Alto, CA, USA. Available at: https://docs.spring.io/spring-ai/reference/
-
-[4] LangChain4j. 2023. *LangChain4j Documentation*. Available at: https://docs.langchain4j.dev
-
-[5] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., and Polosukhin, I. 2017. Attention is all you need. In *Proceedings of the 31st International Conference on Neural Information Processing Systems (NIPS'17)*. Curran Associates Inc., Red Hook, NY, USA, 6000–6010. DOI: https://doi.org/10.5555/3295222.3295349
-
-[6] Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Küttler, H., Lewis, M., Yih, W., Rocktäschel, T., Riedel, S., and Kiela, D. 2020. Retrieval-augmented generation for knowledge-intensive NLP tasks. In *Proceedings of the 34th International Conference on Neural Information Processing Systems (NeurIPS '20)*. Curran Associates Inc., Red Hook, NY, USA, 9459–9474. DOI: https://doi.org/10.5555/3495724.3496517
-
-[7] Apache Software Foundation. 2023. *Apache OpenNLP Developer Documentation*. ASF, Wakefield, MA, USA. Available at: https://opennlp.apache.org/docs/
-
-[8] Eclipse Deeplearning4j. 2023. *Deeplearning4j Documentation*. Eclipse Foundation, Ottawa, ON, Canada. Available at: https://deeplearning4j.konduit.ai
-
-[9] Hall, M., Frank, E., Holmes, G., Pfahringer, B., Reutemann, P., and Witten, I. H. 2009. The WEKA data mining software: An update. *SIGKDD Explorations* 11, 1, 10–18. DOI: https://doi.org/10.1145/1656274.1656278
-
-[10] Oracle Corporation. 2023. *The Java Virtual Machine Specification, Java SE 21 Edition*. Oracle, Redwood City, CA, USA.
-
-[11] Press, O. 2024. *JDK 21 Virtual Threads (JEP 444)*. OpenJDK. Available at: https://openjdk.org/jeps/444
-
-[12] Vaswani, A. et al. 2017. *BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding*. arXiv:1810.04805. DOI: https://doi.org/10.48550/arXiv.1810.04805
-
-## 延伸阅读
-
 ### 书籍
 
 - **Harrington, P.** *Machine Learning in Action*. Manning, 2012. — 经典 ML 算法实战。
@@ -1095,18 +1051,6 @@ public class ChatController {
 - **Lewis, P. et al.** *Retrieval-Augmented Generation*. NeurIPS, 2020. — RAG 奠基。
 - **Devlin, J. et al.** *BERT*. NAACL, 2019. — 预训练语言模型。
 - **Brown, T. et al.** *Language Models are Few-Shot Learners*. NeurIPS, 2020. — GPT-3。
-
-### 在线资源
-
-- **DJL 官方文档**：https://djl.ai
-- **ONNX Runtime Java 文档**：https://onnxruntime.ai/docs/get-started/with-java.html
-- **Spring AI 文档**：https://docs.spring.io/spring-ai/reference/
-- **LangChain4j 文档**：https://docs.langchain4j.dev
-- **Apache OpenNLP**：https://opennlp.apache.org
-- **Deeplearning4j**：https://deeplearning4j.konduit.ai
-- **HuggingFace Java Tokenizers**：https://github.com/huggingface/tokenizers
-- **LangSmith LLM 可观测性**：https://smith.langchain.com
-- **Helicone LLM 监控**：https://helicone.ai
 
 ### 相关课程
 

@@ -251,22 +251,6 @@ ATAM/CBAM 是"重量级"评估，适合大型系统。日常工作中，更多�
 
 **真相**：ATAM 不给架构"打分"，它输出的是**敏感点、权衡点、风险、非风险**——目的是帮助决策，而不是评价好坏。
 
-## 8. 实战练习
-
-1. **效用树**：为一个你熟悉的系统（如电商后端）构建质量属性效用树：至少 4 个质量属性维度、每个维度至少 2 个叶子节点，标注优先级。
-
-2. **ATAM 演练**：选一个候选架构（比如"引入 Redis 缓存"），按 ATAM 的"四类输出"分析：它是什么敏感点？有没有权衡点？有哪些风险？
-
-3. **CBAM 决策**：给定预算有限，要在"微服务化、加缓存、读写分离、加 CDN"中选 2 个，用 ROI 逻辑说明你的选择和理由。
-
-4. **评审演练**：为一个小系统设计架构评审会：列出参与者名单、评审清单（至少 8 项）、会议议程（60 分钟）。
-
-## 9. 参考资源
-
-- SEI 架构评估方法（ATAM 官方）：https://www.sei.cmu.edu/architecture/tools/evaluate/
-- 《软件架构实践》（ATAM/CBAM 详解）：https://www.sei.cmu.edu/publications/books/software-architecture/
-- CBAM 论文（SEI）：https://resources.sei.cmu.edu/library/asset-view.cfm?assetid=6939
-
 ## 10. 延伸阅读
 
 - 评估要检验的质量属性，见本模块《质量属性》

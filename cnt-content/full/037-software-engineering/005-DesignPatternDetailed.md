@@ -333,22 +333,6 @@ abstract class DataProcessor {
 
 **误区五：设计模式能解决所有设计问题。** → 模式解决"局部设计问题"（类与对象组织）；系统级的架构问题（微服务、分层）用"架构模式"解决（见 038-software-architecture）。
 
-## 8. 实战练习
-
-1. **模式识别**：在你熟悉的框架（Spring、Vue、React）中找到至少 3 个设计模式的应用实例，说明"解决什么问题"。
-
-2. **策略实践**：用策略模式实现"运费计算"（顺丰/圆通/京东），替代 if/else，说明新增一家快递公司时的差异。
-
-3. **装饰器实践**：用装饰器给一个"文件写入"功能叠加"加密 + 压缩"两层功能，画出类结构。
-
-4. **选择练习**：用第 6 节的"模式选择指南"，为以下场景各选一个模式并说明理由：①全局配置对象 ②日志系统支持多种输出 ③通知用户有多种方式 ④大图片延迟加载。
-
-## 9. 参考资源
-
-- GoF《设计模式：可复用面向对象软件的基础》：https://en.wikipedia.org/wiki/Design_Patterns
-- Refactoring Guru（设计模式图解）：https://refactoring.guru/design-patterns
-- SourceMaking 设计模式：https://sourcemaking.com/design_patterns
-
 ## 10. 延伸阅读
 
 - 模式的图形化表达，见本模块《UML图详解》

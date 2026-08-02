@@ -2278,8 +2278,6 @@ class AtomicCounterImpl {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：什么是数据竞争？请给出形式化定义。
@@ -2365,54 +2363,6 @@ class Singleton private constructor() {
 ```
 
 `lazy` 默认使用 `LazyThreadSafetyMode.SYNCHRONIZED`，内部通过 DCL + `@Volatile` 实现。
-
-### 综合题知识点讲解
-
-**习题 6**：以下代码是否有数据竞争？如何修复？
-
-```kotlin
-class Counter {
-    private var count = 0
-
-    suspend fun increment() {
-        count++
-    }
-
-    fun get() = count
-}
-```
-
-**解析讲解**：有数据竞争。多个协程并发调用 `increment()` 时，`count++` 不是原子的。
-
-**修复 1**：使用 `Mutex`：
-
-```kotlin
-private val mutex = Mutex()
-
-suspend fun increment() {
-    mutex.withLock { count++ }
-}
-```
-
-**修复 2**：使用 `AtomicInteger`：
-
-```kotlin
-private val count = AtomicInteger(0)
-
-fun increment() {
-    count.incrementAndGet()
-}
-```
-
-**修复 3**：使用 `StateFlow`：
-
-```kotlin
-private val _count = MutableStateFlow(0)
-
-fun increment() {
-    _count.update { it + 1 }
-}
-```
 
 ### 9.7 设计题
 
@@ -2563,8 +2513,6 @@ class ConcurrentExecutor(
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 1. **Hoare, C. A. R. (1978)**. "Communicating sequential processes". *Communications of the ACM*, 21(8), 666-677. CSP 模型，Channel 的理论基础。
@@ -2591,17 +2539,6 @@ class ConcurrentExecutor(
 16. **Herlihy, M., & Shavit, N. (2012)**. *The Art of Multiprocessor Programming*. MIT Press. 多核编程艺术。
 17. **Tanenbaum, A. S., & Bos, H. (2014)**. *Modern Operating Systems* (4th ed.). Pearson. 现代操作系统。
 18. **Silberschatz, A., Galvin, P. B., & Gagne, G. (2018)**. *Operating System Concepts* (10th ed.). Wiley. 操作系统概念。
-
-### 10.4 在线资源
-
-19. **KotlinConf talks on coroutines**. https://www.youtube.com/results?search_query=kotlinconf+coroutines
-20. **Roman Elizarov's blog**. https://medium.com/@elizarov
-21. **"Kotlin Coroutines — A Comprehensive Guide"**. https://github.com/Kotlin/kotlinx.coroutines/blob/master/docs/topics.md
-22. **"Structured Concurrency"** by Roman Elizarov. https://medium.com/@elizarov/structured-concurrency-7c307c84d76b
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 高级并发理论
 

@@ -1858,8 +1858,6 @@ print(User.__create_table_sql__)
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（记忆与理解）
 
 **题目 10.1.1**：写出以下代码的输出，并解释原因。
@@ -2168,55 +2166,6 @@ print(p.x, p.y)  # 1 2
 # p.x = 3  # AttributeError: Cannot modify frozen Point
 ```
 
-### 9.6 思考题
-
-**题目 10.6.1**：为什么 Python 选择 `type` 作为自身的元类（自指），而不是引入一个"超元类"？
-
-**解析讲解**：自指避免了无限回归（Smalltalk 的元类元类元类...问题）。从实现角度，CPython 在解释器初始化时静态分配 `type` 对象，使其 `ob_type` 指向自身，形成闭合环。从理论角度，自指对应于类型论中的"类型:type"递归类型（如 Martin-Löf 类型论中的 universes），是类型系统的自然选择。
-
-**题目 10.6.2**：元类与 AOP（面向切面编程）的关系是什么？元类能否完全实现 AOP？
-
-**解析讲解**：元类是 Python 实现 AOP 的主要机制之一。通过元类，可以在类创建时：
-
-- 自动为方法添加日志（前/后置增强）；
-- 自动为方法添加事务管理（环绕增强）；
-- 自动为方法添加权限检查（前置增强）。
-
-但元类不能完全实现 AOP，因为：
-
-1. 元类仅在类创建时生效，无法处理运行时动态添加的方法；
-2. 元类无法跨多个类统一管理切面（需通过共享元类或装饰器组合）；
-3. 元类难以实现"切入点"（pointcut）的灵活匹配（如"所有以 `service_` 开头的方法"）。
-
-完整的 AOP 需要结合元类、装饰器、描述符、动态代理等多种机制。
-
-**题目 10.6.3**：PEP 487 是否"消灭"了元类？哪些场景仍必须使用元类？
-
-**解析讲解**：PEP 487 消灭了约 90% 的元类需求，但以下场景仍必须使用元类：
-
-1. **修改类的 `__call__` 行为**：如单例、对象池、延迟初始化；
-2. **自定义类命名空间容器**：如 `__prepare__` 返回 `defaultdict` 或带校验的容器；
-3. **修改类的 `__class__`**：如动态替换类的元类（高级元编程）；
-4. **拦截类的实例化**：如禁止实例化、返回缓存实例、返回不同类的实例；
-5. **实现抽象基类的严格检查**：如 `abc.ABCMeta` 的 `__abstractmethods__` 机制。
-
-**题目 10.6.4**：如果让你设计 Python 4，你会保留元类吗？如何改进？
-
-**解析讲解**：（开放题，以下是一种可能的设计）：
-
-保留元类，但做以下改进：
-
-1. **统一元类与 `__init_subclass__`**：将 `__init_subclass__` 提升为元类钩子，使其与 `__new__`/`__init__` 在同一层级，语义更一致。
-2. **显式声明元类传播范围**：允许声明 `metaclass=Meta, propagate=False`，使元类不向子类传播，避免"魔法溢出"。
-3. **元类组合**：支持 `metaclass=(MetaA, MetaB)`，自动生成桥接元类，消除元类冲突。
-4. **元类性能优化**：在 CPython 中为元类 `__call__` 提供快速路径，减少实例化开销。
-5. **元类与类型注解的深度集成**：将 `__annotations__` 解析提升为元类钩子，避免在元类中手动调用 `typing.get_type_hints`。
-6. **元类的可视化工具**：提供标准库工具，可视化元类链与类创建时序，降低调试难度。
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档与 PEP
 
 Python Software Foundation. (2024). *The Python Tutorial: Metaclasses*. Retrieved from https://docs.python.org/3/reference/datamodel.html#metaclasses
@@ -2257,18 +2206,6 @@ Python Software Foundation. (2024). *Lib/enum.py: EnumMeta*. GitHub repository. 
 
 Python Software Foundation. (2024). *Lib/abc.py: ABCMeta*. GitHub repository. https://github.com/python/cpython/blob/main/Lib/abc.py
 
-### 10.5 在线资源
-
-Hettinger, R. (2013). *Python's Class Development Toolkit*. PyCon Canada. https://www.youtube.com/watch?v=HTLu2DFOdTg
-
-Beazley, D. (2013). *Metaclasses: The Wizardry of Object Creation*. PyCon. https://www.youtube.com/watch?v=uOzTwCk0qXo
-
-Bicking, I. (2010). *A Metaclass Seminar*. Blog post. http://ianbicking.org/blog/2010/10/a-metaclass-seminar.html
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 元类进阶主题
 
 - **元类与描述符的协同**：阅读 `descriptor` 协议文档，理解 `__set_name__` 与元类 `__new__` 的协作。
@@ -2296,12 +2233,6 @@ Bicking, I. (2010). *A Metaclass Seminar*. Blog post. http://ianbicking.org/blog
 - *Fluent Python* (2nd ed.) 第 24 章 "Class Metaprogramming"：Luciano Ramalho 对元类有深入浅出的讲解，涵盖 `__init_subclass__` 与描述符协同。
 - *Python Cookbook* (3rd ed.) 第 9 章 "Metaprogramming"：David Beazley 提供了大量元类实战技巧。
 - *Robust Python* (2021) 第 13 章 "Metaclasses"：Patrick Viafore 从类型安全角度讨论元类的使用与风险。
-
-### 11.5 社区资源
-
-- [Python Metaclasses Wiki](https://wiki.python.org/moin/Metaclasses)
-- [Stack Overflow: metaclass tag](https://stackoverflow.com/questions/tagged/metaclass)
-- [Real Python: Python Metaclasses](https://realpython.com/python-metaclasses/)
 
 ### 11.6 进阶案例库
 
@@ -2667,56 +2598,6 @@ class ThreadSafeMeta(type):
             mcs._registry[name] = cls
             return cls
 ```
-
----
-
-## 附录 H：元类面试题精选
-
-### H.1 初级面试题
-
-**常见疑问 1**：什么是元类？请用一句话定义。
-
-**A**：元类是实例为类的类，即"类的类"。
-
-**常见疑问 2**：Python 中默认的元类是什么？
-
-**A**：`type`。
-
-**常见疑问 3**：如何声明一个类使用自定义元类？
-
-**A**：在 Python 3 中，使用 `class Foo(metaclass=MyMeta):`。
-
-### H.2 中级面试题
-
-**常见疑问 4**：元类的 `__new__` 与 `__init__` 有何区别？
-
-**A**：`__new__` 创建并返回类对象，可修改命名空间；`__init__` 在类创建后初始化类对象，可设置类属性但无法修改命名空间。
-
-**常见疑问 5**：什么是元类冲突？如何解决？
-
-**A**：多继承时，若多个基类的元类不同且无共同子类，会触发 `TypeError: metaclass conflict`。解决方案是定义一个同时继承所有基类元类的桥接元类。
-
-**常见疑问 6**：元类与类装饰器有何区别？
-
-**A**：元类在类创建时运行，可修改命名空间、控制实例化；类装饰器在类创建后运行，仅能修改类的 `__dict__`。元类可向子类传播，类装饰器不会。
-
-### H.3 高级面试题
-
-**常见疑问 7**：为什么 `type.__class__ is type`？这是否构成悖论？
-
-**A**：这是 Python 的自指设计，截断元类层级的无限上升。`type` 在 CPython 中是静态分配的对象，其 `ob_type` 指向自身。这不构成逻辑悖论，因为"实例化"是语义自指，而非"集合属于"的语义自指。
-
-**常见疑问 8**：PEP 487 引入的 `__init_subclass__` 是否使元类过时？
-
-**A**：未完全过时。`__init_subclass__` 替代了约 90% 的元类场景（如字段收集、接口检查、插件注册），但以下场景仍需元类：修改 `__call__` 行为、自定义命名空间容器（`__prepare__`）、拦截实例化、实现抽象基类严格检查。
-
-**常见疑问 9**：如何调试元类代码？
-
-**A**：1) 在元类 `__new__`/`__init__` 中打印日志；2) 使用 `traceback.print_stack()` 追踪调用栈；3) 检查 `cls.__class__`、`cls.__bases__`、`cls.__dict__`；4) 用 `print_metaclass_chain` 工具可视化元类链。
-
-**常见疑问 10**：设计一个生产级 ORM 元类，需要考虑哪些因素？
-
-**A**：1) 字段收集与继承；2) 表名推断与覆盖；3) 主键自动添加；4) 外键关系解析；5) 索引声明；6) 字段类型校验；7) 默认值处理；8) 与查询集（QuerySet）集成；9) 序列化支持；10) 迁移生成；11) 多数据库后端兼容；12) 线程安全；13) 性能优化（如延迟字段解析）；14) 类型注解协同；15) IDE 支持（`.pyi` 存根）。
 
 ---
 

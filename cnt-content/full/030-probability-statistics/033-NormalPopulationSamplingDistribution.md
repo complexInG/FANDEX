@@ -10,7 +10,6 @@ updated: '2026-08-02'
 related:
   - 'probability-statistics/统计量'
   - 'probability-statistics/三大分布'
-  - 'probability-statistics/抽样分布典型例题'
   - 'probability-statistics/点估计'
 prerequisites:
   - 'probability-statistics/样本空间与事件'
@@ -173,50 +172,6 @@ $$\frac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2} = \frac{\frac{(n_1-1)S_1^2}{\sigma_1
 - $\chi^2$ 检验：方差检验（043 篇）
 - $F$ 检验：方差齐性检验（044 篇）
 
-## 4. 完整例题
-
-### 例题 1：正态总体均值的概率计算
-
-设 $X_1, \cdots, X_{16}$ 为来自 $N(\mu, 4)$ 的样本，求 $P(|\bar{X} - \mu| < 0.5)$。
-
-**解**：
-
-由定理一，$\bar{X} \sim N\left(\mu, \dfrac{4}{16}\right) = N\left(\mu, \dfrac{1}{4}\right)$，故 $\dfrac{\bar{X} - \mu}{1/2} \sim N(0, 1)$。
-
-$$P(|\bar{X} - \mu| < 0.5) = P\left(\left|\frac{\bar{X} - \mu}{0.5}\right| < 1\right) = 2\Phi(1) - 1 = 2 \times 0.8413 - 1 = 0.6826$$
-
-**解读**：均值在 0.5 个单位的"误差圈"内的概率约 68.3%，这正是"$1\sigma$ 区间"规律在样本均值上的体现——只不过这里的 $\sigma$ 被压缩成了 $\sigma/\sqrt{n} = 0.5$。
-
-### 例题 2：正态总体样本方差的期望与方差
-
-设 $X_1, \cdots, X_{10}$ 为来自 $N(0, \sigma^2)$ 的样本，求 $E(S^2)$ 和 $D(S^2)$。
-
-**解**：
-
-由定理二，$\dfrac{9S^2}{\sigma^2} \sim \chi^2(9)$。由 $\chi^2$ 分布性质 $E(\chi^2(n)) = n$、$D(\chi^2(n)) = 2n$：
-
-$$E\left(\frac{9S^2}{\sigma^2}\right) = 9 \implies E(S^2) = \sigma^2$$
-
-$$D\left(\frac{9S^2}{\sigma^2}\right) = 18 \implies D(S^2) = \frac{18\sigma^4}{81} = \frac{2\sigma^4}{9}$$
-
-**解读**：$E(S^2) = \sigma^2$ 再次验证无偏性；$D(S^2) = \dfrac{2\sigma^4}{9}$ 表明样本量越大，样本方差的波动越小。
-
-### 例题 3：t 统计量的构造（$\sigma$ 未知）
-
-设 $X_1, \cdots, X_9$ 为来自 $N(\mu, \sigma^2)$ 的样本（$\sigma$ 未知），求 $P(|\bar{X} - \mu| < S)$。
-
-**解**：
-
-由定理四，$T = \dfrac{\bar{X} - \mu}{S/\sqrt{9}} = \dfrac{3(\bar{X} - \mu)}{S} \sim t(8)$。
-
-$$P(|\bar{X} - \mu| < S) = P\left(\left|\frac{3(\bar{X} - \mu)}{S}\right| < 3\right) = P(|T| < 3)$$
-
-查 $t$ 分布表：$t_{0.01}(8) = 2.896$，$t_{0.005}(8) = 3.355$。因为 $2.896 < 3 < 3.355$：
-
-$$P(|T| < 3) = 1 - 2P(T > 3) \approx 1 - 2 \times 0.0075 = 0.985$$
-
-（更精确地，$P(T > 3) \approx 0.008$，$P(|T| < 3) \approx 0.984$。）
-
 ## 5. 常见错误与对策
 
 | 错误类型 | 错误示例 | 原因分析 | 纠正方法 |
@@ -228,53 +183,11 @@ $$P(|T| < 3) = 1 - 2P(T > 3) \approx 1 - 2 \times 0.0075 = 0.985$$
 | 均值差方差相加 | 认为 $D(\bar{X} - \bar{Y}) = \frac{\sigma_1^2}{n_1} - \frac{\sigma_2^2}{n_2}$ | 方差没有"减法" | 独立变量之差的方差是**相加**：$D(\bar{X} - \bar{Y}) = \frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}$ |
 | 分位点用错 | 查 $t$ 表用 $\alpha$ 而非 $\alpha/2$（双侧时） | 混淆单侧与双侧尾部面积 | 双侧概率区间 $P(|T| < c) = 1-\alpha$ 对应 $c = t_{\alpha/2}(n-1)$ |
 
-## 6. 实战练习
-
-**练习 1（单总体均值）**：设 $X_1, \cdots, X_{25}$ 为来自 $N(\mu, \sigma^2)$ 的样本，$\sigma = 2$，求 $P(|\bar{X} - \mu| < 0.4)$。
-
-**提示**：$\dfrac{\bar{X} - \mu}{2/5} \sim N(0,1)$。
-
-**参考答案要点**：$P(|Z| < 1) = 2\Phi(1) - 1 = 0.6826$。
-
-**练习 2（单总体方差）**：设 $X_1, \cdots, X_{20}$ 为来自 $N(\mu, \sigma^2)$ 的样本，求 $P\left(\dfrac{19S^2}{\sigma^2} \leq 30.144\right)$ 的近似值。
-
-**提示**：$\dfrac{19S^2}{\sigma^2} \sim \chi^2(19)$，查 $\chi^2$ 表上分位数。
-
-**参考答案要点**：$\chi^2_{0.05}(19) = 30.144$，故 $P(\chi^2(19) \leq 30.144) = 0.95$。
-
-**练习 3（双总体均值差）**：$X_1, \cdots, X_{n_1} \sim N(\mu_1, \sigma^2)$ 与 $Y_1, \cdots, Y_{n_2} \sim N(\mu_2, \sigma^2)$ 独立，写出 $\bar{X} - \bar{Y}$ 的分布。
-
-**提示**：用定理五的特例（$\sigma_1^2 = \sigma_2^2 = \sigma^2$ 已知）。
-
-**参考答案要点**：$\bar{X} - \bar{Y} \sim N\left(\mu_1 - \mu_2, \sigma^2\left(\dfrac{1}{n_1} + \dfrac{1}{n_2}\right)\right)$。
-
-**练习 4（双总体方差比）**：设 $n_1 = 9$，$n_2 = 11$，$\sigma_1^2 = \sigma_2^2$，求 $c$ 使 $P\left(\dfrac{S_1^2}{S_2^2} > c\right) = 0.05$。
-
-**提示**：$\dfrac{S_1^2}{S_2^2} \sim F(8, 10)$。
-
-**参考答案要点**：$c = F_{0.05}(8, 10) = 3.07$（查 F 分布表）。
-
-**练习 5（综合）**：设 $X_1, \cdots, X_n \sim N(\mu, \sigma^2)$，证明 $\dfrac{\bar{X} - \mu}{S/\sqrt{n}} \sim t(n-1)$（写出完整推导过程）。
-
-**提示**：三个定理按顺序组合：定理一给 $Z$，定理二给 $\chi^2$，定理三给独立性。
-
-**参考答案要点**：$Z = \dfrac{\bar{X} - \mu}{\sigma/\sqrt{n}} \sim N(0,1)$，$Y = \dfrac{(n-1)S^2}{\sigma^2} \sim \chi^2(n-1)$，$Z$ 与 $Y$ 独立（由 $\bar{X}$ 与 $S^2$ 独立），则 $\dfrac{Z}{\sqrt{Y/(n-1)}} = \dfrac{\bar{X} - \mu}{S/\sqrt{n}} \sim t(n-1)$。
-
 ## 7. 一句话记忆
 
 **正态总体的抽样分布四定理：$\bar{X}$ 是正态（方差缩 $n$ 倍），$\frac{(n-1)S^2}{\sigma^2}$ 是 $\chi^2(n-1)$，$\bar{X}$ 与 $S^2$ 独立，于是 $\sigma$ 已知用 $Z$、$\sigma$ 未知用 $t$、比方差用 $F$。**
 
-## 参考文献
-
-- 盛骤、谢式千、潘承毅，《概率论与数理统计》（浙大版第四版），高等教育出版社：第六章第三节"正态总体的抽样分布"。
-- 浙江大学概率论与数理统计 MOOC 第 42 讲（单个正态总体的抽样分布，定理一至定理四的证明）：https://cloud.moezx.cc/Document/mooc/%E6%B5%99%E5%A4%A7%E6%A6%82%E7%8E%87%E8%AE%BA/
-- University of Chicago STAT 244 Lecture 13（样本均值与样本方差的分布）：https://statistics.uchicago.edu/~yibi/teaching/stat244/L13.pdf
-- Khan Academy 统计与概率：https://zh.khanacademy.org/math/statistics-probability
-- OpenIntro Statistics：https://www.openintro.org/book/os/
-
 ## 延伸阅读
-
 - 统计量与样本方差无偏性的概念基础，见《统计量》。
 - $\chi^2$、$t$、$F$ 分布的定义与性质，见《三大分布》。
-- 抽样分布定理的查表与计算练习，见《抽样分布典型例题》。
 - 利用抽样分布做区间估计与假设检验，见 035-045 文档。

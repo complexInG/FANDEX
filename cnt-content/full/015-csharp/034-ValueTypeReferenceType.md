@@ -1197,57 +1197,6 @@ public class ValueComparer<T> {
 
 可变 struct 在 EF Core 中需要自定义 `ValueComparer` 提供"深拷贝快照"，否则变更跟踪失效。这展示了 struct 在框架中的复杂性。
 
-## 十、习题
-
-### 选择题知识点讲解
-
-**题 1**：下列代码输出是什么？
-
-```csharp
-struct Point { public int X, Y; }
-var p1 = new Point { X = 1, Y = 2 };
-var p2 = p1;
-p2.X = 10;
-Console.WriteLine($"{p1.X}, {p2.X}");
-```
-
-- A. `10, 10`
-- B. `1, 10`
-- C. `1, 1`
-- D. `10, 1`
-
-**答案：B**
-
-`p1` 和 `p2` 是独立的值类型实例。`p2 = p1` 复制所有字段。修改 `p2.X` 不影响 `p1`。输出 `1, 10`。
-
-**题 2**：下列哪种情况下值类型会分配在堆上？
-
-- A. `int x = 42;`
-- B. `List<int> list = new() { 1, 2, 3 };`
-- C. `struct Point { public int X, Y; } Point p = new();`
-- D. `int[] arr = new int[10];` 中 `arr` 变量本身
-
-**答案：B**
-
-`List<int>` 内部维护 `int[]`，数组是引用类型，分配在堆上。但数组内联存储 `int` 值（值类型字段内联），不装箱。
-
-A 中 `x` 是局部值类型，在栈上；C 中 `p` 同理；D 中 `arr` 变量是引用（在栈上），但指向堆上的数组对象。
-
-注意：`List<int>` 中的 `int` 不装箱，因为 `List<T>` 对值类型有编译期特化（CLR 泛型不为每个 T 生成新代码，但为值类型 T 生成专用布局）。
-
-**题 3**：下列哪个修饰符能让 struct 字段不可被外部修改？
-
-- A. `private`
-- B. `readonly`
-- C. `const`
-- D. `static`
-
-**答案：B**
-
-`readonly` 修饰字段后，仅构造器能赋值，其他方法不能修改。`private` 仅限制访问，不限制修改；`const` 用于编译期常量；`static` 是类级别字段。
-
-最佳实践是用 `readonly struct` 修饰整个 struct，使所有字段隐式 readonly。
-
 ### 填空题知识点讲解
 
 **题 4**：`int` 装箱为 `object` 时，会在堆上创建一个大小为 ________ 字节的对象（64 位系统）。
@@ -1453,72 +1402,6 @@ public class Processor {
 }
 ```
 
-### 10.4 思考题
-
-**题 9**：为何 .NET 设计 `System.ValueType` 本身是引用类型？这一设计有何优劣？
-
-**优势**：
-1. **统一类型系统**：所有类型最终都可视为 `object`，便于反射、API 设计（如 `object.Equals(object)`）。
-2. **装箱的优雅**：值类型通过继承 `ValueType` 自动获得装箱为 `object` 的能力，无需语言特殊机制。
-3. **运行时统一**：CLR 的方法表、GC 等基础设施只需处理 `object` 子类，简化实现。
-
-**劣势**：
-1. **概念混淆**：初学者容易以为 `ValueType` 是值类型。
-2. **装箱不可避免**：调用 `ValueType` 上的方法（如 `ToString()`）会装箱，需要 `IEquatable<T>` 等接口规避。
-3. **多态开销**：值类型通过接口多态时仍需装箱。
-
-替代设计如 Swift 直接区分 value/reference，无统一基类，避免装箱但失去一些统一性。
-
-**题 10**：在微服务架构中，跨服务传递值类型（如 `Money`、`Point`）应如何处理？请列出 3 种策略并权衡。
-
-1. **DTO 折叠为引用类型**：跨服务边界用 `record class` 表示相同数据，避免序列化器处理 struct 的复杂性。
-   - 优点：序列化器（System.Text.Json、Protobuf）对 class 支持更好。
-   - 缺点：服务内部仍需在 struct 与 DTO 间映射。
-
-2. **struct 直接序列化**：用 `System.Text.Json` 的 source generator 支持 struct。
-   - 优点：零映射开销，类型一致。
-   - 缺点：部分序列化器对 struct 支持不全（如默认构造器、`init` 属性）。
-
-3. **二进制协议 + MemoryMarshal**：对性能敏感场景，定义二进制协议，直接 `MemoryMarshal.Read<T>`。
-   - 优点：极快，零分配。
-   - 缺点：版本兼容性差，需固定布局。
-
-**推荐**：默认用策略 1（DTO 折叠），热点路径用策略 3（如游戏服务器、金融行情）。
-
-## 十一、参考文献
-
-[1] Hejlsberg, A., Torgersen, M., Wiltamuth, S., and Golde, P. 2022. *The C# Programming Language* (4th ed.). Addison-Wesley Professional. ISBN: 978-0-321-74176-9.
-
-[2] ECMA International. 2023. *ECMA-334: The C# Language Specification* (6th ed.). ECMA, Geneva. https://www.ecma-international.org/wp-content/uploads/ECMA-334_6th_edition_december_2022.pdf
-
-[3] ECMA International. 2023. *ECMA-335: Common Language Infrastructure (CLI)* (6th ed.). ECMA, Geneva. https://www.ecma-international.org/wp-content/uploads/ECMA-335_6th_edition_december_2022.pdf
-
-[4] Kennedy, A. and Syme, D. 2001. Design and implementation of generics for the .NET Common Language Runtime. In *Proceedings of the 2001 ACM SIGPLAN Conference on Programming Language Design and Implementation* (PLDI '01). ACM, New York, NY, 1–12. DOI: https://doi.org/10.1145/378795.378797
-
-[5] Torgersen, M., Wiltamuth, S., and Hejlsberg, A. 2004. C# generics vs. C++ templates, Java generics. Microsoft Developer Network.
-
-[6] Botta, A. and Russo, D. 2018. The Span<T> and Memory<T> papers. Microsoft .NET Blog.
-
-[7] Skeet, J. 2019. *C# in Depth* (4th ed.). Manning Publications. ISBN: 978-1-61729-453-2.
-
-[8] Albahari, J. and Albahari, B. 2022. *C# 10 in a Nutshell: The Definitive Reference*. O'Reilly Media. ISBN: 978-1-0981-2195-2.
-
-[9] Wagner, B. 2024. *Effective C#* (3rd ed.). Addison-Wesley Professional.
-
-[10] Microsoft. 2024. *Memory and Span-related types*. .NET documentation. https://learn.microsoft.com/dotnet/standard/memory-and-spans/
-
-[11] Microsoft. 2024. *ref struct types*. C# language reference. https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/ref-struct
-
-[12] Lippert, E. 2011. *What's the difference between struct and class?* Fabulous Adventures in Coding blog.
-
-[13] Abadi, M. and Cardelli, L. 1996. *A Theory of Objects*. Springer-Verlag, New York. ISBN: 978-0-387-94775-4. (类型系统理论基础)
-
-[14] Smith, C. 2015. *Swift's value types*. Apple WWDC session 414.
-
-[15] Gafter, N. and Bloch, J. 2006. *Making the Most of Java 5: Generics and Annotations*. JavaOne. (对比 C# 与 Java 泛型实现)
-
-## 十二、延伸阅读
-
 ### 12.1 书籍
 
 - Jon Skeet, *C# in Depth* 第 4 版：第 2 章深入类型系统。
@@ -1530,14 +1413,6 @@ public class Processor {
 
 - Kennedy & Syme, "Design and implementation of generics for the .NET CLR"（PLDI 2001）：CLR 泛型设计奠基论文。
 - Torgersen et al., "The Expression Tree v2 Specification"：表达式树与值类型的交互。
-
-### 12.3 在线资源
-
-- .NET 官方文档：<https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/value-types>
-- Span<T> 指南：<https://learn.microsoft.com/dotnet/standard/memory-and-spans/>
-- Eric Lippert 博客系列："What is the difference between struct and class?"
-- Stephen Toub 性能博客：.NET 8/9 中值类型的 SIMD 优化。
-- Joe Duffy 博客："High-performance C# struct design"。
 
 ### 12.4 相关课程
 

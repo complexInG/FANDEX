@@ -2079,8 +2079,6 @@ gcc -fsanitize=cfi ...
 
 详见《静态分析与调试》章节。
 
-### 12.5 延伸阅读
-
 #### 12.5.1 标准
 
 - ISO/IEC 9899:2018 (C17):当前最广泛支持的标准
@@ -2106,14 +2104,6 @@ gcc -fsanitize=cfi ...
 
 - 《Secure Coding in C and C++》Robert Seacord 著,CERT 标准
 - 《Cryptography in C and C++》Michael Welschenbach 著
-
-#### 12.5.5 在线资源
-
-- cppreference.com:C 标准库参考,更新及时
-- gcc.gnu.org/onlinedocs/:GCC 官方文档
-- clang.llvm.org/docs/:Clang 官方文档
-- iso-9899.info:C 标准草案汇总
-- comp.lang.c:历史悠久的 C 新闻组
 
 ### 12.6 学习路径总结
 
@@ -2454,8 +2444,6 @@ L"hello"    /* wchar_t[6] */
 (写下你自己的理解与疑问)
 ```
 
-### 12.10 自测题
-
 #### 选择题
 
 1. 下列哪个声明定义了一个指向 `const int` 的指针?
@@ -2504,8 +2492,6 @@ for (int i = 0; i < MAX; i++) {
     sum += arr[i];
 }
 ```
-
-### 12.11 参考答案
 
 #### 12.11.1 简答题答案
 

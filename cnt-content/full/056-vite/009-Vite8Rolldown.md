@@ -287,58 +287,6 @@ pnpm add -D vite@latest @vitejs/plugin-vue@latest
 | 升级后首次构建较慢 | 模块级持久化缓存未建立 | 属正常现象，第二次构建即开始享受缓存收益 |
 | `rollupOptions` 出现弃用提示 | 旧配置名仍在兼容期内 | 迁移到 `rolldownOptions`（或 `worker.rolldownOptions`） |
 
-## 10. 实战练习
-
-### 练习 1：读懂版本号（入门）
-
-**题目**：打开项目的 `package.json`，查看 `vite` 依赖版本，对照第 1 节的时间线判断：你当前用的是哪个大版本？对应什么架构（双引擎还是单引擎）？
-
-**提示**：`"vite": "^7.x.x"` 是双引擎（esbuild + Rollup）；`"vite": "^8.x.x"` 是单引擎（Rolldown）。
-
-**参考答案要点**：`^8.0.0` 及以上为单引擎架构，开发与生产均由 Rolldown 承担；`^7.x.x` 及以下为双引擎。若项目还是 7，可按第 8 节迁移指南升级。
-
-### 练习 2：实测构建性能对比（入门）
-
-**题目**：选择一个你现有的项目，先记录 `pnpm build` 的耗时，然后 `pnpm add -D vite@latest` 升级到 Vite 8，再次构建对比耗时与产物体积。
-
-**提示**：两次构建前建议都执行一次干净构建（删除 `dist`）；记录终端输出的"构建耗时"与各 chunk 体积。
-
-**参考答案要点**：升级后构建耗时通常下降（中型项目常见 3-8 倍提升，视项目复杂度）；产物体积通常更小或持平（Rolldown 的死代码消除与常量内联更激进）；若个别 chunk 体积变大，用 007 篇的 visualizer 分析定位。
-
-### 练习 3：验证插件兼容性（进阶）
-
-**题目**：列出项目里使用的所有 Vite/Rollup 插件，逐一到 https://registry.vite.dev/ 查询其 Vite 8 / Rolldown 兼容状态，把不兼容或标为"需更新"的插件整理成升级清单。
-
-**提示**：registry.vite.dev 支持按 Vite/Rolldown/Rollup 分类筛选；重点检查非官方、小众插件。
-
-**参考答案要点**：大多数主流插件（官方框架插件、unplugin 系列、vite-plugin-pwa 等）已兼容 Vite 8；若发现个别不兼容插件，查找其 GitHub 仓库的兼容版本或替代插件，然后执行 `pnpm add -D 插件@最新版` 升级。
-
-### 练习 4：体验 Oxc 转换（进阶）
-
-**题目**：在你的 React 项目中检查 `@vitejs/plugin-react` 的版本（Vite 8 配套的 v6 起底层为 Oxc）。对比升级前后：Babel 是否还出现在依赖树里？构建时间有何变化？
-
-**提示**：`pnpm why @babel/core` 查看 Babel 是否仍在依赖树；对比升级前后的构建耗时。
-
-**参考答案要点**：`@vitejs/plugin-react` v6 + Vite 8 后 `@babel/core` 不再是必需依赖，依赖树更干净；React 项目编译速度提升。若你的项目用了 Babel 自定义插件（非标准 JSX 转换），需评估迁移到 Oxc 的影响。
-
-### 练习 5（挑战）：完整迁移一个项目到 Vite 8
-
-**题目**：把一个 Vite 7（或更低）项目完整迁移到 Vite 8，迁移清单包括：依赖升级、Node 版本确认、配置检查（rollupOptions/esbuild 相关）、插件升级、构建验证与产物对比。写出迁移记录。
-
-**提示**：按第 8 节迁移指南逐步执行；每步记录命令与结果；迁移后用 `pnpm build` + `pnpm preview` 验证 dev 与生产行为一致。
-
-**参考答案要点**：迁移记录应包含：`package.json` 中 vite 与插件版本的变化、Node 版本检查结果、`vite.config.ts` 的改动（如 `esbuild` 配置块的处理、`rollupOptions` 是否迁移为 `rolldownOptions`）、升级前后构建耗时与产物体积对比、以及遇到的问题与解决办法（常见问题可对照第 9 节错误表）。
-
 ## 11. 一句话记忆
 
 Vite 8 给跑车换了一台统一发动机：Rust 写的 Rolldown 同时接管开发与生产，双引擎时代"本地能跑、上线就挂"的顽疾从架构上根除——更快、更一致、插件生态照常运转。
-
-## 12. 参考链接与延伸阅读
-
-- Vite 8 发布公告（官方英文）：https://vite.dev/blog/announcing-vite8
-- Vite 升级迁移指南（官方）：https://cn.vitejs.dev/guide/migration
-- Rolldown 官方文档：https://rolldown.rs/
-- VoidZero 技术博客（Rolldown 1.0 公告）：https://voidzero.dev/posts
-- Vite 中文文档：https://cn.vitejs.dev/
-
-延伸阅读：Rolldown 基准测试仓库 https://github.com/rolldown/benchmarks（可复现 10-30 倍性能数据）；关注 Vite 官方博客（https://vite.dev/blog）可第一时间获取 8.x 后续版本的实验特性进展（Bundled Dev Mode、Chunk Import Map 等）。

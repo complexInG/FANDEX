@@ -4,7 +4,7 @@ title: 重积分
 module: calculus
 category: 高等数学
 difficulty: advanced
-description: 重积分的 Riemann 与 Lebesgue 形式化定义、Fubini-Tonelli 定理、变量替换与 Jacobian 行列式、极/柱/球坐标系、Gauss-Green-Stokes 向量分析定理、Monte Carlo 高维积分与工程应用。本篇以 Spivak Calculus on Manifolds、Apostol Mathematical Analysis、Rudin PMA/RA、Folland Real Analysis 风格严格阐述,配套 40+ Python/SymPy/scipy 数值与符号计算示例、6 个 Mermaid 图、12 道 Spivak 风格习题。
+description: 重积分的 Riemann 与 Lebesgue 形式化定义、Fubini-Tonelli 定理、变量替换与 Jacobian 行列式、极/柱/球坐标系、Gauss-Green-Stokes 向量分析定理、Monte Carlo 高维积分与工程应用。本篇以 Spivak Calculus on Manifolds、Apostol Mathematical Analysis、Rudin PMA/RA、Folland Real Analysis 风格严格阐述,配套 40+ Python/SymPy/scipy 数值与符号计算示例、6 个 Mermaid 图。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -2104,40 +2104,6 @@ $$C = e^{-rT} \int_{\mathbb{R}^n_+} \max\left(\sum_i w_i S_i - K, 0\right) p(\ma
 - Monte Carlo
 - Moment matching 近似
 - 偏微分方程数值解
-
-## 第 10 章 习题与解答
-
-本章节习题以问答形式完整给出,涵盖:
-
-- 填空题 2 道(ex-calc-mi-fb-01, ex-calc-mi-fb-02)
-- 选择题 3 道(ex-calc-mi-ch-01 至 ex-calc-mi-ch-03)
-- 代码修正题 2 道(ex-calc-mi-cf-01, ex-calc-mi-cf-02)
-- 开放题 4 道(ex-calc-mi-oe-01 至 ex-calc-mi-oe-04)
-
-每道题均含认知层级(Bloom)、难度系数、参考答案、关键点与解析,符合 Spivak/Apostol 风格。
-
-## 第 11 章 参考文献
-
-完整参考文献列表见 frontmatter 的 `references` 字段,共 14 条,涵盖:
-
-- Spivak《Calculus on Manifolds》(1965)
-- Apostol《Mathematical Analysis》(1974)
-- Rudin《Principles of Mathematical Analysis》3rd (1976)
-- Rudin《Real and Complex Analysis》3rd (1987)
-- Folland《Real Analysis》2nd (1999)
-- Royden & Fitzpatrick《Real Analysis》4th (2010)
-- Stein & Shakarchi《Real Analysis》(2005)
-- Courant & John《Introduction to Calculus and Analysis II/2》(1989)
-- Munkres《Analysis on Manifolds》(1991)
-- Spivak《Differential Geometry Vol 1》3rd (1999)
-- Fubini《Sugli integrali multipli》(1907)
-- Tonelli《Sull'integrazione per parti》(1909)
-- Carathéodory《Über das lineare Maß》(1914)
-- Lebesgue《Leçons sur l'intégration》(1904)
-
-引用格式遵循 ACM Reference Format,每条均包含作者、年份、标题、出版方/期刊、版本/卷期、DOI(若有)。
-
-## 第 12 章 延伸阅读
 
 ### 12.1 模块内关联
 

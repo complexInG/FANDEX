@@ -477,32 +477,12 @@ Kotlin 基础语法的设计哲学可以概括为“表达力优先、安全内�
 
 类型推断不是类型弱化：Kotlin 仍是强静态类型语言，推断发生在编译期。理解了这一点，就不会误以为 `val x = 1` 是动态类型。
 
-## 10. 参考文献
-
-Kotlin 官方文档, Basic syntax, 访问日期 2026-08-01, https://kotlinlang.org/docs/basic-syntax.html
-
-Kotlin 官方文档, Null safety, 访问日期 2026-08-01, https://kotlinlang.org/docs/null-safety.html
-
-Kotlin 官方文档, Control flow, 访问日期 2026-08-01, https://kotlinlang.org/docs/control-flow.html
-
-JetBrains Blog, Kotlin 2.0 发布公告, 访问日期 2026-08-01, https://blog.jetbrains.com/kotlin/
-
-Kotlin 官方文档, 与 Java 互操作, 访问日期 2026-08-01, https://kotlinlang.org/docs/java-interop.html
-
 ## 11. 延伸阅读
-
 Kotlin 集合与函数式编程，见 014-kotlin 模块的集合与 lambda 文档；
-
 Kotlin 协程与并发，见 014-kotlin 模块的协程文档；
-
 JVM 字节码与内存模型，见 013-java 模块相关文档；
-
 Android 开发中的 Kotlin 应用，见 018-harmonyos 或移动端相关模块；
-
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Kotlin 与 Android 课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Kotlin 入门课程。
-
 ---
-
 ### 1. 变量声明
 
 Kotlin 提供两种变量声明方式：`val`（只读）和 `var`（可变）。
@@ -1598,4 +1578,3 @@ fun area(s: JShape): Double = when (s) {
     is JSquare -> s.side * s.side
 }
 ```
-

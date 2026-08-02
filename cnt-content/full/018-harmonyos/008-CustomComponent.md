@@ -1888,8 +1888,6 @@ struct DynamicForm {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **常见疑问 1**：ArkUI 自定义组件有哪六个生命周期回调？分别说明触发时机。
@@ -1958,49 +1956,8 @@ struct ProductList {
 
 ---
 
-## 10. 参考文献
-
-1. Huawei. ArkUI Developer Documentation. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ark-ui-0000001501453337
-
-2. Huawei. ArkTS Language Specification. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-specification-0000001774279709
-
-3. Huawei. @Reusable Decorator: Component Reuse. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-reusable-0000001774279618
-
-4. Huawei. @BuilderParam Decorator. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-builderparam-0000001774279606
-
-5. Apple Inc. SwiftUI Declarations. Apple Developer Documentation. 2024. https://developer.apple.com/documentation/swiftui
-
-6. Google. Jetpack Compose. Android Developer Documentation. 2024. https://developer.android.com/jetpack/compose
-
-7. Meta. React Hooks. React Documentation. 2024. https://react.dev/reference/react
-
-8. Evan You. Vue 3 Composition API. Vue.js Documentation. 2024. https://vuejs.org/guide/extras/composition-api-faq.html
-
-9. Sebastian Markbåge. React Fiber Architecture. 2017. https://github.com/acdlite/react-fiber-architecture
-
-10. Lee Byron. React Component Performance. React Conf. 2016. https://www.youtube.com/watch?v=KYzlpRv-WZs
-
-11. Anderson, C. R. et al. 2024. Optimizing Declarative UI Performance with Compile-Time Analysis. Proceedings of the ACM on Programming Languages 8, OOPSLA. https://doi.org/10.1145/3649820
-
-12. Zhang, Y. et al. 2023. ArkUI: A High-Performance Declarative UI Framework for HarmonyOS. In Proceedings of the 38th IEEE/ACM International Conference on Automated Software Engineering (ASE '23). IEEE. https://doi.org/10.1109/ASE56229.2023.00145
-
-13. Li, M. and Chen, X. 2024. Compile-Time State Tracking in Declarative UI Frameworks. IEEE Transactions on Software Engineering 50(4): 1234-1250. https://doi.org/10.1109/TSE.2024.3421198
-
----
-
 ## 11. 延伸阅读
-
-- **HarmonyOS 官方文档**：[ArkUI 组件](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkui-ts-components-0000001501271297)
-- **OpenHarmony 源码**：[ArkUI 框架源码](https://gitee.com/openharmony/arkui_ace_engine)
-- **React Fiber**：[架构原理解析](https://github.com/acdlite/react-fiber-architecture)
-- **SwiftUI**：[Apple 官方教程](https://developer.apple.com/tutorials/swiftui)
-- **Jetpack Compose**：[Android 官方教程](https://developer.android.com/courses/pathways/compose)
-- **声明式 UI 理论**：[Out of the Tar Pit](https://github.com/papers-we-love/papers-we-love/blob/master/recommends/out-of-the-tar-pit.pdf)
-- **响应式编程**：[Reactive Manifesto](https://www.reactivemanifesto.org/)
-- **组件设计原则**：[Material Design Components](https://m3.material.io/components)
-
 ---
-
 ## 附录 A：ArkUI 自定义组件装饰器速查表
 
 | 装饰器 | 用途 | 适用场景 |

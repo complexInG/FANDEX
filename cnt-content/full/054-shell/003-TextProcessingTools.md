@@ -183,22 +183,6 @@ grep "$(date -d '5 minutes ago' '+%d/%b/%Y:%H:%M')" error.log | wc -l
 
 **核心套路**：`sort | uniq -c | sort -rn` 是"分组计数 + 排序"的标准三段式——先排序使相同行相邻，`uniq -c` 计数，再按数值倒序排。`$(...)` 命令替换让 grep 的匹配模式动态生成。
 
-## 6. 综合练习：生成简洁日报
-
-```bash
-#!/bin/bash
-LOG="access.log"
-echo "===== 访问统计日报 ====="
-echo "总请求数: $(wc -l < "$LOG")"
-echo "独立 IP 数: $(awk '{print $1}' "$LOG" | sort -u | wc -l)"
-echo "404 次数: $(grep -c ' 404 ' "$LOG")"
-echo "流量 TOP 5 资源:"
-awk '{size[$7] += $10} END {for (u in size) print size[u], u}' "$LOG" \
-    | sort -rn | head -5
-```
-
-脚本把前面所有技巧整合成一个小报表工具，`size[$7] += $10` 按 URL 累加传输字节数，输出流量最大的 5 个资源。该模式可直接套用到任何"按维度聚合统计"的场景。
-
 ## 7. 常见误区
 
 **误区一：grep、sed、awk 都要背下所有选项。** → 记住最常用的 10 个用法（本章已覆盖），其余用 `man` 查。
@@ -210,23 +194,6 @@ awk '{size[$7] += $10} END {for (u in size) print size[u], u}' "$LOG" \
 **误区四：awk 只用来"打印列"。** → awk 的真正威力是统计（关联数组 + END 块），打印列只是入门。
 
 **误区五：什么都用三剑客硬写。** → 复杂逻辑（超过 20 行的 awk）应该用 Python/Perl，三剑客保持"短小精悍"。
-
-## 8. 实战练习
-
-1. **日志分析**：找一份真实的 access.log（或自己造一份），用三剑客统计：总请求数、TOP5 IP、TOP5 页面、404 列表。
-
-2. **sed 改写**：把一份配置文件中所有 `# 注释行` 删除、把 `host=` 改成 `HOST=`，先预览再写回。
-
-3. **awk 报表**：用 awk 统计一份 CSV 数据（如销售额），输出：总销售额、平均单笔、TOP3 商品。
-
-4. **组合实战**：用管道把"错误日志中，最近 1 小时的错误类型分布"统计出来。
-
-## 9. 参考资源
-
-- GNU grep 手册：https://www.gnu.org/software/grep/manual/
-- GNU sed 手册：https://www.gnu.org/software/sed/manual/
-- GNU awk 手册：https://www.gnu.org/software/gawk/manual/
-- 正则表达式在线测试：https://regex101.com/
 
 ## 10. 延伸阅读
 

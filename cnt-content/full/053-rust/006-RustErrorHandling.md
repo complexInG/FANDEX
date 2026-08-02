@@ -230,26 +230,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 讲解：核心业务函数返回 `Result<_, io::Error>` 保持精确；main 用 `Box<dyn Error>` 兜底；外层循环逐文件容错——错误"能精确时精确、能继续时继续"。
 
-## 9. 实战练习
-
-1. **读文件容错**：写一个函数读取文件内容，用 `Result` + `?` 传播错误，在 main 中分别用 match 和 `unwrap_or_default` 处理缺失文件。
-
-2. **自定义错误**：定义一个 `ConfigError` 枚举（用 thiserror），覆盖"文件缺失""格式错误""数值越界"三种情况，让 `?` 自动转换。
-
-3. **解析器练习**：写一个"从字符串解析端口号"的函数，返回 `Result<u16, String>`，用 `ok_or` 把 `Option` 转换为 `Result`。
-
-4. **综合工具**：实现"统计目录中所有 .txt 文件的总行数"的工具，单个文件失败不影响其他文件，最终返回 `Result`。
-
-5. **对比思考**：为什么 `unwrap` 只适合原型？找一个生产代码中应该用 `?` 却用了 `unwrap` 的场景，说明潜在风险。
-
-## 10. 参考资源
-
-TRPL 第 9 章（错误处理）：https://kaisery.github.io/trpl-zh-cn/ch09-00-error-handling.html
-
-Rust 错误处理最佳实践（官方博客）：https://blog.burntsushi.net/rust-error-handling/
-
-thiserror 文档：https://docs.rs/thiserror
-
 ## 11. 小结
 
 错误处理三板斧：`Result` 表达失败、`?` 简化传播、自定义错误类型提升可读性；`panic` 只留给不可恢复场景。牢记：**panic 是异常，Result 是常态**。下一步学习集合与迭代器，掌握 Rust 的日常数据处理武器库。

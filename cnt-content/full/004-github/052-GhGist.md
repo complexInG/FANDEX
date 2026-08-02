@@ -5,7 +5,7 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: 以"三个真实使用场景"为主线讲解 gh gist 系列命令：快速分享代码、备份个人笔记、管理与复用片段，涵盖创建、查看、编辑、克隆、重命名与删除，配以原理讲解、错误对策与实战练习。
+description: 以"三个真实使用场景"为主线讲解 gh gist 系列命令：快速分享代码、备份个人笔记、管理与复用片段，涵盖创建、查看、编辑、克隆、重命名与删除，配以原理讲解、错误对策。
 author: fanquanpp
 updated: '2026-08-02'
 related: []
@@ -248,78 +248,12 @@ gh gist list --json visibility --jq '[.[] | select(.visibility == "public")] | l
 
 ---
 
-## 实战练习
-
-### 练习 1：创建第一个公开片段（入门）
-
-- **题目**：把本地一个文件（如 `hello.py`）发布为公开 gist，带描述"hello world 演示"，并直接在浏览器打开确认。
-- **提示**：`--public` + `-d` + `--web` 三个参数组合。
-- **参考答案要点**：
-  ```bash
-  gh gist create --public hello.py -d "hello world 演示" --web
-  ```
-
-### 练习 2：从标准输入创建（入门）
-
-- **题目**：不创建任何本地文件，把 `console.log('hi')` 这行内容直接变成名为 `hi.js` 的私密 gist。
-- **提示**：用管道 `|` 把 echo 的输出交给 `gh gist create`，用 `-f` 指定文件名；不加 `--public` 即为私密。
-- **参考答案要点**：
-  ```bash
-  echo "console.log('hi')" | gh gist create -f hi.js
-  ```
-
-### 练习 3：备份并取回配置（进阶）
-
-- **题目**：把本机 `~/.bashrc`（或任意配置文件）备份为私密 gist；再把它克隆到 `./my-dotfiles` 目录验证内容一致。
-- **提示**：`create` 默认私密；`clone` 后 `diff` 对比。
-- **参考答案要点**：
-  ```bash
-  gh gist create ~/.bashrc -d "bash 配置备份"
-  gh gist list
-  gh gist clone <上一步输出的 ID> my-dotfiles
-  diff ~/.bashrc my-dotfiles/.bashrc   # 无输出即一致
-  ```
-
-### 练习 4：多文件片段的管理（进阶）
-
-- **题目**：把一个项目里 `utils.py` 和 `README.md` 打包成一个公开 gist；随后查看它包含哪些文件，再把 `README.md` 重命名为 `说明.md`。
-- **提示**：`create` 支持多个文件参数；`view --files` 看清单；`rename` 改名。
-- **参考答案要点**：
-  ```bash
-  gh gist create --public utils.py README.md -d "工具函数集"
-  gh gist view <ID> --files
-  gh gist rename <ID> README.md 说明.md
-  ```
-
-### 练习 5：清理过时片段（挑战）
-
-- **题目**：查找一个你已经不再需要的 gist（可用 `list --limit 20` 查看），先克隆备份，再删除，最后确认列表中没有它。
-- **提示**：删除用 `--yes`；备份用 `clone`。
-- **参考答案要点**：
-  ```bash
-  gh gist list --limit 20
-  gh gist clone <要删的 ID> backup-gist
-  gh gist delete <要删的 ID> --yes
-  gh gist list
-  ```
-
----
-
 ## 一句话记忆
 
 **Gist 是 GitHub 的"便利贴"：`create` 写贴纸（默认私密，`--public` 才公开），`view/list` 翻贴纸，`edit/rename/delete` 整理贴纸，`clone` 把贴纸变成正式文件。**
 
 ---
 
-## 参考链接
-
-- GitHub CLI 官方手册 gh gist：https://cli.github.com/manual/gh_gist
-- GitHub CLI 官方手册 gh gist create：https://cli.github.com/manual/gh_gist_create
-- GitHub CLI 官方手册 gh gist view：https://cli.github.com/manual/gh_gist_view
-- GitHub 文档：关于 Gist：https://docs.github.com/zh/get-started/writing-on-github/editing-and-sharing-content-with-gists/creating-gists
-
 ## 延伸阅读
-
 - Git 仓库管理（clone 的本质），见 003-git 模块。
 - GitHub 仓库创建与归档，见 004-github 模块《RepositoryCreateCloneArchiveDelete》。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

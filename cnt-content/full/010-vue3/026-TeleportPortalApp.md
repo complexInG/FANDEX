@@ -451,30 +451,10 @@ Teleport 的核心一句话：DOM 位置可变，逻辑归属不变。理解这�
 
 `disabled` 与 `defer` 是两个容易忽略的 props：前者做响应式形态切换，后者解决目标节点时序。Vue 3.5+ 项目中应优先掌握这两个特性。
 
-## 10. 参考文献
-
-Vue.js 官方文档, Built-in Components: Teleport, 访问日期 2026-08-01, https://vuejs.org/guide/built-ins/teleport.html
-
-Vue.js 官方文档, Teleport API 参考, 访问日期 2026-08-01, https://vuejs.org/api/built-in-components.html#teleport
-
-React 官方文档, createPortal, 访问日期 2026-08-01, https://react.dev/reference/react-dom/createPortal
-
-MDN Web Docs, Stacking context, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Understanding_z-index/Stacking_context
-
-portal-vue 仓库（Teleport 的前身社区方案）, https://github.com/LinusBorg/portal-vue
-
 ## 11. 延伸阅读
-
 Vue 3 的 KeepAlive 与 Teleport 配合使用，可以阅读本模块的 027-KeepAliveCacheLifecycle 文档；
-
 Vue Router 的导航守卫控制浮层关闭，可以阅读本模块的 030-VueRouterNavigationGuard 文档；
-
 CSS 层叠上下文与包含块的完整原理，见 007-css 模块的相关文档；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Vue3 实战课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供前端工程化系列课程；
-
-Vue 官方生态：https://vuejs.org/ 、https://router.vuejs.org/ 、https://pinia.vuejs.org/ 。
-
 ### 1. Teleport 基础
 
 #### 1.1 基本用法
@@ -544,4 +524,3 @@ Vue 官方生态：https://vuejs.org/ 、https://router.vuejs.org/ 、https://pi
 </Teleport>
 <!-- 结果：a, b -->
 ```
-

@@ -339,43 +339,9 @@ gh config list
 | 别名冲突 | `alias` 设置失败 | 别名与现有命令同名 | 换一个别名，或用 `gh alias delete <名称>` 清理 |
 | 交互提示卡住 | 脚本中命令等待输入 | 缺少 `--yes`/`--confirm` 等非交互参数 | 脚本化时补充 `--yes`、`--json` 等参数跳过交互 |
 
-## 9. 实战练习
-
-### 练习 1：安装并认证（入门）
-- **题目描述**：安装 gh，完成 `gh auth login`，用 `gh auth status` 确认登录状态。
-- **提示**：Windows 用 winget；认证选浏览器方式最省事。
-- **参考答案要点**：`gh --version` 有输出；`gh auth status` 显示已登录的账户名。
-
-### 练习 2：创建并克隆仓库（入门）
-- **题目描述**：用 gh 创建一个私有仓库并克隆到本地，再创建一个文件提交推送。
-- **提示**：`gh repo create demo --private --clone`。
-- **参考答案要点**：本地出现 demo 目录且与远程关联；推送后网页可见文件；体验"全程不打开浏览器"。
-
-### 练习 3：PR 一条龙（进阶）
-- **题目描述**：创建分支 → 修改文件 → 推送 → `gh pr create --fill` → `gh pr merge --squash --delete-branch`，全程命令行完成。
-- **提示**：按 7.2 组合拳；--fill 会用 commit 信息自动生成 PR 标题描述。
-- **参考答案要点**：PR 创建成功并显示编号；合并后远程分支被自动删除；`gh pr list` 无未合并 PR。
-
-### 练习 4：Issue 工作流（进阶）
-- **题目描述**：用 gh 创建一个带标签的 Issue，查看它，再关闭它；用 `gh issue list --label bug` 筛选验证。
-- **提示**：`gh issue create --title "..." --body "..." --label bug`。
-- **参考答案要点**：Issue 出现在列表并带 bug 标签；关闭后 `--state closed` 能查到记录。
-
-### 练习 5：工作流监控与 API（综合）
-- **题目描述**：给仓库配置一个简单的 CI 工作流，用 `gh workflow run` 手动触发、`gh run watch` 观察结果，并用 `gh api` 查询最近一次运行状态。
-- **提示**：工作流文件放 `.github/workflows/`；`gh api repos/OWNER/REPO/actions/runs --jq '.workflow_runs[0].status'`。
-- **参考答案要点**：手动触发成功；`gh run watch` 看到 job 完成；API 返回 running/completed 状态；体会 gh 与 Actions 的联动。
-
 ## 10. 一句话记忆
 
 **gh 是 GitHub 的"遥控器"：一条命令搞定仓库、PR、Issue、Actions，认证一次长期免密，别名与扩展让它越用越顺手。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：关于 GitHub CLI](https://docs.github.com/zh/github-cli/github-cli/about-github-cli)
-- [GitHub 文档：GitHub CLI 快速入门](https://docs.github.com/zh/github-cli/github-cli/quickstart)
-- [GitHub CLI 手册（全部子命令）](https://cli.github.com/manual/)
-- [GitHub CLI 仓库（cli/cli）](https://github.com/cli/cli)
 
 ### 延伸阅读
 

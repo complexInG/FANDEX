@@ -348,23 +348,6 @@ Saga 的核心思想：**把一个长事务拆成一系列本地事务，每个�
 
 **真相**：微服务解决的是"团队协作与独立部署"问题。性能、质量、架构腐化等问题，微服务不会自动解决——它们只是换了一种形态出现。
 
-## 11. 实战练习
-
-1. **拆分练习**：想象一个"电商系统"，把它拆成 5-8 个微服务，说明每个服务的职责和边界，并指出哪些服务会互相调用。
-
-2. **对比分析**：你现在的项目（或最近做过的项目），用第 3 节表格分析：它适合单体还是微服务？给出理由。
-
-3. **Saga 设计**：为"用户下单 → 扣库存 → 支付 → 发券"流程设计 Saga：列出每个步骤的补偿操作，并画出编排式 Saga 的流程图。
-
-4. **网关设计**：为你的电商系统设计 API 网关：哪些接口需要认证？哪些需要限流？是否需要用 BFF 模式区分 Web/App 端？
-
-## 12. 参考资源
-
-- Martin Fowler《微服务》经典文章：https://martinfowler.com/articles/microservices.html
-- Chris Richardson 微服务模式目录：https://microservices.io/patterns/
-- Google Cloud 微服务架构指南：https://cloud.google.com/architecture/microservices-architecture-introduction
-- 微服务模式（书）：https://microservices.io/book
-
 ## 13. 延伸阅读
 
 - 微服务内部如何组织，见本模块《分层架构》《领域驱动设计》

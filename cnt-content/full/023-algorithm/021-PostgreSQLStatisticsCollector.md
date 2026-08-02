@@ -4,7 +4,7 @@ title: 树状数组
 module: algorithm
 category: comp-sci
 difficulty: intermediate
-description: '树状数组（Fenwick Tree / Binary Indexed Tree, BIT）的形式化定义（基于二进制分解的前缀和索引结构）、lowbit 位运算原理、单点更新 + 区间查询 $O(\log n)$、区间更新 + 单点查询（差分树状数组）、区间更新 + 区间查询（双树状数组）三种模式的形式化推导与复杂度证明，覆盖 Peter M. Fenwick 1994《A New Data Structure for Cumulative Frequency Tables》Software: Practice and Experience 24(3):327-336 DOI:10.1002/spe.4380240306 的历史脉络、lowbit 不变式证明、与线段树 / 平方分解 / 前缀和的对比、Lucene 倒排索引 / Redis Sorted Set / PostgreSQL 统计信息等工业案例，附 Python / C++ / Java 多语言实现与 CLRS / Sedgewick 风格习题。'
+description: '树状数组（Fenwick Tree / Binary Indexed Tree, BIT）的形式化定义（基于二进制分解的前缀和索引结构）、lowbit 位运算原理、单点更新 + 区间查询 $O(\log n)$、区间更新 + 单点查询（差分树状数组）、区间更新 + 区间查询（双树状数组）三种模式的形式化推导与复杂度证明，覆盖 Peter M. Fenwick 1994《A New Data Structure for Cumulative Frequency Tables》Software: Practice and Experience 24(3):327-336 DOI:10.1002/spe.4380240306 的历史脉络、lowbit 不变式证明、与线段树 / 平方分解 / 前缀和的对比、Lucene 倒排索引 / Redis Sorted Set / PostgreSQL 统计信息等工业案例，附 Python / C++ / Java 多语言实现。'
 author: fanquanpp
 tags:
 - algorithm
@@ -1562,38 +1562,6 @@ CREATE TABLE column_stats (
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：（easy）下列关于树状数组的描述，正确的是：
-
-A. 树状数组的 tree 数组使用 0-indexed
-B. 树状数组的 tree[i] 管辖区间 $[i - \text{lowbit}(i), i]$
-C. 树状数组单点更新的时间复杂度为 $O(\log n)$
-D. 树状数组原生支持区间最值查询
-
-**常见疑问 2**：（medium）在长度为 16 的数组上，update(5, 1) 会修改哪些 tree 元素？
-
-A. tree[5], tree[6], tree[8], tree[16]
-B. tree[5], tree[7], tree[9], tree[17]
-C. tree[5], tree[10], tree[12], tree[16]
-D. tree[5], tree[6], tree[10], tree[16]
-
-**常见疑问 3**：（medium）差分树状数组中，range_add(l, r, delta) 等价于：
-
-A. update(l, delta)
-B. update(l, delta); update(r, -delta)
-C. update(l, delta); update(r + 1, -delta)
-D. update(l, delta); update(r + 1, delta)
-
-**常见疑问 4**：（hard）关于双树状数组实现区间更新 + 区间查询，下列说法错误的是：
-
-A. 需要 t1 维护差分数组 $d[i]$
-B. 需要 t2 维护 $d[i] \cdot i$
-C. 前缀和 $S(x) = (x+1) \cdot \text{query}(t1, x) - \text{query}(t2, x)$
-D. range_add 操作需要 6 次单点更新
-
 ### 填空题知识点讲解
 
 **常见疑问 5**：（easy）树状数组由 Peter M. Fenwick 在 ____ 年提出，发表于期刊《____》，DOI 为 ____。
@@ -1642,24 +1610,6 @@ void rangeAddBug(int l, int r, long long delta) {
 **常见疑问 14**：（medium）二维树状数组的时间复杂度为 $O(\log^2 n)$，而二维线段树为 $O(\log^2 n)$。两者在常数因子、实现复杂度、可扩展性上有何差异？
 
 ---
-
-## 11. 参考答案
-
-### 选择题知识点讲解
-
-**A1**: **C**。BIT 单点更新沿前向 lowbit 链，长度 $O(\log n)$。A 错（BIT 使用 1-indexed）；B 错（应管辖 $[i - \text{lowbit}(i) + 1, i]$）；D 错（BIT 仅支持可逆运算如加法，不支持 max/min）。
-
-**A2**: **A**。$\text{Forward}(5) = \{5, 6, 8, 16, \ldots\}$：
-- lowbit(5) = 1, 5 + 1 = 6
-- lowbit(6) = 2, 6 + 2 = 8
-- lowbit(8) = 8, 8 + 8 = 16
-- lowbit(16) = 16, 16 + 16 = 32 > 16, 停止
-
-故修改 tree[5], tree[6], tree[8], tree[16]。
-
-**A3**: **C**。差分数组：$d[l] += \Delta, d[r+1] -= \Delta$。
-
-**A4**: **D**。range_add 只需 4 次单点更新：t1 在 l 与 r+1 各更新一次（共 2 次），t2 在 l 与 r+1 各更新一次（共 2 次），总计 4 次。
 
 ### 填空题知识点讲解
 
@@ -1802,42 +1752,6 @@ $$
 
 ---
 
-## 12. 参考文献
-
-1. Fenwick, Peter M. 1994. A New Data Structure for Cumulative Frequency Tables. Software: Practice and Experience 24(3), 327-336. DOI: 10.1002/spe.4380240306.
-
-2. Cormen, Thomas H., Leiserson, Charles E., Rivest, Ronald L., and Stein, Clifford. 2022. Introduction to Algorithms (4th ed.). MIT Press. ISBN 978-0262046305.
-
-3. Knuth, Donald E. 1998. The Art of Computer Programming, Volume 3: Sorting and Searching (2nd ed.). Addison-Wesley Professional. ISBN 978-0201896855.
-
-4. Sedgewick, Robert and Wayne, Kevin. 2011. Algorithms (4th ed.). Addison-Wesley Professional. ISBN 978-0321573513.
-
-5. Skiena, Steven S. 2020. The Algorithm Design Manual (3rd ed.). Springer. ISBN 978-3030542556.
-
-6. Halim, Steven, Halim, Felix, and Yahya, Suhendry Effendy. 2020. Competitive Programming (4th ed.). Lulu Press. ISBN 978-1718900197.
-
-7. Bentley, Jon L. 1977. Solutions to Klee's rectangle problems. Unpublished technical report, Carnegie-Mellon University.
-
-8. Mo, Tao. 2009. An O(N sqrt(Q)) Algorithm for Offline Subarray Sum with Range Modifications. Chinese National Olympiad in Informatics (NOI) Training Material.
-
-9. Lehman, Philip L. and Yao, S. Bing. 1981. Efficient locking for concurrent operations on B-trees. ACM Transactions on Database Systems 6(4), 650-670. DOI: 10.1145/319628.319663.
-
-10. TopCoder. 2026. Binary Indexed Trees - An Efficient Data Structure for Range Updates and Queries. https://www.topcoder.com/thrive/articles/Binary%20Indexed%20Trees (accessed July 20, 2026).
-
-11. Apache Software Foundation. 2026. Apache Lucene Inverted Index Implementation. https://lucene.apache.org/core/ (accessed July 20, 2026).
-
-12. Redis Ltd. 2026. Redis Sorted Set (ZSET) Implementation. https://redis.io/docs/data-types/sorted-sets/ (accessed July 20, 2026).
-
-13. PostgreSQL Global Development Group. 2026. PostgreSQL Statistics Collector. https://www.postgresql.org/docs/current/monitoring-stats.html (accessed July 20, 2026).
-
-14. Rissanen, Jorma. 1976. Generalized Kraft Inequality and Arithmetic Coding. IBM Journal of Research and Development 20(3), 198-203. DOI: 10.1147/rd.203.0198.
-
-15. Pugh, William. 1990. Skip Lists: A Probabilistic Alternative to Balanced Trees. Communications of the ACM 33(6), 668-676. DOI: 10.1145/78973.78977.
-
----
-
-## 13. 延伸阅读
-
 ### 13.1 理论深入
 
 - **Fenwick 1994 原论文**：[Software: Practice and Experience 24(3):327-336](https://onlinelibrary.wiley.com/doi/10.1002/spe.4380240306)，理解 BIT 设计的原始动机与算术编码背景
@@ -1853,17 +1767,6 @@ $$
 - **动态开点 BIT**：值域极大时动态分配节点，节省空间
 - **BIT + 二分**：BIT 上二分查找第 k 大元素，参见 Codeforces 786B
 - **BIT 维护 LCP**：后缀数组 + BIT 计算 LCP 区间统计
-
-### 13.3 工程练习
-
-- **LeetCode 307**：Range Sum Query - Mutable（基础 BIT）
-- **LeetCode 315**：Count of Smaller Numbers After Self（离散化 + BIT）
-- **LeetCode 327**：Count of Range Sum（BIT + 前缀和）
-- **LeetCode 493**：Reverse Pairs（离散化 + BIT）
-- **洛谷 P1908**：逆序对（BIT 经典应用）
-- **洛谷 P3368**：模板题（差分 BIT）
-- **洛谷 P3374**：模板题（基础 BIT）
-- **Codeforces 828B**：区间更新 + 区间查询
 
 ### 13.4 教学视频
 

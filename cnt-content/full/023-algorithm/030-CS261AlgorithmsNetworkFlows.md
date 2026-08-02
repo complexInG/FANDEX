@@ -4,7 +4,7 @@ title: 网络流
 module: algorithm
 category: comp-sci
 difficulty: advanced
-description: 网络流算法：流网络形式化定义 (G,s,t,c,f)、最大流最小割定理、Ford-Fulkerson 方法 O(E·|f*|)、Edmonds-Karp 算法 O(VE²)、Dinic 算法 O(V²E)、Push-Relabel 算法 O(V²E)/O(V³)、ISAP、最小费用最大流、网络单纯形，覆盖二分图匹配、Project Selection、Image Segmentation、Baseball Elimination、Airline Scheduling 等工程应用，附多语言实现与 CLRS 风格习题。
+description: 网络流算法：流网络形式化定义 (G,s,t,c,f)、最大流最小割定理、Ford-Fulkerson 方法 O(E·|f*|)、Edmonds-Karp 算法 O(VE²)、Dinic 算法 O(V²E)、Push-Relabel 算法 O(V²E)/O(V³)、ISAP、最小费用最大流、网络单纯形，覆盖二分图匹配、Project Selection、Image Segmentation、Baseball Elimination、Airline Scheduling 等工程应用，附多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -3244,10 +3244,6 @@ print(weighted_bipartite_matching(workpieces, machines, edges, weights))
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-本节展开 frontmatter 中所列 10 道习题的详细解答,涵盖记忆、理解、应用、分析、评价五个 Bloom 认知层级,配套详细推导与代码修复示范。
-
 ### 填空题知识点讲解
 
 **习题 ex-flow-fb-01**（记忆层级 / 难度 1）：
@@ -3295,64 +3291,6 @@ $$
 1. **Ford-Fulkerson** $O(E\cdot |f^*|)$：每次增广沿路径最长 $O(E)$，最大流值 $|f^*|$ 限定增广次数。当容量为无理数时,Ford-Fulkerson 1962 年书中给出反例,增广次数可能无穷（不收敛）。
 2. **Edmonds-Karp** $O(VE^2)$：用 BFS 选择最短增广路径,证明每条边最多 $O(V)$ 次成为关键边,总增广次数 $O(VE)$,每次 BFS $O(E)$,总复杂度 $O(VE^2)$。
 3. **Dinic** $O(V^2 E)$：用分层图保证每轮源汇距离严格增加,共 $O(V)$ 轮,每轮阻塞流 $O(VE)$,总复杂度 $O(V^2 E)$。
-
-### 选择题知识点讲解
-
-**习题 ex-flow-ch-01**（分析层级 / 难度 2）：
-
-> 关于最大流最小割定理,下列哪一项表述最准确？
-> A. 最大流值等于最小割的"边数"
-> B. 最大流值等于最小割的"容量之和",且最小割可由残量网络 BFS 从源点可达性求出
-> C. 最大流等于最小割是弱对偶关系的特例,但不保证强对偶
-> D. 最大流最小割定理仅适用于无向图
-
-**解析讲解**：B
-
-**详细解析**：
-
-- A 错误：最大流值等于最小割的"容量之和"而非"边数"。例如,两条容量为 100 的边与 100 条容量为 1 的边可能形成相同容量割,但边数差异巨大。
-- B 正确：最大流最小割定理断言 $\max |f| = \min c(S, T)$,其中 $c(S, T) = \sum_{u\in S, v\in T} c(u, v)$ 是横跨割的"容量之和"。求最小割的方法：在残量网络 $G_{f^*}$ 上从源 $s$ 做 BFS/DFS,可达集 $S$ 即为最小割的 $S$ 侧。
-- C 错误：最大流最小割是线性规划强对偶的特例,LP 对偶理论保证强对偶成立。
-- D 错误：流网络默认有向,无向图可通过双向边转化为有向（每条无向边 $(u, v)$ 替换为有向边 $(u, v)$ 与 $(v, u)$,容量相同）。
-
-**习题 ex-flow-ch-02**（分析层级 / 难度 3）：
-
-> 关于 Push-Relabel（预流推进）算法,下列哪一项描述是正确的？
-> A. 每次操作沿残量网络中 s-t 增广路径整体推进
-> B. 节点高度 $h(v)$ 始终等于 $v$ 到汇点 $t$ 的最短距离
-> C. 当节点 $v$ 满足 $e(v) > 0$ 且存在允许边 $(v, w)$（$h(v) = h(w) + 1$）时执行 push；否则执行 relabel 提升 $h(v)$
-> D. 复杂度 $O(V^2 E)$ 是 Push-Relabel 的最佳已知上界
-
-**解析讲解**：C
-
-**详细解析**：
-
-- A 错误：那是 Dinic 与 Edmonds-Karp 的"整体增广路径"范式。Push-Relabel 是局部算法,不维护增广路径。
-- B 错误：$h(v)$ 是 $v$ 到汇点 $t$ 的最短距离的"上界估计",仅在算法终止时等式成立。算法运行中 $h(v)$ 可能严格大于真实距离。
-- C 正确：Push-Relabel 的核心规则。节点 $v$ 有超额流 $e(v) > 0$ 时,若存在允许边 $(v, w)$（即 $h(v) = h(w) + 1$ 且 $c_f(v, w) > 0$）则 push 流量；否则 relabel 使 $h(v)$ 增至 $1 + \min\{h(w) : c_f(v, w) > 0\}$。
-- D 错误：Goldberg-Tarjan FIFO 实现复杂度为 $O(V^3)$,highest-label 选择实现复杂度 $O(V^2 \sqrt{E})$，均优于 $O(V^2 E)$。
-
-**习题 ex-flow-ch-03**（评价层级 / 难度 3）：
-
-> 在二分图最大匹配问题中,将左部 $L$ 与右部 $R$ 通过虚拟源 $s$ 与虚拟汇 $t$ 连接为流网络,下列哪种构造能保证最大流值等于最大匹配数？
-> A. $s\to L$ 容量 $\infty$，$L\to R$ 容量 1，$R\to t$ 容量 $\infty$，所有边流量可为分数
-> B. $s\to L$ 容量 1，$L\to R$ 容量 1，$R\to t$ 容量 1，所有容量为整数
-> C. $s\to L$ 容量 $|L|$，$L\to R$ 容量 1，$R\to t$ 容量 $|R|$
-> D. $s\to L$ 容量 1，$L\to R$ 容量 $\infty$，$R\to t$ 容量 1
-
-**解析讲解**：B
-
-**详细解析**：整数流定理保证：当所有容量为整数时,最大流存在整数解。构造 B 中：
-
-- $s\to L$ 容量 1：每个左部点最多被匹配一次（流入 1,流出 1）。
-- $L\to R$ 容量 1：每条匹配边容量 1,保证匹配关系。
-- $R\to t$ 容量 1：每个右部点最多被匹配一次。
-
-最大流值即最大匹配数。其他选项分析：
-
-- A 错误：$\infty$ 容量可能导致分数流,无法保证匹配数对应关系。
-- C 错误：$s\to L$ 容量 $|L|$ 允许同一左部点匹配多次。
-- D 等价于 B 但不直观（$L\to R$ 容量 $\infty$ 实际上由 $s\to L$ 与 $R\to t$ 的容量 1 约束,但建模不规范）。
 
 ### 9.3 代码修复题
 
@@ -3572,10 +3510,6 @@ def meeting_scheduling(participants, slots, availability):
 
 ---
 
-## 10. 参考文献
-
-本节以 ACM 引用格式列出网络流领域核心文献,涵盖奠基性论文、权威教材、工业实践报告与在线资源。文献按主题分类,便于深入研读。
-
 ### 10.1 奠基性论文（Foundational Papers）
 
 1. **Ford, L. R.** and **Fulkerson, D. R.** 1956. Maximal flow through a network. _Canadian Journal of Mathematics_ 8, 3 (1956), 399–404. DOI: [10.4153/CJM-1956-045-5](https://doi.org/10.4153/CJM-1956-045-5).
@@ -3626,17 +3560,6 @@ def meeting_scheduling(participants, slots, availability):
 
 15. **Ford, L. R. and Fulkerson, D. R.** 1962. _Flows in Networks_ (1st ed.). Princeton University Press, Princeton, NJ, USA. ISBN 978-0691079622.
     - 网络流领域首部专著,虽年代久远但思想奠基。
-
-### 10.4 在线资源（Online Resources）
-
-16. **CP-Algorithms Contributors.** 2024. Maximum flow - Ford-Fulkerson and Edmonds-Karp. Retrieved from [https://cp-algorithms.com/graph/edmonds_karp.html](https://cp-algorithms.com/graph/edmonds_karp.html).
-    - 竞赛算法百科,含可运行代码。
-
-17. **CP-Algorithms Contributors.** 2024. Maximum flow - Dinic's algorithm. Retrieved from [https://cp-algorithms.com/graph/dinic.html](https://cp-algorithms.com/graph/dinic.html).
-    - Dinic 算法的详细推导与实现。
-
-18. **CP-Algorithms Contributors.** 2024. Minimum cost maximum flow. Retrieved from [https://cp-algorithms.com/graph/min_cost_flow.html](https://cp-algorithms.com/graph/min_cost_flow.html).
-    - MCMF 算法的 SPFA 与 Dijkstra 实现。
 
 ### 10.5 公开课程（Open Courses）
 

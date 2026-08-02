@@ -233,23 +233,6 @@ flowchart TD
 
 **误区五：质量门禁越多越好。** → 门禁太多（几十个检查）会让流水线慢、团队烦。**少而关键**的门禁（5-8 个）才有效。
 
-## 8. 实战练习
-
-1. **流水线设计**：为你的项目设计一个 CI/CD 流水线（GitHub Actions），包含 test → build → deploy 三段，并设置质量门禁。
-
-2. **发布策略选择**：为一个电商系统选择发布策略：蓝绿还是金丝雀？说明理由和回滚方案。
-
-3. **门禁设计**：为你的项目设计 CI 质量门禁表（5 个检查项 + 阈值），说明每个门禁的意义。
-
-4. **GitOps 分析**：调研 ArgoCD 或 Flux 的文档，说明 GitOps 如何实现"自动拉取"和"持续协调"。
-
-## 9. 参考资源
-
-- DevOps 定义与历史：https://aws.amazon.com/cn/devops/what-is-devops/
-- GitHub Actions 文档：https://docs.github.com/zh/actions
-- ArgoCD 文档：https://argo-cd.readthedocs.io/
-- 12 因素应用：https://12factor.net/zh_cn/
-
 ## 10. 延伸阅读
 
 - DevOps 的监控与 SLO，见 039-engineering-practices《On-Call最佳实践》

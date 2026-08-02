@@ -1726,8 +1726,6 @@ int main() {
 
 该设计使 SDS 在保持二进制兼容（`char*` 接口）的同时，提供 O(1) 长度查询与容量管理。
 
-## 第 13 章 习题与解答
-
 ### 填空题知识点讲解
 
 **习题 1**（remember，难度 1）：在 64 位系统上，`sizeof(int*)` 的值为 ____ 字节。
@@ -1747,41 +1745,6 @@ int main() {
 **解析讲解**：`std::ptrdiff_t`
 
 **解析讲解**：指针减法返回有符号整数类型 `std::ptrdiff_t`（定义于 `<cstddef>`），其宽度由实现定义但足以表示任意数组下标差。在 64 位系统上通常为 `long long`（8 字节）。
-
-### 选择题知识点讲解
-
-**习题 4**（understand，难度 2）：以下哪段代码存在严格别名违规（Strict Aliasing Violation）？
-
-- A. `int x = 42; int* p = &x;`
-- B. `int x = 42; float* p = (float*)&x; *p = 1.0f;`
-- C. `int x = 42; int* p = &x; *p = 100;`
-- D. `int x = 42; void* p = &x;`
-
-**解析讲解**：B
-
-**解析讲解**：选项 B 通过 `float*` 访问 `int` 对象的存储，违反 C++ 标准 [basic.lval] 中的严格别名规则。`void*`（选项 D）只是存储地址未解引用，不违规。正确做法是使用 `std::memcpy` 或 `std::bit_cast`（C++20）。
-
-**习题 5**（analyze，难度 3）：关于 `const int* const p = &x;`，下列说法正确的是？
-
-- A. 可以通过 `p` 修改 `x` 的值
-- B. 可以让 `p` 指向其他对象
-- C. 既不能通过 `p` 修改所指对象，也不能让 `p` 指向其他对象
-- D. 可以让 `p` 指向其他对象，但不能通过 `p` 修改所指对象
-
-**解析讲解**：C
-
-**解析讲解**：第一个 `const` 修饰所指对象（不能通过 `p` 写入），第二个 `const` 修饰指针本身（不能重新赋值 `p`）。两者结合后 `p` 与 `*p` 均为只读。
-
-**习题 6**（analyze，难度 3）：关于 `std::unique_ptr` 与 `std::shared_ptr`，下列哪项描述正确？
-
-- A. `unique_ptr` 与 `shared_ptr` 都允许复制
-- B. `unique_ptr` 独占所有权且不可复制，`shared_ptr` 通过引用计数共享所有权
-- C. `shared_ptr` 的引用计数操作是零开销的
-- D. `unique_ptr` 的大小始终等于裸指针
-
-**解析讲解**：B
-
-**解析讲解**：`unique_ptr` 是 move-only 类型，独占对象；`shared_ptr` 通过原子引用计数共享所有权。选项 C 错误：`shared_ptr` 的计数器需原子操作，存在性能开销。选项 D 错误：当 `unique_ptr` 持有自定义删除器时，大小可能大于裸指针。
 
 ### 13.3 代码修正题
 
@@ -1936,28 +1899,6 @@ int main() {
 ```
 
 **结论**：`auto_ptr` 的设计缺陷源于其在没有右值引用的时代强行实现所有权转移，导致与值语义和 STL 容器不兼容。`unique_ptr` 通过 C++11 的移动语义原生解决了这一问题，因此委员会在 C++11 标记 `auto_ptr` 为废弃，并在 C++17 正式移除。
-
-## 第 14 章 参考文献
-
-本章参考文献遵循 ACM Reference Format，同时在 frontmatter `references` 字段中以结构化形式存储。
-
-1. ISO/IEC. 2023. _ISO/IEC 14882:2023. Information technology — Programming languages — C++_ (8th ed.). Geneva: ISO. §7.2.2 (Compound types), §6.7.2 (Object model), §6.7.3 (Storage duration).
-
-2. Stroustrup, B. 2013. _The C++ Programming Language_ (4th ed.). Addison-Wesley Professional. ISBN 978-0321563842. Chapter 7 (Pointers, Arrays, References).
-
-3. Sutter, H. and Alexandrescu, A. 2004. _C++ Coding Standards: 101 Rules, Guidelines, and Best Practices_. Addison-Wesley Professional. ISBN 978-0321113580. Items 13, 49-55 (Resource management).
-
-4. Meyers, S. 2005. _Effective C++: 55 Specific Ways to Improve Your Programs and Designs_ (3rd ed.). Addison-Wesley Professional. ISBN 978-0321334879. Items 13-18 (Resource management), Items 27-29 (Smart pointers).
-
-5. cppreference.com. 2024. _Pointers — cppreference.com_. https://en.cppreference.com/w/cpp/language/pointer (accessed December 1, 2024).
-
-6. Stroustrup, B. 1994. _The Design and Evolution of C++_. Addison-Wesley Professional. ISBN 978-0201543308. Chapter 2-3 (Historical context).
-
-7. ISO/IEC. 2023. _ISO/IEC 14882:2023 §6.7.2 [intro.object]_ and _§6.7.3 [basic.stc]_. Geneva: ISO.
-
-8. Sutter, H. 2015. _GotW #89 Solution: Smart Pointers_. https://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/ (accessed December 1, 2024).
-
-## 第 15 章 延伸阅读
 
 ### 15.1 关联模块
 

@@ -1040,8 +1040,6 @@ GitHub Actions、GitLab CI 通过容器隔离运行任务,核心依赖:
 
 这套机制将"运行不可信代码"的工程问题转化为进程隔离问题。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**:以下代码输出什么?
@@ -1105,30 +1103,6 @@ printf("hello\n");
 - 在父进程虚拟内存巨大(数十 GB)时,即使 COW 仍需复制页表,`posix_spawn` 优势最显著。
 - 在嵌入式系统(无 MMU 或内存受限)上,`posix_spawn` 是唯一可行方案。
 - 缺点是灵活性差,不能在 `fork` 与 `exec` 之间执行自定义代码。
-
-## 参考文献
-
-[1] Kernighan, B. W. and Ritchie, D. M. 1988. The C Programming Language, 2nd edition. Prentice Hall. ISBN 0-13-110362-8.
-
-[2] Stevens, W. R. and Rago, S. A. 2013. Advanced Programming in the UNIX Environment, 3rd edition. Addison-Wesley. ISBN 978-0-321-63773-4.
-
-[3] Kerrisk, M. 2010. The Linux Programming Interface: A Linux and UNIX System Programming Handbook. No Starch Press. ISBN 978-1-59327-220-9.
-
-[4] Ritchie, D. M. and Thompson, K. 1974. The UNIX time-sharing system. Communications of the ACM 17, 7 (July 1974), 365-375. DOI: https://doi.org/10.1145/361011.361061
-
-[5] McIlroy, M. D. 1986. A Research UNIX Reader: Annotated Excerpts from the Programmer's Manual, 1971-1986. Bell Labs.
-
-[6] IEEE Computer Society. 2017. IEEE Standard for Information Technology - Portable Operating System Interface (POSIX) Base Specifications, Issue 7. IEEE Std 1003.1-2017. DOI: https://doi.org/10.1109/IEEESTD.2018.8277153
-
-[7] Torvalds, L. et al. 2025. Linux kernel source tree: fs/pipe.c. https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/fs/pipe.c
-
-[8] Bovet, D. P. and Cesati, M. 2005. Understanding the Linux Kernel, 3rd edition. O'Reilly Media. ISBN 978-0-596-00565-8.
-
-[9] Love, R. 2010. Linux Kernel Development, 3rd edition. Addison-Wesley. ISBN 978-0-672-32946-3.
-
-[10] Drepper, U. 2007. What every programmer should know about memory. lwn.net. https://lwn.net/Articles/250967/
-
-## 延伸阅读
 
 ### 官方文档
 

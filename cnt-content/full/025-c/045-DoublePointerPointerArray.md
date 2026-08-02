@@ -2062,78 +2062,6 @@ int main(void) {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 14.1 习题一（记忆）
-
-绘制 `int x = 10; int *p = &x; int **pp = &p;` 在 64 位系统上的内存布局图，标注每个变量的地址、内容与类型。
-
-### 14.2 习题二（理解）
-
-解释为什么 `void process(int **matrix)` 不能接受 `int grid[3][4]` 作为参数。从类型、内存布局、寻址方式三个角度分析。
-
-### 14.3 习题三（应用）
-
-实现函数 `int strsplit(const char *s, char sep, char ***out_tokens, int *out_count)`，将字符串 `s` 按 `sep` 分割，结果通过 `out_tokens` 返回。要求：
-- 返回 0 表示成功，-1 表示失败
-- 失败时不能有内存泄漏
-- `out_tokens` 是 `char **`，每个元素是 `strdup` 复制的字符串
-
-### 14.4 习题四（分析）
-
-分析以下代码的内存泄漏点：
-
-```c
-char **load_lines(FILE *fp, int max_lines) {
-    char **lines = malloc(max_lines * sizeof(char *));
-    char buf[256];
-    int i = 0;
-    while (fgets(buf, sizeof(buf), fp) && i < max_lines) {
-        lines[i] = strdup(buf);
-        i++;
-    }
-    return lines;
-}
-```
-
-### 14.5 习题五（评估）
-
-对比以下三种"动态二维数组"实现的优缺点：
-
-1. `int **matrix`，每行独立 `malloc`
-2. `int *matrix`，一维数组，`matrix[i*cols+j]` 访问
-3. `int (*matrix)[COLS]`，指向 `int[COLS]` 的指针
-
-从内存连续性、访问速度、释放复杂度、灵活性、可读性五个维度评估。
-
-### 14.6 习题六（创造）
-
-设计一个"动态字符串矩阵"API，支持：
-- 创建 `n` 行的矩阵
-- 设置第 `i` 行的字符串（自动释放旧值）
-- 获取第 `i` 行的字符串
-- 在第 `i` 行后插入新行
-- 删除第 `i` 行
-- 销毁矩阵
-
-要求：所有接口返回错误码，失败时不泄漏内存。
-
-### 14.7 习题七（记忆）
-
-写出 `int *arr[5]` 与 `int (*ptr)[5]` 的类型、sizeof、步长。
-
-### 14.8 习题八（理解）
-
-解释 `argv[argc]` 为什么是 NULL。这一保证在哪个标准中引入？
-
-### 14.9 习题九（应用）
-
-使用函数指针数组实现一个简单的计算器，支持 +、-、*、/ 四种运算，输入 `"20 + 4"` 输出 `24`。
-
-### 14.10 习题十（分析）
-
-分析 Linus 的"二级指针游走"链表删除技巧，相比传统"前驱指针"写法，减少了哪些分支？为什么？
-
 ## 15. 最佳实践总结
 
 ### 15.1 命名规范
@@ -2281,8 +2209,6 @@ clang-tidy -checks='*' source.c -- -std=c23
 2. 完成习题 6
 3. 研究大型 C 项目的指针使用模式
 
-## 17. 延伸阅读
-
 ### 17.1 标准文档
 
 - ISO/IEC 9899:2024（C23 标准）
@@ -2298,15 +2224,6 @@ clang-tidy -checks='*' source.c -- -std=c23
 - Seacord, R. C. (2020). *Effective C: An Introduction to Professional C Programming*. No Starch Press.
 - Koening, A. (1989). *C Traps and Pitfalls*. Addison-Wesley.
 - Summit, S. (1995). *C Programming FAQs: Frequently Asked Questions*. Addison-Wesley.
-
-### 17.3 在线资源
-
-- cppreference.com：C 标准库参考
-- gcc.gnu.org/onlinedocs：GCC 官方文档
-- clang.llvm.org/docs：Clang 文档
-- kernel.org：Linux 内核源码
-- sqlite.org/src：SQLite 源码
-- github.com/redis/redis：Redis 源码
 
 ### 17.4 相关论文
 

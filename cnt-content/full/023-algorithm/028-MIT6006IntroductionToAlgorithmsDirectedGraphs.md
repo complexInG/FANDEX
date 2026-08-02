@@ -4,7 +4,7 @@ title: 拓扑排序
 module: algorithm
 category: Algorithm/TopologicalSort
 difficulty: intermediate
-description: '拓扑排序（Topological Sort）算法：Arthur B. Kahn 1962《Topological Sorting of Large Networks》Communications of the ACM 5(11):558-562 DOI:10.1145/368996.369025 提出的入度法（Kahn 算法/BFS），与 Robert Endre Tarjan 1972《Depth-First Search and Linear Graph Algorithms》SIAM Journal on Computing 1(2):146-160 DOI:10.1137/0201010 给出的 DFS 后序逆序线性时间算法共同构成两大主流方案。Donald E. Knuth 在《The Art of Computer Programming, Volume 1: Fundamental Algorithms》§2.2.3 系统化讨论拓扑排序与计算机科学中的等价问题。本文涵盖 DAG（有向无环图）的形式化定义、Kahn 与 DFS 算法的正确性证明、与强连通分量（Tarjan 1972）及关键路径法（CPM, Kelly-Walker 1957；PERT, Malcolm-Roseboom-Clark-Fazar 1959）的关系、编译器依赖分析、Make/Build 系统、课程先修关系、并行任务调度等工业级应用，附 Python/C++/Java 多语言实现与 CLRS 第 22 章风格习题。'
+description: '拓扑排序（Topological Sort）算法：Arthur B. Kahn 1962《Topological Sorting of Large Networks》Communications of the ACM 5(11):558-562 DOI:10.1145/368996.369025 提出的入度法（Kahn 算法/BFS），与 Robert Endre Tarjan 1972《Depth-First Search and Linear Graph Algorithms》SIAM Journal on Computing 1(2):146-160 DOI:10.1137/0201010 给出的 DFS 后序逆序线性时间算法共同构成两大主流方案。Donald E. Knuth 在《The Art of Computer Programming, Volume 1: Fundamental Algorithms》§2.2.3 系统化讨论拓扑排序与计算机科学中的等价问题。本文涵盖 DAG（有向无环图）的形式化定义、Kahn 与 DFS 算法的正确性证明、与强连通分量（Tarjan 1972）及关键路径法（CPM, Kelly-Walker 1957；PERT, Malcolm-Roseboom-Clark-Fazar 1959）的关系、编译器依赖分析、Make/Build 系统、课程先修关系、并行任务调度等工业级应用，附 Python/C++/Java 多语言实现。'
 author: fanquanpp
 tags:
 - algorithm
@@ -2201,8 +2201,6 @@ rdd6.saveAsTextFile("output")                # Stage 2
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 10.1 基础题
 
 **习题 10.1**：给定 DAG $G = (V, E)$，$V = \{0, 1, 2, 3, 4\}$，$E = \{(0, 1), (0, 2), (1, 3), (2, 3), (3, 4)\}$。给出所有合法的拓扑排序。
@@ -2270,8 +2268,6 @@ rdd6.saveAsTextFile("output")                # Stage 2
 **习题 10.26**：研究 SCC 缩点 + 拓扑排序的混合算法，处理含环图的"近似拓扑序"问题。
 
 ---
-
-## 11. 参考答案
 
 ### 11.1 基础题答案
 
@@ -2617,8 +2613,6 @@ class Solution:
 
 ---
 
-## 12. 参考文献
-
 ### 12.1 历史原始论文
 
 1. **Kahn, Arthur B.** (1962). "Topological Sorting of Large Networks." *Communications of the ACM* 5(11):558-562. DOI:10.1145/368996.369025.
@@ -2714,8 +2708,6 @@ class Solution:
     CLRS 第 1 版，第 23 章首次收录 Topological Sort。
 
 ---
-
-## 13. 延伸阅读
 
 ### 13.1 强连通分量（SCC）
 

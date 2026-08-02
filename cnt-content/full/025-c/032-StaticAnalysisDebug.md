@@ -2514,8 +2514,6 @@ jobs:
 - [ ] 静态分析无新警告
 - [ ] 代码审查通过
 
-### 12.5 学习资源
-
 #### 12.5.1 官方文档
 
 - GDB Manual: https://sourceware.org/gdb/current/onlinedocs/gdb/

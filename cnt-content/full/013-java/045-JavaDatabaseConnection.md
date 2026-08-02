@@ -1661,8 +1661,6 @@ private Long version;
 
 **效果**：死锁发生率从每日 50 次降至 0。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：简述 JDBC 中 `Statement`、`PreparedStatement`、`CallableStatement` 的区别。
@@ -1811,40 +1809,6 @@ HikariPool-1 - Connection is not available, request timed out after 30000ms
   2. 修复泄漏代码（确保 try-with-resources）。
   3. 调整 `maximumPoolSize`。
   4. 增加数据库 `max_connections`。
-
-## 10. 参考文献
-
-[1] Ellis, J., Srivastava, N., and Halpern, M. 2017. JDBC 4.3 Specification. Oracle. Retrieved from https://docs.oracle.com/javase/9/docs/api/java/sql/package-summary.html
-
-[2] Bresnahan, C., McAuliffe, T., and O'Brien, P. 2019. HikariCP: The "fastest" connection pool for Java. In Proceedings of the JVM Language Summit. Retrieved from https://github.com/brettwooldridge/HikariCP
-
-[3] King, G. 2006. Hibernate in Action. Manning Publications. ISBN: 978-1932394153
-
-[4] Bauer, C., and King, G. 2015. Java Persistence with Hibernate (2nd ed.). Manning Publications. ISBN: 978-1617290459
-
-[5] Clinton Begin. 2010. iBatis/MyBatis Design. GitHub. Retrieved from https://github.com/mybatis/mybatis-3
-
-[6] Kleppmann, M. 2017. Designing Data-Intensive Applications. O'Reilly Media. ISBN: 978-1449373320. Chapter 7: Transactions.
-
-[7] Berenson, H., Bernstein, P., Gray, J., Melton, J., O'Neil, E., and O'Neil, P. 1995. A critique of ANSI SQL isolation levels. In Proceedings of the 1995 ACM SIGMOD International Conference on Management of Data (SIGMOD '95). ACM, 1–10. DOI: 10.1145/223784.223785
-
-[8] Adya, A., Liskov, B., and O'Neil, P. 2000. Generalized isolation level definitions. In Proceedings of the 16th International Conference on Data Engineering (ICDE '00). IEEE, 439–447. DOI: 10.1109/ICDE.2000.839441
-
-[9] Apache Software Foundation. 2014. DBCP 2.0 Documentation. Retrieved from https://commons.apache.org/proper/commons-dbcp/
-
-[10] Alibaba Group. 2012. Druid: JDBC Connection Pool and SQL Parser. Retrieved from https://github.com/alibaba/druid
-
-[11] Johnson, R., Hoeller, J., Donald, K., Sampaleanu, C., Harrop, R., Risberg, T., Arendsen, A., Davison, D., Kopylenko, N., Pollack, M., et al. 2005. The Spring Framework - Reference Documentation. Interface21. Retrieved from https://docs.spring.io/spring-framework/reference/
-
-[12] Pritchard, J., and Risberg, T. 2003. Spring Data Access. In Spring Framework Documentation. SpringSource.
-
-[13] Garcia-Molina, H., and Salem, K. 1987. Sagas. In Proceedings of the 1987 ACM SIGMOD International Conference on Management of Data (SIGMOD '87). ACM, 249–259. DOI: 10.1145/38714.38742
-
-[14] Lamport, L. 1978. Time, clocks, and the ordering of events in a distributed system. Communications of the ACM 21, 7 (July 1978), 558–565. DOI: 10.1145/359545.359563
-
-[15] Helland, P. 2007. Life beyond distributed transactions: an apostate's opinion. In Proceedings of the 3rd Biennial Conference on Innovative Data Systems Research (CIDR '07), 132–141.
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

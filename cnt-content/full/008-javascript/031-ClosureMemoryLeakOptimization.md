@@ -1412,8 +1412,6 @@ function processData(buffer) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码输出是什么？请解释原因。
@@ -1515,81 +1513,6 @@ function lazyWeak(factory) {
 }
 ```
 
-### 9.3 思考题
-
-**题目 5**：为什么 Java 的 lambda 只能捕获 effectively final 变量，而 JavaScript 没有此限制？请从并发模型、内存模型、语言设计哲学三方面分析。
-
-1. **并发模型**：Java 是多线程共享内存模型，lambda 可能在不同线程执行，若允许修改捕获变量，会引入可见性与竞态问题。JavaScript 是单线程事件循环（Web Worker 之间不共享内存），不存在此类问题，因此可以更宽松。
-
-2. **内存模型**：Java 有明确的 Java Memory Model（JMM），规定了 happens-before 关系。lambda 捕获的变量若可变，需要明确的同步语义，会显著增加心智负担。JavaScript 没有严格的内存模型规范，依赖单线程语义规避了此问题。
-
-3. **设计哲学**：Java 强调显式与安全，宁可牺牲灵活性。JavaScript 强调灵活与简洁，更接近 Scheme 的"万物皆可闭包"传统。
-
-**题目 6**：在以下场景中，哪种引用方式最合适？请说明理由。
-
-- 场景 A：React 组件缓存已渲染的虚拟 DOM 节点。
-- 场景 B：日志系统持有最近 100 条请求的元数据。
-- 场景 C：观察者模式中主题对观察者的引用。
-
-- 场景 A：使用 `WeakMap`。组件实例可能频繁销毁，使用弱引用避免泄露。
-- 场景 B：使用强引用 + 固定容量队列。日志必须可靠保存，不能被 GC，但需限制容量防止无限增长。
-- 场景 C：使用 `WeakSet` 或 `WeakMap`。观察者生命周期独立于主题，弱引用避免主题阻止观察者被回收。
-
-**题目 7**：分析以下代码在 V8 中的内存分配行为。`big` 是否会被分配到堆？
-
-```javascript
-function process() {
-  const big = new Array(1_000_000).fill(0);
-  const sum = big.reduce((a, b) => a + b, 0);
-  return sum;
-}
-console.log(process());
-```
-
-`big` 数组本身是对象，必然分配在堆上（数组是引用类型）。但闭包 `(a, b) => a + b` 不逃逸出 `reduce` 调用，且不引用 `big`，因此该闭包对象本身可能在栈上分配（V8 逃逸分析优化）。
-
-注意：`new Array(1_000_000)` 创建的数组对象在堆上，这是由 ECMAScript 规范决定的，与逃逸分析无关。逃逸分析只影响"局部变量本身的存储位置"，而不影响"对象本身的存储位置"。对于引用类型的局部变量，变量本身存的是指针，逃逸分析决定该指针是存栈还是堆。
-
----
-
-## 10. 参考文献
-
-引用格式遵循 ACM Reference Format。
-
-[1] John McCarthy. 1960. Recursive functions of symbolic expressions and their computation by machine, Part I. *Communications of the ACM* 3, 4 (April 1960), 184-195. DOI: https://doi.org/10.1145/367177.367199
-
-[2] Peter J. Landin. 1964. The mechanical evaluation of expressions. *The Computer Journal* 6, 4 (January 1964), 308-320. DOI: https://doi.org/10.1093/comjnl/6.4.308
-
-[3] Gerald Jay Sussman and Guy Lewis Steele Jr. 1975. *Scheme: An interpreter for extended lambda calculus*. MIT AI Memo 349. Massachusetts Institute of Technology, Cambridge, MA, USA.
-
-[4] ECMA International. 2023. *ECMAScript 2023 Language Specification*. Standard ECMA-262, 14th edition. Available at: https://tc39.es/ecma262/
-
-[5] Michel J. Accetta, Robert V. Baron, William J. Bolosky, David B. Golub, Richard F. Rashid, Avadis Tevanian, and Michael Young. 1986. Mach: A new kernel foundation for UNIX development. In *Proceedings of the USENIX Summer 1986 Technical Conference* 93-112.
-
-[6] Lars T. Hansen. 1998. *Region-based memory management in ML*. PhD Thesis. Carnegie Mellon University, Pittsburgh, PA, USA.
-
-[7] David Ungar. 1984. Generation scavenging: A non-disruptive high performance storage reclamation algorithm. *ACM SIGPLAN Notices* 19, 5 (May 1984), 157-167. DOI: https://doi.org/10.1145/390011.808261
-
-[8] Richard Jones, Antony Hosking, and Eliot Moss. 2011. *The Garbage Collection Handbook: The Art of Automatic Memory Management* (1st ed.). Chapman and Hall/CRC, Boca Raton, FL, USA. ISBN: 978-1420082791
-
-[9] M. Anton Ertl. 1995. A simple and efficient region inference algorithm for a higher-order functional language. In *Proceedings of the 7th International Symposium on Programming Languages: Implementations, Logics and Programs (PLILP '95)*, 218-233. DOI: https://doi.org/10.1007/BFb0026826
-
-[10] Ben L. Titzer, Daniel Waddington, and Cheng-Wei Wang. 2013. A framework for efficient escape analysis in modern dynamic languages. In *Proceedings of the 9th ACM SIGPLAN/SIGSOFT International Conference on Generative Programming and Component Engineering (GPCE '10)*, 51-60. DOI: https://doi.org/10.1145/1868294.1868303
-
-[11] Andreas Rossberg, Claudio V. Russo, and Derek Dreyer. 2014. F-ing modules. *Journal of Functional Programming* 24, 5 (September 2014), 529-605. DOI: https://doi.org/10.1017/S0956796814000264
-
-[12] The V8 Team. 2023. *V8 JavaScript Engine Design Documentation*. Available at: https://v8.dev/docs
-
-[13] James Miller and George Radin. 1984. An architecture for implementing closure-based languages efficiently. In *Proceedings of the 1984 ACM Symposium on LISP and Functional Programming (LFP '84)*, 224-231. DOI: https://doi.org/10.1145/800055.802044
-
-[14] Henry G. Baker. 1992. The use of memory in Lisp systems. *ACM SIGPLAN Lisp Pointers* 5, 1 (January 1992), 18-37. DOI: https://doi.org/10.1145/140775.140780
-
-[15] Patrick L. Varin. 2001. A study of the closure implementation in the SML/NJ compiler. *ACM SIGPLAN Notices* 36, 3 (March 2001), 41-50. DOI: https://doi.org/10.1145/373060.373066
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 规范与标准
 
 - **ECMAScript 规范**：https://tc39.es/ecma262/ - 关注 "Environment Records" 与 "OrdinaryFunctionCreate" 等章节。
@@ -1614,13 +1537,6 @@ console.log(process());
 - **Chrome DevTools Memory 官方文档**：https://developer.chrome.com/docs/devtools/memory-problems/ - 官方推荐的内存排查流程。
 - **Node.js 内存调试指南**：https://nodejs.org/en/docs/guides/diagnostics/memory/ - Node.js 官方诊断手册。
 - **Memory Leak Patterns in Vue**：https://vuejs.org/guide/best-practices/memory-leaks.html - Vue 官方关于闭包与组件内存的指引。
-
-### 11.5 开源项目参考
-
-- **lodash** 源码：闭包在工具库中的极致应用，特别是 `_.memoize`、`_.debounce` 等实现。
-- **Vue 3 reactivity** 源码：`packages/reactivity` 目录展示了如何用 `WeakMap` 管理依赖关系。
-- **immer** 源码：基于 Proxy 与闭包实现不可变数据更新。
-- **Effect Schema / Zod**：函数式校验库中大量闭包与递归的工程实践。
 
 ### 11.6 进阶研究方向
 

@@ -1531,8 +1531,6 @@ result = %sql SELECT * FROM products WHERE price > 100
 df = result.DataFrame()  # 转为 Pandas DataFrame
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：解释 Jupyter 的前端与内核分离架构的优势。
@@ -1643,40 +1641,6 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 - 用 Voila 或 Streamlit 转换为无状态应用
 - 用 papermill + Airflow 调度，而非直接暴露 Notebook
 - 敏感操作（Shell 命令）移除或限制权限
-
-## 10. 参考文献
-
-[1] Pérez, F., & Granger, B. E. (2007). *IPython: A System for Interactive Scientific Computing*. Computing in Science and Engineering, 9(3), 21-29. DOI: 10.1109/MCSE.2007.53.
-
-[2] Kluyver, T., Ragan-Kelley, B., Pérez, F., Granger, B., Bussonnier, M., Frederic, J., et al. (2016). *Jupyter Notebooks - A Publishing Format for Reproducible Computational Workflows*. In Positioning and Power in Academic Publishing: Players, Agents and Agendas, pp. 87-90. DOI: 10.3233/978-1-61499-649-1-87.
-
-[3] Granger, B. E., & Pérez, F. (2021). *Jupyter: Thinking and Storytelling With Code and Data*. Computing in Science and Engineering, 23(2), 7-14. DOI: 10.1109/MCSE.2021.3059263.
-
-[4] Project Jupyter. (2024). *Jupyter Documentation*. Retrieved from https://docs.jupyter.org/
-
-[5] Ragan-Kelley, M., Perez, F., Granger, B., Kluyver, T., Ivanov, P., Frederic, J., & Bussonnier, M. (2014). *The Jupyter/IPython architecture: a unified view of computational publication, collaboration and reproducibility*. Proceedings of the 13th Python in Science Conference (SciPy). DOI: 10.25080/Majora-98bf1922-00e.
-
-[6] Holdgraf, C. (2018). *JupyterLab: The Next Generation Jupyter Web Interface*. Journal of Open Source Software, 3(25), 656. DOI: 10.21105/joss.00656.
-
-[7] Pimentel, J. F., Murta, L., Braganholo, V., & Freire, J. (2019). *A Large-Scale Study About Quality and Reproducibility of Jupyter Notebooks*. In Proceedings of the 16th International Conference on Mining Software Repositories (MSR), pp. 507-517. DOI: 10.1109/MSR.2019.00077.
-
-[8] Rule, A., Tabard, A., & Hollan, J. D. (2018). *Exploration and Explanation in Computational Notebooks*. In Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems, pp. 1-12. DOI: 10.1145/3173574.3173606.
-
-[9] Yang, C., Poon, C., & Poon, K. (2019). *Jupyter Notebooks for Data Science: A Pedagogical Study*. Journal of Computing Sciences in Colleges, 34(6), 124-131.
-
-[10] Uritsky, V. M., & Zhang, J. (2020). *Interactive Computing with Jupyter Notebook in Materials Science*. Computational Materials Science, 178, 109613. DOI: 10.1016/j.commatsci.2020.109613.
-
-[11] Bhatti, A., & Kocak, D. D. (2021). *Reproducible Research with Jupyter Notebooks*. Patterns, 2(6), 100247. DOI: 10.1016/j.patter.2021.100247.
-
-[12] Freeman, G., & Ross, K. A. (2019). *JupyterHub for Education: A Deployment Guide*. In Proceedings of the 50th ACM Technical Symposium on Computer Science Education (SIGCSE), pp. 1244-1250. DOI: 10.1145/3287324.3287440.
-
-[13] Hunt, P. (2018). *Enterprise Gateway: Scaling Jupyter Kernels to the Cluster*. Jupyter Blog. Retrieved from https://jupyter.org/enterprise_gateway
-
-[14] Chacon, S., & Straub, B. (2014). *Pro Git*. Apress. DOI: 10.1007/978-1-4842-0076-6.
-
-[15] McKinney, W. (2017). *Python for Data Analysis: Data Wrangling with Pandas, NumPy, and IPython*. O'Reilly Media. ISBN: 978-1491957660.
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

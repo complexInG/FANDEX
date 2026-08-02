@@ -1743,85 +1743,6 @@ class UserService(private val repo: UserRepository) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下关于 Kotlin value class 的描述，哪一项是错误的？
-
-A. value class 必须有且仅有一个 val 属性
-B. value class 不能继承其他类
-C. value class 在所有场景下都零开销
-D. value class 在 JVM 平台需要 @JvmInline 注解
-
-**解析讲解**：C
-
-**解析讲解**：value class 在装箱场景（可空、泛型、集合、数组、Any）会退化为对象，存在装箱开销。
-
----
-
-**题目 2**：以下代码的输出是？
-
-```kotlin
-@JvmInline
-value class UserId(val id: Long)
-
-fun main() {
-    val a = UserId(42)
-    val b = UserId(42)
-    println(a == b)
-    println(a.hashCode() == b.hashCode())
-}
-```
-
-A. true, true
-B. false, false
-C. true, false
-D. false, true
-
-**解析讲解**：A
-
-**解析讲解**：value class 的 equals 和 hashCode 默认基于底层属性，因此 `a == b` 为 true，hashCode 相同。
-
----
-
-**题目 3**：Kotlin 1.5 将 `inline class` 重命名为 `value class` 的主要原因是？
-
-A. `inline class` 关键字过长
-B. 为非 JVM 平台的真正值类型预留语法
-C. `inline` 关键字被废弃
-D. 性能优化
-
-**解析讲解**：B
-
-**解析讲解**：`value class` 是语言关键字，`@JvmInline` 是 JVM 平台特定注解。这种分离为 Kotlin/Native 等平台实现真正的栈分配值类型预留了空间。
-
----
-
-**题目 4**：以下哪种场景会触发 value class 的装箱？
-
-A. 直接传递 value class 实例
-B. value class 作为可空参数
-C. value class 的方法调用
-D. value class 的属性访问
-
-**解析讲解**：B
-
-**解析讲解**：可空类型 `V?` 需要表示 null，而底层类型（如 Long）不能为 null，因此退化为对象，触发装箱。
-
----
-
-**题目 5**：Kotlin 标准库中的 UInt 实现基于？
-
-A. typealias
-B. data class
-C. value class
-D. sealed class
-
-**解析讲解**：C
-
-**解析讲解**：`UInt`、`ULong`、`UByte`、`UShort` 都是 `@JvmInline value class`，包装对应的有符号整型。
-
 ### 填空题知识点讲解
 
 **题目 1**：value class 必须有且仅有 ________ 个 val 属性。
@@ -1945,199 +1866,6 @@ fun main() {
     println(a + b)  // 0.75
     println(a * b)  // 0.125
     println(a.toPercentage())  // 50.0
-}
-```
-
-### 9.4 思考题
-
-**题目 1**：讨论 value class 与 data class 的适用场景，何时使用哪个？
-
-**解析讲解**：
-
-使用 value class 的场景：
-
-1. 类型安全包装（ID、标识符）。
-2. 单一值的语义化（货币、温度、长度）。
-3. 性能敏感场景（大量实例）。
-4. 不需要 copy、解构声明。
-
-使用 data class 的场景：
-
-1. 多属性的数据载体。
-2. 需要 copy、解构声明。
-3. 不在意装箱开销。
-4. 需要继承（开放类）。
-
----
-
-**题目 2**：value class 在装箱场景中退化为对象，这是否违背了"零开销"承诺？
-
-**解析讲解**：
-
-不违背。"零开销"指的是"在非装箱场景下零开销"，而非"所有场景零开销"。JetBrains 的设计哲学是"在不退化的场景下，性能与底层类型一致"。装箱场景的退化是 JVM 类型系统的限制（类型擦除），是不可避免的。
-
----
-
-**题目 3**：Kotlin 2.0 的 K2 编译器对 value class 有哪些改进？
-
-**解析讲解**：
-
-1. **更激进的装箱消除**：K2 在 IR 阶段更激进地识别不必要的装箱点。
-2. **方法内联**：value class 的方法被内联到调用处。
-3. **桥接方法消除**：减少接口分发的桥接方法。
-4. **逃逸分析**：识别不逃逸的对象，栈上分配。
-5. **诊断质量**：更明确的装箱退化警告。
-
----
-
-**题目 4**：value class 在 KMP 项目中的优势是什么？
-
-**解析讲解**：
-
-1. **跨平台一致**：JVM、JS、Native、Wasm 行为一致。
-2. **零开销**：在 Kotlin/Native 中真正栈分配。
-3. **类型安全**：编译期检查类型隔离。
-4. **API 统一**：跨平台公共 API 使用 value class。
-5. **与 C ABI 兼容**：Kotlin/Native 中 value class 与 C struct 互操作友好。
-
----
-
-**题目 5**：分析以下代码并指出问题：
-
-```kotlin
-@JvmInline
-value class User(val name: String, val age: Int)
-
-@JvmInline
-value class Container(val inner: Container?)
-```
-
-**解析讲解**：
-
-问题：
-
-1. `User` 有两个属性，违反 value class 单一属性约束。
-2. `Container` 递归引用自身，会导致无限展开。
-
-改进：
-
-```kotlin
-// 方案一：使用 data class
-data class User(val name: String, val age: Int)
-
-// 方案二：将 name 和 age 合并为单一属性
-@JvmInline
-value class User(val data: String) {
-    val name: String get() = data.substringBefore(":")
-    val age: Int get() = data.substringAfter(":").toInt()
-}
-```
-
----
-
-**题目 6**：value class 在序列化时需要注意什么？
-
-**解析讲解**：
-
-1. **使用 kotlinx.serialization**：它对 value class 有完整支持。
-2. **避免 Java 默认序列化**：可能不正确处理 value class。
-3. **装箱场景**：序列化时会装箱（因为需要反射）。
-4. **自定义序列化器**：对于复杂 value class，可自定义序列化器。
-5. **版本兼容**：序列化格式应考虑二进制兼容性。
-
----
-
-**题目 7**：value class 与 inline 函数如何协同避免装箱？
-
-**解析讲解**：
-
-`inline` 函数 + `reified` 类型参数可以在编译期展开，避免泛型类型擦除导致的装箱：
-
-```kotlin
-@JvmInline
-value class UserId(val id: Long)
-
-// 普通 fun：会装箱
-fun <T> process(value: T): T = value
-
-// inline + reified：不装箱
-inline fun <reified T> processInline(value: T): T = value
-
-fun main() {
-    val userId = UserId(42)
-
-    // 装箱：T 擦除为 Object
-    val result1 = process(userId)
-
-    // 不装箱：内联展开，T 替换为 UserId
-    val result2 = processInline(userId)
-}
-```
-
----
-
-**题目 8**：讨论 value class 在领域驱动设计（DDD）中的角色。
-
-**解析讲解**：
-
-在 DDD 中，value class 用于实现**值对象**（Value Object）：
-
-1. **类型安全**：不同值对象类型不混淆。
-2. **不变性**：value class 是 final，不可变。
-3. **验证**：init 块保证构造时验证。
-4. **零开销**：性能与底层类型一致。
-5. **领域语义**：`EmailAddress`、`PhoneNumber`、`Money` 等。
-
-注意：value class 仅支持单一属性，多属性值对象仍需使用 data class。
-
----
-
-**题目 9**：分析 value class 在 JVM 字节码中的 `box` 和 `unbox` 方法。
-
-**解析讲解**：
-
-JVM 字节码中，value class 编译为 final 类，带有 `box` 和 `unbox` 静态方法：
-
-```java
-public final class UserId {
-    private final long id;
-
-    // 装箱：long -> UserId
-    public static UserId box(long id) {
-        return new UserId(id);
-    }
-
-    // 拆箱：UserId -> long
-    public static long unbox(UserId userId) {
-        return userId.id;
-    }
-}
-```
-
-`box` 在装箱场景（可空、泛型、集合）调用，`unbox` 在拆箱场景调用。K2 编译器会尽可能消除不必要的 box/unbox 调用。
-
----
-
-**题目 10**：value class 在反射中的行为如何？
-
-**解析讲解**：
-
-1. **KClass.isValue**：Kotlin 1.5+ 提供 `KClass.isValue` 属性判断是否为 value class。
-2. **装箱**：反射操作通常触发装箱（因为接收 `Any?`）。
-3. **构造**：通过 `primaryConstructor?.call()` 会装箱。
-4. **属性访问**：通过 `KProperty.get()` 会装箱。
-5. **性能**：反射操作性能差，应避免在热点代码使用。
-
-```kotlin
-@JvmInline
-value class UserId(val id: Long)
-
-fun main() {
-    val kClass = UserId::class
-    println(kClass.isValue)  // true
-
-    // 反射构造会装箱
-    val userId = kClass.primaryConstructor?.call(42L)
 }
 ```
 
@@ -2303,8 +2031,6 @@ value class UserId(val id: Long)
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 Kotlin 官方文档
 
 [1] JetBrains. 2024. Inline classes. https://kotlinlang.org/docs/inline-classes.html
@@ -2333,16 +2059,6 @@ value class UserId(val id: Long)
 
 [11] Moskala, M. 2020. Effective Kotlin. Kt. Academy. ISBN 978-8395478316.
 
-### 10.4 在线资源
-
-[12] JetBrains. 2024. KEEP - Inline Classes. https://github.com/Kotlin/KEEP/blob/master/proposals/inline-classes.md
-
-[13] JetBrains. 2024. Value Classes. https://github.com/Kotlin/KEEP/blob/master/proposals/value-classes.md
-
-[14] Oracle. 2024. Project Valhalla. https://openjdk.org/projects/valhalla/
-
-[15] ECMA International. 2017. Standard ECMA-334: C# Language Specification. https://www.ecma-international.org/publications-and-standards/standards/ecma-334/
-
 ### 10.5 标准与规范
 
 [16] Oracle. 2023. Java Virtual Machine Specification, Java 21 Edition. https://docs.oracle.com/javase/specs/jvms/se21/html/
@@ -2350,8 +2066,6 @@ value class UserId(val id: Long)
 [17] Oracle. 2023. Java Language Specification, Java 21 Edition. https://docs.oracle.com/javase/specs/jls/se21/html/
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 书籍推荐
 
@@ -2407,14 +2121,6 @@ value class UserId(val id: Long)
 
 3. **KEEP (Kotlin Evolution and Enhancement Process)**
    - Kotlin 语言演进提案。
-
-### 11.6 视频资源
-
-1. **KotlinConf 2024 - Value Classes in Practice**
-   - value class 实战应用。
-
-2. **JetBrains TV - Inline Classes Deep Dive**
-   - value class 内部实现讲解。
 
 ### 11.7 工具与插件
 

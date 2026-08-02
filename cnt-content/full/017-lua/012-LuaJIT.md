@@ -2882,8 +2882,6 @@ end
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：解释 LuaJIT 的 Trace-based JIT 与 HotSpot JVM 的 Method-based JIT 的核心区别，并说明各自适用场景。
@@ -3298,10 +3296,6 @@ client:close()
 
 ---
 
-## 10. 参考文献
-
-本章参考文献遵循 ACM Reference Format，所有文献均提供 DOI 链接（如有）。
-
 ### 10.1 LuaJIT 核心文献
 
 1. Pall, M. (2005). *LuaJIT: A just-in-time compiler for Lua*. Retrieved from https://luajit.org/
@@ -3356,8 +3350,6 @@ client:close()
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档与资源
 
 - **LuaJIT 官方网站**：https://luajit.org/
@@ -3397,17 +3389,6 @@ client:close()
   - 基于 OpenResty 的 API 网关。
 - **LÖVE 源码**：https://github.com/love2d/love
   - 2D 游戏引擎，使用 LuaJIT 作为脚本语言。
-
-### 11.5 社区资源
-
-- **Lua mailing list**：https://www.lua.org/lua-l.html
-  - Lua 官方邮件列表，讨论 Lua 语言相关问题。
-- **LuaJIT mailing list**：https://luajit.org/listinfo
-  - LuaJIT 专用邮件列表。
-- **Stack Overflow [lua] [luajit]**：https://stackoverflow.com/questions/tagged/lua+luajit
-  - 问答社区，解决实际开发问题。
-- **Reddit r/lua**：https://www.reddit.com/r/lua/
-  - Lua 社区讨论。
 
 ### 11.6 相关工具与扩展
 
@@ -3745,4 +3726,3 @@ jit.on(hotFunc)   -- 恢复 JIT
 ```
 
 ---
-

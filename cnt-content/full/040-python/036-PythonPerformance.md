@@ -1745,54 +1745,6 @@ def api_handler():
 
 ---
 
-## 知识讲解与要点分析（原练习）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个 profiler 适合生产环境使用？
-
-A. `cProfile`  
-B. `line_profiler`  
-C. `py-spy`  
-D. `memory_profiler`
-
-**解析讲解**：C
-
-**解析讲解**：`py-spy` 是采样 profiler，开销 < 1%，适合生产。`cProfile` 开销 30-100%，`line_profiler` 开销极高，`memory_profiler` 也会显著减慢程序。
-
-**常见疑问 2**：Amdahl 定律中，若 90% 代码可并行化，理论最大加速比是？
-
-A. 5  
-B. 10  
-C. 100  
-D. 无限
-
-**解析讲解**：B
-
-**解析讲解**：$S_{\infty} = \frac{1}{1-p} = \frac{1}{0.1} = 10$。
-
-**常见疑问 3**：以下哪种情况 `lru_cache` 不会带来性能提升？
-
-A. 纯函数 + 高命中率  
-B. 有副作用的函数  
-C. 参数可哈希  
-D. 计算昂贵
-
-**解析讲解**：B
-
-**解析讲解**：`lru_cache` 假设纯函数，有副作用的函数缓存会导致行为不一致。
-
-**常见疑问 4**：NumPy 比 Python 循环快的根本原因是？
-
-A. NumPy 用 C 编写  
-B. NumPy 使用 SIMD 指令  
-C. NumPy 单次调用处理整个数组  
-D. 以上全部
-
-**解析讲解**：D
-
-**解析讲解**：C 实现 + SIMD + 向量化三者共同作用。
-
 ### 填空题知识点讲解
 
 **常见疑问 5**：Python 性能优化的第一步是 ____。
@@ -1848,29 +1800,6 @@ for name, func in [("loop", sum_squares_loop),
 
 **解析讲解**：见 `caching.py` 中的 `TTLCache` 实现，加 `threading.Lock` 保证线程安全。
 
-### 9.4 思考题
-
-**常见疑问 11**：为什么 Python 的 `list` 比 `array.array` 慢但更灵活？请从类型系统角度分析。
-
-**解析讲解**：`list` 存储任意类型对象（`PyObject*`），支持异构元素，但每次操作需动态分派。`array.array` 存储同质 C 类型，操作直接但仅支持数值类型。这是动态类型灵活性与静态类型性能的经典权衡。
-
-**常见疑问 12**：在什么情况下应选择 Cython 而非 NumPy？
-
-**解析讲解**：
-- 数据是异构的（struct 而非数组）
-- 算法是分支密集型（NumPy 优势在向量化）
-- 需要直接调用 C 库
-- 需要细粒度内存控制（指针操作）
-
-**常见疑问 13**：讨论"过早优化是万恶之源"在 Python 项目中的适用性。
-
-**解析讲解**：
-- 适用：在未 profile 前优化非热点、牺牲可读性换性能、引入复杂依赖（Cython）而收益微薄。
-- 不适用：明显 $O(n^2)$ 算法、N+1 查询、循环中拼接字符串、未释放大对象。
-- 平衡：先写正确代码，profile 后优化热点，保持可读性。
-
----
-
 ## 10. 工具选型决策树
 
 ```mermaid
@@ -1916,8 +1845,6 @@ flowchart TD
 
 ---
 
-## 11. 参考资料
-
 ### 11.1 规范与 PEP
 
 - van Rossum, G., & Peters, T. (2001). PEP 8: Style Guide for Python Code. Python Enhancement Proposals. https://peps.python.org/pep-0008/
@@ -1950,8 +1877,6 @@ flowchart TD
 
 ---
 
-## 12. 延伸阅读
-
 ### 12.1 书籍
 
 - Leiserson, C. E., et al. (2023). Performance Engineering of Software Systems (MIT 6.172 Course Notes). MIT OpenCourseWare.（CSAPP 第 5 章"优化程序性能"）
@@ -1963,13 +1888,6 @@ flowchart TD
 
 - Knuth, D. E. (1974). Computer Programming as an Art. Communications of the ACM, 17(12), 667-673.（"过早优化"经典论述）
 - Patterson, D. A., & Hennessy, J. L. (2020). Computer Organization and Design RISC-V Edition (2nd ed.). Morgan Kaufmann. ISBN: 978-0128203316.
-
-### 12.3 在线资源
-
-- Python Speed Center: https://speed.python.org/
-- PyPy Speed Center: https://speed.pypy.org/
-- NumPy Performance: https://numpy.org/doc/stable/user/performance.html
-- py-spy Documentation: https://github.com/benfred/py-spy
 
 ### 12.4 学习路线
 
@@ -2077,4 +1995,3 @@ python -m memory_profiler my_script.py
 mprof run my_script.py
 mprof plot
 ```
-

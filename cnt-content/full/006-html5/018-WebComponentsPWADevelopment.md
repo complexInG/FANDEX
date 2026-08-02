@@ -465,11 +465,6 @@ flowchart TD
 **解决方案**：在合适的时机请求权限，提供清晰的使用说明
 
 ## 17. 延伸阅读
-
-- [Web Components 官方文档](https://developer.mozilla.org/en-US/docs/Web/Web_Components)
-- [PWA 官方文档](https://web.dev/progressive-web-apps/)
-- [Workbox 文档](https://developers.google.com/web/tools/workbox)
-- [Lit 文档](https://lit.dev/docs/)
   通过本教程，你已经了解了 Web Components 和 PWA 的核心概念和实践技巧。在实际项目中，你可以结合这些技术创建具有原生应用体验的 Web 应用，提升用户体验和性能。
 ## Custom Elements 自定义元素
 
@@ -1011,16 +1006,7 @@ async function syncData() {
 }
 ```
 
-## 参考文献
-
-WHATWG HTML Living Standard：https://html.spec.whatwg.org/
-MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML
-W3C Markup Validation Service：https://validator.w3.org/
-WebAIM 可访问性指南：https://webaim.org/
-
 ## 延伸阅读
-
 HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
 CSS 样式与布局，见 007-css 模块。
 JavaScript DOM 操作，见 008-javascript 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 HTML/CSS 课程。

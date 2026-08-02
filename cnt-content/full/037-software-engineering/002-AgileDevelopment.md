@@ -266,23 +266,6 @@ flowchart LR
 
 **对策**：回顾会必须产出"可执行的改进动作"（哪怕只有一个），并跟踪落实——"改进闭环"是敏捷持续进步的动力（详见 039-engineering-practices《事故复盘方法论》）。
 
-## 8. 实战练习
-
-1. **Scrum 演练**：为"开发一个记账 App"设计一个 Sprint 的完整流程：从 Backlog 挑 3 个故事、写验收标准、规划 Sprint 目标。
-
-2. **用户故事**：用"作为…我希望…以便…"格式写 5 个记账 App 的用户故事，并给每个配验收标准。
-
-3. **估算练习**：和同伴玩一次"规划扑克"——对一组故事分别估算故事点，观察估算差异并讨论原因。
-
-4. **看板设计**：为你的项目设计 Kanban 看板（列 + WIP 限制），并用 Lead Time / Cycle Time 分析当前流程的瓶颈。
-
-## 9. 参考资源
-
-- 敏捷宣言：https://agilemanifesto.org/iso/zhchs/manifesto.html
-- Scrum 指南（官方）：https://scrumguides.org/
-- Martin Fowler 敏捷文章：https://martinfowler.com/agile.html
-- Kanban 方法：https://kanbanize.com/kanban-resources/getting-started/what-is-kanban
-
 ## 10. 延伸阅读
 
 - 敏捷中的需求管理，见本模块《需求分析方法》

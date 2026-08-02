@@ -508,8 +508,6 @@ public:
 | **编译时间长**   | 模板使用过多   | 减少模板复杂度，使用前向声明     |
 | **启动时间慢**   | 静态初始化过多 | 延迟初始化，使用局部静态变量     |
 
-## 9. 学习资源
-
 ### 9.1 书籍
 
 | 书籍                   | 作者                | 适合人群     |
@@ -521,16 +519,6 @@ public:
 | **《深入理解 C++11》** | 侯捷                | 中级到高级   |
 | **《C++ 并发编程》**   | Anthony Williams    | 中级到高级   |
 | **《STL 源码剖析》**   | 侯捷                | 高级         |
-
-### 9.2 在线资源
-
-- **C++ 参考手册**：[cppreference.com](https://en.cppreference.com/w/)
-- **C++ 标准**：[ISO C++](https://isocpp.org/)
-- **C++ Core Guidelines**：[GitHub](https://github.com/isocpp/CppCoreGuidelines)
-- **Stack Overflow**：[C++ 标签](https://stackoverflow.com/questions/tagged/c%2b%2b)
-- **C++ 教程**：[Learn C++](https://www.learncpp.com/)
-- **C++ 周刊**：[YouTube 频道](https://www.youtube.com/c/CppCon)
-- **C++ 会议**：CppCon, Meeting C++
 
 ### 9.3 编译器文档
 
@@ -575,14 +563,6 @@ C++ 是一门强大、灵活且高性能的编程语言，它在系统编程、�
 
 - [C语言](c/overview)
 - [算法](algorithm/overview)
-
-## 参考文献
-
-cppreference C++ 文档：https://zh.cppreference.com/w/cpp
-C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
-C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
-CMake 官方文档：https://cmake.org/documentation/
-Compiler Explorer：https://godbolt.org/
 
 ## 深度专题扩展
 

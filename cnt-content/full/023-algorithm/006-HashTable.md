@@ -4,7 +4,7 @@ title: 哈希表
 module: algorithm
 category: Algorithm/HashTable
 difficulty: intermediate
-description: 哈希表（Hash Table）的形式化定义、哈希函数设计（除法/乘法/全域/多项式滚动）、冲突处理（链地址法/开放寻址法/布谷鸟哈希）、扩容与再哈希、一致性哈希、Bloom Filter 与 LRU/LFU 缓存的工程实现，附 Python/C++/Java 多语言实现与 CLRS 第 11 章风格习题。
+description: 哈希表（Hash Table）的形式化定义、哈希函数设计（除法/乘法/全域/多项式滚动）、冲突处理（链地址法/开放寻址法/布谷鸟哈希）、扩容与再哈希、一致性哈希、Bloom Filter 与 LRU/LFU 缓存的工程实现，附 Python/C++/Java 多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -2227,39 +2227,6 @@ class URLShortener:
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：给定哈希表 $m = 11$（质数），使用除法哈希 $h(k) = k \mod 11$，依次插入键 $\{10, 22, 31, 4, 15, 28, 17\}$。使用链地址法，槽位 5 的链表长度为多少？
-
-- A. 0
-- B. 1
-- C. 2
-- D. 3
-
-**解析讲解**：C。$h(15) = 4, h(28) = 6, h(17) = 6$。槽 6 的链表为 `28 -> 17`，长度 2。
-
-> **勘误**：原题考察槽位 5，正确计算 $h(k) \mod 11$：10→10, 22→0, 31→9, 4→4, 15→4, 28→6, 17→6。槽 5 长度为 0，选 A。若考察槽 6 则选 C。本题答案为 **A**。
-
-**题目 2**：开放寻址法线性探测下，负载因子 $\alpha = 0.5$ 时，查找成功的期望探测次数（理论值）约为？
-
-- A. 1.15
-- B. 1.39
-- C. 2.00
-- D. 2.56
-
-**解析讲解**：B。$\text{ASL}_{\text{success}} = \frac{1}{\alpha} \ln \frac{1}{1-\alpha} = \frac{1}{0.5} \ln \frac{1}{0.5} = 2 \ln 2 \approx 1.39$。
-
-**题目 3**：Carter-Wegman 全域哈希族 $h_{a,b}(k) = ((a \cdot k + b) \mod p) \mod m$，$p = 7, m = 3$，$a \in \{1, 2, 3, 4, 5, 6\}, b \in \{0, 1, 2, 3, 4, 5, 6\}$。该哈希族包含多少个函数？
-
-- A. 6
-- B. 7
-- C. 21
-- D. 42
-
-**解析讲解**：D。$|H| = (p-1) \cdot p = 6 \times 7 = 42$。
-
 ### 填空题知识点讲解
 
 **题目 4**：Bloom Filter 中，若位数组 $m = 10000$，元素数 $n = 1000$，哈希函数数 $k = 7$，则假阳性率约为 ______。（保留 3 位小数）
@@ -2418,24 +2385,6 @@ Python 3.6+ 采用 PEP 412 紧凑字典实现，三段式结构：
 
 ---
 
-## 16. 参考文献
-
-1. Carter, J. L., & Wegman, M. N. (1979). Universal classes of hash functions. *Journal of Computer and System Sciences*, 18(2), 143-154. DOI: 10.1016/0022-0000(79)90044-8
-2. Bloom, B. H. (1970). Space/time trade-offs in hash coding with allowable errors. *Communications of the ACM*, 13(7), 422-426. DOI: 10.1145/362686.362692
-3. Pagh, R., & Rodler, F. F. (2004). Cuckoo hashing. *Journal of Algorithms*, 51(2), 122-144. DOI: 10.1016/j.jalgor.2003.12.002
-4. Knuth, D. E. (1998). *The Art of Computer Programming, Volume 3: Sorting and Searching* (2nd ed.). Addison-Wesley Professional. ISBN 978-0201896855, Section 6.4 (Hashing).
-5. Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2022). *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305, Chapter 11 (Hash Tables).
-6. Sedgewick, R., & Wayne, K. (2011). *Algorithms* (4th ed.). Addison-Wesley Professional. ISBN 978-0321573513, Section 3.4 (Hash Tables).
-7. Kleinberg, J., & Tardos, E. (2006). *Algorithm Design*. Pearson. ISBN 978-0321295354, Chapter 13 (Randomized Algorithms) - Universal Hashing.
-8. Hettinger, R. (2012). Python PEP 412 - Key-sharing dictionary implementation. Python Enhancement Proposals. https://peps.python.org/pep-0412/
-9. Sanfilippo, S. (2018). Redis dict.c source code with incremental rehashing design. Redis GitHub Repository. https://github.com/redis/redis/blob/unstable/src/dict.c
-10. Oracle Corporation. (2024). Java HashMap source documentation (array + linked list + red-black tree). Oracle Java Documentation. https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html
-11. Mitzenmacher, M., & Upfal, E. (2017). *Probability and Computing: Randomization and Probabilistic Techniques in Algorithms and Data Analysis* (2nd ed.). Cambridge University Press. ISBN 978-1107154849, Chapter 5 (Balls and Bins) and Chapter 15 (Pairwise Independent Hashing).
-
----
-
-## 17. 延伸阅读
-
 ### 17.1 理论深入
 
 - **Mitzenmacher-Upfal** *Probability and Computing* Chapter 5（Balls and Bins 模型，哈希冲突的概率论基础）
@@ -2466,18 +2415,6 @@ Python 3.6+ 采用 PEP 412 紧凑字典实现，三段式结构：
 - Stanford CS166 *Data Structures* Lecture 5: Universal Hashing
 - CMU 15-122 *Imperative Programming* Hash Tables Lecture
 
-### 17.5 在线练习
-
-- LeetCode 1: Two Sum（哈希表基础应用）
-- LeetCode 49: Group Anagrams（哈希键设计）
-- LeetCode 128: Longest Consecutive Sequence（哈希集合 + 序列扩展）
-- LeetCode 146: LRU Cache（哈希 + 双链表综合）
-- LeetCode 460: LFU Cache（多层哈希 + 频率链表）
-- LeetCode 706: Design HashMap（从零实现哈希表）
-- LeetCode 1044: Longest Duplicate Substring（二分 + Rabin-Karp）
-
----
-
 ## 附录 A：哈希表复杂度速查表
 
 | 操作 | 链地址法（平均） | 链地址法（最坏） | 开放寻址法（平均） | 开放寻址法（最坏） | 布谷鸟哈希（最坏） |
@@ -2487,30 +2424,3 @@ Python 3.6+ 采用 PEP 412 紧凑字典实现，三段式结构：
 | 删除 | $O(1+\alpha)$ | $O(n)$ | $O(1/(1-\alpha))$ | $O(n)$ | $O(1)$ |
 | 空间 | $O(n+m)$ | $O(n+m)$ | $O(m)$ | $O(m)$ | $O(m)$ |
 | $\alpha$ 范围 | $[0, \infty)$ | $[0, \infty)$ | $[0, 1)$ | $[0, 1)$ | $[0, 0.5)$ |
-
-## 附录 B：常见面试题速查表
-
-| 题号 | 题目 | 哈希技巧 | 难度 |
-| ---- | ---- | ---- | ---- |
-| LC 1 | Two Sum | 哈希表反向查找 | Easy |
-| LC 49 | Group Anagrams | 排序字符串作键 | Medium |
-| LC 128 | Longest Consecutive Sequence | 哈希集合 + 序列起点判断 | Medium |
-| LC 146 | LRU Cache | 哈希 + 双链表 | Medium |
-| LC 217 | Contains Duplicate | 哈希集合 | Easy |
-| LC 347 | Top K Frequent Elements | 哈希 + 桶排序 | Medium |
-| LC 460 | LFU Cache | 双层哈希 | Hard |
-| LC 706 | Design HashMap | 链地址法/开放寻址 | Easy |
-| LC 705 | Design HashSet | 哈希表基础 | Easy |
-| LC 1044 | Longest Duplicate Substring | 二分 + Rabin-Karp | Hard |
-| LC 187 | Repeated DNA Sequences | 滚动哈希 | Medium |
-| LC 560 | Subarray Sum Equals K | 前缀和 + 哈希 | Medium |
-| LC 380 | Insert Delete GetRandom O(1) | 哈希 + 数组 | Medium |
-| LC 381 | Insert Delete GetRandom O(1) - Duplicates | 哈希 + 集合 | Hard |
-| LC 287 | Find the Duplicate Number | Floyd 环检测 | Medium |
-
----
-
-> **文档版本**：FANDEX Content Engineering 金标准 v1.0
-> **最后审阅**：2026-07-20
-> **审阅者**：FANDEX Content Engineering
-> **对标基准**：MIT 6.006 / Stanford CS166 / CMU 15-122 / CLRS 4th Chapter 11

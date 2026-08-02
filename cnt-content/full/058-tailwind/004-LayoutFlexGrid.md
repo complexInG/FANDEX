@@ -425,58 +425,6 @@ grid-cols-3：显式声明 3 列，行数由内容自动决定
 | 定位基准错误 | absolute 元素"飞"到页面角落 | 祖先没有 `relative`，absolute 定位到更外层 | 在最近的定位父元素上加 `relative` |
 | 响应式断点写反 | 移动端也显示多列 | 忘记"移动优先"：基础类先写移动端样式 | 基础写单列，`md:`/`lg:` 前缀逐级增强 |
 
-## 8. 实战练习
-
-### 练习一：三栏自适应布局
-
-题目描述：用 Flex 实现"左右固定、中间弹性"的三栏布局：左栏 200px、右栏 160px、中间占满剩余空间，栏间 16px 间距。
-
-提示：容器 `flex gap-4`；左右 `shrink-0` 固定；中间 `flex-1`。
-
-参考答案要点：`<div class="flex gap-4">`，左 `<aside class="w-50 shrink-0 ...">`（200px 即 `w-50`，v4 支持动态值）、右 `<aside class="w-40 shrink-0 ...">`、中 `<main class="flex-1 ...">`。核心是 `flex-1` 吃掉剩余空间。
-
-### 练习二：响应式卡片墙
-
-题目描述：用 Grid 实现课程卡片墙：移动端 1 列、平板（`md:`）2 列、桌面（`lg:`）3 列，行列间距 24px，卡片带圆角与边框。
-
-提示：`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3`；卡片 `rounded-xl border border-gray-200 p-6`。
-
-参考答案要点：外层 `grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3`，卡片 `<article class="rounded-xl border border-gray-200 p-6">` 三张以上即可看到断点变化。
-
-### 练习三：实现"侧边栏 + 主内容"骨架
-
-题目描述：用 Grid 实现后台骨架：移动端主内容单列，桌面端（`md:`）侧边栏占 1/4、主内容占 3/4。
-
-提示：`md:grid-cols-4` + `md:col-span-1` / `md:col-span-3`。
-
-参考答案要点：`<div class="grid grid-cols-1 md:grid-cols-4">`，侧边栏 `<aside class="md:col-span-1">`，主区 `<main class="md:col-span-3">`。四列网格中 1:3 即 25%:75%。
-
-### 练习四：头像徽标定位
-
-题目描述：实现"头像 + 右上角未读徽标"：头像 64px 圆形，徽标 20px 圆形红底白字，叠在头像右上角，数字为 3。
-
-提示：父 `relative inline-block`；徽标 `absolute -top-1 -right-1` + `flex items-center justify-center`。
-
-参考答案要点：`<div class="relative inline-block">` 内 `<img class="h-16 w-16 rounded-full" />` 与 `<span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">3</span>`。注意负值位移类 `-top-1` 让徽标略微探出头像边缘。
-
-### 练习五：综合：实现"导航 + 卡片墙 + 页脚"首页
-
-题目描述：综合运用本篇全部能力，实现一个迷你首页：吸顶导航（左 logo 右按钮）、响应式三列课程卡片墙、页脚（三列信息 + 居中版权文字）。
-
-提示：导航用 `sticky top-0 flex justify-between`；卡片墙用响应式 grid；页脚用 `grid-cols-1 md:grid-cols-3` + 底部 `text-center`。
-
-参考答案要点：导航 `<nav class="sticky top-0 z-50 flex items-center justify-between bg-white px-6 py-3 shadow-sm">`；卡片墙 `<section class="grid grid-cols-1 gap-6 p-6 md:grid-cols-2 lg:grid-cols-3">`；页脚 `<footer class="bg-gray-900 text-white">` 内 `grid grid-cols-1 md:grid-cols-3` 放三列信息，底部 `<p class="py-4 text-center text-sm text-gray-400">` 放版权。
-
 ## 9. 一句话记忆
 
 一维排布用 Flex（容器管方向与对齐、项目管伸缩），二维排布用 Grid（容器管行列轨道、项目管跨列跨行），兄弟间距用 `gap`、块级居中用 `mx-auto`、悬浮层用 `relative + absolute + z-*`。
-
-## 参考链接与延伸阅读
-
-- Tailwind CSS 官方文档（Flexbox & Grid）：https://tailwindcss.com/docs/flex
-- Tailwind CSS 官方文档（Display）：https://tailwindcss.com/docs/display
-- MDN Flex 布局教程：https://developer.mozilla.org/zh-CN/docs/Learn/CSS/CSS_layout/Flexbox
-- MDN Grid 布局教程：https://developer.mozilla.org/zh-CN/docs/Learn/CSS/CSS_layout/Grids
-- Tailwind CSS 中文文档：https://www.tailwindcss.cn/docs
-
-延伸阅读建议：本模块 006 号文档《响应式与暗色模式》将深入断点体系与暗色模式配置；如需复习工具类基础（颜色、间距、排版），回看 tailwind/003-UtilityCore。

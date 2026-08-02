@@ -1889,8 +1889,6 @@ ImmutableList<User> immutable = users.stream()
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（记忆与理解）
 
 1. 列举 `java.util.function` 包中至少 5 个核心函数式接口及其函数描述符。
@@ -1947,17 +1945,6 @@ ImmutableList<User> immutable = users.stream()
     }
     ```
 
-### 9.5 开放思考题
-
-17. 函数式编程强调不可变性，但 Java 中的 `Stream.collect` 最终产生可变集合。这种设计是否违背了 FP 原则？请论证你的观点。
-18. Java 的 Lambda 选择了 `invokedynamic` 而非匿名内部类，这一决策对 Java 生态的长期影响是什么？
-19. 在微服务架构中，函数式编程如何与领域驱动设计（DDD）结合？请给出你的设计思路。
-20. 随着 Java 21 虚拟线程的普及，函数式响应式编程（Reactor）是否会被取代？请分析两者的适用场景。
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 1. Church, A. (1936). *An unsolvable problem of elementary number theory*. American Journal of Mathematics.
@@ -1981,18 +1968,6 @@ ImmutableList<User> immutable = users.stream()
 13. Okasaki, C. (1998). *Purely Functional Data Structures*. Cambridge University Press.
 14. Lipovača, M. (2011). *Learn You a Haskell for Great Good!* No Starch Press.
 15. Abelson, H., & Sussman, G. J. (1996). *Structure and Interpretation of Computer Programs* (2nd ed.). MIT Press.
-
-### 10.4 在线资源
-
-16. *The Java Tutorials: Lambda Expressions*. Oracle.
-17. *Stream Javadoc*. OpenJDK.
-18. *Project Loom*. OpenJDK.
-19. *Reactor Documentation*. Project Reactor.
-20. *Vavr User Guide*. Vavr.io.
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 函数式编程理论
 

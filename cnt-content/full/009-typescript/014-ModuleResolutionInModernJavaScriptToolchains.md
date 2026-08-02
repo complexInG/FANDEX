@@ -1927,8 +1927,6 @@ jobs:
 
 `type-check` 脚本运行纯类型检查，不产生输出，是 CI 校验模块解析正确性的关键步骤。
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. TypeScript 5.0 引入的 moduleResolution: `____` 策略模拟现代打包工具的解析行为，允许相对路径不带扩展名且更宽松地解析 package.json 的 exports 字段。
@@ -1937,45 +1935,6 @@ jobs:
 4. tsconfig.json 中 `____` 选项启用后，TypeScript 允许在 import 路径中显式包含 `.ts` 扩展名，但要求同时启用 `noEmit`。
 5. package.json 的 `____` 字段允许包内部通过包名引用自身的导出，而不需要使用相对路径。
 6. TypeScript 5.0 引入的 `____` 选项强制 `import type` 与 `export type` 语法在生成的 JavaScript 中精确擦除。
-
-### 选择题知识点讲解
-
-1. 关于 moduleResolution: node16 与 nodenext 的关系，下列说法正确的是？
-   - A. node16 是 nodenext 的别名，两者完全等价
-   - B. node16 固定模拟 Node.js 16 的解析规则；nodenext 跟随当前 TypeScript 版本对应的最新 Node.js 规则
-   - C. nodenext 比 node16 更宽松，允许省略扩展名
-   - D. node16 仅支持 CommonJS，nodenext 仅支持 ESM
-
-2. 下列哪种 moduleResolution 策略允许在相对路径导入中省略文件扩展名？
-   - A. classic
-   - B. node10（node）
-   - C. node16
-   - D. bundler
-
-3. 关于 package.json 的 exports 字段，下列描述错误的是？
-   - A. exports 字段优先级高于 main 字段
-   - B. exports 字段可以限制包的内部文件被外部直接访问
-   - C. exports 字段中的条件匹配是按声明顺序短路求值的
-   - D. exports 字段必须为字符串，不支持对象形式
-
-4. 下列代码在 moduleResolution: node16 下会报错，原因是？
-   `import { foo } from './utils';`
-   - A. utils 是相对路径，必须带 `.ts` 扩展名
-   - B. utils 是相对路径，在 ESM 模式下必须带 `.js` 扩展名
-   - C. node16 不支持相对路径导入
-   - D. utils 文件不存在
-
-5. 关于 tsconfig 的 paths 与 baseUrl，下列说法错误的是？
-   - A. paths 的映射目标路径是相对于 baseUrl 的
-   - B. baseUrl 可以独立于 paths 使用，用于解析非相对路径导入
-   - C. 设置 paths 必须先设置 baseUrl（TypeScript 5.0 之前）
-   - D. paths 支持通配符 `*`，且 `*` 不能出现在路径中间
-
-6. 下列哪种场景最适合使用 moduleSuffixes 选项？
-   - A. Monorepo 中区分多包的入口文件
-   - B. React Native 项目中区分 `.ios.ts` 与 `.android.ts` 平台特定文件
-   - C. 区分开发环境与生产环境的配置文件
-   - D. 区分 CommonJS 与 ESM 输出
 
 ### 12.3 代码修复题
 
@@ -2018,32 +1977,12 @@ const x: MyType = myFunc();
 
 2. 假设你正在为一个 10 万行代码的 monorepo（包含 20 个内部包）设计 TypeScript 模块解析方案，请列出至少 4 个关键决策点及其工程动机。
 
-## 13. 参考文献
-
-1. Node.js Foundation. "Packages: Node.js Module Resolution Algorithm." Node.js Documentation, 2024. https://nodejs.org/api/packages.html
-2. Microsoft. "TypeScript Handbook: Module Resolution." Microsoft Developer Network, 2024. https://www.typescriptlang.org/docs/handbook/module-resolution.html
-3. Rosenwasser, Daniel. "Announcing TypeScript 5.0: moduleResolution: bundler." Microsoft Developer Blog, 2023. https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/
-4. Ecma International. "ECMAScript 2024 Language Specification, Section 16: Modules." ECMA-262, 14th edition, 2024. https://tc39.es/ecma262/#sec-modules
-5. CommonJS Project. "CommonJS Modules 1.1.1 Specification." CommonJS Wiki, 2009. https://wiki.commonjs.org/wiki/Modules/1.1.1
-6. Klabnik, Steve and Nichols, Carol. "The Rust Programming Language: Modules and Crates." No Starch Press, 2023. ISBN 978-1-71850-311-2
-7. Bierman, Gavin M. and Abadi, Martín and Torgersen, Mads. "Understanding TypeScript." ECOOP 2014 — Object-Oriented Programming, 2014, pp. 257-281. DOI: 10.1007/978-3-662-44202-9_11
-8. Watt, Ailsa. "Module Resolution in Modern JavaScript Toolchains." Proceedings of the ACM on Programming Languages, vol. 7, OOPSLA, 2023. DOI: 10.1145/3622823
-
-## 14. 延伸阅读
-
 ### 14.1 官方文档
 
 - TypeScript Handbook: Module Resolution（https://www.typescriptlang.org/docs/handbook/module-resolution.html）
 - TypeScript 5.0 Release Notes（https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/）
 - Node.js Documentation: Packages（https://nodejs.org/api/packages.html）
 - ECMAScript Specification: Modules（https://tc39.es/ecma262/#sec-modules）
-
-### 14.2 社区资源
-
-- "TypeScript Module Resolution: A Visual Guide" by Basarat Ali Syed
-- "Understanding package.json exports" by Sindre Sorhus
-- "ESM in Node.js: A Practical Guide" by Gil Tayar
-- "Monorepo Module Resolution Strategies" by Andrey Okonetchnikov
 
 ### 14.3 相关工具文档
 

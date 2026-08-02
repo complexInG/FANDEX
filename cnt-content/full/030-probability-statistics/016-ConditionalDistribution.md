@@ -72,34 +72,6 @@ $$P(Y = y_j \mid X = x_i) = \frac{p_{ij}}{p_{i\cdot}}, \qquad j = 1, 2, \cdots$$
 
 规范性说明：固定 $Y = y_j$ 后，$X$ 各取值概率之和仍为 1，构成合法分布。
 
-### 2.3 例题 1（离散型，完整的表格推演）
-
-设 $(X, Y)$ 的联合分布律为：
-
-| $X \backslash Y$ | 0        | 1        | $P(X = x_i)$ |
-| :--------------: | :------: | :------: | :----------: |
-| 0                | 1/10     | 3/10     | 2/5          |
-| 1                | 3/10     | 3/10     | 3/5          |
-| $P(Y = y_j)$     | 2/5      | 3/5      | 1            |
-
-（1）求在 $X = 0$ 条件下 $Y$ 的条件分布律；（2）求在 $Y = 1$ 条件下 $X$ 的条件分布律。
-
-**解**：
-
-（1）由表中第 1 行得 $P(X = 0) = \dfrac{1}{10} + \dfrac{3}{10} = \dfrac{2}{5}$。
-
-$$P(Y = 0 \mid X = 0) = \frac{P(X = 0, Y = 0)}{P(X = 0)} = \frac{1/10}{2/5} = \frac{1}{4}$$
-
-$$P(Y = 1 \mid X = 0) = \frac{P(X = 0, Y = 1)}{P(X = 0)} = \frac{3/10}{2/5} = \frac{3}{4}$$
-
-验证规范性：$\dfrac{1}{4} + \dfrac{3}{4} = 1$，正确。
-
-（2）由表中第 2 列得 $P(Y = 1) = \dfrac{3}{5}$。
-
-$$P(X = 0 \mid Y = 1) = \frac{3/10}{3/5} = \frac{1}{2}, \qquad P(X = 1 \mid Y = 1) = \frac{3/10}{3/5} = \frac{1}{2}$$
-
-> 注意：$P(X = 0 \mid Y = 1) = \dfrac{1}{2} \neq P(X = 0) = \dfrac{2}{5}$，条件改变了 $X$ 的分布，故 $X$ 与 $Y$ **不独立**。
-
 ## 3. 连续型随机变量的条件概率密度
 
 ### 3.1 定义
@@ -127,32 +99,6 @@ $$F_{X \mid Y}(x \mid y) = \int_{-\infty}^{x} f_{X \mid Y}(u \mid y) \, du = \fr
 3. **乘法公式**：$f(x, y) = f_X(x) \cdot f_{Y \mid X}(y \mid x) = f_Y(y) \cdot f_{X \mid Y}(x \mid y)$。
 
 乘法公式是把联合密度"拆"成边缘密度与条件密度之积，是贝叶斯推断与条件期望推导的基础。
-
-### 3.4 例题 2（连续型，注意积分上下限）
-
-设 $(X, Y)$ 的联合密度为
-
-$$f(x, y) = \begin{cases} 3x, & 0 < x < 1,\ 0 < y < x \\ 0, & \text{其他} \end{cases}$$
-
-求条件概率密度 $f_{Y \mid X}(y \mid x)$ 与 $f_{X \mid Y}(x \mid y)$。
-
-**解**：
-
-第一步，先求两条边缘密度（积分上下限由非零区域决定：对 $y$ 积分时 $0 < y < x$；对 $x$ 积分时 $y < x < 1$）：
-
-$$f_X(x) = \int_{0}^{x} 3x \, dy = 3x^2, \quad 0 < x < 1$$
-
-$$f_Y(y) = \int_{y}^{1} 3x \, dx = \frac{3(1 - y^2)}{2}, \quad 0 < y < 1$$
-
-第二步，套条件密度公式：
-
-$$f_{Y \mid X}(y \mid x) = \frac{f(x, y)}{f_X(x)} = \frac{3x}{3x^2} = \frac{1}{x}, \quad 0 < y < x$$
-
-即：在 $X = x$ 条件下，$Y$ 服从 $(0, x)$ 上的均匀分布，$Y \mid X = x \sim U(0, x)$。
-
-$$f_{X \mid Y}(x \mid y) = \frac{f(x, y)}{f_Y(y)} = \frac{3x}{3(1 - y^2)/2} = \frac{2x}{1 - y^2}, \quad y < x < 1$$
-
-> 易错点：写出条件密度后，**必须同时写明 $x$ 或 $y$ 的取值范围**（支撑集）。忘记写范围，公式就失去了意义。
 
 ## 4. 条件分布与边缘分布：全概率公式的"密度版"
 
@@ -195,48 +141,6 @@ $$f_{X \mid Y}(x \mid y) = \frac{f_{Y \mid X}(y \mid x) \, f_X(x)}{f_Y(y)} \prop
 
 即"后验 $\propto$ 似然 $\times$ 先验"。条件分布正是贝叶斯推断（贝叶斯分类、垃圾邮件过滤）的数学核心。
 
-## 7. 例题精讲
-
-### 例题 3（条件概率的计算，连续性修正思维）
-
-设 $(X, Y)$ 的联合密度为
-
-$$f(x, y) = \begin{cases} 2, & 0 < y < x < 1 \\ 0, & \text{其他} \end{cases}$$
-
-求 $P\left(X > \dfrac{1}{2} \,\middle|\, Y = \dfrac{1}{4}\right)$。
-
-**解**：
-
-先求边缘密度 $f_Y(y)$：
-
-$$f_Y(y) = \int_{y}^{1} 2 \, dx = 2(1 - y), \quad 0 < y < 1$$
-
-条件密度（注意 $y < x < 1$）：
-
-$$f_{X \mid Y}(x \mid y) = \frac{f(x, y)}{f_Y(y)} = \frac{2}{2(1 - y)} = \frac{1}{1 - y}, \quad y < x < 1$$
-
-在 $Y = \dfrac{1}{4}$ 条件下，$X$ 的条件密度为
-
-$$f_{X \mid Y}\left(x \,\middle|\, \frac{1}{4}\right) = \frac{1}{3/4} = \frac{4}{3}, \quad \frac{1}{4} < x < 1$$
-
-于是
-
-$$P\left(X > \frac{1}{2} \,\middle|\, Y = \frac{1}{4}\right) = \int_{1/2}^{1} \frac{4}{3} \, dx = \frac{4}{3} \times \frac{1}{2} = \frac{2}{3}$$
-
-### 例题 4（条件分布"回头看"边缘分布）
-
-在 $Y = y$（$0 < y < 1$）条件下，$X$ 的条件密度为 $f_{X \mid Y}(x \mid y) = \dfrac{1}{y}$（$0 < x < y$），且 $Y \sim U(0, 1)$。求 $X$ 的边缘密度 $f_X(x)$。
-
-**解**：由全概率公式的密度形式：
-
-$$f_X(x) = \int_{-\infty}^{+\infty} f_{X \mid Y}(x \mid y) f_Y(y) \, dy$$
-
-注意非零条件：$0 < x < y$ 且 $0 < y < 1$，故 $y$ 从 $x$ 积到 $1$：
-
-$$f_X(x) = \int_{x}^{1} \frac{1}{y} \cdot 1 \, dy = \ln y \Big|_{x}^{1} = -\ln x, \quad 0 < x < 1$$
-
-验证规范性：$\displaystyle\int_0^1 (-\ln x) \, dx = 1$，正确。
-
 ## 8. 常见错误与对策
 
 | 错误示例 | 错误类型 | 原因分析 | 纠正方法 |
@@ -248,65 +152,14 @@ $$f_X(x) = \int_{x}^{1} \frac{1}{y} \cdot 1 \, dy = \ln y \Big|_{x}^{1} = -\ln x
 | 积分上下限定错 | 计算错误 | 对非矩形区域积分时凭感觉定限 | 先画出非零区域的图形，再按"先积哪个变量"确定上下限，最后用规范性 $\int f_{X\mid Y} = 1$ 自检 |
 | 认为条件分布必不等于边缘分布 | 以偏概全 | 忽略了独立情形 | 若 $X$ 与 $Y$ 独立，条件分布恰等于边缘分布，这是判断独立性的等价条件之一 |
 
-## 9. 实战练习
-
-### 练习 1（离散型基础）
-
-设 $(X, Y)$ 的联合分布律为：$P(0,0)=\dfrac{1}{6}$，$P(0,1)=\dfrac{1}{3}$，$P(1,0)=\dfrac{1}{3}$，$P(1,1)=\dfrac{1}{6}$。求在 $Y = 0$ 条件下 $X$ 的条件分布律。
-
-**提示**：先求 $P(Y=0)$，再逐项除以它。
-
-**参考答案要点**：$P(Y=0)=\dfrac{1}{6}+\dfrac{1}{3}=\dfrac{1}{2}$；$P(X=0\mid Y=0)=\dfrac{1/6}{1/2}=\dfrac{1}{3}$，$P(X=1\mid Y=0)=\dfrac{1/3}{1/2}=\dfrac{2}{3}$。
-
-### 练习 2（连续型基础）
-
-设 $(X, Y)$ 的联合密度为 $f(x, y) = \begin{cases} 8xy, & 0 < x < y < 1 \\ 0, & \text{其他} \end{cases}$，求 $f_{X \mid Y}(x \mid y)$。
-
-**提示**：先算 $f_Y(y) = \int_0^y 8xy \, dx$。
-
-**参考答案要点**：$f_Y(y) = 4y^3$（$0<y<1$）；$f_{X \mid Y}(x \mid y) = \dfrac{8xy}{4y^3} = \dfrac{2x}{y^2}$，$0 < x < y$。
-
-### 练习 3（条件概率计算）
-
-承练习 2，求 $P\left(X < \dfrac{1}{2} \,\middle|\, Y = \dfrac{3}{4}\right)$。
-
-**提示**：代入条件密度后对 $x$ 积分，注意上限是 $y = \dfrac{3}{4}$。
-
-**参考答案要点**：$f_{X\mid Y}\left(x\mid \frac34\right) = \dfrac{2x}{9/16} = \dfrac{32x}{9}$，$0 < x < \dfrac{3}{4}$；$P = \displaystyle\int_0^{1/2} \frac{32x}{9} dx = \frac{32}{9} \cdot \frac{1}{8} = \frac{4}{9}$。
-
-### 练习 4（条件分布与边缘分布互推）
-
-在 $Y = y$ 条件下 $X$ 的条件密度为 $f_{X \mid Y}(x \mid y) = \dfrac{1}{y}$（$0 < x < y$），$Y$ 的边缘密度 $f_Y(y) = 2y$（$0 < y < 1$）。求 $X$ 的边缘密度。
-
-**提示**：用全概率公式的密度形式，注意 $x < y$ 决定积分下限。
-
-**参考答案要点**：$f_X(x) = \displaystyle\int_x^1 \frac{1}{y} \cdot 2y \, dy = \int_x^1 2 \, dy = 2(1-x)$，$0 < x < 1$。
-
-### 练习 5（综合）
-
-设 $(X, Y)$ 服从区域 $D = \{(x,y): 0 \leq y \leq x \leq 1\}$ 上的均匀分布。（1）求 $f_{Y \mid X}(y \mid x)$；（2）求 $E(Y \mid X = x)$。
-
-**提示**：均匀分布密度为面积的倒数；条件期望 = $\int y f_{Y\mid X}(y\mid x) dy$。
-
-**参考答案要点**：区域面积为 $\dfrac{1}{2}$，故 $f(x,y) = 2$（$0 \le y \le x \le 1$）；$f_X(x) = 2x$（$0<x<1$）；$f_{Y\mid X}(y\mid x) = \dfrac{1}{x}$（$0<y<x$，即 $Y \mid X = x \sim U(0, x)$）；$E(Y \mid X = x) = \dfrac{x}{2}$。
-
 ## 10. 一句话记忆
 
 条件分布就是"打开筛选器后的分布"：固定 $Y = y$，把联合概率（密度）按 $Y = y$ 这一列（这一条线）重新归一化，即 $f_{X\mid Y}(x \mid y) = \dfrac{f(x, y)}{f_Y(y)}$；若条件分布等于边缘分布，则两变量独立。
 
-## 参考文献
-
-- 盛骤, 谢式千, 潘承毅. 概率论与数理统计（第六版）[M]. 高等教育出版社, 2026. 第三章"多维随机变量及其分布"§3 条件分布. https://www.hep.com.cn/book/show/3b2dd87a-7531-4610-97e6-071eb302d813
-- 条件分布与卷积公式教学笔记（边际分布、条件分布、独立性、随机向量函数的分布）. https://blog.csdn.net/blog_programb/article/details/155187444
-- Khan Academy 统计：https://zh.khanacademy.org/math/statistics-probability
-
 ## 延伸阅读
-
 概率统计基础，见 030-probability-statistics 模块文档。
 数据分析应用，见 051-data-analysis 模块。
 机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供概率统计课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

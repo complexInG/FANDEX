@@ -1337,8 +1337,6 @@ public class ReadWriteCache<K, V> {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**:下列代码在多线程环境下是否线程安全?若不安全,请给出修复方案。
@@ -1520,30 +1518,6 @@ private final AtomicReference<Config> configRef = new AtomicReference<>();
 public void init(Config c) { configRef.set(c); }
 public Config get() { return configRef.get(); }
 ```
-
-## 参考文献
-
-1. Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., and Lea, D. 2006. *Java Concurrency in Practice*. Addison-Wesley Professional. ISBN: 978-0-321-34960-6.
-
-2. Lea, D. 2000. *A Java fork/join framework*. In *Proceedings of the ACM 2000 Java Grande Conference* (JAVA '00), 36–43. DOI: [https://doi.org/10.1145/337449.337465](https://doi.org/10.1145/337449.337465)
-
-3. Manson, J., Pugh, W., and Adve, S. V. 2005. *The Java memory model*. In *Proceedings of the 32nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (POPL '05), 378–391. DOI: [https://doi.org/10.1145/1040305.1040336](https://doi.org/10.1145/1040305.1040336)
-
-4. Coffman, E. G., Elphick, M., and Shoshani, A. 1971. *System deadlocks*. *ACM Computing Surveys* 3, 2, 67–78. DOI: [https://doi.org/10.1145/356586.356588](https://doi.org/10.1145/356586.356588)
-
-5. Herlihy, M. and Shavit, N. 2012. *The Art of Multiprocessor Programming* (2nd ed.). Morgan Kaufmann. ISBN: 978-0-12-397337-5.
-
-6. Sutter, H. 2005. *The free lunch is over: A fundamental turn toward concurrency in software*. *Dr. Dobb's Journal* 30, 3, 202–210.
-
-7. Peterson, G. L. 1981. *Myths about the mutual exclusion problem*. *Information Processing Letters* 12, 3, 115–116. DOI: [https://doi.org/10.1016/0020-0190(81)90106-X](https://doi.org/10.1016/0020-0190(81)90106-X)
-
-8. Amdahl, G. M. 1967. *Validity of the single processor approach to achieving large scale computing capabilities*. In *Proceedings of the Spring Joint Computer Conference* (AFIPS '67), 483–485. DOI: [https://doi.org/10.1145/1465482.1465560](https://doi.org/10.1145/1465482.1465560)
-
-9. Click, C. 2007. *Java theory and practice: Fixing the Java Memory Model, Part II*. IBM developerWorks.
-
-10. Oracle Corporation. 2024. *Java Platform SE 21 API Specification: java.util.concurrent*. Retrieved from [https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/package-summary.html](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/package-summary.html)
-
-## 延伸阅读
 
 ### 并发理论进阶
 

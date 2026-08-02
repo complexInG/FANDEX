@@ -1333,8 +1333,6 @@ void parse_bmp(const uint8_t *data) {
 
 **结论**：在缓存友好的紧凑数据结构场景，位域因减少缓存未命中反而可能比 `unsigned int` 数组更快。但单次访问位运算始终最快。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：写出下面结构体在 GCC x86-64 上的 `sizeof` 与每个字段的位偏移。
@@ -1455,21 +1453,6 @@ static inline uint16_t proto_frag(const ProtoHeader *h) {
 3. 缓存行边界跨越访问可能造成 2 次缓存读取
 4. 仅在网络/文件格式等必需场景使用，单机内存结构应使用自然对齐
 
-## 参考文献
-
-1. ISO/IEC. (2011). *ISO/IEC 9899:2011 — Programming languages — C*. International Organization for Standardization. §6.7.2.1 Structure and union specifiers. https://www.iso.org/standard/57853.html
-2. ISO/IEC. (2023). *ISO/IEC 9899:2023 — Programming languages — C (C23)*. International Organization for Standardization. https://www.iso.org/standard/82075.html
-3. Kernighan, B. W., & Ritchie, D. M. (1988). *The C Programming Language* (2nd ed.). Prentice Hall. ISBN: 978-0131103627.
-4. Seacord, R. C. (2020). *Effective C: An Introduction to Professional C Programming*. No Starch Press. ISBN: 978-1718501048.
-5. Gustedt, J. (2019). *Modern C*. Manning Publications. https://gustedt.gitlabpages.inria.fr/modern-c/
-6. System V Application Binary Interface AMD64 Architecture Processor Supplement. (2018). https://refspecs.linuxbase.org/elf/x86_64-abi-0.99.pdf
-7. ARM Limited. (2020). *Procedure Call Standard for the Arm 64-bit Architecture (AArch64)*. https://developer.arm.com/documentation/ihi0055/latest
-8. Microsoft. (2023). *MSVC ABI for bit-fields*. Microsoft Learn. https://learn.microsoft.com/en-us/cpp/cpp/cpp-bit-fields
-9. Postel, J. (1981). *RFC 791 — Internet Protocol*. Internet Engineering Task Force. https://datatracker.ietf.org/doc/html/rfc791
-10. IEEE. (2019). *IEEE Std 754-2019 — IEEE Standard for Floating-Point Arithmetic*. IEEE. https://doi.org/10.1109/IEEESTD.2019.8766229
-
-## 延伸阅读
-
 ### 官方文档
 
 - ISO/IEC JTC1/SC22/WG14 C 标准草案 N3220：https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf
@@ -1488,13 +1471,6 @@ static inline uint16_t proto_frag(const ProtoHeader *h) {
 - N1669 — Bit-field semantics clarification：http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1669.htm
 - ARM AAPCS64 Bit-field Layout：https://github.com/ARM-software/abi-aa
 - Linux Kernel `sk_buff` 设计文档：https://www.kernel.org/doc/html/latest/networking/skbuff.html
-
-### 开源项目参考
-
-- Linux 内核 `include/linux/skbuff.h`：https://github.com/torvalds/linux
-- musl libc `<arpa/inet.h>`：https://git.musl-libc.org/cgit/musl/
-- lwIP 协议栈 `src/include/lwip/prot/`：https://github.com/lwip-tcpip/lwip
-- Redis SDS 头部定义：https://github.com/redis/redis
 
 ### 进阶主题
 

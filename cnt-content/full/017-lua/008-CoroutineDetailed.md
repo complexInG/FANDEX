@@ -1487,8 +1487,6 @@ print(tcp("send", {payload = "hello"}))  -- ESTABLISHED
 print(tcp("close"))  -- FIN_WAIT_1
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 写出协程的四种状态及状态间转换条件。
@@ -1503,36 +1501,12 @@ print(tcp("close"))  -- FIN_WAIT_1
 7. 用协程实现一个简单的 LRU 缓存,每次访问 yield 一次以记录访问顺序。
 8. 实现协程池,支持最大并发数与任务排队。
 
-### 9.3 思考题
-
-9. 协程与闭包在表达状态机时,各自的优势是什么?何时选哪个?
-10. Lua 协程无法利用多核,这是设计缺陷还是合理取舍?论证你的观点。
-11. 若要为 Lua 添加 `async/await` 语法糖,应如何修改语言?会引入哪些问题?
-12. 比较 Lua 协程、Python generator、Go goroutine 在表达"生产者-消费者"问题时的代码风格与可读性。
-13. 在 OpenResty 中,为何 `ngx.sleep` 内部 yield 不会阻塞 worker 进程,而 `os.execute("sleep 1")` 会?解释机制。
-14. 设计一个协程化的事件循环,支持定时器、I/O 多路复用、协程任务,描述核心数据结构与调度算法。
-
 ### 9.4 开放题
 
 15. 调研 LuaJIT 的协程实现与标准 Lua 的差异,分析性能数据。
 16. 调研 Luau(Roblox)对协程 API 的扩展,如 `coroutine.isyieldable` 的使用模式。
 17. 若 Lua 引入真线程(类似 Java),会与现有协程模型产生哪些冲突?可能的设计方案?
 18. 调研 Python `asyncio`、JavaScript `Promise`、C# `Task` 的事件循环实现,与 Lua 协程手动调度器的对比。
-
-## 10. 参考文献
-
-1. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *Lua 5.4 Reference Manual*. Chapter 6: Coroutines.
-2. Roberto Ierusalimschy. *Programming in Lua* (4th Edition). Chapter 9: Coroutines.
-3. Ana Lúcia de Moura, Noemi Rodriguez, Roberto Ierusalimschy. "Coroutines in Lua". *Journal of Universal Computer Science*, 2004.
-4. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. "The Evolution of Lua". *HOPL III*, 2007.
-5. Christopher M. Stone. "Symmetric Coroutines". *Journal of Functional Programming*, 2010.
-6. Ana Lúcia de Moura, Roberto Ierusalimschy. "Revisiting Coroutines". *ACM Transactions on Programming Languages and Systems*, 2009.
-7. MIT OpenCourseWare. *6.005 Software Construction*. Lecture on Concurrency Models.
-8. Stanford CS107. *Programming Paradigms*. Lecture on Coroutines and Generators.
-9. CMU 15-440. *Distributed Systems*. Lecture on Cooperative Multitasking.
-10. LuaJIT Documentation. *FFI and Coroutines*.
-
-## 11. 延伸阅读
 
 ### 11.1 Lua 官方资源
 

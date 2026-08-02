@@ -2291,8 +2291,6 @@ function MicroAppB() {
 
 **收益**：微前端状态隔离避免冲突，事件总线实现松耦合通信。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **1.** 解释 Redux 的三大原则，并说明为何 reducer 必须是纯函数。
@@ -2465,56 +2463,6 @@ function undoable<S>(reducer: (state: S, action: any) => S): (state: HistoryStat
 - **离线支持**：操作记录到 IndexedDB，恢复网络后批量同步，使用 CRDT 解决冲突。
 - **测试策略**：reducer 单元测试、selector 单元测试、组件集成测试、E2E 测试（Playwright）。
 - **扩展点**：预留插件机制（如自定义中间件）、状态切片动态加载（微前端场景）。
-
-## 参考文献
-
-1. Abramov, D., & Clark, A. (2015). Redux: Predictable state container for JavaScript apps. *GitHub Repository*. https://github.com/reduxjs/redux. DOI: 10.5281/zenodo.4764471
-
-2. Wiggins, A. (2011). The Twelve-Factor App: Methodology for building modern web applications. *Heroku*. https://12factor.net/
-
-3. Harel, D. (1987). Statecharts: A visual formalism for complex systems. *Science of Computer Programming*, 8(3), 231-274. DOI: 10.1016/0167-6423(87)90035-9
-
-4. Odersky, M., Spoon, L., & Venners, B. (2019). *Programming in Scala* (5th ed.). Artima Press. ISBN: 978-0-9815316-4-2. (关于协变与逆变的类型理论)
-
-5. Edwards, J. (2014). Flux: Application architecture for building user interfaces. *Facebook Engineering Blog*. https://facebook.github.io/flux/
-
-6. Bini, A. (2019). *Reactive Programming with RxJS 5*. Packt Publishing. ISBN: 978-1-78646-821-0.
-
-7. Sicilia, A., Hu, T., & Sambasivan, M. (2018). When time matters: Analyzing user behaviors in web applications. *Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems*, 1-12. DOI: 10.1145/3173574.3174195
-
-8. Fok, A., & McMillan, C. (2020). Comparative analysis of state management solutions in single-page applications. *IEEE Software*, 37(5), 42-49. DOI: 10.1109/MS.2020.2994061
-
-9. Carlo, D. (2021). *Immer: Create the next immutable state by mutating the current one*. GitHub. https://github.com/immerjs/immer
-
-10. Davis, M. (2018). *XState: State machines and statecharts for the modern web*. GitHub. https://github.com/statelyai/xstate
-
-11. Nygard, M. T. (2017). *Release It!: Design and Deploy Production-Ready Software* (2nd ed.). Pragmatic Bookshelf. ISBN: 978-1-68050-239-8. (关于状态持久化与故障恢复)
-
-12. Sokolova, M., & Lapalme, G. (2009). A systematic analysis of performance measures for classification tasks. *Information Processing & Management*, 45(4), 427-437. DOI: 10.1016/j.ipm.2009.03.002 (用于状态管理性能度量)
-
-13. Wing, J. M. (2006). Computational thinking. *Communications of the ACM*, 49(3), 33-35. DOI: 10.1145/1118178.1118215 (关于状态机思维)
-
-14. Beck, K. (2002). *Test-Driven Development: By Example*. Addison-Wesley. ISBN: 978-0-32114-653-3. (关于状态管理的测试驱动开发)
-
-15. Evans, E. (2003). *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley. ISBN: 978-0-32112-521-7. (关于领域切片设计)
-
-## 延伸阅读
-
-- **Redux 官方文档**：https://redux.js.org/ - 完整的 Redux 教程与最佳实践。
-- **Redux Toolkit 文档**：https://redux-toolkit.js.org/ - 现代 Redux 推荐方案。
-- **Zustand GitHub**：https://github.com/pmndrs/zustand - 极简状态管理库。
-- **Jotai 文档**：https://jotai.org/ - 原子状态管理。
-- **XState 文档**：https://xstate.js.org/docs/ - 有限状态机与状态图。
-- **React Query 文档**：https://tanstack.com/query/ - 服务端状态管理。
-- **Immer 文档**：https://immerjs.github.io/immer/ - 不可变更新简化。
-- **Reselect**：https://github.com/reduxjs/reselect - 记忆化选择器库。
-- **MobX 文档**：https://mobx.js.org/ - 响应式状态管理。
-- **Valtio 文档**：https://github.com/pmndrs/valtio - 代理状态管理。
-- **Flux Standard Action**：https://github.com/redux-utilities/flux-standard-action - Action 规范。
-- **Harel Statecharts 论文**：https://www.wisdom.weizmann.ac.il/~harel/papers/Statecharts.pdf - 状态图理论。
-- **CRDT 论文**：https://hal.inria.fr/inria-00555588/document - 无冲突复制数据类型。
-- **React useSyncExternalStore RFC**：https://github.com/reactjs/rfcs/blob/main/text/0214-use-sync-external-store.md - 外部 Store 接入标准。
-- **Solid Signals 介绍**：https://www.solidjs.com/docs/latest#createsignal - 细粒度响应式。
 
 ## 附录 A：Redux Toolkit 完整模板
 
@@ -2810,4 +2758,3 @@ global.fetch = jest.fn(() =>
   Promise.resolve({ ok: true, json: () => Promise.resolve({ id: '1', name: 'Test' }) }),
 ) as any;
 ```
-

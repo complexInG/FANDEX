@@ -1726,68 +1726,6 @@ print(asdict(dto))  # {'id': 1, 'username': '...', 'email': '...'}
 
 ---
 
-## 知识讲解与要点分析（原练习）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个 `@dataclass` 装饰器参数会使实例不可变？
-
-A. `eq=True`  
-B. `frozen=True`  
-C. `slots=True`  
-D. `kw_only=True`
-
-**解析讲解**：B
-
-**解析讲解**：`frozen=True` 在 `__setattr__` 与 `__delattr__` 中抛出 `FrozenInstanceError`，使实例不可变。`slots=True` 仅影响内存布局，不影响可变性。
-
-**常见疑问 2**：Pydantic v2 中，以下哪个方法将模型导出为 JSON 字符串？
-
-A. `.dict()`  
-B. `.json()`  
-C. `.model_dump_json()`  
-D. `.to_json()`
-
-**解析讲解**：C
-
-**解析讲解**：v2 重命名了 API，`.dict()` → `.model_dump()`，`.json()` → `.model_dump_json()`。`.dict()` 和 `.json()` 在 v2 中仍可调用但会发出 deprecation warning。
-
-**常见疑问 3**：以下代码的输出是什么？
-
-```python
-@dataclass
-class A:
-    x: int = 1
-    y: int = 2
-
-@dataclass
-class B(A):
-    z: int = 3
-
-b = B(10, 20, 30)
-print(b.x, b.y, b.z)
-```
-
-A. `1 2 3`  
-B. `10 20 30`  
-C. `TypeError`  
-D. `1 2 30`
-
-**解析讲解**：B
-
-**解析讲解**：`@dataclass` 继承时，字段按 MRO 顺序合并：`A.x, A.y, B.z`。所有字段都有默认值，所以 `B(10, 20, 30)` 按位置参数赋值。
-
-**常见疑问 4**：Pydantic v2 中，`@field_validator` 默认的 `mode` 是？
-
-A. `before`  
-B. `after`  
-C. `wrap`  
-D. `plain`
-
-**解析讲解**：B
-
-**解析讲解**：默认 `mode="after"`，即在类型转换与约束校验之后执行。`mode="before"` 在类型转换之前执行，常用于规范化输入。
-
 ### 填空题知识点讲解
 
 **常见疑问 5**：`@dataclass` 中，可变默认值应使用 `field(default_factory=____)` 创建。
@@ -1873,51 +1811,6 @@ class Order(BaseModel):
         return self
 ```
 
-### 9.4 思考题
-
-**常见疑问 11**：为什么 `@dataclass(frozen=True, slots=True)` 在 Python 3.10+ 才能同时使用？3.10 之前有什么限制？
-
-**解析讲解**：Python 3.10 之前，`@dataclass(frozen=True)` 会生成 `__setattr__` 抛出异常，但 `slots=True` 生成的 `__slots__` 不包含 `__dict__`，导致 `__setattr__` 无法找到属性来设置。3.10+ 修复了 `__slots__` 与 `frozen` 的交互，使 `@dataclass` 在 `slots=True` 时正确处理 `__setattr__`。
-
-**常见疑问 12**：Pydantic v2 用 Rust 重写内核，带来 5-50x 性能提升，但增加了供应链复杂度（pydantic-core 是二进制 wheel）。请讨论这一权衡的利弊。
-
-**解析讲解**：
-
-利：
-- 性能提升使 Pydantic 从"边缘瓶颈"变为"零成本抽象"
-- Rust 内核更安全（内存安全、无 GIL）
-- 推动 Python 生态向更高效方向发展
-
-弊：
-- 二进制 wheel 增加供应链攻击面（如恶意 wheel 投毒）
-- 调试困难（Rust 错误栈不如 Python 直观）
-- 跨平台编译复杂（musl、ARM 等场景需等待 wheel）
-- 供应商锁定（pydantic-core 不易 fork）
-
-**常见疑问 13**：在微服务架构中，多个服务共享 Pydantic schema 有哪些方案？各自的优缺点？
-
-**解析讲解**：
-
-方案 1：共享 Python 包
-- 优点：类型安全、IDE 支持
-- 缺点：版本耦合、发布协调
-
-方案 2：JSON Schema + 代码生成
-- 优点：语言无关、解耦
-- 缺点：生成代码质量参差、类型信息丢失
-
-方案 3：Protobuf/gRPC
-- 优点：成熟、跨语言
-- 缺点：与 Pydantic 集成需额外映射
-
-方案 4：契约测试（Pact）
-- 优点：运行时验证
-- 缺点：不提供类型，仅验证兼容性
-
-实践中常组合：方案 1（内部 Python 服务）+ 方案 2（跨语言边界）。
-
----
-
 ## 10. 工具选型决策树
 
 ```mermaid
@@ -1949,8 +1842,6 @@ flowchart TD
 ```
 
 ---
-
-## 11. 参考资料
 
 ### 11.1 规范与 PEP
 
@@ -1985,8 +1876,6 @@ flowchart TD
 
 ---
 
-## 12. 延伸阅读
-
 ### 12.1 书籍
 
 - Ramalho, L. (2022). Fluent Python: Clear, Concise, and Effective Programming (2nd ed.). O'Reilly Media. ISBN: 978-1492056355.（第 5 章"一等函数"与第 8 章"对象引用、可变性和垃圾回收"）
@@ -1998,13 +1887,6 @@ flowchart TD
 - JSON Schema Specification. (2020). JSON Schema Draft 2020-12. https://json-schema.org/draft/2020-12/json-schema.html
 - ISO/IEC 9899:2018. Information technology — Programming languages — C.（参考 C struct 内存布局）
 - ISO 4217:2015. Codes for the representation of currencies.（货币代码标准）
-
-### 12.3 在线资源
-
-- Pydantic GitHub: https://github.com/pydantic/pydantic
-- attrs GitHub: https://github.com/python-attrs/attrs
-- msgspec GitHub: https://github.com/jcrist/msgspec
-- mypy plugin for Pydantic: https://docs.pydantic.dev/latest/integrations/mypy/
 
 ### 12.4 学习路线
 

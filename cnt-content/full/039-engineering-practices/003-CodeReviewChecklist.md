@@ -358,26 +358,6 @@ Google 建议一个变更控制在 200 行以内（约合一个"合理大小"的
 
 **症状**：要求作者为"未来可能的需求"增加抽象层、通用组件。**后果**：代码提前复杂化，YAGNI（You Aren't Gonna Need It，你不需要它）原则被违背。**对策**：评审聚焦"当前需求是否被正确实现"，未来的扩展留到未来。
 
-## 10. 实战练习
-
-**练习 1（正反改写）**：把下面这些坏评论改写成好评论：
-
-1. "这代码不行。"
-2. "你应该知道这里会崩吧？"
-3. "我不喜欢这个写法，改成我的那种。"
-4. "这段看不懂。"
-
-**练习 2（清单实战）**：找一段你写过的（或网上找的）200 行左右的代码，用第 4 节的完整清单逐项审查，写出至少 5 条具体发现（每条包含：问题、影响、建议）。
-
-**练习 3（评审演练）**：和同学/朋友互相审查一段代码：一个人当作者，一个人当评审者，分别练习"写 PR 描述+自查"和"按顺序评审+写分级评论"，然后复盘这次评审体验。
-
-## 11. 参考资源
-
-- Google 工程实践文档（评审标准原文）：https://google.github.io/eng-practices/review/reviewer/standard.html
-- Google 评审指南（英文，寻找什么）：https://google.github.io/eng-practices/review/reviewer/looking-for.html
-- GitHub 代码审查文档：https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests
-- CodeRabbit（AI 代码审查工具）：https://www.coderabbit.ai/
-
 ## 12. 延伸阅读
 
 - 评审通过后的代码如何保证持续质量，见本模块《工程实践概述》《On-Call最佳实践》

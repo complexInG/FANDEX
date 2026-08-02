@@ -2293,15 +2293,6 @@ function defensiveCopy(obj) {
 4. **第四周**:Immer 源码、MobX 实现
 5. **第五周**:自定义响应式系统
 
-### 22.2 推荐练习
-
-1. 实现一个简化的 reactive / effect / computed
-2. 实现只读代理、可撤销代理
-3. 实现 TTL 缓存代理
-4. 实现方法装饰器(apply 陷阱)
-5. 实现 Immer 风格的 produce
-6. 实现私有属性保护
-
 ### 22.3 阅读顺序建议
 
 1. MDN:Proxy、Reflect
@@ -2313,8 +2304,6 @@ function defensiveCopy(obj) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **习题 1**(remember):Proxy 提供的陷阱数量是 ______ 种,其中 `apply` 陷阱只能用于 ______ 类型的 target。
@@ -2322,27 +2311,6 @@ function defensiveCopy(obj) {
 **习题 2**(understand):Reflect API 的设计目标是与 ______ 对称,并提供 ______ 返回值语义。
 
 **习题 3**(remember):代理不变量是规范定义的 ______,违反时引擎抛出 ______ 错误。
-
-### 选择题知识点讲解
-
-**习题 4**(understand):以下代码的输出是?
-```javascript
-const target = Object.freeze({ a: 1 });
-const proxy = new Proxy(target, {
-  get() { return 999; }
-});
-console.log(proxy.a);
-```
-A. `1`
-B. `999`
-C. `undefined`
-D. 抛出 TypeError
-
-**习题 5**(apply):实现"只读 + 拒绝删除"的代理,应拦截哪些陷阱?
-A. `get`、`set`
-B. `set`、`deleteProperty`
-C. `set`、`deleteProperty`、`defineProperty`
-D. `get`、`set`、`has`
 
 ### 23.3 代码修复题
 
@@ -2394,99 +2362,6 @@ console.log(child.value);  // 1,应该是 2
 **习题 9**(evaluate):评估在 Node.js 后端服务中使用 Proxy 实现日志中间件的优劣,与传统的 wrapper 函数对比。
 
 **习题 10**(create):实现一个 deepClone 函数,使用 Proxy 跟踪克隆过程,输出每个被访问属性的路径。
-
-### 23.5 习题答案
-
-**习题 1**:13;函数
-
-**习题 2**:Proxy 陷阱;布尔(成功/失败)
-
-**习题 3**:约束;TypeError
-
-**习题 4**:D。target 上的属性 `a` 是不可配置且不可写的(target 被 freeze),根据 get 陷阱不变量,代理返回值必须等于实际属性值,999 ≠ 1,所以抛出 TypeError。
-
-**习题 5**:C。set 拦截写入,deleteProperty 拦截删除,defineProperty 拦截 Object.defineProperty。has 不影响写操作。
-
-**习题 6**:用 WeakMap 缓存代理:
-```javascript
-const cache = new WeakMap();
-function reactive(obj) {
-  if (cache.has(obj)) return cache.get(obj);
-  const proxy = new Proxy(obj, {
-    get(target, prop, receiver) {
-      const v = Reflect.get(target, prop, receiver);
-      if (v && typeof v === 'object') return reactive(v);
-      return v;
-    }
-  });
-  cache.set(obj, proxy);
-  return proxy;
-}
-```
-
-**习题 7**:传递 receiver:
-```javascript
-const proxy = new Proxy(obj, {
-  get(target, prop, receiver) {
-    return Reflect.get(target, prop, receiver);
-  }
-});
-```
-这样 getter 中的 this 指向 receiver(子对象),`this._value` 读取的是子对象上的 _value,即 2。
-
-**习题 8**(参考实现):
-```javascript
-function orm(table) {
-  const query = { table, where: [] };
-  return new Proxy(query, {
-    get(t, prop) {
-      if (prop === 'where') {
-        return (conditions) => {
-          Object.assign(t, conditions);
-          return proxy;
-        };
-      }
-      if (prop === 'execute') {
-        return () => buildSQL(t);
-      }
-      // 链式条件
-      return (value) => {
-        t.where.push(`${prop} = ${JSON.stringify(value)}`);
-        return proxy;
-      };
-    }
-  });
-  // ... 简化版
-}
-```
-
-**习题 9**:略,需结合具体场景分析
-
-**习题 10**:
-```javascript
-function deepCloneWithTrace(obj, path = 'root') {
-  const cloned = Array.isArray(obj) ? [] : {};
-  const proxy = new Proxy(cloned, {
-    get(t, p) {
-      console.log(`Access: ${path}.${String(p)}`);
-      const value = obj[p];
-      if (value && typeof value === 'object') {
-        return deepCloneWithTrace(value, `${path}.${String(p)}`);
-      }
-      return value;
-    }
-  });
-  // 触发拷贝
-  for (const key of Object.keys(obj)) {
-    cloned[key] = obj[key];
-  }
-  return cloned;
-}
-```
-
----
-
-## 24. 延伸阅读
 
 ### 24.1 书籍
 
@@ -2629,17 +2504,3 @@ const memoized = new Proxy(fn, {
 | new 调用            | 50ns        | 300ns      | 6x       |
 
 注:数据基于 V8 8.x 在 Node.js 14 上的典型表现。
-
-## 参考文献
-
-1. ECMA International. (2025). *ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)*. ECMA Standard. https://tc39.es/ecma262/
-2. Bringas, M., & Rößling, G. (2012). On the Design of Meta-Object Protocols for JavaScript. *Journal of Object Technology*. https://doi.org/10.5381/jot.2012.11.1.a3
-3. Van Cutsem, T., & Miller, M. S. (2013). Trustworthy Proxies: Virtual Inheritance for Array Wrappers. *Proceedings of DLS '13*. https://doi.org/10.1145/2508168.2508175
-4. Van Cutsem, T., & Miller, M. S. (2010). Proxies: Design Principles for Robust Object-oriented Intercession APIs. *Proceedings of DLS '10*. https://doi.org/10.1145/1869631.1869638
-5. Faust, E., & Hackett, B. (2018). Laying out C++ objects for the SpiderMonkey JS engine. *Proceedings of MPLR '18*. https://doi.org/10.1145/3237009.3237013
-6. Rauschmayer, A. (2014). *Exploring ES6: Proxies and Reflect*. Leanpub. https://exploringjs.com/es6/ch_proxies.html
-7. Kiczales, G., des Rivières, J., & Bobrow, D. G. (1991). *The Art of the Metaobject Protocol*. MIT Press.
-
----
-
-*本文档最后审阅于 2026-07-20,由 FANDEX Content Engineering Team 维护。如有疑问,请参阅 ECMA-262 最新规范或提交 issue。*

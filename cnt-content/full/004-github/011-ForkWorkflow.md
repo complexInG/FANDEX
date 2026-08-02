@@ -273,63 +273,9 @@ git push origin fix/readme-typo --force-with-lease
 | PR 冲突不知道怎么办 | 网页提示 `This branch has conflicts` | 和上游改动同一段代码 | 按第 8 节 rebase + 手动解决 |
 | PR 描述没关联 Issue | 合并后 Issue 还开着 | 描述里没写 `Fixes #编号` | PR 描述中加上 `Fixes #123` 格式 |
 
-## 10. 实战练习
-
-### 练习 1：完成一次最小闭环（入门）
-
-**题目描述**：在 GitHub 上找到官方演示仓库 `octocat/Spoon-Knife`（专门用来练习 Fork 的仓库），完整走一遍：Fork → Clone → 加 upstream → 建分支 → 改一行文字 → 推送到自己的副本 → 创建 PR → 同步分支 → 删除分支。
-
-**提示**：跟着第 2-6 节逐条执行；PR 可以创建到自己仓库（base 选自己的 main），先不打扰原仓库。
-
-**参考答案要点**：命令序列为 `git clone` → `git remote add upstream` → `git checkout -b fix/demo` → 修改 → `git add && git commit` → `git push origin fix/demo` → 网页 Create PR → 合并后 `git fetch upstream && git checkout main && git merge upstream/main && git branch -d fix/demo`。
-
-### 练习 2：给真实开源项目修一个文档错别字（进阶）
-
-**题目描述**：找一个你正在用的开源项目（建议选文档多、门槛低的项目，如 React 中文文档相关仓库），按 `good first issue` 标签筛选，尝试提交一个只改文档的 PR。
-
-**提示**：先读项目根目录的 CONTRIBUTING.md，很多项目对文档 PR 有格式要求；PR 描述写清"改动内容 + 为什么改"。
-
-**参考答案要点**：流程与练习 1 相同，但需注意：先 `git fetch upstream` 同步最新；分支名用 `docs/修复XXX`；遵循项目的提交信息规范（Conventional Commits）；PR 标题用英文（多数项目要求）。
-
-### 练习 3：模拟冲突并解决（挑战）
-
-**题目描述**：在练习 1 的仓库中，故意制造冲突：先基于旧 main 建分支 A 改 README 第一行并推 PR；然后同步上游最新代码，发现 PR 提示冲突，按第 8 节完整解决。
-
-**提示**：可以在自己仓库内用两个分支互相 merge 制造同样的冲突效果，练习解决手法。
-
-**参考答案要点**：核心手法是 `git fetch upstream` → `git rebase upstream/main` → 手动编辑冲突标记 → `git add` → `git rebase --continue` → `git push --force-with-lease`。注意解决冲突时"保留双方意图"，而不是简单覆盖。
-
-### 练习 4：多 PR 并行管理（挑战）
-
-**题目描述**：同时为同一个项目准备两个互不相关的改动（例如一个修 Bug、一个加文档），各自独立分支、独立 PR，练习分支隔离。
-
-**提示**：两个分支都从同一个最新 main 切出；改动期间 main 变动时，各自 rebase。
-
-**参考答案要点**：
-
-```bash
-git checkout main
-git checkout -b fix/bug-101      # 分支 A
-# ...开发并推送，创建 PR A...
-
-git checkout main
-git checkout -b docs/api-update  # 分支 B
-# ...开发并推送，创建 PR B...
-```
-要点：分支之间互不干扰；统一从最新 main 切分支；同步上游时两个分支都要 rebase。
-
 ## 11. 一句话记忆
 
 **Fork 工作流 = 把别人的仓库复制到自己账号（Fork）→ 克隆到本地（Clone）→ 在独立分支上修改 → 推送回自己的副本 → 向原作者发起合并申请（PR）→ 维护者审查合回，期间通过 upstream 持续同步保持不落后。**
-
-## 12. 参考链接与延伸阅读
-
-### 权威资料（GitHub 官方中文文档）
-
-- 分叉仓库（Fork a repo）：https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo
-- 使用 Fork 工作流（About the fork-and-pull workflow）：https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-branches
-- 同步 Fork（Syncing a fork）：https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork
-- GitHub 流程（GitHub Flow）：https://docs.github.com/zh/get-started/using-github/github-flow
 
 ### 延伸阅读（站内文档）
 

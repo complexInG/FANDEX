@@ -397,54 +397,6 @@ const { Content } = await render(doc)  // 把 Markdown 正文编译为组件
 | 旧链接失效 | 用户收藏的链接 404 | 改版后没有处理重定向 | 用 `astro.config.mjs` 的 `redirects` 配置 301 重定向 |
 | 子路径部署后样式丢失 | 图片、CSS 全部 404 | 部署在 `/repo/` 子路径但未配置 `base` | 在 `astro.config.mjs` 配置 `base: '/repo/'`，链接使用 `/repo/` 前缀 |
 
-## 10. 实战练习
-
-### 练习一：规划路由地图
-
-- 题目：为一个小型博客规划 `src/pages/` 目录结构，要求包含：首页、文章列表、文章详情（动态）、关于页、404 页。
-- 提示：思考哪些页面结构相同适合动态路由。
-- 参考答案要点：`index.astro`、`blog/index.astro`、`blog/[slug].astro`、`about.astro`、`404.astro`。
-
-### 练习二：实现动态路由
-
-- 题目：用 `[slug].astro` 为一个含 3 篇内容的迷你博客生成页面，每页显示标题和正文。
-- 提示：在 `getStaticPaths` 中硬编码 3 条数据即可。
-- 参考答案要点：`getStaticPaths` 返回 3 个 `{ params: { slug }, props: { title, body } }`，模板输出 `<h1>{title}</h1><p>{body}</p>`。
-
-### 练习三：配置重定向
-
-- 题目：旧博客地址 `/2023/hello` 已迁移到 `/blog/hello`，请配置重定向。
-- 提示：使用 `astro.config.mjs` 的 `redirects` 字段。
-- 参考答案要点：`redirects: { '/2023/hello': '/blog/hello' }`，访问旧地址自动 301 跳转。
-
-### 练习四：列表页 + 详情页联动
-
-- 题目：在 `blog/index.astro` 中渲染一个文章列表，每项链接到 `blog/[slug].astro` 生成的页面。
-- 提示：两个文件共用同一份数据（内容集合或同一数组）。
-- 参考答案要点：列表页用 `getCollection('blog')` 或硬编码数组渲染 `<a href={'/blog/' + slug}>`；保证 slug 与 `getStaticPaths` 中的 params 一致。
-
-### 练习五：检查路由优先级
-
-- 题目：同时创建 `src/pages/about.astro` 和 `src/pages/[slug].astro`，访问 `/about`，判断实际渲染哪个页面。
-- 提示：在两个页面写入不同的可见文本，构建后访问验证。
-- 参考答案要点：静态路由优先，`/about` 渲染 `about.astro`；`[slug].astro` 只接管其他未匹配路径。
-
 ## 11. 一句话记忆
 
 **文件即路牌：`src/pages/` 里的每个文件对应一个 URL，`[方括号]` 是参数位，`index` 是入口，`404` 是错误页，`redirects` 是换路牌——放一个文件，就多一条路。**
-
-## 参考链接与延伸阅读
-
-参考链接：
-
-1. Astro 路由指南（中文）：https://docs.astro.build/zh-cn/guides/routing/
-2. Astro 页面与布局：https://docs.astro.build/zh-cn/basics/astro-pages/
-3. Astro 布局组件：https://docs.astro.build/zh-cn/basics/layouts/
-4. Astro 路由参考（getStaticPaths / prerender）：https://docs.astro.build/zh-cn/reference/routing-reference/
-
-延伸阅读：
-
-- 项目创建与目录结构，见本模块 002-QuickStartProject；
-- 组件、Props 与插槽（布局的底层机制），见本模块 004-ComponentsProps；
-- 内容集合与 Schema（动态路由的数据来源），见本模块 005-ContentCollections；
-- 框架整体认知与岛屿架构，见本模块 001-AstroOverview。

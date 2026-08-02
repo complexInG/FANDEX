@@ -1939,8 +1939,6 @@ Map 是更安全的选择。
 
 聚合错误保证所有订阅者都执行后错误不被丢失，便于上层捕获与日志。Node.js 12+ 与所有现代浏览器原生支持 `AggregateError`。
 
-## 14. 参考资料
-
 ### 14.1 经典论文
 
 1. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley. DOI: 10.5555/186897
@@ -1967,8 +1965,6 @@ Map 是更安全的选择。
 13. Jeffrey, A. (1998). *A Distributed Object-Oriented Calculus with Subtyping*. Electronic Notes in Theoretical Computer Science, 16(1), 47-72. DOI: 10.1016/S1571-0661(04)00054-3
 14. Okasaki, C. (1999). *Purely Functional Data Structures*. Cambridge University Press. ISBN: 978-0-521-66350-2
 
-## 15. 延伸阅读
-
 ### 15.1 书籍
 
 - Pierce, B. C. *Types and Programming Languages*（第 11 章 Subtyping）
@@ -1987,13 +1983,6 @@ Map 是更安全的选择。
 - [eventemitter3](https://github.com/primus/eventemitter3)：高性能 Node.js EventEmitter 替代
 - [typed-emitter](https://github.com/andywer/typed-emitter)：TypeScript 类型安全 EventEmitter 包装器
 - [Effect-Ts PubSub](https://effect.website/docs/infra/pubsub)：Schema 驱动的事件总线
-
-### 15.4 在线资源
-
-- TypeScript Handbook: [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html)
-- TypeScript Handbook: [Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html)
-- MDN: [EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget)
-- MDN: [AggregateError](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError)
 
 ### 15.5 视频课程
 

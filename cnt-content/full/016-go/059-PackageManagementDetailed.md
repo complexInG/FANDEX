@@ -1387,8 +1387,6 @@ Google 内部 Go 项目使用 Blaze（Bazel）构建，不使用 go 命令：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 选择题
 
 **1. 关于最小版本选择（MVS），下列哪个描述是正确的？**
@@ -1664,138 +1662,6 @@ echo "- Apply minor/patch updates for security fixes" >> $REPORT_FILE
 cat $REPORT_FILE
 ```
 
-## 知识讲解与要点分析（原思考题）
-
-**1.** 为什么 Go 选择 MVS 而不是 SAT 求解器？请从性能、可重现性、可预测性三个角度分析。
-
-<details>
-<summary>参考答案</summary>
-
-- **性能**：MVS 是 $O(V+E)$ 线性，SAT 是 NP-hard，大型项目（数百依赖）差异显著
-- **可重现性**：MVS 完全确定（给定相同 module graph，结果唯一），SAT 依赖求解顺序
-- **可预测性**：MVS 不会"惊喜"升级到更高版本，开发者可以预判结果
-- **代价**：MVS 不会主动利用新功能，需要手动 `go get -u` 升级
-
-</details>
-
-**2.** `replace` 指令不传递到下游的设计，有哪些优缺点？
-
-<details>
-<summary>参考答案</summary>
-
-**优点**：
-- 防止供应链攻击（恶意库通过 replace 注入恶意代码）
-- 库的版本选择权完全在最终应用
-- 避免库的 replace 影响下游构建
-
-**缺点**：
-- 库无法修复其依赖的 bug（必须等上游发布）
-- 本地开发需要使用 `go.work` 替代
-- 库的测试可能因为下游的版本不同而失败
-
-</details>
-
-**3.** 描述 `go mod tidy` 的工作原理，以及它如何处理 `// indirect` 依赖。
-
-<details>
-<summary>参考答案</summary>
-
-`go mod tidy` 执行两个操作：
-1. **添加缺失依赖**：扫描所有源码 import，将未在 `go.mod` 中的依赖添加进去
-2. **移除未使用依赖**：移除在源码中未被引用的依赖
-
-对于 `// indirect` 依赖：
-- Go 1.17+ 会将所有间接依赖明确列在 `go.mod`（之前的版本只列直接依赖）
-- `go mod tidy` 会保留所有传递依赖，标注 `// indirect`
-- 这使得 module graph pruning 成为可能（构建时只读取直接依赖的 go.mod）
-
-</details>
-
-**4.** 在 monorepo 中使用 `go.work` 有哪些注意事项？
-
-<details>
-<summary>参考答案</summary>
-
-1. **`go.work` 不应入版本控制**：避免影响 CI/CD 与下游
-2. **`go.work.sum` 应入 .gitignore**：避免冲突
-3. **发布前必须移除 go.work**：避免本地模块覆盖
-4. **CI 中应使用 `-mod=mod` 或 vendor 模式**：模拟真实构建
-5. **每个子模块的 go.mod 必须独立完整**：保证单独构建可行
-6. **跨模块重构需要同步修改多个 go.mod**：增加复杂度
-
-</details>
-
-**5.** 假设你是某公司 Go 项目负责人，需要从 GOPATH 迁移到 Go Modules。请设计迁移方案，考虑以下问题：
-- 历史代码（10万行）的 import 修改
-- 多项目共享依赖的版本冲突
-- CI/CD 流水线的调整
-- 团队成员的培训
-
-<details>
-<summary>参考答案</summary>
-
-**迁移方案**：
-
-1. **评估阶段**（1-2 周）：
-   - 盘点所有项目与依赖
-   - 识别版本冲突点
-   - 培训团队 Go Modules 基础
-
-2. **试点阶段**（2-4 周）：
-   - 选择 1-2 个非核心项目迁移
-   - 验证 CI/CD 与 vendor 模式
-   - 沉淀迁移文档
-
-3. **批量迁移阶段**（4-8 周）：
-   - 按依赖关系拓扑排序，从底层库开始迁移
-   - 每个模块使用 `go mod init` + `go mod tidy`
-   - 通过脚本批量修改 import：`find . -name "*.go" -exec sed -i ...`
-   - 配置 GOPROXY 与 GOPRIVATE
-
-4. **CI/CD 调整**：
-   - 所有 job 改用 `go mod download` + `go build -mod=vendor`
-   - 加入 `go mod verify` 校验
-   - 集成 govulncheck 安全扫描
-
-5. **运维阶段**：
-   - 搭建内部 Athens 代理
-   - 定期 `go mod tidy` 与版本升级
-   - 监控依赖安全公告
-
-</details>
-
----
-
-## 参考文献
-
-[1] Cox, R. (2018). *Go and versioning*. Google. Retrieved from https://research.swtch.com/vgo
-
-[2] Cox, R. (2018). *Minimal version selection (MVS)*. Retrieved from https://research.swtch.com/vgo-mvs
-
-[3] SemVer. (2024). *Semantic versioning 2.0.0*. Retrieved from https://semver.org/
-
-[4] Donovan, A. A., & Kernighan, B. W. (2015). *The Go Programming Language* (1st ed.). Addison-Wesley Professional. ISBN: 978-0134190440
-
-[5] Boyer, S. (2017). *dep: prototype design*. Retrieved from https://github.com/golang/dep/blob/master/docs/design.md
-
-[6] Cox, R. (2020). *Go modules: 2019 year-in-review*. The Go Blog. Retrieved from https://go.dev/blog/
-
-[7] Hoisie, A. (2021). *Go module proxy: Athens in production*. USENIX ;login:, 46(3).
-
-[8] Lamport, L. (1978). *Time, clocks, and the ordering of events in a distributed system*. *Communications of the ACM*, 21(7), 558-565. DOI: 10.1145/359545.359563
-
-[9] Laurent, A. S., & Manolescu, I. (2019). *Diamond dependency resolution in modern package managers*. *IEEE Software*, 36(4), 56-63. DOI: 10.1109/MS.2018.290110012
-
-[10] Hoisie, A., & Cox, R. (2022). *The Go module mirror and checksum database*. Retrieved from https://go.dev/ref/mod#checksum-database
-
-[11] Truskovsky, B. (2023). *Supply chain security in Go modules*. ACM Queue, 21(2).
-
-[12] Go Team. (2024). *Go modules reference (Go 1.22)*. Retrieved from https://go.dev/ref/mod
-
----
-
-## 延伸阅读
-
 ### 书籍
 
 1. **《Learning Go: An Idiomatic Approach to Go Programming》** - Jon Bodner
@@ -1817,19 +1683,6 @@ cat $REPORT_FILE
    - 跨语言 SemVer 实证研究
 3. **Decan, A., Mens, T., & Claes, M. (2017). *An empirical comparison of dependency issues in OSS packaging ecosystems*.** SCAM. DOI: 10.1109/SCAM.2017.16
 4. **Lopes, R., et al. (2020). *DéjàVu: a map of code duplicates on GitHub*.** OOPSLA. DOI: 10.1145/3360572
-
-### 在线资源
-
-1. **Go Modules 官方文档**：https://go.dev/ref/mod
-2. **Go Modules by example**：https://github.com/go-modules-by-example/index
-3. **Athens proxy**：https://docs.gomods.io/
-4. **govulncheck**：https://golang.org/x/vuln/cmd/govulncheck
-5. **Marvin Pinto 的 Go Modules 速查表**：https://github.com/marvinpinto/go-modules-reference
-6. **Awesome Go Modules**：https://github.com/avelino/awesome-go
-7. **SemVer 规范**：https://semver.org/
-8. **Dependabot 文档**：https://docs.github.com/en/code-security/dependabot
-9. **Renovate 文档**：https://docs.renovatebot.com/
-10. **MIT 6.172 Performance Engineering**：https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/
 
 ### 视频课程
 

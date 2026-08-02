@@ -10,7 +10,6 @@ updated: '2026-08-02'
 related:
   - 'probability-statistics/协方差'
   - 'probability-statistics/相关系数'
-  - 'probability-statistics/数字特征典型例题'
   - 'probability-statistics/切比雪夫不等式'
 prerequisites:
   - 'probability-statistics/样本空间与事件'
@@ -101,18 +100,6 @@ $$\gamma_2 = \frac{\nu_4}{\nu_2^2} - 3 = \frac{E[X - E(X)]^4}{[D(X)]^2} - 3$$
 - $\gamma_2 < 0$：平坦分布（比正态更平、尾部更薄，如均匀分布）；
 - $\gamma_2 = 0$：与正态相同。
 
-### 2.3 例题 1（用矩算偏度）
-
-设 $X \sim B(1, p)$（$p = \dfrac{1}{2}$），计算偏度。
-
-**解**：$X$ 取 0、1 各 $\dfrac{1}{2}$。$E(X) = \dfrac{1}{2}$。
-
-$$\nu_3 = E[X - E(X)]^3 = \left(0 - \frac{1}{2}\right)^3 \cdot \frac{1}{2} + \left(1 - \frac{1}{2}\right)^3 \cdot \frac{1}{2} = -\frac{1}{16} + \frac{1}{16} = 0$$
-
-$$\gamma_1 = 0$$
-
-分布关于 $\dfrac{1}{2}$ 对称，偏度为 0，与直觉一致。
-
 ## 3. 协方差矩阵：把联动装进一张表
 
 ### 3.1 定义
@@ -137,14 +124,6 @@ $$\mathbf{C} = E\left[(\mathbf{X} - \boldsymbol{\mu})(\mathbf{X} - \boldsymbol{\
 
 注意 $(\mathbf{X} - \boldsymbol{\mu})(\mathbf{X} - \boldsymbol{\mu})^T$ 是 $n \times n$ 外积矩阵，逐元素取期望即得 $\mathbf{C}$。
 
-### 3.3 例题 2（二元协方差矩阵）
-
-设 $D(X) = 4$，$D(Y) = 9$，$\text{Cov}(X, Y) = -3$，写出 $(X, Y)$ 的协方差矩阵。
-
-**解**：
-
-$$\mathbf{C} = \begin{pmatrix} D(X) & \text{Cov}(X, Y) \\ \text{Cov}(Y, X) & D(Y) \end{pmatrix} = \begin{pmatrix} 4 & -3 \\ -3 & 9 \end{pmatrix}$$
-
 ## 4. 协方差矩阵的性质
 
 1. **对称性**：$\mathbf{C}^T = \mathbf{C}$（因为 $c_{ij} = c_{ji}$）；
@@ -162,16 +141,6 @@ $$\mathbf{a}^T \mathbf{C} \mathbf{a} = \mathbf{a}^T E[(\mathbf{X} - \boldsymbol{
 $$\mathbf{C}_Y = \mathbf{A} \mathbf{C}_X \mathbf{A}^T$$
 
 这条公式是"方差 $D(aX) = a^2D(X)$"的矩阵版：系数从平方变成"左乘 $\mathbf{A}$ 右乘 $\mathbf{A}^T$"。
-
-### 例题 3（线性变换验证）
-
-已知 $\mathbf{C}_X = \begin{pmatrix} 4 & -3 \\ -3 & 9 \end{pmatrix}$，$\mathbf{Y} = \begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}\mathbf{X}$，求 $\mathbf{C}_Y$。
-
-**解**：
-
-$$\mathbf{C}_Y = \mathbf{A}\mathbf{C}_X\mathbf{A}^T = \begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix} \begin{pmatrix} 4 & -3 \\ -3 & 9 \end{pmatrix} \begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix} = \begin{pmatrix} 8 & -6 \\ -9 & 27 \end{pmatrix} \begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix} = \begin{pmatrix} 16 & -18 \\ -18 & 81 \end{pmatrix}$$
-
-验证：$D(2X_1) = 4 \times 4 = 16$，$D(3X_2) = 9 \times 9 = 81$，$\text{Cov}(2X_1, 3X_2) = 6 \times (-3) = -18$，全部吻合。
 
 ## 5. 相关矩阵：标准化后的协方差矩阵
 
@@ -202,20 +171,6 @@ $$f(\mathbf{x}) = \frac{1}{(2\pi)^{n/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left\{
 3. **独立与不相关等价**：$X_i$ 与 $X_j$ 独立 $\iff$ $\text{Cov}(X_i, X_j) = 0$——正态分布的特权；
 4. **条件分布仍是正态**：给定部分分量的条件下，其余分量的条件分布仍为正态（这是高斯过程、卡尔曼滤波的数学根基）。
 
-### 6.3 例题 4（二元正态）
-
-二元正态分布的参数为
-
-$$\boldsymbol{\mu} = \begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \qquad \boldsymbol{\Sigma} = \begin{pmatrix} \sigma_1^2 & \rho\sigma_1\sigma_2 \\ \rho\sigma_1\sigma_2 & \sigma_2^2 \end{pmatrix}$$
-
-求行列式 $|\boldsymbol{\Sigma}|$ 与 $\rho$ 的解释。
-
-**解**：
-
-$$|\boldsymbol{\Sigma}| = \sigma_1^2\sigma_2^2 - \rho^2\sigma_1^2\sigma_2^2 = \sigma_1^2\sigma_2^2(1 - \rho^2)$$
-
-由于 $\boldsymbol{\Sigma}$ 正定，$1 - \rho^2 > 0$，即 $|\rho| < 1$——从矩阵正定性再一次看到相关系数的有界性。$\rho$ 就是 $X_1$ 与 $X_2$ 的相关系数，控制椭圆等高线的"倾斜程度"。
-
 ## 7. 常见错误与对策
 
 | 错误示例 | 错误类型 | 原因分析 | 纠正方法 |
@@ -227,65 +182,14 @@ $$|\boldsymbol{\Sigma}| = \sigma_1^2\sigma_2^2 - \rho^2\sigma_1^2\sigma_2^2 = \s
 | 忘记 $\nu_1 = 0$ 与 $\nu_2 = D(X)$ | 概念错误 | 矩的编号与含义对不上 | 中心矩从"偏离均值"出发：$\nu_1 = 0$ 恒成立，$\nu_2$ 就是方差 |
 | 认为一般分布也满足"不相关即独立" | 以偏概全 | 把正态性质外推 | 该性质只对（多元）正态分布成立；其他分布用 $Y = X^2$ 类反例 |
 
-## 8. 实战练习
-
-### 练习 1（矩的计算）
-
-设 $X \sim U(0, 1)$，求一阶、二阶、三阶原点矩。
-
-**提示**：$E(X^k) = \int_0^1 x^k dx$。
-
-**参考答案要点**：$\mu_1 = \dfrac{1}{2}$，$\mu_2 = \dfrac{1}{3}$，$\mu_3 = \dfrac{1}{4}$。
-
-### 练习 2（偏度计算）
-
-设 $X$ 的分布律为 $P(X=-1)=0.5$，$P(X=1)=0.5$，求偏度 $\gamma_1$。
-
-**提示**：分布对称。
-
-**参考答案要点**：$E(X)=0$，$\nu_3 = (-1)^3 \times 0.5 + 1^3 \times 0.5 = 0$，$\gamma_1 = 0$。
-
-### 练习 3（协方差矩阵）
-
-设 $D(X_1) = 1$，$D(X_2) = 4$，$D(X_3) = 9$，且 $\text{Cov}(X_i, X_j) = 0$（$i \neq j$），写出协方差矩阵。
-
-**提示**：独立（不相关）时非对角线为 0。
-
-**参考答案要点**：$\mathbf{C} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 4 & 0 \\ 0 & 0 & 9 \end{pmatrix}$（对角矩阵）。
-
-### 练习 4（线性变换）
-
-设 $\mathbf{C}_X = \begin{pmatrix} 1 & 0.5 \\ 0.5 & 2 \end{pmatrix}$，$\mathbf{Y} = \begin{pmatrix} 2X_1 + X_2 \\ X_1 - X_2 \end{pmatrix}$，求 $\mathbf{C}_Y$。
-
-**提示**：$\mathbf{A} = \begin{pmatrix} 2 & 1 \\ 1 & -1 \end{pmatrix}$，用 $\mathbf{C}_Y = \mathbf{A}\mathbf{C}_X\mathbf{A}^T$。
-
-**参考答案要点**：$\mathbf{A}\mathbf{C}_X = \begin{pmatrix} 2.5 & 3 \\ 0.5 & -1.5 \end{pmatrix}$，$\mathbf{C}_Y = \mathbf{A}\mathbf{C}_X\mathbf{A}^T = \begin{pmatrix} 2.5 & 3 \\ 0.5 & -1.5 \end{pmatrix}\begin{pmatrix} 2 & 1 \\ 1 & -1 \end{pmatrix} = \begin{pmatrix} 8 & -0.5 \\ -0.5 & 2 \end{pmatrix}$。
-
-### 练习 5（概念辨析）
-
-判断：（1）协方差矩阵一定是对称矩阵；（2）$\nu_4/\nu_2^2 = 3$ 是正态分布的标志；（3）任意分布中"不相关 $\iff$ 独立"。
-
-**提示**：对照性质逐条检查。
-
-**参考答案要点**：（1）对，$c_{ij} = c_{ji}$；（2）对，这正是峰度 $\gamma_2 = 0$ 的定义来源；（3）错，仅多元正态分布成立。
-
 ## 9. 一句话记忆
 
 矩是数字特征的"档案表"（$\mu_1$ 期望、$\nu_2$ 方差、$\nu_{1,1}$ 协方差），偏度峰度看形状；协方差矩阵 $\mathbf{C} = E[(\mathbf{X}-\boldsymbol{\mu})(\mathbf{X}-\boldsymbol{\mu})^T]$ 对称半正定，对角线方差、非对角协方差，线性变换满足 $\mathbf{C}_Y = \mathbf{A}\mathbf{C}_X\mathbf{A}^T$。
 
-## 参考文献
-
-- 盛骤, 谢式千, 潘承毅. 概率论与数理统计（第六版）[M]. 高等教育出版社, 2026. 第四章"随机变量的数字特征"§4 协方差矩阵与多元正态分布、§5 其他数字特征. https://www.hep.com.cn/book/show/3b2dd87a-7531-4610-97e6-071eb302d813
-- 相关系数、矩与协方差矩阵讲义. http://wulisu.cn/pdf/2026/Lec-14-slides.pdf
-- 数字特征讲义（期望、方差、协方差、相关系数、原点矩与中心矩、偏度峰度）. https://blog.csdn.net/apr15/article/details/105748887
-
 ## 延伸阅读
-
 概率统计基础，见 030-probability-statistics 模块文档。
 数据分析应用，见 051-data-analysis 模块。
 机器学习概率视角，见 042-machine-learning 模块（AI 模块仅供了解）。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供概率统计课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

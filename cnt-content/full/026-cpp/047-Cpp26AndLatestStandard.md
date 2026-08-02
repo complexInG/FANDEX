@@ -1492,11 +1492,3 @@ int main() {
     return 0;
 }
 ```
-
-## 11. 延伸阅读
-
-- [C++26 草案 N4981](https://www.open-std.org/jtc1/sc22/wg21/)
-- [C++ Reference](https://en.cppreference.com/w/cpp)
-- [CMake 官方文档](https://cmake.org/documentation/)
-- [vcpkg 官方仓库](https://github.com/microsoft/vcpkg)
-- [Compiler Support Table](https://en.cppreference.com/w/cpp/compiler_support)

@@ -867,15 +867,6 @@ flowchart TD
 
 函数与模块化是编写可维护代码的基础。将复杂问题拆分为小函数，将相关功能组织为模块，配合规范的错误处理和调试手段，才能构建出健壮的程序。
 
-## 参考文献
-
-本模块各文档：环境搭建、编程基础、调试思维等。
-MDN 学习区：https://developer.mozilla.org/zh-CN/docs/Learn_web_development
-freeCodeCamp：https://www.freecodecamp.org/chinese/
-黑马程序员官网：https://www.itheima.com/
-
 ## 延伸阅读
-
 从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
 语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供基础课程。

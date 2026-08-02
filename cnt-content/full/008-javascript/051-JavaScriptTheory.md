@@ -2422,8 +2422,6 @@ readable.on('end', () => writable.end());
 - **背压**：writable.write 返回 false 时暂停 readable
 - **闭包**：事件处理器闭包捕获 writable 引用
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. **[remember]** JavaScript 的词法环境由 ____ 与 ____ 两部分组成，前者存储变量绑定，后者指向外层环境。
@@ -2441,103 +2439,6 @@ readable.on('end', () => writable.end());
 7. **[remember]** JavaScript 的 8 种语言类型为 Undefined、Null、Boolean、String、Number、Symbol、____、____。
 
 8. **[understand]** Proxy 必须满足若干不变量，例如若 target 不可扩展，则 getPrototypeOf 必须返回 ____。
-
-### 选择题知识点讲解
-
-1. **[analyze]** 下列关于原型链的描述，哪一项是正确的？
-   - A. [[Prototype]] 是可枚举属性，可通过 for-in 遍历到
-   - B. Object.create(null) 创建的对象没有 [[Prototype]]，因此不继承任何方法
-   - C. 函数的 prototype 属性与其实例的 [[Prototype]] 是同一个指针
-   - D. 修改构造函数的 prototype 会立即影响已创建实例的 [[Prototype]] 链
-
-   答案：B
-
-2. **[understand]** 关于严格模式 "use strict" 的语义，下列哪一项是错误的？
-   - A. 禁止 with 语句
-   - B. 函数内部 this 默认绑定到全局对象
-   - C. 重复参数名会抛出 SyntaxError
-   - D. 删除不可配置属性会抛出 TypeError
-
-   答案：B
-
-3. **[apply]** 以下代码的输出是什么？
-
-   ```javascript
-   console.log(typeof null);
-   console.log(typeof undefined);
-   console.log(typeof NaN);
-   console.log(typeof []);
-   ```
-
-   - A. 'null' 'undefined' 'NaN' 'array'
-   - B. 'object' 'undefined' 'number' 'object'
-   - C. 'null' 'undefined' 'number' 'array'
-   - D. 'object' 'undefined' 'NaN' 'object'
-
-   答案：B
-
-4. **[analyze]** 以下代码的输出顺序是什么？
-
-   ```javascript
-   console.log('1');
-   setTimeout(() => console.log('2'), 0);
-   Promise.resolve().then(() => console.log('3'));
-   console.log('4');
-   ```
-
-   - A. 1 2 3 4
-   - B. 1 4 3 2
-   - C. 1 4 2 3
-   - D. 1 3 4 2
-
-   答案：B
-
-5. **[evaluate]** 关于 WeakMap 与 Map 的比较，下列哪一项是错误的？
-   - A. WeakMap 的 key 必须是对象
-   - B. WeakMap 不可迭代
-   - C. WeakMap 的 key 被 GC 回收后 entry 自动消失
-   - D. WeakMap 的 value 也是弱引用
-
-   答案：D（value 是强引用）
-
-6. **[understand]** 以下代码的输出是什么？
-
-   ```javascript
-   const a = { x: 1 };
-   const b = a;
-   b.x = 2;
-   console.log(a.x);
-   ```
-
-   - A. 1
-   - B. 2
-   - C. undefined
-   - D. TypeError
-
-   答案：B
-
-7. **[analyze]** 以下代码的输出是什么？
-
-   ```javascript
-   for (var i = 0; i < 3; i++) {
-     setTimeout(() => console.log(i), 0);
-   }
-   ```
-
-   - A. 0 1 2
-   - B. 3 3 3
-   - C. 0 0 0
-   - D. undefined undefined undefined
-
-   答案：B
-
-8. **[evaluate]** 关于 async-await 的描述，下列哪一项是正确的？
-   - A. async 函数总是返回 Promise
-   - B. await 只能用于 Promise，不能用于普通值
-   - C. async 函数内的异常会被自动 try-catch
-   - D. 顶层 await 在任何文件都可用
-
-   答案：A
 
 ### 19.3 代码修复题（code-fix）
 
@@ -2701,60 +2602,6 @@ readable.on('end', () => writable.end());
 | 新生代 GC | Scavenge 半空间复制 | 短生命周期对象 |
 | 老生代 GC | Mark-Sweep-Compact | 增量标记 + 并发回收 |
 
-## 21. 参考文献（ACM Reference Format）
-
-[1] Eich, B. 1995. JavaScript 1.0 Specification. Netscape Communications Corporation.
-
-[2] ECMA International. 2026. ECMAScript 2026 language specification (27th edition). Standard ECMA-262. DOI: 10.17445/ecma-262-27.
-
-[3] van Kesteren, A. 2026. HTML living standard, section 8.1.7: Event loops. WHATWG. Retrieved from https://html.spec.whatwg.org/.
-
-[4] Rossberg, A. 2018. JavaScript semantics: A formal specification of the ECMAScript language. In Proceedings of the 32nd European Conference on Object-Oriented Programming (ECOOP 2018). Schloss Dagstuhl. DOI: 10.4230/LIPIcs.ECOOP.2018.15.
-
-[5] Flanagan, C. and Freund, S. N. 2000. Type inference against races. Science of Computer Programming 39, 2-3, 199-224. DOI: 10.1016/S0167-6423(00)00015-3.
-
-[6] Anderson, C., Giannakopoulos, P., and Dinesh, T. 2010. Towards JavaScript program verification via type analysis. In Proceedings of the 9th International Conference on Coordination Models and Languages (COORDINATION 2010). Springer. DOI: 10.1007/978-3-642-13493-2_12.
-
-[7] Lieberman, H. 1986. Using prototypical objects to implement shared behavior. In Proceedings of the 1st ACM Conference on Object-Oriented Programming Systems, Languages, and Applications (OOPSLA 1986). ACM, New York, NY, 214-223. DOI: 10.1145/28697.28718.
-
-[8] Ungar, D. and Smith, R. B. 1987. Self: The power of simplicity. In Proceedings of the 2nd ACM Conference on Object-Oriented Programming Systems, Languages, and Applications (OOPSLA 1987). ACM, New York, NY, 227-242. DOI: 10.1145/38765.38828.
-
-[9] Landin, P. J. 1964. The mechanical evaluation of expressions. The Computer Journal 6, 4, 308-320. DOI: 10.1093/comjnl/6.4.308.
-
-[10] Platzer, A. and Pretnar, M. 2010. Algebraic effects and handlers. In Proceedings of the 19th European Symposium on Programming (ESOP 2010). Springer. DOI: 10.1007/978-3-642-11957-6_7.
-
-[11] Wadler, P. 1995. Monads for functional programming. In Advanced Functional Programming, Lecture Notes in Computer Science, vol. 925. Springer, 24-52. DOI: 10.1007/3-540-59451-5_2.
-
-[12] Cheney, C. J. 1970. A nonrecursive list compacting algorithm. Communications of the ACM 13, 11, 677-678. DOI: 10.1145/362790.362798.
-
-[13] Bishop, P. 1977. Computer systems with a very large number of processes. Technical Report CS-RR-078. University of Warwick.
-
-[14] McCarthy, J. 1960. Recursive functions of symbolic expressions and their computation by machine, part I. Communications of the ACM 3, 4, 184-195. DOI: 10.1145/367177.367199.
-
-[15] Felleisen, M. and Hieb, R. 1992. The revised report on the syntactic theories of sequential control and state. Theoretical Computer Science 103, 2, 235-271. DOI: 10.1016/0304-3975(92)90014-7.
-
-[16] Herman, D. 2012. Algebraic effects and handlers in JavaScript. In Proceedings of the ACM International Symposium on New Ideas, New Paradigms, and Reflections on Programming and Software (Onward! 2012). ACM, New York, NY. DOI: 10.1145/2384592.2384603.
-
-[17] Seligman, J., Caires, M., and Pucella, R. 2011. Algebraic effects and resources. Theoretical Computer Science 412, 28, 3214-3232. DOI: 10.1016/j.tcs.2011.03.013.
-
-[18] Ott, J. 2010. Garbage collection. In Handbook of Programming Languages, vol. 1. Macmillan Technical Publishing.
-
-[19] Jones, R. and Lins, R. 1996. Garbage Collection: Algorithms for Automatic Dynamic Memory Management. John Wiley & Sons.
-
-[20] Click, C. 2005. The pauses that refresh: Reducing garbage collection pause times. Sun Microsystems Technical Report.
-
-[21] Titzer, B. and Palsberg, J. 2010. Vertical compression of JavaScript abstract syntax trees. In Proceedings of the 9th International Conference on Generative Programming and Component Engineering (GPCE 2010). ACM. DOI: 10.1145/1868294.1868301.
-
-[22] Richards, G., Lebresne, S., Burg, B., and Vitek, J. 2010. An analysis of the dynamic behavior of JavaScript programs. In Proceedings of the 31st ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI 2010). ACM. DOI: 10.1145/1806596.1806638.
-
-[23] Ratanaworabhan, P., Livshits, V. B., and Zorn, B. G. 2010. JSMeter: Comparing the behavior of JavaScript web applications. In Proceedings of the 9th Annual Workshop on the Interaction between Operating Systems and Computer Architecture (WIOSCA 2010).
-
-[24] Tavares, A., et al. 2018. JSCoverage: Path coverage for JavaScript. arXiv preprint arXiv:1805.04598.
-
-[25] Matsakis, N. D. and Klock II, F. S. 2014. The Rust language. In Proceedings of the 2014 ACM SIGAda Annual Conference on High Integrity Language Technology (HILT 2014). ACM. DOI: 10.1145/2663171.2663188.
-
-## 22. 延伸阅读
-
 ### 22.1 经典书籍
 
 - David Flanagan. *JavaScript: The Definitive Guide*, 7th Edition. O'Reilly Media, 2020.
@@ -2817,28 +2664,6 @@ readable.on('end', () => writable.end());
 - **Service Worker**：离线与背景同步的形式语义
 - **Import Maps**：模块解析的运行时配置
 - **Pattern Matching 提案**：模式匹配的形式语义与代数数据类型
-
-## 23. 附录 A：Bloom 分类法与习题映射
-
-本文习题按 Bloom 分类法设计，覆盖六个认知层级：
-
-| 层级 | 习题类型 | 示例 |
-| ---- | -------- | ---- |
-| remember | 填空题 | 复述规范条目、术语定义 |
-| understand | 填空题、选择题 | 解释语义、对比概念 |
-| apply | 选择题、代码修复题 | 运用规则预测结果、修复缺陷 |
-| analyze | 选择题、代码修复题 | 拆解执行流程、识别陷阱 |
-| evaluate | 选择题、开放题 | 评估方案优劣、论证等价性 |
-| create | 代码修复题、开放题 | 设计元编程抽象、构造缓存方案 |
-
-建议学习路径：
-
-1. 先读历史动机建立直觉
-2. 学习形式化定义建立框架
-3. 通过代码示例验证理解
-4. 完成填空与选择题巩固基础
-5. 挑战代码修复与开放题
-6. 阅读案例研究连接实践
 
 ## 24. 附录 B：术语对照表
 

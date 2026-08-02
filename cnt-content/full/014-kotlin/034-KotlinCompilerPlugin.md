@@ -1189,8 +1189,6 @@ Compose Compiler Plugin 展示了 Kotlin IR 的强大能力：通过深度修改
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 #### 题 1
@@ -1313,44 +1311,6 @@ override fun process(resolver: Resolver): List<KSAnnotated> {
 
 ---
 
-## 参考文献
-
-以下参考文献遵循 ACM Reference Format，包含 DOI 链接。
-
-[1] JetBrains. 2024. Kotlin Symbol Processing API Documentation. Retrieved July 21, 2026 from https://kotlinlang.org/docs/ksp-overview.html
-
-[2] Google. 2023. KSP2: The Next Generation of Kotlin Symbol Processing. In *Proceedings of the Kotlin Conf '23*. https://kotlinconf.com/2023/talks/ksp2/
-
-[3] Elizarov, R. 2021. Kotlin Compiler Plugins: Past, Present, and Future. In *Proceedings of the Kotlin Conf '21*. https://kotlinconf.com/2021/
-
-[4] Tolmachev, N. 2023. K2 Compiler: Architecture Overview. JetBrains Technical Report. https://blog.jetbrains.com/kotlin/2023/02/k2-compiler-architecture/
-
-[5] Bracha, G. and Ungar, D. 2004. Mirrors: design principles for meta-level facilities of object-oriented programming languages. In *Proceedings of the 19th Annual ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications* (OOPSLA '04). ACM, 331–344. DOI: https://doi.org/10.1145/1035292.1028981
-
-[6] Erdweg, S. et al. 2015. Growing a language environment with editor libraries. In *Proceedings of the 2015 ACM SIGPLAN International Conference on Generative Programming: Concepts and Experiences* (GPCE '15). ACM, 87–98. DOI: https://doi.org/10.1145/2814204.2814214
-
-[7] Flatt, M. 2002. Composable and compilable macros: you want it when? In *Proceedings of the 7th ACM SIGPLAN International Conference on Functional Programming* (ICFP '02). ACM, 72–83. DOI: https://doi.org/10.1145/581478.581486
-
-[8] Gay, S. et al. 2017. The Kotlin Programming Language. In *Companion to the 32nd ACM SIGPLAN Conference on Programming Language Design and Implementation* (PLDI '17 Companion). ACM. DOI: https://doi.org/10.1145/3144585
-
-[9] JetBrains. 2024. Kotlin Compiler Plugin API. Retrieved July 21, 2026 from https://kotlinlang.org/api/compiler-plugin-api/
-
-[10] Google. 2023. Room KSP Migration Guide. Retrieved July 21, 2026 from https://developer.android.com/jetpack/androidx/releases/room#2.5.0
-
-[11] Arshavnikov, A. 2023. Annotation Processing in Kotlin: kapt vs KSP. In *Proceedings of the Android Dev Summit '23*. https://developer.android.com/dev-summit
-
-[12] Kompose. 2024. Compose Compiler Plugin Internals. Retrieved July 21, 2026 from https://github.com/JetBrains/kotlin/blob/master/plugins/compose
-
-[13] Nystrom, R. 2016. Crafting Interpreters. Genever Benning. https://craftinginterpreters.com/
-
-[14] Aho, A. V., Lam, M. S., Sethi, R., and Ullman, J. D. 2006. *Compilers: Principles, Techniques, and Tools* (2nd ed.). Addison-Wesley.
-
-[15] Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press.
-
----
-
-## 延伸阅读
-
 ### 官方文档
 
 - **Kotlin Symbol Processing 官方文档**：https://kotlinlang.org/docs/ksp-overview.html
@@ -1387,12 +1347,6 @@ override fun process(resolver: Resolver): List<KSAnnotated> {
 - **Moshi CodeGen**：https://github.com/square/moshi
   - 同时提供 kapt 与 KSP 入口的迁移范例，可对比两种实现的差异。
 
-### 社区资源
-
-- **Kotlin Slack #ksp 频道**：KSP 团队与社区开发者的实时交流。
-- **Kotlinlang Slack #compiler 频道**：Kotlin 编译器团队与插件作者讨论。
-- **KSP Issue Tracker**：https://github.com/google/ksp/issues
-  - 报告 KSP 框架的 Bug 与功能请求。
 ## 基本编译
 
 **基本写法：编译单文件**

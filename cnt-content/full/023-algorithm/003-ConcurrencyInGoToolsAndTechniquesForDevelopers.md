@@ -4,7 +4,7 @@ title: 栈与队列
 module: algorithm
 category: Algorithm/StackQueue
 difficulty: beginner
-description: 栈（Stack）与队列（Queue）的形式化定义、LIFO/FIFO 原理、顺序栈/链式栈/循环队列/链式队列/双端队列/单调栈/单调队列的实现与复杂度分析，涵盖 Bauer-Samelson 1955 叠加原理、Dijkstra 1965 信号量、Hoare 1978 CSP 等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 10 章风格习题。
+description: 栈（Stack）与队列（Queue）的形式化定义、LIFO/FIFO 原理、顺序栈/链式栈/循环队列/链式队列/双端队列/单调栈/单调队列的实现与复杂度分析，涵盖 Bauer-Samelson 1955 叠加原理、Dijkstra 1965 信号量、Hoare 1978 CSP 等历史脉络，附 Python/C++/Java 多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -2022,64 +2022,6 @@ def deep_iteration(n):
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**1.** 下列关于栈与队列的描述，错误的是：
-
-- A. 栈是 LIFO 结构，队列是 FIFO 结构
-- B. 顺序栈的 push 操作均摊时间复杂度为 $O(1)$
-- C. 循环队列的判空条件 `front == rear` 与判满条件 `front == rear` 相同，无法区分
-- D. 双端队列可同时作为栈和队列使用
-
-**C**。维护 `size` 变量可区分空与满；或浪费一个槽位，判满用 `(rear + 1) % capacity == front`。A、B、D 均正确。
-
-**2.** 给定入栈序列 `1, 2, 3, 4, 5`，下列哪个序列**不可能是**合法出栈序列？
-
-- A. `5, 4, 3, 2, 1`
-- B. `2, 3, 4, 5, 1`
-- C. `4, 5, 3, 2, 1`
-- D. `2, 1, 4, 3, 5`
-- E. `3, 5, 4, 2, 1`
-
-**E**。出栈序列 `3, 5, 4, 2, 1`：
-- push 1, 2, 3 → pop 3（栈剩 1, 2）
-- 想要 pop 5，需先 push 4, 5 → pop 5（栈剩 1, 2, 4）
-- pop 4（栈剩 1, 2）
-- pop 2（栈剩 1）
-- pop 1
-
-实际可推出 3, 5, 4, 2, 1 是合法的。重新分析：
-- push 1,2,3, pop 3 → 出 3
-- push 4,5, pop 5 → 出 5
-- pop 4 → 出 4
-- pop 2 → 出 2
-- pop 1 → 出 1
-
-合法序列 3,5,4,2,1 实际**可能**，故 E 不正确。重新选择：
-
-实际上 E 是合法的。正确答案应为：所有给出的都可能是合法出栈序列。本题原意考察 Catalan 数，建议重读题意。
-
-**3.** 单调递减栈处理数组 `[3, 1, 4, 1, 5, 9, 2, 6]` 时，栈内最多同时有多少个元素？
-
-- A. 3
-- B. 4
-- C. 5
-- D. 6
-
-**B**。模拟过程：
-- 3 入栈：[3]
-- 1 < 3，入栈：[3, 1]
-- 4 > 1, 3，弹出 1, 3，入栈：[4]
-- 1 < 4，入栈：[4, 1]
-- 5 > 1, 4，弹出 1, 4，入栈：[5]
-- 9 > 5，弹出 5，入栈：[9]
-- 2 < 9，入栈：[9, 2]
-- 6 > 2，弹出 2，入栈：[9, 6]
-
-栈最多 4 个元素（[3, 1] 与 [4, 1] 时，但 [9, 2] 仅 2 个）。实际最大值出现在 [3, 1]（2 个）和 [4, 1]（2 个）。重新数：栈最大为 2 个元素，无 4 个的情况。**正确答案应重新分析**。
-
 ### 填空题知识点讲解
 
 **1.** 循环队列存储在数组 `Q[0..n-1]` 中，`front` 指向队首元素、`rear` 指向下一个待插入位置。当 `front = 3`、`rear = 3` 时，队列长度可能是 ____ 或 ____。
@@ -2185,24 +2127,6 @@ def is_palindrome(head) -> bool:
 
 ---
 
-## 14. 参考文献
-
-1. Bauer, F. L. and Samelson, K. 1960. Sequential formula translation. *Communications of the ACM* 3(2): 76-83. DOI:10.1145/366994.367017
-2. Knuth, D. E. 1997. *The Art of Computer Programming, Volume 1: Fundamental Algorithms* (3rd ed.). Addison-Wesley Professional. ISBN 978-0201896831. Section 2.2.1 (Stacks, Queues and Deques).
-3. Cormen, T. H., Leiserson, C. E., Rivest, R. L., and Stein, C. 2022. *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305. Chapter 10, Section 10.1 (Stacks and Queues).
-4. Sedgewick, R. and Wayne, K. 2011. *Algorithms* (4th ed.). Addison-Wesley Professional. ISBN 978-0321573513. Section 1.3 (Bags, Queues, and Stacks).
-5. Dijkstra, E. W. 1965. Cooperating sequential processes. Technological University Eindhoven, Mathematics Department Report EWD-123. Reprinted in: Genys, F. (ed.) 1968, *The Origin of Concurrent Programming*, Springer, pp. 65-138.
-6. Hoare, C. A. R. 1978. Communicating sequential processes. *Communications of the ACM* 21(8): 666-677. DOI:10.1145/359576.359585
-7. Brinch Hansen, P. 1973. Structured multiprogramming. *Communications of the ACM* 16(7): 395-397. DOI:10.1145/355600.362315
-8. Stroustrup, B. 2013. *The C++ Programming Language* (4th ed.). Addison-Wesley Professional. ISBN 978-0321563842. Chapter 31 (STL Containers).
-9. Tanenbaum, A. S. and Bos, H. 2014. *Modern Operating Systems* (4th ed.). Pearson. ISBN 978-0133591620. Chapter 2 (Processes and Threads).
-10. Oracle Corporation. 2024. Java Collections Framework - Deque and ArrayDeque documentation. https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayDeque.html
-11. Cox-Buday, K. 2017. *Concurrency in Go: Tools and Techniques for Developers*. O'Reilly Media. ISBN 978-1491941195.
-
----
-
-## 15. 延伸阅读
-
 ### 15.1 理论深入
 
 - Knuth, D. E. *The Art of Computer Programming, Volume 1: Fundamental Algorithms*, Section 2.2.1 — 栈/队列/双端队列的系统化理论
@@ -2229,16 +2153,6 @@ def is_palindrome(head) -> bool:
 - Stanford CS161 Design and Analysis of Algorithms, Lecture 2: Stacks, Queues, Heaps
 - Berkeley CS61B Data Structures, Lecture 5: Stacks, Queues, ADTs
 
-### 15.5 在线练习
-
-- LeetCode 栈专题：https://leetcode.cn/tag/stack/
-- LeetCode 队列专题：https://leetcode.cn/tag/queue/
-- LeetCode 单调栈专题：https://leetcode.cn/problems/tag/单调栈/
-- Codeforces Stack Problems: https://codeforces.com/problemset/tags/stack
-- USACO Guide - Monotonic Stack: https://usaco.guide/guide/stacks
-
----
-
 ## 附录 A：栈与队列复杂度速查表
 
 | 操作 | 顺序栈 | 链式栈 | 循环队列 | 链式队列 | 双端队列 | 单调栈 | 单调队列 |
@@ -2249,23 +2163,3 @@ def is_palindrome(head) -> bool:
 | 查找 | $O(n)$ | $O(n)$ | $O(n)$ | $O(n)$ | $O(n)$ | — | — |
 | 扩容 | $O(n)$ 偶发 | 无需 | $O(n)$ 偶发 | 无需 | $O(n)$ 偶发 | 无需 | 无需 |
 | 内存/元素 | 数据 + 容量分摊 | 数据 + 8 字节指针 | 数据 + 容量分摊 | 数据 + 8 字节指针 | 数据 + 容量分摊 | 同栈 | 同双端队列 |
-
-## 附录 B：常见面试题速查表
-
-| LeetCode 题号 | 题目 | 难度 | 核心技巧 |
-| ---- | ---- | ---- | ---- |
-| 20 | 有效括号 | 简单 | 栈匹配 |
-| 150 | 逆波兰表达式求值 | 中等 | 栈求值 |
-| 155 | 最小栈 | 中等 | 辅助栈 |
-| 232 | 用栈实现队列 | 简单 | 双栈 |
-| 225 | 用队列实现栈 | 简单 | 双队列/单队列 |
-| 239 | 滑动窗口最大值 | 困难 | 单调队列 |
-| 739 | 每日温度 | 中等 | 单调栈 |
-| 84 | 柱状图中最大矩形 | 困难 | 单调栈 + 哨兵 |
-| 85 | 最大矩形 | 困难 | 84 + 逐行转化 |
-| 42 | 接雨水 | 困难 | 单调栈/双指针 |
-| 394 | 字符串解码 | 中等 | 栈 |
-| 94 | 二叉树中序遍历 | 简单 | 显式栈 |
-| 144 | 二叉树前序遍历 | 简单 | 显式栈 |
-| 102 | 二叉树层序遍历 | 中等 | BFS 队列 |
-| 207 | 课程表 | 中等 | 拓扑排序 + 队列 |

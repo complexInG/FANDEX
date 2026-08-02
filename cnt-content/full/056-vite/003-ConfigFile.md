@@ -331,66 +331,6 @@ vite build --mode staging
 | 6 | 生产环境接口请求仍报跨域 | `server.proxy` 只在开发环境生效 | 生产环境在 nginx/网关配置反向代理 |
 | 7 | 自定义变量在代码中无类型提示 | 未在 `vite-env.d.ts` 声明 | 按第 7 节方式补充 `ImportMetaEnv` 接口 |
 
-## 9. 实战练习
-
-### 练习 1：从零配置一个常用工程配置
-
-**题目**：创建一个 `vanilla-ts` 项目，在 `vite.config.ts` 中配置：端口 5173、启动自动打开浏览器、`@` 别名指向 `src`，并在 `tsconfig.json` 同步 `paths`。
-
-**提示**：别名用 `path.resolve(__dirname, 'src')`；TS 侧用 `baseUrl` + `paths`。
-
-**参考答案要点**：
-1. `vite.config.ts` 中配置 `server: { port: 5173, open: true }` 与 `resolve.alias`；
-2. `tsconfig.json` 中配置 `"baseUrl": "."` 与 `"paths": { "@/*": ["src/*"] }`；
-3. 在任意源码中使用 `import x from '@/utils/format'` 验证别名生效。
-
-### 练习 2：配置开发代理对接假后端
-
-**题目**：本地用 `node` 起一个返回 JSON 的 8080 端口服务，为 Vite 配置 `/api` 代理，并在页面中通过 `fetch('/api/user')` 获取数据展示。
-
-**提示**：`server.proxy['/api']` 指向 `http://localhost:8080`；`rewrite` 视后端路由决定是否去掉 `/api` 前缀。
-
-**参考答案要点**：
-1. 简单假后端：`node -e "require('http').createServer((req,res)=>{res.end(JSON.stringify({name:'FANDEX'}))}).listen(8080)"`；
-2. 配置 proxy 后，页面 `fetch('/api/user')` 成功拿到数据；
-3. 在浏览器 Network 面板确认请求发往 5173 端口的 `/api/user`，而非直接跨域。
-
-### 练习 3：用环境变量区分多环境
-
-**题目**：创建 `.env`、`.env.development`、`.env.production` 三个文件，分别定义不同的 `VITE_APP_TITLE`，在页面显示它，验证不同命令下显示不同的标题。
-
-**提示**：`pnpm dev` 加载 `.env.development`，`pnpm build` 加载 `.env.production`；页面用 `import.meta.env.VITE_APP_TITLE`。
-
-**参考答案要点**：
-1. 三份 .env 文件分别设置 `VITE_APP_TITLE=默认版/开发版/生产版`；
-2. `pnpm dev` 时页面显示"开发版"；
-3. `pnpm build && pnpm preview` 时显示"生产版"；验证完成后再构建前记得删除 `.env.production` 中的测试值（如不需要）。
-
-### 练习 4：用 --mode 自定义环境
-
-**题目**：创建 `.env.staging`，运行 `vite build --mode staging`，观察 `import.meta.env.MODE` 的值与加载的环境变量。
-
-**提示**：`--mode staging` 会加载 `.env.staging` 覆盖同名变量，MODE 变为 'staging'。
-
-**参考答案要点**：
-1. `.env.staging` 中定义 `VITE_API_BASE=https://staging.example.com/api`；
-2. `pnpm build --mode staging` 后，产物中 API 地址为 staging 地址；
-3. 结论：多环境（dev/staging/prod）部署的核心就是 `--mode` + `.env.[mode]` 的组合。
-
 ## 10. 一句话记忆
 
 **vite.config.ts 是 Vite 的方向盘：`defineConfig` 拿类型提示，`plugins` 装能力，`resolve` 管寻路，`server` 管开发，`build` 管产物，`VITE_` 前缀管环境——所有配置都遵循"默认可用、按需调整、两套机制同步"**。
-
-## 11. 参考链接与延伸阅读
-
-- Vite 配置参考（全量选项）：https://cn.vite.dev/config/
-- Vite 环境变量与模式：https://cn.vite.dev/guide/env-and-mode
-- Vite 共享配置选项（root/base/plugins/resolve 等）：https://cn.vite.dev/config/shared-options
-- Vite 插件目录 registry.vite.dev：https://registry.vite.dev/
-
-延伸阅读：
-
-- 本模块 002 篇《Vite 快速上手与项目结构》：配置文件在项目中的位置与作用；
-- 本模块 004 篇《Vite 静态资源处理》：`base` 与部署路径的完整关系；
-- 本模块 007 篇《构建与代码分割》：`build.rollupOptions` 的深度用法；
-- 本模块 009 篇《Vite 8 与 Rolldown》：Vite 8 配置项的迁移变化。

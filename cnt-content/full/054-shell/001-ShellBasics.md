@@ -304,23 +304,6 @@ echo "部署完成"
 
 **陷阱五：忽略退出码。** `command || { echo "失败"; exit 1; }` 显式处理。
 
-## 8. 实战练习
-
-1. **写第一个脚本**：写一个脚本，接收一个目录路径参数，统计该目录下的文件数、子目录数、总大小。
-
-2. **管道练习**：写一条命令，从 access.log 中找出 404 错误最多的前 5 个 IP。
-
-3. **安全练习**：写一个"删除 .tmp 文件"的脚本，要求：先预览（dry-run）、有严格模式、删除前确认。
-
-4. **改造练习**：把本章的部署脚本模板改造成"先备份再部署"的版本，加入时间戳备份。
-
-## 9. 参考资源
-
-- Bash 参考手册：https://www.gnu.org/software/bash/manual/
-- ShellCheck（静态检查）：https://www.shellcheck.net/
-- Explain Shell：https://explainshell.com/
-- Bash 陷阱汇总：https://mywiki.wooledge.org/BashPitfalls
-
 ## 10. 延伸阅读
 
 - 文件与目录操作详解，见本模块《命令行基础》

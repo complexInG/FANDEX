@@ -757,16 +757,7 @@ SMIL 提供 `<animateTransform>` 专门用于变换动画。
 </svg>
 ```
 
-## 参考文献
-
-MDN SVG 文档：https://developer.mozilla.org/zh-CN/docs/Web/SVG
-SVG 规范（W3C）：https://www.w3.org/TR/SVG2/
-SVGO 优化工具：https://github.com/svg/svgo
-D3.js：https://d3js.org/
-
 ## 延伸阅读
-
 SVG 图形语法，见 012-svg 模块文档。
 CSS 样式与动画，见 007-css 模块。
 React/Vue 图标组件实践，见 011-react/010-vue3 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前端图形课程。

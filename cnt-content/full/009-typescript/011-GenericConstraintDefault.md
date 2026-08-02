@@ -1264,8 +1264,6 @@ app.get("/profile", authMiddleware, traceMiddleware, (req, res) => {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**：编写泛型函数 `firstOrDefault<T>(arr: T[], defaultValue: T): T`，返回数组第一个元素或默认值。
@@ -1453,36 +1451,6 @@ const user = userValidator({ id: "1", age: 30 }); // 类型安全
 
 ---
 
-## 参考文献
-
-1. Hejlsberg, A. (2012). TypeScript: Language specification. Microsoft Corporation. https://github.com/Microsoft/TypeScript/blob/main/doc/spec.md
-
-2. Bierman, G., Abadi, M., & Torgersen, M. (2014). Understanding TypeScript. In *ECOOP 2014 — Object-Oriented Programming* (pp. 257-281). Springer. https://doi.org/10.1007/978-3-662-44202-9_11
-
-3. Bierman, G., Abadi, M., & Torgersen, M. (2014). Understanding TypeScript: A progressive approach to types. *Electronic Proceedings in Theoretical Computer Science*, 153, 1-15. https://doi.org/10.4204/EPTCS.153.1
-
-4. Java Community Process. (2004). JSR 14: Add Generic Types To The Java Programming Language. https://www.jcp.org/en/jsr/detail?id=14
-
-5. Kennedy, A., & Syme, D. (2001). Design and implementation of generics for the .NET Common Language Runtime. In *Proceedings of the ACM SIGPLAN 2001 Conference on Programming Language Design and Implementation* (PLDI '01) (pp. 1-12). ACM. https://doi.org/10.1145/378795.378797
-
-6. Pierce, B. C. (2002). *Types and programming languages*. MIT Press. https://mitpress.mit.edu/9780262162098/types-and-programming-languages/
-
-7. Cardelli, L., & Wegner, P. (1985). On understanding types, data abstraction, and polymorphism. *ACM Computing Surveys*, 17(4), 471-523. https://doi.org/10.1145/6041.6042
-
-8. Robinson, J. A. (1965). A machine-oriented logic based on the resolution principle. *Journal of the ACM*, 12(1), 23-41. https://doi.org/10.1145/321250.321253
-
-9. Reynolds, J. C. (1974). Towards a theory of type structure. In *Programming Symposium* (pp. 408-425). Springer. https://doi.org/10.1007/3-540-06859-7_148
-
-10. Microsoft. (2017). TypeScript 2.3 release notes: Default type parameters. https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html
-
-11. Microsoft. (2018). TypeScript 2.8 release notes: Conditional types. https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html
-
-12. Wadler, P., & Blott, S. (1989). How to make ad-hoc polymorphism less ad hoc. In *Proceedings of the 16th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (POPL '89) (pp. 60-76). ACM. https://doi.org/10.1145/75277.75283
-
----
-
-## 延伸阅读
-
 ### 官方文档
 
 - **TypeScript Handbook - Generics**: https://www.typescriptlang.org/docs/handbook/2/generics.html
@@ -1501,22 +1469,6 @@ const user = userValidator({ id: "1", age: 30 }); // 类型安全
 - Bierman, G., Abadi, M., & Torgersen, M. (2014). Understanding TypeScript. ECOOP 2014. 系统形式化 TS 类型系统。
 - Bartoletti, M., et al. (2020). Type safety in dynamic languages: A formal analysis. 现代动态语言类型安全的形式化分析。
 - Chlipala, A. (2013). Certified Programming with Dependent Types. MIT Press. 依赖类型与约束系统的高级应用。
-
-### 开源项目参考
-
-- **type-fest**: https://github.com/sindresorhus/type-fest - 实用类型工具集合，含大量约束模式实例。
-- **ts-toolbelt**: https://github.com/millsp/ts-toolbelt - 类型级函数库，可学习高阶约束技巧。
-- **io-ts**: https://github.com/gcanti/io-ts - 运行时类型与编译期类型同步的代表性库。
-- **zod**: https://github.com/colinhacks/zod - 现代运行时校验库，与 TS 类型系统集成紧密。
-- **tRPC**: https://github.com/trpc/trpc - 端到端类型安全 RPC 框架，约束设计典范。
-- **react-hook-form**: https://github.com/react-hook-form/react-hook-form - 高性能表单库，类型约束设计精良。
-- **Prisma**: https://github.com/prisma/prisma - 类型安全的 ORM，schema 驱动类型生成。
-
-### 社区资源
-
-- **TypeScript Deep Dive**: https://basarat.gitbook.io/typescript/ - 在线开源教材，涵盖泛型与约束实战。
-- **Type Challenges**: https://github.com/type-challenges/type-challenges - 类型体操题集，适合进阶练习。
-- **TypeScript Weekly**: https://www.typescript-weekly.com/ - 每周精选 TS 文章与项目。
 
 ### 工具与扩展
 

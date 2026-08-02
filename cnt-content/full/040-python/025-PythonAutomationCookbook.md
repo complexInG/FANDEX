@@ -2428,41 +2428,6 @@ def enable_asyncio_debug():
     asyncio.set_event_loop(loop)
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 14.1 综合练习：设计文件同步工具
-
-**需求**：
-- 双向同步两个目录；
-- 监控文件变化实时同步；
-- 冲突时保留两个版本；
-- 支持忽略规则（.gitignore 风格）。
-
-### 14.2 综合练习：实现日志分析流水线
-
-**需求**：
-- 监控 Nginx access.log；
-- 解析日志并统计 PV/UV；
-- 异常请求触发告警；
-- 每日生成报告发送邮件。
-
-### 14.3 综合练习：实现 CI/CD 流水线
-
-**需求**：
-- 监听 GitHub Webhook；
-- 拉取代码并运行测试；
-- 构建 Docker 镜像并推送；
-- 部署到 K8s；
-- 失败时回滚。
-
-### 14.4 综合练习：实现 RPA 机器人
-
-**需求**：
-- 自动登录企业 ERP；
-- 抓取每日销售数据；
-- 填写 Excel 报表；
-- 通过邮件发送给管理者。
-
 ## 15. 工程检查清单
 
 ### 15.1 上线前自检
@@ -2501,8 +2466,6 @@ def enable_asyncio_debug():
 - [ ] 是否准备回滚方案？
 - [ ] 是否定期演练故障恢复？
 
-## 16. 延伸阅读
-
 ### 16.1 必读书籍
 
 1. **Al Sweigart**. *Automate the Boring Stuff with Python*. 2nd Edition. No Starch Press, 2019. ISBN 978-1593279929.
@@ -2529,14 +2492,6 @@ def enable_asyncio_debug():
 - **Playwright**: https://github.com/microsoft/playwright
 - **Click**: https://github.com/pallets/click
 - **Typer**: https://github.com/tiangolo/typer
-
-### 16.4 在线资源
-
-- **Apache Airflow 官方教程**: https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html
-- **Prefect 官方文档**: https://docs.prefect.io/
-- **Celery 官方文档**: https://docs.celeryq.dev/
-- **Real Python 自动化系列**: https://realpython.com/tutorials/automation/
-- **Awesome Python Automation**: https://github.com/vinta/awesome-python
 
 ## 17. Python 版本兼容性矩阵
 

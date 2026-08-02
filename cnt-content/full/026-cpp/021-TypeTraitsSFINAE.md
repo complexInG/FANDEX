@@ -2005,8 +2005,6 @@ int main() {
 
 ---
 
-## 知识讲解与要点分析（原练习题）
-
 ### 9.1 基础题（记忆与理解）
 
 **常见疑问 1**：SFINAE 缩写展开是什么？它在 ISO/IEC 14882 中的定义位置是？
@@ -2397,8 +2395,6 @@ int main() {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 标准文档
 
 [1] International Organization for Standardization. ISO/IEC 14882:2020 Information technology — Programming languages — C++ [S]. 5th ed. Geneva: ISO, 2020. https://www.iso.org/standard/79758.html
@@ -2447,18 +2443,6 @@ int main() {
 
 [20] Siek J, Lumsdaine A. Essential Requirements for Concepts [C]// Proceedings of the 10th International Conference on Object-Oriented Information Systems (OOIS '04). Berlin: Springer, 2004: 232-245. DOI: 10.1007/978-3-540-30187-6_24
 
-### 10.5 在线资源
-
-[21] cppreference.com. Standard library header <type_traits> [EB/OL]. (2023-07-15) [2026-07-21]. https://en.cppreference.com/w/cpp/header/type_traits
-
-[22] cppreference.com. Standard library header <concepts> [EB/OL]. (2023-07-15) [2026-07-21]. https://en.cppreference.com/w/cpp/header/concepts
-
-[23] cppreference.com. SFINAE [EB/OL]. (2023-07-15) [2026-07-21]. https://en.cppreference.com/w/cpp/language/sfinae
-
-[24] Stroustrup B. The C++20 Concepts [EB/OL]. (2022-01-15) [2026-07-21]. https://www.stroustrup.com/C++20Concepts.html
-
-[25] Sutton A. The C++20 Concepts Story [EB/OL]. (2020-10-15) [2026-07-21]. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2009r0.pdf
-
 ### 10.6 编译器文档
 
 [26] GCC Team. Type Traits [EB/OL]. (2024-01-15) [2026-07-21]. https://gcc.gnu.org/onlinedocs/libstdc++/manual/std/typetraits.html
@@ -2468,8 +2452,6 @@ int main() {
 [28] Microsoft. Compiler Support for Type Traits (C++/CLI) [EB/OL]. (2024-01-15) [2026-07-21]. https://learn.microsoft.com/en-us/cpp/dotnet/compiler-support-for-type-traits-cpp-cli
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 进阶书籍
 
@@ -2497,14 +2479,6 @@ int main() {
 - **The Cherno (YouTube)**：C++ 系列教程，包含类型特征专题。
 - **C++ Weekly (Jason Turner)**：每周 C++ 技巧，涵盖 SFINAE 与 concepts。
 - **Andrei Alexandrescu: The C++ Concepts Story**：concepts 的历史与设计哲学。
-
-### 11.5 社区资源
-
-- **ISO C++ 标准委员会邮件列表**：std-discussion@iso.org
-- **Stack Overflow [c++] 标签**：大量类型特征与 SFINAE 的实战问答。
-- **Reddit r/cpp**：C++ 社区讨论，包含新标准提案与最佳实践。
-
----
 
 ## 12. 附录
 

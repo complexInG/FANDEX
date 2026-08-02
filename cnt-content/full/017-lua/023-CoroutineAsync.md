@@ -2184,178 +2184,6 @@ end
 
 **注意**:LuaJIT 的 FFI 回调在 C 栈中,Lua 协程不能跨 C 边界 yield,需使用 `lua_callk`/continuation 机制。
 
-## 知识讲解与要点分析（原习题）
-
-### 9.1 习题 1:协程状态转换
-
-**题目**:给定以下代码,写出每行 `print` 的输出:
-
-```lua
-local co = coroutine.create(function()
-  print("A")
-  coroutine.yield(1)
-  print("B")
-  coroutine.yield(2)
-  print("C")
-  return 3
-end)
-
-print(coroutine.status(co))
-coroutine.resume(co)
-local _, r1 = coroutine.resume(co)
-print(r1)
-local _, r2 = coroutine.resume(co)
-print(r2)
-local ok, r3 = coroutine.resume(co)
-print(ok, r3)
-print(coroutine.status(co))
-```
-
-**解析讲解**：
-
-```
-suspended
-A
-B
-1
-C
-2
-false    cannot resume dead coroutine
-dead
-```
-
-### 9.2 习题 2:生成器实现
-
-**题目**:用协程实现一个生成器,产出斐波那契数列中小于 N 的所有数。
-
-**解析讲解**：
-
-```lua
-local function fib_below(n)
-  return coroutine.wrap(function()
-    local a, b = 0, 1
-    while a < n do
-      coroutine.yield(a)
-      a, b = b, a + b
-    end
-  end)
-end
-
-for v in fib_below(100) do
-  io.write(v, " ")
-end
--- 0 1 1 2 3 5 8 13 21 34 55 89
-```
-
-### 9.3 习题 3:生产者-消费者
-
-**题目**:实现一个生产者-消费者,生产者每秒产出一个数字,消费者接收并打印。使用协程与简易事件循环。
-
-**解析讲解**：
-
-```lua
-local function producer()
-  return coroutine.create(function()
-    for i = 1, 5 do
-      coroutine.yield(i)
-    end
-  end)
-end
-
-local function consumer(prod)
-  while true do
-    local ok, v = coroutine.resume(prod)
-    if not ok or v == nil then break end
-    print("consumed:", v)
-  end
-end
-
-local prod = producer()
-consumer(prod)
-```
-
-### 9.4 习题 4:Promise 实现
-
-**题目**:实现一个简单的 Promise 类,支持 `resolve`、`reject`、`then`、`catch`。
-
-**解析讲解**：见 §5.9。
-
-### 9.5 习题 5:async/await 模拟
-
-**题目**:基于 Promise 与协程,实现 `async` 与 `await` 函数,使下列代码工作:
-
-```lua
-local function fetch(url)
-  return Promise.new(function(resolve)
-    setTimeout(function() resolve("data from " .. url) end, 1000)
-  end)
-end
-
-local main = async(function()
-  local a = await(fetch("http://a"))
-  print(a)
-  local b = await(fetch("http://b"))
-  print(b)
-end)
-
-main()
-```
-
-**解析讲解**：见 §5.10。
-
-### 9.6 习题 6:协程池
-
-**题目**:实现一个协程池,限制最大并发数,支持任务队列。
-
-**解析讲解**：见 §8.5。
-
-### 9.7 习题 7:错误处理
-
-**题目**:在协程中处理错误,使主线程不受影响,并记录错误日志。
-
-**解析讲解**：
-
-```lua
-local function safe_resume(co, ...)
-  local ok, err = coroutine.resume(co, ...)
-  if not ok then
-    log_error(tostring(err))
-    return false
-  end
-  return true
-end
-```
-
-### 9.8 习题 8:取消机制
-
-**题目**:实现协程的取消机制,允许外部取消正在执行的协程。
-
-**解析讲解**：见 §8.4。
-
-### 9.9 思考题 1:协程与线程的本质区别
-
-**问题**:为什么说协程"协作式调度"在 IO 密集场景下优于线程"抢占式调度"?是否存在协程劣于线程的场景?
-
-**提示**:考虑切换开销、内存占用、IO 等待时间、CPU 密集任务。
-
-### 9.10 思考题 2:协程与 call/cc
-
-**问题**:Lua 协程能否实现 Scheme 的 call/cc?如果不能,缺失了什么?
-
-**提示**:考虑续延的可重入性与逃逸续延的区别。
-
-### 9.11 思考题 3:协程泄漏的检测
-
-**问题**:如何检测 Lua 应用中的协程泄漏?需要哪些运行时信息?
-
-**提示**:考虑 `collectgarbage("count")`、`coroutine.status`、自定义跟踪。
-
-### 9.12 思考题 4:协程与多核
-
-**问题**:Lua 协程是单线程的,如何利用多核 CPU?有哪些方案?
-
-**提示**:考虑多进程、LuaJIT + FFI、LPEG、LuaDist。
-
 ### 9.13 项目题:实现完整的异步框架
 
 **任务**:设计并实现一个完整的异步框架,包含以下功能:
@@ -2375,8 +2203,6 @@ end
 - 支持至少一种 IO 后端（libuv、select、epoll）。
 
 **参考实现**:见 §5.9、§5.10、§5.11、§5.12、§8.1-8.10。
-
-## 10. 参考文献
 
 ### 10.1 Lua 官方资料
 
@@ -2443,8 +2269,6 @@ end
 [24] Carnegie Mellon University, "15-440 Distributed Systems," 2023. [Online]. Available: https://www.cs.cmu.edu/~dga/15-440/F12/
 
 [25] R. Ierusalimschy, "Lua: An Extensible Extension Language," in Encyclopedia of Computer Science and Technology, vol. 76, no. 47, A. Kent and J. G. Williams, Eds. Boca Raton, FL, USA: CRC Press, 2017, pp. 1-12.
-
-## 11. 延伸阅读
 
 ### 11.1 Lua 深入主题
 
@@ -2549,42 +2373,6 @@ end
 | `coroutine.isyieldable` | 否 | 否 | 否 | 是 | 是 | 是 | 是 | 是 |
 | 跨 C 边界 yield | 否 | 否 | 部分 | 是 | 是 | 是 | 是 | 是 |
 | `coroutine.close` | 否 | 否 | 否 | 否 | 否 | 否 | 否 | 是 |
-
-## 附录 E:习题答案
-
-### E.1 习题 1 答案
-
-见 §10.1 参考答案。
-
-### E.2 思考题 1 答案要点
-
-- **IO 密集场景优势**:协程切换开销小（μs 级 vs 线程 ms 级）,无内核陷入。
-- **协程劣于线程场景**:
-  - CPU 密集任务:协程需显式 yield,易阻塞事件循环。
-  - 多核并行:协程单线程,无法利用多核。
-  - 需要抢占的场景:协程协作式,无法强制中断。
-
-### E.3 思考题 2 答案要点
-
-- Lua 协程可模拟"逃逸续延"（escape continuation）,但不能实现"任意续延"（any continuation）。
-- 缺失:续延的重入（reentry）,即不能多次调用同一续延。
-- 原因:Lua 协程栈是线性的,yield 后不能"回到过去"。
-
-### E.4 思考题 3 答案要点
-
-- 检测方法:
-  1. 跟踪所有创建的协程,定期检查 status。
-  2. 使用 `collectgarbage("count")` 监控内存增长。
-  3. 集成到 metrics 系统,监控活跃协程数。
-- 需要信息:协程创建栈、当前状态、上次 resume 时间。
-
-### E.5 思考题 4 答案要点
-
-- **多进程**:每个进程一个 Lua VM,通过 IPC 通信。
-- **LuaJIT + FFI**:绑定 C 线程库,在 C 中调用 Lua。
-- **LPEG**:并行解析。
-- **LuaDist**:多 Lua 状态机,共享内存。
-- **未来**:Lua 5.5+ 可能引入并行支持,但当前无原生多线程。
 
 ## 结语
 

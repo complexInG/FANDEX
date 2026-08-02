@@ -5,7 +5,7 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: 问题驱动讲解 gh search：从"怎么快速找到想要的仓库、代码、Issue、PR、提交"等真实问题切入，涵盖 repos/code/issues/prs/commits 五类搜索与常用过滤选项，配以错误对策与实战练习。
+description: 问题驱动讲解 gh search：从"怎么快速找到想要的仓库、代码、Issue、PR、提交"等真实问题切入，涵盖 repos/code/issues/prs/commits 五类搜索与常用过滤选项，配以错误对策。
 author: fanquanpp
 updated: '2026-08-02'
 related: []
@@ -263,70 +263,12 @@ gh search repos --language=python --sort=stars --limit 5 --json fullName --jq '.
 
 ---
 
-## 实战练习
-
-### 练习 1：搜索入门项目（入门）
-
-- **题目**：用 gh search 找出 5 个 star 数大于 10000、语言为 Python、适合做学习参考的仓库，并按 star 数从高到低排序。
-- **提示**：`--language=python`、`--stars=">10000"`、`--sort=stars`、`--limit 5`。
-- **参考答案要点**：
-  ```bash
-  gh search repos --language=python --stars=">10000" --sort=stars --order=desc --limit 5
-  ```
-
-### 练习 2：找"新手友好"的 Issue（入门）
-
-- **题目**：在 `cli/cli` 仓库中找出所有"good first issue"标签且无人认领（no assignee）、状态为 open 的 Issue。
-- **提示**：`--repo=cli/cli --label="good first issue" --no-assignee --state=open`。
-- **参考答案要点**：
-  ```bash
-  gh search issues --repo=cli/cli --label="good first issue" --no-assignee --state=open
-  ```
-
-### 练习 3：代码搜索（进阶）
-
-- **题目**：在自己组织或已知仓库中，搜索所有包含 `TODO` 注释的 `.py` 文件。
-- **提示**：`gh search code` 加 `--filename="*.py"` 与 `--org` 或 `--repo`。
-- **参考答案要点**：
-  ```bash
-  gh search code "TODO" --repo=owner/repo --filename="*.py"
-  ```
-
-### 练习 4：审查工作流（进阶）
-
-- **题目**：列出所有"需要我审查"且状态为 open 的 PR，然后输出为 JSON，只看仓库名与编号。
-- **提示**：`--review-requested=@me --open`；`--json repository,number`。
-- **参考答案要点**：
-  ```bash
-  gh search prs --review-requested=@me --open --json repository,number
-  ```
-
-### 练习 5：组合搜索挑战（挑战）
-
-- **题目**：找出"今年创建、star 数 500-5000、使用 Rust 语言、描述含 cli"的仓库，并验证在浏览器打开搜索结果。
-- **提示**：`--created=">=2026-01-01"`（日期写法）、`--stars="500..5000"`（区间写法）、`--match=description`、`--web`。
-- **参考答案要点**：
-  ```bash
-  gh search repos "cli" --language=rust --stars="500..5000" --created=">=2026-01-01" --web
-  ```
-
----
-
 ## 一句话记忆
 
 **`gh search` 是 GitHub 的"检索台"：找库用 `repos`，找代码用 `code`，找讨论用 `issues/prs`，找历史用 `commits`；记住"关键词 + 限定符 + `--` 排除 + `--json` 输出"四板斧，检索又快又准。**
 
 ---
 
-## 参考链接
-
-- GitHub CLI 官方手册 gh search：https://cli.github.com/manual/gh_search
-- GitHub CLI 官方手册 gh search repos：https://cli.github.com/manual/gh_search_repos
-- GitHub CLI 官方手册 gh search issues：https://cli.github.com/manual/gh_search_issues
-- GitHub 文档：搜索语法与限定符：https://docs.github.com/zh/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax
-
 ## 延伸阅读
-
 - GitHub 网页端搜索技巧，见 004-github 模块相关文档。
 - 用 gh api 实现更复杂的搜索（search/issues 端点），见《GhApi》。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

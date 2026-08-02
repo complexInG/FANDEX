@@ -1657,90 +1657,6 @@ Next.js 从 v10 开始默认启用 `strict: true`，并通过 `next type-check` 
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**第 1 题**：以下哪个 `tsconfig.json` 选项不在 `strict: true` 总开关的聚合范围内？
-
-A. `strictNullChecks`
-B. `noImplicitAny`
-C. `noUncheckedIndexedAccess`
-D. `strictFunctionTypes`
-
-**答案：C**
-
-`noUncheckedIndexedAccess` 是一个独立的严格性选项，不属于 `strict: true` 总开关的聚合范围。`strict: true` 聚合的子选项包括：`strictNullChecks`、`noImplicitAny`、`strictFunctionTypes`、`strictBindCallApply`、`strictPropertyInitialization`、`noImplicitThis`、`alwaysStrict`、`useUnknownInCatchVariables`。
-
-**第 2 题**：启用 `strictFunctionTypes` 后，以下哪段代码会报错？
-
-A.
-```typescript
-type AnimalHandler = (animal: Animal) => void;
-type DogHandler = (dog: Dog) => void;
-const animalHandler: AnimalHandler = (dog: Dog) => {};
-```
-
-B.
-```typescript
-type AnimalHandler = (animal: Animal) => void;
-type DogHandler = (dog: Dog) => void;
-const dogHandler: DogHandler = (animal: Animal) => {};
-```
-
-C.
-```typescript
-interface Container {
-  handle(animal: Animal): void;
-}
-const c: Container = { handle(dog: Dog) {} };
-```
-
-D. 以上都不会报错
-
-**答案：A**
-
-`strictFunctionTypes` 启用后，函数类型字面量采用逆变规则。选项 A 中，`DogHandler`（接收 `Dog`）不能赋值给 `AnimalHandler`（接收 `Animal`），因为 `AnimalHandler` 可能被传入 `Cat`（`Animal` 的另一个子类），但 `DogHandler` 只能处理 `Dog`。
-
-选项 B 正确：`AnimalHandler` 可以赋值给 `DogHandler`，因为能处理 `Animal` 的函数自然能处理 `Dog`。
-
-选项 C 正确：方法声明（method declaration）仍采用双向兼容，不受 `strictFunctionTypes` 影响。
-
-**第 3 题**：以下关于 `useUnknownInCatchVariables` 的描述，哪项是正确的？
-
-A. catch 变量类型为 `any`
-B. catch 变量类型为 `unknown`
-C. catch 变量类型为 `Error`
-D. catch 变量类型为 `never`
-
-**答案：B**
-
-`useUnknownInCatchVariables: true`（属于 `strict: true` 聚合范围）使 catch 子句的变量类型为 `unknown`。`unknown` 类型必须经过类型守卫或类型断言后才能使用，强制开发者安全地处理错误。
-
-**第 4 题**：以下哪种方式不能解决 `strictPropertyInitialization` 报错？
-
-A. 在构造函数中初始化属性
-B. 使用 `!` 确定赋值断言
-C. 使用 `?` 将属性声明为可选
-D. 使用 `as any` 类型断言
-
-**答案：D**
-
-`as any` 类型断言不能解决 `strictPropertyInitialization` 报错，因为该检查针对的是属性初始化状态，而非类型兼容性。正确的解决方式包括：构造函数初始化（A）、确定赋值断言（B）、可选属性（C）。
-
-**第 5 题**：以下关于 `noUncheckedIndexedAccess` 的描述，哪项是错误的？
-
-A. 数组索引访问返回 `T | undefined`
-B. 对象索引签名访问返回 `T | undefined`
-C. 元组索引访问返回 `T | undefined`
-D. `Map.get()` 返回 `T | undefined`
-
-**答案：C**
-
-`noUncheckedIndexedAccess` 不影响元组索引访问。元组类型 `[string, number]` 的索引 `0` 和 `1` 在范围内，类型分别为 `string` 和 `number`，不包含 `undefined`。只有超出元组长度的索引（如 `tuple[10]`）才会返回 `T | undefined`（因为元组也是数组）。
-
-注意：`Map.get()` 本身就返回 `T | undefined`，与该选项无关。
-
 ### 填空题知识点讲解
 
 **第 1 题**：`strict: true` 等价于同时启用 ________ 个子选项。
@@ -2079,93 +1995,6 @@ await service.update('1', { name: 'Bob' });
 await service.delete('1');
 ```
 
-### 9.4 思考题
-
-**第 1 题**：为什么 TypeScript 默认不启用所有严格选项（如 `noUncheckedIndexedAccess`、`exactOptionalPropertyTypes`）？请从向后兼容性、迁移成本、社区生态三个维度分析。
-
-TypeScript 默认不启用所有严格选项的原因：
-
-1. **向后兼容性**：TypeScript 需要支持从 JavaScript 零成本迁移，过严的默认配置会阻碍迁移。例如，`noUncheckedIndexedAccess` 会使大量现有代码（如 `array[0]` 直接赋值给 `T`）报错，破坏与现有 JavaScript 库的兼容性。
-
-2. **迁移成本**：对于遗留项目，一次性启用所有严格选项可能导致数千个编译错误，迁移成本过高。渐进式迁移需要按子选项逐步启用，因此默认配置应相对宽松。
-
-3. **社区生态**：TypeScript 需要与 JavaScript 生态（npm 包、第三方库类型定义）兼容。过严的默认配置可能导致与现有类型定义不兼容，影响生态发展。
-
-4. **学习曲线**：新手从 JavaScript 转向 TypeScript 时，过严的配置会增加学习负担。`strict: true` 作为推荐起点，平衡了类型安全与易用性。
-
-5. **设计哲学**：TypeScript 的渐变类型系统（gradual typing）允许开发者按需添加类型注解，过严的默认配置违背了这一设计哲学。
-
-**第 2 题**：在大型团队中推行 TypeScript 严格模式时，应如何制定迁移策略？请给出具体的阶段性计划。
-
-大型团队推行严格模式的迁移策略：
-
-**第一阶段：试点与评估（1-2 个月）**
-
-- 选择 1-2 个新模块作为试点，启用 `strict: true`
-- 评估严格模式对开发效率、编译性能、bug 率的影响
-- 梳理常见类型错误模式，制定团队类型设计规范
-
-**第二阶段：工具与规范建设（1-2 个月）**
-
-- 配置 ESLint `@typescript-eslint/strict` 规则集
-- 开发自动化迁移工具（如 `ts-migrate`）
-- 编写团队 TypeScript 工程规范文档
-- 建立 `any` 审批流程（所有 `any` 必须通过 code review）
-
-**第三阶段：渐进式启用（6-12 个月）**
-
-- 按子选项优先级启用：
-  1. `strictNullChecks`（最高优先级，收益最大）
-  2. `noImplicitAny`（消除隐式 any）
-  3. `strictFunctionTypes`（函数类型安全）
-  4. `strictBindCallApply`（bind/call/apply 安全）
-  5. `strictPropertyInitialization`（类属性初始化）
-  6. `noImplicitThis`（this 类型安全）
-  7. `alwaysStrict`（运行时严格模式）
-  8. `useUnknownInCatchVariables`（catch 安全）
-- 每个子选项启用后，修复所有相关错误再进入下一个
-
-**第四阶段：全面启用与优化（2-3 个月）**
-
-- 启用 `strict: true` 总开关
-- 评估是否启用 `noUncheckedIndexedAccess`、`exactOptionalPropertyTypes`
-- 优化编译性能（增量编译、项目引用）
-- 建立 CI 类型检查硬性门槛
-
-**第五阶段：持续改进（持续）**
-
-- 定期审计代码库的类型安全性
-- 跟踪 TypeScript 新版本的严格性改进
-- 持续优化类型设计规范
-
-**第 3 题**：TypeScript 的 `strictNullChecks` 与 Rust 的 `Option<T>`、Haskell 的 `Maybe a` 在设计哲学上有何异同？请从类型系统、运行时开销、开发者体验三个维度分析。
-
-**类型系统维度**：
-
-- TypeScript：通过联合类型 `T | null | undefined` 表达可空性，null 与 undefined 是类型系统的一等公民。类型缩小通过控制流分析实现。
-- Rust：通过代数数据类型 `Option<T>` = `Some(T) | None` 表达可空性，Option 是标准库类型。模式匹配是处理 Option 的主要方式。
-- Haskell：通过 `data Maybe a = Just a | Nothing` 表达可空性，Maybe 是代数数据类型。Monad 操作（`>>=`、`do` notation）是处理 Maybe 的主要方式。
-
-**运行时开销**：
-
-- TypeScript：类型注解在编译期擦除，运行时零开销。null/undefined 是 JavaScript 原生值。
-- Rust：Option<T> 在运行时有内存开销（枚举判别式），但编译器优化可消除部分开销（如 `Option<&T>` 优化为零开销指针）。
-- Haskell：Maybe a 在运行时有构造器开销，但惰性求值与 GHC 优化可部分消除。
-
-**开发者体验**：
-
-- TypeScript：与 JavaScript 生态无缝集成，类型缩小语法直观（`if (x !== null)`）。但需要开发者主动启用 `strictNullChecks`，且存在非空断言（`!`）等"逃生舱"。
-- Rust：强制使用 Option<T>，无"逃生舱"。模式匹配语法优雅，但学习曲线陡峭。
-- Haskell：强制使用 Maybe a，无"逃生舱"。Monad 操作强大但概念抽象，新手难以掌握。
-
-**核心差异**：
-
-TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效率之间权衡；Rust 与 Haskell 的方案是强制的，类型安全是语言的核心承诺。这反映了三种语言的设计哲学差异：TypeScript 追求兼容性与渐进性，Rust 追求零成本抽象与安全性，Haskell 追求纯函数式编程的严谨性。
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档与规范
 
 1. Microsoft. TypeScript Handbook: TSConfig Reference. Microsoft, 2024. https://www.typescriptlang.org/tsconfig
@@ -2202,16 +2031,6 @@ TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效
 
 15. Vercel. (2024). Next.js TypeScript documentation. Vercel. https://nextjs.org/docs/app/building-your-application/configuring/typescript
 
-### 10.4 社区资源
-
-16. Rosenwasser, D. (2024). TypeScript 5.4 Release Notes. Microsoft. https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
-
-17. type-challenges. (2024). Type Challenges: A collection of TypeScript type challenges. GitHub. https://github.com/type-challenges/type-challenges
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 类型理论
 
 - *Types and Programming Languages* (Benjamin C. Pierce, 2002) —— 类型系统的经典教材，涵盖 λ-calculus、System F、子类型、递归类型等理论基础
@@ -2241,15 +2060,6 @@ TypeScript 的方案是渐进式的，允许开发者在类型安全与开发效
 - *TypeScript at Scale* (Boris Cherny, 2024) —— 大型 TypeScript 项目的工程实践
 - *Full-Stack TypeScript with React, Node.js, and GraphQL* (David Choi, 2023) —— 全栈 TypeScript 开发
 - Airbnb TypeScript Style Guide: https://github.com/airbnb/typescript
-
-### 11.6 在线资源
-
-- TypeScript Playground: https://www.typescriptlang.org/play
-- TypeScript Type Search: https://www.typescriptlang.org/dt/search
-- DefinitelyTyped (类型定义仓库): https://github.com/DefinitelyTyped/DefinitelyTyped
-- TypeScript Weekly Newsletter: https://www.typescriptweekly.com/
-
----
 
 ## 附录 A：术语表
 

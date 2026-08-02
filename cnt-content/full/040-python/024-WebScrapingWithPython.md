@@ -2677,17 +2677,6 @@ Go (goroutine)                3s      100MB   10K goroutine
 - 实时性优化（连接复用、缓存预热）；
 - 多渠道通知（邮件、短信、微信）。
 
-## 知识讲解与要点分析（原习题）
-
-本章共 4 道习题，覆盖 Bloom 六个认知层次：
-
-1. `ex-scraper-01`（remember）：Scrapy 引擎与 Twisted 框架；
-2. `ex-scraper-02`（understand）：HTTP 客户端并发性能；
-3. `ex-scraper-03`（apply）：修复爬虫代码缺陷；
-4. `ex-scraper-04`（create）：设计分布式新闻聚合爬虫系统。
-
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Mitchell, R. (2018). *Web Scraping with Python* (2nd ed.). O'Reilly Media.

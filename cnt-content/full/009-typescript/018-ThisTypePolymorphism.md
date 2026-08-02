@@ -974,66 +974,6 @@ const user = await dataSource
   .getOne();
 ```
 
-## 9. 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下代码的返回类型是什么？
-
-```typescript
-class A {
-  foo(): this { return this; }
-}
-class B extends A {}
-const b = new B().foo();
-```
-
-- A. `A`
-- B. `B`
-- C. `this`
-- D. `any`
-
-**解析讲解**：B
-
-**解析讲解**：多态 `this` 在子类 `B` 中被替换为 `B`。调用 `new B().foo()` 时，接收者类型为 `B`，`this` 推断为 `B`，返回类型为 `B`。
-
----
-
-**题目 2**：以下代码是否能通过类型检查？为什么？
-
-```typescript
-class A {
-  equals(other: this): boolean { return true; }
-}
-class B extends A {
-  equals(other: B): boolean { return true; }
-}
-const a: A = new B();
-a.equals(new A());  // ?
-```
-
-- A. 通过，因为 `B extends A`
-- B. 不通过，违反 LSP
-- C. 通过，因为 `a` 实际是 `B` 实例
-- D. 不通过，因为 `this` 推断为 `A`
-
-**解析讲解**：B
-
-**解析讲解**：`a` 的静态类型是 `A`，所以 `a.equals` 中 `this` 推断为 `A`，参数 `other` 要求类型 `A`。但运行时 `a` 是 `B` 实例，`B.equals` 要求 `other: B`。这违反 Liskov 替换原则——子类方法对参数要求更严格。TypeScript 通过禁止子类重写 `this` 参数方法签名来缓解此问题，但运行时仍可能出错。
-
----
-
-**题目 3**：`ThisType<T>` 的本质是什么？
-
-- A. 一个普通接口，有 `this` 属性
-- B. 编译器特殊处理的标记类型，本身无成员
-- C. 泛型工具类型，类似 `Partial<T>`
-- D. 运行时存在的对象类型
-
-**解析讲解**：B
-
-**解析讲解**：`ThisType<T>` 在 `lib.es5.d.ts` 中定义为空接口 `interface ThisType<T> {}`。其作用是作为编译器标记，告诉 TypeScript 将对象字面量方法体内的 `this` 推断为 `T`。运行时不存在任何相关代码。
-
 ### 填空题知识点讲解
 
 **题目 4**：TypeScript 在版本 ______ 中首次引入 `this` 类型作为类成员返回值。
@@ -1125,38 +1065,6 @@ const input = new InputElementBuilder()
   .build();  // 推断为 HTMLInputElement
 ```
 
-### 9.4 思考题
-
-**题目 7**：为什么 TypeScript 不允许在接口中使用 `this` 作为属性类型，只允许作为方法返回类型？请从类型论角度论证。
-
-**解析讲解**：
-
-接口中的 `this` 用于属性会引发递归类型展开问题。考虑：
-
-```typescript
-interface Node {
-  parent: this;  // 若允许
-}
-```
-
-展开时，`Node.parent` 类型是 `Node`，再展开 `parent.parent` 又是 `Node`，理论上有限但实践中会导致类型检查器无法精确推断具体子类。在方法返回位置，`this` 是协变位置，类型检查器可通过接收者类型替换；而属性是逆变+协变混合位置，难以一致推断。
-
-更深层原因：接口在 TypeScript 中是开放可合并的，`this` 在多个合并声明中的语义不明确。类是封闭的，`this` 边界清晰。
-
-形式化上，这是 *equirecursive* vs *isorecursive* 类型的差异：类用 `this` 实现 isorecursive（需显式 unfold），接口属性会是 equirecursive（自动展开），后者在结构类型系统中判定相等不可判定。
-
-**题目 8**：在何种业务场景下应避免使用多态 `this`？请举三个反例。
-
-**解析讲解**：
-
-1. **不可变值类型**：`class Point { move(dx): this }` 要求返回原对象，但不可变设计要求返回新对象。此时应返回 `Point` 而非 `this`，或使用工厂模式。
-
-2. **跨层级序列化**：当对象需序列化为 JSON 并反序列化时，`this` 类型在反序列化端无法恢复子类信息，应使用 discriminated union。
-
-3. **依赖注入容器**：当对象由 DI 容器管理生命周期时，`this` 类型假设对象自管理，与 DI 模式冲突。应使用接口抽象 + 工厂。
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Cardelli, L., & Wegner, P. (1985). On understanding types, data abstraction, and polymorphism. *ACM Computing Surveys*, 17(4), 471–523. https://doi.org/10.1145/6041.6042
@@ -1183,22 +1091,12 @@ interface Node {
 
 [10] Smith, J., et al. (2022). *PEP 673 – Self Type*. Python Enhancement Proposals. https://peps.python.org/pep-0673/
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press. — 第 19 章 *Recursive Types*、第 26 章 *Bounded Quantification*，系统讲解 F-bounded 多态。
 - Harper, R. (2016). *Practical Foundations for Programming Languages* (2nd ed.). Cambridge University Press. — 第 20 章 *Subtyping*、第 21 章 *Recursive Types*，形式化视角。
 - Bruce, K. B. (2002). *Foundations of Object-Oriented Languages: Types and Semantics*. MIT Press. — 第 18 章 *Self Types and Binary Methods*。
 - Stefanov, S. (2023). *TypeScript Design Patterns*. O'Reilly. — 第 4 章 *Builder Pattern with this Type*。
-
-### 11.2 在线资源
-
-- TypeScript Handbook: *Polymorphic this Types* — https://www.typescriptlang.org/docs/handbook/2/classes.html#this-types
-- TypeScript Handbook: *ThisType\<T\>* — https://www.typescriptlang.org/docs/handbook/utility-types.html#thistypet
-- TypeScript Deep Dive: *this* — https://basarat.gitbook.io/typescript/style-guide#this
-- Effect-TS Documentation: *Self Types in Functional Design* — https://effect.website/docs/guides/essentials/self-types
-- Milan Lund's Blog: *Polymorphic this in TypeScript* — https://medium.com/@milanlund
 
 ### 11.3 相关源码
 
@@ -1265,18 +1163,8 @@ interface Node {
 
 ---
 
-## 参考文献
-
-TypeScript 官方文档：https://www.typescriptlang.org/docs/
-TS 手册中文版：https://www.typescriptlang.org/zh/docs/handbook/
-TypeScript 发布计划：https://github.com/microsoft/TypeScript/wiki/Roadmap
-tsconfig 参考：https://www.typescriptlang.org/tsconfig/
-Type Challenges：https://github.com/type-challenges/type-challenges
-
 ## 延伸阅读
-
 TS 基础类型与接口，见 009-typescript 模块文档。
 TS 泛型与工具类型，见 009-typescript 模块进阶文档。
 React + TS 组件类型，见 011-react 模块。
 Vue3 + TS 组合式 API，见 010-vue3 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 TypeScript 课程。

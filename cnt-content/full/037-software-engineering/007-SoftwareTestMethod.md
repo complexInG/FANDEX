@@ -253,23 +253,6 @@ with patch('module.external_api') as mock_api:
 
 **误区五：测试太多会拖慢开发。** → 好的测试（快速、稳定、准确）**加速**开发——它们让重构敢做、回归放心。坏测试（慢、脆弱、误报）才拖慢开发。
 
-## 8. 实战练习
-
-1. **金字塔分析**：看你（或团队）现有的测试分布，画出测试金字塔，判断是否"倒金字塔"（E2E 太多）。
-
-2. **TDD 练习**：用 TDD 实现一个"计算购物车总价（含折扣）"的函数：先写测试（红）→ 最少代码（绿）→ 重构。
-
-3. **BDD 场景**：为"用户注册"写 3 个 BDD 场景（成功/邮箱已存在/密码太弱），用 Gherkin 语法。
-
-4. **Mock 辨析**：找一个使用 Mock 的测试，分析：Mock 的是"外部依赖"还是"业务逻辑"？如果 Mock 过度，如何改进？
-
-## 9. 参考资源
-
-- IEEE Software 期刊：https://www.computer.org/csdl/magazine/so
-- Martin Fowler《测试驱动开发》：https://martinfowler.com/bliki/TestDrivenDevelopment.html
-- BDD 与 Cucumber：https://cucumber.io/docs/bdd/
-- 12 因素应用：https://12factor.net/zh_cn/
-
 ## 10. 延伸阅读
 
 - 测试工程完整体系，见 036-software-testing 模块

@@ -1220,16 +1220,7 @@ kvStore.on('dataChange', distributedKVStore.SubscribeType.SUBSCRIBE_TYPE_ALL, (d
 });
 ```
 
-## 参考文献
-
-华为开发者联盟 HarmonyOS 文档：https://developer.huawei.com/consumer/cn/harmonyos
-ArkTS 语言规范：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-overview
-ArkUI 组件参考：https://developer.huawei.com/consumer/cn/doc/harmonyos-references/
-DevEco Studio：https://developer.huawei.com/consumer/cn/deveco-studio/
-
 ## 延伸阅读
-
 TypeScript 基础（ArkTS 语言底座），见 009-typescript 模块。
 声明式 UI 概念与 React/Vue 对比，见 011-react/010-vue3 模块。
 移动端应用架构，见 018-harmonyos 模块文档。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供鸿蒙开发课程。

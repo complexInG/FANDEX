@@ -2338,90 +2338,6 @@ Stripe 网站以精致的渐变背景著称：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个 `background` 简写是合法的？
-
-A. `background: url('img.jpg') cover no-repeat center;`
-B. `background: url('img.jpg') no-repeat center / cover;`
-C. `background: url('img.jpg') no-repeat cover center;`
-D. `background: url('img.jpg') center cover no-repeat;`
-
-**解析讲解**：B
-
-**解析讲解**：`background` 简写中，`background-size` 必须跟在 `background-position` 后面，以 `/` 分隔。正确语法：`background: <image> <repeat> <position> / <size>`。
-
----
-
-**题目 2**：以下代码最终生效的 `background-color` 是什么？
-
-```css
-.box {
-  background: url('img.jpg') no-repeat center;
-  background-color: red;
-  background: linear-gradient(to right, blue, green);
-}
-```
-
-A. `red`
-B. `blue`
-C. `green`
-D. `transparent`
-
-**解析讲解**：D
-
-**解析讲解**：第二条 `background` 简写重置了所有未指定的子属性，`background-color` 被重置为默认值 `transparent`。`background-color: red` 被后续简写覆盖。
-
----
-
-**题目 3**：以下哪个 `background-clip` 值可以让背景绘制到内容区但不包括 padding？
-
-A. `border-box`
-B. `padding-box`
-C. `content-box`
-D. `text`
-
-**解析讲解**：C
-
-**解析讲解**：`background-clip: content-box` 将背景绘制区域限制在 content-box 内，不包括 padding 和 border。
-
----
-
-**题目 4**：`background-size: cover` 与 `background-size: contain` 的关键差异是什么？
-
-A. `cover` 保持宽高比，`contain` 不保持
-B. `cover` 覆盖容器可能裁剪，`contain` 完整显示可能留白
-C. `cover` 用于图像，`contain` 用于渐变
-D. `cover` 拉伸图像，`contain` 保持原尺寸
-
-**解析讲解**：B
-
-**解析讲解**：两者都保持宽高比。`cover` 缩放至完全覆盖容器（可能裁剪超出部分），`contain` 缩放至完整显示（可能在某方向留白）。
-
----
-
-**题目 5**：以下代码在 iOS Safari 上的表现是？
-
-```css
-.hero {
-  background-image: url('bg.jpg');
-  background-attachment: fixed;
-}
-```
-
-A. 背景固定不动，产生视差效果
-B. 背景随页面滚动，无视差效果
-C. 背景随元素内容滚动
-D. 背景不显示
-
-**解析讲解**：B
-
-**解析讲解**：iOS Safari 出于性能考虑，将 `background-attachment: fixed` 降级为 `scroll` 行为，即背景随页面滚动，不产生视差效果。
-
----
-
 ### 填空题知识点讲解
 
 **题目 1**：CSS 多背景的层级顺序中，第一个声明的背景位于__________层，最后一个位于__________层，`background-color` 始终位于__________层。
@@ -2600,104 +2516,6 @@ D. 背景不显示
 
 ---
 
-### 9.4 思考题
-
-**题目 1**：为什么 iOS Safari 禁用 `background-attachment: fixed` 的视口绑定？从性能与渲染机制角度分析。
-
-**解析讲解**：
-
-iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以下原因：
-
-1. **合成层限制**：iOS 的 GPU 合成层有数量与内存限制。`fixed` 背景要求浏览器在每次滚动时重新合成背景层，这在 iOS 上成本极高。
-2. **滚动性能**：iOS 的滚动采用硬件加速，若背景绑定视口，每次滚动需重新绘制背景，破坏了滚动流畅性。
-3. **内存占用**：`fixed` 背景需要单独的合成层，在大尺寸背景下占用大量 GPU 内存。
-4. **移动端 GPU 限制**：移动设备的 GPU 性能与内存远低于桌面端，无法承担复杂的合成任务。
-
-替代方案：使用 JavaScript 监听滚动事件，或使用 `position: sticky` + `transform: translateZ(-1px)` 模拟视差效果。
-
----
-
-**题目 2**：在「CSS 多背景」与「`::before`/`::after` 伪元素叠加」之间，如何选择？请列出至少 3 个决策维度。
-
-**解析讲解**：
-
-决策维度：
-
-1. **层数**：
-   - 多背景：适合 2-4 层简单叠加（渐变 + 图像 + 蒙版）。
-   - 伪元素：每元素仅 2 个伪元素，适合少量独立层。
-
-2. **动画需求**：
-   - 多背景：仅支持 `background-position` 动画，性能有限。
-   - 伪元素：支持 `transform`、`opacity` 动画，性能更优（GPU 加速）。
-
-3. **独立控制**：
-   - 多背景：每层共享 `background-size`、`background-position` 等属性（除非用逗号分隔多值）。
-   - 伪元素：每个伪元素完全独立，可设置不同 `opacity`、`mix-blend-mode`、`filter`。
-
-4. **语义**：
-   - 多背景：纯装饰性，无语义。
-   - 伪元素：可承载一定语义（如装饰性图标）。
-
-5. **性能**：
-   - 多背景：合成层共享，但层数过多时光栅化成本高。
-   - 伪元素：独立合成层，但每个伪元素占用额外内存。
-
-选择原则：装饰性叠加用多背景，需要独立动画或复杂效果用伪元素。
-
----
-
-**题目 3**：`background-clip: text` 的可访问性影响是什么？如何确保使用此特性时不损害可访问性？
-
-**解析讲解**：
-
-可访问性影响：
-
-1. **屏幕阅读器**：屏幕阅读器读取的是文本内容，而非视觉表现。`background-clip: text` 不影响文本可读性，但若文字因不支持此特性而消失（`color: transparent` 未回退），则视觉用户无法阅读。
-2. **对比度**：渐变背景上的文字对比度可能不均匀，某些位置可能低于 WCAG AA 标准（4.5:1）。
-3. **高对比度模式**：Windows 高对比度模式下，`background-clip: text` 可能失效，文字消失。
-4. **打印**：打印时背景默认不打印，`background-clip: text` 文字消失。
-
-确保可访问性的措施：
-
-1. **回退方案**：使用 `@supports` 检测，不支持时显示纯色文字。
-2. **对比度检查**：使用 WCAG 对比度检查器，确保渐变所有位置对比度 ≥ 4.5:1。
-3. **高对比度模式**：使用 `@media (forced-colors: active)` 提供回退。
-4. **打印样式**：使用 `@media print` 设置打印时显示纯色文字。
-5. **语义化**：确保文字本身有语义，`background-clip: text` 仅是视觉增强。
-
-```css
-.gradient-text {
-  color: #667eea;  /* 回退 */
-}
-
-@supports (background-clip: text) {
-  .gradient-text {
-    background: linear-gradient(to right, #667eea, #764ba2);
-    background-clip: text;
-    color: transparent;
-  }
-}
-
-@media (forced-colors: active) {
-  .gradient-text {
-    background: none;
-    color: ButtonText;
-  }
-}
-
-@media print {
-  .gradient-text {
-    background: none;
-    color: black;
-  }
-}
-```
-
----
-
-## 10. 参考文献
-
 ### 10.1 W3C 规范
 
 [1] W3C. CSS Backgrounds and Borders Module Level 3 [EB/OL]. (2023-12-19) [2024-12-01]. https://www.w3.org/TR/css-backgrounds-3/.
@@ -2770,8 +2588,6 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 W3C 规范进阶
 
 - [CSS Backgrounds Module Level 4 Editor's Draft](https://drafts.csswg.org/css-backgrounds-4/)：最新草案，跟踪 `background-clip: text` 标准化进展。
@@ -2784,13 +2600,6 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 - **CSS: The Definitive Guide**（Eric Meyer）：CSS 权威指南，第 5 版涵盖现代 CSS。
 - **HTML & CSS: Design and Build Websites**（Jon Duckett）：入门级图文教程。
 - **CSS in Depth**（Keith J. Grant）：中级进阶，深入 CSS 内部机制。
-
-### 11.3 在线资源
-
-- [MDN CSS Background](https://developer.mozilla.org/en-US/docs/Web/CSS/background)：Mozilla 官方文档。
-- [web.dev CSS Background](https://web.dev/articles/css-background)：Google 性能优化指南。
-- [CSS-Tricks Background](https://css-tricks.com/almanac/properties/b/background/)：实战技巧与示例。
-- [Can I Use](https://caniuse.com/?search=background-clip)：浏览器兼容性查询。
 
 ### 11.4 开源项目
 
@@ -2805,12 +2614,6 @@ iOS Safari 禁用 `background-attachment: fixed` 的视口绑定主要基于以�
 - [Lea Verou's Blog](https://lea.verou.me/)：CSS 专家 Lea Verou 的博客。
 - [Chris Coyier's Blog](https://chriscoyier.net/)：CSS-Tricks 创始人博客。
 - [Una Kravets's Blog](https://una.im/)：CSS 工作组成员博客。
-
-### 11.6 视频资源
-
-- [CSS for People Who Hate CSS](https://www.youtube.com/watch?v=2Z3lya8gJDM)：Una Kravets 演讲。
-- [CSS Houdini](https://www.youtube.com/watch?v=IWDIrkDwHpU)：Houdini Paint API 实战。
-- [Modern CSS](https://www.youtube.com/playlist?list=PLo3w8EB99pqJQDw-LjJgwIepCi3mI3HNk)：现代 CSS 技术系列。
 
 ### 11.7 工具与实验
 

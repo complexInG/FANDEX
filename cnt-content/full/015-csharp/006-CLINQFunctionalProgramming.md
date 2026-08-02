@@ -2200,8 +2200,6 @@ public enum AggregateType { Count, Sum, Average, Max, Min }
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 8.1 基础题
 
 **习题 1**：使用 LINQ 方法语法实现以下需求：给定整数列表，返回所有偶数的平方，并按降序排列。
@@ -2323,36 +2321,6 @@ var result = numbers
 - 提供规则的单元测试与回归测试框架
 
 ---
-
-## 9. 参考文献
-
-1. Hejlsberg, A., Torgersen, M., Wiltamuth, S., & Golde, P. (2010). *The C# Programming Language* (4th ed.). Addison-Wesley Professional. ISBN: 978-0-321-74176-9.
-
-2. Meijer, E., Beckman, B., & Bierman, G. (2007). LINQ: Reconciling object, relational and XML programming in the .NET framework. In *Proceedings of the 2nd ACM SIGPLAN International Workshop on Declaration Aspects of Software Languages* (pp. 27-33). ACM. DOI: [10.1145/1238808.1238816](https://doi.org/10.1145/1238808.1238816)
-
-3. Bierman, G. M., Meijer, E., & Torgersen, M. (2007). Lost in translation: Formalizing proposed extensions to C#. In *International Conference on Object-Oriented Programming, Ecoop 2007* (pp. 479-503). Springer. DOI: [10.1007/978-3-540-73589-2_23](https://doi.org/10.1007/978-3-540-73589-2_23)
-
-4. Wadler, P. (1995). Monads for functional programming. In *Advanced Functional Programming* (pp. 24-52). Springer. DOI: [10.1007/3-540-59451-5_2](https://doi.org/10.1007/3-540-59451-5_2)
-
-5. Mac Lane, S. (1971). *Categories for the Working Mathematician* (2nd ed.). Springer-Verlag. DOI: [10.1007/978-1-4612-9839-7](https://doi.org/10.1007/978-1-4612-9839-7)
-
-6. Okasaki, C. (1999). *Purely Functional Data Structures*. Cambridge University Press. ISBN: 978-0-521-66350-2.
-
-7. Microsoft. (2024). *Language Integrated Query (LINQ) (C#)*. Microsoft Learn. Retrieved from https://learn.microsoft.com/dotnet/csharp/linq/
-
-8. Microsoft. (2024). *Expression Trees (C#)*. Microsoft Learn. Retrieved from https://learn.microsoft.com/dotnet/csharp/advanced-topics/expression-trees/
-
-9. Petricek, T., & Skeet, J. (2010). *Real-World Functional Programming: With Examples in F# and C#*. Manning Publications. ISBN: 978-1933988924.
-
-10. Skeet, J. (2019). *C# in Depth* (4th ed.). Manning Publications. ISBN: 978-1617294532.
-
-11. Aspnes, J. (2011). *Notes on the expression problem and related matters*. Yale University. Retrieved from https://www.cs.yale.edu/homes/aspnes/
-
-12. Torgersen, M. (2004). The expression problem revisited. In *European Conference on Object-Oriented Programming (ECOOP)*. Springer. DOI: [10.1007/978-3-540-27685-5_6](https://doi.org/10.1007/978-3-540-27685-5_6)
-
----
-
-## 10. 延伸阅读
 
 ### 10.1 官方文档
 

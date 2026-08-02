@@ -1463,65 +1463,6 @@ Notion 的富文本编辑器使用 30+ 自定义 Hook 组织逻辑：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 以下哪个**违反**了 Hooks 规则？
-
-A. 在函数组件顶层调用 `useState`
-B. 在自定义 Hook 中调用 `useEffect`
-C. 在 `if` 条件中调用 `useMemo`
-D. 在 `useEffect` 的回调中调用 `setState`
-
-**答案：C**
-
-Hooks 必须在组件函数体顶层调用，不能放在条件、循环、嵌套函数中。这会导致 Hook 调用顺序在多次渲染间不一致，破坏 React 内部的 Hook 链表映射。
-
-**Q2.** 关于 `useEffect` 的清理函数（cleanup），下列说法**正确**的是？
-
-A. 清理函数在组件卸载时才执行
-B. 清理函数在下次 effect 执行前调用
-C. 清理函数与 effect 并行执行
-D. 清理函数仅在依赖变化时执行
-
-**答案：B**
-
-`useEffect` 的清理时序：mount 时执行 effect → 依赖变化时，先执行上次 effect 的清理，再执行新 effect → unmount 时执行最后清理。所以"下次 effect 执行前"是正确的。
-
-**Q3.** 自定义 Hook 命名必须以 `use` 开头的原因是？
-
-A. JavaScript 语法要求
-B. React Linter 据此识别并应用 Hooks 规则
-C. TypeScript 类型推导需要
-D. 浏览器解析需要
-
-**答案：B**
-
-ESLint 的 `eslint-plugin-react-hooks` 通过函数名前缀 `use` 判断是否为 Hook，从而应用 rules-of-hooks 与 exhaustive-deps 规则。React DevTools 也据此在 Profiler 中识别 Hook。
-
-**Q4.** 下列哪种场景适合用 `useRef` 而非 `useState`？
-
-A. 需要触发重渲染的计数器
-B. 需要在事件处理器中读取最新值
-C. 需要在 JSX 中显示的文本
-D. 需要在 props 中传递的状态
-
-**答案：B**
-
-`useRef` 的 `.current` 变化不会触发重渲染，适合存储"不参与渲染但需要在事件中读取"的值（如定时器 ID、最新 props 快照）。`useState` 用于"参与渲染"的状态。
-
-**Q5.** `useSyncExternalStore` 解决的核心问题是？
-
-A. 性能优化
-B. 并发渲染下的 tearing（撕裂）问题
-C. 闭包陷阱
-D. 依赖数组遗漏
-
-**答案：B**
-
-在并发渲染中，多个组件可能从同一外部 store 读取到不同快照（tearing）。`useSyncExternalStore` 通过在每次 render 与 paint 前校验快照一致性，强制同步重渲染，消除 tearing。
-
 ### 填空题知识点讲解
 
 **Q1.** React 内部将每个组件的 Hook 调用维护为一个 `______` 数据结构，以保证 Hook 调用顺序与状态映射正确。
@@ -1692,75 +1633,6 @@ export function useDebouncedCallback<Args extends any[]>(
 }
 ```
 
-### 9.4 思考题
-
-**Q1.** 为什么 React 选择"显式依赖数组"而非 Vue 的"自动依赖追踪"？请从可预测性、性能、并发兼容性三个角度论述。
-
-1. **可预测性**：显式依赖让开发者明确知道副作用何时触发，便于调试；Vue 的 Proxy 追踪对开发者透明，但出问题时难以排查。
-2. **性能**：Vue 的自动追踪有运行时开销（Proxy 拦截）；React 的依赖数组是 O(n) 比较，n 通常很小（5-10 个依赖）。
-3. **并发兼容**：React 的并发模式下，渲染可能被中断与重启，自动追踪难以保证一致性；显式依赖让"何时触发"完全由开发者控制。
-4. **权衡**：React Compiler 在编译期自动分析依赖，达到"无显式依赖数组"的便利，同时保留运行时的可预测性。
-
-**Q2.** 设计一个企业级 Hook 库的目录结构、版本策略与发布流程。
-
-目录结构：
-```mermaid
-flowchart TD
-    T0["packages/hooks/"]
-    T1["src/"]
-    T2["useToggle.ts"]
-    T3["useFetch.ts"]
-    T4["useLocalStorage.ts"]
-    T5["index.ts"]
-    T6["tests/"]
-    T7["useToggle.test.ts"]
-    T8["useFetch.test.ts"]
-    T9["docs/"]
-    T10["stories/"]
-    T11["package.json"]
-    T12["tsconfig.json"]
-    T13["README.md"]
-    T0 --> T1
-    T5 --> T6
-    T8 --> T9
-    T10 --> T11
-    T10 --> T12
-    T10 --> T13
-```
-
-版本策略：
-- 遵循 SemVer：MAJOR（破坏性）、MINOR（新功能）、PATCH（修复）
-- 用 Changesets 管理变更日志
-- Beta 阶段用 0.x，稳定后 1.0
-
-发布流程：
-1. PR 合并触发 Changesets 生成 changelog
-2. 手动 release PR 触发版本升级
-3. CI 跑测试 → 发布到 npm → 创建 GitHub Release
-4. 文档站自动构建部署
-
-**Q3.** 在 Next.js App Router 中，自定义 Hook 如何与 Server Components 共存？哪些 Hook 不能在 Server Components 中使用？
-
-Server Components 限制：
-- 不能用 `useState`、`useReducer`（无客户端状态）
-- 不能用 `useEffect`、`useLayoutEffect`（无生命周期）
-- 不能用 `useRef`（无持久化意义）
-- 不能用 `useSyncExternalStore`（无客户端订阅）
-
-可以用：
-- `useContext`（Server Context）
-- `useId`（生成稳定 ID）
-- 自定义 Hook 若仅调用以上 Hook，则可在 Server Components 中使用
-
-实践模式：
-- Server Components 负责数据获取（async/await）
-- 客户端逻辑封装在 `'use client'` 组件中
-- 通过 props 将 server data 传给 client hooks
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Salvaneschi, G. and Mezini, M. 2016. Debugging for reactive programming. In *Proceedings of the 38th International Conference on Software Engineering (ICSE '16)*. ACM, 796–807. DOI: https://doi.org/10.1145/2884781.2884816
@@ -1793,8 +1665,6 @@ Server Components 限制：
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Boris Cherny. *Thinking in React: From First Principles*. Manning, 2024.（第 7 章 Hooks 深入）
@@ -1808,23 +1678,6 @@ Server Components 限制：
 - Dan Abramov. *useEffect vs useLayoutEffect*. Overreacted, 2019.
 - Ryan Florence. *React Hooks: The Reuse Revolution*. React Conf, 2018.
 - Andrew Clark. *useSyncExternalStore: A Practical Guide*. React Conf, 2022.
-
-### 11.3 在线资源
-
-- **React Official Hooks Docs**: https://react.dev/reference/react
-- **useHooks.com**（社区 Hook 集合）: https://usehooks.com/
-- **react-use**（开源 Hook 库）: https://github.com/streamich/react-use
-- **ahooks**（阿里 Hook 库）: https://ahooks.js.org/
-- **SWR**: https://swr.vercel.org/
-- **TanStack Query**: https://tanstack.com/query/
-
-### 11.4 开源项目参考
-
-- **react-use**（200+ Hook）: https://github.com/streamich/react-use
-- **ahooks**（中文社区）: https://github.com/alibaba/hooks
-- **use-debounce**: https://github.com/xnimorz/use-debounce
-- **react-hook-form**: https://github.com/react-hook-form/react-hook-form
-- **swr**: https://github.com/vercel/swr
 
 ### 11.5 进阶主题
 

@@ -250,26 +250,6 @@ $$n - m + f = 2$$
 
 **误区四：Kruskal 和 Prim 求"最短路径"。** → 它们求的是**最小生成树**（连通所有点的最小总代价），不是两点间的最短路径（Dijkstra 才是）。
 
-## 9. 实战练习
-
-1. **Euler 公式**：一个连通平面图有 10 个顶点、15 条边，求面数。
-
-2. **平面图判定**：判断 $K_{3,3}$ 是否平面图，用推论证明。
-
-3. **着色应用**：给 5 门课程排考试（冲突关系为：A-B, A-C, B-C, C-D, D-E），最少需要几个考场？
-
-4. **Dijkstra 手算**：画一个 5 顶点带权图，用手算执行 Dijkstra，写出每一步的 dist 数组。
-
-5. **拓扑排序**：给"穿衣顺序"（内衣→衬衫、内衣→裤子、衬衫→外套、裤子→外套、外套→帽子）求一个拓扑排序。
-
-6. **最大流**：画一个简单网络（s 到 t 两三条路径），用 Ford-Fulkerson 求最大流，并找出最小割。
-
-## 10. 参考资源
-
-- MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-- Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-- Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
 ## 11. 延伸阅读
 
 - 图论进阶的算法实现，见 023-algorithm 模块

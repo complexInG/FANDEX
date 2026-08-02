@@ -218,23 +218,6 @@ pgrep -f "$SERVICE" > /dev/null && echo "启动成功" || echo "启动失败"
 
 **误区四：jobs 看不到就说明进程没了。** → jobs 只显示当前 Shell 的作业；别的终端/进程用 `ps` 查看。
 
-## 9. 实战练习
-
-1. **进程观察**：启动一个 `sleep 300 &`，用 ps、pgrep、jobs 三种方式观察它，理解 PID 与作业号的区别。
-
-2. **优雅停止**：写一个"优雅停止"脚本：对指定进程先发 TERM，等待 N 秒，仍存活再发 KILL。
-
-3. **脱离终端**：用 nohup 启动一个长任务，关闭终端重开，确认进程仍在运行。
-
-4. **限时保护**：用 timeout 保护一个可能卡死的命令，验证返回码 124 的处理。
-
-## 10. 参考资源
-
-- ps 手册：https://man7.org/linux/man-pages/man1/ps.1.html
-- kill 信号说明：https://man7.org/linux/man-pages/man7/signal.7.html
-- tmux 官方文档：https://github.com/tmux/tmux/wiki
-- Bash 作业控制：https://www.gnu.org/software/bash/manual/html_node/Job-Control.html
-
 ## 11. 延伸阅读
 
 - 环境变量配置，见本模块《环境变量与配置文件》

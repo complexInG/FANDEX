@@ -549,18 +549,8 @@ const users = ref(
 Vue3 应用的性能优化是一个持续的过程，需要从多个方面入手，包括渲染性能、响应式性能、网络性能和构建优化等。通过本章节的学习，你已经了解了 Vue3 应用性能优化的基本方法和最佳实践。
 在实际开发中，要根据应用的具体情况，选择合适的优化策略，同时要定期监控应用的性能，不断优化和改进。只有这样，才能构建出性能优异、用户体验良好的 Vue3 应用。
 
-## 参考文献
-
-Vue 官方文档：https://vuejs.org/
-Vue Router：https://router.vuejs.org/zh/
-Pinia：https://pinia.vuejs.org/zh/
-Vue 3 迁移指南：https://v3-migration.vuejs.org/
-VueUse 组合函数库：https://vueuse.org/
-
 ## 延伸阅读
-
 Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
 Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。
 Vue Router 导航守卫，见 010-vue3/030-VueRouterNavigationGuard 文档。
 TypeScript 与 Vue 组合，见 009-typescript 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vue3 课程。

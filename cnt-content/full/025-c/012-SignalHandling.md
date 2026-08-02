@@ -2667,14 +2667,6 @@ void ngx_signal_handler(int signo) {
 - [ ] 是否考虑了 `EINTR` 错误?
 - [ ] 复杂逻辑是否使用 `signalfd` 或 `sigwait` 替代异步处理?
 
-### 12.4 推荐学习资源
-
-- 《Advanced Programming in the UNIX Environment》(APUE)第 10 章
-- 《The Linux Programming Interface》(TLPI)第 20-22 章
-- 《Programming with POSIX Threads》第 6 章(多线程信号)
-- POSIX.1-2017 标准 `<signal.h>` 章节
-- Linux 手册:`man 7 signal`、`man 7 signal-safety`
-
 ### 12.5 信号处理的演进方向
 
 现代系统编程中,信号的使用呈下降趋势:

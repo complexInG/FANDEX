@@ -1893,8 +1893,6 @@ function destroyComponent(component) {
 
 **效果**：Detached DOM 节点归零，长时间使用不再变慢。
 
-## 知识讲解与要点分析（原习题）
-
 ### 10.1 基础题
 
 **题目 1**：请列出 Chrome DevTools 的八大面板，并说明各面板的主要用途。
@@ -1987,30 +1985,6 @@ class Dashboard {
 - 泄漏点 2：`visibilitychange` 监听器未移除
 - 泄漏点 3：`widget.onUpdate` 闭包持有 dashboard，widget 未销毁时 dashboard 无法回收
 - 修复：添加 `destroy()` 方法显式清理定时器、监听器，并将 `widget.onUpdate` 设为 `null`
-
-## 11. 参考文献
-
-[1] B. Calder, A. Chilton, M. Kuhr, and R. P. L. B. Huang. 2023. Web Performance in Action. Manning Publications, Shelter Island, NY, USA. DOI: https://doi.org/10.1613/jair.1.1234
-
-[2] B. McCallum, P. Doyle, and S. Lighthill. 2024. Core Web Vitals: Measuring User Experience. Communications of the ACM 67, 4 (April 2024), 44-52. DOI: https://doi.org/10.1145/3649474
-
-[3] G. Duboc, S. L. P. de Oliveira, and R. Rosenbaum. 2022. Performance Testing for Web Applications: A Systematic Mapping Study. Empirical Software Engineering 27, 3 (March 2022), 1-38. DOI: https://doi.org/10.1007/s10664-021-10045-9
-
-[4] S. Savoji, F. Khomh, and S. E. C. Preuß. 2023. An Empirical Study of Web Performance Evolution in Chrome. In Proceedings of the 30th IEEE International Conference on Web Services (ICWS 2023). IEEE, Piscataway, NJ, USA, 245-252. DOI: https://doi.org/10.1109/ICWS60020.2023.00045
-
-[5] L. A. Meyerovich and R. Bodik. 2010. Fast and Parallel Webpage Layout. In Proceedings of the 19th International Conference on World Wide Web (WWW '10). ACM, New York, NY, USA, 711-720. DOI: https://doi.org/10.1145/1772690.1772763
-
-[6] S. Hong, Y. Li, and W. Meng. 2024. Understanding and Detecting Memory Leaks in Single-Page Web Applications. In Proceedings of the 46th International Conference on Software Engineering (ICSE '24). IEEE/ACM, Piscataway, NJ, USA, 1-13. DOI: https://doi.org/10.1109/ICSE57899.2024.00123
-
-[7] M. Selakovic, V. Santos, and P. Marinescu. 2022. Performance Optimization in Modern JavaScript Runtimes: A Systematic Approach. Proceedings of the ACM on Programming Languages 6, OOPSLA2, Article 171 (October 2022), 1-28. DOI: https://doi.org/10.1145/3563345
-
-[8] M. Panou, C. B. O. Quinn, and R. Terra. 2023. An Empirical Study on the Impact of Web Performance on User Engagement. Empirical Software Engineering 28, 5 (September 2023), 1-32. DOI: https://doi.org/10.1007/s10664-023-10345-9
-
-[9] S. K. Dubey, P. Ghosh, and A. M. R. Mishra. 2023. Modern Web Performance Optimization: A Survey. ACM Computing Surveys 56, 3 (March 2024), 1-38. DOI: https://doi.org/10.1145/3611368
-
-[10] M. B. Roth, R. Capilla, and A. T. S. Hassan. 2024. Real User Monitoring and Synthetic Monitoring: A Comparative Study. Journal of Systems and Software 215 (August 2024), 1-15. DOI: https://doi.org/10.1016/j.jss.2024.112067
-
-## 12. 延伸阅读
 
 ### 12.1 官方文档
 

@@ -1408,8 +1408,6 @@ func main() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：编写一个程序，捕获 `SIGINT` 后打印"Ctrl-C pressed"，但前 3 次不退出，第 4 次才退出。
@@ -1476,22 +1474,6 @@ Linux 内核对 PID 1 的特殊保护：
 1. **使用 init 系统**：在容器中使用 `tini` 或 `dumb-init` 作为 PID 1，由它们转发信号。
 2. **Go 程序显式注册**：在 `main()` 中调用 `signal.Notify` 注册所有需要处理的信号。
 
-### 9.3 思考题
-
-**思考题 1**：在微服务架构中，如何确保滚动更新期间零请求丢失？请设计完整流程，包括负载均衡器、Kubernetes、应用层的协同。
-
-**思考题 2**：为什么 Go 选择通过 channel 而非回调函数传递信号？这一设计如何与 CSP 模型一致？
-
-**思考题 3**：假设你设计一个分布式任务队列，worker 收到 `SIGTERM` 后应该如何处理进行中的任务？请考虑任务幂等性、重试机制、消息队列确认语义。
-
-**思考题 4**：对比 Go 的 `signal.NotifyContext` 与 Rust 的 `tokio::signal::ctrl_c()`，分析两者在异步上下文中的设计差异。
-
-**思考题 5**：在 Linux 中，`signalfd` 与传统 `sigaction` 相比有何优势？为什么 Go runtime 不使用 `signalfd`？
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文与标准
 
 [1] IEEE. (2008). *IEEE Standard for Information Technology - Portable Operating System Interface (POSIX) Base Specifications, Issue 7*. IEEE Std 1003.1-2008. https://doi.org/10.1109/IEEESTD.2008.4694976
@@ -1529,15 +1511,6 @@ Linux 内核对 PID 1 的特殊保护：
 [14] Cloud Native Computing Foundation. (2024). *Kubernetes Pod Lifecycle specification*. https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/
 
 ---
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **Go Blog: Signal handling in Go** — https://go.dev/blog/signals
-- **`os/signal` 包文档** — https://pkg.go.dev/os/signal
-- **Go 1.16 release notes** — https://go.dev/doc/go1.16
-- **`signal.NotifyContext` 源码** — https://github.com/golang/go/blob/master/src/os/signal/signal.go
 
 ### 11.2 进阶主题
 

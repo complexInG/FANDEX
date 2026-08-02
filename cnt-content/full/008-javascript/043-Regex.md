@@ -1826,8 +1826,6 @@ console.log(highlighter.highlight(code));
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：写出匹配以下内容的正则：
@@ -1852,12 +1850,6 @@ console.log(highlighter.highlight(code));
 
 **题目 6**：写一个正则，匹配合法的 JSON 字符串（仅字符串值，不含对象/数组）。
 
-### 9.3 思考题
-
-**题目 7**：为什么 `(a+)+b` 在输入 `aaaa...a!` 上会发生灾难性回溯？请从 NFA 角度分析。
-
-**题目 8**：JavaScript 的正则引擎是 NFA 还是 DFA？这对开发者意味着什么？
-
 ### 9.4 设计题
 
 **题目 9**：设计一个完整的路由匹配系统，支持：
@@ -1874,87 +1866,8 @@ console.log(highlighter.highlight(code));
 - 它的 `isEmail` 实现考虑了哪些边界情况？
 - 为什么它使用大量正则而不是手写解析器？
 
-### 9.5 参考答案
-
-**题目 3 答案**：
-
-```javascript
-const str = 'Hello, World! 123';
-const words = str.match(/[A-Za-z]+|\d+/g);
-console.log(words); // ['Hello', 'World', '123']
-```
-
-**题目 4 答案**：
-
-```javascript
-function camelToKebab(str) {
-  return str
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
-    .toLowerCase();
-}
-console.log(camelToKebab('myVariableName')); // "my-variable-name"
-console.log(camelToKebab('HTMLElement')); // "html-element"
-```
-
-**题目 7 答案**：
-
-`(a+)+` 的 NFA 中，外层 `+` 与内层 `+` 都允许任意次数重复。对于 $n$ 个 `a`，可分解为：
-
-- 1 个内层组（$n$ 个 a）
-- 2 个内层组（$k$ 个 a + $(n-k)$ 个 a，共 $n-1$ 种）
-- 3 个内层组（$\binom{n-1}{2}$ 种）
-- ...
-
-总组合数为 $2^{n-1}$，每种都需 NFA 尝试匹配 `b` 失败后回溯，因此时间复杂度为 $O(2^n)$。
-
----
-
-## 10. 参考文献（ACM 格式）
-
-[1] S. C. Kleene, "Representation of events in nerve nets and finite automata," in *Automata Studies*, C. E. Shannon and J. McCarthy, Eds. Princeton, NJ: Princeton University Press, 1956, pp. 3-42.
-
-[2] K. Thompson, "Regular expression search algorithm," *Communications of the ACM*, vol. 11, no. 6, pp. 419-422, 1968.
-
-[3] J. E. Hopcroft, R. Motwani, and J. D. Ullman, *Introduction to Automata Theory, Languages, and Computation*, 3rd ed. Boston, MA: Addison-Wesley, 2006.
-
-[4] M. E. Lesk, "Lex—A lexical analyzer generator," *Computing Science Technical Report* 39, Bell Laboratories, 1975.
-
-[5] ECMA International, *ECMAScript 2023 Language Specification (ECMA-262, 14th edition)*, Standard ECMA-262, 2023.
-
-[6] J. Friedl, *Mastering Regular Expressions*, 3rd ed. Sebastopol, CA: O'Reilly Media, 2006.
-
-[7] R. Cox, "Regular expression matching can be simple and fast," 2007. [Online]. Available: https://swtch.com/~rsc/regexp/regexp1.html
-
-[8] P. Hazel, "PCRE - Perl Compatible Regular Expressions," *Manual*, University of Cambridge, 1997.
-
-[9] B. Spolsky, "The Law of Leaky Abstractions," *Joel on Software*, 2002. [Online]. Available: https://www.joelonsoftware.com/2002/11/11/the-law-of-leaky-abstractions/
-
-[10] M. Davis and A. Scherer, "Unicode Technical Standard #18: Unicode Regular Expressions," *Unicode Consortium*, 2023.
-
-[11] A. V. Aho, M. S. Lam, R. Sethi, and J. D. Ullman, *Compilers: Principles, Techniques, and Tools*, 2nd ed. Boston, MA: Addison-Wesley, 2006.
-
-[12] N. Wirth, *Compiler Construction*, 2005. [Online]. Available: https://www.ethoberon.ethz.ch/WirthPubl/CompilerConstruction.pdf
-
----
-
 ## 11. 延伸阅读
-
-- [MDN - Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
-- [MDN - RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
-- [ECMAScript 规范 - RegExp](https://tc39.es/ecma262/#sec-regexp-regular-expression-objects)
-- [Regular-Expressions.info](https://www.regular-expressions.info/)
-- [RegexOne - Interactive Tutorial](https://regexone.com/)
-- [regex101 - Online Tester](https://regex101.com/)
-- [RegExr - Learn, Build, & Test RegEx](https://regexr.com/)
-- [Russ Cox - Implementing Regular Expressions](https://swtch.com/~rsc/regexp/)
-- [RE2 - Google's fast regex engine](https://github.com/google/re2)
-- [PCRE - Perl Compatible Regular Expressions](https://www.pcre.org/)
-- [XRegExp - Extended JavaScript regex](https://xregexp.com/)
-- [Unicode Regular Expressions (UTS#18)](https://unicode.org/reports/tr18/)
-
 ---
-
 ## 附录 A：完整语法速查表
 
 ### A.1 字符类

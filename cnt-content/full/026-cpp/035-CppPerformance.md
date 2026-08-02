@@ -1226,8 +1226,6 @@ V8 引擎在 2017 年引入 TurboFan 优化编译器,关键改进:
 
 Octane 基准分数提升约 30%,真实网页场景提升 10%-15%。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**: 解释 Amdahl 定律与 Gustafson 定律的区别,各适用于何种场景?
@@ -1416,46 +1414,6 @@ std::vector<std::string> loadFiles(const std::vector<std::string>& paths) {
 - A:内存占用优先,使用定点运算、SIMD(若支持)、查表替代除法、避免动态分配
 - B:吞吐量与延迟并重,使用 SIMD(BLAS)、批处理、线程池、NUMA 优化、量化推理
 - C:帧率优先,使用 SIMD(SSE/AVX)、数据导向设计(ECS)、缓存友好布局、SIMD 数学库
-
-## 参考文献
-
-[1] Stroustrup, B. 2013. The C++ Programming Language, 4th edition. Addison-Wesley Professional. ISBN: 978-0321563842. DOI: https://doi.org/10.5555/2502040
-
-[2] Meyers, S. 2004. Effective C++: 55 Specific Ways to Improve Your Programs and Designs, 3rd edition. Addison-Wesley Professional. ISBN: 978-0321334879.
-
-[3] Fog, A. 2024. Optimizing software in C++: An optimization guide for Windows, Linux and macOS platforms. Technical University of Denmark. Available: https://www.agner.org/optimize/optimizing_cpp.pdf
-
-[4] Drepper, U. 2007. What Every Programmer Should Know About Memory. Red Hat, Inc. Available: https://people.freebsd.org/~lstewart/articles/cpumemory.pdf
-
-[5] Sutter, H. 2005. The Free Lunch Is Over: A Fundamental Turn Toward Concurrency in Software. Dr. Dobb's Journal, 30(3). Available: https://www.gotw.ca/publications/concurrency-ddj.htm
-
-[6] Hennessy, J. L. and Patterson, D. A. 2017. Computer Architecture: A Quantitative Approach, 6th edition. Morgan Kaufmann. ISBN: 978-0128119051. DOI: https://doi.org/10.1016/C2015-0-06063-5
-
-[7] Amdahl, G. M. 1967. Validity of the single processor approach to achieving large scale computing capabilities. In Proceedings of the AFIPS '67 Spring Joint Computer Conference (AFIPS '67), 483-485. DOI: https://doi.org/10.1145/1465482.1465560
-
-[8] Gustafson, J. L. 1988. Reevaluating Amdahl's law. Communications of the ACM, 31(5), 532-533. DOI: https://doi.org/10.1145/42411.42415
-
-[9] Williams, S., Waterman, A., and Patterson, D. 2009. Roofline: an insightful visual performance model for multicore architectures. Communications of the ACM, 52(4), 65-76. DOI: https://doi.org/10.1145/1498765.1498785
-
-[10] Hoare, C. A. R. 1978. Communicating Sequential Processes. Communications of the ACM, 21(8), 666-677. DOI: https://doi.org/10.1145/359576.359585
-
-[11] Leiserson, C. E., Thompson, N. C., Emer, J. S., Kwasniewski, G. P., Lampson, J. W., Sanchez, D., and Schardl, T. B. 2020. There's plenty of room at the Top: What will drive computer performance after Moore's law ends? Science, 370(6523). DOI: https://doi.org/10.1126/science.aba0984
-
-[12] Patterson, D. A. and Hennessy, J. L. 2020. Computer Organization and Design RISC-V Edition: The Hardware Software Interface, 2nd edition. Morgan Kaufmann. ISBN: 978-0128203316.
-
-[13] Schmidt, D. C. and Huston, S. D. 2012. C++ Network Programming: Systematic Reuse with ACE and Frameworks, Volume 2. Addison-Wesley Professional. ISBN: 978-0201795254.
-
-[14] Josuttis, N. M. 2012. The C++ Standard Library: A Tutorial and Reference, 2nd edition. Addison-Wesley Professional. ISBN: 978-0321623218.
-
-[15] ISO/IEC 14882:2023. Information technology — Programming languages — C++. International Organization for Standardization. Available: https://www.iso.org/standard/83626.html
-
-[16] McKinley, K. S., Carr, S., and Tseng, C.-W. 1996. Improving data locality with loop transformations. ACM Transactions on Programming Languages and Systems (TOPLAS), 18(4), 424-453. DOI: https://doi.org/10.1145/233561.233563
-
-[17] Carr, S. and Kennedy, K. 1994. Improving the ratio of memory operations to floating-point operations in loops. ACM Transactions on Programming Languages and Systems (TOPLAS), 16(6), 1768-1810. DOI: https://doi.org/10.1145/197320.197329
-
-[18] Click, C. 2005. Azul Systems: Experiences with Hardware-Assisted Garbage Collection. In Proceedings of the 4th International Symposium on Memory Management (ISMM '06). DOI: https://doi.org/10.1145/1133956.1133961
-
-## 延伸阅读
 
 ### 官方文档
 

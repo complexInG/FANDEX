@@ -328,65 +328,6 @@ import './index.css'
 | 6 | 动态 import 页面的样式没生效 | `cssCodeSplit` 关闭后异步 chunk 的样式被合并但加载顺序异常 | 按需确认是否真的需要关闭分割；大项目保持默认开启 |
 | 7 | 全局样式污染组件 | 全局 `.css` 中的选择器与组件类名重名 | 组件样式一律走 `.module.css`；全局样式用前缀约定（如 `.fx-`）隔离 |
 
-## 9. 实战练习
-
-### 练习 1：接上预处理器（第一站到第二站）
-
-**题目**：在 `vanilla-ts` 项目中安装 sass，编写一个 `main.scss`，使用变量与嵌套编写卡片样式，在 `main.ts` 中引入并验证生效。
-
-**提示**：`pnpm add -D sass`；SCSS 语法：`$变量`、`&:hover`、嵌套。
-
-**参考答案要点**：
-1. `pnpm add -D sass` 后直接创建 `main.scss` 并在 `main.ts` 中 `import './main.scss'`；
-2. 用 `$primary: #4f46e5` 定义变量，`.card { .title { ... } &:hover { ... } }` 写嵌套；
-3. `pnpm dev` 后样式生效（无需任何额外配置），验证"装编译器即用"的接入方式。
-
-### 练习 2：共享变量注入（additionalData）
-
-**题目**：创建 `src/styles/_variables.scss`（含 `$primary`、`$radius`），通过 `css.preprocessorOptions.scss.additionalData` 全局注入，让两个组件文件都能直接用这些变量。
-
-**提示**：`additionalData: '@use "/src/styles/variables" as *;'`；partial 文件以下划线开头。
-
-**参考答案要点**：
-1. `_variables.scss` 中定义变量（用 `!default` 便于覆盖）；
-2. vite.config.ts 配置 `additionalData`；
-3. 两个组件 SCSS 中直接使用 `$primary` 均编译成功——省去每个文件手动 `@use`。
-
-### 练习 3：CSS Modules 防冲突实验
-
-**题目**：两个组件各自写一个 `.title` 样式（颜色不同），先用普通 `.css` 验证冲突，再改用 `.module.css` 验证隔离。
-
-**提示**：普通 CSS 全局作用域、后加载者覆盖；`.module.css` 类名哈希化。
-
-**参考答案要点**：
-1. 普通 `.css`：两个组件的 `.title` 颜色互相覆盖（谁后加载谁生效）；
-2. 改为 `TitleA.module.css` / `TitleB.module.css`：构建后类名变为 `_title_hashA` / `_title_hashB`，互不干扰；
-3. 结论：组件样式一律用 CSS Modules，全局样式显式放全局文件。
-
-### 练习 4：样式按需加载验证
-
-**题目**：用 `lazy(() => import(...))` 懒加载一个带样式的大页面组件，`pnpm build` 后检查它的样式是否生成了独立 CSS 文件。
-
-**提示**：`build.cssCodeSplit` 默认为 true；产物中可看到对应 chunk 的独立 `.css`。
-
-**参考答案要点**：
-1. 懒加载组件内的样式与组件 chunk 一起拆分；
-2. 产物中出现如 `Dashboard-xxxx.css` 的独立文件；
-3. 设置 `cssCodeSplit: false` 后重新构建，对比产物差异，理解默认行为的价值。
-
 ## 10. 一句话记忆
 
 **CSS 在 Vite 中就是一条五站流水线：import 入口登记 -> 预处理器编译 -> PostCSS 加工 -> CSS Modules 装盘 -> 压缩按需送达——你只需记住"装编译器就能用、`.module.css` 管局部、生产自动分割"三个要点**。
-
-## 11. 参考链接与延伸阅读
-
-- Vite CSS 特性（官方）：https://cn.vite.dev/guide/features#css
-- Vite 预处理器配置（preprocessorOptions）：https://cn.vite.dev/config/shared-options#css-preprocessoroptions
-- Lightning CSS（官方）：https://lightningcss.dev/
-- Tailwind CSS v4 安装指南：https://tailwindcss.com/docs/installation/using-vite
-
-延伸阅读：
-
-- 本模块 004 篇《Vite 静态资源处理》：CSS 中 `url()` 资源的处理管线；
-- 本模块 007 篇《构建与代码分割》：CSS 按需加载与 chunk 拆分细节；
-- 本模块 009 篇《Vite 8 与 Rolldown》：Lightning CSS 与生产构建目标的深度内容。

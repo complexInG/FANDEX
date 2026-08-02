@@ -372,30 +372,11 @@ defineProps<{
 
 圆角不会裁剪子内容，`overflow: hidden` 才负责裁剪。阴影与背景跟随圆角，outline 在现代浏览器中也跟随。理解这些边界行为，才能避免“圆角了但图片还是方的”这类问题。
 
-## 10. 参考文献
-
-W3C, CSS Backgrounds and Borders Module Level 3, border-radius, 访问日期 2026-08-01, https://www.w3.org/TR/css-backgrounds-3/#border-radius
-
-MDN Web Docs, border-radius, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius
-
-MDN Web Docs, border-image 与 border-radius 兼容性说明, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/border-image
-
-CSS-Tricks, border-radius 完整指南, 访问日期 2026-08-01, https://css-tricks.com/almanac/properties/b/border-radius/
-
 ## 11. 延伸阅读
-
 圆角常与盒阴影、渐变配合，见 007-css 模块的盒模型、渐变、阴影相关文档；
-
 响应式尺寸与 aspect-ratio，见本模块 019-MediaQuery 文档；
-
 CSS 函数 calc/clamp 与圆角联动，见本模块 022-Function 文档；
-
-MDN 圆角实战教程：https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_backgrounds_and_borders/Border-radius_generator ；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 CSS 进阶课程。
-
 ---
-
 ### 1. border-radius 语法
 
 ```css
@@ -1027,4 +1008,3 @@ MDN 圆角实战教程：https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_ba
   }
 }
 ```
-

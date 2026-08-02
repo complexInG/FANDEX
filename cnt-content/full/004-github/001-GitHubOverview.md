@@ -220,39 +220,9 @@ is:pr is:merged author:alice       # alice 已合并的 PR
 | 推错分支 | PR 合到了错误的 base | 未确认 base/compare 分支 | 创建 PR 时检查页面顶部的 base repository 和 branch |
 | 仓库找不到 | `Repository not found` | 仓库私有、URL 错误或已被删除 | 确认 URL 拼写、检查可见性与访问权限 |
 
-## 9. 实战练习
-
-### 练习 1：注册并完善账户（入门）
-- **题目描述**：注册 GitHub 账户，完成邮箱验证，设置头像和简介，并启用 2FA。
-- **提示**：注册入口 https://github.com/signup；2FA 推荐使用 TOTP 验证器 App（如 Google Authenticator）。
-- **参考答案要点**：邮箱验证成功后可创建仓库；2FA 设置路径为 Settings → Password and authentication；务必保存恢复码（见 002 篇）。
-
-### 练习 2：创建第一个仓库（入门）
-- **题目描述**：创建名为 `my-first-repo` 的私有仓库，勾选 README 初始化，然后在网页上编辑 README 并提交。
-- **提示**：仓库右上角 **+** → New repository；编辑文件后点击 **Commit changes**。
-- **参考答案要点**：私有仓库只有你和受邀协作者可见；README 内容自动展示在仓库首页。
-
-### 练习 3：命令行完成首次提交（进阶）
-- **题目描述**：克隆 `my-first-repo` 到本地，新建 `notes.md` 文件，完成 add/commit/push 三步操作，并在 GitHub 上确认文件已出现。
-- **提示**：`git clone` 需要仓库 URL；克隆后先 `cd my-first-repo`。
-- **参考答案要点**：`git clone https://github.com/你的用户名/my-first-repo.git`；`git add notes.md`；`git commit -m "docs: add notes"`；`git push origin main`。
-
-### 练习 4：走一遍 PR 流程（综合）
-- **题目描述**：在 `my-first-repo` 中从 main 创建分支 `feature/add-about`，添加 `about.md`，推送后发起一个 PR 并合并。
-- **提示**：按 6.1 小节的命令行步骤操作；推送后页面会提示创建 PR。
-- **参考答案要点**：`git checkout -b feature/add-about` → 修改 → `git push -u origin feature/add-about` → 网页上 Compare & pull request → Merge。合并后可删除该功能分支，保持仓库整洁。
-
 ## 10. 一句话记忆
 
 **GitHub 是程序员存放代码、记录版本、协作开发的"代码图书馆"：Git 负责本地记账，GitHub 负责云端存档与协作，而 Pull Request 是协作的大门。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：入门指南](https://docs.github.com/zh/get-started/onboarding/getting-started-with-your-github-account)
-- [GitHub 文档：你好，世界（Hello World 教程）](https://docs.github.com/zh/get-started/start-your-journey/hello-world)
-- [GitHub 文档：仓库快速入门](https://docs.github.com/zh/repositories/creating-and-managing-repositories/quickstart-for-repositories)
-- [GitHub 文档：GitHub 计划与定价](https://docs.github.com/zh/get-started/learning-about-github/githubs-plans)
-- [GitHub 文档：关于 GitHub 和 Git](https://docs.github.com/zh/get-started/start-your-journey/about-github-and-git)
 
 ### 延伸阅读
 

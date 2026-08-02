@@ -470,32 +470,11 @@ GraphQL 的核心是“Schema 即契约”：类型系统同时服务服务端�
 
 Python 实现的选择取决于团队工作流：喜欢类型注解与异步用 Strawberry，存量 Django 用 Graphene，契约先行用 Ariadne。三者共享 GraphQL 规范，迁移成本可控。
 
-## 10. 参考文献
-
-GraphQL 官方规范, October 2021, 访问日期 2026-08-01, https://spec.graphql.org/October2021/
-
-GraphQL 官方文档, 学习 GraphQL, 访问日期 2026-08-01, https://graphql.org/learn/
-
-Strawberry 官方文档, 访问日期 2026-08-01, https://strawberry.rocks/
-
-Ariadne 官方文档, 访问日期 2026-08-01, https://ariadnegraphql.org/
-
-Graphene-Python 官方文档, 访问日期 2026-08-01, https://graphene-python.org/
-
-aiodataloader 文档, 访问日期 2026-08-01, https://github.com/syrusakbary/aiodataloader
-
 ## 11. 延伸阅读
-
 Python 异步编程与 FastAPI，见 040-python 模块的异步与 Web 框架文档；
-
 数据库访问与 ORM，见 019-sql/020-mysql 模块相关文档；
-
 API 设计整体对比，见 038-software-architecture 模块相关文档；
-
 GraphQL 客户端（Apollo/urql）与前端集成，见 008-javascript/009-typescript 模块相关文档；
-
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Python 与后端课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Python 全栈课程。
-
 ### 什么是 GraphQL
 
 GraphQL 是一种 API 查询语言，由 Facebook 开发。与 REST API 不同，GraphQL 让客户端自己决定需要哪些数据，不多不少。在 REST 中，一个接口返回固定的字段，你可能获取了太多不需要的数据，或者需要调用多个接口才能获取足够的数据。GraphQL 用一个接口解决了这个问题。
@@ -946,4 +925,3 @@ class Subscription:
                 yield message
             await asyncio.sleep(1)
 ```
-

@@ -423,56 +423,6 @@ import Logo from '../assets/logo.svg?astro'
 | 组件样式"串"到别的组件 | 某组件样式影响全站 | 误用了全局选择器或 `is:global` | 去掉 `is:global`，改用 scoped 选择器；需要外溢时用 `:global()` 收窄范围 |
 | `import '../styles/global.css'` 重复引入 | 样式重复出现（通常无报错） | 在每个组件里都导入了全局样式 | 只在布局组件中引入一次，其余组件靠变量与 scoped 样式 |
 
-## 8. 实战练习
-
-### 练习 1：搭一套主题变量
-
-**题目**：为你的个人博客建立 `src/styles/global.css`，包含主色、文字色、背景色、字体栈、间距刻度各一组 CSS 变量，并在布局中引入。
-
-**提示**：变量名用语义化前缀（`--color-`、`--space-`、`--font-`），方便 `var()` 引用时一眼看懂含义。
-
-**参考答案要点**：仿照本文 1.1 节的结构写 `:root`；在 `Layout.astro` 中 `import '../styles/global.css'`；页面中任一组件用 `color: var(--color-primary)` 验证生效。
-
-### 练习 2：造一个"永不相撞"的按钮组件
-
-**题目**：写 `Button.astro`（含 `.btn` 与 `.primary` 两个类），并在同一页面使用两次；再写一个也有 `.btn` 类的 `Badge.astro`，验证两者样式互不影响。
-
-**提示**：构建后查看产物，找到 `data-astro-cid-*` 属性，理解隔离机制。
-
-**参考答案要点**：两个组件各自写 `<style>`；构建后选择器形如 `.btn[data-astro-cid-xxx]`，哈希不同故互不影响；这是 Astro scoped CSS 的默认行为，无需任何额外配置。
-
-### 练习 3：接入一套自定义字体
-
-**题目**：使用 Fonts API 接入本地字体文件 `src/assets/fonts/MyFont.woff2`，并为正文标题设置该字体。
-
-**提示**：`fontProviders.local()` 需要 `name`、`path`、`cssVariable` 三项；页面中用 `<Font cssVariable="--font-myfont" />` 启用；CSS 中 `font-family: var(--font-myfont)`。
-
-**参考答案要点**：配置见本文 3.2 节；验证要点是构建后 `dist/_astro/` 出现自托管的字体文件，页面 head 出现 preload 链接，本地预览时字体正常显示且无第三方请求。
-
-### 练习 4：给博客文章页的封面图做优化
-
-**题目**：在文章列表页用 `<Image />` 展示每篇文章的封面（`z.image()` 声明的字段），要求格式转 webp、按容器宽度响应式输出。
-
-**提示**：schema 用 `z.image()`；渲染时 `<Image src={post.data.heroImage} alt={post.data.title} />`；可显式传 `format="webp"`。
-
-**参考答案要点**：内容集合字段配置见本文 4.5 节；渲染处传入 `src`、`alt`，Astro 自动完成格式转换、srcset 生成与宽高占位，页面加载不再有图片引起的布局跳动。
-
-### 练习 5：装饰画升级——把 Logo 变成可着色组件
-
-**题目**：把 `src/assets/logo.svg` 导入为组件，让它能跟随主题色显示。
-
-**提示**：`import Logo from '../assets/logo.svg?astro'`；SVG 内填充色使用 `currentColor`，组件外通过 CSS `color` 控制。
-
-**参考答案要点**：`<Logo class="logo" />` + `.logo { color: var(--color-primary); }`；若原 SVG 填充是固定色值，需先编辑 SVG 把 `fill="#xxx"` 改为 `fill="currentColor"` 才能随主题变色。
-
 ## 9. 一句话记忆
 
 **"全局样式刷墙、scoped 样式软装、字体交给 Fonts API、图片交给 astro:assets——装修从打底开始，优化从源头抓起。"**
-
-## 10. 参考链接与延伸阅读
-
-- Astro 样式指南（官方，中文）：https://docs.astro.build/zh-cn/guides/styling/
-- Astro Fonts API 指南（官方，中文）：https://docs.astro.build/zh-cn/guides/fonts/
-- Astro 图片优化指南（官方，中文）：https://docs.astro.build/zh-cn/guides/images/
-- Astro 6.0 发布公告（Fonts API 与 CSP 来源）：https://astro.build/blog/astro-6/
-- 延伸阅读：Web 字体性能最佳实践（web.dev，中文）：https://web.dev/articles/font-best-practices?hl=zh-cn

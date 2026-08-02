@@ -2249,40 +2249,6 @@ describe('ConfigManager performance', () => {
 2. 灵活性：调用方可以选择 Zod、Effect Schema、JSON Schema 等不同校验方案。
 3. 性能：校验在启动期完成一次，运行时无需重复校验。
 
-## 16. 参考资料
-
-本节列出本模块引用的全部学术论文、书籍与官方文档。引用格式遵循 ACM Reference Format。
-
-1. Wadler, P., & Blott, S. (1989). How to make ad-hoc polymorphism less ad hoc. _Proceedings of the 16th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL)_, 60-76. https://doi.org/10.1145/75277.75283
-
-2. Pierce, B. C. (2002). _Types and Programming Languages_. MIT Press. ISBN 978-0-262-16209-8.
-
-3. Bierman, G. M., Abadi, M., & Torgersen, M. (2014). Understanding TypeScript. _ECOOP 2014 — Object-Oriented Programming_, 257-281. https://doi.org/10.1007/978-3-662-44202-9_11
-
-4. Ajvani, B., Vahidi, S., & Itzhaki, S. (2023). Type-level Programming in TypeScript. _arXiv preprint arXiv:2302.09465_. https://doi.org/10.48550/arXiv.2302.09465
-
-5. Bachmayr, C., et al. (2022). On the Complexity of TypeScript Type Checking. _Proceedings of the ACM on Programming Languages_, 6(OOPSLA). https://doi.org/10.1145/3563308
-
-6. Ecma International. (2024). _ECMAScript 2024 Language Specification (ECMA-262 15th Edition)_. https://tc39.es/ecma262/
-
-7. Hoffman, B., & Metz, A. (2024). Configuration Management in Modern JavaScript Applications. _IEEE Software Technical Report_. https://doi.org/10.1109/MS.2024.1234567
-
-8. McDonnell, C. (2024). _Zod: TypeScript-first schema validation with static type inference_. https://zod.dev
-
-9. Browne, T., & Houston, C. (2024). _t3-env: Type-safe environment variables for Next.js_. https://env.t3.gg
-
-10. Deligne, P. (1990). Catégories Tannakiennes. _The Grothendieck Festschrift, Progress in Mathematics_, 87, 111-195. https://doi.org/10.1007/978-0-8176-4574-8_3
-
-11. Cardelli, L., & Martini, S. (1992). An Extension of System F with Subtyping. _Information and Computation_, 109(1-2), 4-56. https://doi.org/10.1016/0890-5401(92)90018-G
-
-12. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). _Design Patterns: Elements of Reusable Object-Oriented Software_. Addison-Wesley Professional, 293-303. https://doi.org/10.5555/186897
-
-13. North, S. (2024). 12-Factor App Revisited: Configuration in Cloud-Native Era. _Communications of the ACM_, 67(3), 44-52. https://doi.org/10.1145/3636203
-
-14. Microsoft Corporation. (2024). _TypeScript 5.4 Release Notes: NoInfer Utility Type_. https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-4.html
-
-## 17. 延伸阅读
-
 ### 17.1 类型论经典教材
 
 - Pierce, B. C. (2002). _Types and Programming Languages_. MIT Press. — 类型系统形式语义入门经典，第 19 章递归类型与第 28 章子类型特别相关。

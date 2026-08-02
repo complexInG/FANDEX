@@ -1677,110 +1677,6 @@ public class ShoppingCartService
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 以下关于 C# record 的描述，哪项是**错误**的？
-
-A. record class 与 record struct 都支持值相等
-B. record 默认实现 `Equals`、`GetHashCode`、`ToString`、`Deconstruct`
-C. record 的 `with` 表达式在编译时展开为 `<Clone>$` 调用 + 属性赋值
-D. record class 必须显式定义主构造函数
-
-**解析讲解**：D
-
-**解析讲解**：record class 可以使用非位置语法，通过对象初始化器初始化属性，不必显式定义主构造函数。例如：
-```csharp
-public record Person
-{
-    public string Name { get; init; } = "";
-    public int Age { get; init; }
-}
-```
-
----
-
-**Q2.** 下列代码的输出是？
-
-```csharp
-public record A(int X);
-public record B(int X, int Y) : A(X);
-
-var a = new A(1);
-var b = new B(1, 2);
-Console.WriteLine(a == b);
-```
-
-A. `True`
-B. `False`
-C. 编译错误
-D. 运行时异常
-
-**解析讲解**：B
-
-**解析讲解**：record 的 `Equals` 检查 `EqualityContract`。`a.EqualityContract` 为 `typeof(A)`，`b.EqualityContract` 为 `typeof(B)`，两者不同，故不相等。即使 X 相同，子类 record 与父类 record 不相等。
-
----
-
-**Q3.** 以下哪个 `with` 表达式**不会**编译通过？
-
-A. `record R(int X); var r = new R(1) with { X = 2 };`
-B. `record R(int X) { public int X { get; set; } = X; } var r = new R(1) with { X = 2 };`
-C. `readonly record struct S(int X); var s = new S(1) with { X = 2 };`
-D. `record struct S(int X); var s = new S(1) with { X = 2 };`
-
-**解析讲解**：无错误（陷阱题）
-
-**解析讲解**：
-- A：`with` 调用 `<Clone>$`，通过 `init` 设置 X，正确。
-- B：属性为 `set`（非 `init`），`with` 表达式可使用 `set` 属性，正确。
-- C：`readonly record struct` 的属性为 `init`，`with` 创建新实例，正确。
-- D：`record struct` 属性为 `set`，`with` 正确。
-
-所有选项均可编译。注意 B 中的 `set` 属性使 record 不再不可变。
-
----
-
-**Q4.** 关于 record struct 与 readonly record struct 的区别，下列哪项**正确**？
-
-A. 两者都支持 `with` 表达式
-B. readonly record struct 不允许定义 `set` 属性
-C. record struct 不能实现接口
-D. readonly record struct 装箱后不能调用 `Equals`
-
-**解析讲解**：A、B
-
-**解析讲解**：
-- A：正确。两者都支持 `with`，编译器合成 `<Clone>$`。
-- B：正确。`readonly` 修饰符禁止所有字段修改，包括 `set` 属性。
-- C：错误。两者都可实现接口。
-- D：错误。装箱后调用 `Equals` 通过虚方法分派，正常工作。
-
----
-
-**Q5.** 以下代码的内存分配情况是？
-
-```csharp
-public readonly record struct Point(double X, double Y);
-
-var p1 = new Point(1, 2);
-var p2 = p1 with { X = 10 };
-object o = p1;
-```
-
-A. `p1` 在栈，`p2` 在堆，`o` 在堆
-B. `p1` 在栈，`p2` 在栈，`o` 在堆
-C. 全部在堆
-D. 全部在栈
-
-**解析讲解**：B
-
-**解析讲解**：
-- `p1` 是值类型局部变量，分配在栈（或寄存器）。
-- `p2 = p1 with { X = 10 }` 也是值类型，分配在栈。
-- `object o = p1` 触发装箱，p1 的副本分配在堆上，o 引用该副本。
-
 ### 填空题知识点讲解
 
 **Q6.** record 的 `with` 表达式在编译时调用 `________` 方法创建实例副本，再通过 `________` 访问器修改属性。
@@ -1947,63 +1843,6 @@ var result = ParseInt("42")
 2. 添加异步版本 `AsyncResult<T>`。
 3. 与 C# 异常处理对比优劣。
 
-### 9.4 思考题
-
-**Q13.** 为什么 C# record 选择支持继承，而 Java record 与 Kotlin data class 不支持？请从语言设计哲学、运行时实现、性能影响三个角度分析。
-
-**设计哲学**：
-- C# 强调"多范式融合"，支持函数式 + 面向对象。record 作为不可变类型仍可参与继承体系。
-- Java record 强调"纯函数式数据载体"，继承会引入复杂性（如 EqualityContract），故禁止。
-- Kotlin data class 默认 final，但允许显式 `open`，权衡灵活性与安全性。
-
-**运行时实现**：
-- C# CLR 的 `EqualityContract` 通过虚属性实现子类区分，开销小。
-- JVM 缺乏类似机制，需通过 `getClass()` 比较，但与 record 的对称性约束冲突（LSP 问题）。
-
-**性能影响**：
-- C# record 继承引入虚方法分派（EqualityContract、Equals），略微增加调用开销。
-- 不支持继承的语言可在编译期确定类型，更多内联优化。
-
----
-
-**Q14.** 在事件溯源（Event Sourcing）系统中，使用 record 表示领域事件有何优势？请结合一致性、可重放性、调试性展开论述。
-
-**一致性**：
-- 不可变事件：一旦写入事件存储（Event Store）即不可修改，保证历史可追溯。
-- 值相等：相同事件在重放时产生相同状态变化，确保幂等性。
-
-**可重放性**：
-- `with` 表达式支持函数式状态转移：`state = state.Apply(event)`。
-- 重放历史事件时，每次 Apply 创建新 state，原始 state 不变，便于回滚。
-
-**调试性**：
-- record 的 `ToString` 自动合成，事件日志可读性高。
-- 模式匹配支持事件分发，代码清晰。
-- 不可变性使得并发重放安全，无需加锁。
-
----
-
-**Q15.** 假设你正在设计一个高频交易系统，每秒需处理百万级订单事件。订单状态使用 record class 还是 record struct？请详细论证。
-
-**推荐**：`readonly record struct` + 对象池。
-
-**理由**：
-1. **零 GC 压力**：值类型分配在栈，无对象头开销，避免 Gen 0 GC。
-2. **缓存友好**：连续内存布局（数组中），CPU 缓存命中率高。
-3. **值相等无虚方法**：struct 的 Equals 非虚，可内联。
-4. **装箱风险**：避免 `List<object>`、`Dictionary<object, _>`，使用泛型集合。
-
-**注意事项**：
-- record struct 大小应 < 64 字节（避免栈拷贝开销）。
-- 大型数据（如订单备注）应作为引用，而非内联。
-- 跨线程共享时，struct 自动按值拷贝，天然线程安全。
-
-**反例**：record class 会触发 Gen 0 GC，每秒百万级分配导致 GC 暂停超过交易延迟容忍（< 1ms）。
-
----
-
-## 10. 参考文献
-
 ### 10.1 标准与规范
 
 [1] ECMA International. *ECMA-334: The C# Language Specification*. 5th ed. Geneva: ECMA International, 2017. DOI: 10.1159/ECMA.334.5.
@@ -2032,20 +1871,6 @@ var result = ParseInt("42")
 
 [11] Bierman, Gavin, Claudio Russo, and Mads Torgersen. "C# 7-9 Records and the Evolution of Data-Oriented Programming." *OOPSLA*, 2021.
 
-### 10.4 在线资源
-
-[12] Microsoft Learn. *Records (C# Reference)*. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record
-
-[13] C# Language Design. *Records GitHub Repository*. https://github.com/dotnet/csharplang/labels/area-records
-
-[14] Jon Skeet. *C# in Depth*. 4th ed., Manning Publications, 2019. ISBN: 978-1617294532.
-
-[15] Joseph Albahari. *C# 12 in a Nutshell*. O'Reilly Media, 2024. ISBN: 978-1098154249.
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 推荐书籍
 
 1. **《Functional Programming in C#》** — Enrico Buonanno, Manning Publications, 2023
@@ -2073,32 +1898,6 @@ var result = ParseInt("42")
 
 3. **"Linear Types Can Change the World!"** — Philip Wadler, 1990
    - 线性类型与不可变性的理论基础。
-
-### 11.3 在线资源
-
-1. **Microsoft Learn - C# Records**
-   https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record
-
-2. **C# Language Design Notes**
-   https://github.com/dotnet/csharplang/tree/main/meetings
-
-3. **.NET Runtime Source Code**
-   https://github.com/dotnet/runtime
-
-4. **ASP.NET Core Source Code**
-   https://github.com/dotnet/aspnetcore
-
-5. **EF Core Source Code**
-   https://github.com/dotnet/efcore
-
-6. **BenchmarkDotNet Documentation**
-   https://benchmarkdotnet.org/
-
-7. **Sharplab.io** — 在线查看 record 的 IL 与反编译
-   https://sharplab.io/
-
-8. **C# Language Design on YouTube** — Mads Torgersen 讲解
-   https://www.youtube.com/@dotnet
 
 ### 11.4 进阶学习路径
 
@@ -2132,25 +1931,6 @@ flowchart TD
     T8 --> T12
     T8 --> T13
 ```
-
-### 11.5 社区资源
-
-1. **Stack Overflow - [c#-records] 标签**
-   https://stackoverflow.com/questions/tagged/c%23-records
-
-2. **Reddit - r/csharp**
-   https://www.reddit.com/r/csharp/
-
-3. **C# Discord Community**
-   https://discord.com/invite/csharp
-
-4. **Microsoft .NET YouTube Channel**
-   https://www.youtube.com/@dotnet
-
-5. **The .NET Foundation**
-   https://dotnetfoundation.org/
-
----
 
 ## 附录 A：record 自动合成成员速查表
 

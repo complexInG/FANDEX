@@ -4,13 +4,12 @@ title: 正定二次型
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: advanced
-description: 从"能量恒正"的生活类比出发，系统讲解正定二次型与正定矩阵的定义、五种判定方法（特征值、顺序主子式、合同、惯性指数、Cholesky 分解）、正定矩阵的性质与半正定，并配完整例题与实战练习。
+description: 从"能量恒正"的生活类比出发，系统讲解正定二次型与正定矩阵的定义、五种判定方法（特征值、顺序主子式、合同、惯性指数、Cholesky 分解）、正定矩阵的性质与半正定，。
 author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/二次型的标准形'
   - 'linear-algebra/二次型的规范形'
-  - 'linear-algebra/二次型典型例题'
   - 'linear-algebra/LU分解'
 prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
@@ -152,8 +151,6 @@ $A$ 半正定 $\iff$ 以下任一条件成立：
 
 **应用提醒**：机器学习中协方差矩阵 $\frac{1}{m-1}X^TX$ 一定半正定（因为 $X^TX = (X)^T(X)$），这是"方差不为负"的代数本质；数据线性无关时它才是正定矩阵。
 
-## 5. 完整例题详解
-
 ### 例 1（判定）：顺序主子式法
 
 判断 $f = 5x_1^2 + x_2^2 + 5x_3^2 + 4x_1x_2 - 8x_1x_3 - 4x_2x_3$ 的正定性。
@@ -221,53 +218,10 @@ $\Delta_3 = -(t-3)^2 \leq 0$ 对一切 $t$ 成立，等号仅在 $t = 3$ 时取�
 | 断言"$A, B$ 正定则 $AB$ 正定" | 命题错误 | 忽略对称性 | $AB$ 可能不对称；只有 $AB = BA$ 时才成立 |
 | 证明 $A^TA$ 正定时不验证列满秩 | 证明漏洞 | 忽略 $\boldsymbol{x} \neq \mathbf{0}$ 时 $A\boldsymbol{x}$ 可能为 0 | 用 $r(A) = n$ 说明 $A\boldsymbol{x} = 0$ 只有零解 |
 
-## 7. 实战练习
-
-### 练习 1（入门）：判定正定
-
-判断 $A = \begin{pmatrix} 3 & 1 \\ 1 & 2 \end{pmatrix}$ 是否正定。
-
-**提示**：用顺序主子式法，只需算两个行列式。
-
-**参考答案要点**：$\Delta_1 = 3 > 0$，$\Delta_2 = 6 - 1 = 5 > 0$，正定。
-
-### 练习 2（基础）：参数范围
-
-求使 $f = x_1^2 + x_2^2 + x_3^2 + 2\lambda x_1x_2 + 2x_1x_3 + 2\mu x_2x_3$ 正定的 $\lambda, \mu$ 条件。
-
-**提示**：$\Delta_2 = 1 - \lambda^2$，$\Delta_3$ 是关键——算出来是 $-( \lambda - \mu)^2$。
-
-**参考答案要点**：$\Delta_1 = 1 > 0$；$\Delta_2 = 1 - \lambda^2 > 0 \Rightarrow |\lambda| < 1$；$\Delta_3 = |A| = 1(1-\mu^2) - \lambda(\lambda - \mu) + 1(\lambda\mu - 1) = 2\lambda\mu - \lambda^2 - \mu^2 = -(\lambda - \mu)^2 \leq 0$。$\Delta_3$ 不可能为正，故**不存在**使 $f$ 正定的 $(\lambda, \mu)$。
-
-### 练习 3（进阶）：正定与半正定
-
-设 $A$ 为 $n$ 阶正定矩阵，$B$ 为 $n$ 阶半正定矩阵，证明 $A + B$ 正定。
-
-**提示**：对任意 $\boldsymbol{x} \neq \mathbf{0}$，拆成 $\boldsymbol{x}^TA\boldsymbol{x} + \boldsymbol{x}^TB\boldsymbol{x}$ 分别处理。
-
-**参考答案要点**：$\boldsymbol{x}^T(A+B)\boldsymbol{x} = \boldsymbol{x}^TA\boldsymbol{x} + \boldsymbol{x}^TB\boldsymbol{x}$。$A$ 正定给出第一项 $> 0$，$B$ 半正定给出第二项 $\geq 0$，和 $> 0$，故 $A + B$ 正定。
-
-### 练习 4（综合）：矩阵证明
-
-设 $A$ 为 $n$ 阶正定矩阵，证明存在可逆矩阵 $B$ 使得 $A = B^TB$。
-
-**提示**：用合同判别法：正定 $\Rightarrow$ 存在可逆 $C$ 使 $C^TAC = I$，然后反解 $A$。
-
-**参考答案要点**：由 $C^TAC = I$ 得 $A = (C^{-1})^TC^{-1}$，令 $B = C^{-1}$ 即得 $A = B^TB$。反过来，若 $A = B^TB$ 且 $B$ 可逆，则 $\boldsymbol{x}^TA\boldsymbol{x} = \|B\boldsymbol{x}\|^2 > 0$，正定。
-
 ## 8. 一句话记忆
 
 > **正定二次型 = "能量恒正"的二次型：判定它就看五种体检指标——特征值全正、顺序主子式全正、合同于单位阵、正惯性指数满格、能做 Cholesky 分解，其中手算最常用的是"顺序主子式全正"（Sylvester 准则）。**
 
-## 参考文献
-
-1. 同济大学数学科学学院（编），《线性代数》（第七版），高等教育出版社——第五章"二次型"，含正定二次型的定义、Sylvester 准则与正定矩阵性质。
-2. 线性代数知识库（kmath.cn）"正定二次型"相关条目：http://kb.kmath.cn/kbase/detail.aspx?id=1394
-3. MIT 18.06 Linear Algebra（Gilbert Strang），Spring 2010——Lecture 20 起关于正定矩阵（positive definite matrices）的讲解：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-4. NumPy 文档（Cholesky 分解的数值实现）：https://numpy.org/doc/stable/reference/generated/numpy.linalg.cholesky.html
-
 ## 延伸阅读
-
 - 正定的判定依赖标准形与规范形，见《二次型的标准形》（order 60）与《二次型的规范形》（order 61）。
 - Cholesky 分解是正定矩阵的"专属分解"，其计算细节见《LU 分解》（order 70）。
-- 正定二次型在多元函数极值、优化中的应用，见《二次型典型例题》（order 63）与 027-calculus 模块。

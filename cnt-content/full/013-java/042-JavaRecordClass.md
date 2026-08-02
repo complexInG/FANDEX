@@ -1265,8 +1265,6 @@ class ResultDemo {
 
 ---
 
-## 十、习题
-
 ### 10.1 基础题
 
 **题 1.1**(记忆) Record 自动生成哪些方法?它们与 Lombok `@Value` 生成的有哪些差异?
@@ -1469,32 +1467,6 @@ class TreeMapOps {
 参考 9.3 节 AST 解释器案例,扩展 `Let` 节点支持作用域嵌套。核心思路:`eval` 方法接受 `Map<String, Double>` 环境,`Let` 节点创建新环境副本放入绑定后递归求值 body。注意使用 `HashMap` copy 实现"不可变环境"语义。
 
 ---
-
-## 十一、参考文献
-
-[1] Buckley, A. and Bierman, G. 2020. *JEP 359: Records (Preview).* Oracle Corporation. Retrieved July 21, 2026 from https://openjdk.org/jeps/359
-
-[2] Bierman, G. and Buckley, A. 2021. *JEP 395: Records.* Oracle Corporation. Retrieved July 21, 2026 from https://openjdk.org/jeps/395
-
-[3] Goetz, B. 2021. *JEP 409: Sealed Classes.* Oracle Corporation. Retrieved July 21, 2026 from https://openjdk.org/jeps/409
-
-[4] Goetz, B. 2023. *JEP 441: Pattern Matching for switch.* Oracle Corporation. Retrieved July 21, 2026 from https://openjdk.org/jeps/441
-
-[5] Goetz, B. 2023. *JEP 440: Record Patterns.* Oracle Corporation. Retrieved July 21, 2026 from https://openjdk.org/jeps/440
-
-[6] Bloch, J. 2018. *Effective Java* (3rd. ed.). Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0134685991.
-
-[7] Evans, E. 2003. *Domain-Driven Design: Tackling Complexity in the Heart of Software.* Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0321125217.
-
-[8] Pierce, B. C. 2002. *Types and Programming Languages.* MIT Press, Cambridge, MA, USA. ISBN: 978-0262162098.
-
-[9] Wampler, D. and Payne, A. 2009. *Programming Scala: Tackle Scalability with Powerful Functional Programming Techniques.* O'Reilly Media, Sebastopol, CA, USA. ISBN: 978-0596155957.
-
-[10] Oracle Corporation. 2024. *Java Language Specification: Java SE 21 Edition.* Retrieved July 21, 2026 from https://docs.oracle.com/javase/specs/jls/se21/html/index.html
-
----
-
-## 十二、延伸阅读
 
 ### 12.1 官方资料
 

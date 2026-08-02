@@ -1694,46 +1694,6 @@ JupyterLab 拥有 50+ monorepo 子包，依赖管理复杂。其方案：
 
 ---
 
-## 知识讲解与要点分析（原练习）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个工具不是用 Rust 实现的？
-
-A. `uv`
-B. `ruff`
-C. `pixi`
-D. `poetry`
-
-D。`poetry` 用 Python 实现。`uv`、`ruff`、`pixi` 均为 Rust 实现。
-
-**常见疑问 2**：PEP 405 标准化的虚拟环境配置文件是？
-
-A. `virtualenv.cfg`
-B. `pyvenv.cfg`
-C. `.python-version`
-D. `environment.yml`
-
-B。PEP 405 标准化 `pyvenv.cfg`，包含 `home`、`version_info` 等键。
-
-**常见疑问 3**：以下哪个算法被 `uv` 用于依赖解析？
-
-A. DPLL
-B. PubGrub
-C. resolvelib
-D. SAT4J
-
-B。`uv` 使用 PubGrub 算法（借鉴 SAT 求解器的 CDCL 思想）。
-
-**常见疑问 4**：在 Docker 容器中，以下哪种做法最推荐？
-
-A. 不使用虚拟环境，直接安装到系统 Python
-B. 使用虚拟环境，便于多阶段构建
-C. 使用 conda 管理所有依赖
-D. 手动编译所有依赖
-
-B。使用虚拟环境便于多阶段构建，与本地开发环境一致，隔离清晰。
-
 ### 填空题知识点讲解
 
 **常见疑问 5**：Python 标准库中创建虚拟环境的模块是 `______`。
@@ -1814,18 +1774,6 @@ if __name__ == "__main__":
         print(f"虚拟环境路径: {path}")
 ```
 
-### 9.4 思考题
-
-**常见疑问 10**：为什么 `uv` 比 `pip` 快 10-100 倍？从语言、算法、缓存三个维度分析。
-
-**常见疑问 11**：在什么场景下 `conda` 仍然不可替代？`uv` 能否完全取代 `conda`？
-
-**常见疑问 12**：monorepo 中"共享虚拟环境"与"每包独立虚拟环境"各有什么优缺点？如何选择？
-
-**常见疑问 13**：为什么 Python 不能像 Rust 一样完全摒弃虚拟环境，采用 `cargo` 的"项目本地依赖 + 全局缓存"模型？根本原因是什么？
-
----
-
 ## 10. 工具选型决策树
 
 ```mermaid
@@ -1883,8 +1831,6 @@ flowchart TD
 
 ---
 
-## 11. 参考文献
-
 ### 11.1 PEP 与标准
 
 - [1] Smith, E. V. PEP 405: Python Virtual Environments. Python Enhancement Proposal, 2012. https://peps.python.org/pep-0405/
@@ -1929,21 +1875,6 @@ flowchart TD
 - **《Python Packaging and Distribution》** — Paul Ganssle, O'Reilly, 2024（涵盖 pyproject.toml、wheel、虚拟环境全链路）。
 - **《Architecture Patterns with Python》** — Harry Percival, Bob Gregory, O'Reilly, 2020（第 11 章讨论依赖管理对架构的影响）。
 - **《Python Testing with pytest》** — Brian Okken, Pragmatic Bookshelf, 2nd ed., 2022（涵盖 tox、虚拟环境在测试中的应用）。
-
-### 12.2 在线资源
-
-- **[Real Python: Python Virtual Environments Primer](https://realpython.com/python-virtual-environments-a-primer/)** — 从零到一的 venv 教程。
-- **[Hynek Schlawack: Going Fast with uv](https://hynek.me/articles/going-fast-with-uv/)** — `attrs` 作者的 uv 迁移实践。
-- **[Brett Cannon: What the heck is pyproject.toml?](https://snarky.ca/what-the-heck-is-pyproject-toml/)** — Python 核心开发者解读 pyproject.toml。
-- **[uv 官方文档](https://docs.astral.sh/uv/)** — 最权威的 uv 使用指南。
-- **[poetry 官方文档](https://python-poetry.org/docs/)** — poetry 完整参考。
-- **[conda 用户指南](https://docs.conda.io/projects/conda/en/latest/user-guide/)** — conda 官方教程。
-
-### 12.3 视频资源
-
-- **[Charlie Marsh: uv - The Future of Python Packaging (PyCon 2024)](https://www.youtube.com/watch?v=g6DchVb1HBg)** — uv 作者的 PyCon 演讲。
-- **[Nick Coghlan: The Evolution of Python Environments (PyCon AU 2024)](https://www.youtube.com/watch?v=Z_dck3x5BdY)** — PEP 405 共作者回顾虚拟环境历史。
-- **[Hynek Schlawack: Packaging Python Right (Europython 2023)](https://www.youtube.com/watch?v=sfoF1FSwRHw)** — attrs 作者的打包实践。
 
 ### 12.4 学习路线
 

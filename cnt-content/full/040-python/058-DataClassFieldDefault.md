@@ -1789,8 +1789,6 @@ print(hero.inventory)  # [InventoryItem(name='Potion', quantity=3, weight=0.5)]
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 10.1.1**：使用 `@dataclass` 实现一个 `Book` 类，包含字段：`title`（必填）、`author`（必填）、`isbn`（可选，默认空字符串）、`price`（默认 0.0）、`tags`（默认空列表）。
@@ -2021,24 +2019,6 @@ p = Product(name="Pen", price=5, stock=10)
 print(p)  # Product(name='Pen', price=5.0, stock=10)
 ```
 
-### 9.6 思考题
-
-**题目 10.6.1**：dataclass 与 ORM 模型（如 SQLAlchemy）的本质区别是什么？如何选择？
-
-**提示**：考虑关注点分离（数据 vs 持久化）、可测试性、序列化需求。
-
-**题目 10.6.2**：为什么 dataclass 不内置类型验证？这是设计缺陷还是有意为之？
-
-**提示**：考虑 Python 的"鸭子类型"哲学、性能开销、与 typing 系统的关系。
-
-**题目 10.6.3**：在微服务架构中，dataclass 应如何用于服务间通信？需要考虑哪些问题？
-
-**提示**：考虑序列化协议（JSON、Protobuf）、版本兼容性、向后兼容、schema 演进。
-
----
-
-## 10. 参考文献
-
 ### 10.1 PEP 文档
 
 - Smith, E. V. (2017). *PEP 557: Data Classes*. Python Software Foundation. https://peps.python.org/pep-0557/
@@ -2055,16 +2035,6 @@ print(p)  # Product(name='Pen', price=5.0, stock=10)
 
 - Beazley, D., & Jones, B. K. (2013). *Python Cookbook* (3rd ed.). O'Reilly Media.（Recipe 8.13: Creating a Dataclass）
 
-### 10.3 在线资源
-
-- Python Documentation. *dataclasses — Data Classes*. https://docs.python.org/3/library/dataclasses.html
-
-- Real Python. *Python Data Classes: A Guide to the @dataclass Decorator*. https://realpython.com/python-data-classes/
-
-- attrs Documentation. https://www.attrs.org/
-
-- Pydantic Documentation. *Dataclasses*. https://docs.pydantic.dev/latest/usage/dataclasses/
-
 ### 10.4 学术论文
 
 - Smith, E. V. (2017). *Data Classes: Reducing boilerplate code for classes that primarily exist to store data*. Python Language Summit 2017.
@@ -2079,8 +2049,6 @@ print(p)  # Product(name='Pen', price=5.0, stock=10)
 - `dacite`：https://github.com/konradhalas/dacite
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 类型系统深入
 
@@ -2368,8 +2336,6 @@ PointDict.__dict__ 内存: 104 字节
 
 **结论**：`slots=True` 节省约 20% 内存（主要因无 `__dict__`）。
 
-## 附录 H：面试题精选
-
 ### H.1 基础题
 
 **Q**: `@dataclass` 装饰器的作用是什么？
@@ -2611,4 +2577,3 @@ dataclass 提供了大量可选项，但不强制使用。默认配置即可满�
 dataclass 与 attrs 的"竞争"是 Python 生态健康的体现。attrs 推动了 dataclass 的诞生，dataclass 反过来促进了 attrs 的改进。两者共存，各自服务不同需求。
 
 ---
-

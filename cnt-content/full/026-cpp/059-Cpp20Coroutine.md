@@ -3399,8 +3399,6 @@ int main() {
 
 ---
 
-## 第 11 章 习题与解答
-
 ### 填空题知识点讲解
 
 #### ex-co-fb-01（基础）
@@ -3426,8 +3424,6 @@ C++20 协程的 Promise 必须提供的最小接口集包括 get_return_object�
 **解析讲解**：对称（symmetric）
 
 **解析讲解**：当 await_suspend 返回 coroutine_handle 时编译器执行「对称转移」：当前协程挂起后立即恢复目标协程，无中间调用者介入，调用栈深度不变。Lewis Baker 在 CppCon 2017 演讲中详细论证这是「尾调用优化」的协程版变体，可保证 O(1) 栈空间。
-
-### 选择题知识点讲解
 
 #### ex-co-ch-01（理解）
 
@@ -3648,31 +3644,6 @@ private:
 ```
 
 P2300 互操作方案：实现 `sender_of<T>` 概念与 `await_transform(sender)` 重载，将 sender 通过 `connect` 与 `receiver` 组合后转为 awaitable。反过来，可通过 `let_value`/`then` 等组合子将协程包装为 sender，让协程参与 P2300 的 `when_all`、`transfer`、`schedule_from` 等组合算法。这种双向互操作是 C++26 统一异步模型的目标。
-
-### 11.5 习题小结
-
-本章习题覆盖 Bloom 分类法的全部 6 个认知层级：
-
-| 题号        | 类型     | 认知层级   | 难度 | 核心考点                 |
-| ----------- | -------- | ---------- | ---- | ------------------------ |
-| ex-co-fb-01 | 填空     | Remember   | 1    | 三关键字                 |
-| ex-co-fb-02 | 填空     | Understand | 2    | Promise 最小接口集       |
-| ex-co-fb-03 | 填空     | Apply      | 4    | 对称转移                 |
-| ex-co-ch-01 | 选择     | Understand | 2    | stackless 协程           |
-| ex-co-ch-02 | 选择     | Analyze    | 3    | 协程帧与局部变量生命周期 |
-| ex-co-ch-03 | 选择     | Evaluate   | 4    | final_suspend 设计准则   |
-| ex-co-cf-01 | 代码修正 | Apply      | 4    | 悬挂引用                 |
-| ex-co-cf-02 | 代码修正 | Evaluate   | 5    | 对称转移修正栈溢出       |
-| ex-co-oe-01 | 开放性   | Analyze    | 4    | C++ vs Go 协程对比       |
-| ex-co-oe-02 | 开放性   | Create     | 5    | 可取消 Task 设计         |
-
-通过这套习题，读者可检验对协程语法、Promise/Awaiter 模型、对称转移、生命周期管理与生产级 Task 设计的掌握程度。建议先独立完成，再对照答案与解析查漏补缺。
-
----
-
-## 第 12 章 参考文献
-
-本章参考文献遵循 ACM Reference Format，按类型分组列出。所有文献均在前文论述中被引用或作为论点支撑，覆盖标准文档、教材、技术提案、会议演讲、在线资源等多种类型。
 
 ### 12.1 标准与规范
 

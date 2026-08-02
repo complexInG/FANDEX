@@ -1109,16 +1109,6 @@ Flow（Facebook 的 JavaScript 类型检查器）也支持映射类型，但语�
 - **Type-Level Programming in TypeScript**（社区教程）：系统讲解类型级编程，包含映射类型的高级模式。
 - **paper: "TypeScript: A Sound Type System for JavaScript"**：理解 TypeScript 类型系统的形式化基础。
 
-### 12.5 实践练习
-
-1. **练习一**：实现 `OmitByValue<T, V>`，从 `T` 中排除值类型匹配 `V` 的属性。
-2. **练习二**：实现 `Mutable<T>`，移除 `T` 所有层级的 `readonly` 修饰符（递归版本）。
-3. **练习三**：实现 `PathKeys<T>`，生成 `T` 所有点分路径的联合类型（如 `"a" | "a.b" | "a.b.c"`）。
-4. **练习四**：实现 `Zip<A, B>`，将两个元组类型按位置组合为元组对的元组。
-5. **练习五**：实现 `DeepNonNullable<T>`，递归地将 `T` 中所有 `null | undefined` 移除。
-6. **练习六**：实现 `FunctionPropertyNames<T>` 与 `FunctionProperties<T>`，前者返回函数属性名的联合，后者返回函数属性的对象类型。
-7. **练习七**：实现 `OptionalKeys<T>` 与 `RequiredKeys<T>`，分别返回可选键与必选键的联合类型。
-
 ### 12.6 总结
 
 映射类型进阶是 TypeScript 类型系统的"高阶应用"领域。掌握键重映射、键过滤、递归映射、模板字面量映射等模式，不仅能使我们写出更精炼、更安全的类型代码，更能让我们以"类型即程序"的视角重新审视类型系统——它不再是声明，而是计算；不再是约束，而是表达。
@@ -1270,24 +1260,6 @@ TypeScript 的默认递归深度限制是 50 层。在 5.4 之后，部分场景
 3. 编写测试用例，使用 `expectType<Expected>(actual)` 风格的断言。
 4. 使用 `--generateTrace` 选项分析性能瓶颈。
 
-## 附录 E：延伸阅读资源
-
-### E.1 官方资源
-
-- TypeScript Handbook: Mapped Types
-- TypeScript Handbook: Key Remapping via `as`
-- TypeScript Handbook: Template Literal Types
-- TypeScript Handbook: Conditional Types
-- TypeScript Release Notes: 4.1 (Key Remapping)、4.4 (Symbol Key Fixes)、5.4 (Recursion Limit)
-
-### E.2 社区资源
-
-- type-challenges 仓库（GitHub）：从入门到困难的类型体操练习
-- TypeScript Deep Dive（在线书籍）：映射类型与工具类型章节
-- Effective TypeScript（Dan Vanderkam）：第二版第 3 章
-- "Type-Level Programming in TypeScript"（社区教程）
-- Microsoft DevBlog: TypeScript 类型系统演进系列文章
-
 ### E.3 学术参考
 
 - Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press.（类型论基础）
@@ -1323,8 +1295,6 @@ TypeScript 的默认递归深度限制是 50 层。在 5.4 之后，部分场景
 | $\mathcal{O}(n)$ | 时间复杂度 |
 | $d$ | 递归深度 |
 | $\oplus$ | 字符串拼接 |
-
-## 附录 H：练习题参考答案
 
 ### H.1 OmitByValue
 

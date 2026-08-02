@@ -465,14 +465,6 @@ prerequisites:
 - **内存池**: 对于频繁分配的小对象使用内存池
 - **内存检查**: 定期使用内存检查工具检测问题
 
-## 8. 延伸阅读
-
-- [CppCoreGuidelines](https://github.com/isocpp/CppCoreGuidelines)
-- [Performance Tuning Guidelines for C++](https://github.com/dendibakh/perf-book)
-- [Debugging with GDB](https://www.gnu.org/software/gdb/documentation/)
-- [Valgrind User Manual](https://valgrind.org/docs/manual/manual.html)
-- [Intel VTune Profiler Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler-documentation.html)
-
 ## 9. 更新日志
 
 - **2026-04-05**: 初始创建，涵盖调试工具、常见错误、性能分析与优化
@@ -701,18 +693,8 @@ work();
 double seconds = double(std::clock() - start) / CLOCKS_PER_SEC;
 ```
 
-## 参考文献
-
-cppreference C++ 文档：https://zh.cppreference.com/w/cpp
-C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
-C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
-CMake 官方文档：https://cmake.org/documentation/
-Compiler Explorer：https://godbolt.org/
-
 ## 延伸阅读
-
 C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
 STL 容器与算法，见 026-cpp 模块 STL 文档。
 并发与原子，见 026-cpp 模块并发文档。
 Rust 内存安全对比，见 053-rust 模块（若已加入）。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 C++ 课程。

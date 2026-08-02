@@ -541,16 +541,7 @@ SLOWLOG RESET
 - 监控 SLOWLOG 并告警
 ```
 
-## 参考文献
-
-Redis 官方文档：https://redis.io/docs/latest/
-Redis 命令参考：https://redis.io/docs/latest/commands/
-Redis 中文资料：https://redis.com.cn/
-Redisson 文档：https://redisson.org/
-
 ## 延伸阅读
-
 Redis 数据结构详解，见 022-redis 模块文档。
 Redis 持久化与集群，见 022-redis 模块相关文档。
 MySQL 与 Redis 缓存架构，见 020-mysql 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Redis 课程。

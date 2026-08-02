@@ -160,17 +160,6 @@ C++26 持续完善 chrono：
 - 与 `std::execution` Sender/Receiver 的集成（异步定时）
 - `<chrono>` 与 `<format>` 的进一步整合
 
-### 1.7 关键提案与文献
-
-- **N2661 (Hinnant, 2008)**：*A Foundation to Sleep On*，chrono 奠基提案
-- **N3344 (Hinnant, 2012)**：*Formatting for chrono*，早期格式化提案
-- **P0355R7 (Hinnant, 2018)**：*Extending `<chrono>` to Calendars and Time Zones*，C++20 日历时区
-- **P0217R3 (Hinnant, 2017)**：*Proposal to Introduce a `format` Function*，`<format>` 与 chrono 集成
-- **P1650R0 (Hinnant, 2019)**：*A `std::chrono::utc_clock`*
-- **P1466R3 (Hinnant, 2019)**：*Miscellaneous minor fixes for `<chrono>`*
-- **P2372R0 (Hinnant, 2021)**：*Fixing locale handling in `chrono`'s formatter*
-- **P2445R1 (Hinnant, 2022)**：*`std::is_clock`*
-
 ### 1.8 与其他语言的横向对比
 
 | 特性 | C++ chrono | Rust chrono | Java java.time | Python datetime | Go time |
@@ -1592,8 +1581,6 @@ private:
 };
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（Remember/Understand）
 
 **题目 1**：列举 `<chrono>` 库的三大核心抽象，各举一个例子。
@@ -1799,8 +1786,6 @@ private:
 - 工作时间可能跨日（如夜班）
 - 加班计算基于本地时间
 
-## 10. 参考文献
-
 ### 10.1 标准文档
 
 - ISO/IEC 14882:2023 *Information technology — Programming languages — C++*，§27 Time library
@@ -1826,15 +1811,6 @@ private:
 - Stroustrup, Bjarne. *The C++ Programming Language*. 4th ed., Addison-Wesley, 2013.（Chapter 35: Time）
 - Josuttis, Nicolai. *C++20 - The Complete Guide*. 2022.（Chapter 11: Chrono Extensions）
 - Williams, Anthony. *C++ Concurrency in Action*. 2nd ed., Manning, 2019.
-
-### 10.5 在线资源
-
-- cppreference.com *Chrono library*: https://en.cppreference.com/w/cpp/chrono
-- Hinnant *Date library*: https://github.com/HowardHinnant/date
-- IANA Time Zone Database: https://www.iana.org/time-zones
-- IERS Leap Second: https://www.iers.org/
-
-## 11. 延伸阅读
 
 ### 11.1 进阶书籍
 

@@ -2143,8 +2143,6 @@ public class ReactiveUserService {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 描述 JPA 实体的 4 种生命周期状态及状态转移。
@@ -2169,86 +2167,6 @@ public class ReactiveUserService {
 
 10. 解释 HikariCP 的 `maximum-pool-size` 该如何设置，并说明为什么过大的连接池反而会降低性能。
 
-### 9.3 思考题
-
-11. **JPA 的"魔法"**：JPA 通过方法名派生查询大幅提升开发效率，但这种"魔法"是否会带来可维护性问题？什么情况下应该放弃 JPA 改用 MyBatis？
-
-12. **事务边界**：传统事务基于 ThreadLocal 传递 Connection，响应式栈如何实现事务传播？R2DBC 的事务模型与 JDBC 有何本质区别？
-
-13. **缓存一致性**：Spring Cache + Redis 提供了声明式缓存，但如何保证缓存与数据库的一致性？双写、失效、TTL 各有什么优劣？
-
-14. **虚拟线程 vs 响应式**：Java 21 虚拟线程让 JDBC 重新成为高并发选项，那么 R2DBC 还有存在的必要吗？请从性能、可维护性、生态三个维度论证。
-
-15. **分库分表后的事务**：跨库事务是分布式系统的难题，Seata、XA、TCC、Saga 各有什么优劣？什么场景该用哪种？
-
-### 9.4 实战题
-
-16. 用 Spring Data JPA 实现一个博客系统，包含文章、评论、标签三类实体，要求：
-    - 文章与评论一对多（LAZY 加载）
-    - 文章与标签多对多
-    - 用 JOIN FETCH 解决文章列表的 N+1 问题
-    - 用 @Transactional(readOnly = true) 优化查询
-
-17. 用 MyBatis 实现一个订单查询接口，支持：
-    - 多条件动态查询（用户名、订单状态、时间范围、金额范围）
-    - 分页与排序
-    - 关联查询用户与订单项
-
-18. 设计一个多数据源架构：主库（PostgreSQL）写、从库（MySQL）读，并解决以下问题：
-    - 事务跨库（用 Seata 或最终一致性）
-    - 主从延迟（强制读主或缓存）
-    - 数据源动态切换
-
-19. 实现一个缓存服务，要求：
-    - 本地缓存（Caffeine）+ 分布式缓存（Redis）二级架构
-    - 缓存穿透、缓存击穿、缓存雪崩防护
-    - 缓存与数据库一致性保证
-
-20. **性能对比实验**：实现同一个查询接口的两个版本——JPA + Hibernate 与 MyBatis，用 JMeter 压测，对比：
-    - 启动时间
-    - 单次查询延迟
-    - 1000 QPS 下的 CPU/内存占用
-    - 复杂查询（5 表 JOIN）的延迟差异
-    分析差异原因，并给出选型建议。
-
----
-
-## 10. 参考文献
-
-1. **JSR 338: Java Persistence API 2.2**. Oracle, 2017. https://jcp.org/en/jsr/detail?id=338
-
-2. **Hibernate Reference Documentation**. Red Hat. https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html
-
-3. **Spring Data JPA Reference**. VMware. https://docs.spring.io/spring-data/jpa/reference/
-
-4. **MyBatis 3 User Guide**. MyBatis. https://mybatis.org/mybatis-3/
-
-5. **Spring Framework Transaction Management**. VMware. https://docs.spring.io/spring-framework/reference/data-access/transaction.html
-
-6. **HikariCP Wiki**. Brett Wooldridge. https://github.com/brettwooldridge/HikariCP
-
-7. **R2DBC Specification**. Pivotal. https://r2dbc.io/spec/0.9.1.RELEASE/
-
-8. **Spring Data R2DBC Reference**. VMware. https://docs.spring.io/spring-data/r2dbc/reference/
-
-9. **Gray, Jim et al.** "The Transaction Concept: Virtues and Limitations". 1981.（事务概念的奠基性论文）
-
-10. **Berenson, Hal et al.** "A Critique of ANSI SQL Isolation Levels". SIGMOD 1995.（隔离级别的深入分析）
-
-11. **Bailis, Peter et al.** "Eventual Consistency Today: Limitations, Extensions, and Beyond". ACM Queue, 2013.
-
-12. **Vogels, Werner**. "Eventually Consistent". ACM Queue, 2008.
-
-13. **ShardingSphere Documentation**. Apache. https://shardingsphere.apache.org/
-
-14. **Seata Documentation**. Alibaba. https://seata.io/
-
-15. **Flyway Documentation**. Red Gate. https://flywaydb.org/
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - "Java Persistence with Hibernate". Christian Bauer, Gavin King, Gary Gregory. Manning, 2nd Edition, 2015.
@@ -2257,15 +2175,6 @@ public class ReactiveUserService {
 - "MyBatis in Practice". Clinton Begin.（MyBatis 作者）
 - "Database Internals". Alex Petrov. O'Reilly, 2019.（数据库底层原理）
 - "Designing Data-Intensive Applications". Martin Kleppmann. O'Reilly, 2017.（分布式数据系统圣经）
-
-### 11.2 在线资源
-
-- Spring Data 官方文档：https://docs.spring.io/spring-data/jpa/reference/
-- Hibernate 官方文档：https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html
-- MyBatis 官方文档：https://mybatis.org/mybatis-3/
-- R2DBC 规范：https://r2dbc.io/
-- Vlad Mihalcea 博客（JPA/Hibernate 性能权威）：https://vladmihalcea.com/
-- HikariCP GitHub Wiki：https://github.com/brettwooldridge/HikariCP
 
 ### 11.3 相关规范与论文
 

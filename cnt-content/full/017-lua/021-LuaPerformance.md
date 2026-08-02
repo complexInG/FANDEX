@@ -2461,8 +2461,6 @@ end
 -- 4. CPU 占用
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 解释 Lua 中局部变量与全局变量访问的性能差异,给出量化估计。
@@ -2538,45 +2536,6 @@ end
     - 字符串拼接(替代 `table.concat`)。
     - 字符串分割(替代 `string.gmatch`)。
     - 正则匹配(调用 C 库)。
-
-## 10. 参考文献
-
-1. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *Lua 5.4 Reference Manual*. Lua.org, 2020.
-2. Roberto Ierusalimschy. *Programming in Lua* (4th Edition). Lua.org, 2016.
-3. Mike Pall. *LuaJIT 2.0 Design and Implementation*. LuaJIT Project, 2011.
-4. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *The Implementation of Lua 5.0*. Journal of Universal Computer Science, 2005.
-5. Roberto Ierusalimschy. *Passing a Language through the Eye of a Needle*. HOPL IV, 2024.
-6. Mike Pall. *LuaJIT FFI Documentation*. https://luajit.org/ext_ffi.html
-7. Mike Pall. *LuaJIT JIT Compiler Documentation*. https://luajit.org/ext_jit.html
-8. Brendan Gregg. *Systems Performance: Enterprise and the Cloud* (2nd Edition). Addison-Wesley, 2020.
-9. Randy Allen, Ken Kennedy. *Optimizing Compilers for Modern Architectures*. Morgan Kaufmann, 2001.
-10. Ravi Sethi, Jeffrey Ullman. *Compilers: Principles, Techniques, and Tools* (2nd Edition). Addison-Wesley, 2006.
-11. Richard Jones, Antony Hosking, Eliot Moss. *The Garbage Collection Handbook*. CRC Press, 2011.
-12. Steve Blackburn, Kathryn McKinley. *Ulterior Reference Counting*. OOPSLA, 2003.
-13. David Detlefs, Stephen Heller, Marek Prochazka. *Generational GC for Lua*. ISMM, 2018.
-14. C. J. F. Pickett, C. Verbrugge. *Trace-based Just-In-Time Compilation for Lua*. CASCON, 2011.
-15. Mike Pall. *The LuaJit Project*. https://luajit.org/
-16. OpenResty Documentation. https://openresty.org/en/
-17. Luau Documentation. https://luau-lang.org/
-18. Roberto Ierusalimschy. *Lua Performance Tips*. Lua.org, 2008.
-19. Mike Pall. *LuaJIT Performance Optimization Guide*. https://luajit.org/performance.html
-20. Roberto Ierusalimschy. *Lua Garbage Collection*. Lua.org, 2017.
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **Lua 官方网站**:https://www.lua.org/
-  官方文档、教程、邮件列表、参考实现。
-
-- **LuaJIT 官方网站**:https://luajit.org/
-  LuaJIT 实现、FFI 文档、JIT 编译器文档、性能指南。
-
-- **OpenResty 官方网站**:https://openresty.org/
-  基于 Nginx + LuaJIT 的 Web 平台,高性能 Web 后端参考。
-
-- **Luau 官方网站**:https://luau-lang.org/
-  Roblox 的 Lua 方言,渐进式类型系统,游戏脚本参考。
 
 ### 11.2 性能工程经典教材
 

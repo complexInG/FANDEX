@@ -342,54 +342,6 @@ const products = await getLiveCollection('products')
 | 查询了不存在的集合名 | 运行时报集合不存在 | `getCollection('xxx')` 名称拼写错误 | 检查集合名与 `collections` 对象键名一致 |
 | 误把 pages 目录当集合数据源 | 查询结果与预期不符 | 内容文件同时放在 `src/pages/`（会生成页面）和集合目录 | 内容集合的数据文件放集合目录（如 `src/content/blog/`），不要放 `pages/` |
 
-## 10. 实战练习
-
-### 练习一：定义第一个集合
-
-- 题目：在 `content.config.ts` 中定义一个 `notes` 集合，字段含 `title`（必填字符串）、`date`（日期）、`tags`（字符串数组，默认空）。
-- 提示：参考第 2.1 节的写法。
-- 参考答案要点：`glob({ pattern: '**/*.md', base: './src/content/notes' })`；schema 用 `z.object({ title: z.string(), date: z.coerce.date(), tags: z.array(z.string()).default([]) })`。
-
-### 练习二：触发一次校验失败
-
-- 题目：故意在文档 frontmatter 中删掉 `title` 字段，运行 `npm run build`，观察报错信息，再修复。
-- 提示：报错会精确指出文件路径与字段。
-- 参考答案要点：构建报 `Invalid value for "title"` 并指向具体文件；补回 `title` 后构建通过。体会到"错误在构建期拦截"的价值。
-
-### 练习三：列表页 + 详情页闭环
-
-- 题目：实现 `blog/index.astro`（列表，按日期倒序，过滤草稿）与 `blog/[slug].astro`（详情，含标题、日期、标签、正文）。
-- 提示：参考第 4.1 节与第 5.1 节。
-- 参考答案要点：列表页 `getCollection` + `filter(!draft)` + `sort(日期倒序)`；详情页 `getStaticPaths` 用 `post.id` 作 params，`render(post)` 输出 `<Content />`。
-
-### 练习四：用枚举约束取值
-
-- 题目：为 `notes` 集合的 `status` 字段定义为枚举：只能取 `draft` / `published` / `archived`，并给出默认值。
-- 提示：`z.enum([...])` 加 `.default(...)`。
-- 参考答案要点：`status: z.enum(['draft', 'published', 'archived']).default('draft')`。
-
-### 练习五：认识 Astro 6 的 live 集合
-
-- 题目：查资料回答：构建期集合与 live 集合各自适合什么场景？你的文档站适合哪种？
-- 提示：对比"内容变化频率"与"重建成本"。
-- 参考答案要点：稳定的文章/文档用构建期集合（快、省）；频繁变化的数据（库存、榜单）用 live 集合（请求时实时）；一般文档站全部用构建期集合即可。
-
 ## 11. 一句话记忆
 
 **内容集合是图书馆编目系统：loader 决定书从哪来，schema 决定借书卡的格式（不合格不上架），getCollection 是检索目录，render 把书的内容翻开给读者看。**
-
-## 参考链接与延伸阅读
-
-参考链接：
-
-1. Astro 内容集合指南（中文）：https://docs.astro.build/zh-cn/guides/content-collections/
-2. Astro Content Layer API 参考：https://docs.astro.build/zh-cn/reference/content-layer/
-3. Astro Content 模块参考（getCollection / getEntry / render）：https://docs.astro.build/zh-cn/reference/modules/astro-content/
-4. Astro 官方博客（版本特性发布）：https://astro.build/blog/
-
-延伸阅读：
-
-- 动态路由与内容集合的配合，见本模块 003-PagesRouting；
-- 内容列表页与详情的渲染组件，见本模块 004-ComponentsProps；
-- 内容集合在 FANDEX 文档站的整体应用，见本模块 001-AstroOverview；
-- 交互组件与客户端岛屿，见本模块 006-IslandsClientComponents。

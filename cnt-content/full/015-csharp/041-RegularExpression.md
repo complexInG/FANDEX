@@ -287,20 +287,10 @@ public partial class MyRegex
 Match m = Regex.Match("a1", @"\d(?=[a-z])"); // 数字后跟字母
 ```
 
-## 参考文献
-
-Microsoft Learn C# 文档：https://learn.microsoft.com/zh-cn/dotnet/csharp/
-.NET 官方文档：https://learn.microsoft.com/zh-cn/dotnet/
-ASP.NET Core 文档：https://learn.microsoft.com/zh-cn/aspnet/core/
-C# 语言规范：https://learn.microsoft.com/zh-cn/dotnet/csharp/language-reference/
-
 ## 延伸阅读
-
 C# 与 .NET 生态，见 015-csharp 模块基础文档。
 异步编程与 Task，见 015-csharp 模块异步文档。
 SQL 与 EF Core，见 019-sql 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 .NET 课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

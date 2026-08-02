@@ -1813,8 +1813,6 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：编写正则匹配 IPv4 地址，要求每段 0-255。
@@ -1838,24 +1836,6 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 2. ^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$
 3. ^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
 ```
-
-### 9.3 实战题
-
-**习题 7**：实现一个函数 `ExtractURLs(text string) []string`，从 Markdown 文本中提取所有 URL（含 `[text](url)` 与裸 URL 两种形式）。
-
-**习题 8**：实现一个 ReDoS 静态检测器，输入正则字符串，输出是否可能存在回溯爆炸。提示：检测嵌套量词（如 `(a+)+`）与重叠分支（如 `(a|a)*`）。
-
-**习题 9**：实现一个支持热加载的验证器，从 YAML 配置文件读取多个正则模式，监听文件变化自动重新编译，提供 `Validate(field, value string) bool` 接口。
-
-### 9.4 思考题
-
-**习题 10**：为何 Russ Cox 选择 Pike VM 而非 lazy DFA 作为 Go `regexp` 的引擎？从实现复杂度、内存可预测性、捕获组支持、性能权衡四个维度分析。
-
-**习题 11**：设想你需要设计一个支持 100 万正则模式同时匹配的入侵检测系统（IDS），Go `regexp` 是否合适？应选何种方案？
-
----
-
-## 10. 参考文献
 
 ### 10.1 经典论文
 
@@ -1891,8 +1871,6 @@ func MatchRoute(path string) (map[string]string, func(map[string]string)) {
 18. Google RE2 Performance Benchmarks. https://github.com/google/re2/wiki/Performance
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 形式语言理论
 

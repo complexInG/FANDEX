@@ -184,21 +184,6 @@ overrides:
 
 **误区四：用了 catalog 就不需要 workspace 协议了。** → 两者分工不同：catalog 管"外部依赖版本"，workspace 管"内部包引用"，配合使用才完整。
 
-## 8. 实战练习
-
-1. **配置 catalog**：为你的 workspace 配置默认 catalog（react、typescript、vite 三个依赖），把各包中的版本号改为 `catalog:` 协议。
-
-2. **升级实验**：把 catalog 中 react 从 `^18.0.0` 改为 `^19.0.0`，执行 `pnpm -r update`，验证全工作空间同步升级。
-
-3. **strict 实验**：开启 `catalogMode: strict`，尝试 `pnpm add` 一个 catalog 中不存在的依赖，观察报错并理解严格模式的意义。
-
-4. **具名 catalog**：设计一个迁移场景（react17/react18 共存），用 `catalogs` 具名目录实现，并说明迁移完成后的收敛策略。
-
-## 9. 参考资源
-
-- pnpm catalogs 官方文档（中文）：https://pnpm.io/zh/catalogs
-- pnpm 设置参考（catalogMode）：https://pnpm.io/settings
-
 ## 10. 延伸阅读
 
 - workspace 基础配置，见本模块《工作空间配置》

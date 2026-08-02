@@ -446,16 +446,7 @@ gh release download v1.0.0
 gh release delete v1.0.0
 ```
 
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
-
 ## 延伸阅读
-
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。
 DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

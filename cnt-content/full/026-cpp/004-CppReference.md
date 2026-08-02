@@ -50,18 +50,6 @@ struct complex operator+(const struct complex& a, const struct complex& b);
 | **C++23** | 2023 | `std::reference_wrapper` 与 ranges 协作完善；`std::move_only_function` 中引用语义 | P2447 |
 | **C++26** | 草案 | Hazard pointer 与引用语义；`std::execution` 中的引用传递 | P2530 |
 
-### 1.3 关键提案与文献
-
-- **Stroustrup 1985**：*An Overview of C++*，首次公开引用语法与用途。
-- **N1385 (Ellis, Stroustrup, 2002)**：*A Fix for Rvalue References*，奠定 rvalue reference 语法基础。
-- **N1690 (Narodytska, 2004)**：*Extending move semantics to \*this*，提出 `&` / `&&` 限定成员函数。
-- **N1377 (Nelson, 2002)**：*A Proposal to Add Move Semantics Support to the C++ Language*，移动语义奠基。
-- **N2835 (Nasonov, 2009)**：*Lvalue references as rvalues*，澄清 value category 规则。
-- **N3055 (Futter, 2010)**：*A Refined Rvalue Reference Proposal*。
-- **N4279**：*Rvalue references for \*this*（最终版本，纳入 C++11）。
-- **P0135 (Voutilainen, 2016)**：*Guaranteed copy elision through simplified value categories*。
-- **P0137 (Morrow, 2016)**：*launder: A Library Function for Optimizing the Layout of Objects*。
-
 ### 1.4 与其他语言的横向对比
 
 | 特性 | C++ | Rust | Swift | Java | C# |
@@ -1391,8 +1379,6 @@ process(a);                // 隐式转 span
 process({arr, 3});         // 显式构造子视图
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（Remember / Understand）
 
 **习题 1**：以下哪些声明是合法的引用？
@@ -1618,50 +1604,6 @@ v[0] = false;   // 通过代理类型修改
 // bool& ref = v[0];  // 错误：不能绑定到代理类型
 ```
 
-## 10. 参考文献
-
-[1] Stroustrup, B. 1985. *An Overview of C++*. SIGPLAN Notices 20(6): 47-64. DOI: 10.1145/17919.17922.
-
-[2] Ellis, M. A. and Stroustrup, B. 1990. *The Annotated C++ Reference Manual*. Addison-Wesley. ISBN: 0-201-51459-1.
-
-[3] ISO/IEC 14882:1998. *Programming languages — C++*. International Organization for Standardization.
-
-[4] ISO/IEC 14882:2011. *Programming languages — C++*. International Organization for Standardization.
-
-[5] ISO/IEC 14882:2023. *Programming languages — C++*. International Organization for Standardization.
-
-[6] Stroustrup, B. 2013. *The C++ Programming Language* (4th ed.). Addison-Wesley. ISBN: 978-0321563842.
-
-[7] Meyers, S. 2014. *Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14*. O'Reilly Media. ISBN: 978-1491903995.
-
-[8] Sutter, H. and Alexandrescu, A. 2004. *C++ Coding Standards: 101 Rules, Guidelines, and Best Practices*. Addison-Wesley. ISBN: 978-0321113580.
-
-[9] Vandevoorde, D., Josuttis, N. M., and Gregor, D. 2017. *C++ Templates: The Complete Guide* (2nd ed.). Addison-Wesley. ISBN: 978-0321714121.
-
-[10] N1385, Ellis, M. and Stroustrup, B. 2002. *A Fix for Rvalue References*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N1385>.
-
-[11] N1377, Nelson, H.-J. 2002. *A Proposal to Add Move Semantics Support to the C++ Language*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N1377>.
-
-[12] N1690, Narodytska, N. 2004. *Extending move semantics to \*this*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N1690>.
-
-[13] N2835, Nasonov, A. 2009. *Lvalue references as rvalues*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N2835>.
-
-[14] P0135, Voutilainen, V. 2016. *Guaranteed copy elision through simplified value categories*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/P0135>.
-
-[15] P0137, Morrow, J. 2016. *launder: A Library Function for Optimizing the Layout of Objects*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/P0137>.
-
-[16] P2447, Krinkin, A. 2023. *std::span constructors*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/P2447>.
-
-[17] Becker, P. 2011. *The C++ Standard Library Extensions: A Tutorial and Reference*. Addison-Wesley. ISBN: 978-0321410993.
-
-[18] Josuttis, N. M. 2012. *The C++ Standard Library: A Tutorial and Reference* (2nd ed.). Addison-Wesley. ISBN: 978-0321623218.
-
-[19] Stroustrup, B. 2020. *C++20 — Reaching for the Aims of C++*. Keynote at CppCon 2020. Available: <https://www.youtube.com/watch?v=25r8gZEwYXc>.
-
-[20] Stroustrup, B. and Sutter, H. (eds.) 2021. *C++ Core Guidelines*. Available: <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>.
-
-## 11. 延伸阅读
-
 ### 11.1 标准文献
 
 - ISO/IEC 14882:2023 §9.4.3 *References*：引用的标准化定义与语义。
@@ -1677,15 +1619,6 @@ v[0] = false;   // 通过代理类型修改
 - *The C++ Programming Language* (4th ed.) by Stroustrup, §7.7（引用）。
 - *C++ Coding Standards* by Sutter & Alexandrescu, Items 88-94（参数传递、引用安全）。
 - *Exceptional C++* by Sutter, Items 16-18（编译期引用安全）。
-
-### 11.3 在线资源
-
-- cppreference.com: *Reference declaration* <https://en.cppreference.com/w/cpp/language/reference>
-- cppreference.com: *Value categories* <https://en.cppreference.com/w/cpp/language/value_category>
-- cppreference.com: *std::launder* <https://en.cppreference.com/w/cpp/utility/launder>
-- cppreference.com: *std::reference_wrapper* <https://en.cppreference.com/w/cpp/utility/functional/reference_wrapper>
-- ISO C++ FAQ: *References* <https://isocpp.org/wiki/faq/references>
-- C++ Core Guidelines: *F.7: For general use, take T* or T& arguments rather than smart pointers* <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rf-conventional>
 
 ### 11.4 视频与课程
 

@@ -4,7 +4,7 @@ title: 平衡树与高级树
 module: algorithm
 category: 算法与数据结构
 difficulty: advanced
-description: 二叉搜索树（BST）、AVL 树（Adelson-Velsky-Landis 1962《An algorithm for the organization of information》Dokl. Akad. Nauk SSSR 146:263-266）、2-3 树（Hopcroft 1970）、红黑树（Bayer 1972 原始版对称二叉 B 树；Guibas-Sedgewick 1978《A Dichromatic Framework for Balanced Trees》FOCS 19th Annual Symposium 现代版；Sedgewick 2008 Left-Leaning Red-Black BST）、B 树（Bayer-McCreight 1972《Organization and Maintenance of Large Ordered Indexes》Acta Informatica 1(3):173-189）、B+ 树（Knuth 1973 TAOCP Vol.3 系统化；Comer 1979《The Ubiquitous B-Tree》Computing Surveys 11(2):121-137）、Splay 树（Sleator-Tarjan 1985《Self-Adjusting Binary Search Trees》JACM 32(3):652-686 DOI:10.1145/3828.3835）、Treap（Seidel-Aragon 1996）、AA 树（Andersson 1993）的形式化定义、旋转操作、平衡不变式与摊还分析、复杂度证明，覆盖 MySQL InnoDB B+ 树聚簇索引 / Linux CFS 红黑树 / Java TreeMap / C++ std::map / PostgreSQL B-tree 等工业案例，附 Python / C++ / Java 多语言实现与 CLRS / Sedgewick 风格习题。
+description: 二叉搜索树（BST）、AVL 树（Adelson-Velsky-Landis 1962《An algorithm for the organization of information》Dokl. Akad. Nauk SSSR 146:263-266）、2-3 树（Hopcroft 1970）、红黑树（Bayer 1972 原始版对称二叉 B 树；Guibas-Sedgewick 1978《A Dichromatic Framework for Balanced Trees》FOCS 19th Annual Symposium 现代版；Sedgewick 2008 Left-Leaning Red-Black BST）、B 树（Bayer-McCreight 1972《Organization and Maintenance of Large Ordered Indexes》Acta Informatica 1(3):173-189）、B+ 树（Knuth 1973 TAOCP Vol.3 系统化；Comer 1979《The Ubiquitous B-Tree》Computing Surveys 11(2):121-137）、Splay 树（Sleator-Tarjan 1985《Self-Adjusting Binary Search Trees》JACM 32(3):652-686 DOI:10.1145/3828.3835）、Treap（Seidel-Aragon 1996）、AA 树（Andersson 1993）的形式化定义、旋转操作、平衡不变式与摊还分析、复杂度证明，覆盖 MySQL InnoDB B+ 树聚簇索引 / Linux CFS 红黑树 / Java TreeMap / C++ std::map / PostgreSQL B-tree 等工业案例，附 Python / C++ / Java 多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -2101,38 +2101,6 @@ SELECT * FROM orders WHERE status = 'shipped' AND created_at >= '2026-01-01';
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：（easy）下列关于 AVL 树的描述，错误的是：
-
-A. AVL 树由 Adelson-Velsky 和 Landis 在 1962 年提出
-B. AVL 树任意节点的平衡因子 $\in \{-1, 0, 1\}$
-C. AVL 树的高度上界为 $2 \log_2(n+1)$
-D. AVL 树插入最多需要 $O(\log n)$ 次旋转
-
-**常见疑问 2**：（medium）红黑树插入新节点时，若叔叔节点为红色，应执行：
-
-A. 左旋
-B. 右旋
-C. 变色并将修复点上移
-D. 不需修复
-
-**常见疑问 3**：（medium）$m$ 阶 B 树的根节点（非叶）至少有 ____ 个子节点：
-
-A. 1
-B. 2
-C. $\lceil m/2 \rceil$
-D. $m$
-
-**常见疑问 4**：（hard）关于 Splay 树的摊还复杂度，下列说法正确的是：
-
-A. 单次最坏复杂度为 $O(\log n)$
-B. $m$ 次操作总摊还代价为 $O(m \log n)$
-C. 不需要任何显式平衡信息
-D. B 和 C 都正确
-
 ### 填空题知识点讲解
 
 **常见疑问 5**：（easy）AVL 树由 ____ 与 ____ 在 ____ 年提出，发表于《____》。
@@ -2188,18 +2156,6 @@ def insert_fixup_buggy(self, z):
 **常见疑问 14**：（hard）Splay 树相比红黑树有哪些优势与劣势？在什么场景下应优先选择 Splay 树？
 
 ---
-
-## 11. 参考答案
-
-### 选择题知识点讲解
-
-**A1**: **C**。AVL 树高度上界为 $1.4405 \log_2(n+2) - 0.3277 \approx 1.44 \log_2 n$，而非 $2 \log_2(n+1)$（后者为红黑树上界）。其余均正确。
-
-**A2**: **C**。叔叔为红色时执行变色（父、叔叔变黑，祖父变红），并将修复点上移至祖父。无需旋转。
-
-**A3**: **B**。$m$ 阶 B 树的根节点（非叶）至少 2 个子节点。其余非根非叶节点至少 $\lceil m/2 \rceil$ 个子节点。
-
-**A4**: **D**。Splay 树单次最坏为 $O(n)$（A 错），但 $m$ 次操作总摊还代价 $O(m \log n)$（B 对），且不需要任何显式平衡信息（C 对）。
 
 ### 填空题知识点讲解
 
@@ -2307,52 +2263,6 @@ Splay 树相比红黑树的劣势：
 
 ---
 
-## 12. 参考文献
-
-1. Adelson-Velsky, Georgy M. and Landis, Evgenii M. 1962. An algorithm for the organization of information. Doklady Akademii Nauk SSSR 146, 263-266. (English translation: Soviet Mathematics - Doklady 3, 1259-1263.)
-
-2. Bayer, Rudolf and McCreight, Edward M. 1972. Organization and Maintenance of Large Ordered Indices. Acta Informatica 1(3), 173-189. DOI: 10.1007/BF00288683.
-
-3. Bayer, Rudolf. 1972. Symmetric binary B-trees: Data structure and maintenance algorithms. Acta Informatica 1(4), 290-306. DOI: 10.1007/BF00289509.
-
-4. Guibas, Leonidas J. and Sedgewick, Robert. 1978. A Dichromatic Framework for Balanced Trees. Proceedings of the 19th Annual Symposium on Foundations of Computer Science (FOCS 78), 8-21. DOI: 10.1109/SFCS.1978.3.
-
-5. Comer, Douglas. 1979. The Ubiquitous B-Tree. ACM Computing Surveys 11(2), 121-137. DOI: 10.1145/356770.356776.
-
-6. Sleator, Daniel D. and Tarjan, Robert E. 1985. Self-Adjusting Binary Search Trees. Journal of the ACM (JACM) 32(3), 652-686. DOI: 10.1145/3828.3835.
-
-7. Andersson, Arne. 1993. Balanced search trees made simple. Proceedings of the Third Workshop on Algorithms and Data Structures (WADS 93), LNCS 709, 60-71. DOI: 10.1007/BFb0021337.
-
-8. Sedgewick, Robert. 2008. Left-Leaning Red-Black Trees. Department of Computer Science, Princeton University. https://sedgewick.io/wp-content/uploads/2022/03/2008-09LLRB.pdf
-
-9. Seidel, Raimund and Aragon, Cecilia R. 1996. Randomized Search Trees. Algorithmica 16(4-5), 464-497. DOI: 10.1007/BF01940876.
-
-10. Cormen, Thomas H., Leiserson, Charles E., Rivest, Ronald L., and Stein, Clifford. 2022. Introduction to Algorithms (4th ed.). MIT Press. ISBN 978-0262046305.
-
-11. Knuth, Donald E. 1998. The Art of Computer Programming, Volume 3: Sorting and Searching (2nd ed.). Addison-Wesley Professional. ISBN 978-0201896855.
-
-12. Sedgewick, Robert and Wayne, Kevin. 2011. Algorithms (4th ed.). Addison-Wesley Professional. ISBN 978-0321573513.
-
-13. Tarjan, Robert E. 1983. Data Structures and Network Algorithms. SIAM (Society for Industrial and Applied Mathematics). ISBN 978-0898711875.
-
-14. Lehman, Philip L. and Yao, S. Bing. 1981. Efficient locking for concurrent operations on B-trees. ACM Transactions on Database Systems 6(4), 650-670. DOI: 10.1145/319628.319663.
-
-15. Garcia-Molina, Hector, Ullman, Jeffrey D., and Widom, Jennifer. 2014. Database Systems: The Complete Book (2nd ed.). Pearson. ISBN 978-0131873254.
-
-16. MySQL AB / Oracle. 2026. MySQL 8.0 InnoDB Storage Engine Architecture. https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html (accessed July 20, 2026).
-
-17. Linux Kernel Organization. 2026. Linux Kernel CFS Scheduler - Red-Black Tree Usage. https://www.kernel.org/doc/html/latest/scheduler/sched-design-CFS.html (accessed July 20, 2026).
-
-18. Oracle Corporation. 2026. Java TreeMap Source Code. https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/TreeMap.java (accessed July 20, 2026).
-
-19. PostgreSQL Global Development Group. 2026. PostgreSQL B-tree Index Implementation. https://www.postgresql.org/docs/current/btree.html (accessed July 20, 2026).
-
-20. Hibbard, Thomas N. 1962. Some Combinatorial Properties of Certain Trees with Applications to Searching and Sorting. Journal of the ACM (JACM) 9(1), 13-28. DOI: 10.1145/321105.321108.
-
----
-
-## 13. 延伸阅读
-
 ### 13.1 理论深入
 
 - **Adelson-Velsky-Landis 1962 原始论文**：[Dokl. Akad. Nauk SSSR 146:263-266](https://www.scopus.com/record/display.uri?eid=2-s2.0-0035172718)，理解 AVL 树的原始动机
@@ -2371,18 +2281,6 @@ Splay 树相比红黑树的劣势：
 - **内存数据库**：Redis、Memcached 的索引结构
 - **图数据库**：Neo4j 的索引结构
 - **搜索引擎**：Lucene 的倒排索引 + FST (Finite State Transducer)
-
-### 13.3 工程练习
-
-- **LeetCode 98**：验证二叉搜索树
-- **LeetCode 108**：将有序数组转换为 BST
-- **LeetCode 450**：删除 BST 中的节点
-- **LeetCode 701**：BST 中的插入操作
-- **LeetCode 1382**：将 BST 转换为平衡 BST
-- **LeetCode 220**：存在重复元素 III（红黑树 / TreeMap 应用）
-- **洛谷 P3369**：普通平衡树（Treap / Splay / 红黑树）
-- **洛谷 P3391**：文艺平衡树（Splay 区间翻转）
-- **洛谷 P3960**：列队（Splay 区间操作）
 
 ### 13.4 教学视频
 

@@ -1494,8 +1494,6 @@ function transition(state: AppState, event: string): AppState {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 1. **概念理解**：解释交叉类型 `A & B` 的集合论语义，说明为何称为 "Intersection Type"。
@@ -1563,38 +1561,7 @@ function transition(state: AppState, event: string): AppState {
     - 插件提供的接口类型安全
     - 支持插件卸载后的类型收窄
 
-## 参考文献
-
-1. Pierce, B. C. (2002). *Types and programming languages*. MIT Press. https://doi.org/10.7551/mitpress/4236.001.0001
-
-2. Pierce, B. C. (2004). *Advanced topics in types and programming languages*. MIT Press. https://doi.org/10.7551/mitpress/4236.001.0001
-
-3. Microsoft. (2024). *TypeScript Handbook: Intersection Types*. https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types
-
-4. Microsoft. (2024). *TypeScript Handbook: Declaration Merging*. https://www.typescriptlang.org/docs/handbook/declaration-merging.html
-
-5. Bierman, G., Abadi, M., & Torgersen, M. (2014). *Understanding TypeScript*. Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP '14), 257-281. https://doi.org/10.1007/978-3-662-44202-9_11
-
-6. Cardelli, L., & Wegner, P. (1985). *On understanding types, data abstraction, and polymorphism*. ACM Computing Surveys, 17(4), 471-523. https://doi.org/10.1145/6041.6042
-
-7. Cook, W. R., Hill, W. L., & Canning, P. S. (1990). *Inheritance is not subtyping*. Proceedings of the 17th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '90), 125-135. https://doi.org/10.1145/96709.96721
-
-8. Bruce, K. B., Cardelli, L., Castagna, G., Eifrig, J., Smith, S. F., Trifonov, V., White, D., & Leavens, G. T. (1995). *On binary methods*. Theory and Practice of Object Systems, 1(3), 221-242. https://doi.org/10.1002/tpao.1
-
-9. Compagnoni, A. B. (1995). *Higher-order subtyping with intersection types*. PhD Thesis, University of Edinburgh. https://doi.org/10.1.1.35.9280
-
-10. Reynolds, J. C. (1997). *Design of the programming language Forsythe*. Technical Report CMU-CS-96-136, Carnegie Mellon University.
-
-11. Apple Inc. (2014). *The Swift Programming Language: Protocols*. https://docs.swift.org/swift-book/LanguageGuide/Protocols.html (参考 Trait 组合语义)
-
-12. TypeScript Community. (2024). *Type-level programming patterns*. https://github.com/type-challenges/type-challenges
-
 ## 延伸阅读
-
-- **TypeScript Deep Dive**：https://basarat.gitbook.io/typescript/type-system — 深入讲解 TypeScript 类型系统，包括交叉类型与声明合并。
-- **Type Challenges**：https://github.com/type-challenges/type-challenges — 通过练习深入理解类型体操，包含交叉类型与递归类型的进阶题目。
-- **Effect Schema**：https://effect.website/docs/schema/introduction — Effect 生态的 Schema 库，大量使用交叉类型与条件类型。
-- **type-fest**：https://github.com/sindresorhus/type-fest — 实用工具类型集合，包含 `Merge`、`DeepMerge`、`Simplify` 等。
 - *Types and Programming Languages*（Benjamin C. Pierce 著）：类型系统的经典教材，深入理解子类型、交集类型的理论基础。
 - *Advanced Topics in Types and Programming Languages*（Pierce 编）：涵盖交叉类型、行多态（Row Polymorphism）等高级主题。
 - *Object-Oriented Programming: The CLOS Perspective*（Paepcke 编）：理解 Mixin 与多继承的运行时语义。

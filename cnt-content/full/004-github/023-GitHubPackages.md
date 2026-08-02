@@ -241,52 +241,9 @@ jobs:
 | 权限继承不生效 | 协作者读不了包 | 包未关联仓库 | 在包设置中关联仓库，或通过 Docker 标签声明来源 |
 | 令牌泄露风险 | 发现 token 出现在代码里 | 把令牌写进了文件并提交 | 立即吊销 token，改用环境变量/Secrets |
 
-## 9. 实战练习
-
-### 练习 1：发布你的第一个 npm 包（入门）
-
-**题目描述**：创建一个极简 npm 包（一个导出求和函数的 `index.js`），按第 4 节配置 `.npmrc` 和 `package.json`，用 PAT 发布到 GitHub Packages，然后在另一个项目里安装并调用。
-
-**提示**：包名用 `@你的用户名/hello-utils`；PAT 需要 `write:packages` 权限；先在本地测试 `npm pack` 确认包内容正确。
-
-**参考答案要点**：验证链路：`npm publish` 成功 → GitHub 仓库右侧出现 "Packages" 区块 → 另一个项目 `npm install @你的用户名/hello-utils` 成功 → 代码中 `require`/`import` 调用得到结果。中途 401 时检查 `.npmrc` 的 token 变量。
-
-### 练习 2：用 Actions 实现"打标签即发布"（进阶）
-
-**题目描述**：为练习 1 的包编写 `.github/workflows/publish.yml`，实现"创建 Git tag 时自动发布新版本"，并测试 `npm version patch && git push --tags` 触发流程。
-
-**提示**：`on` 可以写 `push: tags`；版本号从 `package.json` 读取，发布前先 `npm version` 更新。
-
-**参考答案要点**：工作流关键片段：`on: push: tags: ['v*']` → setup-node（registry-url 指向 GitHub Packages）→ `npm ci` → `npm publish`（`NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`，job 声明 `permissions: packages: write`）。验证：推 tag 后 Actions 跑绿，Packages 出现新版本。
-
-### 练习 3：发布并拉取一个 Docker 镜像（进阶）
-
-**题目描述**：用你的账号发布一个最小镜像到 GHCR（Dockerfile 可以是 `FROM alpine:latest` + 一个 ENV），验证"公开镜像匿名拉取、私有镜像需登录"的差异。
-
-**提示**：先构建到本地，`docker images` 确认 tag 为 `ghcr.io/你的用户名/hello:v1`。
-
-**参考答案要点**：命令序列：`docker build -t ghcr.io/你的用户名/hello:v1 .` → `echo $TOKEN | docker login ghcr.io -u 你的用户名 --password-stdin` → `docker push ghcr.io/你的用户名/hello:v1` → 切到无登录环境 `docker pull` 验证。观察 GHCR 包页面的可见性开关对拉取的影响。
-
-### 练习 4：设计团队私有包策略（挑战）
-
-**题目描述**：假设你的团队有 3 个仓库：`core-lib`（公共库）、`api-service`（后端）、`web-app`（前端）。设计一份"包管理策略"（200 字内）：哪些包发布到 GitHub Packages、包名规范、版本规范、谁有发布权、CI 何时触发发布。
-
-**提示**：结合第 7 节权限继承和第 6 节 CI 集成；包名建议 `@团队名/库名`；版本遵循语义化版本（主.次.修订）。
-
-**参考答案要点**：示例策略："core-lib 发布为私有 npm 包 @team/core-lib，语义化版本，仅 CI 在合并到 main 并打 tag v* 时自动发布（Actions + GITHUB_TOKEN）；api-service 发布 Docker 镜像 ghcr.io/team/api-service，Release 创建时触发；web-app 只消费不发布。所有包权限继承仓库权限，不单独开放。"
-
 ## 10. 一句话记忆
 
 **GitHub Packages 是 GitHub 自营的"软件包超市"：它兼容 npm、Docker、Maven 等常见工具，把"包"和你的仓库权限、CI 流程绑定在一起——认证靠 Token，发布用原生命令，私有包复用仓库权限，让团队不再需要把代码和包分开管理。**
-
-## 11. 参考链接与延伸阅读
-
-### 权威资料（GitHub 官方中文文档）
-
-- 关于 GitHub Packages：https://docs.github.com/zh/packages/learn-github-packages/about-github-packages
-- 使用 npm 注册表：https://docs.github.com/zh/packages/working-with-a-github-packages-registry/working-with-the-npm-registry
-- 使用容器注册表（GHCR）：https://docs.github.com/zh/packages/working-with-a-github-packages-registry/working-with-the-container-registry
-- 配置软件包的访问控制和可见性：https://docs.github.com/zh/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility
 
 ### 延伸阅读（站内文档）
 

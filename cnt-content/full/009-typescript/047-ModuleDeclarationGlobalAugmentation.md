@@ -1341,8 +1341,6 @@ console.log(user.name);
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 10.1**：为以下 JavaScript 模块编写 `.d.ts` 声明文件：
@@ -1491,64 +1489,6 @@ class Host {
 }
 ```
 
-### 9.3 思考题
-
-**思考题 10.6**：为什么 TypeScript 选择"声明合并"而非"显式扩展"（如 Rust 的 trait）作为模块增强的机制？从语言设计哲学、向后兼容性、生态演进三个角度分析。
-
-**参考答案要点**：
-
-1. **语言设计哲学**：TypeScript 的目标是"为 JavaScript 提供类型层"，因此类型层必须能描述 JavaScript 的动态特性。JavaScript 中对象的属性可在运行时被多次添加，声明合并正是这一行为的类型层抽象。
-2. **向后兼容性**：TypeScript 1.0 时代，已有大量 jQuery、Backbone 等库使用"命名空间 + 多文件拼接"模式。声明合并使这些库可以无损类型化。
-3. **生态演进**：声明合并降低了库的扩展门槛，但也带来了命名冲突风险。现代趋势是向"显式注入"（依赖注入、插件 API）转移，但声明合并仍是 Express、Fastify、Vue 等框架的基础。
-
-**思考题 10.7**：在 monorepo 中，若包 A 与包 B 都通过 `declare global` 扩展 `Window`，且类型不同，会发生什么？如何避免？
-
-**参考答案要点**：
-
-- **行为**：TypeScript 按文件加载顺序合并，后加载的覆盖前者（若类型兼容）。若不兼容，编译报错。
-- **避免方案**：
-  1. 库中绝不使用 `declare global`，改用显式注入。
-  2. 宿主项目集中管理全局类型，包 A、B 提供类型接口而非全局声明。
-  3. 使用 `interface` 而非 `var`，利用接口合并的"取并集"语义减少冲突。
-
-**思考题 10.8**：`declare module '*'` 与 `any` 类型有什么区别？为什么前者更危险？
-
-**参考答案要点**：
-
-- `any` 是显式放弃类型检查，开发者知道自己放弃了什么。
-- `declare module '*'` 是隐式放弃，开发者可能不知道某个模块的 `any` 来自这条通配符声明。
-- 前者更危险，因为它"吞掉"了所有未声明模块的类型错误，使 `Cannot find module` 错误消失，但实际类型仍是 `any`，运行时可能崩溃。
-
----
-
-## 10. 参考文献
-
-> 采用 ACM Reference Format。
-
-- Bierman, G. M., Abadi, M., & Torgersen, M. (2014). *Understanding TypeScript*. In Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP '14), Article 10, 1–29. DOI: 10.4230/LIPIcs.ECOOP.2014.10.
-
-- Ratanotayanon, S., & Dewey, D. (2019). *Type-Level Programming with TypeScript: A Practical Guide*. ACM SIGPLAN Notices, 54(8), 1–12. DOI: 10.1145/3359061.3359068.
-
-- Bierman, G., & Torgersen, M. (2018). *TypeScript: A Static Type Checker for JavaScript*. Microsoft Research Technical Report MSR-TR-2018-12. https://www.microsoft.com/en-us/research/publication/typescript-static-type-checker-javascript/
-
-- Golubev, A. (2021). *The Definitive TypeScript Guide: Modules, Declarations, and the @types Ecosystem*. DefinitelyTyped Community White Paper. https://definitelytyped.org/
-
-- Microsoft. (2024). *TypeScript Language Specification, Version 5.4*. Microsoft Corporation. https://github.com/microsoft/TypeScript/blob/main/doc/spec-archived.md
-
-- Freeman, J. (2023). *Programming TypeScript: Making Your JavaScript Applications Scale* (2nd ed.). O'Reilly Media.
-
-- Cherny, B. (2020). *Programming TypeScript* (1st ed.). O'Reilly Media.
-
-- Vasava, P. (2022). *Augmenting Modules in TypeScript: Patterns and Pitfalls*. Journal of JavaScript Engineering, 7(3), 45–62.
-
-- Bates, C., & Treppo, J. (2023). *DefinitelyTyped: Lessons from Maintaining 8000+ Type Declaration Packages*. ACM SIGPLAN Programming Languages Design and Implementation (PLDI '23), 234–248.
-
-- Node.js Foundation. (2024). *Node.js TypeScript Declaration Files: The @types/node Architecture*. Node.js Foundation Documentation. https://nodejs.org/api/typescript.html
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **TypeScript Handbook: Declaration Files** — https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
@@ -1559,17 +1499,6 @@ class Host {
 
 - **TypeScript Handbook: tsconfig Reference** — https://www.typescriptlang.org/tsconfig
   所有 tsconfig 选项的官方参考，包括 `typeRoots`、`types`、`paths` 等。
-
-### 11.2 社区资源
-
-- **DefinitelyTyped GitHub Repository** — https://github.com/DefinitelyTyped/DefinitelyTyped
-  8000+ 类型声明包的集中维护仓库，是学习声明文件的最佳实践来源。
-
-- **TypeScript Deep Dive: Declaration Files** — https://basarat.gitbook.io/typescript/type-system/declarations
-  Basarat Ali Syed 编写的深度教程，对声明合并有详细图解。
-
-- **Effective TypeScript: Item 33-37** — Dan Vanderkam
-  对声明文件、模块增强、`@types` 生态的工程化讨论。
 
 ### 11.3 相关课程
 

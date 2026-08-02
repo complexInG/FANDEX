@@ -2190,8 +2190,6 @@ type RouteLoader = () => Promise<typeof import('./pages/Home.js')>;
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. **[remember]** TypeScript 5.0+ 推荐的现代模块解析策略中，____适合打包器工程，____适合 Node.js ESM 工程。
@@ -2203,71 +2201,6 @@ type RouteLoader = () => Promise<typeof import('./pages/Home.js')>;
 4. **[understand]** 声明合并规则中，接口的____成员必须唯一且类型一致，____成员会按声明顺序合并为重载列表。
 
 5. **[remember]** TypeScript 内置的声明文件位于 ____目录，可通过 ____ 选项配置包含哪些标准库。
-
-### 选择题知识点讲解
-
-1. **[understand]** 下列哪种情况必须使用 declare module 而非 declare global？
-
-   - A. 扩展 Window 接口
-   - B. 为无类型的 npm 包提供类型
-   - C. 在模块文件中新增全局变量
-   - D. 声明 process.env 类型
-
-   答案：B
-
-2. **[analyze]** 关于 moduleResolution: bundler 的描述，错误的是？
-
-   - A. 支持不写扩展名的相对路径导入
-   - B. 要求 package.json 必须设置 type: module
-   - C. 适用于 Vite/Webpack/Rollup 等打包器工程
-   - D. 不支持 Node.js 原生运行
-
-   答案：B
-
-3. **[evaluate]** 以下 package.json exports 配置，TypeScript 解析时会出什么问题？
-
-   ```json
-   {
-     "exports": {
-       ".": {
-         "import": "./dist/index.mjs",
-         "types": "./dist/index.d.ts"
-       }
-     }
-   }
-   ```
-
-   - A. 没问题，正常运行
-   - B. TypeScript 找不到类型，因为 types 在 import 之后
-   - C. import 入口无法被 Node.js 加载
-   - D. 需要添加 require 条目
-
-   答案：B
-
-4. **[understand]** 关于 esModuleInterop 与 allowSyntheticDefaultImports 的关系，正确的是？
-
-   - A. 二者完全等价
-   - B. esModuleInterop 自动启用 allowSyntheticDefaultImports
-   - C. allowSyntheticDefaultImports 自动启用 esModuleInterop
-   - D. 二者互斥
-
-   答案：B
-
-5. **[analyze]** 以下代码在 NodeNext ESM 工程中哪一行会报错？
-
-   ```typescript
-   import express from 'express';            // (1)
-   import { helper } from './utils';          // (2)
-   import type { Options } from './types';    // (3)
-   import _ from 'lodash';                    // (4)
-   ```
-
-   - A. 第 (1) 行
-   - B. 第 (2) 行
-   - C. 第 (3) 行
-   - D. 第 (4) 行
-
-   答案：B（NodeNext 要求显式 .js 扩展名）
 
 ### 17.3 代码修复题
 
@@ -2387,42 +2320,6 @@ type RouteLoader = () => Promise<typeof import('./pages/Home.js')>;
 
 ---
 
-## 18. 参考文献
-
-1. Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In *28th European Conference on Object-Oriented Programming (ECOOP 2014)*. LIPIcs 33, Article 257, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-
-2. ECMA International. 2024. *ECMAScript 2024 Language Specification (ECMA-262, 15th edition)*. Standard ECMA-262. Available at: https://tc39.es/ecma262/
-
-3. Node.js Foundation. 2024. *Node.js Modules API: Package Exports*. Available at: https://nodejs.org/api/packages.html
-
-4. TypeScript Team. 2024. *TypeScript Handbook: Modules Reference*. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/modules/reference.html
-
-5. TC39. 2018. *ECMA-262 Module Specification*. In Proceedings of ECMA TC39. DOI: https://doi.org/10.1145/3180267
-
-6. Guarneri, S. and Gardner, P. 2021. A formal semantics for ES modules. In *Proceedings of the 30th European Symposium on Programming (ESOP 2021)*. LNCS 12648, 287–314. DOI: https://doi.org/10.1007/978-3-030-72019-3_11
-
-7. Bradley, M. and Bonsangue, M. 2018. A formal semantics for the JavaScript module system. In *Proceedings of the 17th International Workshop on Formal Engineering approaches to Software Components and Architectures (FESCA 2018)*. EPTCS 272, 23–40. DOI: https://doi.org/10.4204/EPTCS.272.2
-
-8. Swaine, B. and Glines, M. 2019. *A History of JavaScript Modules*. ACM Queue 17, 4 (Aug. 2019).
-
-9. TypeScript Team. 2023. *TypeScript 5.0 Release: moduleResolution: bundler*. Microsoft. Available at: https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/
-
-10. Branch, A. 2022. *TypeScript 4.7 Release: Enhanced moduleResolution*. Microsoft. Available at: https://devblogs.microsoft.com/typescript/announcing-typescript-4-7/
-
-11. DefinitelyTyped Community. 2024. *DefinitelyTyped README*. GitHub. Available at: https://github.com/DefinitelyTyped/DefinitelyTyped
-
-12. Ecma International. 2015. *ECMAScript 2015 Language Specification (6th edition)*. Standard ECMA-262, 6th edition.
-
-13. CommonJS Community. 2009. *Modules/1.1.1*. CommonJS Wiki. Available at: https://wiki.commonjs.org/wiki/Modules/1.1.1
-
-14. Winter, J. 2018. *UMD (Universal Module Definition) patterns*. GitHub. Available at: https://github.com/umdjs/umd
-
-15. McIlroy, D., Pinch, E., and Bostock, M. 2020. *Package.json exports field: a comprehensive guide*. npm Blog. Available at: https://nodejs.org/api/packages.html
-
----
-
-## 19. 延伸阅读
-
 ### 19.1 书籍
 
 - **《Programming TypeScript》**——Boris Cherny，O'Reilly 2019。第 9 章对模块解析有详尽讲解。
@@ -2444,14 +2341,6 @@ type RouteLoader = () => Promise<typeof import('./pages/Home.js')>;
 - **tshy**（https://github.com/isaacs/tshy）：Isaac Schlueter 的 TypeScript 双格式发布工具。
 - **unbuild**（https://github.com/unjs/unbuild）：JavaScript/TypeScript 构建工具。
 - **tsx**（https://github.com/privatenumber/tsx）：TypeScript 运行时执行器，支持 ESM/CJS。
-
-### 19.4 在线资源
-
-- **TypeScript Handbook: Modules Reference**（https://www.typescriptlang.org/docs/handbook/modules/reference.html）——官方模块解析完整参考。
-- **TypeScript Handbook: Module Resolution**（https://www.typescriptlang.org/docs/handbook/module-resolution.html）——官方解析策略说明。
-- **TypeScript Handbook: Declaration Files**（https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html）——官方声明文件指南。
-- **Node.js Documentation: Packages**（https://nodejs.org/api/packages.html）——Node.js exports 字段官方文档。
-- **Andrew Branch's Blog**（https://andrewbranch.dev）——TypeScript 团队成员博客，模块解析深度文章。
 
 ### 19.5 视频课程
 
@@ -2533,21 +2422,6 @@ flowchart TD
     T8 --> T9
     T8 --> T10
 ```
-
-## 附录 E：自测清单
-
-- [ ] 我能说出五种模块解析策略的名称与适用场景
-- [ ] 我能在 NodeNext 工程中正确使用 .js 扩展名
-- [ ] 我能写出符合规范的双格式发布 package.json exports
-- [ ] 我能使用 declare module 扩展第三方模块类型
-- [ ] 我能区分 esModuleInterop 与 allowSyntheticDefaultImports
-- [ ] 我能配置 paths 路径映射并在打包器同步
-- [ ] 我能在 monorepo 中使用 project references
-- [ ] 我能写出 declare module '*.svg' 等通配符声明
-- [ ] 我能诊断 "Cannot find module" 错误的根因
-- [ ] 我能为无类型的 npm 包编写 .d.ts 文件
-
----
 
 ## 模块基础
 

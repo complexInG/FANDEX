@@ -324,26 +324,6 @@ $B_n$ 是 $n$ 个元素的**划分总数**（分成任意组）。
 
 **误区四：Catalan 数和 Stirling 数记不住。** → 记住"判别词"：配对/出栈/不越线 → Catalan；分组（轮换/子集）→ Stirling；任意分组 → Bell。
 
-## 11. 实战练习
-
-1. **计数原理**：一个密码由 2 个大写字母 + 3 个数字组成（可重复），共多少种？不可重复呢？
-
-2. **排列组合**：8 人站成一排，其中 2 人必须相邻，有多少种排法？8 人选 3 人组成小组呢？
-
-3. **容斥原理**：1 到 100 中，能被 2 或 3 或 5 整除的数有多少个？
-
-4. **鸽巢原理**：证明在 11 个整数中，必有两个数的差是 10 的倍数。
-
-5. **Catalan 应用**：4 个节点有多少种不同的二叉搜索树？（用 $C_n$）
-
-6. **Stirling 应用**：5 个不同元素分成 3 个非空组，有多少种分法？（用 $S(5,3)$）
-
-## 12. 参考资源
-
-- MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-- Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-- Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
 ## 13. 延伸阅读
 
 - 组合数学在算法分析中的应用，见 023-algorithm 模块

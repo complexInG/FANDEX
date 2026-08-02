@@ -194,73 +194,9 @@ Wiki 最大的敌人是"写完就忘"。以下实践能让文档持续更新：
 | 文档与代码脱节 | 页面内容过时 | 没有维护机制 | 采用"改代码者同步改文档"约定 + 定期体检 |
 | Wiki 太多页打不开 | 部分页面访问缓慢 | 官方对 Wiki 有软限制（约 5000 个文件） | 超过规模改用 GitHub Pages 或 docs 目录 |
 
-## 7. 实战练习
-
-### 练习 1：开通并创建首页（入门）
-
-**题目描述**：在你自己的仓库里启用 Wiki，创建首页 `Home.md`，用 5 行以内的话介绍项目，并列出未来要补充的 3 个页面计划。
-
-**提示**：第一次进入 Wiki 页点 "Create the first page"；首页用链接列表充当目录。
-
-**参考答案要点**：
-
-```markdown
-# 校园二手交易平台
-
-本 Wiki 是本项目的知识库，供全体成员查阅。
-
-- [[Getting-Started|新人上手指南]]
-- [[Architecture|架构设计]]
-- [[Deployment|部署手册]]
-```
-要点：首页只做导航不写正文；页面链接用双括号语法。
-
-### 练习 2：搭建完整的页面骨架（进阶）
-
-**题目描述**：继续练习 1，创建 `_Sidebar.md` 侧边栏和 `_Footer.md` 页脚，再新建 2 个内容页面（如"开发环境搭建""接口约定"），填写真实内容。
-
-**提示**：侧边栏和页脚的创建入口在 Wiki 首页；页面之间用双括号链接互连。
-
-**参考答案要点**：侧边栏包含全部页面链接并分组；页脚包含"最近更新日期 + 反馈 Issue 链接"；新页面内容至少包含"是什么、怎么用、注意事项"三段，并让页面互相可跳转。
-
-### 练习 3：本地克隆并推送一个页面（进阶）
-
-**题目描述**：把 Wiki 克隆到本地，用编辑器新增一个 `Troubleshooting.md`（常见问题排查）页面，提交并推送，然后在网页上确认出现新页面。
-
-**提示**：克隆地址是 `仓库名.wiki.git`；默认分支通常是 `master`。
-
-**参考答案要点**：
-
-```bash
-git clone https://github.com/你的用户名/你的仓库.wiki.git
-cd 你的仓库.wiki
-# 编写 Troubleshooting.md 后
-git add Troubleshooting.md
-git commit -m "docs: 新增常见问题排查页"
-git push origin master
-```
-要点：推送后刷新 Wiki 页面验证；提交信息遵循 `docs:` 前缀。
-
-### 练习 4：制定团队文档维护规则（挑战）
-
-**题目描述**：给练习 1-3 的 Wiki 制定一份"维护公约"（100-200 字），包括：谁负责、什么时候更新、过期页面怎么处理、新页面怎么登记到侧边栏。把公约写入 `_Footer.md` 或首页置顶。
-
-**提示**：参考第 5 节的最佳实践清单，把规则写成可执行、可检查的条款。
-
-**参考答案要点**：公约示例："1. 改接口者当日更新对应页面；2. 每次迭代结束做 30 分钟文档体检；3. 新页面创建后必须在 _Sidebar.md 登记；4. 页面标注最后更新人，连续两轮迭代未更新视为待审。责任人：组长。"
-
 ## 8. 一句话记忆
 
 **Wiki 是仓库自带的"项目百科"：README 讲是什么，Wiki 讲怎么做和为什么这么设计；用首页做目录、侧边栏做导航、页脚做版权与反馈，把它当独立 Git 仓库来维护，知识才能持续沉淀。**
-
-## 9. 参考链接与延伸阅读
-
-### 权威资料（GitHub 官方中文文档）
-
-- 关于 Wiki：https://docs.github.com/zh/communities/documenting-your-project-with-wikis/about-wikis
-- 添加或编辑 Wiki 页面：https://docs.github.com/zh/communities/documenting-your-project-with-wikis/adding-or-editing-wiki-pages
-- 为 Wiki 创建页脚或侧边栏：https://docs.github.com/zh/communities/documenting-your-project-with-wikis/creating-a-footer-or-sidebar-for-your-wiki
-- 查看 Wiki 的变更历史：https://docs.github.com/zh/communities/documenting-your-project-with-wikis/viewing-a-wikis-history-of-changes
 
 ### 延伸阅读（站内文档）
 

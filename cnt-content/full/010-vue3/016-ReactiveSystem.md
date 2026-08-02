@@ -855,11 +855,3 @@ const set = reactive(new Set<number>());
 set.add(1);           // 触发更新
 set.has(1);           // true
 ```
-
-## 参考文献
-
-Vue 官方文档：https://vuejs.org/
-Vue Router：https://router.vuejs.org/zh/
-Pinia：https://pinia.vuejs.org/zh/
-Vue 3 迁移指南：https://v3-migration.vuejs.org/
-VueUse 组合函数库：https://vueuse.org/

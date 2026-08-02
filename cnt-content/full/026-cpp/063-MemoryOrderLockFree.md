@@ -1160,67 +1160,6 @@ int rte_ring_enqueue(struct rte_ring* r, void* obj) {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：. 以下哪种内存序提供最强的同步保证？
-
-- A. `relaxed`
-- B. `acquire`
-- C. `release`
-- D. `seq_cst`
-
-**解析讲解**：D
-
-`seq_cst` 提供全局总序，所有线程观察一致。是最强的内存序。
-
-**常见疑问 2**：. 以下代码是否安全？
-
-```cpp
-int data = 0;
-std::atomic<bool> ready{false};
-
-// 线程 A
-data = 42;
-ready.store(true, std::memory_order_relaxed);
-
-// 线程 B
-while (!ready.load(std::memory_order_acquire));
-print(data);
-```
-
-- A. 安全
-- B. 不安全，存在数据竞争
-- C. 安全但性能差
-- D. 编译错误
-
-**解析讲解**：B
-
-A 线程使用了 `relaxed` store，不建立 synchronizes-with 关系。即使 B 线程使用 `acquire` load，A 线程的 `data = 42` 也不保证对 B 可见。需要 A 使用 `release` store。
-
-**常见疑问 3**：. ABA 问题主要发生在什么场景？
-
-- A. 多生产者多消费者的无锁栈
-- B. 单生产者单消费者队列
-- C. 互斥锁实现
-- D. 全部以上
-
-**解析讲解**：A
-
-ABA 问题主要发生在使用 CAS 的无锁数据结构中，特别是无锁栈/队列。SPSC 队列通常不涉及 ABA（无并发 pop）。
-
-**常见疑问 4**：. `compare_exchange_weak` 与 `strong` 的区别是什么？
-
-- A. weak 性能更好
-- B. strong 保证不会伪失败
-- C. weak 在循环中使用更优
-- D. 全部以上
-
-**解析讲解**：D
-
-weak 可能伪失败（即使值匹配也返回 false），但在循环场景中性能更优（避免不必要的内存屏障）。strong 保证不会伪失败，适合单次判断。
-
 ### 填空题知识点讲解
 
 **常见疑问 5**：. C++11 定义了 ______ 种 `std::memory_order`。
@@ -1308,69 +1247,6 @@ public:
 };
 ```
 
-### 9.4 思考题
-
-**常见疑问 12**：. 为什么 `seq_cst` 在 x86 上比 `relaxed` 贵得多？
-
-x86 的 TSO 模型允许 store-load 重排。`seq_cst` 需要禁止这种重排，必须插入 `mfence` 指令或使用 `xchg`（隐含 lock 前缀）。这些操作会强制刷新写缓冲，导致显著的性能开销（5-10 倍）。而 `relaxed` 仅是普通的 `mov` 指令，几乎免费。
-
-**常见疑问 13**：. 无锁数据结构一定比互斥锁快吗？
-
-不一定。无锁数据结构在高争用场景下可能反而更慢：
-- CAS 失败重试导致 CPU 浪费；
-- 缓存行迁移开销大；
-- 实现复杂度高，易出错。
-
-低争用场景下，互斥锁（如 `std::mutex`）通常足够快（内核态 futex），且实现简单、易维护。无锁结构适合特定场景：高频访问、低延迟需求、无法进入内核态的实时系统。
-
-工程实践中应先测量再优化，避免过早使用无锁。
-
-**常见疑问 14**：. 为什么 C++ 不像 Java 那样使用 `volatile` 实现跨线程可见性？
-
-C++ 的 `volatile` 语义与 Java 不同：
-- C++ `volatile` 仅禁止编译器优化（如寄存器缓存），不保证 CPU 层面的可见性；
-- Java `volatile` 类似 C++ 的 `std::atomic` + `seq_cst`。
-
-C++ 选择将 `volatile` 与并发分离，引入 `std::atomic` 专门处理跨线程同步。这种分离使语义更清晰，避免误用 `volatile` 导致的微妙并发 bug。
-
-C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
-
-## 10. 参考文献
-
-引用采用 ACM Reference Format，含 DOI 链接。
-
-1. Boehm, H.-J. and Adve, A. 2008. *Foundations of the C++ Concurrency Memory Model*. In Proceedings of the 29th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '08). ACM, New York, NY, USA, 68–78. DOI: 10.1145/1375581.1375591
-
-2. Boehm, H.-J. 2005. *Memory Model for C++*. ISO/IEC JTC1/SC22/WG21 N2007. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n2007.pdf
-
-3. ISO/IEC. 2023. *Information technology — Programming languages — C++*. ISO/IEC 14882:2023. International Organization for Standardization, Geneva, Switzerland. Available at: https://www.iso.org/standard/83626.html
-
-4. Williams, A. 2019. *C++ Concurrency in Action* (2nd ed.). Manning Publications, Shelter Island, NY, USA. ISBN: 978-1617294693.
-
-5. Herlihy, M. and Shavit, N. 2012. *The Art of Multiprocessor Programming* (2nd ed.). Morgan Kaufmann, Cambridge, MA, USA. ISBN: 978-0123973375.
-
-6. McKenney, P. E. and Silvera, A. 2009. *Memory Barriers: a Hardware View for Software Hackers*. Available at: https://www.puppet.com/sites/default/files/2017-08/memory-barriers.pdf
-
-7. Adve, S. V. and Gharachorloo, K. 1996. *Shared Memory Consistency Models: A Tutorial*. IEEE Computer 29, 12, 66–76. DOI: 10.1109/2.546611
-
-8. Crowl, L. and Boehm, H.-J. 2007. *Atomic Operations in C++*. ISO/IEC JTC1/SC22/WG21 N2145. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2145.html
-
-9. Lea, D. 2019. *The java.util.concurrent Synchronizer Framework*. In Proceedings of the 19th European Conference on Object-Oriented Programming (ECOOP '05). Springer, Berlin, Germany, 1–20. DOI: 10.1007/11531142_1
-
-10. Michael, M. M. 2004. *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*. IEEE Transactions on Parallel and Distributed Systems 15, 6, 491–504. DOI: 10.1109/TPDS.2004.8
-
-11. Detlefs, D., Flood, C., Garthwaite, A., Martin, P., Shavit, N., and Steele, G. 2002. *Even Better DCAS-Based Concurrent Deques*. In Proceedings of the 14th International Conference on Distributed Computing (DISC '00). Springer, Berlin, Germany, 72–86. DOI: 10.1007/3-540-40026-5_5
-
-12. Michael, M. M. and Scott, M. L. 1996. *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*. In Proceedings of the 15th Annual ACM Symposium on Principles of Distributed Computing (PODC '96). ACM, New York, NY, USA, 267–275. DOI: 10.1145/248052.248106
-
-13. Mckenney, P. E. 2020. *Hazard Pointers*. ISO/IEC JTC1/SC22/WG21 P2530R0. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2530r0.html
-
-14. Sutter, H. 2012. *Welcome to the Jungle*. ISO/IEC JTC1/SC22/WG21 N3334. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3334.html
-
-15. Lamport, L. 1979. *How to Make a Multiprocessor Computer That Correctly Executes Multiprocess Programs*. IEEE Transactions on Computers 28, 9, 690–691. DOI: 10.1109/TC.1979.1675439
-
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **《C++ Concurrency in Action》**（Anthony Williams, 2nd ed., 2019）：C++ 并发权威著作，详细讲解内存模型与无锁编程。
@@ -1388,14 +1264,6 @@ C++20 起 `volatile` 进一步被弱化（deprecate 了许多用途）。
 - **P2530**: Hazard Pointers for C++26 — hazard pointer 标准化。
 - **P2545**: Read-Copy-Update (RCU) for C++26 — RCU 标准化。
 - **P2045**: atomic_ref<floating-point> — 浮点原子操作。
-
-### 11.3 在线资源
-
-- **cppreference.com**: [std::atomic](https://en.cppreference.com/w/cpp/atomic/atomic), [std::memory_order](https://en.cppreference.com/w/cpp/atomic/memory_order), [std::atomic_thread_fence](https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence)
-- **Paul McKenney's papers**: <https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2530r0.html> — RCU 与 Hazard Pointer 系列论文。
-- **C++ Reference Concurrency**: <https://en.cppreference.com/w/cpp/thread> — 完整并发 API 文档。
-- **Jeff Preshing's Blog**: <https://preshing.com/> — 一系列深入浅出的内存模型文章。
-- **Boehm's Memory Model tutorials**: <https://www.hboehm.info/> — C++ 内存模型作者主页。
 
 ### 11.4 视频课程
 

@@ -1624,8 +1624,6 @@ void auto_bind() {
 GameEngine(int width, int height);
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **Q1**：什么是 WebAssembly 的"线性内存"？为什么 C++ 与之语义契合？
@@ -1678,83 +1676,6 @@ emcc main.cpp -o main.js -g -O0
 
 **Q15**：分析浏览器 Streaming Compilation 与同步 Compilation 的性能差异，设计实验量化启动延迟。
 
-### 参考答案要点
-
-**A1**：Wasm 的线性内存是单一连续字节数组，地址空间从 0 到 L-1。C++ 的指针运算直接映射为内存偏移，使 C++ 代码几乎可以无损移植。
-
-**A2**：
-
-```sh
-emcc hello.cpp -o hello.html
-```
-
-打开 `hello.html` 即可看到输出。
-
-**A3**：wasm32 地址空间 32 位，最大 4GB；wasm64 为 64 位，理论支持更大内存。需要 wasm64 的场景：大型数据库、视频编辑、科学计算。目前浏览器对 wasm64 支持有限（2024 年实验性）。
-
-**A4**：(1) 体积优化（异常表与 RTTI 信息增加 200–500 KB）；(2) 浏览器环境通常不需异常传播到 JS；(3) 性能：异常捕获有运行时开销。
-
-**A5**：WASI 是面向服务端的 Wasm 系统接口，定义 POSIX-like API。与 Emscripten 区别：(1) 能力安全（不能自由访问文件系统）；(2) 无浏览器依赖；(3) 标准化（W3C）；(4) 启动开销小。
-
-**A6-A15**：略，参考 Emscripten 文档与开源项目案例。
-
-## 参考文献
-
-[1] Haas, A., Rossberg, A., Schuff, D. L., Holman, M., Gohman, B., Wagner, L., Zakai, A., Bastien, J., and Holman, M. 2017. *Bringing the Web up to Speed with WebAssembly*. In *Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation* (PLDI '17). ACM, New York, NY, 185–200. DOI: 10.1145/3062341.3062363.
-
-[2] Rossberg, A. (Ed.) 2024. *WebAssembly Core Specification Version 2.0*. W3C Recommendation. Available at: https://www.w3.org/TR/wasm-core-2/.
-
-[3] Watt, A., Rossberg, A., and Gohman, B. 2023. *WebAssembly 2.0*. W3C Working Draft. Available at: https://www.w3.org/TR/wasm-core-2/.
-
-[4] Zakai, A. 2011. *Emscripten: An LLVM-to-JavaScript Compiler*. In *Proceedings of the ACM International Conference Companion on Object Oriented Programming Systems Languages and Applications Companion* (SPLASH '11). ACM, New York, NY, 301–312. DOI: 10.1145/2048147.2048224.
-
-[5] Watt, A. 2019. *WebAssembly System Interface (WASI)*. Bytecode Alliance. Available at: https://wasi.dev/.
-
-[6] International Organization for Standardization. 2023. *Information technology — Programming languages — C++*. ISO/IEC 14882:2023. ISO, Geneva, Switzerland.
-
-[7] Gohman, B. 2018. *WebAssembly SIMD Proposal*. GitHub Repository. Available at: https://github.com/WebAssembly/simd.
-
-[8] Rossberg, A., Gohman, B., Wagner, L., and Zakai, A. 2018. *WebAssembly Threads Proposal*. GitHub Repository. Available at: https://github.com/WebAssembly/threads.
-
-[9] Brunthaler, M. 2020. *WebAssembly Exception Handling*. GitHub Proposal. Available at: https://github.com/WebAssembly/exception-handling.
-
-[10] Rossberg, A. 2023. *WebAssembly Garbage Collection (GC) Proposal*. GitHub Repository. Available at: https://github.com/WebAssembly/gc.
-
-[11] Watt, A. 2022. *Component Model for WebAssembly*. Bytecode Alliance. Available at: https://github.com/WebAssembly/component-model.
-
-[12] Lattner, C. and Adve, V. 2004. *LLVM: A Compilation Framework for Lifelong Program Analysis & Transformation*. In *Proceedings of the International Symposium on Code Generation and Optimization: Feedback-Directed and Runtime Optimization* (CGO '04). IEEE Computer Society, 75–86. DOI: 10.1109/CGO.2004.1281668.
-
-[13] Emscripten Project. 2024. *Emscripten Documentation*. Available at: https://emscripten.org/docs/.
-
-[14] WebAssembly Community Group. 2024. *Binaryen Toolkit*. GitHub Repository. Available at: https://github.com/WebAssembly/binaryen.
-
-[15] WebAssembly Community Group. 2024. *WABT: The WebAssembly Binary Toolkit*. GitHub Repository. Available at: https://github.com/WebAssembly/wabt.
-
-[16] Bytecode Alliance. 2024. *Wasmtime Documentation*. Available at: https://wasmtime.dev/.
-
-[17] Bytecode Alliance. 2024. *Wasmer Runtime*. Available at: https://wasmer.io/.
-
-[18] OpenCV Team. 2024. *OpenCV with WebAssembly*. Available at: https://docs.opencv.org/4.x/d4/da1/tutorial_js_setup.html.
-
-[19] Catto, E. 2024. *Box2D Physics Engine*. Available at: https://box2d.org/.
-
-[20] Zakai, A. 2013. *asm.js: Assembling the Web*. Mozilla Hacks Blog. Available at: https://hacks.mozilla.org/2013/03/asm-js-assembling-the-web/.
-
-[21] Meyerovich, L. A. and Bodik, R. 2010. *Fast and Parallel Webpage Layout*. In *Proceedings of the 19th International Conference on World Wide Web* (WWW '10). ACM, New York, NY, 711–720. DOI: 10.1145/1772690.1772763.
-
-[22] Anderson, C. and Giannini, P. 2023. *WebAssembly Component Model Specification*. Bytecode Alliance. Available at: https://github.com/WebAssembly/component-model.
-
 ## 延伸阅读
-
-- **Emscripten 文档**：https://emscripten.org/docs/ — 官方完整文档与教程。
-- **MDN WebAssembly**：https://developer.mozilla.org/en-US/docs/WebAssembly — Mozilla 开发者网络。
-- **WebAssembly 官网**：https://webassembly.org/ — 规范、提案、社区。
-- **Bytecode Alliance**：https://bytecodealliance.org/ — WASI、Wasmtime 等核心项目。
-- **Surma 的博客**：https://dassur.ma/things/ — WebAssembly 实践与思考。
-- **Lin Clark 的 WebAssembly 系列**：https://hacks.mozilla.org/author/lclarkmozilla-com/ — 通俗易懂的 Wasm 解释。
-- **Wasm Weekly**：https://wasmweekly.dev/ — Wasm 生态每周更新。
-- **Awesome Wasm**：https://github.com/mbasso/awesome-wasm — 优质 Wasm 资源集合。
-- **Emscripten GitHub Issues**：https://github.com/emscripten-core/emscripten/issues — 实际问题排查。
-- **Wasm Examples**：https://github.com/mdn/webassembly-examples — MDN 提供的示例集合。
 - **教学资源**：MIT 6.5840 Distributed Systems（涉及 Wasm 边缘计算）、CMU 15-410 Operating Systems（沙箱机制）、Stanford CS217（Wasm 设计原则）。
 - **未来方向**：关注 Wasm GC 提案、Component Model、WASI 0.2、Wasm 64 位内存等前沿进展。

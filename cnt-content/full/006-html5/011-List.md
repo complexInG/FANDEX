@@ -377,34 +377,11 @@ function buildToc(root) {
 
 嵌套列表的规则只有一条：子列表必须在 `<li>` 内部。理解 HTML 内容模型后，错误嵌套导致的渲染异常都可以解释。
 
-## 10. 参考文献
-
-WHATWG HTML Standard, The ul element, 访问日期 2026-08-01, https://html.spec.whatwg.org/multipage/grouping-content.html#the-ul-element
-
-WHATWG HTML Standard, The ol element, 访问日期 2026-08-01, https://html.spec.whatwg.org/multipage/grouping-content.html#the-ol-element
-
-WHATWG HTML Standard, The dl element, 访问日期 2026-08-01, https://html.spec.whatwg.org/multipage/grouping-content.html#the-dl-element
-
-MDN Web Docs, list-style-type, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/list-style-type
-
-MDN Web Docs, ::marker, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/::marker
-
-W3C, WCAG 2.1 Success Criterion 1.3.1 Info and Relationships, 访问日期 2026-08-01, https://www.w3.org/TR/WCAG21/#info-and-relationships
-
 ## 11. 延伸阅读
-
 列表的样式与布局与 CSS 密切相关，可阅读 007-css 模块的列表样式相关文档；
-
 HTML 语义元素的整体体系，见 006-html5 模块的 HTML5 语义化文档；
-
 Vue 组件化渲染列表的更多模式，见 010-vue3 模块相关文档；
-
-MDN 的 HTML 列表教程：https://developer.mozilla.org/zh-CN/docs/Learn_web_development/Core/Structuring_content/Lists ；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 HTML/CSS 入门课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供前端基础与工程化课程。
-
 ---
-
 ### 1. 无序列表 ul
 
 ```html
@@ -734,4 +711,3 @@ ul.custom-mark li::before {
   <li><button onclick="exit()">退出</button></li>
 </menu>
 ```
-

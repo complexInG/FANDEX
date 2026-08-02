@@ -1285,16 +1285,6 @@ Python 的 `@dataclass` 装饰器提供了有限的类型变换能力，但无�
 - "Effective TypeScript"（Dan Vanderkam）：第二版第 3 章
 - `type-fest` 仓库（GitHub）：社区工具类型集合
 
-### 16.5 实践练习
-
-1. 实现 `Mutable<T>`，移除所有 `readonly`。
-2. 实现 `DeepReadonly<T>`，递归地只读化。
-3. 实现 `PickByValue<T, V>`，按值类型挑选。
-4. 实现 `SnakeToCamel<S>`，字符串转换。
-5. 实现 `UnionToIntersection<U>`，联合转交叉。
-6. 实现 `IsUnion<T>`，判断是否为联合类型。
-7. 实现 `AsyncReturnType<T>`，异步函数返回值。
-
 ### 16.6 总结
 
 工具类型是 TypeScript 类型系统的"标准库"。理解其实现原理，不仅能让我们更有效地使用内置工具类型，更能让我们以一致的风格编写自定义工具类型，扩展类型系统的表达力。
@@ -1526,8 +1516,6 @@ TypeScript 对重载函数的 `infer` 推断只能匹配最后一个签名。如
 
 将类型参数包裹在元组中：`[T] extends [U] ? ... : ...`。这会阻止编译器将 `T` 视为裸类型参数，从而禁用分发。
 
-## 附录 F：练习题参考答案
-
 ### F.1 Mutable
 
 ```typescript
@@ -1739,20 +1727,6 @@ T & \text{otherwise}
 $$
 
 ## 附录 J：教学资源推荐
-
-### J.1 官方资源
-
-- TypeScript Handbook: Utility Types
-- TypeScript Handbook: Mapped Types
-- TypeScript Handbook: Conditional Types
-- TypeScript Handbook: Type Inference
-
-### J.2 社区资源
-
-- type-challenges（GitHub）：从入门到困难的类型体操练习
-- type-fest（GitHub）：社区工具类型集合
-- utility-types（GitHub）：另一个工具类型集合
-- TypeScript Deep Dive：在线书籍
 
 ### J.3 学术参考
 

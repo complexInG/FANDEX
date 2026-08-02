@@ -1407,8 +1407,6 @@ func FuzzYAMLParse(f *testing.F) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：编写一个 fuzz target `FuzzBase64`，测试 `encoding/base64` 标准库的鲁棒性，要求：
@@ -1543,22 +1541,6 @@ if (x * 1234567 == 0xdeadbeef) {
 
 Go 原生 fuzzing 不集成符号执行，对此类"魔法值"分支效果较差，需通过字典或人工种子辅助。
 
-### 9.3 思考题
-
-**思考题 1**：在微服务架构中，如何将 fuzzing 引入到 gRPC 服务端测试？请描述 Fuzz target 的设计、种子来源、CI 集成方式。
-
-**思考题 2**：如果一个 fuzz target 在 24 小时内发现 0 个崩溃，但覆盖率仅 40%，应该如何诊断与改进？请列出至少 3 个可能原因与对应措施。
-
-**思考题 3**：为什么 Go 团队选择不支持自定义变异器？这一设计决策的利弊各是什么？在何种场景下会成为瓶颈？
-
-**思考题 4**：对比 Go fuzzing 与 libFuzzer 在 worker 进程模型上的差异。Go 为何选择多进程而非多线程？
-
-**思考题 5**：假设你负责一个金融协议解析库的 fuzzing，如何平衡"发现的崩溃应及时披露"与"零日漏洞不应公开"之间的矛盾？请设计一个 disclosure policy。
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Miller, B. P., Fredriksen, L., & So, B. (1990). An empirical study of the reliability of UNIX utilities. *Communications of the ACM*, 33(12), 32-44. https://doi.org/10.1145/96267.96279
@@ -1594,16 +1576,6 @@ Go 原生 fuzzing 不集成符号执行，对此类"魔法值"分支效果较差
 [14] Ziv, J., & Lempel, A. (1977). A universal algorithm for sequential data compression. *IEEE Transactions on Information Theory*, 23(3), 337-343.
 
 ---
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **Go Fuzzing 官方教程** — https://go.dev/doc/tutorial/fuzz
-- **Go Blog: Fuzzing is Beta Ready** — https://go.dev/blog/fuzz-beta
-- **Go 1.18 Release Notes** — https://go.dev/doc/go1.18
-- **`testing` 包文档** — https://pkg.go.dev/testing#hdr-Fuzzing
-- **`internal/fuzz` 源码** — https://github.com/golang/go/tree/master/src/internal/fuzz
 
 ### 11.2 进阶论文
 

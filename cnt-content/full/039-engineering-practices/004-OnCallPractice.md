@@ -333,24 +333,6 @@ Runbook 的价值：
 
 **真相**：过时的 Runbook 比没有更糟——值班者照着错的步骤操作，可能造成二次事故。手册必须随系统变更同步维护。
 
-## 8. 实战练习
-
-1. **设计轮值表**：假设你是一个 5 人团队（不足 6 人），要为一个 7×24 在线服务设计值班制度。写出你的方案：如何解决人数不足？主备如何安排？交接仪式怎么做？
-
-2. **审查告警**：列出你熟悉的系统（或你写的服务）可能监控的 10 个指标，逐个判断"哪些值得告警、哪些只是噪音"，并为值得告警的写出触发条件。
-
-3. **写 Runbook**：为"数据库连接数打满"这个典型故障写一份 Runbook：影响评估、快速止血、详细排查、修复方案、升级路径。
-
-4. **计算错误预算**：某服务 SLO 定为"月度可用性 99.99%"，计算它一个月的错误预算是多少分钟；如果某天错误率骤升到会"3 天内烧光预算"，应该用哪种告警级别？
-
-## 9. 参考资源
-
-- Google SRE 书（第 11 章 Being On-Call，公开）：https://sre.google/sre-book/being-on-call/
-- Google SRE 工作手册（告警与 SLO）：https://sre.google/workbook/
-- Google 四大黄金信号：https://sre.google/sre-book/monitoring-distributed-systems/
-- 错误预算告警模式（Google SRE Workbook）：https://sre.google/workbook/alerting-on-slos/
-- PagerDuty On-Call 最佳实践：https://www.pagerduty.com/resources/guides/
-
 ## 10. 延伸阅读
 
 - 事故发生后如何复盘学习，见本模块《事故复盘方法论》

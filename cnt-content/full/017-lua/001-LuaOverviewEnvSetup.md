@@ -1675,8 +1675,6 @@ end
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**：以下代码输出什么？请解释原因。
@@ -1909,10 +1907,6 @@ return M
 
 ---
 
-## 10. 参考文献
-
-本节参考文献按 ACM Reference Format 格式组织，包含 DOI 链接。
-
 ### 10.1 Lua 语言核心文献
 
 [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua-an extensible extension language. *Software: Practice and Experience* 26, 6 (June 1996), 635-652. DOI: https://doi.org/10.1002/(SICI)1097-024X(199606)26:6%3C635::AID-SPE26%3E3.0.CO;2-P
@@ -1957,8 +1951,6 @@ return M
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档与资源
 
 - **Lua 官方网站**：https://www.lua.org/
@@ -1994,12 +1986,6 @@ return M
 - **Love2D**：https://love2d.org/（2D 游戏引擎）
 - **Neovim**：https://neovim.io/
 - **Luau**：https://luau-lang.org/（Roblox 的 Lua 衍生分支，渐进式类型）
-
-### 11.5 社区资源
-
-- **Lua Users Community**：http://lua-users.org/
-- **Reddit r/lua**：https://www.reddit.com/r/lua/
-- **Stack Overflow Lua 标签**：https://stackoverflow.com/questions/tagged/lua
 
 ### 11.6 相关工具
 

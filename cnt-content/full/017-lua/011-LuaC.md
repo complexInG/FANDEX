@@ -2303,8 +2303,6 @@ OpenResty 在 Nginx 中嵌入 LuaJIT，用于编写高性能 Web 网关：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：编写一个 C 函数 `l_sum`，接收任意数量的数字参数，返回它们的和。要求使用 `lua_gettop` 获取参数数量，循环 `lua_tonumber` 累加。
@@ -2462,8 +2460,6 @@ static int l_reverse(lua_State *L) {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 Lua 官方文献
 
 - Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 1996. Lua-an extensible extension language. *Software: Practice and Experience* 26, 6 (June 1996), 635-652. DOI: [10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P](https://doi.org/10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P).
@@ -2499,8 +2495,6 @@ static int l_reverse(lua_State *L) {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - Lua 5.4 Reference Manual: [https://www.lua.org/manual/5.4/](https://www.lua.org/manual/5.4/)
@@ -2530,12 +2524,6 @@ static int l_reverse(lua_State *L) {
 - Kong: [https://github.com/Kong/kong](https://github.com/Kong/kong)
 - Redis: [https://github.com/redis/redis](https://github.com/redis/redis)
 - Neovim: [https://github.com/neovim/neovim](https://github.com/neovim/neovim)
-
-### 11.5 社区资源
-
-- Lua Users Wiki: [http://lua-users.org/wiki/](http://lua-users.org/wiki/)
-- Lua 邮件列表存档: [https://www.lua.org/lua-l.html](https://www.lua.org/lua-l.html)
-- Stack Overflow Lua 标签: [https://stackoverflow.com/questions/tagged/lua](https://stackoverflow.com/questions/tagged/lua)
 
 ### 11.6 性能调优工具
 

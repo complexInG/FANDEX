@@ -188,23 +188,6 @@ flowchart TD
 
 **误区四：质量 = 功能多。** → 功能多≠质量好。一个功能少但稳定、易维护、安全的系统，比功能多但频繁崩溃的系统质量更高。
 
-## 8. 实战练习
-
-1. **模型选择**：为以下项目各选一个合适的开发模型，并说明理由：①一个需求非常明确的报表系统 ②一个需求天天变的电商 App ③一个涉及人身安全的医疗设备系统。
-
-2. **危机分析**：回想你（或同学）做过的项目，用第 2 节的"软件危机表现"分析它踩过哪些坑。
-
-3. **原则应用**：找出你最近写的一段代码，用 DRY / KISS / YAGNI 三个原则各找出一个可以改进的点。
-
-4. **质量评估**：用 ISO 25010 的 8 个维度为你常用的一个 App 打分（1-5 分），并说明最强的维度和最弱的维度。
-
-## 9. 参考资源
-
-- IEEE Software 期刊：https://www.computer.org/csdl/magazine/so
-- Martin Fowler 网站：https://martinfowler.com/
-- 敏捷宣言：https://agilemanifesto.org/iso/zhchs/manifesto.html
-- ISO 25010 质量模型：https://iso25000.com/index.php/en/iso-25000-standards/iso-25010
-
 ## 10. 延伸阅读
 
 - 软件生命周期中的需求阶段，见本模块《需求分析方法》

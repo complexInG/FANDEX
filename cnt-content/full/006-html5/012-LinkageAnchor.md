@@ -397,32 +397,11 @@ h1, h2 {
 
 链接与按钮的选择是交互设计的基础问题：导航用链接，动作用按钮。这个判断影响键盘支持、中键行为、SEO 与辅助技术体验，值得在组件设计层面统一约束。
 
-## 10. 参考文献
-
-WHATWG HTML Standard, The a element, 访问日期 2026-08-01, https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-a-element
-
-WHATWG URL Standard, 访问日期 2026-08-01, https://url.spec.whatwg.org/
-
-MDN Web Docs, a 元素, 访问日期 2026-08-01, https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/a
-
-MDN Web Docs, rel=noopener, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/noopener
-
-Web.dev, Links and buttons guide, 访问日期 2026-08-01, https://web.dev/articles/links-and-buttons
-
 ## 11. 延伸阅读
-
 锚点滚动与 CSS 滚动行为（`scroll-behavior`、`scroll-margin`），见 007-css 模块相关文档；
-
 SPA 路由中的导航实现，见 010-vue3 模块的 030-VueRouterNavigationGuard 文档；
-
 URL 解析与网络协议细节，见 032-networking 模块相关文档；
-
-MDN 的超链接教程：https://developer.mozilla.org/zh-CN/docs/Learn_web_development/Core/Structuring_content/Creating_links ；
-
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）与黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前端基础课程视频。
-
 ---
-
 ### 1. 超链接基础
 
 ```html
@@ -711,4 +690,3 @@ a:active  { color: orange; }     /* 点击时 */
 <!-- 浏览器会向 ping 指定的 URL 发送 POST 请求 -->
 <a href="https://example.com" ping="https://track.example.com/click">链接</a>
 ```
-

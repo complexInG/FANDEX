@@ -1785,11 +1785,3 @@ A: struct 是值类型，赋值会发生复制，型变的"引用兼容"语义�
 
 **Q: 泛型和 `object` 性能差距多大？**
 A: 对值类型，泛型避免装箱，性能提升 5-10 倍。对引用类型，泛型避免类型转换，提升约 2 倍。
-
-## 附录 D：参考资源
-
-- [官方文档：C# 中的泛型](https://learn.microsoft.com/dotnet/csharp/fundamentals/types/generics)
-- [官方文档：协变和逆变](https://learn.microsoft.com/dotnet/csharp/programming-guide/concepts/covariance-contravariance/)
-- [ECMA-335 标准：CLI 规范](https://www.ecma-international.org/publications-and-standards/standards/ecma-335/)
-- [Jon Skeet：C# in Depth](https://csharpindepth.com/)
-- [Eric Lippert 的博客：协变和逆变系列](https://ericlippert.com/2007/10/16/covariance-and-contravariance-in-c-part-one/)

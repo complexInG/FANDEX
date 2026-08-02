@@ -1411,8 +1411,6 @@ public ref struct LineSplitEnumerator
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：编写一个反射工具方法 `Type GetFirstTypeImplementing(Assembly asm, Type interfaceType)`，返回程序集中第一个实现指定接口的类型。
@@ -1512,8 +1510,6 @@ public static Span<byte> GetBuffer()
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 语言规范与官方文档
 
 [1] Hejlsberg, A., Torgersen, M., Wiltamuth, S., and Golde, P. 2010. *The C# Programming Language* (4th ed.). Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0-321-74176-9.
@@ -1556,8 +1552,6 @@ public static Span<byte> GetBuffer()
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档与博客
 
 - **C# 语言规范**：https://learn.microsoft.com/dotnet/csharp/language-reference/
@@ -1577,13 +1571,6 @@ public static Span<byte> GetBuffer()
 - **MIT 6.838: Computer Systems Engineering**：系统级编程基础。
 - **Stanford CS343: Programming Languages**：函数式与类型系统。
 - **Microsoft .NET YouTube Channel**：官方技术讲解。
-
-### 11.4 开源项目参考
-
-- **System.Text.Json**：Span 在序列化中的应用范例。https://github.com/dotnet/runtime/tree/main/src/libraries/System.Text.Json
-- **Microsoft.Extensions.DependencyInjection**：反射 + 表达式树容器实现。https://github.com/dotnet/runtime/tree/main/src/libraries/Microsoft.Extensions.DependencyInjection
-- **MessagePack-CSharp**：高性能序列化器，大量使用 unsafe + Span。https://github.com/MessagePack-CSharp/MessagePack-CSharp
-- **ZeroFormatter**：另一个零分配序列化器。https://github.com/neuecc/ZeroFormatter
 
 ### 11.5 社区与会议
 

@@ -4,7 +4,7 @@ title: Floyd-Warshall 算法
 module: algorithm
 category: Algorithm/AllPairsShortestPath
 difficulty: intermediate
-description: 'Floyd-Warshall 多源最短路径算法：Robert W. Floyd 1962《Algorithm 97: Shortest Path》CACM 5(6):345 DOI:10.1145/367766.368168 与 Stephen Warshall 1962《A Theorem on Boolean Matrices》JACM 9(1):11-12 DOI:10.1145/321105.321107 独立提出的动态规划算法，Bernard Roy 1959 更早发现传递闭包版本。算法以 $O(n^3)$ 时间、$O(n^2)$ 空间求解所有顶点对最短路径，支持负权边（无负环），可用于负环检测与传递闭包计算。本文涵盖 DP 状态设计、最优子结构证明、路径重建、位运算优化、与 Dijkstra/Bellman-Ford/Johnson 算法的对比、在 OSPF 路由协议与 NetworkX 工业级库中的应用，附 Python/C++/Java 多语言实现与 CLRS 第 25 章风格习题。'
+description: 'Floyd-Warshall 多源最短路径算法：Robert W. Floyd 1962《Algorithm 97: Shortest Path》CACM 5(6):345 DOI:10.1145/367766.368168 与 Stephen Warshall 1962《A Theorem on Boolean Matrices》JACM 9(1):11-12 DOI:10.1145/321105.321107 独立提出的动态规划算法，Bernard Roy 1959 更早发现传递闭包版本。算法以 $O(n^3)$ 时间、$O(n^2)$ 空间求解所有顶点对最短路径，支持负权边（无负环），可用于负环检测与传递闭包计算。本文涵盖 DP 状态设计、最优子结构证明、路径重建、位运算优化、与 Dijkstra/Bellman-Ford/Johnson 算法的对比、在 OSPF 路由协议与 NetworkX 工业级库中的应用，附 Python/C++/Java 多语言实现。'
 author: fanquanpp
 tags:
 - algorithm
@@ -1700,45 +1700,6 @@ assert closure[0][4] == False  # Alice !-> Eve
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**（easy）：Floyd-Warshall 算法的时间复杂度是？
-
-A. $O(n^2)$
-B. $O(n^2 \log n)$
-C. $O(n^3)$
-D. $O(n^3 \log n)$
-
-**题目 2**（easy）：下列哪个循环顺序是 Floyd-Warshall 的正确实现？
-
-A. `for i, for j, for k`
-B. `for k, for i, for j`
-C. `for k, for j, for i`
-D. 以上皆可
-
-**题目 3**（medium）：Floyd-Warshall 算法检测负环的判定条件是？
-
-A. 算法运行时出现 `dist[i][k] + dist[k][j] < dist[i][j]` 但已收敛
-B. 算法终止时存在 $i$ 使 `dist[i][i] < 0`
-C. 算法终止时存在 $i \neq j$ 使 `dist[i][j] < 0`
-D. 算法运行超过 $n$ 轮仍未收敛
-
-**题目 4**（medium）：关于 Floyd-Warshall 与 Johnson 算法的对比，下列哪个正确？
-
-A. 稠密图上 Johnson 更快
-B. 稀疏图上 Floyd-Warshall 更快
-C. $m = O(n^2)$ 时两者复杂度相同
-D. Johnson 不支持负权
-
-**题目 5**（hard）：将 Warshall 算法中的 $\lor$ 替换为 $\min$、$\land$ 替换为 $+$ 后，得到 Floyd 算法。这种代换在代数路径问题中对应的半环是？
-
-A. $(\{0, 1\}, \lor, \land, 0, 1)$
-B. $(\mathbb{R} \cup \{\infty\}, \min, +, \infty, 0)$
-C. $(\mathbb{R}, +, \times, 0, 1)$
-D. $(\mathbb{R}_{\geq 0}, \min, \times, \infty, 1)$
-
 ### 填空题知识点讲解
 
 **题目 6**（easy）：Floyd-Warshall 算法的状态 $d^{(k)}_{ij}$ 表示从 $i$ 到 $j$ 仅经过 ____ 集合中中间点的最短路径长度。
@@ -1799,20 +1760,6 @@ def reconstruct_path_bug(nxt, i, j):
 
 ---
 
-## 11. 参考答案
-
-### 选择题知识点讲解
-
-**题 1**：C。三重嵌套循环每层 $n$ 次，总计 $O(n^3)$。
-
-**题 2**：B。$k$ 必须在最外层保证不变式"第 $k$ 轮所有 $D[i, j] = d^{(k)}$"成立。选项 C 表面上 $k$ 在最外层，但 $i, j$ 顺序不影响正确性，等价于 B。严格来说 B 与 C 都正确，但 B 是标准形式。
-
-**题 3**：B。`dist[i][i]` 表示 $i$ 到 $i$ 的最短路径，空路径长度为 0。若 `dist[i][i] < 0` 则存在经过 $i$ 的负环。选项 C 错误：负权边不等于负环。选项 A、D 是 Bellman-Ford 的负环检测条件。
-
-**题 4**：C。$m = O(n^2)$ 时 Johnson 复杂度 $O(nm \log n) = O(n^3 \log n)$，与 Floyd $O(n^3)$ 同阶（略劣）。其他选项均相反。
-
-**题 5**：B。最短路径问题映射至 $(\mathbb{R} \cup \{\infty\}, \min, +, \infty, 0)$ 半环。$\oplus = \min$（取较短路径），$\otimes = +$（路径拼接为加和），$\bar{0} = \infty$（不存在的路径），$\bar{1} = 0$（空路径长度）。
-
 ### 填空题知识点讲解
 
 **题 6**：$\{1, 2, \ldots, k\}$
@@ -1864,102 +1811,6 @@ def reconstruct_path_fixed(nxt, i, j):
     return path
 ```
 
-### 11.4 开放性论述题参考答案
-
-**题 14** 参考答案：
-
-选择 Floyd-Warshall 的场景：
-
-1. **图密度**：稠密图（$m \approx n^2$）时 Floyd 的 $O(n^3)$ 与 $n$ 次 Dijkstra 的 $O(n \cdot n^2) = O(n^3)$ 持平，且 Floyd 实现更简单、缓存友好
-2. **边权正负**：含负权边（无负环）时 Dijkstra 失效，必须用 Floyd 或 Johnson。规模小（$n \leq 500$）时 Floyd 更直接
-3. **查询频率**：需要 $O(1)$ 查询任意顶点对距离时，Floyd 预处理后查询响应极快。$n$ 次 Dijkstra 也可预处理但内存访问局部性差
-
-选择 $n$ 次 Dijkstra 的场景：
-
-1. **稀疏图**（$m = O(n)$）：$n$ 次 Dijkstra 复杂度 $O(n \cdot (n + m) \log n) = O(n^2 \log n)$，远优于 Floyd 的 $O(n^3)$
-2. **非负权**：Dijkstra 实现成熟，堆优化版本常数小
-3. **单次或少量查询**：仅需一两个源点时直接用单次 Dijkstra 即可
-
-**题 15** 参考答案：
-
-不变式：第 $k$ 轮迭代开始前，对所有 $i, j$，$D[i, j] = d^{(k-1)}_{ij}$。
-
-若 $k$ 不在最外层（如 $k$ 在最内层），则同一对 $(i, j)$ 在一轮 $(i, j)$ 迭代内连续被不同 $k$ 更新。但本轮中 $D[i, k]$ 与 $D[k, j]$ 尚未经过前几轮 $k$ 的松弛，可能仍为 $d^{(0)}$ 时期值，违反不变式。
-
-反例：3 顶点图，边 $(0, 1, 1), (1, 2, 1), (0, 2, 100)$。
-
-- 正确（$k$ 在最外层）：
-  - $k = 1$：$D[0, 2] = \min(100, D[0, 1] + D[1, 2]) = \min(100, 1 + 1) = 2$ √
-- 错误（$k$ 在最内层）：
-  - $i = 0, j = 2$ 时连续尝试 $k = 0, 1, 2$：
-    - $k = 0$：$D[0, 0] + D[0, 2] = 0 + 100 = 100 \geq 100$，不更新
-    - $k = 1$：$D[0, 1] + D[1, 2] = 1 + 1 = 2 < 100$，$D[0, 2] = 2$ √
-  - 但若图更复杂，如 $(0, 2, 100), (2, 1, 1), (0, 1, 100)$：
-    - $k = 0$：不更新
-    - $k = 1$：$D[0, 1] + D[1, 1] = 100 + 0 \geq 100$，不更新
-    - $k = 2$：$D[0, 2] + D[2, 1] = 100 + 1 = 101 \geq 100$，不更新
-  - 结果 $D[0, 1] = 100$，但正确答案应通过 $0 \to 2 \to 1$ 为 101... 实际此例正确答案 100（直连），暂未出错。需构造更复杂反例：4 顶点 $(0, 3, 100), (0, 1, 1), (1, 2, 1), (2, 3, 1)$。
-    - 正确答案：$0 \to 1 \to 2 \to 3 = 3$
-    - $k$ 在最内层时 $i = 0, j = 3$：
-      - $k = 0$：$D[0, 0] + D[0, 3] = 0 + 100 = 100$，不更新
-      - $k = 1$：$D[0, 1] + D[1, 3] = 1 + \infty = \infty$，不更新
-      - $k = 2$：$D[0, 2] + D[2, 3] = \infty + 1 = \infty$，不更新（$D[0, 2]$ 尚未松弛到 2）
-    - 结果 $D[0, 3] = 100$，错误！
-
-**题 16** 参考答案：
-
-闭半环 $(S, \oplus, \otimes, \bar{0}, \bar{1})$ 上的矩阵闭包问题统一了多种代数路径问题：
-
-1. **最长路径问题**（无正环）：映射至 $(\mathbb{R} \cup \{-\infty\}, \max, +, -\infty, 0)$ 半环。$\oplus = \max$ 取较长路径，$\otimes = +$ 路径拼接。状态转移 $d^{(k)}_{ij} = \max(d^{(k-1)}_{ij}, d^{(k-1)}_{ik} + d^{(k-1)}_{kj})$。需注意若存在正环（边权和为正的环）则最长路径无定义。
-
-2. **图的可靠性分析**：每条边有成功概率 $p_e \in [0, 1]$，求两点间最大可靠路径（路径上所有边都成功的概率最大）。映射至 $([0, 1], \max, \times, 0, 1)$ 半环。$\oplus = \max$ 取概率最大路径，$\otimes = \times$ 概率相乘（独立事件）。状态转移 $r^{(k)}_{ij} = \max(r^{(k-1)}_{ij}, r^{(k-1)}_{ik} \times r^{(k-1)}_{kj})$。
-
-3. **正则表达式匹配**：Kleene 代数 $(2^{\Sigma^*}, \cup, \circ, \emptyset, \{\epsilon\})$ 上，矩阵 $M_{ij}$ 表示从状态 $i$ 到状态 $j$ 接受的字符串集合。Floyd-Warshall 闭包运算 $M^*$ 计算所有可能路径接受的字符串集，对应正则表达式。这是自动机理论中"状态消除法"的形式化基础。
-
----
-
-## 12. 参考文献
-
-1. Floyd, Robert W. 1962. Algorithm 97: Shortest Path. *Communications of the ACM* 5, 6 (June), 345. DOI: 10.1145/367766.368168.
-
-2. Warshall, Stephen. 1962. A Theorem on Boolean Matrices. *Journal of the ACM* 9, 1 (Jan.), 11-12. DOI: 10.1145/321105.321107.
-
-3. Roy, Bernard. 1959. Transitivité et connexité. *Comptes Rendus de l'Académie des Sciences de Paris* 249, 216-218.
-
-4. Cormen, Thomas H., Leiserson, Charles E., Rivest, Ronald L., and Stein, Clifford. 2022. *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305. Chapter 23.
-
-5. Kleinberg, Jon and Tardos, Eva. 2006. *Algorithm Design*. Pearson. ISBN 978-0321295354. Chapter 6.
-
-6. Sedgewick, Robert and Wayne, Kevin. 2011. *Algorithms* (4th ed.). Addison-Wesley Professional. ISBN 978-0321573513. Section 4.4.
-
-7. Skiena, Steven S. 2020. *The Algorithm Design Manual* (3rd ed.). Springer. ISBN 978-3030542556. Chapter 8.
-
-8. Tarjan, Robert Endre. 1983. *Data Structures and Network Algorithms*. SIAM. ISBN 978-0898711875.
-
-9. Johnson, Donald B. 1977. Efficient algorithms for shortest paths in sparse networks. *Journal of the ACM* 24, 1 (Jan.), 1-13. DOI: 10.1145/321992.321993.
-
-10. Dijkstra, Edsger W. 1959. A note on two problems in connexion with graphs. *Numerische Mathematik* 1, 1, 269-271. DOI: 10.1007/BF01386390.
-
-11. Bellman, Richard. 1958. On a routing problem. *Quarterly of Applied Mathematics* 16, 1, 87-90. DOI: 10.1090/qam/102435.
-
-12. Moy, John T. 1998. OSPF Version 2. RFC 2328. IETF. DOI: 10.17487/RFC2328.
-
-13. Bondy, John A. and Murty, U. S. R. 2008. *Graph Theory*. Springer. ISBN 978-1846289699.
-
-14. Knuth, Donald E. 1997. *The Art of Computer Programming, Volume 1: Fundamental Algorithms* (3rd ed.). Addison-Wesley. ISBN 978-0201896831. Section 2.3.4.
-
-15. Aho, Alfred V., Hopcroft, John E., and Ullman, Jeffrey D. 1974. *The Design and Analysis of Computer Algorithms*. Addison-Wesley. ISBN 978-0201000290.
-
-16. NetworkX Developers. 2026. NetworkX Reference: floyd_warshall_numpy. https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall_numpy.html (accessed July 20, 2026).
-
-17. MIT OpenCourseWare. 2026. MIT 6.006: Introduction to Algorithms - All-Pairs Shortest Paths. https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/ (accessed July 20, 2026).
-
-18. Stanford University. 2026. CS 161: Design and Analysis of Algorithms. https://web.stanford.edu/class/cs161/ (accessed July 20, 2026).
-
----
-
-## 13. 延伸阅读
-
 ### 13.1 关联模块
 
 - [算法分析基础与学习路线](./算法分析基础与学习路线.md) — 渐近记号、动态规划、复杂度分析基础
@@ -1983,14 +1834,6 @@ def reconstruct_path_fixed(nxt, i, j):
 - **社交网络分析**：LinkedIn、Twitter 的关系链分析
 - **编译器优化**：LLVM、GCC 的数据流分析与依赖图
 - **生物信息学**：蛋白质相互作用网络的传递闭包
-
-### 13.4 工程练习
-
-1. **LeetCode 1334**：阈值距离内邻居最少的城市（Floyd-Warshall 基础应用）
-2. **LeetCode 1462**：课程表 IV（传递闭包应用）
-3. **LeetCode 787**：K 站中转内最便宜的航班（限制中转次数的最短路变种）
-4. **LeetCode 1192**：查找集群内的关键连接（无向图桥，Tarjan 算法对比）
-5. **Codeforces 1205C**：Palindromic Paths（Floyd + 位运算）
 
 ### 13.5 教学视频
 

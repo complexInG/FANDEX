@@ -249,23 +249,6 @@ $$\text{可用性} = \frac{\text{MTTF}}{\text{MTTF} + \text{MTTR}}$$
 
 **真相**：性能问题要靠测量定位（Profile），不能靠猜。凭感觉优化的结果往往是"优化了不存在的瓶颈"。
 
-## 9. 实战练习
-
-1. **场景编写**：为以下质量属性各写一个完整的质量属性场景（含刺激源/刺激/环境/制品/响应/度量）：性能、可用性、安全性。
-
-2. **权衡分析**：为"订单系统"列出三组质量属性冲突（如性能 vs 安全），每组给出你的取舍选择与理由。
-
-3. **目标制定**：为一个电商网站制定"可验收的质量目标表"：至少覆盖性能、可用性、安全三个维度，每个目标都要可测量。
-
-4. **案例分析**：选一个你常用的 App，分析它在"性能、可用性、安全"上的取舍（比如它为什么允许某些数据滞后显示）。
-
-## 10. 参考资源
-
-- SEI《软件架构质量属性》：https://www.sei.cmu.edu/architecture/quality-attribute-workshops/
-- 《软件架构实践》（SEI 经典教材）：https://www.sei.cmu.edu/publications/books/software-architecture/
-- OWASP Top 10（Web 安全）：https://owasp.org/www-project-top-ten/
-- Google SRE 书（SLO 与可靠性）：https://sre.google/sre-book/
-
 ## 11. 延伸阅读
 
 - 质量属性的系统评估方法，见本模块《架构评估》

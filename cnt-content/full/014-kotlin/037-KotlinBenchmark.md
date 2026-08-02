@@ -1523,8 +1523,6 @@ matchOrder:·gc.alloc.rate.norm  avgt  5  2048.00  B/op
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**：解释为什么在 JMH 中使用 `Blackhole.consume()` 是必要的，并给出一个未使用导致结果错误的例子。
@@ -1641,42 +1639,6 @@ MyBenchmark.test   avgt    5  1.234  ±0.370   us/op
 - 改进：增加 Fork 至 3、迭代至 10、预热至 5、确保机器空闲、启用 GC Profiler 排查。
 
 ---
-
-## 参考文献
-
-[1] Shipilev, A. 2014. JMH: Java Microbenchmark Harness. OpenJDK Project. Retrieved July 21, 2026 from https://github.com/openjdk/jmh
-
-[2] Shipilev, A. 2016. JVM Performance Quirks: The Definitive Guide. JavaOne 2016. DOI: 10.13140/RG.2.1.1234.4567
-
-[3] JetBrains. 2020. kotlinx-benchmark: A benchmarking toolkit for Kotlin. Retrieved July 21, 2026 from https://github.com/Kotlin/kotlinx-benchmark
-
-[4] Click, C. 2017. Java Performance: JVM Optimizations. GOTO Chicago 2017. DOI: 10.13140/RG.2.2.12345.67890
-
-[5] Kotzem, J. and León, F. 2019. Kotlin Coroutines in Practice. Proc. ACM SIGPLAN Int. Symp. on Practical Programming. DOI: 10.1145/3352483.3352487
-
-[6] Elmas, T. and Budiu, M. 2020. Optimizing Kotlin Coroutines for High-Throughput Systems. Proc. ACM SIGPLAN Int. Conf. on Systems Programming. DOI: 10.1145/3394462.3394689
-
-[7] Prokopec, A. 2016. ScalaMeter: A microbenchmarking harness for Scala. Journal of Functional Programming 26, e12. DOI: 10.1017/S0956796816000122
-
-[8] Georges, A., Buytaert, D., and Eeckhout, L. 2007. Statistically rigorous Java performance evaluation. Proc. ACM SIGPLAN Conf. on Object-Oriented Programming Systems and Applications (OOPSLA '07). DOI: 10.1145/1297027.1297033
-
-[9] Chen, Y. and Hall, M. W. 2018. Compiler Optimizations for JVM Performance. ACM Trans. Program. Lang. Syst. 40, 3, Article 12. DOI: 10.1145/3195260
-
-[10] Blackburn, S. M. et al. 2006. The DaCapo benchmarks: Java benchmarking development and analysis. Proc. ACM SIGPLAN Int. Conf. on Object-Oriented Programming Systems and Applications (OOPSLA '06). DOI: 10.1145/1167473.1167488
-
-[11] Kotzmann, T. and Mössenböck, H. 2005. Run-time support for optimizations based on escape analysis. Proc. Int. Symp. on Code Generation and Optimization (CGO '05). DOI: 10.1109/CGO.2005.29
-
-[12] Click, C. 2005. Race Detection in Java via Static Analysis. JavaOne 2005. DOI: 10.13140/RG.2.1.2345.6789
-
-[13] Sergey, I. et al. 2018. Type-directed microbenchmark generation for container libraries. Proc. ACM SIGPLAN Int. Conf. on Software Engineering (ICSE '18). DOI: 10.1145/3183519.3183532
-
-[14] Pape, T. and Eckhardt, J. 2019. Benchmark-driven library design: A case study on Kotlin collections. Proc. ACM SIGPLAN Int. Symp. on New Ideas in Programming. DOI: 10.1145/3328433.3328445
-
-[15] Kalibera, T. and Jones, R. 2013. Rigorous benchmarking in reasonable time. Proc. ACM SIGPLAN Int. Symp. on Memory Management (ISMM '13). DOI: 10.1145/2466485.2466488
-
----
-
-## 延伸阅读
 
 ### 官方文档
 

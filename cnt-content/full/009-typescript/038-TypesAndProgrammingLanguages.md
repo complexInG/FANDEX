@@ -1737,8 +1737,6 @@ import type { User } from './types';
 import { type User } from './types';
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. TypeScript 5.0 引入的 const 类型参数语法为____，它会让类型参数推断为最窄的字面量类型。
@@ -1751,56 +1749,6 @@ import { type User } from './types';
 8. Stage 3 装饰器的 context.metadata 通过 ____ 符号暴露到类本身。
 9. 5.4 引入的 NoInfer<T> 工具类型的作用是____。
 10. 5.5 的 inferred type predicates 解决了____问题。
-
-### 选择题知识点讲解
-
-1. 关于 const 类型参数，下列说法正确的是？
-   - A. const 类型参数会改变函数的运行时行为，使其参数被视为 const
-   - B. const 类型参数仅影响类型推断，使推断结果保留更窄的字面量类型
-   - C. const 类型参数等价于把参数声明为 readonly
-   - D. const 类型参数只能用于函数，不能用于类型别名
-
-2. 下列关于 satisfies 操作符的描述，错误的是？
-   - A. satisfies 不会拓宽字面量类型
-   - B. satisfies 会触发类型校验，若不满足则编译错误
-   - C. satisfies 等价于 as，仅做类型断言
-   - D. satisfies 可用于对象字面量、数组、函数返回值等多种表达式
-
-3. TypeScript 5.0 装饰器与 experimentalDecorators 的核心差异是什么？
-   - A. 5.0 装饰器不支持方法装饰器
-   - B. 5.0 装饰器的 context 参数提供 metadata 字段，标准化元数据存储
-   - C. 5.0 装饰器只能用于类本身，不能用于类成员
-   - D. 5.0 装饰器在运行时会自动注入 reflect-metadata
-
-4. 关于 --moduleResolution: bundler，下列描述错误的是？
-   - A. 需要配合 --module: esnext 使用
-   - B. 允许相对路径导入不带扩展名
-   - C. 强制要求 package.json 必须包含 exports 字段
-   - D. 模拟 Vite/Webpack/Rollup 等打包工具的解析行为
-
-5. TypeScript 5.4 引入的 NoInfer<T> 工具类型的作用是？
-   - A. 禁止类型推断，强制显式标注
-   - B. 把 T 从推导位置中排除，避免反向约束污染推导结果
-   - C. 等价于 unknown，但更明确
-   - D. 用于禁止某个泛型参数的使用
-
-6. 关于 --erasableSyntaxOnly，下列说法正确的是？
-   - A. 仅适用于库开发
-   - B. 禁止使用 enum、namespace、parameter properties
-   - C. 自动删除未使用的导入
-   - D. 与 verbatimModuleSyntax 等价
-
-7. 关于 5.5 的 inferred type predicates，下列说法错误的是？
-   - A. 自动为返回 boolean 的函数推断类型谓词 (x is T)
-   - B. 仅在控制流分析能确定时推断
-   - C. 推断的类型谓词不可靠，仅用于提示
-   - D. 兼容旧的显式类型谓词
-
-8. 关于 --verbatimModuleSyntax，下列说法正确的是？
-   - A. 自动删除未使用的导入
-   - B. 强制类型导入必须用 import type
-   - C. 与 isolatedModules 互斥
-   - D. 仅适用于 ESM 项目
 
 ### 18.3 代码修复题（code-fix）
 
@@ -1871,42 +1819,6 @@ import { User, createUser } from './api';
    - 支持构造函数注入
    - 支持生命周期管理（singleton/transient）
 
-## 19. 参考文献
-
-[1] Rosenwasser, D. 2023. Announcing TypeScript 5.0. Microsoft Developer Blog. Retrieved July 20, 2026 from https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/
-
-[2] Rosenwasser, D. 2024. Announcing TypeScript 5.4. Microsoft Developer Blog. Retrieved July 20, 2026 from https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
-
-[3] Rosenwasser, D. 2024. Announcing TypeScript 5.5. Microsoft Developer Blog. Retrieved July 20, 2026 from https://devblogs.microsoft.com/typescript/announcing-typescript-5-5/
-
-[4] Ehrenberg, R. and Voss, G. 2023. ECMAScript Decorators Proposal, Stage 3. TC39. https://github.com/tc39/proposal-decorators
-
-[5] Bierman, G. M., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In *ECOOP 2014 — Object-Oriented Programming* (pp. 257-281). Springer. DOI: 10.1007/978-3-662-44202-9_11
-
-[6] Bracha, G. and Ungar, D. 2004. Mirrors: design principles for meta-level facilities of object-oriented programming languages. In *OOPSLA '04* (pp. 331-344). DOI: 10.1145/1028976.1029004
-
-[7] Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press. ISBN 978-0-262-16209-8.
-
-[8] Katz, Y. 2014. Decorators Proposal, Stage 1. TC39. https://github.com/wycats/javascript-decorators
-
-[9] Ehrenberg, D. 2019. Decorators Proposal, Stage 2. TC39. https://github.com/tc39/proposal-decorators/tree/7d4add9d04e6c8d558c4c8b16d53c92bdfac12ec
-
-[10] Microsoft. 2023. TypeScript 5.2: Explicit Resource Management. https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/
-
-[11] Microsoft. 2023. TypeScript 5.3: Import Attributes. https://devblogs.microsoft.com/typescript/announcing-typescript-5-3/
-
-[12] Microsoft. 2024. TypeScript 5.6: Iterator Helpers. https://devblogs.microsoft.com/typescript/announcing-typescript-5-6/
-
-[13] Microsoft. 2025. TypeScript 5.8: Erasable Syntax Only. https://devblogs.microsoft.com/typescript/announcing-typescript-5-8/
-
-[14] Fu, A. 2020. type-challenges: Collection of TypeScript type challenges. GitHub. https://github.com/type-challenges/type-challenges
-
-[15] ECMA International. 2024. ECMAScript 2024 Language Specification. ECMA-262, 15th Edition. https://tc39.es/ecma262/
-
-[16] Hosoya, H. and Pierce, B. C. 2003. Regular expression pattern matching for XML. *Journal of Functional Programming* 13(6), 961-1004. DOI: 10.1017/S0956796803001131
-
-## 20. 延伸阅读
-
 ### 20.1 书籍
 
 - Boris Cherny. *Programming TypeScript*. O'Reilly Media, 2nd Edition, 2023.
@@ -1926,15 +1838,6 @@ import { User, createUser } from './api';
 - tRPC: https://github.com/trpc/trpc
 - Drizzle ORM: https://github.com/drizzle-team/drizzle-orm
 - type-fest: https://github.com/sindresorhus/type-fest
-
-### 20.4 在线资源
-
-- TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/
-- TypeScript 5.0 Release Notes: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html
-- TypeScript 5.4 Release Notes: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-4.html
-- TypeScript 5.5 Release Notes: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-5.html
-- Total TypeScript: https://www.totaltypescript.com/
-- Matt Pocock's Blog: https://www.totaltypescript.com/articles
 
 ### 20.5 视频课程
 

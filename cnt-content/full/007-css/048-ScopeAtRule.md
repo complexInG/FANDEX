@@ -175,22 +175,11 @@ p { color: black; }              /* 全局 */
 .special 外的 p 仍是黑色
 ```
 
-## 参考文献
-
-MDN CSS 文档：https://developer.mozilla.org/zh-CN/docs/Web/CSS
-CSS 规范（W3C）：https://www.w3.org/Style/CSS/
-CSS-Tricks：https://css-tricks.com/
-Can I use：https://caniuse.com/
-Tailwind CSS：https://tailwindcss.com/
-
 ## 延伸阅读
-
 CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
 CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
 CSS 函数与变量，见 007-css/022-Function 文档。
 HTML 结构与语义，见 006-html5 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 CSS 课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

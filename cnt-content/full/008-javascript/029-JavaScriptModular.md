@@ -2010,61 +2010,6 @@ import(/* webpackPrefetch: true */ './pages/Dashboard.js'); // 空闲时预获�
 import(/* webpackPreload: true */ './pages/Dashboard.js'); // 父 chunk 加载时并行预加载
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下代码在 ESM 中的输出是？
-
-```javascript
-// counter.js
-export let count = 0;
-export function increment() {
-  count++;
-}
-
-// main.js
-import { count, increment } from './counter.js';
-increment();
-console.log(count);
-```
-
-- A. `0`
-- B. `1`
-- C. `undefined`
-- D. `TypeError`
-
-**解析讲解**：B。ESM 是 live binding，`count` 反映最新值。
-
-**题目 2**：以下 CommonJS 代码的输出是？
-
-```javascript
-// counter.cjs
-let count = 0;
-module.exports = { count, increment: () => count++ };
-
-// main.cjs
-const { count, increment } = require('./counter.cjs');
-increment();
-console.log(count);
-```
-
-- A. `0`
-- B. `1`
-- C. `undefined`
-- D. `TypeError`
-
-**解析讲解**：A。CommonJS 是值拷贝，`count` 是 require 时的快照。
-
-**题目 3**：以下哪个字段可以控制 npm 包的子路径暴露？
-
-- A. `main`
-- B. `module`
-- C. `exports`
-- D. `types`
-
-**解析讲解**：C。`exports` 字段可以精确控制哪些子路径可被外部导入。
-
 ### 简答题知识点讲解
 
 **题目 4**：解释 ESM 的 Tree-shaking 比 CommonJS 更好的根本原因。
@@ -2221,38 +2166,6 @@ loader.register('./main.js', `
 
 console.log(loader.require('./main.js')); // 3
 ```
-
-## 15. 参考文献
-
-1. Ecma International. (2024). *ECMAScript 2024 Language Specification (ECMA-262, 15th edition) - Modules*. https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
-
-2. Node.js Foundation. (2024). *Node.js Documentation - Packages*. https://nodejs.org/api/packages.html
-
-3. G. Iyer, S. Vinoski. (2019). *CommonJS Modules: A Retrospective*. *IEEE Software*, 36(4), 28-35. https://doi.org/10.1109/MS.2019.2913610
-
-4. A. K. Mackie, R. M. Parizi. (2021). *A Comparative Analysis of JavaScript Module Systems*. *ACM Computing Surveys*, 54(3), 1-32. https://doi.org/10.1145/3444975
-
-5. T. Axselrod. (2022). *The Evolution of JavaScript Module Systems*. *Communications of the ACM*, 65(8), 44-52. https://doi.org/10.1145/3544912
-
-6. WHATWG. (2024). *HTML Living Standard - Scripting*. https://html.spec.whatwg.org/multipage/scripting.html
-
-7. Webpack Contributors. (2024). *Webpack Documentation - Tree Shaking*. https://webpack.js.org/guides/tree-shaking/
-
-8. Vite Team. (2024). *Vite Documentation - Why Vite*. https://vitejs.dev/guide/why.html
-
-9. Rollup Contributors. (2024). *Rollup Documentation - Tree-shaking*. https://rollupjs.org/introduction/
-
-10. Evan Wallace. (2020). *esbuild - An extremely fast JavaScript bundler*. https://esbuild.github.io/
-
-11. S. Vercel. (2023). *Turbopack: The Rust-based Web Bundler*. Vercel Blog. https://turbo.build/pack/docs
-
-12. G. Berriman, L. Denicola. (2023). *require(esm): The Final Migration*. Node.js Blog. https://nodejs.org/en/blog/announcements/require-esm
-
-13. M. Sutton, K. Wilson. (2022). *Static Analysis of JavaScript Module Dependencies for Tree-shaking*. *Proceedings of the ACM on Programming Languages*, 6(OOPSLA), 1-25. https://doi.org/10.1145/3563352
-
-14. D. Crockford. (2019). *JavaScript: The Good Parts Revisited*. *ACM Queue*, 17(4), 50-65. https://doi.org/10.1145/3365600
-
-## 16. 延伸阅读
 
 ### 16.1 规范与提案
 

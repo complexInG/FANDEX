@@ -726,11 +726,3 @@ BFC（Block Formatting Context）是 CSS 中一个独立的渲染区域，内部
 ## 延伸阅读
 
 - [HTML 标签](html5/tags-and-attributes)
-
-## 参考文献
-
-MDN CSS 文档：https://developer.mozilla.org/zh-CN/docs/Web/CSS
-CSS 规范（W3C）：https://www.w3.org/Style/CSS/
-CSS-Tricks：https://css-tricks.com/
-Can I use：https://caniuse.com/
-Tailwind CSS：https://tailwindcss.com/

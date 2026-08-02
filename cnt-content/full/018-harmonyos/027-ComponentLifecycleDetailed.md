@@ -2346,8 +2346,6 @@ struct FormPage {
 4. **掌握 LazyForEach 与 `IDataSource`**——长列表性能优化的核心
 5. **学习 HarmonyOS 内存管理**——理解 LMK、内存压力下的组件回收
 
-## 11. 参考资料
-
 ### 11.1 官方文档
 
 1. **HarmonyOS Developer——UI Development**
@@ -2372,8 +2370,6 @@ struct FormPage {
 - **路由跳转与路由栈**——路由跳转触发页面级生命周期的详细机制
 - **权限申请**——权限申请通常在 `onCreate` 中完成,与 UIAbility 生命周期相关
 - **分布式数据管理**——长连接与数据同步,常在生命周期中管理
-
-### 11.4 练习题
 
 #### 基础题
 

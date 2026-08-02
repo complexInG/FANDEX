@@ -1346,8 +1346,6 @@ Stroustrup 在多个场合强调：
 
 理解 RAII 不只是掌握一个语法特性，更是理解 C++ 区别于其他语言的哲学根基。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **Q1**：以下哪个不是 RAII 的核心要素？
@@ -1440,128 +1438,6 @@ t.commit();  // 三个操作要么全做，要么全不做
 **Q14**：分析 `std::shared_ptr` 的控制块（control block）内存布局，解释为什么 `make_shared` 通常比 `shared_ptr(new T)` 更高效，但 Dtor 时机可能更晚。给出具体场景权衡。
 
 **Q15**：设计一个编译期 RAII 链，要求：在 `constexpr` 函数中使用 `std::array`、`std::string_view`，模拟一个编译期字符串处理流水线，并保证不分配堆内存。
-
-### 参考答案要点
-
-**A1**：C。RAII 不要求拷贝构造深拷贝——`std::unique_ptr` 不可复制，`std::mutex` 也不可复制。RAII 的核心是"资源绑定到对象生命周期"。
-
-**A2**：(1) 若 `fopen` 返回 `NULL`，析构时 `fclose(nullptr)` 是 UB；(2) 类不可复制，否则双重 `fclose`；(3) 缺少移动语义。修复：构造失败抛异常、`delete` 复制构造、实现移动构造。
-
-**A3**：
-
-```cpp
-struct GlTextureDeleter {
-    void operator()(GLuint* p) const noexcept {
-        ::glDeleteTextures(1, p);
-        delete p;
-    }
-};
-using GlTexture = std::unique_ptr<GLuint, GlTextureDeleter>;
-
-GlTexture make_texture() {
-    auto p = std::make_unique<GLuint>();
-    ::glGenTextures(1, p.get());
-    return GlTexture(p.release());
-}
-```
-
-**A4**：`auto_ptr` 复制构造执行移动语义却伪装成复制，违反"复制后源对象与副本独立"的不变式 I4。
-
-**A5**：
-- `push_back`：强保证（必要时抛 `bad_alloc`，向量不变）；
-- `~unique_ptr`：不抛；
-- `shared_ptr` 复制：不抛（原子操作）；
-- `mutex::lock`：基本保证（若失败抛 `system_error`，互斥量未锁定）。
-
-**A6**：
-
-```cpp
-class scoped_thread {
-public:
-    explicit scoped_thread(std::thread t) : t_(std::move(t)) {
-        if (!t_.joinable()) throw std::logic_error("no thread");
-    }
-    ~scoped_thread() { if (t_.joinable()) t_.join(); }
-    scoped_thread(const scoped_thread&) = delete;
-    scoped_thread& operator=(const scoped_thread&) = delete;
-    scoped_thread(scoped_thread&&) = default;
-    scoped_thread& operator=(scoped_thread&&) = default;
-private:
-    std::thread t_;
-};
-```
-
-**A7**：
-
-```cpp
-template <typename F>
-class scope_fail {
-public:
-    explicit scope_fail(F&& f) : f_(std::move(f)), count_(std::uncaught_exceptions()) {}
-    ~scope_fail() {
-        if (std::uncaught_exceptions() > count_) {
-            try { f_(); } catch (...) {}
-        }
-    }
-    scope_fail(const scope_fail&) = delete;
-    scope_fail& operator=(const scope_fail&) = delete;
-private:
-    F f_;
-    int count_;
-};
-```
-
-`scope_success` 反之：仅在 `uncaught_exceptions() == count_` 时执行。
-
-**A8**：(1) 返回裸指针，调用方可能忘记 `release`；(2) `pool_` 持有裸指针，无所有权；(3) 无线程安全；(4) 无异常安全。修复：返回 `unique_ptr<Connection, ...>` 借用句柄。
-
-**A9**：略，参见案例 4。
-
-**A10**：`shared_ptr` 的引用计数需要被多个线程同时访问（构造、析构、复制）。原子操作保证计数自增/自减是原子的，避免数据竞争。但注意：引用计数原子，但**指向对象本身的多线程访问仍需同步**。
-
-**A11-A15**：参见延伸阅读与开源实现（如 `std::experimental::scope_exit`、Folly `RAII` 工具）。
-
-## 参考文献
-
-[1] Stroustrup, B. 1994. *The Design and Evolution of C++*. Addison-Wesley Professional, Reading, MA. ISBN: 0-201-54330-3.
-
-[2] Stroustrup, B. and Abrahams, D. 2002. *Exception-Safety in Generic Components*. In *Generic Programming: Proceedings of the International Seminar on Generic Programming* (Dagstuhl Castle, Germany, 1998). Lecture Notes in Computer Science, vol. 1766. Springer, Berlin, 68–79. DOI: 10.1007/3-540-39953-4_6.
-
-[3] Abrahams, D. 1998. *Exception-Safety in Generic Components*. In *Proceedings of the 1st Workshop on C++ Template Programming* (Manchester, UK). Available at: https://www.boost.org/community/exception_safety.html.
-
-[4] International Organization for Standardization. 2020. *Information technology — Programming languages — C++*. ISO/IEC 14882:2020. ISO, Geneva, Switzerland.
-
-[5] International Organization for Standardization. 2023. *Information technology — Programming languages — C++*. ISO/IEC 14882:2023. ISO, Geneva, Switzerland.
-
-[6] Meyers, S. 2005. *Effective C++: 55 Specific Ways to Improve Your Programs and Designs* (3rd ed.). Addison-Wesley Professional, Boston, MA. ISBN: 0321334876.
-
-[7] Sutter, H. and Alexandrescu, A. 2004. *C++ Coding Standards: 101 Rules, Guidelines, and Best Practices*. Addison-Wesley Professional, Boston, MA. ISBN: 0321113586.
-
-[8] Sutter, H. 1999. *Exceptional C++: 47 Engineering Puzzles, Programming Problems, and Solutions*. Addison-Wesley Professional, Boston, MA. ISBN: 0201615622.
-
-[9] Alexandrescu, A. 2001. *Modern C++ Design: Generic Programming and Design Patterns Applied*. Addison-Wesley Professional, Boston, MA. ISBN: 0201704315.
-
-[10] Williams, A. 2019. *C++ Concurrency in Action* (2nd ed.). Manning Publications, Shelter Island, NY. ISBN: 1617294691.
-
-[11] Stroustrup, B. 2013. *The C++ Programming Language* (4th ed.). Addison-Wesley Professional, Boston, MA. ISBN: 0321563840.
-
-[12] Stroustrup, B. 2022. *A Tour of C++* (3rd ed.). Addison-Wesley Professional, Boston, MA. ISBN: 0136816487.
-
-[13] Josuttis, N. M. 2021. *C++20: The Complete Guide*. Self-published. ISBN: 9783967300104.
-
-[14] ISO/IEC JTC1/SC22/WG21. 2024. *Working Draft, C++26*. N4988. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/n4988.pdf.
-
-[15] Sutton, A. and Sankel, D. 2024. *Reflection for C++26* (P2996R5). ISO/IEC JTC1/SC22/WG21. Available at: https://wg21.link/p2996r5.
-
-[16] Gregor, D., Stroustrup, B., et al. 2003. *Proposed Wording for Implicitly-Callable Move Operations* (N1773). ISO/IEC JTC1/SC22/WG21.
-
-[17] Becker, P. 2011. *Working Draft, Standard for Programming Language C++* (N3242). ISO/IEC JTC1/SC22/WG21.
-
-[18] Halpern, P. 2024. *Contracts for C++* (P2900R9). ISO/IEC JTC1/SC22/WG21. Available at: https://wg21.link/p2900r9.
-
-[19] Milewski, B. 2018–2024. *Category Theory for Programmers*. Available at: https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/.
-
-[20] Jung, A. and Turo, D. 1995. *A Cook's Tour of the Generic C++ Standard Template Library*. ACM SIGPLAN Notices 30, 6, 28–41. DOI: 10.1145/211442.211448.
 
 ## 延伸阅读
 

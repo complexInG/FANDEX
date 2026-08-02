@@ -780,8 +780,6 @@ func tracedWork() {
 
 **结果**:GC 频率从 50 次/秒降至 5 次/秒,P99 从 200ms 降至 30ms。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1.1**:Go GC 采用的是什么算法?简要说明三色标记的强不变式。
@@ -1745,8 +1743,6 @@ var equipmentMap = make(map[int64]*Equipment)
 
 **结果**:冷启动从 800ms 降至 350ms。
 
-## 进阶习题
-
 ### 进阶题(续)
 
 **题 2.4**:某服务在容器中运行,设置了 `GOMEMLIMIT=2GiB`、`GOGC=100`,但 HeapAlloc 稳定在 1GB,GC 仍然每秒触发。分析原因。
@@ -1811,28 +1807,6 @@ var globalCache [1000][]byte
 - globalCache 持有 1000 个 buffer,约 1MB 存活堆。
 - HeapAlloc 会在 GC 后稳定在约 1MB,但分配速率高,GC 频繁。
 - 若 GOGC=100,每次 HeapAlloc 达到 2MB 时触发 GC。
-
-## 参考文献
-
-[1] Dijkstra, E. W., Lamport, L., Martin, A. J., Scholten, C. S., and Steffens, E. F. M. 1978. On-the-fly garbage collection: An exercise in cooperation. *Communications of the ACM* 21, 11 (Nov. 1978), 966-975. DOI: https://doi.org/10.1145/359642.359655
-
-[2] Hudson, R. L., and Moss, J. E. B. 2001. Sapphire: Copying GC without stopping the world. In *Proceedings of the 2001 ACM SIGPLAN Java Virtual Machine Research and Technology Symposium* (JVM '01). ACM, New York, NY, USA, 95-110. DOI: https://doi.org/10.1145/504216.504226
-
-[3] Click, C. 2005. The Azul Pauseless GC Algorithm. In *VM 2005: Research, Technology, and Applications*. USENIX Association.
-
-[4] Chandry, P., Doligez, D., Haller, S., and Kordyban, R. 2018. Correctness of the Go 1.5 Write Barrier. *Technical Report*, Google Inc. Available at: https://research.swtch.com/gc15
-
-[5] Cox-Buday, C. 2017. *Concurrency in Go: Tools and Techniques for Developers*. O'Reilly Media, Sebastopol, CA, USA. ISBN: 978-1491941195.
-
-[6] Donovan, A. A. A., and Kernighan, B. W. 2015. *The Go Programming Language*. Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0134190440.
-
-[7] Google Inc. 2022. Go 1.19 Release Notes. *The Go Programming Language*. Available at: https://go.dev/doc/go1.19
-
-[8] Google Inc. 2015. Getting to Go 1.5: The Garbage Collector. *The Go Blog*. Available at: https://go.dev/blog/go15gc
-
-[9] Yang, X., Blackburn, S. M., Frampton, D., and Hosking, A. L. 2018. Barriers revisited. In *Proceedings of the 13th International Symposium on Memory Management* (ISMM 2018). ACM, New York, NY, USA, 33-44. DOI: https://doi.org/10.1145/3210545.3210553
-
-[10] Jones, R., Hosking, A., and Moss, E. 2011. *The Garbage Collection Handbook: The Art of Automatic Memory Management* (2nd ed.). Chapman & Hall/CRC, Boca Raton, FL, USA. ISBN: 978-1420082791.
 
 ## 延伸阅读
 

@@ -749,16 +749,6 @@ Git 使用四种基本对象来存储数据：
 3. **Git 扩展**：git-extras、git-flow 等
 4. **IDE 集成**：利用 IDE 的 Git 集成功能
 
-## 16. 延伸阅读
-
-- [Git 官方文档](https://git-scm.com/doc) <!-- nofollow -->
-- [Pro Git 书籍](https://git-scm.com/book/en/v2) <!-- nofollow -->
-- [GitHub 文档](https://docs.github.com/en/get-started) <!-- nofollow -->
-- [GitLab 文档](https://docs.gitlab.com/) <!-- nofollow -->
-- [Bitbucket 文档](https://support.atlassian.com/bitbucket-cloud/docs/) <!-- nofollow -->
-- [Git 内部原理](https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain) <!-- nofollow -->
-- [Git 工作流程](https://www.atlassian.com/git/tutorials/comparing-workflows) <!-- nofollow -->
-
 ## 17. 总结
 
 Git 是一个强大的版本控制系统，它的核心是基于对象模型的存储机制。通过理解 Git 的内部原理，你可以更有效地使用 Git，解决复杂的版本控制问题，提高开发效率。
@@ -781,16 +771,7 @@ Git 是一个强大的版本控制系统，它的核心是基于对象模型的�
 - **持续学习**：关注 Git 的新特性和最佳实践
   通过不断学习和实践，你将能够熟练使用 Git，成为一名高效的开发者，为项目的成功做出贡献
 
-## 参考文献
-
-Git 官方文档：https://git-scm.com/doc
-Pro Git 中文版：https://git-scm.com/book/zh/v2
-Git 参考手册：https://git-scm.com/docs
-Conventional Commits：https://www.conventionalcommits.org/zh-hans/
-
 ## 延伸阅读
-
 Git 基础操作与分支，见 003-git 模块文档。
 GitHub 协作与 PR，见 004-github 模块。
 CI/CD 自动化，见 031-devops 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Git 课程。

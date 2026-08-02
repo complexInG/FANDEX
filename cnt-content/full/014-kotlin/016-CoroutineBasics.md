@@ -1645,8 +1645,6 @@ sealed class UiState {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：以下代码的输出顺序是什么？
@@ -1937,8 +1935,6 @@ class DynamicPool(initialConcurrency: Int = 4) {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. JetBrains. "Coroutines Guide." *Kotlin Coroutines Documentation*, 2024. https://kotlinlang.org/docs/coroutines-guide.html.
@@ -1987,18 +1983,6 @@ class DynamicPool(initialConcurrency: Int = 4) {
 
 19. Akhmechet, Eugene. *Kotlin Coroutines Deep Dive*. 2023.
 
-### 10.6 跨语言参考
-
-20. Go Team. "Go Concurrency Patterns." *Go Documentation*, 2024. https://go.dev/blog/pipelines.
-
-21. Python. "asyncio - Asynchronous I/O." *Python Documentation*, 2024. https://docs.python.org/3/library/asyncio.html.
-
-22. Microsoft. "Asynchronous Programming with async and await." *C# Documentation*, 2024. https://learn.microsoft.com/dotnet/csharp/async/.
-
-23. Rust Team. "Asynchronous Programming in Rust." *Rust Async Book*, 2024. https://rust-lang.github.io/async-book/.
-
-24. Java. "JEP 444: Virtual Threads." *OpenJDK*, 2023. https://openjdk.org/jeps/444.
-
 ### 10.7 课程参考
 
 25. MIT OpenCourseWare. "6.005 Software Construction." *MIT OCW*, 2024. https://ocw.mit.edu/.
@@ -2010,8 +1994,6 @@ class DynamicPool(initialConcurrency: Int = 4) {
 28. Coursera. "Kotlin for Java Developers." *JetBrains on Coursera*, 2024.
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 进阶主题
 
@@ -2050,16 +2032,6 @@ class DynamicPool(initialConcurrency: Int = 4) {
 
 - **BlockHound**：检测阻塞调用
   - https://github.com/reactor/BlockHound
-
-### 11.4 社区资源
-
-- **Kotlin Slack**：https://kotlinlang.slack.com/
-  - `#coroutines` 频道
-
-- **Roman Elizarov Blog**：协程设计者博客
-  - https://elizarov.medium.com/
-
-- **Kotlin Discussions**：https://discuss.kotlinlang.org/
 
 ### 11.5 实践项目建议
 

@@ -436,17 +436,7 @@ while read line; do echo "$line" | base64 -d 2>/dev/null; echo; done < b64list.t
 python3 -c "import chardet; print(chardet.detect(open('file.txt','rb').read()))"
 ```
 
-## 参考文献
-
-OWASP Top 10：https://owasp.org/www-project-top-ten/
-OWASP Cheat Sheets：https://cheatsheetseries.owasp.org/
-NIST 网络安全框架：https://www.nist.gov/cyberframework
-CWE 数据库：https://cwe.mitre.org/
-PortSwigger Web Security Academy：https://portswigger.net/web-security
-
 ## 延伸阅读
-
 密码学与证书，见 033-cybersecurity 模块文档。
 Web 攻击与防御，见 033-cybersecurity 模块相关文档。
 网络层安全，见 032-networking 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供网络安全课程。

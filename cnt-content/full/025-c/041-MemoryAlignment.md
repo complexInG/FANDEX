@@ -1154,89 +1154,6 @@ struct rte_mbuf {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题 1**：以下 struct 在 LP64 Linux x86_64 上的 `sizeof` 是多少？
-
-```c
-struct S {
-    char  a;
-    int   b;
-    void *c;
-    short d;
-};
-```
-
-A. 15  
-B. 16  
-C. 24  
-D. 32
-
-**解析讲解**：C
-
-**解析讲解**：
-
-- `a`：offset 0，size 1
-- 填充 3 字节
-- `b`：offset 4，size 4
-- `c`：offset 8，size 8（指针在 LP64 上 8 字节）
-- `d`：offset 16，size 2
-- 整体对齐值 = max(1, 4, 8, 2) = 8
-- 末尾填充 6 字节到 8 的倍数
-- `sizeof = 24`
-
-**题 2**：以下哪种对齐方式可以消除伪共享？
-
-```c
-struct Counter {
-    atomic_int a;
-    atomic_int b;
-};
-```
-
-A. `#pragma pack(1)`  
-B. `alignas(64) atomic_int a, b;`  
-C. `alignas(64)` 整个 struct  
-D. 仅 `alignas(64) atomic_int a;`
-
-**解析讲解**：B、C
-
-**解析讲解**：
-
-- A 选项 `#pragma pack(1)` 移除填充，使两变量更靠近，**加重**伪共享。
-- B 选项使每个变量独占一个 64 字节缓存行，正确消除伪共享。
-- C 选项使整个 struct 起始对齐到 64 字节，但若两变量仍共享一个缓存行（struct 大小 < 64），仍存在伪共享。需配合 `alignas(64)` 各成员才完全消除。
-- D 选项仅对齐 `a`，`b` 仍可能位于同一缓存行。
-
-正确做法是 B（每个并发变量独立缓存行对齐），或在 struct 末尾填充至 128 字节并整体 `alignas(64)`。
-
-**题 3**：以下代码在 ARMv7（不允许未对齐访问）上的行为是？
-
-```c
-char buf[10];
-int v = *(int *)&buf[1];
-```
-
-A. 总是返回 0  
-B. 触发 `SIGBUS`  
-C. 触发 `SIGSEGV`  
-D. UB，可能触发 `SIGBUS` 也可能正常返回
-
-**解析讲解**：D
-
-**解析讲解**：
-
-C 标准规定未对齐访问是 UB（undefined behavior）。具体行为：
-
-- ARMv7 默认配置下，未对齐访问触发 `SIGBUS`。
-- ARMv7 SCTLR.A 位关闭时，硬件自动处理未对齐访问，可能正常返回。
-- x86 总是正常返回（但性能下降）。
-- 编译器可能优化为 `memcpy` 调用，则无 UB。
-
-UB 意味着标准未规定行为，任何结果都可能。D 是最准确描述。
-
 ### 填空题知识点讲解
 
 **题 4**：以下代码输出为：
@@ -1361,98 +1278,6 @@ int main(void) {
 }
 ```
 
-### 9.4 思考题
-
-**题 8**：为什么 `aligned_alloc(16, 20)` 在 C 标准下是 UB？请从内存分配器实现角度解释。
-
-C11 §7.22.3.1 规定 `aligned_alloc(alignment, size)` 要求 `size` 是 `alignment` 的整数倍，否则 UB。
-
-**原因**：
-
-1. `aligned_alloc` 实现通常复用 `malloc` 的内部结构（chunk header），通过偏移指针返回对齐地址。
-2. `free` 时需从对齐地址还原原始 chunk header。常见实现将原始指针存于对齐地址前 8 字节。
-3. 若 `size` 不是 `alignment` 的倍数，分配的总空间 `size + alignment + sizeof(void*)` 可能不足以容纳 `size` 字节有效载荷 + 元数据 + 对齐填充。
-4. `free` 时无法正确还原原始指针，导致内存泄漏或损坏。
-
-**实现细节**：
-
-```c
-void *aligned_alloc(size_t alignment, size_t size) {
-    /* 标准：size 必须是 alignment 的倍数 */
-    /* glibc 实现：内部对 size 向上取整 */
-    size_t aligned_size = (size + alignment - 1) & ~(alignment - 1);
-    /* ... */
-}
-```
-
-**最佳实践**：调用前手动向上取整：
-
-```c
-size_t safe_size = (size + alignment - 1) & ~(alignment - 1);
-void *p = aligned_alloc(alignment, safe_size);
-```
-
-**题 9**：在多核 CPU 上，为何 `alignas(64)` 一个 `atomic_int` 比单纯使用 `atomic_int` 性能更好？请从缓存一致性协议角度分析。
-
-**缓存一致性协议（MESI/MOESI）**：
-
-1. 现代 CPU 每核有独立 L1/L2 缓存，以 64 字节缓存行为单位。
-2. 修改缓存行时，CPU 通过 MESI 协议将其他核的该缓存行标记为 INVALID。
-3. 修改后写回，其他核下次访问需从 L3 或内存重新加载。
-
-**未对齐情况**：
-
-- `atomic_int counter` 大小 4 字节，多个计数器位于同一缓存行。
-- 核 A 修改 `counter1` → 整个缓存行 INVALID → 核 B 的 `counter2` 缓存失效。
-- 核 B 修改 `counter2` → 整个缓存行再次 INVALID → 核 A 的 `counter1` 缓存失效。
-- 形成"乒乓"（ping-pong），每次修改引入 ~50-100ns 同步开销（L3 延迟）。
-
-**对齐后**：
-
-- `alignas(64) atomic_int counter` 独占整个缓存行。
-- 核 A 修改 `counter1` 仅影响自己的缓存行，核 B 的 `counter2` 缓存行不受影响。
-- 无乒乓，每次修改仅 L1 延迟（~1ns）。
-
-**实测**：在 4 核 CPU 上，10^9 次并发计数：
-
-- 未对齐：~10s
-- 对齐：~0.5s
-
-性能差距 20 倍。
-
-**题 10**：C++ 的 `std::vector<struct S>` 与 C 中 `struct S *arr = malloc(N * sizeof(struct S))` 在对齐处理上有何异同？
-
-**相同点**：
-
-- 都保证 `arr[0]` 地址满足 `alignof(struct S)`。
-- 都保证 `arr[i]` 与 `arr[i+1]` 间距为 `sizeof(struct S)`（无填充）。
-- 都通过 `alignof(struct S)` 决定起始地址对齐。
-
-**不同点**：
-
-1. **分配器**：
-   - C `malloc` 默认对齐到 `alignof(max_align_t)`（C11 起，通常 16）。
-   - C++ `std::vector` 默认使用 `std::allocator<T>`，调用 `::operator new(sizeof(T) * N)`，C++17 起通过 `std::aligned_alloc` 或重载 `operator new(size, std::align_val_t)` 处理对齐。
-   - 若 `alignof(T) > alignof(max_align_t)`，C++ `std::vector` 自动切换到对齐分配；C `malloc` 不保证（需用 `aligned_alloc`）。
-
-2. **异常安全**：
-   - C `malloc` 失败返回 NULL，需手工检查。
-   - C++ `std::vector` 构造失败抛 `std::bad_alloc`。
-
-3. **重分配**：
-   - C 需手工 `realloc`，可能改变对齐（glibc `realloc` 保留原对齐）。
-   - C++ `std::vector::resize` 自动重新分配并保证新对齐。
-
-4. **自定义分配器**：
-   - C 难以注入自定义对齐分配器。
-   - C++ 通过 `std::vector<T, Alloc>` 可注入。
-
-**结论**：C++ 在对齐分配上更自动化，但 C 通过显式 `aligned_alloc` + 自定义分配器也能达到同等效果，只是需要更多手工工作。
-
----
-
-## 10. 参考文献
-
 ### 10.1 标准文档
 
 [1] International Organization for Standardization. *ISO/IEC 9899:2024 Information technology — Programming languages — C* (Fifth edition) [Standard]. Geneva: ISO; 2024. Available from: https://www.iso.org/standard/82075.html
@@ -1509,8 +1334,6 @@ void *p = aligned_alloc(alignment, safe_size);
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **《Computer Systems: A Programmer's Perspective（CSAPP）》** Randal E. Bryant, David R. O'Hallaron 著。第 3 章深入讲解机器级表示，第 6 章讨论存储器层次结构，第 9 章虚拟内存，对理解对齐的硬件根源至关重要。
@@ -1532,23 +1355,6 @@ void *p = aligned_alloc(alignment, safe_size);
 
 - **CMU 15-445 Database Systems**：Lecture 5 讨论 B+Tree 页面布局与对齐。
   - https://15445.courses.cs.cmu.edu/
-
-### 11.3 在线资源
-
-- **cppreference.com "Alignment" 词条**：标准对齐特性的权威参考。
-  - https://en.cppreference.com/w/c/language/object/alignment
-
-- **GCC Manual "Type Attributes"**：GCC 扩展对齐特性的官方文档。
-  - https://gcc.gnu.org/onlinedocs/gcc/Common-Type-Attributes.html
-
-- **"What Every Programmer Should Know About Memory"**（Ulrich Drepper）：Linux 社区关于内存层次与对齐的经典文献。
-  - https://people.redhat.com/~drepper/cpumemory.pdf
-
-- **Linux Kernel Documentation "Memory Alignment"**：内核视角下的对齐要求。
-  - https://www.kernel.org/doc/html/latest/core-api/unaligned-memory.html
-
-- **"Data alignment for speed: myth or reality?"**（Embedded.com）：实测各架构未对齐访问开销。
-  - https://www.embedded.com/data-alignment-for-speed-myth-or-reality/
 
 ### 11.4 开源项目学习
 

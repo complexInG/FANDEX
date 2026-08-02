@@ -5,7 +5,7 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: 清单驱动讲解 gh label 系列命令：按"查看现状-创建标签-编辑维护-删除清理-模板复用"的管理流程展开，配以原理讲解、错误对策与实战练习。
+description: 清单驱动讲解 gh label 系列命令：按"查看现状-创建标签-编辑维护-删除清理-模板复用"的管理流程展开，配以原理讲解、错误对策。
 author: fanquanpp
 updated: '2026-08-02'
 related: []
@@ -262,78 +262,12 @@ gh label list --search "type:"
 
 ---
 
-## 实战练习
-
-### 练习 1：盘点标签（入门）
-
-- **题目**：列出当前练习仓库的全部标签，并统计有多少个标签的名字含 `type`。
-- **提示**：`list` 输出后数一下，或 `list --search type` 过滤。
-- **参考答案要点**：
-  ```bash
-  gh label list
-  gh label list --search "type:"
-  ```
-
-### 练习 2：创建一套基础标签（入门）
-
-- **题目**：创建 `type:bug`（红色 D73A4A）、`type:feature`（绿色 0E8A16）、`priority:high`（深红 B60205）三个标签，均带中文描述。
-- **提示**：`create` 加 `--color` 与 `--description`；名称用引号包裹。
-- **参考答案要点**：
-  ```bash
-  gh label create "type:bug" --color "D73A4A" --description "程序缺陷"
-  gh label create "type:feature" --color "0E8A16" --description "新功能请求"
-  gh label create "priority:high" --color "B60205" --description "高优先级"
-  ```
-
-### 练习 3：重命名与改色（进阶）
-
-- **题目**：把默认标签 `enhancement` 改名为 `type:feature`，并修改 `bug` 标签的颜色为 `E99695`。
-- **提示**：`edit` 加 `--new-name` / `--color`。
-- **参考答案要点**：
-  ```bash
-  gh label edit enhancement --new-name "type:feature"
-  gh label edit bug --color "E99695"
-  ```
-
-### 练习 4：模板复制（进阶）
-
-- **题目**：把 `cli/cli` 仓库的标签体系复制到一个新建的练习仓库中，验证数量一致。
-- **提示**：`clone owner/template-repo -R 目标仓库`。
-- **参考答案要点**：
-  ```bash
-  gh label clone cli/cli -R 你的名字/练习仓库
-  gh label list -R 你的名字/练习仓库
-  ```
-
-### 练习 5：体系搭建全流程（挑战）
-
-- **题目**：在练习仓库中完成：先克隆 `cli/cli` 标签 → 删除其中 `invalid` 标签 → 给 `good first issue` 添加中文描述 → 最终输出全部标签清单。
-- **提示**：依次 `clone`、`delete --yes`、`edit --description`、`list`。
-- **参考答案要点**：
-  ```bash
-  gh label clone cli/cli
-  gh label delete "invalid" --yes
-  gh label edit "good first issue" --description "适合新手入门的问题"
-  gh label list
-  ```
-
----
-
 ## 一句话记忆
 
 **Label 是 Issue 的"彩色贴纸"：`list` 盘点、`create` 贴新、`edit` 改色改名、`delete` 撕掉、`clone` 一键复制整套——命名用"分类:名称"格式，团队协作才不乱。**
 
 ---
 
-## 参考链接
-
-- GitHub CLI 官方手册 gh label：https://cli.github.com/manual/gh_label
-- GitHub CLI 官方手册 gh label create：https://cli.github.com/manual/gh_label_create
-- GitHub 文档：管理标签：https://docs.github.com/zh/issues/using-labels-and-milestones-to-track-work/managing-labels
-- GitHub 文档：标签与里程碑：https://docs.github.com/zh/issues/using-labels-and-milestones-to-track-work
-
 ## 延伸阅读
-
 - Issue 与标签、里程碑的综合使用，见 004-github 模块《IssuesTemplateTagMilestone》。
 - 用 gh api 批量管理标签（REST labels 端点），见《GhApi》。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

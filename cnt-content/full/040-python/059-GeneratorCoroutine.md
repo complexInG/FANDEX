@@ -2122,50 +2122,6 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## 知识讲解与要点分析（原练习题）
-
-### 选择题知识点讲解
-
-**1. 下列关于 Python 生成器的描述，正确的是？**
-
-A. 生成器函数调用后立即执行函数体
-B. 生成器对象可以多次迭代
-C. `yield` 表达式的值是 `send()` 传入的值
-D. 生成器在 `return` 后仍可继续 yield
-
-**解析讲解**：C
-
-**解析讲解**：`yield expr` 是一个表达式，其值由 `send(value)` 传入；若通过 `next()` 调用，则 `yield` 表达式值为 `None`。A 错误（调用生成器函数返回生成器对象，不执行函数体）；B 错误（生成器一次性，迭代完毕后再次迭代为空）；D 错误（`return` 后生成器结束，抛出 `StopIteration`）。
-
-**2. 执行以下代码的输出是？**
-
-```python
-def gen():
-    x = yield 1
-    y = yield x + 10
-    return x + y
-
-g = gen()
-print(next(g))
-print(g.send(5))
-try:
-    g.send(3)
-except StopIteration as e:
-    print(e.value)
-```
-
-A. 1, 15, 8
-B. 1, 15, StopIteration: 8
-C. 1, 15, 8
-D. 1, 10, 8
-
-**解析讲解**：C
-
-**解析讲解**：
-- `next(g)`：启动生成器，执行到 `x = yield 1`，返回 1；
-- `g.send(5)`：`x = 5`，执行到 `y = yield x + 10 = 15`，返回 15；
-- `g.send(3)`：`y = 3`，`return x + y = 8`，抛出 `StopIteration(8)`，`e.value = 8`。
-
 ### 填空题知识点讲解
 
 **1. 以下代码输出是？**
@@ -2303,42 +2259,6 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
     return [gen(q) for q in queues]
 ```
 
-### 9.4 思考题
-
-**1. 为什么 Python 的生成器不能"重置"（重新从头迭代）？这带来了哪些优势和劣势？**
-
-**解析讲解**：
-
-优势：
-- 内存效率：生成器无需保存已产出的值，只需当前状态；
-- 简化语义：避免了"迭代器是否可重置"的状态判断；
-- 安全性：避免资源被多次访问（如文件句柄、数据库游标）。
-
-劣势：
-- 不便性：需要重新创建生成器，可能丢失内部状态；
-- 与列表不兼容：某些算法期望可重复迭代。
-
-设计哲学：Python 强调"显式优于隐式"，若需可重置迭代器，应使用列表或自定义类。
-
-**2. `yield from` 与 `for x in subgen: yield x` 在性能、语义、异常处理上有何区别？**
-
-**解析讲解**：
-
-- 性能：`yield from` 直接调用子生成器的 C 实现，避免 Python 层的循环，快约 20%；
-- 语义：`yield from` 透明转发 `send`、`throw`、`close`，手动迭代只产出值不转发；
-- 返回值：`yield from` 的返回值是子生成器的 `return` 值，手动迭代忽略返回值；
-- 异常处理：`yield from` 自动处理 `GeneratorExit`，手动迭代需自行处理。
-
-**3. 异步生成器与同步生成器在哪些场景下应该选用？有何性能差异？**
-
-**解析讲解**：
-
-- 同步生成器：纯 CPU 计算、本地文件 I/O、内存数据处理；
-- 异步生成器：网络 I/O、数据库查询、文件系统慢操作；
-- 性能差异：异步生成器有事件循环开销（~50ns/切换），但避免阻塞事件循环，整体吞吐量更高。
-
-## 10. 参考文献
-
 ### 10.1 Python 增强提案（PEP）
 
 1. Schemenauer, N., Peters, T., & Hetland, M. L. (2001). *PEP 255: Simple Generators*. Python Enhancement Proposals. https://peps.python.org/pep-0255/
@@ -2400,22 +2320,6 @@ def tee(iterable: Iterable[T], n: int = 2) -> list[Generator[T, None, None]]:
 3. **股票行情流**：异步生成器 + 移动平均 + 异常检测；
 4. **CSV/JSON 流式解析**：处理大文件不占用内存；
 5. **协程调度器**：基于 `yield from` 实现简易任务调度器。
-
-### 11.3 相关文档
-
-- Python 官方文档 - 生成器：https://docs.python.org/3/reference/expressions.html#yield-expressions
-- Python 官方文档 - 异步生成器：https://docs.python.org/3/reference/expressions.html#asynchronous-generator-functions
-- Python 官方文档 - `itertools` 模块：https://docs.python.org/3/library/itertools.html
-- Python 官方文档 - `collections.abc.Generator`：https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator
-- Real Python - How to Use Generators and yield in Python：https://realpython.com/introduction-to-python-generators/
-- Stack Overflow - Python Generators Tag：https://stackoverflow.com/questions/tagged/python-generators
-
-### 11.4 视频资源
-
-- David Beazley - *Generators: The Final Frontier* (PyCon 2014)
-- David Beazley - *Python Concurrency From the Ground Up* (PyCon 2015)
-- Brett Slatkin - *Effective Python* 系列中的生成器章节
-- Raymond Hettinger - *Transforming Code into Beautiful, Idiomatic Python* (PyCon 2013)
 
 ## 12. 附录
 

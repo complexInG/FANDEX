@@ -1359,8 +1359,6 @@ int test_likely(int *arr, int n) {
 
 **结论**：正确使用 `likely`/`unlikely` 可提升 30-50% 性能，但错误使用会导致严重退化。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：使用 C23 标准属性标记下面函数为废弃，并提供迁移提示。
@@ -1445,21 +1443,6 @@ int divide(int a, int b) {
 - 差异：C++ 有 `[[carries_dependency]]`、`[[likely]]`、`[[unlikely]]`，C23 暂未引入但 C2y 草案已包含
 - C2y 趋势：可能引入 `[[likely]]`、`[[unlikely]]`、`[[indeterminate]]`、`[[trivial]]`、`[[reproducible]]` 等新属性
 
-## 参考文献
-
-1. ISO/IEC. (2023). *ISO/IEC 9899:2023 — Programming languages — C (C23)*. §6.7.12 Attributes. https://www.iso.org/standard/82075.html
-2. ISO/IEC. (2011). *ISO/IEC 9899:2011 — Programming languages — C*. International Organization for Standardization. https://www.iso.org/standard/57853.html
-3. Becker, P. (2011). *Working Draft, N1570 — Programming Languages C*. ISO/IEC JTC1/SC22/WG14. https://www.open-std.org/jtc1/sc22/wg14/docs/docs_1570.pdf
-4. GCC Team. (2024). *GCC Manual — Attribute Syntax*. Free Software Foundation. https://gcc.gnu.org/onlinedocs/gcc/Attribute-Syntax.html
-5. Clang Team. (2024). *Clang Language Extensions — Attributes*. LLVM Project. https://clang.llvm.org/docs/LanguageExtensions.html
-6. Microsoft. (2024). *MSVC Attributes*. Microsoft Learn. https://learn.microsoft.com/en-us/cpp/cpp/attributes
-7. Seacord, R. C. (2020). *Effective C: An Introduction to Professional C Programming*. No Starch Press. ISBN: 978-1718501048.
-8. Gustedt, J. (2019). *Modern C*. Manning Publications. https://gustedt.gitlabpages.inria.fr/modern-c/
-9. ISO/IEC. (2020). *ISO/IEC 14882:2020 — Programming languages — C++*. (C++ 属性对比参考) https://www.iso.org/standard/79358.html
-10. Torvalds, L., et al. (2024). *Linux Kernel Source — include/linux/compiler_attributes.h*. https://github.com/torvalds/linux/blob/master/include/linux/compiler_attributes.h
-
-## 延伸阅读
-
 ### 官方文档
 
 - C23 标准草案 N3220：https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf
@@ -1478,13 +1461,6 @@ int divide(int a, int b) {
 - N2268 — Attributes in C：http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2268.pdf
 - N2553 — C23 Attribute syntax：http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2553.pdf
 - C2y 属性提案汇总：https://www.open-std.org/jtc1/sc22/wg14/www/wg14_document_log.htm
-
-### 开源项目参考
-
-- Linux 内核属性宏：https://github.com/torvalds/linux/blob/master/include/linux/compiler_attributes.h
-- glibc 属性使用：https://sourceware.org/git/?p=glibc.git
-- PostgreSQL API 标记：https://github.com/postgres/postgres
-- Redis 缓存行对齐：https://github.com/redis/redis
 
 ### 进阶主题
 

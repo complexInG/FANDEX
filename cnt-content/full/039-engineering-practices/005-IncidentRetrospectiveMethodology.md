@@ -324,21 +324,6 @@ Postmortem（事后总结/事故复盘）的定义：
 
 **真相**：小问题反复发生，往往是更大问题的前兆。"连接池偶发打满"不追根因，几个月后可能就是"高峰期大面积 503"。**小事故用轻量复盘（10 分钟 + 简短报告），大事故用完整复盘。**
 
-## 8. 实战练习
-
-1. **5-Whys 实战**：写一个你最近遇到的 bug（或网上看到的事故案例），做完整的 5-Whys 分析，并写出对应的"系统修复行动"（至少 3 条，必须包含流程层面而非仅技术层面）。
-
-2. **写复盘报告**：基于本章模板，为你自己模拟的一次事故（比如"你负责的网站周末挂了 30 分钟"）写一份完整复盘报告，包含：基本信息、时间线、影响、根因（5-Whys）、行动项、经验教训。
-
-3. **批判性阅读**：找一篇公开的事故复盘（GitHub 状态页、Cloudflare 博客等都有公开 postmortem），用本章的知识点分析：它有没有区分"直接原因"和"根本原因"？行动项是否具体可执行？你还能提出什么问题？
-
-## 9. 参考资源
-
-- John Allspaw《Blameless PostMortems and a Just Culture》（无指责文化起源）：https://codeascraft.com/2012/05/22/blameless-postmortems/
-- Google SRE 书第 15 章《Postmortem Culture: Learning from Failure》：https://sre.google/sre-book/postmortem-culture/
-- Etsy 工程博客（复盘文化实践）：https://codeascraft.com/
-- GitHub 公开状态页与事故报告：https://www.githubstatus.com/
-
 ## 10. 延伸阅读
 
 - 复盘之前如何应急响应，见本模块《On-Call最佳实践》

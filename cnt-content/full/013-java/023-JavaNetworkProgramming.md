@@ -1556,8 +1556,6 @@ HttpClient client = HttpClient.newBuilder()
 - 头部压缩（HPACK）减少约 80% 头部字节。
 - 端到端延迟 P99 从 80ms 降到 25ms。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题 1**：解释 TCP 三次握手为什么不是两次或四次。
@@ -1700,42 +1698,6 @@ public class SimplePool<T> {
 - 服务端用 Netty 或 Spring WebFlux 实现。
 - SSE 在 HTTP/2 上自然多路复用，无需多连接。
 - 关键点：响应头 `Content-Type: text/event-stream`，按 `data: ...\n\n` 格式发送。
-
-## 10. 参考文献
-
-[1] Postel, J. 1981. *Transmission Control Protocol* (RFC 793). Internet Engineering Task Force. DOI: https://doi.org/10.17487/RFC0793
-
-[2] Postel, J. 1980. *User Datagram Protocol* (RFC 768). Internet Engineering Task Force. DOI: https://doi.org/10.17487/RFC0768
-
-[3] Stevens, W. R., Fenner, B., and Rudoff, A. M. 2003. *UNIX Network Programming, Volume 1: The Sockets Networking API* (3rd ed.). Addison-Wesley Professional.
-
-[4] Bish, C. 2014. *Netty in Action*. Manning Publications.
-
-[5] The Linux Kernel Documentation. 2024. *The epoll(7) manual page and kernel internals*. https://www.kernel.org/doc/html/latest/networking/epoll.html
-
-[6] McCanna, J. 2003. *JSR 51: New I/O APIs for the Java Platform*. Java Community Process. https://jcp.org/en/jsr/detail?id=51
-
-[7] Watson, G. 2008. *JSR 203: More New I/O APIs for the Java Platform ("NIO.2")*. Java Community Process. https://jcp.org/en/jsr/detail?id=203
-
-[8] Pressler, R. 2023. *JEP 444: Virtual Threads*. OpenJDK. https://openjdk.org/jeps/444
-
-[9] Bishop, J. 2020. *JSR 353: Java API for JSON Processing*. Java Community Process. https://jcp.org/en/jsr/detail?id=353
-
-[10] Belshe, M., Peon, R., and Thomson, M. (Eds.) 2015. *Hypertext Transfer Protocol Version 2 (HTTP/2)* (RFC 7540). IETF. DOI: https://doi.org/10.17487/RFC7540
-
-[11] Fielding, R., Reschke, J. (Eds.) 2014. *Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content* (RFC 7231). IETF. DOI: https://doi.org/10.17487/RFC7231
-
-[12] Anderson, L. W., Krathwohl, D. R. (Eds.) 2001. *A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives*. Longman.
-
-[13] Schmidt, D. C. 1995. *Reactor: An Object Behavioral Pattern for Concurrent Event Demultiplexing and Event Handler Dispatching*. In *Pattern Languages of Program Design* (Vol. 2). Addison-Wesley.
-
-[14] Narayan, S., Sheppard, B. 2012. *Pro Java 7 NIO.2*. Apress. DOI: https://doi.org/10.1007/978-1-4302-4018-0
-
-[15] inner, B. 1995. *Reactor: An Object Behavioral Pattern for Demultiplexing and Dispatching Handles for Synchronous Events*. Washington University St. Louis.
-
-[16] Marow, A. (Ed.) 2022. *The C10K Problem*. https://www.kegel.com/c10k.html (经典问题页面，持续维护)
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

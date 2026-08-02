@@ -321,81 +321,9 @@ jobs:
 | 自动合并不生效 | PR 挂起不合并 | 分支保护要求审查/CI 未通过；或 workflow 权限不足 | 确认保护规则放行；为 workflow 声明 `pull-requests: write`、`contents: write` 权限 |
 | 私有注册源（私有 npm 包）无法更新 | 401 认证失败 | Dependabot 无法访问私有仓库 | 在 dependabot.yml 中添加 `registries` 配置并设置认证凭据 |
 
-## 8. 实战练习
-
-### 练习 1：启用体检与开药（入门）
-
-**题目描述**：为你的仓库启用 Dependabot alerts 和 Dependabot security updates，并说明两者的区别。
-
-**提示**：路径在 Settings → Code security and analysis；区别在于"报警"与"自动修复"。
-
-**参考答案要点**：分别在 Settings → Code security and analysis 中 Enable 两项功能。区别：alerts 只在发现漏洞时生成告警；security updates 会在存在安全版本时自动创建修复 PR。
-
-### 练习 2：编写第一份 dependabot.yml（入门）
-
-**题目描述**：为同时包含前端（根目录 package.json）与后端（backend/ 目录的 requirements.txt）的全栈项目编写 dependabot.yml：npm 每周检查、pip 每月检查，并同时监控 GitHub Actions。
-
-**提示**：需要三个 updates 配置块，分别指定 package-ecosystem 与 directory。
-
-**参考答案要点**：参考第 4.2 节模板——三个配置块：`npm` + `directory: '/'` + weekly；`pip` + `directory: '/backend'` + monthly；`github-actions` + `directory: '/'` + weekly。
-
-### 练习 3：控制更新范围（进阶）
-
-**题目描述**：你的项目不想被 `webpack` 5.x 的大版本升级打扰，也不想让 Dependabot 更新 devDependencies。修改配置。
-
-**提示**：使用 `ignore` 与 `allow` 两个键。
-
-**参考答案要点**：
-
-```yaml
-version: 2
-updates:
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'weekly'
-    ignore:
-      - dependency-name: 'webpack'
-        versions: ['>=5.0.0']
-    allow:
-      - dependency-type: 'production'
-```
-
-### 练习 4：分组更新（进阶）
-
-**题目描述**：团队抱怨 Dependabot 每天开太多 PR。请把 jest 系列与 typescript 相关依赖的版本更新合并为两个分组 PR。
-
-**提示**：使用顶层 `groups` 键，`patterns` 支持通配符。
-
-**参考答案要点**：
-
-```yaml
-version: 2
-updates:
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'weekly'
-    groups:
-      jest:
-        patterns: ['jest', 'jest-*', '@jest/*']
-      typescript:
-        patterns: ['typescript', '@types/*', 'ts-*']
-```
-
-### 练习 5：搭建"安全更新自动合并"流水线（综合）
-
-**题目描述**：设计一套完整方案：Dependabot 安全更新 PR 自动通过 CI，patch 与 minor 版本自动合并，major 版本仍需人工审查。
-
-**提示**：结合第 6 节的工作流 + `fetch-metadata` 的输出 + 分支保护规则。
-
-**参考答案要点**：1. 配置 dependabot.yml（weekly + groups）；2. 仓库启用 security updates；3. 编写 auto-merge workflow：仅 `dependabot[bot]` 的 PR，用 `dependabot/fetch-metadata` 判断 `update-type`，`semver-patch`/`semver-minor`（或安全更新）走 `gh pr merge --auto`；4. 在分支保护中保留"必须通过 CI"，为 major 升级保留人工审查环节。
-
 ## 9. 一句话记忆
 
 > **Dependabot 是你的"自动体检医生"：Alerts 负责发现漏洞（体检）、Security Updates 负责自动修复（开药）、Version Updates 按计划保持依赖新鲜（保健），一份 dependabot.yml 就能让它在你的仓库"上岗"。**
-
-## 参考链接与延伸阅读
 
 ### 官方文档
 
@@ -405,8 +333,6 @@ updates:
 - Dependabot 官方元数据 Action（fetch-metadata）：https://github.com/dependabot/fetch-metadata
 
 ### 延伸阅读
-
 - 依赖安全选项（供应链攻击原理与四道防线），见 004-github 模块 010 文档。
 - 密钥扫描（另一种自动安全防线），见 004-github 模块 018 文档。
 - GitHub Actions CI/CD（自动合并工作流的载体），见 004-github 模块 029 文档。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

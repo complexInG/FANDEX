@@ -47,14 +47,6 @@ C++ 与 Rust、Go、Node.js 等现代语言的关键差异在于：**没有官�
 | **MSVC** | 1993 | Visual Studio 2019 16.11 支持 C++20；2022 支持 C++23 | VS 2022 17.10+ |
 | **Build2** | 2014 | 现代化构建系统 | 小众但活跃 |
 
-### 1.3 关键提案与文献
-
-- **Kitware** — *CMake: Cross-Platform Make*, 2000.
-- **Spencer, J.** — *Ninja: a small build system with a focus on speed*, 2010.
-- **Nicol, B.** — *Professional CMake: A Practical Guide*, 持续更新，CMake 权威教材。
-- **Microsoft** — *vcpkg: C++ Library Manager*, 2016.
-- **Sborlini, J.** — *Conan 2.0: A new era for C/C++ package management*, 2022.
-
 ### 1.4 与其他语言工具链的横向对比
 
 | 维度 | C++ (CMake+vcpkg) | Rust (Cargo) | Go (go mod) | Node.js (npm) | Java (Maven) |
@@ -1501,8 +1493,6 @@ target_link_libraries(plugin_video PRIVATE engine_core)
 install(TARGETS plugin_video LIBRARY DESTINATION plugins)
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 1. **工具链识别**：列出 C++ 主流编译器、构建系统、包管理器各三种，说明各自特点。
@@ -1552,8 +1542,6 @@ install(TARGETS plugin_video LIBRARY DESTINATION plugins)
 
 18. **工具链统一**：若要为团队制定 C++ 工具链标准，列出关键决策点与推荐方案。
 
-## 10. 参考文献
-
 ### 官方文档
 
 - **CMake Documentation** — https://cmake.org/documentation/
@@ -1577,20 +1565,11 @@ install(TARGETS plugin_video LIBRARY DESTINATION plugins)
 - **Sutton, M.** *C++ Software Design*, O'Reilly, 2022.
 - **Stroustrup, B.** *A Tour of C++*（3rd Edition）, Addison-Wesley, 2022.
 
-### 在线资源
-
-- **cppreference.com** — *Compiler support*: https://en.cppreference.com/w/cpp/compiler_support
-- **CMake Wiki** — https://gitlab.kitware.com/cmake/community/-/wikis
-- **C++ Awesome CMake** — https://github.com/onqtam/awesome-cmake
-- **vcpkg GitHub** — https://github.com/microsoft/vcpkg
-
 ### 学术论文与演讲
 
 - **Martin, B.** *Modern CMake*, CppCon 2017.
 - **Sutton, A.** *C++ Modules: What They Are and How to Use Them*, CppCon 2022.
 - **Herring, D.** *CMake 3.20+ Features*, CppCon 2021.
-
-## 11. 延伸阅读
 
 ### 书籍
 

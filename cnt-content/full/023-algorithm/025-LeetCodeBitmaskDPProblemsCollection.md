@@ -1528,55 +1528,6 @@ print(colorTheGrid(5, 5))  # 输出: 58098624
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题 1**（easy）：Held-Karp 算法的时间复杂度是？
-
-A. $O(n!)$
-B. $O(n^2 \cdot 2^n)$
-C. $O(n \cdot 2^n)$
-D. $O(2^n)$
-
-B。状态数 $O(n \cdot 2^n)$，每状态转移 $O(n)$，总 $O(n^2 \cdot 2^n)$。
-
-**题 2**（medium）：枚举 $n$ 元集合 $U$ 的所有子集的所有子集，总迭代次数为？
-
-A. $2^n$
-B. $n \cdot 2^n$
-C. $3^n$
-D. $n!$
-
-C。$\sum_{S \subseteq U} 2^{|S|} = \sum_{k=0}^{n} \binom{n}{k} 2^k = 3^n$。
-
-**题 3**（medium）：`x & (-x)` 的作用是？
-
-A. 清除最低位的 1
-B. 取最低位的 1
-C. 取最高位的 1
-D. 统计 1 的个数
-
-B。`-x` 在补码表示下为 `~x + 1`，与 `x` 按位与后仅保留最低位的 1。例如 `x = 12 = 1100`，`-x = ...10100`，`x & -x = 0100 = 4`。
-
-**题 4**（hard）：以下哪种情况下 bitmask DP 比 Meet-in-the-Middle 更优？
-
-A. $n = 40$ 的子集和问题
-B. $n = 20$ 的 TSP 问题
-C. $n = 100$ 的图着色问题
-D. $n = 1000$ 的 0-1 背包问题
-
-B。$n = 20$ 时 bitmask DP 需 $2^{20} \cdot 20^2 \approx 4 \times 10^8$ 操作，可解；Meet-in-the-Middle 不直接适用 TSP。$n = 40$ 的子集和应用 Meet-in-the-Middle 需 $2^{20} \approx 10^6$，更优。$n = 100$ 和 $n = 1000$ 超出 bitmask DP 范围。
-
-**题 5**（hard）：Held-Karp 算法在 $n = 22$ 时的状态数约为？
-
-A. $2 \times 10^6$
-B. $9 \times 10^7$
-C. $4 \times 10^8$
-D. $1 \times 10^{10}$
-
-B。$n \cdot 2^{n-1} = 22 \cdot 2^{21} = 22 \cdot 2097152 \approx 4.6 \times 10^7$。状态数 $n \cdot 2^n = 22 \cdot 4194304 \approx 9.2 \times 10^7$，选 B。
-
 ### 填空题知识点讲解
 
 **题 1**（easy）：Bellman ______ 年在专著《Dynamic Programming》中系统化了动态规划理论，Held-Karp ______ 年在 J. SIAM 上发表 TSP 的 $O(n^2 2^n)$ 算法。
@@ -1780,8 +1731,6 @@ def subset_sum_dict(nums, target):
 
 ---
 
-## 11. 参考文献
-
 ### 11.1 历史性论文
 
 1. **Bellman, R.** 1952. On the Theory of Dynamic Programming. *Proceedings of the National Academy of Sciences* 38(8):716-719. DOI:10.1073/pnas.38.8.716.
@@ -1816,8 +1765,6 @@ def subset_sum_dict(nums, target):
 
 ---
 
-## 12. 延伸阅读
-
 ### 12.1 理论深入
 
 - **CLRS 第 15 章**（动态规划）+ 第 35 章（近似算法 - TSP）：bitmask DP 与近似算法的对比
@@ -1834,15 +1781,6 @@ def subset_sum_dict(nums, target):
 - **子集卷积（Subset Convolution）**：$O(n^2 \cdot 2^n)$ 计算两个子集函数的卷积，用于图论中的斯坦纳树等问题
 - **斯坦纳树（Steiner Tree）**：$O(3^k \cdot n + 2^k \cdot n^2)$ DP 求解带 $k$ 个必经点的最小生成树
 - **色多项式（Chromatic Polynomial）**：$O(2^n \cdot n)$ DP 计算图的色多项式
-
-### 12.3 工程实现练习
-
-1. **TSP 求解器**（中阶）：实现 Held-Karp 算法，并对比 Concorde 在 $n=10, 15, 20$ 时的性能
-2. **数独求解器**（中阶）：使用 bitmask DP（每行/列/宫用 9 位 mask）求解数独，对比回溯剪枝
-3. **N 皇后计数器**（中阶）：实现 bitmask 优化的 N 皇后计数，$n=15$ 时毫秒级返回
-4. **棋盘覆盖方案数**（高阶）：实现轮廓线 DP，计算 $20 \times 20$ 棋盘的骨牌覆盖方案数
-5. **CP-SAT VRP 求解器**（高阶）：使用 Google OR-Tools 求解带容量约束的 VRP，对比 bitmask DP 在小规模的精确解
-6. **GPU 并行 bitmask DP**（极高阶）：使用 CUDA 实现 Held-Karp TSP 的 GPU 并行版本，预期 10-100 倍加速
 
 ### 12.4 教学视频与公开课
 

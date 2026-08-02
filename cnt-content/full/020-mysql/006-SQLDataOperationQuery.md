@@ -1056,10 +1056,3 @@ SELECT MIN(price) AS min_price FROM products;
 SELECT status, GROUP_CONCAT(username SEPARATOR ',') AS names
 FROM users GROUP BY status;
 ```
-
-## 参考文献
-
-MySQL 官方文档：https://dev.mysql.com/doc/
-MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/
-High Performance MySQL（O'Reilly）：https://www.oreilly.com/library/view/high-performance-mysql/
-Percona 博客：https://www.percona.com/blog/

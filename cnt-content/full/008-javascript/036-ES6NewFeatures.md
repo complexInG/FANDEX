@@ -1521,8 +1521,6 @@ signer.sign('hello');
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码输出什么？
@@ -1644,32 +1642,6 @@ class Counter {
 ```
 
 ---
-
-## 10. 参考文献
-
-[1] Ecma International. 2024. *ECMAScript 2024 Language Specification (ECMA-262, 15th edition)*. Geneva, Switzerland: Ecma International. https://www.ecma-international.org/wp-content/uploads/ECMA-262_15th_edition_june_2024.pdf
-
-[2] Wirfs-Brock, A. and Eich, B. 2020. JavaScript: the first 20 years. *Proceedings of the ACM on Programming Languages* 4, HOPL (June 2020), 1–189. DOI: https://doi.org/10.1145/3386327
-
-[3] TC39. 2024. *TC39 Process*. GitHub. https://github.com/tc39/how-we-work
-
-[4] Van Cutsem, T. and Miller, M. 2013. *Proxies: Design Principles for Robust Metaprogramming in JavaScript*. ACM SIGPLAN Notices 48, 2 (October 2013), 1–12. DOI: https://doi.org/10.1145/2480359.2480361
-
-[5] Sabie, I., Sardana, N., and Guha, A. 2022. *Design and semantics of JavaScript proxies*. *Science of Computer Programming* 214 (April 2022), 102730. DOI: https://doi.org/10.1016/j.scico.2021.102730
-
-[6] Madsen, M. and Lhoták, O. 2020. *A Sound and Complete Semantics for JavaScript Promises*. *Proceedings of the ACM on Programming Languages* 4, OOPSLA (November 2020), 1–28. DOI: https://doi.org/10.1145/3428253
-
-[7] Anderson, L. W. and Krathwohl, D. R. (Eds.). 2001. *A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives*. Longman, New York, NY.
-
-[8] Rauschmayer, A. 2020. *JavaScript for Impatient Programmers*. ECMAScript 2022 Edition. Exploring JS. https://exploringjs.com/impatient-js/
-
-[9] Frain, B. 2019. *Programming TypeScript*. O'Reilly Media, Sebastopol, CA.
-
-[10] Porcello, E. and Banks, A. 2019. *Fullstack React, 3rd Edition*. Fullstack.io, New York, NY.
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

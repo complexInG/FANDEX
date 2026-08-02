@@ -465,30 +465,11 @@ func main() {
 
 内存模型是原子语义的底层契约：原子操作提供 happens-before 边界，保证周边普通读写的可见性。理解这一契约，才能写出既正确又高效的并发代码。
 
-## 10. 参考文献
-
-Go 官方文档, The Go Memory Model, 访问日期 2026-08-01, https://go.dev/ref/mem
-
-Go 官方文档, sync/atomic 包, 访问日期 2026-08-01, https://pkg.go.dev/sync/atomic
-
-Go 官方博客, Introducing the Go Race Detector, 访问日期 2026-08-01, https://go.dev/blog/race-detector
-
-Go 官方文档, Data Race Detector 详解, 访问日期 2026-08-01, https://go.dev/doc/articles/race_detector
-
-Go 官方文档, sync 包（Mutex/RWMutex）, 访问日期 2026-08-01, https://pkg.go.dev/sync
-
 ## 11. 延伸阅读
-
 Go 并发模型与 goroutine 调度，见 016-go 模块的并发相关文档；
-
 Go channel 与 select 模式，见 016-go 模块的 channel 文档；
-
 CPU 缓存与伪共享的硬件原理，见 024-cs-fundamentals 模块相关文档；
-
 性能基准测试与 pprof，见 016-go 模块的性能优化文档；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Go 并发编程课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Go 相关课程。
-
 ### 概述
 
 并发编程中，多个 goroutine 同时访问共享数据可能导致数据竞争（data race），产生难以复现和调试的问题。Go 提供了内置的竞态检测器（race detector）和 atomic 包来帮助发现和解决竞态问题。竞态检测器可以在运行时发现数据竞争，原子操作则提供了无锁的并发安全原语。
@@ -925,4 +906,3 @@ func debugRace() {
     // 增加测试迭代次数提高检测概率
 }
 ```
-

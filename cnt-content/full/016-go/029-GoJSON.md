@@ -977,8 +977,6 @@ func ValidateJSON(data []byte, schemaJSON string) (bool, []string, error) {
 
 **结果**:前端精度问题消失,API 兼容性提升。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1.1**:`json:"name,omitempty"` 中 omitempty 的作用是什么?对零值与 nil 的处理有何不同?
@@ -1077,40 +1075,12 @@ type UserV2 struct {
 - 要点：操作分发:add、remove、replace、move、copy、test。
 - 使用 `map[string]interface{}` 作为内部表示,操作完成后重新序列化。
 
-## 参考文献
-
-[1] Crockford, D. 2017. *The JSON Data Interchange Syntax* (RFC 8259). Internet Engineering Task Force (IETF). DOI: https://doi.org/10.17487/RFC8259
-
-[2] Bray, T. (Ed.). 2017. *The JavaScript Object Notation (JSON) Data Interchange Format* (STD 90). Internet Engineering Task Force (IETF). DOI: https://doi.org/10.17487/RFC8259
-
-[3] Google Inc. 2023. *encoding/json package documentation*. The Go Programming Language. Available at: https://pkg.go.dev/encoding/json
-
-[4] Donovan, A. A. A., and Kernighan, B. W. 2015. *The Go Programming Language*. Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0134190440.
-
-[5] Bytedance. 2021. *Sonic: A JSON Parser by JIT*. Bytedance Tech Blog. Available at: https://github.com/bytedance/sonic
-
-[6] Mailgun. 2017. *easyjson: Fast JSON Encoder/Decoder for Go*. Available at: https://github.com/mailru/easyjson
-
-[7] Lang, T. 2017. *jsoniter: A High-Performance JSON Library for Go*. Available at: https://github.com/json-iterator/go
-
-[8] Pezoa, F., Reutter, J. L., Suarez, F., Ugarte, M., and Vrgoč, D. 2016. Foundations of JSON Schema. In *Proceedings of the 25th International Conference on World Wide Web* (WWW '16). International World Wide Web Conferences Steering Committee, Geneva, CHE, 263-273. DOI: https://doi.org/10.1145/2872427.2883029
-
-[9] Bryan, P., and Hoffman, P. 2013. *JavaScript Object Notation (JSON) Pointer* (RFC 6901). Internet Engineering Task Force (IETF). DOI: https://doi.org/10.17487/RFC6901
-
-[10] Internet Engineering Task Force. 2013. *JavaScript Object Notation (JSON) Patch* (RFC 6902). DOI: https://doi.org/10.17487/RFC6902
-
 ## 延伸阅读
-
 - **RFC 8259**:JSON 标准规范,权威定义。
 - **《The Go Programming Language》** 第 4 章:JSON 序列化深入讲解。
 - **《Designing Data-Intensive Applications》**(Kleppmann, 2017):第 4 章对比 JSON、XML、Protobuf、Thrift。
-- **easyjson 文档**:https://github.com/mailru/easyjson
-- **sonic 文档**:https://github.com/bytedance/sonic
-- **jsoniter 文档**:https://github.com/json-iterator/go
 - **《API Design Patterns》**(Mihaylov, 2021):API 响应格式的最佳实践。
-- **JSON Schema 规范**:https://json-schema.org/
 - **Go 源码 `encoding/json/encode.go`**:Marshal 实现细节。
-- **simdjson 论文**:https://arxiv.org/abs/1902.08318
 - **《Streaming JSON Processing》**(Tidwall, 2020):流式 JSON 处理模式。
 ## 编码与解码
 

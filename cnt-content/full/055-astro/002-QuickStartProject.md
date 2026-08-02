@@ -332,48 +332,6 @@ dist/
 | 页面修改后不刷新 | 浏览器看不到改动 | 开发服务器未运行，或改的是 `public/`（public 文件不触发 HMR） | 确认 `npm run dev` 在运行；`public/` 内容需手动刷新 |
 | 构建后页面样式/资源 404 | 引用的图片、脚本找不到 | 资源路径写成了相对路径或未放进 `public/` | 资源放 `public/` 后用 `/文件名` 绝对路径引用 |
 
-## 11. 实战练习
-
-### 练习一：环境自检
-
-- 题目：在终端执行 `node -v` 和 `npm -v`，确认版本号，并判断当前 Node 版本是否满足 Astro 要求。
-- 提示：对照"v22.12.0 或更高、且不能是奇数版本（如 v23）"的规则。
-- 参考答案要点：版本号形如 `v22.x.x` 或 `v24.x.x` 均满足；`v23` 等奇数版本不满足，需要切换。
-
-### 练习二：用非交互命令创建项目
-
-- 题目：不经过任何交互提示，一次命令创建名为 `my-docs` 的文档站模板项目。
-- 提示：使用 `--template docs` 与 `--yes`。
-- 参考答案要点：`npm create astro@latest my-docs -- --template docs --yes`；然后 `cd my-docs && npm run dev`。
-
-### 练习三：自定义首页
-
-- 题目：把首页改为一个"个人名片"页面：包含姓名、技能列表（用 `{数组.map()}` 渲染）、一段自我介绍。
-- 提示：在 frontmatter 定义数组，模板中用 `{skills.map(...)}`。
-- 参考答案要点：frontmatter 中 `const skills = ['HTML', 'CSS', 'Astro']`，模板 `<ul>{skills.map(s => <li>{s}</li>)}</ul>`。
-
-### 练习四：生产构建与产物检查
-
-- 题目：运行 `npm run build`，查看 `dist/` 目录，指出哪个文件对应首页，并确认首页 HTML 中不包含 JavaScript 引用。
-- 提示：`dist/index.html` 即首页产物；用编辑器打开查看 `<script>` 标签数量。
-- 参考答案要点：`dist/index.html` 存在；未添加交互组件时，其中应没有 `<script>` 标签或仅含极少量（如 view transitions）。
-
 ## 12. 一句话记忆
 
 **`npm create astro@latest` 生成积木盒，`npm run dev` 边搭边看，`npm run build` 出成品——src/pages 里每个文件就是一块会自动变成页面的积木。**
-
-## 参考链接与延伸阅读
-
-参考链接：
-
-1. Astro 官方安装指南（中文）：https://docs.astro.build/zh-cn/install-and-setup/
-2. Astro 配置参考：https://docs.astro.build/zh-cn/reference/configuration-reference/
-3. Astro 项目结构说明：https://docs.astro.build/zh-cn/basics/project-structure/
-4. Astro 模板市场：https://astro.build/themes/
-
-延伸阅读：
-
-- 页面与路由原理，见本模块 003-PagesRouting；
-- 组件、Props 与插槽，见本模块 004-ComponentsProps；
-- 内容集合与 Schema，见本模块 005-ContentCollections；
-- Astro 框架整体认知，见本模块 001-AstroOverview。

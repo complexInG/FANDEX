@@ -1006,8 +1006,6 @@ OBD-II 协议要求 ECU 在 50ms 内响应诊断请求:
 - 软件单元要求:每个函数不超过 60 行(Power of Ten)。
 - 异常处理:每条故障路径都有明确恢复策略。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**:`volatile` 关键字在嵌入式 C 中有哪些典型用途?
@@ -1083,30 +1081,6 @@ uint32_t get_count(void) { return g_count; }
 - **优势**:开源指令集免授权费,可定制扩展指令,模块化设计。
 - **劣势**:生态成熟度不及 ARM,工具链支持参差,浮点与 DSP 扩展标准不统一。
 - **趋势**:IoT 与定制 AI 加速器领域 RISC-V 渐成主流;汽车领域逐步渗透;高性能计算领域仍在追赶 ARM。
-
-## 参考文献
-
-[1] Barr, M. 2006. Programming Embedded Systems in C and C++, 2nd edition. O'Reilly Media. ISBN 978-0-596-00983-0.
-
-[2] Yiu, J. 2013. The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors, 3rd edition. Newnes. ISBN 978-0-12-408082-9.
-
-[3] ISO/IEC. 2008. TR 18037:2008 - Programming languages - C - Extensions to support embedded processors. ISO. https://www.iso.org/standard/51126.html
-
-[4] MISRA. 2019. MISRA C:2012 Amendment 3. MISRA. ISBN 978-1-906400-11-9.
-
-[5] ISO. 2018. ISO 26262:2018 - Road vehicles - Functional safety. ISO. https://www.iso.org/standard/68383.html
-
-[6] IEC. 2006. IEC 62304:2006 - Medical device software - Software life cycle processes. IEC. https://www.iec.ch/standards/iec_62304
-
-[7] Liu, C. L. and Layland, J. W. 1973. Scheduling algorithms for multiprogramming in a hard-real-time environment. Journal of the ACM 20, 1 (January 1973), 46-61. DOI: https://doi.org/10.1145/321738.321743
-
-[8] Wilhelm, R. et al. 2008. The worst-case execution-time problem - overview of methods and survey of tools. ACM Transactions on Embedded Computing Systems 7, 3 (April 2008), 1-53. DOI: https://doi.org/10.1145/1347375.1347389
-
-[9] ARM Limited. 2024. ARM Cortex-M Programming Guide to Memory Barrier Instructions. ARM DEN0024A. https://developer.arm.com/documentation/den0024
-
-[10] Patterson, D. A. and Hennessy, J. L. 2020. Computer Organization and Design RISC-V Edition, 2nd edition. Morgan Kaufmann. ISBN 978-0-12-820331-6.
-
-## 延伸阅读
 
 ### 官方文档
 

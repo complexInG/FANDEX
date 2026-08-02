@@ -3212,8 +3212,6 @@ extern template class TemplateHeavy<int>;
 extern template class TemplateHeavy<double>;
 ```
 
-## 第 15 章 习题与解答
-
 ### 填空题知识点讲解
 
 **习题 1（ex-tmp-fb-01）**：C++ 模板元编程最早由 ____ 在 1994 年用模板编译期计算素数的程序无意中发现。
@@ -3233,58 +3231,6 @@ extern template class TemplateHeavy<double>;
 **解析讲解**：refines；constrained（更受约束的）
 
 **解析讲解**：C++20 Concepts 的 subsumption 规则：若 C1 的约束合取范式蕴含 C2，则 C1 比 C2 更受约束（more constrained），重载时优先选择 C1。这是 Concepts 实现部分排序与精细重载的形式化基础。
-
-### 选择题知识点讲解
-
-**习题 4（ex-tmp-ch-01）**：关于 C++ 模板元编程的图灵完备性，下列哪项正确？
-
-- A. 自 C++98 起，C++ 模板就是图灵完备的，但仅对类型计算有效
-- B. 模板的图灵完备性意味着任何编译期可计算的问题都能用模板表达，但实际受编译器递归深度与编译时间限制
-- C. C++20 Concepts 之前，模板不能表达循环，因此并非图灵完备
-- D. constexpr 函数的引入使模板失去图灵完备性的价值
-
-**解析讲解**：B
-
-**解析讲解**：Todd Veldhuizen 在 2003 年正式证明 C++ 模板图灵完备（参见《C++ Templates are Turing Complete》）。模板可通过特化模拟模式匹配、通过递归实例化模拟递归、通过类型/枚举模拟状态，等价于无界 λ 演算。但编译器对递归深度（如 -ftemplate-depth=900）与编译时间有实际限制。constexpr 与模板是互补而非替代关系。
-
-**习题 5（ex-tmp-ch-02）**：以下 C++17 代码的输出是什么？
-
-```cpp
-#include <type_traits>
-#include <iostream>
-
-template<typename T>
-std::enable_if_t<std::is_integral_v<T>, int>
-f(T) { return 1; }
-
-template<typename T>
-std::enable_if_t<!std::is_integral_v<T>, int>
-f(T) { return 2; }
-
-int main() {
-    std::cout << f(42) << f(3.14);
-}
-```
-
-- A. 12
-- B. 21
-- C. 编译错误：f 重载歧义
-- D. 编译错误：第二个 f 的 SFINAE 失败
-
-**解析讲解**：A
-
-**解析讲解**：f(42) 实参为 int，is_integral_v<int> 为 true，第一个 f 的 enable_if_t<true, int> = int 有效，第二个 f 的 enable_if_t<!true,...> 替换失败被 SFINAE 剔除，选择第一个返回 1。f(3.14) 实参为 double，is_integral_v<double> 为 false，第一个 f 被剔除，第二个 f 有效返回 2。输出 12。这是 SFINAE 实现条件重载的经典范式，注意 enable_if_t 作用于返回类型时，替换失败发生在「立即上下文」中，故被 SFINAE 静默处理而非硬错误。
-
-**习题 6（ex-tmp-ch-03）**：关于 C++20 Concepts 与 SFINAE 的对比，下列哪项**错误**？
-
-- A. Concepts 提供更清晰的错误信息，能精确指出哪个约束未满足
-- B. Concepts 支持 subsumption 实现部分排序，SFINAE 仅能二分「匹配/不匹配」
-- C. Concepts 不能与可变参数模板、auto 占位符组合使用
-- D. Concepts 的约束检查在重载解析前完成，避免 SFINAE 的「立即上下文」局限
-
-**解析讲解**：C
-
-**解析讲解**：C 项错误。C++20 Concepts 可与可变参数模板（`template<typename... Ts> requires (Convertible<Ts> && ...)`）、auto 占位符（`void f(std::integral auto x)`）、缩写模板（`template<Addable T>`）等组合。A、B、D 均为 Concepts 相对于 SFINAE 的真实优势：错误诊断精确到原子约束、subsumption 提供部分排序、约束原子化检查避免「立即上下文」硬错误。Concepts 的约束在模板参数推导后、重载解析前进行，且不限于「立即上下文」，这是其诊断能力优于 SFINAE 的根本原因。
 
 ### 15.3 代码修正题
 
@@ -3591,10 +3537,6 @@ Concepts 的错误诊断优势源于其约束的「原子化」。当 `save(Some
 
 此外，Concepts 的 subsumption 使重载层级清晰：`save<T>` 对 `JsonSerializable` 的重载比 `Serializable` 更受约束，编译器自动选择前者。SFINAE 实现此层级需手动编排 `enable_if` 优先级，易出错且诊断更差。Concepts 的 atomic constraint normalization 还允许编译器缓存约束检查结果，在大型代码库中编译速度通常更优。这是 Concepts 相对 SFINAE 的核心工程价值：将「类型约束」从隐式元编程技巧提升为显式、可诊断、可组合的语言级抽象。
 
-## 第 16 章 参考文献
-
-本章列出本模块引用的全部文献，遵循 ACM Reference Format。文献覆盖 C++ 标准文档、经典教材、会议论文、技术提案与在线资源，按类型分组排列。
-
 ### 16.1 标准与技术报告
 
 1. ISO/IEC. 2023. _Information technology — Programming languages — C++_. ISO/IEC 14882:2023, Eighth edition. International Organization for Standardization.
@@ -3628,16 +3570,6 @@ Concepts 的错误诊断优势源于其约束的「原子化」。当 `save(Some
 13. Veldhuizen, T. 1995. _Expression Templates_. C++ Report 7(5): 26–31.
 
 14. Veldhuizen, T. 2003. _C++ Templates are Turing Complete_. The C++ Source.
-
-### 16.4 在线资源与文档
-
-15. cppreference.com. 2024. _Templates — cppreference.com_. Accessed December 1, 2024. https://en.cppreference.com/w/cpp/language/templates
-
-16. cppreference.com. 2024. _Concepts library — cppreference.com_. Accessed December 1, 2024. https://en.cppreference.com/w/cpp/concepts
-
-17. C++ Core Guidelines Contributors. 2024. _C++ Core Guidelines — Templates (T-series) and Concepts (C-series)_. isocpp. Accessed December 1, 2024. https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
-
-18. Stroustrup, B. 2024. _A Tour of C++ (3rd Edition) — online excerpts_. stroustrup.com. Accessed December 1, 2024. https://www.stroustrup.com/tour3.html
 
 ## 第 17 章 延伸阅读
 
@@ -3686,4 +3618,3 @@ Concepts 的错误诊断优势源于其约束的「原子化」。当 `save(Some
 - **std::ranges**：C++20 标准库，Concepts 的最大规模工业应用。
 
 ---
-

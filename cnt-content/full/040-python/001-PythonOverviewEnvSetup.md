@@ -418,15 +418,6 @@ flowchart TD
 - **使用 HTTPS**：在网络通信中使用 HTTPS
 - **密码处理**：使用 hashlib 或 bcrypt 处理密码
 
-## 7. 学习资源
-
-### 7.1 官方资源
-
-- **Python 官网**: [https://www.python.org/](https://www.python.org/)
-- **Python 文档**: [https://docs.python.org/](https://docs.python.org/)
-- **PEP 8 风格指南**: [https://peps.python.org/pep-0008/](https://peps.python.org/pep-0008/)
-- **PyPI (Python Package Index)**: [https://pypi.org/](https://pypi.org/)
-
 ### 7.2 书籍
 
 - **《Python 编程：从入门到实践》** - Eric Matthes
@@ -520,15 +511,6 @@ Python 作为一种不断发展的编程语言，未来将继续在以下方面�
 ## 延伸阅读
 
 - [数据分析](data-analysis/overview)
-
-## 参考文献
-
-Python 官方文档：https://docs.python.org/zh-cn/3/
-PEP 8 样式指南：https://peps.python.org/pep-0008/
-Python 之禅（PEP 20）：https://peps.python.org/pep-0020/
-Python 类型注解指南（PEP 484）：https://peps.python.org/pep-0484/
-Python 打包用户指南：https://packaging.python.org/
-Real Python 教程站：https://realpython.com/
 
 ## 深度专题扩展
 

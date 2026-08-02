@@ -1524,8 +1524,6 @@ if (result.success && result.data) {
 3. 本章节深入类型差异
 4. 重点学习 ArkUI 声明式 UI(与命令式思维差异较大)
 
-## 11. 参考资料
-
 ### 11.1 官方文档
 
 - **HarmonyOS 应用开发文档**——https://developer.harmonyos.com/
@@ -1788,8 +1786,6 @@ HarmonyOS 作为面向万物互联的操作系统,对应用安全性有更高要
 
 ---
 
-## 附录 F:练习题
-
 ### F.1 基础题
 
 **题目 1**:以下 TypeScript 代码改为 ArkTS:
@@ -1946,73 +1942,6 @@ class EventEmitter {
   }
 }
 ```
-
-### F.3 综合题
-
-**题目 5**:设计一个类型安全的状态管理类,支持订阅状态变化。
-
-参考答案:
-
-```typescript
-interface Listener<T> {
-  (state: T): void;
-}
-
-class Store<T> {
-  private state: T;
-  private listeners: Listener<T>[] = [];
-
-  constructor(initialState: T) {
-    this.state = initialState;
-  }
-
-  getState(): T {
-    return this.state;
-  }
-
-  setState(updater: (prevState: T) => T): void {
-    const newState: T = updater(this.state);
-    this.state = newState;
-    this.notifyListeners();
-  }
-
-  subscribe(listener: Listener<T>): () => void {
-    this.listeners.push(listener);
-    // 返回取消订阅函数
-    return (): void => {
-      const idx: number = this.listeners.indexOf(listener);
-      if (idx >= 0) {
-        this.listeners.splice(idx, 1);
-      }
-    };
-  }
-
-  private notifyListeners(): void {
-    for (let i = 0; i < this.listeners.length; i++) {
-      this.listeners[i](this.state);
-    }
-  }
-}
-
-// 使用
-interface CounterState {
-  count: number;
-}
-
-const store: Store<CounterState> = new Store<CounterState>({ count: 0 });
-
-const unsubscribe: () => void = store.subscribe((state: CounterState): void => {
-  console.log(`Count: ${state.count}`);
-});
-
-store.setState((prev: CounterState): CounterState => ({
-  count: prev.count + 1
-}));
-
-unsubscribe();
-```
-
----
 
 ## 附录 G:术语表
 

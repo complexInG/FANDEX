@@ -1986,8 +1986,6 @@ def crawl_with_depth(url: str, depth: int = 1, max_depth: int = 2):
             crawl_with_depth.delay(link, depth + 1, max_depth)
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：解释 `delay()` 与 `apply_async()` 的区别，并给出使用场景。
@@ -2084,40 +2082,6 @@ def process_order(order: Order):
 - Kafka Streams：流式处理，低延迟；无 Result Backend；支持窗口、聚合
 - Celery 适合：任务队列、定时调度、批处理
 - Kafka Streams 适合：实时流处理、事件溯源、复杂事件处理（CEP）
-
-## 10. 参考文献
-
-[1] Ask Solem Hoel. 2009. Celery: Distributed Task Queue. Retrieved July 21, 2026, from https://docs.celeryq.dev/
-
-[2] Celery Project. 2024. Celery Documentation v5.4. Retrieved July 21, 2026, from https://docs.celeryq.dev/en/stable/
-
-[3] VMware Inc. 2024. RabbitMQ Documentation: AMQP 0-9-1 Model. Retrieved July 21, 2026, from https://www.rabbitmq.com/tutorials/amqp-concepts.html
-
-[4] Redis Ltd. 2024. Redis Documentation: Pub/Sub and Lists. Retrieved July 21, 2026, from https://redis.io/docs/manual/pubsub/
-
-[5] OASIS. 2014. Advanced Message Queuing Protocol (AMQP) Version 1.0. DOI: 10.1155/2014/354629. Retrieved July 21, 2026, from https://docs.oasis-open.org/amqp/core/v1.0/amqp-core-complete-v1.0.pdf
-
-[6] Brendan Burns and Theodoros Rekatsinas. 2014. At-least-once delivery in distributed message queues. In Proceedings of the 2014 ACM SIGCOMM conference. DOI: 10.1145/2619239.2626293
-
-[7] Ask Solem Hoel. 2020. Celery 5.0 Release Notes. Retrieved July 21, 2026, from https://docs.celeryq.dev/en/stable/history/whatsnew-5.0.html
-
-[8] Rémi Rampin. 2018. Flower: Real-time monitor and web admin for Celery. Retrieved July 21, 2026, from https://flower.readthedocs.io/
-
-[9] Salvatore Sanfilippo. 2024. Redis Documentation: Distributed Locks with Redis. Retrieved July 21, 2026, from https://redis.io/docs/manual/patterns/distributed-locks/
-
-[10] Python Software Foundation. 2024. multiprocessing — Process-based parallelism. Retrieved July 21, 2026, from https://docs.python.org/3/library/multiprocessing.html
-
-[11] Twitter Inc. 2010. Finagle: A Fault-Tolerant RPC System. Retrieved July 21, 2026, from https://finagle.github.io/
-
-[12] Apache Software Foundation. 2024. Apache Kafka Documentation: Streams API. Retrieved July 21, 2026, from https://kafka.apache.org/documentation/streams/
-
-[13] Martin Kleppmann. 2017. Designing Data-Intensive Applications. O'Reilly Media, Sebastopol, CA, USA. Chapter 11: Stream Processing. DOI: 10.5555/3156360
-
-[14] Shiju Sreedharan. 2018. Celery: Distributed Task Queue (3rd ed.). O'Reilly Media. DOI: 10.5555/3273630
-
-[15] Patrick Deziel. 2024. Dramatiq: Fast and reliable distributed task processing library. Retrieved July 21, 2026, from https://dramatiq.io/
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

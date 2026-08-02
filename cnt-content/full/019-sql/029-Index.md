@@ -3488,8 +3488,6 @@ SET SHOWPLAN_TEXT OFF;
 
 ---
 
-## 第十七章 练习题与参考答案
-
 ### 17.1 基础理论题
 
 **题目 1**：简述 B+ 树相比 B 树在数据库索引场景下的四个核心优势。
@@ -3578,22 +3576,6 @@ CREATE INDEX idx_users_email_prefix_status ON users(left(email, 5), status)
 -- 部分索引 + 表达式索引组合
 ```
 
-### 17.4 进阶思考题
-
-**题目 5**：为什么 PostgreSQL 在查询命中大量数据（如表的 30%）时，倾向于使用 Bitmap Index Scan 而非 Index Scan？请从 I/O 模式角度分析。
-
-**参考答案**：
-
-Index Scan 的 I/O 模式：每命中一个索引项就回表读取一次堆页面，若命中数据分散在不同页面，会产生大量随机 I/O。当命中数据量小时，随机 I/O 可控；当命中数据量大（如 30%）时，同一页面可能被多次随机访问，效率极低。
-
-Bitmap Index Scan 的 I/O 模式：先扫描索引构建位图（标记需访问的堆页面），再按页面顺序（Physical Order）批量读取堆页面，将随机 I/O 转化为顺序 I/O。代价是需先构建位图（额外 CPU 与内存开销），且失去索引有序性（需额外排序）。
-
-因此，当命中数据量大时，Bitmap Scan 通过顺序 I/O 显著降低磁盘访问开销，优于 Index Scan 的随机 I/O。这一决策由优化器基于统计信息自动判断。
-
----
-
-## 第十八章 参考文献
-
 ### 18.1 经典论文
 
 1. Bayer, R., & McCreight, E. (1970). Organization and Maintenance of Large Ordered Indices. *Acta Informatica*, 1(3), 173-189. —— B 树的奠基性论文。
@@ -3622,13 +3604,6 @@ Bitmap Index Scan 的 I/O 模式：先扫描索引构建位图（标记需访问
 15. Tcl, G. (2019). *PostgreSQL High Performance*. Packt. —— PostgreSQL 高性能。
 16. Tow, D. (2010). *SQL Tuning*. O'Reilly. —— SQL 调优。
 17. Nadeau, T. P., & Teorey, T. J. (2002). *Database Modeling and Design: Logical Principles*. Morgan Kaufmann. —— 数据库建模与设计。
-
-### 18.5 在线资源
-
-18. PostgreSQL Wiki: Index Maintenance. https://wiki.postgresql.org/wiki/Index_Maintenance
-19. Use The Index, Luke!: A Guide to Database Performance for Developers. https://use-the-index-luke.com/
-20. MySQL Performance Blog (Percona). https://www.percona.com/blog/
-21. PostgreSQL Mailing List Archives. https://www.postgresql.org/list/pgsql-performance/
 
 ### 18.6 标准规范
 

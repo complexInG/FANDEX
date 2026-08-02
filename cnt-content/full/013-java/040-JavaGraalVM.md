@@ -1089,8 +1089,6 @@ Native Image 使 Java 在 Serverless 场景与 Node.js、Python 平起平坐。
 
 ---
 
-## 9. 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 简述 GraalVM 的核心组件及其职责。
@@ -1135,33 +1133,6 @@ Class<?> clazz = Class.forName(className);
 15. Truffle 框架对 Java 多语言生态的意义是什么？
 16. 在容器化场景，Native Image 是否一定优于 JVM？为何？
 
-### 综合题知识点讲解
-
-17. 阅读以下代码，分析在 Native Image 中的行为：
-
-```java
-public class ConfigLoader {
-    private static final Config CONFIG;
-
-    static {
-        CONFIG = new Config();
-        CONFIG.loadFromEnv();  // 从环境变量加载
-    }
-
-    public static Config getConfig() {
-        return CONFIG;
-    }
-}
-```
-
-问：若 `ConfigLoader` 被 `--initialize-at-build-time` 标记，运行时 `CONFIG` 的值是什么？为何？
-
-18. 设计一个基于 GraalVM Polyglot API 的应用，要求：
-    - Java 主程序。
-    - JavaScript 执行业务规则（动态更新）。
-    - Python 执行数据分析。
-    - 三者共享内存对象。
-
 ### 9.7 代码题
 
 19. 实现一个 Native Image 友好的 JSON 序列化器，要求：
@@ -1172,8 +1143,6 @@ public class ConfigLoader {
 20. 实现一个跨语言调用示例：Java 调用 Python 的 `pandas` 库进行数据分析，返回结果给 Java。
 
 ---
-
-## 10. 参考文献
 
 ### 10.1 官方文档
 
@@ -1196,19 +1165,6 @@ public class ConfigLoader {
 11. **Duboscq, G. et al.** "Graal IR: An Extensible Declarative Intermediate Representation". APLAS, 2013.
 12. **Simon, D. et al.** "SubstrateVM: AOT Compilation for Java". PPPJ, 2019.
 
-### 10.4 在线资源
-
-13. GraalVM GitHub: https://github.com/oracle/graal
-14. GraalVM Reachability Metadata: https://github.com/oracle/graalvm-reachability-metadata
-15. Quarkus Native Guide: https://quarkus.io/guides/building-native-image
-16. Micronaut AOT: https://docs.micronaut.io/latest/guide/#aot
-17. AWS Lambda Java Native: https://aws.amazon.com/blogs/developer/aws-lambda-support-for-java-21/
-18. Spring Boot Native Hints: https://docs.spring.io/spring-boot/docs/current/reference/html/native-image.html#native-image.advanced.hints
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 相关章节
 
 - `java/JVM类加载机制`：Native Image 的"无类加载"与传统 JVM 的对比。
@@ -1225,15 +1181,6 @@ public class ConfigLoader {
 - **TruffleDSL**：自定义语言实现框架。
 - **GraalWasm**：WebAssembly 运行时。
 - **ES2GraalJS**：ECMAScript 引擎实现。
-
-### 11.3 社区资源
-
-- GraalVM Slack: https://graalvm.slack.com/
-- GraalVM Twitter: @graalvm
-- Quarkus Zulip: https://quarkusio.zulipchat.com/
-- Spring Boot GitHub Discussions: https://github.com/spring-projects/spring-boot/discussions
-
----
 
 ## 附录 A：常用 native-image 参数速查
 
@@ -1357,19 +1304,8 @@ GraalVM 的演进仍在继续——从 PGO 到 G1 GC，从 Spring Boot 3 到 Qua
 
 > 本文基于 GraalVM for JDK 21 撰写，部分内容参考 GraalVM 官方文档与 Spring Boot 3 参考手册。文中代码示例均在 GraalVM 21.0.3 上验证通过，读者可在此基础上扩展至任意现代 GraalVM 版本。
 
-## 参考文献
-
-Oracle Java 官方文档：https://docs.oracle.com/en/java/
-OpenJDK 项目：https://openjdk.org/
-Java 语言规范：https://docs.oracle.com/javase/specs/
-Spring 官方文档：https://spring.io/projects/spring-boot
-Baeldung 教程站：https://www.baeldung.com/
-Maven 官方文档：https://maven.apache.org/guides/
-
 ## 延伸阅读
-
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
 Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
 数据库访问（JDBC/JPA），见 019-sql 模块相关文档。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Java 全栈课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Java 进阶课程。

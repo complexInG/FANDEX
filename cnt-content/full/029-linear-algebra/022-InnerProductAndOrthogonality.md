@@ -4,14 +4,13 @@ title: 内积与正交性
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 内积的定义与性质，向量的长度与距离，正交向量与正交向量组，正交补空间与正交投影，含 0 基础类比、完整例题、常见错误对策与实战练习。
+description: 内积的定义与性质，向量的长度与距离，正交向量与正交向量组，正交补空间与正交投影，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/基与维数'
   - 'linear-algebra/坐标与坐标变换'
   - 'linear-algebra/施密特正交化'
-  - 'linear-algebra/向量空间典型例题'
 prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
 ---
@@ -193,8 +192,6 @@ $$\text{proj}_W \boldsymbol{\alpha} = \sum_{i=1}^{r} (\boldsymbol{\alpha}, \bold
 
 即投影等于"$\boldsymbol{\alpha}$ 在各标准正交基方向上的分量之和"。
 
-## 5. 典型例题
-
 ### 例1（求长度、夹角与正交性判断）
 
 设 $\boldsymbol{\alpha} = (1, -1, 2)^T$，$\boldsymbol{\beta} = (2, 1, 0)^T$，$\boldsymbol{\gamma} = (1, 3, 1)^T$。
@@ -254,58 +251,6 @@ $$\boldsymbol{\alpha}_\perp = \boldsymbol{\alpha} - \text{proj}_W \boldsymbol{\a
 | 标准正交基下仍解方程组求坐标 | 方法低效/错误 | 没利用内积公式 | 标准正交基下坐标就是 $(\boldsymbol{\beta}, \boldsymbol{e}_i)$，直接内积即可 |
 | 求投影后不检验垂直分量 | 流程缺失 | 只算投影不算余量 | 投影与余量应满足 $\boldsymbol{\alpha}_\perp \perp W$，算完代入验证 |
 
-## 7. 实战练习
-
-### 练习1（基础：内积与长度）
-
-设 $\boldsymbol{\alpha} = (2, -1, 3)^T$，$\boldsymbol{\beta} = (1, 4, -2)^T$。求 $(\boldsymbol{\alpha}, \boldsymbol{\beta})$、$\|\boldsymbol{\alpha}\|$、$\|\boldsymbol{\beta}\|$，并判断 $\boldsymbol{\alpha}$ 与 $\boldsymbol{\beta}$ 是否正交。
-
-**提示**：直接套定义；正交当且仅当内积为 0。
-
-**参考答案要点**：$(\boldsymbol{\alpha}, \boldsymbol{\beta}) = 2 - 4 - 6 = -8 \neq 0$，不正交；$\|\boldsymbol{\alpha}\| = \sqrt{14}$，$\|\boldsymbol{\beta}\| = \sqrt{21}$。
-
-### 练习2（进阶：夹角）
-
-求 $\boldsymbol{\alpha} = (1, 1, 0)^T$ 与 $\boldsymbol{\beta} = (1, -1, \sqrt{2})^T$ 的夹角 $\theta$。
-
-**提示**：$\cos\theta = \dfrac{(\boldsymbol{\alpha}, \boldsymbol{\beta})}{\|\boldsymbol{\alpha}\|\|\boldsymbol{\beta}\|}$，注意向量分量含 $\sqrt{2}$，长度也要带根号算。
-
-**参考答案要点**：$(\boldsymbol{\alpha}, \boldsymbol{\beta}) = 1 - 1 + 0 = 0$，故 $\theta = 90°$，两向量正交。
-
-### 练习3（进阶：构造正交向量）
-
-求一个与 $\boldsymbol{\alpha}_1 = (1, 1, 0)^T$ 和 $\boldsymbol{\alpha}_2 = (0, 1, 1)^T$ 都正交的单位向量。
-
-**提示**：先找满足 $\begin{cases} x_1 + x_2 = 0 \\ x_2 + x_3 = 0 \end{cases}$ 的非零解，再单位化。
-
-**参考答案要点**：由 $x_2 = -x_1$，$x_3 = -x_2 = x_1$，取 $(1, -1, 1)^T$，单位化得 $\frac{1}{\sqrt{3}}(1, -1, 1)^T$。
-
-### 练习4（综合：正交补与投影）
-
-设 $W = \text{span}\{(1, 2, -1)^T\}$。求 $W^\perp$ 的一组基，并把 $\boldsymbol{\beta} = (3, 1, 2)^T$ 分解为 $W$ 分量与 $W^\perp$ 分量之和。
-
-**提示**：$W^\perp = \{(x,y,z) \mid x + 2y - z = 0\}$，是 2 维子空间，解方程组得基；投影用公式 $\text{proj}_W\boldsymbol{\beta} = \dfrac{(\boldsymbol{\beta},\boldsymbol{u})}{(\boldsymbol{u},\boldsymbol{u})}\boldsymbol{u}$。
-
-**参考答案要点**：$W^\perp$ 基可取 $(-2, 1, 0)^T$ 与 $(1, 0, 1)^T$。$\text{proj}_W\boldsymbol{\beta} = \frac{3+2-2}{6}(1,2,-1)^T = \frac{1}{2}(1,2,-1)^T$，余量 $\boldsymbol{\beta}_\perp = (\frac{5}{2}, 0, \frac{5}{2})^T$。检验：$(\boldsymbol{\beta}_\perp, (1,2,-1)) = \frac{5}{2} + 0 - \frac{5}{2} = 0$。
-
-### 练习5（挑战：内积不等式）
-
-证明：对任意实数 $x_1, \ldots, x_n$，有 $\left(\sum_{i=1}^{n}x_i\right)^2 \leq n\sum_{i=1}^{n}x_i^2$，并指出等号成立条件。
-
-**提示**：令 $\boldsymbol{\alpha} = (1, 1, \ldots, 1)^T$，$\boldsymbol{\beta} = (x_1, \ldots, x_n)^T$，用 Cauchy-Schwarz 不等式。
-
-**参考答案要点**：$|(\boldsymbol{\alpha}, \boldsymbol{\beta})| \leq \|\boldsymbol{\alpha}\|\|\boldsymbol{\beta}\|$ 即 $|\sum x_i| \leq \sqrt{n}\sqrt{\sum x_i^2}$，平方即得。等号当且仅当 $\boldsymbol{\beta}$ 与 $\boldsymbol{\alpha}$ 线性相关，即 $x_1 = x_2 = \cdots = x_n$。
-
 ## 8. 一句话记忆
 
 **内积是向量空间的"尺子"：长度是内积开方，夹角由内积定义，正交就是内积为零；非零正交组必线性无关，标准正交基下坐标只需做内积。**
-
-## 参考链接与延伸阅读
-
-- 同济大学数学科学学院《工程数学 线性代数（第七版）》，高等教育出版社，第 5 章 §1 向量的内积、长度及正交性（权威教材，概念与例题来源）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- Purdue University《Linear Algebra and its Applications》（Lay 教材配套讲义，§6.1 内积、长度与正交性）：https://www.math.purdue.edu/~xu1121/Sec6.1
-- LibreTexts Linear Algebra（正交集合与投影，含正交基坐标公式）：https://math.libretexts.org/Courses/Irvine_Valley_College/Math_26%3A_Introduction_to_Linear_Algebra/03%3A_Vector_Geometry/3.07%3A_Orthogonal_Sets
-- MIT 18.06 Linear Algebra（Strang 第 14 讲正交向量与子空间）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- Interactive Linear Algebra（Georgia Tech，§6.2 正交集合与正交基）：https://textbooks.math.gatech.edu/ila/
-
-延伸阅读：基与维数、坐标与坐标变换（前置知识）；施密特正交化（把普通基改造成标准正交基的算法，即本篇的直接续篇）；向量空间典型例题（正交化综合练习）；实对称矩阵对角化（标准正交基在特征值问题中的应用）。

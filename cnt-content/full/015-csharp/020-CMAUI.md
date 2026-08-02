@@ -1797,8 +1797,6 @@ public class OfflineFirstRepository<T> where T : class, ISyncable, new()
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 8.1 基础题
 
 **习题 1**：使用 .NET CLI 创建一个新的 MAUI 项目，并说明项目结构中 `Platforms/`、`Resources/`、`MauiProgram.cs` 的作用。
@@ -1909,36 +1907,6 @@ public class SimpleViewModel : BaseViewModel
 | 适用场景 | 内容应用、Web 团队 | 性能敏感、原生体验 |
 
 ---
-
-## 9. 参考文献
-
-1. Microsoft. (2024). *.NET MAUI documentation*. Microsoft Learn. Retrieved from https://learn.microsoft.com/dotnet/maui/
-
-2. Bartolucci, J. (2022). *Mobile Development with .NET MAUI*. O'Reilly Media. ISBN: 978-1098131916.
-
-3. Peppas, K. (2022). *Building Cross-Platform Applications with .NET MAUI*. Apress. DOI: [10.1007/978-1-4842-8083-2](https://doi.org/10.1007/978-1-4842-8083-2)
-
-4. Hejlsberg, A., Torgersen, M., Wiltamuth, S., & Golde, P. (2010). *The C# Programming Language* (4th ed.). Addison-Wesley Professional. ISBN: 978-0-321-74176-9.
-
-5. Microsoft. (2024). *.NET MAUI GitHub repository*. Retrieved from https://github.com/dotnet/maui
-
-6. Microsoft. (2024). *.NET MAUI Community Toolkit*. Retrieved from https://learn.microsoft.com/dotnet/communitytoolkit/maui/
-
-7. Fowler, M. (2002). *Patterns of Enterprise Application Architecture*. Addison-Wesley Professional. ISBN: 978-0321127426.
-
-8. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley Professional. ISBN: 978-0201633610.
-
-9. Mac Lane, S. (1971). *Categories for the Working Mathematician* (2nd ed.). Springer-Verlag. DOI: [10.1007/978-1-4612-9839-7](https://doi.org/10.1007/978-1-4612-9839-7)
-
-10. Petricek, T., & Skeet, J. (2010). *Real-World Functional Programming: With Examples in F# and C#*. Manning Publications. ISBN: 978-1933988924.
-
-11. Skeet, J. (2019). *C# in Depth* (4th ed.). Manning Publications. ISBN: 978-1617294532.
-
-12. Nystrom, R. (2014). *Game Programming Patterns*. Genever Benning. ISBN: 978-0990582908.
-
----
-
-## 10. 延伸阅读
 
 ### 10.1 官方文档
 

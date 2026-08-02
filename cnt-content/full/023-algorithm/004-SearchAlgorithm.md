@@ -4,7 +4,7 @@ title: 搜索算法
 module: algorithm
 category: Algorithm/Searching
 difficulty: intermediate
-description: 搜索（Search）算法的形式化定义、状态空间图模型、完备性与最优性证明、线性搜索 $O(n)$、二分搜索 $O(\log n)$、哈希查找 $O(1)$、BFS/DFS 图搜索 $O(V+E)$、双向 BFS、迭代深化 DFS（IDDFS）、A* 启发式搜索（Hart-Nilsson-Raphael 1968）、IDA* 内存受限搜索（Korf 1985）、Minimax + Alpha-Beta 剪枝博弈树搜索（Shannon 1950、Knuth-Moore 1975）的原理、实现与对比分析，涵盖 Shannon 1950 国际象棋程序、Dijkstra 1959 最短路径、Hart-Nilsson-Raphael 1968 A*、Korf 1985 IDA* 等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 22 章、Russell-Norvig 第 3 章风格习题。
+description: 搜索（Search）算法的形式化定义、状态空间图模型、完备性与最优性证明、线性搜索 $O(n)$、二分搜索 $O(\log n)$、哈希查找 $O(1)$、BFS/DFS 图搜索 $O(V+E)$、双向 BFS、迭代深化 DFS（IDDFS）、A* 启发式搜索（Hart-Nilsson-Raphael 1968）、IDA* 内存受限搜索（Korf 1985）、Minimax + Alpha-Beta 剪枝博弈树搜索（Shannon 1950、Knuth-Moore 1975）的原理、实现与对比分析，涵盖 Shannon 1950 国际象棋程序、Dijkstra 1959 最短路径、Hart-Nilsson-Raphael 1968 A*、Korf 1985 IDA* 等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 22 章。
 author: fanquanpp
 tags:
 - algorithm
@@ -1906,55 +1906,6 @@ IDDFS 在深度 $d$ 找到解时，前 $d$ 轮的扩展看似浪费。但 Korf 1
 
 $h \equiv 0$ 时 A* = Dijkstra。需选择合适的启发式（如网格用曼哈顿距离，而非 0）。
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**1. 在分支因子 $b=10$、解深度 $d=6$ 的状态空间中，双向 BFS 相比单向 BFS 的扩展次数大致减少为：**
-
-A. 2 倍  
-B. 100 倍  
-C. 1000 倍  
-D. 10000 倍
-
-**解析讲解**：C。单向 $10^6$，双向 $2 \times 10^3 \approx 2000$，减少约 500 倍，最接近 1000 倍。
-
-**2. 下列关于 A* 算法的描述，正确的是：**
-
-A. 启发式 $h$ 越大，A* 越快且保证最优  
-B. 可采纳性 $h(n) \leq h^*(n)$ 保证 A* 最优  
-C. 一致性比可采纳性更弱  
-D. $h \equiv 0$ 时 A* 退化为 BFS
-
-**解析讲解**：B。可采纳性是 A* 最优性的充分条件。C 错：一致性蕴含可采纳性，故一致性更强。D 错：$h \equiv 0$ 时 A* 退化为 Dijkstra，不是 BFS。
-
-**3. IDA* 相比 A* 的核心优势是：**
-
-A. 时间复杂度更低  
-B. 空间复杂度更低  
-C. 不需要启发式  
-D. 完备性更强
-
-**解析讲解**：B。IDA* 空间 $O(d)$，A* 空间 $O(b^d)$。
-
-**4. Knuth-Moore 1975 证明 Alpha-Beta 剪枝的最优复杂度为：**
-
-A. $O(b^d)$  
-B. $O(b^{d/2})$  
-C. $O(b^{3d/4})$  
-D. $O(b^{\log_2 d})$
-
-**解析讲解**：B。最优节点排序下 Alpha-Beta 复杂度 $O(b^{d/2})$。
-
-**5. 下列算法中，哪个在加权图上不保证最短路径？**
-
-A. Dijkstra  
-B. A*（可采纳启发式）  
-C. Bellman-Ford  
-D. BFS
-
-**解析讲解**：D。BFS 仅在无权图（或所有边权相等）上保证最短路径。
-
 ### 填空题知识点讲解
 
 **1.** Hart-Nilsson-Raphael 于 ____ 年在 IEEE Trans. SSC-4(2):100-107 发表 A* 算法，最初为 ____ 机器人路径规划而设计。
@@ -2037,8 +1988,6 @@ def bidirectional_buggy(graph, start, end):
 
 **解析讲解**：(1) 节点排序：TT move > killer move > history heuristic，逼近 Knuth-Moore 最优排序 $O(b^{d/2})$；(2) Iterative Deepening：上一深度最佳着法作为下一深度 TT move；(3) Quiescence Search：避免水平线效应；(4) Null Move Pruning：跳过一步判断优势；(5) Transposition Table：Zobrist hashing 缓存；(6) Late Move Reduction：靠后着法降深度；(7) 并行搜索：Stockfish 11+ 多线程。
 
-## 18. 参考文献
-
 ### 18.1 经典教材
 
 1. **Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C.** (2022). *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305. Chapter 11 (Hash Tables), Chapter 22 (Elementary Graph Algorithms - BFS/DFS), Chapter 24 (Single-Source Shortest Paths - Dijkstra).
@@ -2073,16 +2022,6 @@ def bidirectional_buggy(graph, start, end):
 24. **CPython dictobject.c.** https://github.com/python/cpython/blob/main/Objects/dictobject.c. Python 字典实现。
 25. **Java HashMap.** https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/HashMap.java. Java 哈希表实现。
 
-### 18.4 在线资源
-
-26. **VisuAlgo.** https://visualgo.net/. 算法可视化（BFS/DFS/Dijkstra/A*）。
-27. **LeetCode.** https://leetcode.com/tag/breadth-first-search/. 高频搜索算法题集。
-28. **CP-Algorithms.** https://cp-algorithms.com/graph/. 竞赛算法大全。
-29. **OpenGenus IQ.** https://iq.opengenus.org/. 搜索算法百科。
-30. **Stanford CS221.** https://stanford-cs221.github.io/. AI 基础与搜索算法课程。
-
-## 19. 延伸阅读
-
 ### 19.1 理论深入
 
 - **Pearl, J.** (1984). *Heuristics: Intelligent Search Strategies for Computer Problem Solving*. Addison-Wesley. 启发式搜索的奠基性专著。
@@ -2096,15 +2035,6 @@ def bidirectional_buggy(graph, start, end):
 - **机器人路径规划**：RRT、RRT*、PRM（采样式规划）；
 - **数据库索引**：B+ 树、LSM 树、跳表索引；
 - **生物信息学**：BLAST 序列搜索、A* 在基因组比对中的应用。
-
-### 19.3 工程实现练习
-
-1. **实现一个完整的 Sokoban 求解器**：IDA* + 模式数据库 + 死锁检测；
-2. **实现一个简单的国际象棋引擎**：Alpha-Beta + 评估函数 + 置换表；
-3. **实现 Google Maps 风格的路径规划**：A* + Landmark + 双向搜索；
-4. **实现一个 15 数码求解器**：IDA* + Manhattan + Linear Conflict；
-5. **实现一个迷宫生成与求解器**：DFS 生成 + BFS/A* 求解；
-6. **实现一个社交网络 K 度好友推荐**：BFS 多源搜索。
 
 ### 19.4 教学视频
 
@@ -2199,4 +2129,3 @@ flowchart TD
 ---
 
 > **核心要点**：搜索算法是计算机科学的基石——从 Knuth TAOCP Vol.3 的静态查找到 Russell-Norvig AIMA 的状态空间搜索，再到 AlphaGo 的 MCTS。掌握本文 13 种算法（线性/二分/哈希/BFS/DFS/双向 BFS/IDDFS/A*/IDA*/Minimax/Alpha-Beta/MCTS）的形式化复杂度、完备性、最优性、工程实现，是算法工程师与 AI 研究者的核心素养。
-

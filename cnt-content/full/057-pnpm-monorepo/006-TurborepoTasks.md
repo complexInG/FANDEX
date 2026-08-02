@@ -174,22 +174,6 @@ turbo run build --dry      # 预览执行计划，不真正执行
 
 **误区四：dev 任务也应该缓存。** → dev 是长驻进程（persistent），不产生可复用产物，`cache: false` 是正确配置。
 
-## 8. 实战练习
-
-1. **配置 turbo.json**：为你的 Monorepo 配置 build/test/lint/dev 四个任务，正确设置 dependsOn 和 outputs。
-
-2. **缓存验证**：连续两次运行 `turbo run build`，观察第二次的 `FULL TURBO` 输出；修改一个包的源码再运行，观察只有该包重跑。
-
-3. **inputs 优化**：为 build 任务配置 `inputs`，验证修改 README 不会触发构建。
-
-4. **affected 实验**：切换分支修改一个包，运行 `turbo run build --affected`，观察只有变更相关的包被执行。
-
-## 9. 参考资源
-
-- Turborepo 官方文档：https://turborepo.com/docs
-- Turborepo 缓存文档：https://turborepo.com/docs/caching
-- turbo.json 配置参考：https://turborepo.com/docs/reference/configuration
-
 ## 10. 延伸阅读
 
 - Monorepo 的完整落地，见本模块《Monorepo 实战》

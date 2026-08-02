@@ -1587,8 +1587,6 @@ class ChatRoom : ViewModel() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：下列哪种 Flow 类型最适合表示"用户在搜索框中输入的查询字符串"？
@@ -1768,48 +1766,6 @@ viewModelScope.launch {
 
 ---
 
-## 10. 参考文献
-
-[1] JetBrains. 2019. Kotlin Coroutines 1.3 Release Notes. Retrieved July 21, 2026 from https://github.com/Kotlin/kotlinx.coroutines/releases/tag/1.3.0
-
-[2] JetBrains. 2020. Kotlin Coroutines 1.4: StateFlow and SharedFlow. Retrieved July 21, 2026 from https://blog.jetbrains.com/kotlin/2020/08/kotlin-coroutines-1-4-0-released/
-
-[3] JetBrains. 2021. Kotlin Coroutines 1.5: SharedFlow. Retrieved July 21, 2026 from https://github.com/Kotlin/kotlinx.coroutines/releases/tag/1.5.0
-
-[4] Roman Elizarov. 2019. Reactive Streams and Kotlin Flows. Kotlin Conf 2019. Retrieved July 21, 2026 from https://www.youtube.com/watch?v=3_tQSh1LQp0
-
-[5] Roman Elizarov. 2020. Asynchronous Programming with Kotlin Flow. Retrieved July 21, 2026 from https://elizarov.medium.com/reactive-streams-and-kotlin-flows-bfd65feae32f
-
-[6] Lightbend, Netflix, Pivotal. 2015. Reactive Streams Specification 1.0.0. Retrieved July 21, 2026 from https://www.reactive-streams.org/
-
-[7] Erik Meijer. 2010. Subject/Observer is Dual to Iterator. Retrieved July 21, 2026 from https://themejer.blogspot.com/2010/01/subjectobserver-is-dual-to-iterator.html
-
-[8] Conal Elliott. 1997. Functional Reactive Programming. Retrieved July 21, 2026 from https://conal.net/papers/icfp97/
-
-[9] Anderson, L. W., and Krathwohl, D. R. 2001. A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives. Longman.
-
-[10] Google. 2021. Android StateFlow and SharedFlow. Retrieved July 21, 2026 from https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
-
-[11] Google. 2021. repeatOnLifecycle with StateFlow. Retrieved July 21, 2026 from https://medium.com/androiddevelopers/a-safer-way-to-collect-flows-from-android-uis-23080b1f8bda
-
-[12] Cash App. 2023. Turbine - A testing library for Flow. Retrieved July 21, 2026 from https://github.com/cashapp/turbine
-
-[13] Pivotal. 2017. Project Reactor Documentation. Retrieved July 21, 2026 from https://projectreactor.io/docs/core/release/reference/
-
-[14] Netflix. 2018. RxJava 3 Documentation. Retrieved July 21, 2026 from https://github.com/ReactiveX/RxJava
-
-[15] Apple. 2019. Combine Framework Documentation. Retrieved July 21, 2026 from https://developer.apple.com/documentation/combine
-
-[16] Roman Elizarov. 2017. Structured Concurrency. Retrieved July 21, 2026 from https://medium.com/@elizarov/structured-concurrency-7221827f4837
-
-[17] JetBrains. 2023. Kotlin Multiplatform. Retrieved July 21, 2026 from https://kotlinlang.org/docs/multiplatform.html
-
-[18] KEEP-154. 2019. Kotlin Flow Proposal. Retrieved July 21, 2026 from https://github.com/Kotlin/KEEP/blob/master/proposals/coroutines/flow.md
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - [Kotlin Flow Documentation](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/)：官方 API 参考。
@@ -1836,13 +1792,6 @@ viewModelScope.launch {
 - **Google I/O 2021: A safer way to collect flows** by Manuel Vivo.
 - **Stanford CS193P: SwiftUI & Combine**（虽讲 Combine，原理相通）。
 
-### 11.5 开源项目参考
-
-- **JetBrains/kotlinx.coroutines**：Flow 实现源码。
-- **Cash App/Turbine**：Flow 测试框架。
-- **KMP-NativeCoroutines**：iOS 桥接。
-- **Square/Moshi** + Flow：JSON 与流结合示例。
-
 ### 11.6 相关主题
 
 - **Channel 与 BroadcastChannel**：理解为什么 SharedFlow 替代了 BroadcastChannel。
@@ -1867,36 +1816,6 @@ viewModelScope.launch {
 4. **StateFlow/SharedFlow**（1 周）：理解冷热流差异，掌握状态管理。
 5. **实战应用**（2 周）：在 Android/服务端项目中应用。
 6. **深入源码**（持续）：阅读 kotlinx.coroutines 源码。
-
-### 11.9 常见面试题
-
-1. **StateFlow 和 SharedFlow 的区别？**
-   - StateFlow 是 SharedFlow 的特化，replay=1, conflate, distinctUntilChanged。
-   - StateFlow 必须有初始值，SharedFlow 不必。
-
-2. **为什么 Flow 是冷的？**
-   - 每次 collect 都触发独立执行，与 Sequence 一致。
-
-3. **catch 和 try/catch 的区别？**
-   - catch 操作符只捕获上游异常，try/catch 在 collect 处可捕获所有。
-
-4. **flowOn 和 buffer 的区别？**
-   - flowOn 切换上下文并桥接，buffer 只引入缓冲。
-
-5. **背压如何实现？**
-   - 通过 suspend emit 自动背压。
-
-6. **什么时候用 SharedFlow 而不是 Channel？**
-   - 需要广播给多个订阅者时用 SharedFlow。
-   - 需要点对点（每个值被一个消费者消费）时用 Channel。
-
-7. **StateFlow 在 Compose 中如何避免重渲染？**
-   - collectAsStateWithLifecycle 自动管理生命周期。
-   - StateFlow 的 distinctUntilChanged 避免重复值。
-   - 应将 State 拆分到最小粒度，避免无关字段更新触发重渲染。
-
-8. **如何在测试中控制 Flow 时间？**
-   - 使用 `runTest` + `Turbine`，配合 `delay` 自动跳过。
 
 ### 11.10 附录：操作符速查表
 

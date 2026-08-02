@@ -1841,8 +1841,6 @@ end
 print(sum)  -- 385 (1+4+9+...+100)
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 写出泛型 `for` 的内部展开形式,说明三个隐藏变量的作用。
@@ -1857,36 +1855,12 @@ print(sum)  -- 385 (1+4+9+...+100)
 7. 用协程实现二叉树层序遍历(广度优先)迭代器。
 8. 实现可重置的迭代器,支持 `reset()` 方法重新开始遍历。
 
-### 9.3 思考题
-
-9. 为什么 Lua 不引入 `Iterable` 接口?这种设计的优缺点?
-10. 协程迭代器相比闭包迭代器,在性能、可读性、错误处理上有何取舍?
-11. 若为 Lua 添加 `yield from` 语法(类似 Python),会如何影响迭代器组合?
-12. `pairs` 顺序未定义对哪些场景造成困扰?如何缓解?
-13. 比较 Lua 迭代器、Python `itertools`、Rust `Iterator` trait 在表达"取前 N 个偶数"时的代码风格。
-14. 设计一个惰性序列库,支持 `map`/`filter`/`take`/`reduce` 链式调用,描述核心数据结构。
-
 ### 9.4 开放题
 
 15. 调研 Lua 5.4 移除 `__pairs`/`__ipairs` 元方法的设计动机,分析利弊。
 16. 调研 Luau 是否对迭代器有类型注解支持,如 `Iterable<T>`。
 17. 若为 Lua 添加列表推导式 `[x for x in iter if x > 0]`,需要修改哪些语言组件?
 18. 调研 Haskell、Scala、Clojure 的惰性序列实现,与 Lua 协程迭代器对比性能与表达力。
-
-## 10. 参考文献
-
-1. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *Lua 5.4 Reference Manual*. Section 3.3.5: For Statement, Section 6.1: Basic Functions.
-2. Roberto Ierusalimschy. *Programming in Lua* (4th Edition). Chapter 7: Iterators and the Generic for.
-3. Barbara Liskov. "Abstraction Mechanisms in CLU". *Communications of the ACM*, 1977.
-4. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. "The Evolution of Lua". *HOPL III*, 2007.
-5. Ana Lúcia de Moura, Roberto Ierusalimschy. "Coroutines in Lua". *Journal of Universal Computer Science*, 2004.
-6. Abelson, Sussman. *Structure and Interpretation of Computer Programs*. Section 3.5 on Streams.
-7. MIT OpenCourseWare. *6.001 Structure and Interpretation of Computer Programs*. Lecture on Streams.
-8. Stanford CS106X. *Programming Abstractions*. Lecture on Iterators.
-9. CMU 15-150. *Functional Programming*. Lecture on Lazy Evaluation.
-10. Python PEP 234 (Iterators): https://peps.python.org/pep-0234/
-
-## 11. 延伸阅读
 
 ### 11.1 Lua 官方资源
 

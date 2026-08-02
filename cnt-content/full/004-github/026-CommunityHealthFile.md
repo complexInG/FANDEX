@@ -257,52 +257,9 @@ your-org/.github（公开仓库）
 | 模板文件名不对 | 新建 Issue 时模板不出现 | 模板未放对目录 | Issue 模板必须位于 `.github/ISSUE_TEMPLATE/` |
 | 内容与现实脱节 | 新人按指南操作失败 | 文件写完从不更新 | 每轮迭代同步检查健康文件，用社区标准页面体检 |
 
-## 9. 实战练习
-
-### 练习 1：完成一份最小体检（入门）
-
-**题目描述**：打开你仓库的 Insights → Community standards 页面，对照"社区健康文件清单"记录哪些达标、哪些缺失，输出一份体检结果（表格形式）。
-
-**提示**：该页面只有公开仓库有；每项旁边有 Add 按钮可直接跳转创建。
-
-**参考答案要点**：体检表格式："文件名 / 状态（达标-缺失）/ 建议"；重点检查 README、CONTRIBUTING、CODE_OF_CONDUCT、LICENSE 四项；缺失项按第 2-6 节模板补齐后复查页面打勾状态。
-
-### 练习 2：编写你的 CONTRIBUTING.md（入门）
-
-**题目描述**：基于第 2.2 节模板，为你的项目写一份精简 CONTRIBUTING.md（100-150 行），并放入仓库根目录，验证它在社区标准页面被识别。
-
-**提示**：先写清"报告 Bug 三步"和"提交代码五步"；代码规范写你项目真实用的工具。
-
-**参考答案要点**：包含五个必要模块：Bug 报告流程、功能请求流程、Fork 提交流程、开发环境搭建、代码规范与测试要求；文件放根目录后刷新 Community standards 页面确认打勾。
-
-### 练习 3：搭建 .github 默认文件仓库（进阶）
-
-**题目描述**：在你的账号下创建 `.github` 公开仓库，放入默认 CONTRIBUTING.md 和 SUPPORT.md，然后在另一个没有这些文件的仓库中验证"自动继承"生效。
-
-**提示**：`.github` 仓库必须公开；继承规则见第 7 节优先级。
-
-**参考答案要点**：验证方法：在无自带 CONTRIBUTING 的仓库里新建 Issue，页面会显示"该仓库使用来自默认仓库的贡献指南"链接；体验"一处维护、处处生效"后，再在某个仓库放一份自有 CONTRIBUTING，确认自有文件优先生效。
-
-### 练习 4：完整配置 SECURITY + CODEOWNERS + 模板（挑战）
-
-**题目描述**：为你的项目一次性补齐：SECURITY.md（含私密报告流程）、CODEOWNERS（docs/ 与 src/auth/ 指定负责人）、一个 Bug 报告 Issue 模板，并全部通过社区标准检查。
-
-**提示**：模板文件用 YAML frontmatter 或 Markdown 皆可；CODEOWNERS 语法是"路径 + 用户名/团队"。
-
-**参考答案要点**：SECURITY.md 用 4.2 模板改真实邮箱；CODEOWNERS 三行：`* @你的团队`、`/docs/ @文档负责人`、`src/auth/ @安全负责人`；Bug 模板含"环境/复现步骤/期望行为/实际行为/截图"五栏；最终 Insights → Community standards 显示全部通过。
-
 ## 10. 一句话记忆
 
 **社区健康文件是开源项目的《业主手册》：CONTRIBUTING 讲怎么干活，CODE_OF_CONDUCT 讲什么不能干，SUPPORT 讲去哪求助，SECURITY 讲漏洞怎么报——用 Insights 的社区标准页面做体检，用 .github 公开仓库做默认模板，一次维护、全组织生效。**
-
-## 11. 参考链接与延伸阅读
-
-### 权威资料（GitHub 官方中文文档）
-
-- 为健康的贡献设置您的项目（总览）：https://docs.github.com/zh/communities/setting-up-your-project-for-healthy-contributions
-- 创建默认社区健康文件：https://docs.github.com/zh/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file
-- 为项目添加行为准则：https://docs.github.com/zh/communities/setting-up-your-project-for-healthy-contributions/adding-a-code-of-conduct-to-your-project
-- 设置仓库的贡献者指南：https://docs.github.com/zh/communities/setting-up-your-project-for-healthy-contributions/setting-guidelines-for-repository-contributors
 
 ### 延伸阅读（站内文档）
 

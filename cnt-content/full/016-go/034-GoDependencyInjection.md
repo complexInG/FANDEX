@@ -1483,8 +1483,6 @@ Kubeflow 团队报告,采用 Wire 后,新组件接入时间从半天降至 1 小
 
 教训:小型项目不应过度工程化。Go 团队建议"组件数 < 10 时手动注入,10-50 用 Wire,50+ 考虑 fx"。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**:给定以下代码,指出依赖图中的循环依赖并修复。
@@ -1575,41 +1573,8 @@ func NewB(a *A) *B { return &B{a: a} }
 - 场景 B:Wire。组件多,编译期安全重要,运行时开销零。生命周期可通过 `OnStart`/`OnStop` 模式手动管理,或借助 fx 但牺牲编译期检查。
 - 场景 C:fx 或 dig。运行时动态注册是硬需求,Wire 无法应对。fx 提供更好的生命周期管理。
 
-## 参考文献
-
-1. Fowler, M. 2004. Inversion of Control Containers and the Dependency Injection Pattern. https://martinfowler.com/articles/injection.html (accessed July 2024).
-
-2. Johnson, R. E. and Foote, B. 1988. Designing Reusable Classes. Journal of Object-Oriented Programming 1, 2 (June/July 1988), 22-35. DOI: 10.1.1.56.3607.
-
-3. Google LLC. 2018. Wire: Compile-time Dependency Injection for Go. https://github.com/google/wire (accessed July 2024).
-
-4. Uber Technologies Inc. 2017. dig: A Dependency Injection Toolkit for Go. https://github.com/uber-go/dig (accessed July 2024).
-
-5. Uber Technologies Inc. 2018. fx: A Modular, Dependency Injection Framework for Go. https://github.com/uber-go/fx (accessed July 2024).
-
-6. Mattsson, M. 1996. Object-Oriented Frameworks: A Survey of Methodological Issues. Licentiate Thesis, Lund University. DOI: 10.1.1.36.7454.
-
-7. Johnson, R. E. 1997. Frameworks = Components + Patterns. Communications of the ACM 40, 10 (Oct. 1997), 39-42. DOI: 10.1145/262793.262800.
-
-8. Srinivasan, S. 2008. Design Patterns in Java: Dependency Injection. Pearson Education.
-
-9. Go Team. 2009. Go: A Compiled, Concurrent Programming Language. https://go.dev/ (accessed July 2024).
-
-10. Pike, R. 2012. Go at Google: Language Design in the Service of Software Engineering. https://go.dev/talks/2012/splash.article (accessed July 2024).
-
-11. Cox-Buday, K. 2017. Concurrency in Go: Tools and Techniques for Developers. O'Reilly Media. ISBN: 978-1491941195.
-
-12. Summerfield, M. 2012. Programming in Go: Creating Applications for the 21st Century. Addison-Wesley Professional. ISBN: 978-0321774637.
-
 ## 延伸阅读
-
-- **Wire 官方文档**:https://github.com/google/wire/blob/main/_tutorial/README.md — 官方教程,涵盖基础用法与高级特性。
-- **fx 官方文档**:https://pkg.go.dev/go.uber.org/fx — API 参考与最佳实践。
 - **Martin Fowler《Patterns of Enterprise Application Architecture》**:深入阐述 DI 与服务定位器模式的理论基础。
 - **Go Blog《Organizing Go Code》**:Go 团队关于包组织与依赖管理的官方建议。
 - **《Clean Architecture in Go》**(Miki Tebeka):探讨如何在 Go 中实现 Clean Architecture,DI 是核心组件。
 - **《100 Go Mistakes and How to Avoid Them》**(Teiva Harsanyi):第 7 章专门讨论 DI 相关的常见错误。
-- **Wire vs dig 讨论**:https://github.com/google/wire/issues/225 — 社区对两种方案选型的深入讨论。
-- **Google Wire 内部实现**:https://github.com/google/wire/tree/main/internal/wire — 阅读源码,理解代码生成算法。
-- **Kubernetes CRI 设计**:https://kubernetes.io/docs/concepts/architecture/cri/ — 大规模系统中 DI 思想的应用案例。
-- **Go 1.18 泛型对 DI 的影响**:https://go.dev/blog/generics-proposal — 泛型如何简化部分 DI 场景。

@@ -10,7 +10,6 @@ updated: '2026-08-02'
 related:
   - 'linear-algebra/初等变换与初等矩阵'
   - 'linear-algebra/矩阵的秩'
-  - 'linear-algebra/矩阵典型例题'
   - 'linear-algebra/高斯消元法'
 prerequisites: []
 ---
@@ -187,42 +186,9 @@ $$Ax = b \quad \Longleftrightarrow \quad \begin{pmatrix} A_{11} & A_{12} \\ A_{2
 | 分块对角求逆时直接写各块逆但漏了可逆条件 | 条件缺失 | 子块不可逆时整体公式不成立 | 先验证每个对角子块可逆 |
 | 把零块、单位块当普通元素随便交换 | 结构误读 | 混淆"块"与"数" | 先展开成小块，验证再收拢 |
 
-## 8. 实战练习
-
-**练习 1（基础）**：设 $A = \begin{pmatrix} 1 & 2 & 0 & 0 \\ 3 & 4 & 0 & 0 \\ 0 & 0 & 5 & 6 \\ 0 & 0 & 7 & 8 \end{pmatrix}$，求 $A^2$。
-
-- **提示**：将 $A$ 写成 $\mathrm{diag}(A_1, A_2)$，其中 $A_1 = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$，$A_2 = \begin{pmatrix} 5 & 6 \\ 7 & 8 \end{pmatrix}$。
-- **参考答案要点**：$A^2 = \mathrm{diag}(A_1^2, A_2^2) = \begin{pmatrix} 7 & 10 & 0 & 0 \\ 15 & 22 & 0 & 0 \\ 0 & 0 & 67 & 78 \\ 0 & 0 & 91 & 106 \end{pmatrix}$。
-
-**练习 2（进阶）**：设 $A = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 1 & 2 & 3 \end{pmatrix}$，求 $A^{-1}$。
-
-- **提示**：$A = \begin{pmatrix} I_2 & O \\ C & 3 \end{pmatrix}$，$C = (1, 2)$，用分块下三角求逆公式。
-- **参考答案要点**：$A^{-1} = \begin{pmatrix} I_2 & O \\ -\frac{1}{3}C & \frac{1}{3} \end{pmatrix} = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ -\frac{1}{3} & -\frac{2}{3} & \frac{1}{3} \end{pmatrix}$。
-
-**练习 3（综合）**：设 $A = \begin{pmatrix} A_{11} & A_{12} \\ O & A_{22} \end{pmatrix}$ 为 $n$ 阶分块上三角矩阵，其中 $A_{11}$、$A_{22}$ 均为方阵且 $|A_{11}| = 2$，$|A_{22}| = 3$，求 $|A|$。
-
-- **提示**：分块三角行列式公式。
-- **参考答案要点**：$|A| = |A_{11}||A_{22}| = 6$，因此 $A$ 可逆，$r(A) = n$。
-
-**练习 4（证明）**：设 $A$、$B$ 为 $n$ 阶方阵，证明 $\begin{pmatrix} A & O \\ O & B \end{pmatrix}$ 与 $\begin{pmatrix} B & O \\ O & A \end{pmatrix}$ 相似。
-
-- **提示**：相似即存在可逆矩阵 $P$ 使 $P^{-1}MP = N$；取 $P = \begin{pmatrix} O & I_n \\ I_n & O \end{pmatrix}$，验证 $P^{-1} = P$。
-- **参考答案要点**：$P^{-1}\begin{pmatrix} A & O \\ O & B \end{pmatrix}P = \begin{pmatrix} B & O \\ O & A \end{pmatrix}$，故两者相似（分块交换变换）。
-
-**练习 5（应用）**：某系统状态方程为 $\begin{pmatrix} x_1(t+1) \\ x_2(t+1) \end{pmatrix} = \begin{pmatrix} A_1 & O \\ O & A_2 \end{pmatrix}\begin{pmatrix} x_1(t) \\ x_2(t) \end{pmatrix}$，其中 $A_1 = \begin{pmatrix} 0.5 & 0 \\ 0 & 0.8 \end{pmatrix}$，$A_2 = (0.9)$。求 $t = 10$ 时的状态演化矩阵。
-
-- **提示**：演化矩阵是 $A^{10} = \mathrm{diag}(A_1^{10}, A_2^{10})$，对角块各自求幂。
-- **参考答案要点**：$A^{10} = \begin{pmatrix} 0.5^{10} & 0 & 0 \\ 0 & 0.8^{10} & 0 \\ 0 & 0 & 0.9^{10} \end{pmatrix}$，对角线上各子块独立演化，体现"子系统解耦"。
-
 ## 9. 一句话记忆
 
 > **分块矩阵就是把"矩阵中的矩阵"当元素来运算——先按需切块，再逐块运算；分块对角矩阵的一切运算都可以逐块独立进行。**
-
-## 参考文献
-
-- 同济大学数学科学学院. 工程数学 线性代数（第七版）[M]. 北京: 高等教育出版社, 2023. （第 2 章 §5 矩阵分块法）https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- MIT 18.06 Linear Algebra（Strang）: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- Interactive Linear Algebra（Georgia Tech）: https://textbooks.math.gatech.edu/ila/
 
 ## 延伸阅读
 

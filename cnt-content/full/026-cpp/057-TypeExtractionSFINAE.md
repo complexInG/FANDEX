@@ -1556,112 +1556,6 @@ struct IsRelocatable : std::integral_constant<bool,
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个不是 SFINAE 友好的失败位置？
-
-- (A) 函数返回类型
-- (B) 函数参数类型
-- (C) 函数体内
-- (D) 模板参数默认值
-
-**解析讲解**：(C)
-
-**解析讲解**：SFINAE 仅在"即时上下文"中生效，即函数签名、模板参数列表、尾随返回类型。函数体内的语法或语义错误不属于 SFINAE，会直接导致编译错误。
-
----
-
-**常见疑问 2**：以下代码的输出是什么？
-
-```cpp
-template<typename T, typename = std::void_t<decltype(T::foo())>>
-void f(T) { std::cout << "A"; }
-
-template<typename T>
-void f(T) { std::cout << "B"; }
-
-struct WithFoo { static void foo() {} };
-struct WithoutFoo {};
-
-int main() {
-    f(WithFoo{});   // (1)
-    f(WithoutFoo{}); // (2)
-}
-```
-
-- (A) AB
-- (B) AA
-- (C) BB
-- (D) BA
-
-**解析讲解**：(A)
-
-**解析讲解**：(1) 中 `WithFoo::foo()` 是有效表达式，第一个模板的偏特化成功，优先选择它，输出 A。(2) 中 `WithoutFoo::foo()` 无效，第一个模板的 SFINAE 触发，仅第二个模板可选，输出 B。
-
----
-
-**常见疑问 3**：以下代码的编译结果是什么？
-
-```cpp
-template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
-void g(T) {}
-
-template<typename T, typename = std::enable_if_t<std::is_floating_point_v<T>>>
-void g(T) {}
-
-int main() { g(42); }
-```
-
-- (A) 编译通过，调用第一个 g
-- (B) 编译通过，调用第二个 g
-- (C) 编译错误：重定义
-- (D) 编译错误：歧义
-
-**解析讲解**：(C)
-
-**解析讲解**：两个 `g` 的签名在替换前完全相同（`void g(T)`，第二个参数都是默认值），构成重定义错误。正确写法应使用尾随实参或返回类型。
-
----
-
-**常见疑问 4**：以下代码的输出是什么？
-
-```cpp
-template<typename... Ts>
-constexpr auto sum = (0 + ... + Ts::value);
-
-struct A { static constexpr int value = 1; };
-struct B { static constexpr int value = 2; };
-struct C { static constexpr int value = 3; };
-
-int main() {
-    std::cout << sum<A, B, C>;
-}
-```
-
-- (A) 6
-- (B) 0
-- (C) 编译错误
-- (D) 1
-
-**解析讲解**：(A)
-
-**解析讲解**：这是二元左折叠 `init op ... op pack`，展开为 `((0 + A::value) + B::value) + C::value = 0 + 1 + 2 + 3 = 6`。
-
----
-
-**常见疑问 5**：以下哪种类型特征不是 C++11 引入的？
-
-- (A) `std::is_integral`
-- (B) `std::remove_const`
-- (C) `std::void_t`
-- (D) `std::enable_if`
-
-**解析讲解**：(C)
-
-**解析讲解**：`std::void_t` 是 C++17 才标准化的，C++11 仅引入了 `std::enable_if`、`std::is_integral`、`std::remove_const` 等基础类型特征。
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：SFINAE 缩写展开为 ________。
@@ -1811,60 +1705,6 @@ int main() {
 3. concepts 版本约束更易组合（`!Ostreamable<T>` 直接表达否定）。
 4. SFINAE 版本兼容 C++11/14/17，concepts 版本要求 C++20+。
 
-### 9.4 思考题
-
-**常见疑问 14**：为什么 SFINAE 仅在"即时上下文"中生效？这一设计选择的工程权衡是什么？
-
-**解析讲解**：
-
-SFINAE 的"即时上下文"限制是出于编译器实现复杂度的考虑。若允许函数体内的失败触发 SFINAE，编译器必须完整实例化每个候选模板的函数体才能确定是否可调用——这会显著增加编译时间，并可能引发循环依赖（A 的函数体调用 B，B 的函数体调用 A，无法确定哪个先失败）。
-
-"即时上下文"限制使编译器仅需检查函数签名即可完成 SFINAE，无需深入函数体。这是性能与表达能力的权衡：牺牲了部分表达能力（函数体内的失败不能触发 SFINAE），换取了显著的编译速度提升。
-
-C++17 的 `if constexpr` 与 C++20 的 concepts 提供了部分解决方案：`if constexpr` 允许在函数体内进行编译期分支（被丢弃的分支不进行完整检查），concepts 允许在签名层表达更复杂的约束。
-
----
-
-**常见疑问 15**：在什么场景下应该使用 SFINAE 而非 concepts？反之又如何？
-
-**解析讲解**：
-
-**使用 SFINAE 的场景**：
-
-1. 项目必须支持 C++17 及更早版本。
-2. 维护遗留代码库，已大量使用 SFINAE 模式。
-3. 需要细粒度的"条件启用"而非"约束"，例如根据类型的某些属性选择不同的实现。
-4. 与第三方库交互，对方使用 SFINAE。
-
-**使用 concepts 的场景**：
-
-1. 项目使用 C++20+。
-2. 需要友好的错误信息（如面向初学者或非 C++ 专家的 API）。
-3. 需要约束组合与子集化（自动选择更特化的重载）。
-4. 设计新的泛型 API，没有历史包袱。
-
----
-
-**常见疑问 16**：`std::void_t` 看似简单（只有一行 `using void_t = void`），为什么在 C++17 中才标准化？这反映了 C++ 标准化的哪些特点？
-
-**解析讲解**：
-
-`void_t` 之所以延迟到 C++17 标准化，反映了 C++ 标准化的几个特点：
-
-1. **标准措辞优先于实现**：`void_t` 的语法很简单，但其语义依赖于 CWG 1558 对 SFINAE 规则的细化解释。在标准措辞明确"模板参数替换的 SFINAE 适用于偏特化的实参"之前，编译器实现存在差异。
-
-2. **保守的标准化态度**：C++ 委员会倾向于先在编译器中实验，再标准化。`void_t` 由 Walter Brown 在 2014 年提出（N3911），但需要等待编译器（特别是 GCC、MSVC）统一实现 CWG 1558 后才被采纳。
-
-3. **向后兼容性**：标准化 `void_t` 需要确保不破坏现有代码。委员会需要验证：用户自定义的 `void_t` 是否会与标准库版本冲突？
-
-4. **跨编译器一致性**：标准化前，不同编译器对 `void_t` 习语的支持不一（Clang 支持，GCC 4.9 不支持，MSVC 长期不支持），委员会需要等待主要编译器达成一致。
-
-这反映了 C++ 标准化的"实践先行、标准后至"特点——许多习语在社区中已被广泛使用，但标准化需要解决跨编译器一致性、向后兼容性、措辞精确性等问题，过程较慢。
-
----
-
-## 10. 参考文献
-
 ### 10.1 标准与规范
 
 - [1] International Organization for Standardization. 2020. *Information technology — Programming languages — C++ (ISO/IEC 14882:2020)*. Geneva, Switzerland: ISO. DOI: 10.3403/30199258U.
@@ -1911,8 +1751,6 @@ C++17 的 `if constexpr` 与 C++20 的 concepts 提供了部分解决方案：`i
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **《Effective Modern C++》** — Scott Meyers（2014）：第 9 章专门讨论类型推导与 `decltype`，第 27 项详述 `enable_if` 与 SFINAE 的现代用法。
@@ -1921,35 +1759,12 @@ C++17 的 `if constexpr` 与 C++20 的 concepts 提供了部分解决方案：`i
 - **《C++ Templates: The Complete Guide》** — David Vandevoorde, Nicolai Josuttis, Douglas Gregor（2017, 2nd ed.）：第 8 章深入讨论 SFINAE，第 9 章介绍 concepts。
 - **《C++20 - The Complete Guide》** — Nicolai Josuttis（2021）：第 11 章全面介绍 concepts，包括与 SFINAE 的对比。
 
-### 11.2 在线资源
-
-- **cppreference.com**：`<type_traits>` 头文件参考文档。https://en.cppreference.com/w/cpp/header/type_traits
-- **cppreference.com**：`<concepts>` 头文件参考文档。https://en.cppreference.com/w/cpp/header/concepts
-- **ISO C++ 官方文档**：C++20 标准草案。https://www.open-std.org/jtc1/sc22/wg21/
-- **Compiler Explorer**：在线编译器，可视化模板实例化过程。https://godbolt.org/
-- **C++ Insights**：将 C++ 源码转换为编译器视角的中间表示。https://cppinsights.io/
-
 ### 11.3 视频课程
 
 - **Walter Brown: "Modern Template Programming" (C++Now 2014)**：`void_t` 习语的首次公开讲解。YouTube: https://www.youtube.com/watch?v=MtfbDfLumds
 - **Andrei Alexandrescu: "Generic Programming Meets C++" (Accu 2018)**：类型特征与泛型编程的实践指南。
 - **Herb Sutter: "Metaclasses: Thoughts on Generative C++" (CppCon 2017)**：未来元编程方向的前瞻性演讲。
 - **Bjarne Stroustrup: "Concepts: The Future of Generic Programming" (CppCon 2018)**：concepts 的设计哲学与最佳实践。
-
-### 11.4 开源项目参考
-
-- **LLVM/Clang**：`llvm/ADT/STLExtras.h`、`llvm/Support/type_traits.h` 中的 SFINAE 应用实例。https://github.com/llvm/llvm-project
-- **Abseil (absl)**：`absl/meta/type_traits.h` 中的扩展类型特征。https://github.com/abseil/abseil-cpp
-- **Folly (Facebook)**：`folly/Traits.h` 中的扩展类型特征。https://github.com/facebook/folly
-- **Boost.TypeTraits**：类型特征库的历史参考。https://www.boost.org/doc/libs/release/libs/type_traits/
-- **range-v3 (Eric Niebler)**：C++20 ranges 的前身，大量使用 SFINAE 与 concepts。https://github.com/ericniebler/range-v3
-
-### 11.5 相关文档
-
-- **C++ Reference: Type Traits**：cppreference 上的类型特征完整参考。https://en.cppreference.com/w/cpp/meta
-- **C++ Reference: Constraints and Concepts**：concepts 的语法与用法。https://en.cppreference.com/w/cpp/language/constraints
-- **C++ Core Guidelines: T.10-Early concepts**：C++ 核心准则中的概念使用建议。https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#t-10-specify-concepts-for-the-sake-of-readers
-- **C++ Core Guidelines: T.11-Always define constraints**：何时定义概念约束。https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#t-11-whenever-conventional-define-concepts
 
 ### 11.6 进阶主题
 

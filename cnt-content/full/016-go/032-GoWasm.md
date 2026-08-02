@@ -1217,8 +1217,6 @@ func main() {
 
 ---
 
-## 知识讲解与要点分析（原练习）
-
 ### 9.1 基础题
 
 **题 1**：使用 `syscall/js` 实现一个函数 `isPrime(n int) bool`，在浏览器中调用并显示 1-100 的所有素数。
@@ -1397,122 +1395,7 @@ func process(data js.Value) {
 }
 ```
 
-### 9.3 思考题
-
-**题 5**：在浏览器中，Go wasm 与 JavaScript 共享同一个事件循环。若 Go wasm 中启动了 1000 个 goroutine，调度器如何避免某个 goroutine 长时间占用 CPU 导致 UI 卡顿？请从协作式调度与抢占式调度的角度分析。
-
-Go wasm 的调度器是协作式（cooperative）的：
-
-1. **协作式调度**：goroutine 在函数调用、channel 操作、`time.Sleep` 等点主动让出。如果 goroutine 是纯计算循环（无函数调用），则永远不会被抢占。
-2. **wasm 限制**：在 wasm 1.0 中，无法实现真正的抢占式调度，因为浏览器没有信号机制（SIGALRM）来中断执行。
-3. **Go 1.14+ 的异步抢占**：在原生平台上，Go 使用信号机制实现异步抢占，但 wasm 目标不支持，因此异步抢占在 wasm 中被禁用。
-
-**实践方案**：
-
-- 长任务中插入 `runtime.Gosched()` 主动让出。
-- 将长任务切分为多个 macrotask，通过 `time.Sleep(0)` 或 `Promise.resolve().then()` 串联。
-- 使用 Web Worker 将 wasm 放到独立线程，避免阻塞主线程。
-
-**题 6**：WASI Preview 1 不支持 socket，但 WASI Preview 2 引入了 `wasi-sockets` 提案。请分析在 Go 中如何编写一个跨平台的 HTTP 客户端，同时支持 `js/wasm`（浏览器）与 `wasip1`（WASI）。
-
-通过接口抽象 + 编译标签：
-
-```go
-// http_client.go
-package httpclient
-
-type Client interface {
-    Get(url string) ([]byte, error)
-}
-
-// http_client_js.go
-//go:build js
-
-package httpclient
-
-import "syscall/js"
-
-type jsClient struct{}
-
-func (c *jsClient) Get(url string) ([]byte, error) {
-    // 通过 fetch 桥接
-    // ...
-    return nil, nil
-}
-
-func New() Client { return &jsClient{} }
-
-// http_client_wasi.go
-//go:build wasip1
-
-package httpclient
-
-type wasiClient struct{}
-
-func (c *wasiClient) Get(url string) ([]byte, error) {
-    // WASI Preview 1 不支持 socket，需通过宿主扩展
-    // 或等待 Preview 2 的 wasi-sockets
-    return nil, fmt.Errorf("not supported on wasip1")
-}
-
-func New() Client { return &wasiClient{} }
-
-// http_client_native.go
-//go:build !js && !wasip1
-
-package httpclient
-
-import "net/http"
-
-type nativeClient struct{ c *http.Client }
-
-func (c *nativeClient) Get(url string) ([]byte, error) {
-    resp, err := c.c.Get(url)
-    // ...
-    return nil, nil
-}
-
-func New() Client { return &nativeClient{c: &http.Client{}} }
-```
-
-业务代码统一通过 `httpclient.New()` 获取客户端实例，编译器根据目标平台选择具体实现。
-
----
-
-## 10. 参考文献
-
-以下参考文献遵循 ACM Reference Format：
-
-- Haas, A., Rossberg, A., Schuff, D. L., Holman, R., Gohman, D., Wagner, L., ... & Bastien, J. (2017). Bringing the Web up to Speed with WebAssembly. In *Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '17)* (pp. 185-200). ACM. https://doi.org/10.1145/3062341.3062363
-
-- Musiol, R. (2018). *Go 1.11 adds WebAssembly support*. The Go Blog. https://go.dev/blog/wasm
-
-- Sørensen, A. B. (2023). *Go 1.21 adds WASI Preview 1 support*. The Go Blog. https://go.dev/blog/wasi
-
-- van Laethem, A. (2019). *TinyGo: A Go Compiler for Small Places*. GitHub. https://github.com/tinygo-org/tinygo
-
-- Watt, C., Rossberg, A., & Spec Working Group. (2023). *WebAssembly Core Specification Version 2.0*. W3C. https://www.w3.org/TR/wasm-core-2/
-
-- Turon, A., & Wasmtime Team. (2023). *Wasmtime: A Standalone WebAssembly Runtime*. GitHub. https://github.com/bytecodealliance/wasmtime
-
-- Musial, A., & McCampbell, M. (2022). *WASI Preview 2 Specification*. Bytecode Alliance. https://github.com/WebAssembly/WASI
-
-- Google. (2023). *brotli: Generic-purpose lossless compressor*. GitHub. https://github.com/google/brotli
-
-- Hall, A., & Lattner, C. (2020). *WebAssembly Threads Proposal*. WebAssembly Community Group. https://github.com/WebAssembly/threads
-
-- Zakai, A. (2011). *Emscripten: An LLVM-to-JavaScript Compiler*. In *Proceedings of the 1st ACM SIGPLAN International Conference on Object-Oriented Programming, Systems, Languages, and Applications (SPLASH '11)*. ACM.
-
----
-
 ## 11. 扩展阅读
-
-### 11.1 官方资源
-
-- **Go Wasm Wiki**：https://github.com/golang/go/wiki/WebAssembly
-- **WebAssembly 官方规范**：https://webassembly.github.io/spec/
-- **WASI 官方文档**：https://wasi.dev/
-- **TinyGo 文档**：https://tinygo.org/
 
 ### 11.2 经典论文
 

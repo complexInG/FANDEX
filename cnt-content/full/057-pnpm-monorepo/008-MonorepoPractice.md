@@ -212,22 +212,6 @@ pnpm outdated -r        # 查看可升级的依赖
 
 **版本排查三连**：配合 catalog 统一升级，多数版本问题在安装阶段就能被 pnpm 发现。
 
-## 8. 实战练习
-
-1. **完整搭建**：从零搭建一个包含 `apps/web`、`packages/ui`、`packages/utils` 的完整 Monorepo，配置 workspace、turbo、changesets。
-
-2. **共享组件**：在 `packages/ui` 中实现一个 Button 组件，让 `apps/web` 通过 `workspace:*` 引用并渲染，验证 HMR 热更新。
-
-3. **CI 配置**：为你的 Monorepo 编写完整的 ci.yml 和 release.yml，在 GitHub Actions 上跑通全流程。
-
-4. **发布演练**：在 Verdaccio 私有 registry 上完整演练：改代码 → changeset → version → publish → 消费者安装。
-
-## 9. 参考资源
-
-- pnpm 官方文档（中文）：https://pnpm.io/zh/
-- Turborepo 官方文档：https://turborepo.com/docs
-- Changesets 官方文档：https://changesets-docs.vercel.app/
-
 ## 10. 延伸阅读
 
 - 底层机制，见本模块《pnpm 核心特性》

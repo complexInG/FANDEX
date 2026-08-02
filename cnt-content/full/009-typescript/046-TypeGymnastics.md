@@ -1340,104 +1340,6 @@ type ReducerAction<R extends Reducer<any, any>> =
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个类型别名实现了正确的 `Flatten<T>` 元组扁平化？
-
-A.
-```typescript
-type Flatten<T> = T extends any[] ? T : T;
-```
-
-B.
-```typescript
-type Flatten<T extends any[]> = T extends [infer First, ...infer Rest]
-  ? First extends any[] ? [...Flatten<First>, ...Flatten<Rest>] : [First, ...Flatten<Rest>]
-  : T;
-```
-
-C.
-```typescript
-type Flatten<T> = T extends [infer First, ...infer Rest] ? First : T;
-```
-
-D.
-```typescript
-type Flatten<T> = T extends any[] ? T[number] : T;
-```
-
-**答案：B**
-
-B 正确处理了元组的递归扁平化：
-- 通过 `[infer First, ...infer Rest]` 模式匹配分解元组
-- 当 `First` 本身是数组时，递归扁平化
-- 否则将 `First` 作为单个元素保留
-
-A 不进行任何扁平化；C 丢失了元组结构；D 将元组转为联合类型而非扁平元组。
-
-**题目 2**：关于 TypeScript 类型体操的递归深度限制，以下说法正确的是？
-
-A. 递归深度无限制
-B. 递归深度限制约为 100 层
-C. 递归深度限制约为 1000 层
-D. 递归深度限制可通过 tsconfig 配置
-
-**答案：C**
-
-TypeScript 类型递归深度限制约为 1000 层（具体数值随版本变化）。超过限制会报错 "Type instantiation is excessively deep and possibly infinite"。
-
-该限制无法通过 tsconfig 配置修改，是编译器内置的硬性限制，用于防止无限递归导致编译器卡死。
-
-**题目 3**：以下代码的输出类型是？
-
-```typescript
-type Wrap<T> = T extends any ? { value: T } : never;
-type R = Wrap<string | number>;
-```
-
-A. `{ value: string | number }`
-B. `{ value: string } | { value: number }`
-C. `{ value: never }`
-D. `never`
-
-**答案：B**
-
-条件类型在检查类型是裸类型参数（naked type parameter）时，对联合类型分布。`Wrap<string | number>` 等价于 `Wrap<string> | Wrap<number>`，即 `{ value: string } | { value: number }`。
-
-如果希望阻止分布，可以使用 `[T] extends [any]` 的形式包裹类型参数。
-
-**题目 4**：邱奇编码中，自然数 $n$ 在 TypeScript 类型系统中通常表示为？
-
-A. 数字字面量类型 `n`
-B. 长度为 $n$ 的元组 `[any, any, ..., any]`
-C. 字符串字面量 `'n'`
-D. 联合类型 `1 | 2 | ... | n`
-
-**答案：B**
-
-邱奇编码将自然数 $n$ 表示为长度为 $n$ 的元组。这样可以通过元组的模式匹配 `[any, ...Rest]` 实现"减一"操作，通过 `[...M, ...N]` 实现"加法"操作。
-
-数字字面量类型本身不可计算（无法在类型层做加减），因此需要通过元组长度间接表示。
-
-**题目 5**：关于 `infer` 关键字，以下说法错误的是？
-
-A. `infer` 只能在条件类型的 `extends` 子句中使用
-B. `infer` 可以同时推断多个类型变量
-C. `infer` 推断失败时返回 `never`
-D. `infer` 可以在任意位置推断任意类型
-
-**答案：D**
-
-`infer` 的推断能力受位置限制：
-- 在函数类型中，`infer` 可以推断参数元组或返回值
-- 在元组中，`infer` 可以通过模式匹配推断元素
-- 在模板字面量类型中，`infer` 可以推断字符串片段
-- `infer` 不能推断任意位置的类型，例如无法直接从对象类型中推断"所有值为 string 的键"
-
-D 选项错误。
-
 ### 填空题知识点讲解
 
 **题目 1**：完成以下 `DeepReadonly<T>` 的实现：
@@ -1556,85 +1458,6 @@ type I2 = IndexOf<['a', 'b', 'c'], 'd'>;  // -1
 type I3 = IndexOf<['a', 'b', 'a'], 'a'>;  // 0（返回第一个匹配位置）
 ```
 
-### 9.4 思考题
-
-**题目 1**：为什么 TypeScript 类型系统被认为是图灵完备的？请从理论上解释。
-
-TypeScript 类型系统具备图灵完备性，原因如下：
-
-1. **条件分支**：条件类型 `T extends U ? X : Y` 等价于 if-then-else
-2. **递归**：类型别名可以通过条件类型实现递归，等价于递归函数
-3. **无界数据结构**：通过元组和模板字面量类型，可以构造任意长度的数据
-4. **模式匹配**：`infer` 关键字实现类型层的模式匹配，等价于代数数据类型的解构
-
-通过以上四个要素，TypeScript 类型系统可以模拟 λ-calculus，而 λ-calculus 是图灵完备的。因此 TypeScript 类型系统也是图灵完备的。
-
-实际证明：可以构造一个类型层的 Busy Beaver 函数，或模拟图灵机。type-challenges 仓库中的 "extreme" 难度题目（如实现类型层 SQL 解析器）也证明了这一点。
-
-**题目 2**：类型体操在生产环境中有哪些适用场景？哪些场景应避免使用？
-
-**适用场景**：
-
-1. **类型派生**：从基础类型派生变种（如 `Partial<T>`、`Pick<T, K>`、`Omit<T, K>`）
-2. **API 类型安全**：从 OpenAPI schema 派生前端 API 类型
-3. **ORM 类型层**：从数据库 schema 派生查询类型
-4. **表单类型派生**：从业务类型派生表单字段类型
-5. **状态机类型建模**：使用可区分联合 + 条件类型约束合法状态转移
-6. **配置类型派生**：从配置 schema 派生配置访问类型
-
-**应避免的场景**：
-
-1. **复杂业务逻辑**：业务逻辑应在运行时实现，类型层仅做约束
-2. **大数计算**：邱奇编码受递归深度限制，不适合大数运算
-3. **性能敏感场景**：复杂类型体操会显著增加编译时间
-4. **团队不熟悉类型体操**：复杂类型可能难以维护
-5. **可由运行时代码替代的场景**：如果运行时校验更简单清晰，应优先运行时
-
-**题目 3**：TypeScript 类型体操的递归深度限制对实际开发有何影响？如何规避？
-
-**影响**：
-
-1. **大数运算不可行**：邱奇编码下的斐波那契数列计算 $F(20)$ 已接近限制
-2. **深层嵌套对象处理受限**：极深嵌套的对象类型可能无法完全递归处理
-3. **复杂字符串解析受限**：超长字符串的递归解析可能失败
-4. **类型实例化缓慢**：接近限制时编译时间显著增加
-
-**规避策略**：
-
-1. **限制递归深度**：通过额外的类型参数控制递归深度
-2. **使用查表法**：对于大数运算，预先定义查表类型
-3. **拆分复杂类型**：将复杂类型体操拆分为多个简单类型组合
-4. **运行时校验补充**：类型无法覆盖的部分使用运行时校验
-5. **使用 `satisfies` 校验**：在关键位置使用 `satisfies` 校验类型，避免全量推导
-6. **监控编译性能**：在 CI 中监控 `Instantiations` 指标，及时优化
-
-**题目 4**：比较 TypeScript 类型体操与 Haskell Type Families 的优劣，并讨论何时选择哪个。
-
-**TypeScript 类型体操的优势**：
-
-1. **与 JavaScript 互操作零成本**：类型体操完全在编译期消除，运行时零开销
-2. **企业级生态成熟**：被 VS Code、Slack、Airbnb、Google 等公司广泛采用
-3. **社区活跃**：type-challenges、type-fest 等社区资源丰富
-4. **学习曲线相对平缓**：从基础 TypeScript 过渡到类型体操有清晰路径
-5. **工具支持完善**：VS Code、WebStorm 等 IDE 对类型推导有良好支持
-
-**Haskell Type Families 的优势**：
-
-1. **类型系统更严谨**：基于 Hindley-Milner 推断，类型推导更精确
-2. **支持依赖类型**：Dependent Haskell 支持更强大的类型层表达
-3. **终止性检查**：编译器内置终止性检查，避免无限递归
-4. **错误信息更友好**：GHC 的错误信息通常比 TypeScript 更清晰
-5. **类型层与值层一致性**：Haskell 的类型层与值层风格更一致
-
-**选择建议**：
-
-- 选择 TypeScript：Web 前端、Node.js 后端、需要与 JavaScript 生态深度集成
-- 选择 Haskell：学术研究、形式化验证、对类型安全性要求极高的场景
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 1. Bierman, G., Abadi, M., & Torgersen, M. (2014). *Understanding TypeScript*. In Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP '14). ACM. https://doi.org/10.1007/978-3-662-44202-9_10
@@ -1659,16 +1482,6 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 
 10. Microsoft. (2024). *TypeScript 5.4 Release Notes*. https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
 
-### 10.3 社区资源
-
-11. Fu, A. (2024). *Type Challenges*. GitHub Repository. https://github.com/type-challenges/type-challenges
-
-12. Sorhus, S. (2024). *type-fest: A collection of essential TypeScript types*. https://github.com/sindresorhus/type-fest
-
-13. Poo, M. (2024). *ts-toolbelt: TypeScript's Type Utility Library*. https://github.com/millsp/ts-toolbelt
-
-14. Poltava, V. (2024). *Effect: A Fully Typed TypeScript Library*. https://github.com/Effect-TS/effect
-
 ### 10.4 教材与课程
 
 15. Harper, R. (2016). *Practical Foundations for Programming Languages* (2nd ed.). Cambridge University Press. ISBN: 978-1107150300.
@@ -1680,8 +1493,6 @@ TypeScript 类型系统具备图灵完备性，原因如下：
 18. Carnegie Mellon University. (2024). *15-214: Principles of Software Construction*. https://www.cs.cmu.edu/~ckaestne/15214/
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 进阶主题
 

@@ -1423,113 +1423,12 @@ const ConnectedComponent = connect(
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 11.1 习题详解
-
-本节提供 7 道习题，覆盖填空、选择、代码修正、开放性问题四类题型，对应 Bloom 六个认知层次。
-
-**习题 1（填空题，Remember）**
-
-题目：柯里化将一个接受多个参数的函数 $f(a, b, c)$ 转换为 ______ 形式，其名称源于数学家 ______ 的姓氏。
-
-解析讲解：`f(a)(b)(c)`、`Haskell Curry`
-
-解析讲解：柯里化的形式定义是将 $n$ 元函数转换为 $n$ 个一元函数的链式调用。该技术以 Haskell Brooks Curry（1900-1982）命名，其姓氏 Curry 亦是 Haskell 编程语言的命名来源。
-
-**习题 2（填空题，Understand）**
-
-题目：在 JavaScript 中实现柯里化时，通常通过 ______ 判断是否已收集足够参数，使用 ______ 方法延迟执行原函数。
-
-解析讲解：`fn.length`、`apply`
-
-解析讲解：`Function.prototype.length` 属性返回函数的形式参数数量（不含默认参数与 rest 参数），用于判断参数是否收集完毕。`Function.prototype.apply` 方法允许以数组形式传入参数并指定 `this` 上下文。
-
-**习题 3（选择题，Understand）**
-
-题目：下列关于柯里化与偏函数的区别，哪项描述最准确？
-
-正确答案：A（柯里化每次只接受一个参数，偏函数一次可固定多个参数）
-
-解析讲解：柯里化将多元函数严格分解为一元函数链 $f(a)(b)(c)$，偏函数则允许一次固定部分参数 $f(a, b)(c)$。二者形式不同但都基于闭包实现。选项 B 错误（二者形式不同），选项 C 错误（偏函数可返回完整函数），选项 D 错误（偏函数并非必须用占位符）。
-
-**习题 4（选择题，Analyze）**
-
-题目：以下哪种场景最适合使用柯里化？
-
-正确答案：B（需要逐步收集参数并复用配置的日志、过滤、映射函数）
-
-解析讲解：柯里化的核心价值在于配置复用与函数组合。日志器、过滤器、映射器等工具函数通过柯里化可生成预配置的专用版本，提升代码可读性。选项 A（一次性任务）无需柯里化的灵活性；选项 C（性能敏感场景）应避免柯里化的开销；选项 D（并行处理）与柯里化无关。
-
-**习题 5（代码修正题，Apply）**
-
-题目：以下柯里化函数存在缺陷，在调用 `curry(fn)(1, 2)(3)` 时无法正确返回结果。请修复。
-
-修复要点：
-1. 使用 `fn.apply(this, args)` 展开参数数组
-2. 递归调用使用 `curried.apply(this, args.concat(moreArgs))`
-
-解析讲解：原代码使用 `fn(args)` 将参数数组作为单个参数传入，导致原函数收到 `[[1, 2]]` 而非 `[1, 2]`。`apply` 方法可正确展开数组为参数列表。
-
-**习题 6（代码修正题，Evaluate）**
-
-题目：以下偏函数实现无法处理占位符，导致 `partial(fn, _, 2)(1, 3)` 无法正确返回结果。请修复。
-
-修复要点：遍历 `presetArgs`，遇到占位符时从 `laterArgs` 中按序取值填充。
-
-解析讲解：原实现未识别占位符 `_`，直接将 `_` 符号作为参数传递给原函数。修复后，占位符位置从后续调用参数中按序填充。
-
-**习题 7（开放性问题，Create）**
-
-题目：你正在设计一个 HTTP 客户端库，要求支持灵活的请求配置复用与链式调用。请论述如何使用柯里化与偏函数构建可扩展的 API 设计。
-
-关键评分点：
-1. 提出清晰的三层柯里化架构（配置层、方法层、调用层）
-2. 论述偏函数在预配置方法（get/post）中的应用
-3. 处理路径参数与查询参数的解耦
-4. 给出拦截器组合的函数管道设计
-5. 处理 async/await 与柯里化返回 Promise 的兼容性
-6. 给出完整的错误处理与重试策略
-
----
-
-## 12. 参考文献
-
-1. Curry, H. B. and Feys, R. 1958. *Combinatory Logic, Volume I*. North-Holland Publishing Company, 1-416.
-
-2. Schönfinkel, M. 1924. Über die Bausteine der mathematischen Logik. *Mathematische Annalen* 92, 3, 305-316. DOI: 10.1007/BF01448013.
-
-3. Reynolds, J. C. 1972. Definitional interpreters for higher-order programming languages. In *Proceedings of the ACM Annual Conference*. ACM, 717-740. DOI: 10.1145/800194.805852.
-
-4. Peyton Jones, S. L. 1987. *The Implementation of Functional Programming Languages*. Prentice Hall International, 1-492.
-
-5. Odersky, M., Spoon, L., and Venners, B. 2016. *Programming in Scala* (3rd ed.). Artima Press, 1-582.
-
-6. Ecma International. 2026. *ECMAScript 2026 Language Specification (ECMA-262, 16th Edition)*. Ecma International. Retrieved from https://www.ecma-international.org/publications/standards/Ecma-262.htm
-
-7. Wampler, D. and Payne, A. 2014. *Programming Scala* (2nd ed.). O'Reilly Media, 1-496. DOI: 10.5555/2618071.
-
-8. MDN Web Docs. 2025. *Closures*. Mozilla Developer Network. Retrieved from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
-
-9. Elliott, E. 2017. Curry and function composition. *JavaScript Scene on Medium*. Retrieved July 20, 2026, from https://medium.com/javascript-scene/curry-and-function-composition-2c208d774983
-
----
-
-## 13. 延伸阅读
-
 ### 13.1 函数式编程经典著作
 
 - **《Structure and Interpretation of Computer Programs》**（Abelson & Sussman, 1985）：MIT 经典教材，深入讲解函数式编程与闭包
 - **《Learn You a Haskell for Great Good!》**（Miran Lipovača, 2011）：Haskell 入门最佳读物，原生柯里化语言
 - **《Real-World Functional Programming》**（Tomas Petricek, 2009）：F# 与函数式编程实践
 - **《Functional JavaScript》**（Michael Fogus, 2013）：JavaScript 函数式编程专题
-
-### 13.2 在线资源
-
-- **Ramda.js 文档**：https://ramdajs.com/ —— JavaScript 函数式编程库
-- **Lodash 文档**：https://lodash.com/ —— 实用工具函数库
-- **Fantasy Land Specification**：https://github.com/fantasyland/fantasy-land —— 函数式代数结构规范
-- **Folktale**：https://folktale.origamitower.com/ —— JavaScript 函数式编程库
 
 ### 13.3 相关主题
 
@@ -2090,4 +1989,3 @@ const doubled = numbers.map(x => x * 2);  // 新元组
 4. 不可变数据结构消除手动 `cloneDeep`，提升性能与安全性
 
 **未来展望：** JavaScript 函数式编程正在向 Haskell、Scala 等语言靠拢。柯里化与偏函数作为基础技术，其理念将贯穿未来 ECMAScript 的演进。掌握这些核心概念，将有助于开发者在语言演进中保持竞争力。
-

@@ -1750,8 +1750,6 @@ Folly 的实现使用变参模板 + `std::initializer_list` 类型擦除，平�
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：以下代码的输出是什么？
@@ -1946,105 +1944,6 @@ f(1, 2, 3);  // last=1, args={2,3}
 
 ---
 
-### 9.3 思考题
-
-**思考题 1**：为什么 C++17 引入折叠表达式后，标准库中 `std::make_tuple` 的实现仍然使用递归？
-
-**解析讲解**：
-- `std::make_tuple` 需要构造 `std::tuple<Ts...>` 对象，折叠表达式只能用于表达式求值，不能用于类型构造。
-- 折叠表达式适用于"对每个参数执行相同操作并合并结果"的场景，而 `make_tuple` 需要将所有参数作为整体传递给构造函数。
-- 标准库实现内部确实使用了折叠表达式进行某些辅助操作（如 `std::apply`），但核心构造仍需递归或直接展开。
-
----
-
-**思考题 2**：在何种情况下，递归展开比折叠表达式更优？
-
-**解析讲解**：
-1. **需要对不同类型参数执行不同操作**：折叠表达式要求相同的运算符，递归可以针对每个类型特化。
-2. **需要中断条件**：递归可在某次调用中提前返回，折叠表达式必须处理所有参数。
-3. **复杂的副作用顺序**：递归可以精确控制执行顺序，折叠表达式的求值顺序在某些运算符上不明确。
-4. **调试需求**：递归展开生成的中间函数便于断点调试，折叠表达式被合并为单一表达式。
-
----
-
-**思考题 3**：变参模板如何影响编译时间？有哪些优化策略？
-
-**解析讲解**：
-- **影响**：
-  - 每种参数组合生成独立的实例，编译时间随组合数线性增长。
-  - 递归展开的深度影响实例化链长度。
-  - 头文件中的变参模板会污染所有包含它的编译单元。
-
-- **优化策略**：
-  1. **使用折叠表达式替代递归**：减少模板实例化。
-  2. **使用前置声明（extern template）**：`extern template class std::vector<int>;` 抑制实例化。
-  3. **类型擦除**：将变参模板限制在内部，对外提供 `std::any`、`std::function` 接口。
-  4. **模块（C++20 Modules）**：替代头文件包含，减少重复解析。
-  5. **统一构建系统（Unity Build）**：将多个 .cpp 合并为一个，减少实例化次数。
-  6. **分布式编译**：使用 distcc、icecc 分布编译负载。
-
----
-
-**思考题 4**：C++26 的静态反射将如何改变变参模板的使用模式？
-
-**解析讲解**：
-- **现状**：变参模板需要显式传递类型，无法在编译期"枚举"结构体的字段。
-- **反射后**：`^T`（反射运算符）可获取类型的元信息，包括字段列表、方法签名。
-  ```cpp
-  // C++26 提案（P2996）
-  template<typename T>
-  void serialize(T obj) {
-      template for (constexpr auto member : std::meta::members_of(^T)) {
-          std::cout << std::meta::name_of(member) << ": "
-                    << obj.[member] << '\n';
-      }
-  }
-  ```
-- **影响**：
-  - 某些场景下，变参模板可被反射替代（如遍历结构体字段）。
-  - 变参模板与反射结合，可实现更强大的元编程（如编译期生成 SQL schema）。
-  - 反射将降低元编程门槛，减少对 SFINAE/概念的依赖。
-
----
-
-## 10. 参考文献
-
-本章节引用的文献遵循 ACM Reference Format。
-
-[1] Gregor, D., Järvi, J., and Powell, G. 2007. A proposal to add a variadic template facility to the C++ standard (N2080). ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2080.pdf
-
-[2] Vandevoorde, A., Josuttis, N., and Gregor, D. 2018. C++ Templates: The Complete Guide (2nd ed.). Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/3262385
-
-[3] Sutton, A. and Smith, R. 2014. Fold expressions (N4295). ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4295.html
-
-[4] Stroustrup, B. 2013. The C++ Programming Language (4th ed.). Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/2524254
-
-[5] Myers, N. 2005. The auto and decltype proposals (N1478). ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2003/n1478.pdf
-
-[6] Josuttis, N. 2012. The C++ Standard Library: A Tutorial and Reference (2nd ed.). Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/2332624
-
-[7] ISO/IEC. 2020. Programming languages — C++ (ISO/IEC 14882:2020). International Organization for Standardization, Geneva, Switzerland. Retrieved July 21, 2026 from https://www.iso.org/standard/79358.html
-
-[8] ISO/IEC. 2023. Programming languages — C++ (ISO/IEC 14882:2023). International Organization for Standardization, Geneva, Switzerland. Retrieved July 21, 2026 from https://www.iso.org/standard/83626.html
-
-[9] Sutter, H. and Alexandrescu, A. 2004. C++ Coding Standards: 101 Rules, Guidelines, and Best Practices. Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/1047474
-
-[10] Veldhuizen, T. 1998. Template metaprograms. C++ Report 16, 10 (1998), 36–43. Retrieved July 21, 2026 from https://ericlippert.com/2005/05/30/template-metaprogramming/
-
-[11] Abrahams, D. and Gurtovoy, A. 2004. C++ Template Metaprogramming: Concepts, Tools, and Techniques from Boost and Beyond. Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/1045852
-
-[12] Dos Reis, G., Stroustrup, B., and Meredith, A. 2014. A proposal to add a concept syntax to C++ (N4377). ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4377.pdf
-
-[13] Park, T. 2022. Reflection for C++26 (P2996R2). ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://wg21.link/p2996r2
-
-[14] Gregor, D. 2010. Lambda expressions and closures (N2550). ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2550.pdf
-
-[15] Clang Team. 2024. Clang Language Extensions: Variadic templates. LLVM Project. Retrieved July 21, 2026 from https://clang.llvm.org/docs/LanguageExtensions.html
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 标准与提案文档
 
 - **C++ Standard Working Draft (N4950)**：最新工作草案，涵盖 C++26 提案。链接：https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf
@@ -2061,15 +1960,6 @@ f(1, 2, 3);  // last=1, args={2,3}
    - 条款 33-40 涉及万能引用与完美转发，是变参模板实践基础。
 4. **《C++ Concurrency in Action》(2nd Edition)** — Anthony Williams
    - 第 4-6 章涉及变参模板在并发原语中的应用。
-
-### 11.3 在线资源
-
-- **cppreference.com — Variadic arguments**：https://en.cppreference.com/w/cpp/language/variadic_arguments
-- **cppreference.com — Fold expressions**：https://en.cppreference.com/w/cpp/language/fold
-- **Boost.Hana Documentation**：https://www.boost.org/doc/libs/release/libs/hana/
-- **Boost.MPL Documentation**：https://www.boost.org/doc/libs/release/libs/mpl/
-- **LLVM Clang Source — SemaExprCXX.cpp**：折叠表达式实现源码。
-- **GCC libstdc++ — tuple implementation**：`/usr/include/c++/<version>/tuple` 查看实际实现。
 
 ### 11.4 视频课程
 

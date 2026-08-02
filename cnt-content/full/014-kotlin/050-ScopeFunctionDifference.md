@@ -1583,8 +1583,6 @@ fun main() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下哪个作用域函数不是扩展函数？
@@ -1783,48 +1781,6 @@ class ApplyReturnsValueRule : Rule() {
 
 ---
 
-## 10. 参考文献
-
-[1] JetBrains. 2023. Kotlin Standard Library Documentation. Retrieved July 21, 2026 from https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/
-
-[2] JetBrains. 2016. Kotlin 1.0 Release Notes. Retrieved July 21, 2026 from https://blog.jetbrains.com/kotlin/2016/02/kotlin-1-0-released/
-
-[3] JetBrains. 2017. Kotlin 1.1: also Function. Retrieved July 21, 2026 from https://blog.jetbrains.com/kotlin/2017/04/kotlin-1-1-released/
-
-[4] Dmitry Jemerov and Svetlana Isakova. 2017. Kotlin in Action. Manning Publications.
-
-[5] Anderson, L. W., and Krathwohl, D. R. 2001. A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives. Longman.
-
-[6] Erik Meijer. 2010. Subject/Observer is Dual to Iterator. Retrieved July 21, 2026 from https://themejer.blogspot.com/2010/01/subjectobserver-is-dual-to-iterator.html
-
-[7] Groovy Documentation. 2023. Groovy with Method. Retrieved July 21, 2026 from https://docs.groovy-lang.org/latest/html/groovy-jdk/java/lang/Object.html#with(groovy.lang.Closure)
-
-[8] Ruby Documentation. 2023. Ruby Object#tap Method. Retrieved July 21, 2026 from https://ruby-doc.org/core-3.0.0/Object.html#method-i-tap
-
-[9] Apple. 2014. Swift Optional Chaining. Retrieved July 21, 2026 from https://docs.swift.org/swift-book/LanguageGuide/OptionalChaining.html
-
-[10] Roman Elizarov. 2017. Structured Concurrency. Retrieved July 21, 2026 from https://medium.com/@elizarov/structured-concurrency-7221827f4837
-
-[11] KEEP-77. 2016. Inline Functions Proposal. Retrieved July 21, 2026 from https://github.com/Kotlin/KEEP/blob/master/proposals/inline-classes.md
-
-[12] Marcin Moskała. 2020. Kotlin Coroutines Deep Dive. Retrieved July 21, 2026 from https://kt.ac/
-
-[13] Venkat Subramaniam. 2019. Programming Kotlin. Pragmatic Programmers.
-
-[14] Pierre-Yves Saumont. 2019. The Joy of Kotlin. Manning Publications.
-
-[15] Google. 2022. Android Kotlin Style Guide. Retrieved July 21, 2026 from https://developer.android.com/kotlin/style-guide
-
-[16] Detekt. 2023. Static Analysis for Kotlin. Retrieved July 21, 2026 from https://detekt.dev/
-
-[17] Stephen Colebourne. 2018. Scope Functions in Kotlin. Retrieved July 21, 2026 from https://blog.joda.org/2018/01/exploring-kotlin-standard-library.html
-
-[18] Roman Elizarov. 2019. What should be the default scope function?. Retrieved July 21, 2026 from https://discuss.kotlinlang.org/
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - [Kotlin Standard Library Reference](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/)：作用域函数的官方文档。
@@ -1850,13 +1806,6 @@ class ApplyReturnsValueRule : Rule() {
 - **KotlinConf 2019: Effective Kotlin** by Marcin Moskała。
 - **Google I/O 2019: Kotlin Coding Conventions**。
 
-### 11.5 开源项目参考
-
-- **JetBrains/kotlin**：标准库源码。
-- **JetBrains/Exposed**：DSL 设计范例。
-- **Ktor**：作用域函数在服务端的应用。
-- **Android Architecture Components**：apply 在 ViewModel 中的应用。
-
 ### 11.6 相关主题
 
 - **函数与Lambda**：作用域函数的函数式编程基础。
@@ -1879,40 +1828,6 @@ class ApplyReturnsValueRule : Rule() {
 4. **深入原理**（2 周）：阅读标准库源码，理解 inline 机制。
 5. **DSL 设计**（2 周）：基于作用域函数设计 DSL。
 6. **代码审查**（持续）：审查团队代码，识别反模式。
-
-### 11.9 常见面试题
-
-1. **let、run、with、apply、also 的区别？**
-   - 引用方式：let/also 用 `it`，run/with/apply 用 `this`。
-   - 返回值：apply/also 返回 `this`，let/run/with 返回 Lambda 结果。
-   - 是否扩展函数：with 是普通函数，其余是扩展函数。
-
-2. **为什么需要五个作用域函数？**
-   - 语义清晰：每个函数对应明确意图。
-   - 作用域差异：`this` vs `it` 影响是否遮蔽外部 `this`。
-   - 返回值差异：链式 vs 转换。
-
-3. **apply 与 also 的区别？**
-   - apply 用 `this`，适合初始化（修改属性）。
-   - also 用 `it`，适合副作用（日志、调试）。
-
-4. **let 处理可空类型的优势？**
-   - `nullable?.let { ... }` 简洁地处理可空，可链式调用。
-
-5. **作用域函数是否引入性能开销？**
-   - 不引入。所有作用域函数都是 `inline`，编译时内联。
-
-6. **如何选择作用域函数？**
-   - 看"是否返回对象"与"引用方式"两个维度。
-   - 决策树：返回对象 → apply/also；返回结果 → run/with/let。
-
-7. **with 为什么不是扩展函数？**
-   - 设计意图是"对对象执行操作"，形式上更接近函数调用。
-   - 避免与可空类型混淆（with 不处理可空）。
-
-8. **apply 在 Builder 模式中的优势？**
-   - 任何类都可用 apply 模拟 Builder，无需写 Builder 类。
-   - 代码更简洁，类型安全。
 
 ### 11.10 附录：作用域函数速查表
 

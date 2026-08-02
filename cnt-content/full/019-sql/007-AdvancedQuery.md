@@ -558,18 +558,8 @@ UPDATE events SET data = JSON_MODIFY(data, '$.status', 'processed') WHERE id = 1
 - PostgreSQL 的全文搜索功能完善，JSONB 支持索引和丰富操作符
 - MySQL 的 `JSON_TABLE` 和 SQL Server 的 `OPENJSON` 可将 JSON 数据展开为关系表
 
-## 参考文献
-
-SQL 标准（ISO/IEC 9075）：https://www.iso.org/standard/76583.html
-PostgreSQL 文档（SQL 章节）：https://www.postgresql.org/docs/current/sql.html
-MySQL 文档：https://dev.mysql.com/doc/
-SQLite 文档：https://www.sqlite.org/docs.html
-Use The Index, Luke：https://use-the-index-luke.com/
-
 ## 延伸阅读
-
 SQL 连接与子查询，见 019-sql 模块文档。
 SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
 MySQL 深入，见 020-mysql 模块。
 PostgreSQL 深入，见 021-postgresql 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 MySQL 课程。

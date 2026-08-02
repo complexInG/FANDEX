@@ -1044,8 +1044,6 @@ public class CodeExecutionService {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**:解释 WebAssembly 的线性内存模型,以及它与 JVM 堆内存的区别。
@@ -1165,30 +1163,6 @@ public byte[] computeSha256(byte[] data) {
 - **Wasm**:用户 JS 需先编译为 Wasm(可通过 Javy 等工具),沙箱天然安全,零权限起步。但编译步骤增加复杂度。
 
 推荐:若已用 GraalVM,选 GraalVM JS(开发体验最佳);若需强安全沙箱或跨语言,选 Wasm;Nashorn 不推荐。
-
-## 参考文献
-
-1. Haas, A., Rossberg, A., Schuff, D. L., Holman, M., Gohman, D., Wagner, L., Zakai, A., and Bastien, J. 2017. *Bringing the Web up to speed with WebAssembly*. In *Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation* (PLDI '17), 185–200. DOI: [https://doi.org/10.1145/3062341.3062363](https://doi.org/10.1145/3062341.3062363)
-
-2. WebAssembly Community Group. 2024. *WebAssembly Specification Version 2.0*. W3C Working Draft. Retrieved from [https://webassembly.github.io/spec/core/](https://webassembly.github.io/spec/core/)
-
-3. Watt, C., Rossberg, A., and Pizlo, A. 2023. *Weakening WebAssembly's Same-Origin Policy*. In *Proceedings of the 32nd USENIX Security Symposium*, 2621–2638.
-
-4. Bertelsen, P. 2024. *Chicory: A WebAssembly Runtime for the JVM*. Retrieved from [https://github.com/dylibso/chicory](https://github.com/dylibso/chicory)
-
-5. Kopp, M. 2024. *Bytecoder: Java to WebAssembly Compiler*. Retrieved from [https://github.com/mirkosertic/Bytecoder](https://github.com/mirkosertic/Bytecoder)
-
-6. Zakai, A. 2011. *Emscripten: An LLVM-to-JavaScript compiler*. In *Proceedings of the 1st ACM SIGPLAN International Conference on Compiler Construction* (CC '11), 301–304. DOI: [https://doi.org/10.1145/2034615.2034640](https://doi.org/10.1145/2034615.2034640)
-
-7. Jangda, A., Powers, B., Berger, E. D., and Brunthaler, M. 2019. *Not so fast: Analyzing the performance of WebAssembly vs. native code*. In *Proceedings of the 2019 USENIX Annual Technical Conference*, 107–120.
-
-8. Watt, C. 2023. *WASI: WebAssembly System Interface Design*. Retrieved from [https://wasi.dev/](https://wasi.dev/)
-
-9. Rossberg, A. 2024. *WebAssembly 2.0: Type System and GC Proposal*. Retrieved from [https://github.com/WebAssembly/gc](https://github.com/WebAssembly/gc)
-
-10. Gohman, D. 2023. *Capability-based security in WASI*. In *Proceedings of the 2023 WebAssembly Summit*, 45–52.
-
-## 延伸阅读
 
 ### WebAssembly 核心规范
 

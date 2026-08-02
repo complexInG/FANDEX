@@ -245,44 +245,9 @@ jobs:
 | 审查意见无回应 | PR 长时间无人跟进 | 作者未回复或修改 | 作者及时回复每条评论；设置提醒；必要时礼貌催促 |
 | 合并冲突反复出现 | PR 冲突不断 | 功能分支长期未同步 main | 定期 `git pull origin main` 同步；保持 PR 小而聚焦 |
 
-## 7. 实战练习
-
-### 练习 1：写一个规范提交（入门）
-- **题目描述**：在你自己的测试仓库中完成一次 `fix` 类型提交，包含 scope、Closes 关键词，并验证格式。
-- **提示**：参考 2.4 示例；`git commit -m "fix(cart): fix price calculation error\n\nCloses #12"`。
-- **参考答案要点**：类型 + 作用域 + 主题齐全；提交后 `git log --oneline` 检查显示格式正确。
-
-### 练习 2：为仓库配置 PR 模板（进阶）
-- **题目描述**：在仓库中创建 `.github/pull_request_template.md`，推送到 GitHub 后发起一个测试 PR 验证模板生效。
-- **提示**：模板内容按第 3.2 节结构；推送后 New pull request 页面应自动带出模板。
-- **参考答案要点**：新建文件 → commit → push → 打开新 PR 看到预填模板即成功。
-
-### 练习 3：体验 commitlint 校验（进阶）
-- **题目描述**：在本地仓库安装 commitlint 并配置约定式提交规则，尝试提交一条不符合格式的信息，观察拦截效果。
-- **提示**：`npm init -y` 后安装 `@commitlint/cli @commitlint/config-conventional`，用 husky 挂 pre-commit 钩子。
-- **参考答案要点**：非法提交被拦截并提示错误格式；按提示修正后可提交。
-
-### 练习 4：配置 DCO 检查（综合）
-- **题目描述**：为仓库添加 `actions/dco` 工作流，提交一个不带签名的 commit 观察 CI 失败，再用 `git commit -s` 修复。
-- **提示**：按 5.3 配置；不带签名推送 → 看 Actions 失败 → 用 `--amend -s` 补签后强推。
-- **参考答案要点**：DCO 工作流识别缺少 `Signed-off-by` 的提交并置为失败；补签后 CI 通过。
-
-### 练习 5：模拟一次完整 Code Review（综合）
-- **题目描述**：和一位同学结对，A 提一个含已知小缺陷的 PR，B 按第 4.2 节清单审查并给出"必须修改 + 建议修改"两类反馈，A 修改后重新提交。
-- **提示**：审查时先看 PR 描述再看 diff；反馈要具体到行号。
-- **参考答案要点**：完成"提 PR → 审查 → 修改 → 复核 → 合并"全流程；体会规范如何让反馈高效。
-
 ## 8. 一句话记忆
 
 **协作规范就是团队的"厨房公约"：提交信息让历史可读，PR 模板让审查高效，审查清单把好质量关，CLA/DCO 明确权属，四者共同支撑可持续的团队协作。**
-
-## 参考链接与延伸阅读
-
-- [Conventional Commits（约定式提交规范）](https://www.conventionalcommits.org/zh-hans/)
-- [GitHub 文档（官方中文）：拉取请求协作指南](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests)
-- [GitHub 文档：关于 PR 审查](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews)
-- [Google 工程实践文档：Code Review 指南](https://google.github.io/eng-practices/review/)
-- [Open Source Guides：法律与许可证](https://opensource.guide/zh-hans/legal/)
 
 ### 延伸阅读
 

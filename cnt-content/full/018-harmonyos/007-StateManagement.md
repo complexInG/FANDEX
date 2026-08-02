@@ -2078,8 +2078,6 @@ struct DocEditor {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题 1**：简述 `@State`、`@Prop`、`@Link` 的区别。
@@ -2193,8 +2191,6 @@ class StateManager<T> {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 [1] Huawei Device Co., Ltd. 2024. ArkUI State Management Guide. (Version 5.0). HarmonyOS Official Documentation. Retrieved July 21, 2026 from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/arkui-state-management-V5. DOI: 10.1234/harmonyos.state.2024.001.
@@ -2231,8 +2227,6 @@ class StateManager<T> {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档与资源
 
 - **ArkUI 状态管理**：https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/arkui-state-management-V5
@@ -2255,12 +2249,6 @@ class StateManager<T> {
 - **"Time-Travel Debugging for Distributed Systems"** IEEE Transactions on Software Engineering, 2024
 - **"Cross-Device State Synchronization"** ACM Computing Surveys, 2023
 - **"Fine-grained Reactivity in Declarative UIs"** Proceedings of the ACM on Programming Languages, 2024
-
-### 11.4 社区资源
-
-- **HarmonyOS State Management Sample**：https://gitee.com/harmonyos_samples/state-management
-- **51CTO 状态管理专栏**：https://harmonyos.51cto.com/posts/state
-- **掘金 ArkUI 标签**：https://juejin.cn/tag/ArkUI
 
 ### 11.5 相关课程
 

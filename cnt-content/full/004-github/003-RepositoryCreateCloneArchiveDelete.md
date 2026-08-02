@@ -249,44 +249,9 @@ gh repo create ORG/repo-a --public --description "desc"
 | 推送到 main 失败 | `protected branch` | 分支启用了保护规则 | 按保护规则走 PR 流程合并，或由管理员临时调整规则 |
 | 找不到删除/归档按钮 | Danger Zone 无选项 | 不是仓库 Owner/Admin | 只有 Owner 或 Admin 角色才能归档/删除；组织仓库需组织管理员授权 |
 
-## 7. 实战练习
-
-### 练习 1：创建并初始化仓库（入门）
-- **题目描述**：创建一个名为 `my-daily-notes` 的公开仓库，勾选 README 和 Python 的 .gitignore。
-- **提示**：New repository 页面有 .gitignore 模板下拉框。
-- **参考答案要点**：创建后仓库自带 README.md 和 .gitignore；可通过 Code 按钮复制克隆 URL。
-
-### 练习 2：克隆并推送代码（进阶）
-- **题目描述**：将 `my-daily-notes` 克隆到本地，添加 `plan.md`，提交并推送，然后在 GitHub 上确认文件出现。
-- **提示**：推送时 HTTPS 需要 PAT，SSH 需要密钥（见 004 篇）。
-- **参考答案要点**：`git clone <URL>` → 新建文件 → `git add`/`git commit` → `git push -u origin main`。
-
-### 练习 3：本地项目关联远程空仓库（进阶）
-- **题目描述**：在 GitHub 创建**空仓库**（不勾选 README），把本地已有项目推送到该仓库。
-- **提示**：按 3.2 小节步骤；远程 URL 用仓库页面的 "…or push an existing repository" 提示。
-- **参考答案要点**：`git init` → `git add .` → `git commit` → `git branch -M main` → `git remote add origin <URL>` → `git push -u origin main`。
-
-### 练习 4：归档与取消归档（综合）
-- **题目描述**：对 `my-daily-notes` 执行归档，验证只读效果（尝试新建 Issue 应被阻止），再取消归档。
-- **提示**：归档在 Settings → Danger Zone；取消归档在相同位置。
-- **参考答案要点**：归档后仓库显示 Archived 徽章，New issue 按钮被禁用；取消归档后恢复写权限。
-
-### 练习 5：安全删除与恢复演练（综合）
-- **题目描述**：先镜像克隆备份 `my-daily-notes`，再删除该仓库，最后用备份验证代码完好。
-- **提示**：`git clone --mirror` 会生成带 `.git` 后缀的完整备份目录。
-- **参考答案要点**：备份目录可完整恢复代码与分支；确认删除不可逆后，养成"先备份后删除"的习惯；正式练习建议改用归档代替删除，避免误操作。
-
 ## 8. 一句话记忆
 
 **仓库生命周期四步走：创建（开店）→ 克隆（开分店）→ 归档（挂牌歇业，随时复业）→ 删除（注销店铺，不可恢复，务必先备份）。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：仓库快速入门](https://docs.github.com/zh/repositories/creating-and-managing-repositories/quickstart-for-repositories)
-- [GitHub 文档：克隆仓库](https://docs.github.com/zh/repositories/creating-and-managing-repositories/cloning-a-repository)
-- [GitHub 文档：归档仓库](https://docs.github.com/zh/repositories/archiving-a-github-repository/archiving-repositories)
-- [GitHub 文档：删除仓库](https://docs.github.com/zh/repositories/creating-and-managing-repositories/deleting-a-repository)
-- [GitHub 文档：关于仓库可见性](https://docs.github.com/zh/repositories/creating-and-managing-repositories/about-repositories)
 
 ### 延伸阅读
 

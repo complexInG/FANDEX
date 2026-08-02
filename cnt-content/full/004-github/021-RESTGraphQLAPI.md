@@ -342,84 +342,9 @@ gh api graphql -f query='{ rateLimit { limit cost remaining resetAt } }'
 | 分页只返回一页 | 数据不全 | REST 默认 per_page=30 且未处理分页 | 用 `per_page=100` + `--paginate` 或 Link 头翻页 |
 | Token 误提交到仓库 | 密钥扫描告警 | Token 硬编码进代码 | 撤销 Token；改用环境变量或 gh auth |
 
-## 8. 实战练习
-
-### 练习 1：用 REST 获取个人信息（入门）
-
-**题目描述**：用 curl 与 gh api 两种方式获取当前用户的用户名与粉丝数。
-
-**提示**：端点是 `/user`；gh api 可用 `--jq` 提取字段。
-
-**参考答案要点**：
-
-```bash
-curl -H "Authorization: Bearer ghp_xxx" https://api.github.com/user | jq '{login, followers}'
-# 或
-gh api user --jq '{login: .login, followers: .followers}'
-```
-
-### 练习 2：创建 Issue（入门）
-
-**题目描述**：为 `octocat/Hello-World` 仓库创建一个带 `bug` 标签的 Issue。
-
-**提示**：POST `/repos/{owner}/{repo}/issues`，labels 用数组。
-
-**参考答案要点**：
-
-```bash
-gh api repos/octocat/Hello-World/issues \
-  -f title="首页按钮错位" \
-  -f body="复现步骤：1. 打开首页 2. 点击按钮" \
-  -f labels='["bug"]'
-```
-
-### 练习 3：REST 与 GraphQL 对比实践（进阶）
-
-**题目描述**：分别用 REST 与 GraphQL 获取你的 5 个仓库的 name 与 stargazerCount，对比请求次数与代码量。
-
-**提示**：REST 需要先查 `/user/repos` 再逐个查 Star 数；GraphQL 一次查询嵌套即可。
-
-**参考答案要点**：REST：1 次列仓库 + 5 次查 Star（共 6 次请求）；GraphQL：1 次查询 `viewer.repositories(first:5){nodes{name stargazerCount}}`。结论：GraphQL 用 1 次请求完成 6 次请求的工作，这正是它适合复杂关联查询的原因。
-
-### 练习 4：处理速率限制（进阶）
-
-**题目描述**：你的脚本报了 `403 API rate limit exceeded`。写出完整的排查与恢复流程。
-
-**提示**：从"查配额、查原因、等恢复、防再犯"组织。
-
-**参考答案要点**：1. `gh api rate_limit` 查看 remaining/reset；2. 检查脚本是否未认证（未认证仅 60 次/小时）；3. 确认认证后等待 `X-RateLimit-Reset` 时间戳到达再重试；4. 长期改进：使用认证 Token、改用 GraphQL、用 Webhooks 替代轮询。
-
-### 练习 5：编写 GraphQL 变量化查询（综合）
-
-**题目描述**：编写一个带变量的 GraphQL 查询：输入 owner 与 repo，返回仓库名、描述、Star 数、fork 数及最新 Issue 标题；用 gh api 传入变量执行。
-
-**提示**：mutation/query 中声明 `$owner: String!` 变量；`-f` 传值。
-
-**参考答案要点**：
-
-```graphql
-query($owner: String!, $name: String!) {
-  repository(owner: $owner, name: $name) {
-    name
-    description
-    stargazerCount
-    forkCount
-    issues(first: 1, orderBy: { field: CREATED_AT, direction: DESC }) {
-      nodes { title }
-    }
-  }
-}
-```
-
-```bash
-gh api graphql -F query=@query.gql -f owner=octocat -f name=Hello-World
-```
-
 ## 9. 一句话记忆
 
 > **REST 是"套餐菜单"，端点固定、简单直接；GraphQL 是"自助点餐"，一次请求按需取字段——记住：简单操作用 REST，关联数据用 GraphQL，实时事件用 Webhooks，所有调用都要带上认证并留意速率限制。**
-
-## 参考链接与延伸阅读
 
 ### 官方文档
 
@@ -429,8 +354,6 @@ gh api graphql -F query=@query.gql -f owner=octocat -f name=Hello-World
 - GraphQL 文档与 Schema 浏览器：https://docs.github.com/zh/graphql
 
 ### 延伸阅读
-
 - Webhooks（事件驱动的另一种数据获取方式），见 004-github 模块 022 文档。
 - GitHub CLI（gh api 的完整语法），见 004-github 模块 020 与 054 文档。
 - 密钥扫描（Token 的安全管理），见 004-github 模块 018 文档。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

@@ -1287,8 +1287,6 @@ $$
 
 其中 $\text{ref}$ 为引用类型（identity），$\text{val}$ 为值类型（no identity），$\sigma$ 为类型参数。
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **1.（remember）** Java 泛型在编译期通过____机制将所有泛型类型实例化映射到同一份字节码表示，运行时不再保留类型参数信息。
@@ -1298,38 +1296,6 @@ $$
 **3.（understand）** 通配符 `List<? extends Number>` 的形式语义是____类型，表示存在某个未知类型 X 满足 X 是 Number 的子类型。
 
 **4.（apply）** 在泛型方法签名 `<T extends Comparable<? super T>>` 中，`? super T` 应用的原则是____。
-
-### 选择题知识点讲解
-
-**1.（apply）** 下列代码片段哪一项可以正确通过编译并实现协变返回类型？
-
-A. `class Parent { Number get() { return 1; } } class Child extends Parent { @Override Integer get() { return 1; } }`
-
-B. `class Parent<T> { T get() { return null; } } class Child extends Parent<Number> { @Override Integer get() { return null; } }`
-
-C. `List<Number> nums = new ArrayList<Integer>();`
-
-D. `List<Integer>[] arr = new ArrayList<Integer>[10];`
-
-**2.（analyze）** 关于桥接方法（bridge method），下列哪项描述最准确？
-
-A. 桥接方法是 JVM 在运行时通过字节码插桩动态生成的方法
-
-B. 桥接方法由编译器在编译期生成，用于保证泛型擦除后的多态语义正确
-
-C. 桥接方法仅出现在接口默认方法中
-
-D. 桥接方法是开发者通过 @Bridge 注解显式声明的方法
-
-**3.（evaluate）** 下列关于 Java 泛型与 C# 泛型的对比，哪项是错误的？
-
-A. Java 泛型在运行时不保留类型参数，C# 保留
-
-B. Java 不允许 `new T()`，C# 在 `new()` 约束下允许
-
-C. Java 不允许创建泛型数组，C# 允许
-
-D. Java 泛型对值类型装箱，C# 泛型对值类型同样装箱
 
 ### 10.3 代码修正题
 
@@ -1401,20 +1367,12 @@ List<Integer> ints = List.of(1, 2, 3);
 Number total = sum(ints);
 ```
 
-## 11. 参考答案
-
 ### 填空题知识点讲解
 
 1. **类型擦除**（type erasure）。JLS §4.6 定义擦除函数将 `List<String>` 映射到原生类型 `List`。
 2. **extends**，**super**。Producer Extends, Consumer Super 的缩写，由 Joshua Bloch 在《Effective Java》提出。
 3. **存在**（existential）。形式化为 $\exists X <: \text{Number}. \, \text{List<X>}$，X 是未知的具体子类型。
 4. **PECS**。`? super T` 让 `Comparable<Delayed>` 等父类型实现也能被接受。
-
-### 选择题知识点讲解
-
-1. **B**。Child 显式指定父类泛型为 Number 后重写返回 Integer，编译器生成桥接方法保证多态正确。A 虽合法但未涉及泛型；C 错误，泛型不协变；D 错误，泛型数组创建被禁止。
-2. **B**。桥接方法由 javac 在编译期合成，签名擦除后调用实际类型安全的方法，确保子类方法能被父类引用正确分发。可通过 `Method.isBridge()` 检测。
-3. **D**。C# 泛型对值类型不装箱，每个值类型参数生成特化版本，这正是 C# reified 泛型的关键优势之一。
 
 ### 11.3 代码修正题
 
@@ -1521,8 +1479,6 @@ QueryBuilder.from(User.class)
 - `sum(ints)`：调用时 T 推断为 Integer，但因为返回 `T`，编译器在 `Number total = sum(ints)` 处插入 `checkcast` 到 Number；
 - 关键陷阱：若调用方写 `Integer total = sum(ints)`，运行时 `(Integer)` 转换 Double 会抛出 ClassCastException——这是擦除带来的隐藏风险。
 
-## 12. 参考文献
-
 ### 12.1 原始论文与规范
 
 1. Bracha, G., Odersky, M., Wadler, P., and Thorup, M. 1998. Making the future safe for the present: Theorem about type erasure. _Proceedings of the 13th ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '98)_, 221–232. DOI: 10.1145/286936.286960.
@@ -1560,8 +1516,6 @@ QueryBuilder.from(User.class)
 14. Project Valhalla Team. 2024. JEP 218: Generics over Primitive Types. OpenJDK. https://openjdk.org/jeps/218
 
 15. Oracle Corporation. 2024. Java Generics Tutorial. Oracle Documentation. https://docs.oracle.com/javase/tutorial/java/generics/index.html
-
-## 13. 延伸阅读
 
 ### 13.1 关联模块
 

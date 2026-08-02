@@ -218,44 +218,9 @@ gh codespace ports visibility 3000:public
 | 额度耗尽 | 提示超出配额 | 未及时停止/删除不用的 codespace | 习惯性 `gh codespace stop`；删除陈旧 codespace；必要时升级套餐 |
 | 权限/密钥问题 | 推送被拒或拉私有依赖失败 | 容器内未配置凭据 | 在 Settings → Codespaces secrets 配置仓库级密钥；或重新登录 gh |
 
-## 7. 实战练习
-
-### 练习 1：首次体验（入门）
-- **题目描述**：在任意公开仓库上创建一个 codespace，在浏览器中完成一次"新建文件 → 提交 → 推送"。
-- **提示**：仓库 → Code → Codespaces → Create codespace。
-- **参考答案要点**：环境自动就绪；`git config` 的 user.name/email 已由 GitHub 自动配置；推送成功后在仓库可见新文件。
-
-### 练习 2：添加 devcontainer.json（进阶）
-- **题目描述**：为你的项目仓库添加最简 devcontainer.json（指定 Node 20 镜像 + 安装依赖命令），重建后验证环境生效。
-- **提示**：按 3.1 节；重建用 VS Code 命令或 `gh codespace rebuild`。
-- **参考答案要点**：重建后 `node -v` 输出 v20.x；`postCreateCommand` 已自动执行 `npm install`。
-
-### 练习 3：体验端口转发（进阶）
-- **题目描述**：在 codespace 中启动一个简单 Web 服务（如 `npx serve` 或任意框架 dev server），通过转发的端口在浏览器访问。
-- **提示**：`forwardPorts` 配置后自动转发；`gh codespace ports` 查看。
-- **参考答案要点**：浏览器访问 `http://localhost:3000` 能看到页面；理解"服务在云端、访问像本地"。
-
-### 练习 4：配置预构建（综合）
-- **题目描述**：为仓库 main 分支配置预构建，观察新 codespace 创建时是否出现 "Prebuild ready" 标记。
-- **提示**：Settings → Codespaces → Prebuilds → Set up prebuild。
-- **参考答案要点**：配置后第一次预构建触发成功；之后创建 codespace 明显变快并显示预构建标记。
-
-### 练习 5：生命周期管理（综合）
-- **题目描述**：用 gh 完成"创建 → 停止 → 重启 → 删除"完整生命周期，并练习用 `--days` 参数批量清理陈旧 codespace。
-- **提示**：`gh codespace create/list/stop/delete`；删除前确认没有未提交改动。
-- **参考答案要点**：停止后不再计费；删除后从列表消失；体会"用完即回收"的成本管理习惯。
-
 ## 8. 一句话记忆
 
 **Codespaces 是"云端电脑"：devcontainer.json 是环境图纸，容器保证团队环境一致，预构建把启动从 5 分钟压到 30 秒，用完记得停止和删除省额度。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：dev 容器简介](https://docs.github.com/zh/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers)
-- [GitHub 文档：Codespaces 快速入门](https://docs.github.com/zh/codespaces/getting-started/quickstart)
-- [GitHub 文档：配置预构建](https://docs.github.com/zh/codespaces/prebuilding-your-codespaces/configuring-prebuilds)
-- [GitHub 文档：Codespaces 概述](https://docs.github.com/zh/codespaces/overview)
-- [Dev Containers 规范（containers.dev）](https://containers.dev/)
 
 ### 延伸阅读
 

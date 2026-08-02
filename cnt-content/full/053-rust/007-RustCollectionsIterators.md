@@ -263,26 +263,6 @@ fn main() {
 
 讲解：`lines()` 按行迭代、`split_whitespace` 分词、`entry().or_insert()` 计数——组合了本节全部知识点。
 
-## 8. 实战练习
-
-1. **成绩统计**：用 HashMap 存"学生名→分数"，实现"找最高分学生"和"计算平均分"两个功能。
-
-2. **去重练习**：用 HashSet 对一个单词列表去重，统计去重前后数量，并找出两个列表的交集。
-
-3. **迭代器链**：从 1 到 100 中，用迭代器链式操作求"所有能被 3 整除的数的平方和"。
-
-4. **词频统计**：写一个函数统计一段英文文本的单词频率，输出出现次数最多的前 5 个词。
-
-5. **字符串处理**：写一个函数，把 `"hello,world;rust"` 按 `,` 和 `;` 拆分成单词列表，并统计字符总数与字符去重数。
-
-## 9. 参考资源
-
-TRPL 第 8 章（集合）：https://kaisery.github.io/trpl-zh-cn/ch08-00-common-collections.html
-
-TRPL 第 13 章（迭代器与闭包）：https://kaisery.github.io/trpl-zh-cn/ch13-00-functional-features.html
-
-标准库 collections 文档：https://doc.rust-lang.org/std/collections/index.html
-
 ## 10. 小结
 
 Vec/HashMap/HashSet 覆盖了绝大多数数据组织需求；String 与 &str 的区分沿用所有权思维；迭代器链式操作让数据处理"声明式、零分配、可组合"。下一步学习泛型与 Trait，让代码对不同类型复用。

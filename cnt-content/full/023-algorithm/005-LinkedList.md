@@ -559,8 +559,6 @@ ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
 
 ---
 
-## 6. 常见面试题型
-
 ### 6.1 题型分类与解题模板
 
 | 题型     | 核心技巧         | 代表题目     |
@@ -712,24 +710,11 @@ def reverse_k_group(head, k):
 ---
 
 ## 8. 延伸阅读
-
 - CLRS 第 10 章（链表基础）
 - 《剑指 Offer》链表专题
-- [Linked List -- VisuAlgo](https://visualgo.net/en/list)
 - Skiena, _The Algorithm Design Manual_, Section 3.1
-
 > 跨模块引用：链表在哈希表和LRU缓存中的应用参见 [哈希表](algorithm/hashtable)。刷题实践参见 [LeetCode刷题指南](algorithm/leetcode-guide)。
-
-## 参考文献
-
-算法导论（CLRS）：https://mitpress.mit.edu/9780262046305/
-LeetCode：https://leetcode.cn/
-OI Wiki：https://oi-wiki.org/
-Visualgo 可视化：https://visualgo.net/zh
-
 ## 延伸阅读
-
 数据结构与算法基础，见 023-algorithm 模块文档。
 数学基础（离散数学），见 028-discrete-math 模块。
 编程语言实现，见各语言模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供算法课程。

@@ -1676,8 +1676,6 @@ public static class SaveSystem {
 }
 ```
 
-## 十、练习题（含答案）
-
 ### 基础题
 
 **Q1**：MonoBehaviour 中 `Awake` 与 `Start` 的核心区别是什么？
@@ -1756,25 +1754,6 @@ public static void Subscribe<TEvent>(Action<TEvent> handler, int priority = 0)
 
 优化：在 Awake 中缓存 `var rb = GetComponent<Rigidbody>()` 到字段，Update 中直接访问字段，开销仅 1-2ns。
 
-## 知识讲解与要点分析（原思考题）
-
-**Q5**：MonoBehaviour 模型与 ECS 模型在 CPU 缓存友好性上的差异？请用具体数据说明。
-
-**A5**：
-MonoBehaviour：
-- 每个 Component 是独立托管对象，分布在 GC 堆任意位置；
-- 遍历 N 个 Enemy 时，每次访问需解引用，cache miss 概率高；
-- 假设 cache line 64 字节，Enemy 含 Position(12) + Health(4) + Target(8) = 24 字节，每次访问可能 miss；
-- 5000 个 Enemy 遍历：5000 × 100ns (cache miss) = 500μs。
-
-ECS：
-- 同一 Archetype 的组件存储在连续内存块（Chunk，16KB）；
-- Position 数组紧凑排列，预取器友好；
-- 5000 个 Enemy 的 Position 遍历：5000 × 24 / 64 = 1875 个 cache line，约 1875 × 10ns = 18.75μs；
-- 配合 Burst SIMD，可并行处理 4-8 个 float，进一步压缩到 5μs 内。
-
-ECS 比 MonoBehaviour 快 100 倍的根源：**内存连续性 + SIMD 并行**。
-
 ### 设计题
 
 **Q6**：为一个支持 4 人本地分屏的赛车游戏设计输入系统架构。
@@ -1787,84 +1766,6 @@ ECS 比 MonoBehaviour 快 100 倍的根源：**内存连续性 + SIMD 并行**�
 4. `CarController` 通过依赖注入获取 `InputAdapter`，解耦输入与控制；
 5. 暂停时统一禁用所有 `PlayerInput`，避免输入泄漏；
 6. 手柄掉线处理：监听 `InputSystem.onDeviceChange`，自动切换到键盘。
-
-### 综合题
-
-**Q7**：分析以下代码的 5 个问题并修复：
-
-```csharp
-public class EnemySpawner : MonoBehaviour {
-    public GameObject enemyPrefab;
-    public float spawnInterval = 2f;
-    private List<Enemy> enemies = new();
-
-    void Start() {
-        StartCoroutine(SpawnLoop());
-    }
-
-    IEnumerator SpawnLoop() {
-        while (true) {
-            yield return new WaitForSeconds(spawnInterval);
-            var enemy = Instantiate(enemyPrefab);
-            enemy.GetComponent<Enemy>().Initialize();
-            enemies.Add(enemy.GetComponent<Enemy>());
-        }
-    }
-
-    void Update() {
-        foreach (var e in enemies) {
-            if (e == null) enemies.Remove(e);
-            else e.UpdateAI();
-        }
-    }
-}
-```
-
-**A7**：
-问题：
-1. **无限循环协程永不停止**：GameObject 销毁后协程仍在运行，需在 OnDisable 中 StopCoroutine；
-2. **`enemies.Add` 与 `enemies.Remove` 在不同上下文**：Update 中修改集合会破坏迭代，抛 InvalidOperationException；
-3. **`GetComponent<Enemy>()` 重复调用**：两次调用，应缓存；
-4. **`foreach` 迭代时 `Remove`**：集合被修改，迭代器失效；
-5. **敌人销毁后 `enemies` 中保留 null 引用**：未及时清理。
-
-修复：
-
-```csharp
-public class EnemySpawner : MonoBehaviour {
-    [SerializeField] private GameObject _enemyPrefab = null!;
-    [SerializeField, Min(0.1f)] private float _spawnInterval = 2f;
-    private readonly List<Enemy> _enemies = new();
-    private Coroutine? _spawnCoroutine;
-
-    private void OnEnable() {
-        _spawnCoroutine = StartCoroutine(SpawnLoop());
-    }
-
-    private void OnDisable() {
-        if (_spawnCoroutine != null) StopCoroutine(_spawnCoroutine);
-    }
-
-    private IEnumerator SpawnLoop() {
-        while (enabled) {
-            yield return new WaitForSeconds(_spawnInterval);
-            var enemy = Instantiate(_enemyPrefab);
-            var comp = enemy.GetComponent<Enemy>();
-            comp.Initialize();
-            comp.OnDied += () => _enemies.Remove(comp);
-            _enemies.Add(comp);
-        }
-    }
-
-    private void Update() {
-        for (var i = _enemies.Count - 1; i >= 0; i--) {
-            var e = _enemies[i];
-            if (e == null) _enemies.RemoveAt(i);
-            else e.UpdateAI();
-        }
-    }
-}
-```
 
 ### 算法题
 
@@ -1953,100 +1854,6 @@ async UniTaskVoid LoadDataAsync() {
 // 调用方
 LoadDataAsync().Forget();
 ```
-
-### 实战题
-
-**Q10**：设计一个可热重载的技能系统，要求：
-- 技能配置数据驱动（ScriptableObject）；
-- 运行时可替换技能配置而不重启游戏；
-- 支持技能连招（前一技能结束触发下一技能）；
-- 支持技能冷却、消耗、前摇、后摇。
-
-**A10**：
-架构：
-1. `SkillConfig`（ScriptableObject）：含动画引用、伤害数值、冷却时间、消耗、连招链；
-2. `SkillInstance`（运行时实例）：维护冷却剩余、当前阶段（前摇/执行/后摇）、连招窗口；
-3. `SkillSystem`（MonoBehaviour）：管理当前激活技能、接收输入、触发连招；
-4. `SkillCaster`（接口）：抽象施法者，支持玩家与敌人复用。
-
-```csharp
-public abstract class SkillConfig : ScriptableObject {
-    public string SkillName;
-    public float Cooldown = 1f;
-    public float Cost = 10f;
-    public float AnticipationTime = 0.2f;  // 前摇
-    public float ActiveTime = 0.3f;         // 执行
-    public float RecoveryTime = 0.5f;       // 后摇
-    public SkillConfig? ComboNext;          // 连招后续
-    public float ComboWindow = 0.2f;        // 连招窗口
-    public abstract void Execute(SkillContext ctx);
-}
-
-public sealed class SkillSystem : MonoBehaviour {
-    [SerializeField] private List<SkillConfig> _equippedSkills = new();
-    private SkillInstance? _current;
-    private float _globalCooldown;
-
-    public bool TryCast(int index) {
-        if (_globalCooldown > 0f || _current != null) return false;
-        if (index < 0 || index >= _equippedSkills.Count) return false;
-        var config = _equippedSkills[index];
-        _current = new SkillInstance(config, this);
-        return true;
-    }
-
-    private void Update() {
-        if (_globalCooldown > 0f) _globalCooldown -= Time.deltaTime;
-        _current?.Update(Time.deltaTime);
-        if (_current?.IsFinished == true) {
-            _globalCooldown = _current.Config.Cooldown;
-            _current = null;
-        }
-    }
-}
-```
-
-## 十一、参考文献（ACM Reference Format）
-
-本文参考了以下学术文献、官方文档与权威著作，遵循 ACM Reference Format：
-
-[1] Hejlsberg, A., Torgersen, M., Wiltamuth, S., and Golde, P. 2023. *The C# Programming Language* (4th ed.). Addison-Wesley Professional, Boston, MA. DOI: 10.5555/1202040.
-
-[2] Ecma International. 2023. *ECMA-334: C# Language Specification* (6th ed.). Geneva, Switzerland. Retrieved from https://www.ecma-international.org/publications-and-standards/standards/ecma-334/
-
-[3] Unity Technologies. 2024. *Unity User Manual 2022.3 (LTS)*. San Francisco, CA. Retrieved from https://docs.unity3d.com/2022.3/Documentation/Manual/
-
-[4] Unity Technologies. 2024. *Unity Scripting API: MonoBehaviour*. Retrieved from https://docs.unity3d.com/ScriptReference/MonoBehaviour.html
-
-[5] Unity Technologies. 2024. *Unity Scripting API: ScriptableObject*. Retrieved from https://docs.unity3d.com/ScriptReference/ScriptableObject.html
-
-[6] Cysharp, Inc. 2024. *UniTask: Zero Allocation Async/Await for Unity*. GitHub repository. Retrieved from https://github.com/Cysharp/UniTask
-
-[7] Nystrom, R. 2014. *Game Programming Patterns*. Genever Benning, Auburn, NY. Retrieved from https://gameprogrammingpatterns.com/
-
-[8] Gregory, J. 2018. *Game Engine Architecture* (3rd ed.). CRC Press, Boca Raton, FL. DOI: 10.1201/9781315365230.
-
-[9] Dickinson, J. 2022. *Hands-On Design Patterns with Unity*. Packt Publishing, Birmingham, UK.
-
-[10] Hocking, J. 2015. *Unity in Action: Multiplatform Game Development in C# with Unity 5* (1st ed.). Manning Publications, Shelter Island, NY.
-
-[11] Unity Technologies. 2023. *DOTS: Data-Oriented Technology Stack*. Retrieved from https://unity.com/dots
-
-[12] Unity Technologies. 2023. *Unity ECS Documentation*. Retrieved from https://docs.unity3d.com/Packages/com.unity.entities@1.0/manual/
-
-[13] Microsoft. 2024. *.NET Standard 2.1 Specification*. Retrieved from https://docs.microsoft.com/en-us/dotnet/standard/net-standard
-
-[14] Lander, M. 2020. *Game Development with Unity* (2nd ed.). Routledge, London, UK. DOI: 10.4324/9780429263705.
-
-[15] Gray, J. 2019. *Mastering Unity Scripting*. Packt Publishing, Birmingham, UK.
-
-[16] Smith, T. 2021. *Pro Unity Game Development with Optimizations*. Apress, Berkeley, CA. DOI: 10.1007/978-1-4842-7265-5.
-
-[17] Falcon, H. 2022. *Unity 2022 by Example*. Packt Publishing, Birmingham, UK.
-
-[18] Thierens, M. 2023. *Unity Game Optimization* (3rd ed.). Packt Publishing, Birmingham, UK.
-
-## 十二、延伸阅读
 
 ### 12.1 官方文档与教程
 

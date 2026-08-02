@@ -506,8 +506,6 @@ WordPress 插件中曾发现过二次注入漏洞，攻击者通过评论功能�
 - Web 目录设置正确的权限
 - 使用参数化查询
 
-## 3. 实战演练 (Hands-on Practice)
-
 ### 3.1 搭建测试环境
 
 #### 3.1.1 创建测试数据库
@@ -590,35 +588,6 @@ WordPress 插件中曾发现过二次注入漏洞，攻击者通过评论功能�
 
 ### 3.2 攻击演练
 
-#### 3.2.1 练习 1：绕过登录
-
-```
- 访问：http://localhost:5000/login
- 提交 POST 请求：
- -
- -
-```
-
-#### 3.2.2 练习 2：UNION 查询
-
-```
- 访问：http://localhost:5000/product?id=-1 UNION SELECT 1, database(), version(), 4
-```
-
-#### 3.2.3 练习 3：获取用户数据
-
-```
- 访问：http://localhost:5000/product?id=-1 UNION SELECT id, username, password, role FROM users
-```
-
-#### 3.2.4 练习 4：时间盲注
-
-```
- # 测试是否存在注入
- 访问：http://localhost:5000/product?id=1' AND SLEEP(5) --
- # 如果响应延迟 5 秒，说明存在注入
-```
-
 ### 3.3 修复演练
 
 ```python
@@ -655,16 +624,7 @@ WordPress 插件中曾发现过二次注入漏洞，攻击者通过评论功能�
 
 ---
 
-## 参考文献
-
-MySQL 官方文档：https://dev.mysql.com/doc/
-MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/
-High Performance MySQL（O'Reilly）：https://www.oreilly.com/library/view/high-performance-mysql/
-Percona 博客：https://www.percona.com/blog/
-
 ## 延伸阅读
-
 MySQL 索引与优化，见 020-mysql 模块文档。
 MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
 Redis 缓存与 MySQL 组合，见 022-redis 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 MySQL 高级课程。

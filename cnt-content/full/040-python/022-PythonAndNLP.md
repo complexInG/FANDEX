@@ -1423,8 +1423,6 @@ GitHub Copilot 基于 OpenAI Codex 实现 Python 代码补全：
 - 上下文裁剪策略（保留最近文件 + 同目录文件）对效果影响大
 - 隐私与版权问题需通过数据过滤与许可证检测缓解
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **习题 11.1**（记忆层）：在 BERT 的掩码语言模型中，被选中掩码的位置会被替换为特殊标记 ____，其原始词用于计算交叉熵损失。
@@ -1438,26 +1436,6 @@ label（或 label_）
 **习题 11.3**（应用层）：使用 Transformers 库调用 `pipeline("ner")` 时，需通过参数 ____ 控制是否合并同实体的多个子词 token。
 
 grouped_entities=True（新版为 aggregation_strategy="simple"）
-
-### 选择题知识点讲解
-
-**习题 11.4**（理解层）：关于 BPE（Byte-Pair Encoding）分词算法，下列说法错误的是？
-
-- A. BPE 通过迭代合并最频繁字符对构建词表
-- B. BPE 能处理未登录词，避免 OOV 问题
-- C. BPE 词表越大，模型推理速度越快
-- D. GPT-2、Llama 等模型均采用 BPE 或其变体
-
-解析讲解：C。BPE 词表大小影响编码长度（更大的词表通常产生更短的序列），但推理速度主要由模型参数量与序列长度决定，而非词表大小。更大的词表会增加 embedding 层参数量。
-
-**习题 11.5**（分析层）：以下 Python 代码在 Hugging Face Transformers 中调用 `AutoModel.from_pretrained` 时，最可能触发警告或错误的是？
-
-- A. `AutoModel.from_pretrained("bert-base-chinese")`
-- B. `AutoModel.from_pretrained("hfl/roberta-wwm-ext-chinese")`
-- C. `AutoModel.from_pretrained("gpt2")` 加载后用于序列分类
-- D. `AutoModel.from_pretrained("./local-model")` 但目录中无 config.json
-
-解析讲解：D。`AutoModel` 是通用基类，调用分类任务需用 `AutoModelForSequenceClassification`；C 会有警告但能加载；D 缺少 config.json 会直接报错，无法加载。
 
 ### 10.3 代码修正题
 
@@ -1582,26 +1560,6 @@ optimizer.zero_grad()
 - Linear Attention：用核函数近似 softmax，复杂度 $O(n \cdot d^2)$，但表达力下降
 
 权衡：稀疏注意力保留局部性但损失全局信息；线性注意力速度快但近似精度有限。
-
-## 11. 参考文献
-
-参考文献遵循 ACM Reference Format，按发表年份升序排列：
-
-[1] Bird, S., Klein, E., and Loper, E. 2009. _Natural Language Processing with Python: Analyzing Text with the Natural Language Toolkit_. O'Reilly Media, Sebastopol, CA. https://www.nltk.org/book/
-
-[2] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., and Polosukhin, I. 2017. Attention is all you need. In _Advances in Neural Information Processing Systems 30 (NeurIPS 2017)_, 5998–6008. DOI: 10.48550/arXiv.1706.03762. https://arxiv.org/abs/1706.03762
-
-[3] Devlin, J., Chang, M.-W., Lee, K., and Toutanova, K. 2019. BERT: Pre-training of deep bidirectional transformers for language understanding. In _Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT 2019)_, 4171–4186. DOI: 10.18653/v1/N19-1423. https://aclanthology.org/N19-1423
-
-[4] Honnibal, M., Montani, I., Van Landeghem, S., and Boyd, A. 2020. spaCy: Industrial-strength natural language processing in Python. Zenodo. DOI: 10.5281/zenodo.1212303. https://spacy.io
-
-[5] Brown, T. B., Mann, B., Ryder, N., Subbiah, M., Kaplan, J., Dhariwal, P., Neelakantan, A., Shyam, P., Sastry, G., Askell, A., et al. 2020. Language models are few-shot learners. In _Advances in Neural Information Processing Systems 33 (NeurIPS 2020)_, 1877–1901. DOI: 10.48550/arXiv.2005.14165. https://arxiv.org/abs/2005.14165
-
-[6] Raffel, C., Shazeer, N., Roberts, A., Lee, K., Narang, S., Matena, M., Zhou, Y., Li, W., and Liu, P. J. 2020. Exploring the limits of transfer learning with a unified text-to-text transformer. _Journal of Machine Learning Research_ 21, 140, 1–67. https://jmlr.org/papers/v21/20-074.html
-
-[7] Wolf, T., Debut, L., Sanh, V., Chaumond, J., Delangue, C., Moi, A., Cistac, P., Rault, T., Louf, R., Funtowicz, M., Davison, J., Shleifer, S., von Platen, P., Carr, C., Rush, A. M., et al. 2020. Transformers: State-of-the-art natural language processing. In _Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations (EMNLP 2020 Demos)_, 38–45. DOI: 10.18653/v1/2020.emnlp-demos.6. https://aclanthology.org/2020.emnlp-demos.6
-
-## 12. 延伸阅读
 
 ### 12.1 书籍
 

@@ -167,24 +167,6 @@ $$f^{-1}(b) = a \iff f(a) = b$$
 
 **误区四：$|S| = |\mathcal{P}(S)|$。** → 永远 $|S| < |\mathcal{P}(S)|$（Cantor 定理），无限集也成立。
 
-## 6. 实战练习
-
-1. **函数判定**：$f: \mathbb{Z} \to \mathbb{Z}$，$f(x) = x^2$。是单射吗？是满射吗？$f: \mathbb{Z} \to \mathbb{N}$ 呢？
-
-2. **双射构造**：构造 $\mathbb{Z}$ 到 $\mathbb{N}$ 的双射（提示：把正数、负数、0 分别映射）。
-
-3. **复合保性**：如果 $g \circ f$ 是双射，能推出 $f$ 或 $g$ 是双射吗？为什么？
-
-4. **可数性判断**：判断以下集合是否可数：①偶数集 ②自然数对的集合 $\mathbb{N} \times \mathbb{N}$ ③$[0,1]$ 区间内的无理数。
-
-5. **对角线论证**：用 Cantor 对角线法证明 $[0,1]$ 区间内的实数不可数。
-
-## 7. 参考资源
-
-- MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-- Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-- Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
 ## 8. 延伸阅读
 
 - 函数的集合基础，见本模块《集合与关系》

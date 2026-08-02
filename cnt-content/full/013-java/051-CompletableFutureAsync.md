@@ -2034,8 +2034,6 @@ Reactor / RxJava 在 Loom 时代面临重新定位：
 
 Spring 6+ 已支持"虚拟线程 + 同步代码"模式，未来 Spring WebFlux 与 Spring MVC 的边界将模糊。
 
-## 知识讲解与要点分析（原习题）
-
 ### ex-cf-01
 
 **解析讲解**：`CompletionStage`
@@ -2153,28 +2151,6 @@ class ApiGateway {
    - JDK 24+：Structured Concurrency 第三轮 Preview，新增 API 稳定；
    - JDK 25+ GA：新代码优先 StructuredTaskScope，老代码保持 CompletableFuture；
    - 长期：CompletableFuture 退居"组合原语"角色，不再承担"任务调度"职责。
-
-## 11. 参考文献
-
-本模块参考文献按 ACM Reference Format 列出，覆盖 Java 并发原典、Reactive 编程理论、Promise 起源论文与 OpenJDK 官方规范：
-
-1. Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., and Lea, D. 2006. _Java Concurrency in Practice_. Addison-Wesley Professional. ISBN 978-0321349601.
-2. Bloch, J. 2018. _Effective Java (3rd ed.)_. Addison-Wesley Professional. ISBN 978-0134685991.
-3. Lea, D. 2014. _The java.util.concurrent Synchronization Framework: CompletableFuture and CompletionStage_. State University of New York at Oswego, Technical Report. http://gee.cs.oswego.edu/dl/jsr166/dist/docs/java/util/concurrent/CompletableFuture.html
-4. Manson, J., Pugh, B., and Adve, S. V. 2005. _JSR 133: Java Memory Model and Thread Specification_. Java Community Process. https://jcp.org/en/jsr/detail?id=133
-5. OpenJDK Team. 2024. _JEP 444: Virtual Threads_. OpenJDK Official Project. https://openjdk.org/jeps/444
-6. OpenJDK Team. 2024. _JEP 453: Structured Concurrency (Preview)_. OpenJDK Official Project. https://openjdk.org/jeps/453
-7. Oracle Corporation. 2024. _Java SE 21 API Specification: CompletableFuture_. Oracle Official Documentation. https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html
-8. Oracle Corporation. 2024. _Java SE 21 API Specification: CompletionStage_. Oracle Official Documentation. https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletionStage.html
-9. Wampler, D. 2021. _Reactive Design Patterns_. Manning Publications. ISBN 978-1617291808.
-10. Liskov, B. and Shrira, L. 1988. _Promises: Linguistic Support for Efficient Asynchronous Procedure Calls in Distributed Systems_. In _Proceedings of the ACM SIGPLAN 1988 Conference on Programming Language Design and Implementation (PLDI)_, 260–267. DOI: 10.1145/53990.54016.
-11. Friedman, D. P. and Wise, D. S. 1976. _The Impact of Applicative Programming on Concurrent Computation_. In _Proceedings of the 1976 Conference on Parallel Processing_, 230–235.
-12. Sutter, H. 2005. _The Free Lunch Is Over: A Fundamental Turn Toward Concurrency in Software_. _Dr. Dobb's Journal_ 30, 1, 202–210.
-13. Project Reactor Team. 2024. _Project Reactor Reference: Mono and Flux_. VMware Official Documentation. https://projectreactor.io/docs/core/release/reference/
-14. ReactiveX Team. 2024. _ReactiveX Documentation: Observable and Flowable_. ReactiveX Official Documentation. http://reactivex.io/documentation/observable.html
-15. ISO/IEC. 2023. _ISO/IEC 14882:2023 Information technology — Programming languages — C++_. International Organization for Standardization.
-
-## 12. 延伸阅读
 
 ### 12.1 官方文档与规范
 

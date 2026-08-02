@@ -1707,8 +1707,6 @@ return _M
 - 共享内存的原子操作保证了限流的准确性。
 - 熔断降级是最后一道防线，必须提前规划。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：OpenResty 的请求处理阶段顺序是？
@@ -1993,34 +1991,6 @@ end
 return _M
 ```
 
-## 10. 参考文献
-
-[1] Agentzh. 2015. OpenResty Documentation. OpenResty Inc. https://openresty.org/en/docs.html
-
-[2] Ngixn Inc. 2024. Nginx HTTP Request Processing Phase. Nginx Documentation. https://nginx.org/en/docs/dev/development_guide.html#http_phases
-
-[3] Mike Pall. 2020. LuaJIT 2.1 Documentation. LuaJIT Project. https://luajit.org/luajit.html
-
-[4] Yichun Zhang. 2017. Building High-Performance Web Applications with OpenResty. In Proceedings of the Lua Workshop 2017 (LW'17). ACM, Article 4, 1–8. DOI: 10.1145/3126815.3126820
-
-[5] Apache Software Foundation. 2024. Apache APISIX Documentation. https://apisix.apache.org/docs/
-
-[6] Kong Inc. 2024. Kong Gateway Documentation. https://docs.konghq.com/
-
-[7] Roberto Ierusalimschy, Luiz Henrique de Figueiredo, and Waldemar Celes. 2018. Lua 5.4 Reference Manual. PUC-Rio. https://www.lua.org/manual/5.4/
-
-[8] Cloudflare. 2023. Engineering at Cloudflare: How We Use OpenResty. Cloudflare Blog. https://blog.cloudflare.com/
-
-[9] Bilibili. 2022. High-Performance API Gateway Practice at Bilibili. In Proceedings of the QCon Beijing 2022. 45–52.
-
-[10] Tao Wang and Junji Zhi. 2021. Distributed Rate Limiting with Redis and OpenResty. In Proceedings of the International Conference on Web Engineering (ICWE 2021). Springer, 234–248. DOI: 10.1007/978-3-030-77096-6_18
-
-[11] Redis Ltd. 2024. Redis Lua Scripting Documentation. https://redis.io/docs/manual/programmability/lua/
-
-[12] OpenResty Inc. 2023. lua-resty-core Documentation. https://github.com/openresty/lua-resty-core
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **OpenResty 官方文档**：https://openresty.org/en/docs.html
@@ -2037,17 +2007,6 @@ return _M
 - **《OpenResty 完全开发指南》**（罗曼·季先科 著）：系统讲解 OpenResty 开发，包含大量实战案例。
 - **《Lua 程序设计》**（Roberto Ierusalimschy 著）：Lua 语言作者亲笔，深入理解 Lua 设计哲学。
 - **《Nginx 高性能 Web 服务器详解》**：理解 Nginx 架构，为 OpenResty 开发打下基础。
-
-### 11.3 社区资源
-
-- **OpenResty GitHub**：https://github.com/openresty
-  源码、issue、PR，跟踪最新进展。
-
-- **OpenResty 邮件列表**：https://groups.google.com/group/openresty
-  与开发者交流，获取技术支持。
-
-- **lua-resty-* 库集合**：https://github.com/openresty/lua-resty-*
-  官方维护的库集合，涵盖 Redis、MySQL、HTTP、JWT 等常用组件。
 
 ### 11.4 进阶主题
 

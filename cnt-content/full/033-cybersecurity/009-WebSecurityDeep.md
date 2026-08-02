@@ -124,21 +124,10 @@ prerequisites:
 - API 网关
 - 审计日志
 
-## 参考文献
-
-OWASP Top 10：https://owasp.org/www-project-top-ten/
-OWASP Cheat Sheets：https://cheatsheetseries.owasp.org/
-NIST 网络安全框架：https://www.nist.gov/cyberframework
-CWE 数据库：https://cwe.mitre.org/
-PortSwigger Web Security Academy：https://portswigger.net/web-security
-
 ## 延伸阅读
-
 密码学与证书，见 033-cybersecurity 模块文档。
 Web 攻击与防御，见 033-cybersecurity 模块相关文档。
 网络层安全，见 032-networking 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供网络安全课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

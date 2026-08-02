@@ -1530,8 +1530,6 @@ public record RuleResult(bool IsMatch, decimal Rate, string Reason) {
 }
 ```
 
-## 十、练习题与参考答案
-
 ### 10.1 基础题
 
 **题目 1**：用 switch 表达式实现一个将 HTTP 状态码转换为描述的函数。
@@ -1635,29 +1633,6 @@ public static int SumJsonArray(string json) {
 }
 ```
 
-### 10.5 思考题
-
-**题目 5**：为什么 C# 选择**警告**而非**错误**来处理 switch 表达式的穷尽性？这种设计的优缺点是什么？
-
-**解析讲解**：
-
-**优点**：
-1. 向后兼容：新增枚举值不会破坏现有代码编译；
-2. 灵活性：允许通过 `_` 兜底显式表达"其他情况"；
-3. 渐进式迁移：从 C# 7 升级到 C# 8+ 不会引入大量编译错误。
-
-**缺点**：
-1. 容易遗漏新枚举值，引入运行时 bug；
-2. `_` 兜底掩盖了穷尽性问题；
-3. 与 F#、Rust 等强制穷尽的语言相比，类型安全较弱。
-
-**折中方案**：
-- 在新代码中移除 `_` 兜底，让编译器强制穷尽；
-- 在 `.editorconfig` 中将 CS8509 升级为错误：
-  ```ini
-  dotnet_diagnostic.CS8509.severity = error
-  ```
-
 ### 10.6 设计题
 
 **题目 6**：设计一个支持活动模式（active patterns）的扩展方法系统，用于识别偶数、质数、斐波那契数。
@@ -1690,57 +1665,6 @@ string Classify(int n) => n switch {
     _ when n.IsEven() => $"偶数: {n}",
     _ => $"普通数: {n}"
 };
-```
-
-### 综合题知识点讲解
-
-**题目 7**：实现一个基于模式匹配的 JSON Schema 校验器（简化版）。
-
-**解析讲解**：
-
-```csharp
-public sealed class JsonSchemaValidator {
-    public bool Validate(JsonElement value, JsonSchema schema) => (value, schema) switch {
-        // null 校验
-        ({ ValueKind: JsonValueKind.Null }, JsonSchema.Null) => true,
-        ({ ValueKind: not JsonValueKind.Null }, JsonSchema.Null) => false,
-
-        // 字符串校验
-        ({ ValueKind: JsonValueKind.String } s, JsonSchema.String { MinLength: var min, MaxLength: var max }) => {
-            var len = s.GetString()?.Length ?? 0;
-            return len >= min && len <= max;
-        },
-
-        // 数字校验
-        ({ ValueKind: JsonValueKind.Number } n, JsonSchema.Number { Min: var min, Max: var max }) => {
-            var v = n.GetDouble();
-            return v >= min && v <= max;
-        },
-
-        // 布尔校验
-        ({ ValueKind: JsonValueKind.True or JsonValueKind.False }, JsonSchema.Boolean) => true,
-
-        // 数组校验
-        ({ ValueKind: JsonValueKind.Array } arr, JsonSchema.Array { Items: var itemSchema, MinItems: var min, MaxItems: var max }) => {
-            var count = arr.GetArrayLength();
-            if (count < min || (max > 0 && count > max)) return false;
-            foreach (var item in arr.EnumerateArray())
-                if (!Validate(item, itemSchema)) return false;
-            return true;
-        },
-
-        // 默认
-        _ => false
-    };
-}
-
-public abstract record JsonSchema {
-    public record Null : JsonSchema;
-    public record String(int MinLength = 0, int MaxLength = int.MaxValue) : JsonSchema;
-    public record Number(double Min = double.MinValue, double Max = double.MaxValue) : JsonSchema;
-    public record Boolean : JsonSchema;
-    public record Array(JsonSchema Items, int MinItems = 0, int MaxItems = 0) : JsonSchema;
-}
 ```
 
 ### 10.8 算法题
@@ -1798,109 +1722,6 @@ string Classify(object obj) => obj switch {
 };
 ```
 
-### 10.10 实战题
-
-**题目 10**：用模式匹配实现一个简单的银行账户交易处理器，支持存款、取款、转账，并处理各种异常情况。
-
-**解析讲解**：
-
-```csharp
-public abstract record Transaction {
-    public record Deposit(string AccountId, decimal Amount, DateTime At) : Transaction;
-    public record Withdraw(string AccountId, decimal Amount, DateTime At) : Transaction;
-    public record Transfer(string From, string To, decimal Amount, DateTime At) : Transaction;
-}
-
-public sealed class TransactionProcessor {
-    public TransactionResult Process(Transaction tx, Dictionary<string, Account> accounts) => tx switch {
-        // 存款
-        Transaction.Deposit { AccountId: var id, Amount: > 0 } when accounts.ContainsKey(id) => {
-            accounts[id].Balance += tx.Amount;
-            return new TransactionResult(true, "存款成功");
-        },
-
-        // 取款 - 余额不足
-        Transaction.Withdraw { AccountId: var id, Amount: var amt } when amt > accounts[id].Balance =>
-            new TransactionResult(false, "余额不足"),
-
-        // 取款 - 成功
-        Transaction.Withdraw { AccountId: var id, Amount: > 0 } when accounts.ContainsKey(id) => {
-            accounts[id].Balance -= tx.Amount;
-            return new TransactionResult(true, "取款成功");
-        },
-
-        // 转账 - 同一账户
-        Transaction.Transfer { From: var f, To: var t } when f == t =>
-            new TransactionResult(false, "不能转账给同一账户"),
-
-        // 转账 - 余额不足
-        Transaction.Transfer { From: var f, Amount: var amt } when amt > accounts[f].Balance =>
-            new TransactionResult(false, "余额不足"),
-
-        // 转账 - 成功
-        Transaction.Transfer { From: var f, To: var t, Amount: > 0 } => {
-            accounts[f].Balance -= tx.Amount;
-            accounts[t].Balance += tx.Amount;
-            return new TransactionResult(true, "转账成功");
-        },
-
-        // 金额非法
-        _ when tx is Transaction.Deposit { Amount: <= 0 }
-           or Transaction.Withdraw { Amount: <= 0 }
-           or Transaction.Transfer { Amount: <= 0 } =>
-            new TransactionResult(false, "金额必须为正"),
-
-        // 账户不存在
-        _ => new TransactionResult(false, "账户不存在")
-    };
-}
-
-public class Account { public decimal Balance { get; set; } }
-public record TransactionResult(bool Success, string Message);
-```
-
-## 十一、参考文献
-
-本节按 ACM Reference Format 列出本文主要参考资料。
-
-[1] Ecma International. 2023. *ECMA-334: The C# Language Specification* (6th ed.). ECMA, Geneva. Retrieved July 21, 2026 from https://www.ecma-international.org/wp-content/uploads/ECMA-334_6th_edition_december_2022.pdf
-
-[2] Anders Hejlsberg, Mads Torgersen, Scott Wiltamuth, and Peter Golde. 2010. *The C# Programming Language* (4th ed.). Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/1861685
-
-[3] Mads Torgersen. 2017. *Pattern Matching in C# 7.0*. .NET Blog. Retrieved July 21, 2026 from https://devblogs.microsoft.com/dotnet/pattern-matching-in-csharp-7-0/
-
-[4] Mads Torgersen. 2018. *Pattern Matching in C# 8.0*. .NET Blog. Retrieved July 21, 2026 from https://devblogs.microsoft.com/dotnet/take-csharp-8-0-for-a-spin/
-
-[5] Mads Torgersen. 2020. *Pattern Matching in C# 9.0*. .NET Blog. Retrieved July 21, 2026 from https://devblogs.microsoft.com/dotnet/welcome-to-csharp-9/
-
-[6] Mads Torgersen. 2022. *Pattern Matching in C# 11*. .NET Blog. Retrieved July 21, 2026 from https://devblogs.microsoft.com/dotnet/welcome-to-csharp-11/
-
-[7] Microsoft. 2024. *Patterns (C# reference)*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns
-
-[8] Microsoft. 2024. *Switch expressions (C# reference)*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/switch-expression
-
-[9] Don Syme, Gregory Neverov, and James Margetson. 2007. *Extensible Pattern Matching via a Lightweight Language Extension*. In *Proceedings of the 12th ACM SIGPLAN International Conference on Functional Programming (ICFP '07)*. ACM, Freiburg, Germany, 29-40. DOI: https://doi.org/10.1145/1291220.1291159
-
-[10] Lennart C. L. Kats, Eelco Visser, and Guido Wachsmuth. 2010. *Pure and Declarative Syntax Definition: The Disambiguation Problem Solved*. In *Proceedings of the 19th ACM SIGPLAN International Conference on Functional Programming (ICFP '10)*. ACM, Baltimore, MD, 87-99. DOI: https://doi.org/10.1145/1863543.1863560
-
-[11] Philip Wadler. 1987. *Views: A Way for Pattern Matching to Cohabit with Data Abstraction*. In *Proceedings of the 14th ACM SIGACT-SIGPLAN Symposium on Principles of Programming Languages (POPL '87)*. ACM, Munich, Germany, 307-313. DOI: https://doi.org/10.1145/41625.41653
-
-[12] Malcolm Wallace and Colin Runciman. 1998. *Liberating Type-Specific Optimizations*. In *Proceedings of the 3rd ACM SIGPLAN Workshop on Types in Compilation (TIC '98)*. ACM, Kyoto, Japan. Retrieved July 21, 2026 from https://dl.acm.org/doi/10.5555/970706
-
-[13] Bertrand Meyer. 2009. *Touch of Class: Learning to Program Well with Objects and Contracts*. Springer, Berlin. DOI: https://doi.org/10.1007/978-3-540-92145-5
-
-[14] Jon Skeet. 2019. *C# in Depth* (4th ed.). Manning Publications, Shelter Island, NY. Retrieved July 21, 2026 from https://csharpindepth.com/
-
-[15] Mark Michaelis. 2022. *Essential C# 11.0* (7th ed.). Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/3593866
-
-[16] Andrew Kennedy and Don Syme. 2001. *Design and Implementation of Generics for the .NET Common Language Runtime*. In *Proceedings of the 22nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '01)*. ACM, London, UK, 1-12. DOI: https://doi.org/10.1145/360204.372037
-
-[17] ECMA International. 2012. *ECMA-335: Common Language Infrastructure (CLI)* (6th ed.). ECMA, Geneva. Retrieved July 21, 2026 from https://www.ecma-international.org/wp-content/uploads/ECMA-335_6th_edition_december_2012.pdf
-
-[18] Microsoft. 2024. *C# 13.0 specification: Patterns*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-13.0
-
-## 十二、延伸阅读
-
 ### 12.1 官方文档
 
 - [Patterns - C# reference | Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns)
@@ -1940,13 +1761,6 @@ public record TransactionResult(bool Success, string Message);
 - [Scala Pattern Matching](https://docs.scala-lang.org/tour/pattern-matching.html)
 - [Kotlin when expression](https://kotlinlang.org/docs/control-flow.html#when-expression)
 - [Java Pattern Matching for switch](https://openjdk.org/jeps/441)
-
-### 12.7 开源项目参考
-
-- [dotnet/csharplang GitHub](https://github.com/dotnet/csharplang) - C# 语言设计官方仓库
-- [dotnet/roslyn GitHub](https://github.com/dotnet/roslyn) - C# 编译器源码
-- [LanguageExt](https://github.com/louthy/language-ext) - C# 函数式编程库，含模式匹配扩展
-- [OneOf](https://github.com/mcintyre321/OneOf) - C# 判别联合库
 
 ### 12.8 进阶主题
 

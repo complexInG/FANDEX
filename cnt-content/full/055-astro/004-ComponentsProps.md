@@ -434,54 +434,6 @@ const hasFooter = Astro.slots.has('footer')
 | 组件 `<style>` 影响不到子组件 | 子组件样式没生效 | scoped 样式默认不穿透子组件 | 在父组件用 `:global()`，或在子组件内自行定义样式 |
 | Slot 内容不显示 | 写了 `<Component>内容</Component>` 但页面没有内容 | 组件模板里忘了放 `<slot />` | 在组件模板的期望位置加上 `<slot />` |
 
-## 10. 实战练习
-
-### 练习一：抽取第一个组件
-
-- 题目：把"博客首页"中重复的卡片 HTML 抽取为 `src/components/Card.astro`，要求组件接收 `title` 和 `desc` 两个参数。
-- 提示：参考 1.2 节的对比写法。
-- 参考答案要点：`Card.astro` 定义 `interface Props { title: string; desc: string }`，解构后用 `<h2>{title}</h2><p>{desc}</p>` 渲染；页面 `import Card` 后循环调用。
-
-### 练习二：给组件加默认值
-
-- 题目：为 `Card.astro` 的 `desc` 加默认值"暂无描述"，并验证不传 `desc` 时的显示效果。
-- 提示：解构时写默认值。
-- 参考答案要点：`const { title, desc = '暂无描述' } = Astro.props`。
-
-### 练习三：实现具名插槽的页面骨架
-
-- 题目：创建一个 `PageFrame.astro`，包含 `header`、默认、`footer` 三个插槽，并在页面中使用。
-- 提示：`<slot name="header" />`、`<slot />`、`<slot name="footer" />`，使用时用 `slot="名称"` 定向。
-- 参考答案要点：组件内三个 `<slot>` 出口；使用方 `<PageFrame><header slot="header">…</header><p>正文</p><footer slot="footer">…</footer></PageFrame>`。
-
-### 练习四：条件渲染与列表渲染组合
-
-- 题目：改造 `Card.astro`，支持 `tags` 数组参数，有标签时渲染标签列表，无标签时不渲染。
-- 提示：`{tags.length > 0 && <ul>{tags.map(...)}</ul>}`。
-- 参考答案要点：解构 `tags = []`，模板中用 `&&` 加 `map` 组合。
-
-### 练习五：用 props 控制样式
-
-- 题目：给 `Card.astro` 增加 `featured` 布尔参数，为 true 时显示高亮边框。
-- 提示：`class={featured ? 'card featured' : 'card'}`，`.featured` 样式写在组件 `<style>` 中。
-- 参考答案要点：解构 `featured = false`，动态 class，scoped 样式内定义 `.featured`。
-
 ## 11. 一句话记忆
 
 **组件是乐高零件：Props 是说明书（传数据），Slot 是凹槽（插内容），`<style>` 是涂装（只属于自己）——把重复封装成零件，把变化暴露成参数。**
-
-## 参考链接与延伸阅读
-
-参考链接：
-
-1. Astro 组件语法（中文）：https://docs.astro.build/zh-cn/basics/astro-components/
-2. Astro 模板表达式参考：https://docs.astro.build/zh-cn/reference/astro-syntax/
-3. Astro 内置组件参考：https://docs.astro.build/zh-cn/reference/builtin-components/
-4. Astro 前端框架组件指南（client 指令）：https://docs.astro.build/zh-cn/guides/framework-components/
-
-延伸阅读：
-
-- 布局组件（Slot 的典型应用），见本模块 003-PagesRouting；
-- 交互组件与客户端岛屿，见本模块 006-IslandsClientComponents；
-- 项目创建与目录结构，见本模块 002-QuickStartProject；
-- 框架整体认知，见本模块 001-AstroOverview。

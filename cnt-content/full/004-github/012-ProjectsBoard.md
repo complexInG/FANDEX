@@ -208,52 +208,9 @@ mutation {
 | 多人看到的视图不一致 | 各自字段不同 | 改了私有视图而非共享视图 | 保存视图时选择"保存到共享视图"（团队需要时可复制） |
 | 图表数据对不上 | Insights 缺条目 | 洞察不含已归档/已删除条目 | 统计期内不要归档条目，或使用筛选修正口径 |
 
-## 8. 实战练习
-
-### 练习 1：创建你的第一个个人项目（入门）
-
-**题目描述**：用"团队待办（Team backlog）"模板创建一个个人项目，添加 3 条草稿条目，练习在三种视图间切换。
-
-**提示**：个人主页 → Projects → New project → 选模板；草稿条目不用关联仓库，直接写文字。
-
-**参考答案要点**：创建后检查：表格视图能看到条目的 Title/Status/Assignee 列；看板视图按 Status 分列；时间线视图需要先给条目设置日期字段。把一条草稿拖到"In Progress"，验证视图联动。
-
-### 练习 2：把真实 Issue 拉进项目并配置字段（进阶）
-
-**题目描述**：在你自己的仓库中创建 3 个 Issue（如"修复登录 Bug""补充 API 文档""性能优化调研"），全部加入项目，并添加 Priority（单选）和 Sprint（迭代）两个自定义字段，给每个 Issue 赋值。
-
-**提示**：字段配置入口在项目页顶部的"字段（Fields）"区域；迭代字段需要先创建 Sprint 1、Sprint 2。
-
-**参考答案要点**：Issue 加入项目后，在项目表格中为每条设置 Priority 和 Sprint；然后在 Issue 页面确认字段已同步显示——验证双向同步机制。再试一次：把某个 Issue 关闭，观察开启"Issue 关闭→Done"工作流后卡片状态自动变化。
-
-### 练习 3：搭建团队看板流程（进阶）
-
-**题目描述**：模拟一个 3 人小团队（可以用你的账号 + 两个小号，或与同学组队）：创建组织项目，配置 Status 流程（Backlog→Todo→In Progress→In Review→Done），开启内置工作流，并按 Assignee 分组练习拖拽流转。
-
-**提示**：组织项目需要 GitHub 组织；拖动卡片换组等价于修改字段。
-
-**参考答案要点**：验证内置工作流的三条典型规则：新 Issue 进项目自动设为 Todo；PR 进入待审自动改 In Review；合并/关闭自动 Done。注意：卡片拖拽流转要确认"分组依据"字段正确。
-
-### 练习 4：用洞察图表汇报进度（挑战）
-
-**题目描述**：在练习 3 的项目上，创建一张"当前图表"（按成员统计条目数）和一张"历史图表"（Burn up），模拟一周内逐步完成任务，观察曲线变化，写一段 100 字的进度汇报。
-
-**提示**：历史图表的 X 轴要设为"时间"；不要归档条目。
-
-**参考答案要点**：Burn up 图中"已完成"曲线应随时间上升；汇报模板："本周共 9 个任务，已完成 5 个，剩余 4 个集中在 Sprint 3；瓶颈在登录模块（2 个任务超期），建议下周优先处理。"
-
 ## 9. 一句话记忆
 
 **Projects 就是把团队白板搬进 GitHub：Issue 和 PR 是便利贴，表格/看板/时间线是三种看法，自定义字段是便利贴上的属性，内置工作流让便利贴自动流转——所有数据双向同步，一处改动处处生效。**
-
-## 10. 参考链接与延伸阅读
-
-### 权威资料（GitHub 官方中文文档）
-
-- 关于 Projects：https://docs.github.com/zh/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects
-- Projects 快速入门：https://docs.github.com/zh/issues/planning-and-tracking-with-projects/learning-about-projects/quickstart-for-projects
-- 更改视图布局（表格/看板/时间线切换）：https://docs.github.com/zh/issues/planning-and-tracking-with-projects/customizing-views-in-your-project/changing-the-layout-of-a-view
-- 关于项目洞察（Insights 图表）：https://docs.github.com/zh/issues/planning-and-tracking-with-projects/viewing-insights-from-your-project/about-insights-for-projects
 
 ### 延伸阅读（站内文档）
 

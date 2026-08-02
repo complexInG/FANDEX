@@ -277,95 +277,11 @@ git tag -a v1.0.0 -m "1.0.0 正式发布"
 
 ---
 
-## 十、实战练习
-
-### 练习 1：创建并查看第一个标签（入门）
-
-**题目**：在仓库完成一次提交后，创建附注标签 `v0.1.0`，用 `git tag` 和 `git show` 查看结果。
-
-**提示**：`-a` + `-m`，观察 `git show` 输出的 Tagger 信息。
-
-**参考答案要点**：
-
-```bash
-git commit -m "feat: 初始功能"
-git tag -a v0.1.0 -m "第一个里程碑"
-git tag              # 输出 v0.1.0
-git show v0.1.0      # 显示标签信息 + 提交信息
-```
-
-### 练习 2：区分两种标签（核心）
-
-**题目**：分别创建轻量标签 `v0.1.0-lw` 和附注标签 `v0.1.0-ann`，对比两个 `git show` 输出的差异。
-
-**提示**：轻量标签的 show 输出里没有 Tagger/Date 段。
-
-**参考答案要点**：
-
-```bash
-git tag v0.1.0-lw
-git tag -a v0.1.0-ann -m "测试附注"
-git show v0.1.0-lw    # 只有提交信息
-git show v0.1.0-ann   # 有 tag 对象信息 + 提交信息
-```
-
-### 练习 3：推送并验证标签（进阶）
-
-**题目**：把本地标签推送到远程仓库，然后在 GitHub 网页的 Releases 页面或 `git ls-remote --tags origin` 中验证。
-
-**提示**：push 不会自动带标签。
-
-**参考答案要点**：
-
-```bash
-git push origin v0.1.0
-git ls-remote --tags origin    # 远程能看到 refs/tags/v0.1.0
-# 或者：git push origin --tags 一次推全部
-```
-
-### 练习 4：基于标签修复 Bug（进阶）
-
-**题目**：检出 `v1.0.0` 标签，基于它创建 `hotfix-1.0` 分支修复一个 Bug 并提交。
-
-**提示**：分离 HEAD 下先建分支再改。
-
-**参考答案要点**：
-
-```bash
-git switch -c hotfix-1.0 v1.0.0
-# 修复 Bug
-git add . && git commit -m "fix: 修复 1.0 的严重 Bug"
-```
-
-### 练习 5：版本发布全流程（综合）
-
-**题目**：模拟一次完整发布：从 main 提交正式版代码，打 `v1.0.0` 附注标签，推送标签，用 `git diff v0.1.0..v1.0.0 --stat` 查看版本间变更规模。
-
-**提示**：按"提交 → 打标签 → 推标签 → 对比"的顺序执行。
-
-**参考答案要点**：
-
-```bash
-git commit -m "feat: 1.0 正式版"
-git tag -a v1.0.0 -m "1.0.0 正式发布"
-git push origin v1.0.0
-git diff v0.1.0..v1.0.0 --stat   # 查看版本差异统计
-```
-
----
-
 ## 十一、一句话记忆
 
 **标签是静止的书签、发布的里程碑：`-a -m` 建附注标签（正式发布用），`push` 默认不带你得显式推，checkout 后记得建分支，`-d` 删本地、`--delete` 删远程，命名跟着语义化版本走（主.次.修订）。**
 
 ---
-
-## 参考链接
-
-- Git 官方文档（git tag，中文）：https://git-scm.com/docs/git-tag/zh_HANS-CN
-- Pro Git 中文版 2.6 打标签：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%89%93%E6%A0%87%E7%AD%BE
-- GitHub 文档（Releases 与标签）：https://docs.github.com/zh/repositories/releasing-projects-on-github/about-releases
-- 语义化版本规范（SemVer，中文）：https://semver.org/lang/zh-CN/
 
 ## 延伸阅读
 

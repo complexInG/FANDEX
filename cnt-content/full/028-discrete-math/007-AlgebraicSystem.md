@@ -269,26 +269,6 @@ $$G / \ker \phi \cong \text{Im}(\phi)$$
 
 **误区四：同态和同构没区别。** → 同构是"结构完全一样"（双射），同态只要求"保持运算"（可能多个映一个）。同构是同态的特例。
 
-## 9. 实战练习
-
-1. **运算性质**：判断 $(\mathbb{Z}, -)$（减法）是半群吗？是群吗？为什么？
-
-2. **群的判定**：判断以下哪些是群：①$(\mathbb{Z}, +)$ ②$(\mathbb{Z}, \times)$ ③$(\mathbb{Z}_4, +_4)$ ④偶数集在加法下 ⑤奇矩阵集合在乘法下。
-
-3. **元素阶**：求 $\mathbb{Z}_8$ 中每个元素的阶，并验证"元素的阶整除群的阶"。
-
-4. **陪集划分**：$G = \mathbb{Z}_6$，$H = \{0, 2, 4\}$，写出所有左陪集，并说明它们如何划分 $G$。
-
-5. **Lagrange 应用**：6 阶群可能的子群阶有哪些？8 阶群呢？
-
-6. **同构判断**：判断 $(\mathbb{Z}_4, +_4)$ 和 $(\{1, i, -1, -i\}, \times)$（四次单位根）是否同构。
-
-## 10. 参考资源
-
-- MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-- Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-- Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
 ## 11. 延伸阅读
 
 - 代数系统与图论的交叉，见本模块《图论进阶》

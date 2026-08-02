@@ -2165,8 +2165,6 @@ public class GetterAnnotationProcessor extends AbstractProcessor {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（记忆与理解）
 
 **习题 1**：写出获取 `java.util.HashMap` 的 `Class` 对象的三种方式。
@@ -2374,52 +2372,6 @@ public class MiniIoC {
 **解析讲解**：参考第 5.7 节的注解示例，扩展为完整的 CRUD 生成器。
 
 ---
-
-## 10. 参考文献
-
-采用 ACM Reference Format：
-
-[1] Gosling, J., Joy, B., Steele, G., Bracha, G., and Buckley, A. 2018. *The Java Language Specification, Java SE 10 Edition*. Addison-Wesley Professional.
-
-[2] Lindholm, T., Yellin, F., Bracha, G., and Buckley, A. 2018. *The Java Virtual Machine Specification, Java SE 10 Edition*. Addison-Wesley Professional.
-
-[3] Kiczales, G., des Rivières, J., and Bobrow, D. G. 1991. *The Art of the Metaobject Protocol*. MIT Press, Cambridge, MA.
-
-[4] Igarashi, A., Pierce, B. C., and Wadler, P. 2001. Featherweight Java: A minimal core calculus for Java and GJ. *ACM Transactions on Programming Languages and Systems (TOPLAS)* 23, 3 (May 2001), 396–450. DOI: https://doi.org/10.1145/503502.503505
-
-[5] Rose, J. 2009. *JSR 292: Supporting Dynamically Typed Languages on the Java Platform*. Sun Microsystems.
-
-[6] Click, C. 2009. *Optimizing Method Invoke in HotSpot*. Google Tech Talk. https://www.youtube.com/watch?v=h1xZoken3Vk
-
-[7] Oracle Corporation. 2021. *Java Reflection API Documentation*. Java SE 17. https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/package-summary.html
-
-[8] Buko, A., and Landin, J. 2005. *Pro Java EE 5 Performance Management and Optimization*. Apress.
-
-[9] Walls, C. 2022. *Spring in Action, Sixth Edition*. Manning Publications.
-
-[10] Sharma, S. 2020. *Java Reflection in Action: From Basic to Advanced*. Apress.
-
-[11] Warburton, R. 2014. *Java 8 Lambdas: Pragmatic Functional Programming*. O'Reilly Media.
-
-[12] Urma, R.-G., Fusco, M., and Mycroft, A. 2018. *Modern Java in Action: Lambdas, Streams, Functional and Reactive Programming*. Manning Publications.
-
-[13] Oaks, S. 2020. *Java Performance: In-Depth Advice for Tuning and Programming Java 8, 11, and Beyond*. O'Reilly Media.
-
-[14] Lin, C., Gao, K., and Zhang, K. 2014. Research on Java reflection mechanism performance optimization. In *Proceedings of the 2014 International Conference on Computer Science and Service System (CSSS 2014)*, 87–91.
-
-[15] Apache Software Foundation. 2023. *Apache Commons Lang ReflectionUtils*. https://commons.apache.org/proper/commons-lang/javadocs/api-release/org/apache/commons/lang3/reflect/ReflectionUtils.html
-
----
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **Java Reflection Tutorial**（Oracle）：https://docs.oracle.com/javase/tutorial/reflect/
-- **JEP 118: Access to Parameter Names at Runtime**：https://openjdk.org/jeps/118
-- **JEP 260: Encapsulate Most Internal APIs**：https://openjdk.org/jeps/260
-- **JEP 396: Strongly Encapsulate JDK Internals by Default**：https://openjdk.org/jeps/396
-- **JEP 411: Deprecate the Security Manager for Removal**：https://openjdk.org/jeps/411
 
 ### 11.2 进阶书籍
 
@@ -2890,4 +2842,3 @@ Class<?> c3 = Class.forName("java.lang.String");
 ```
 
 ---
-

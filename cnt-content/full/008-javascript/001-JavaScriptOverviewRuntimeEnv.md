@@ -1912,8 +1912,6 @@ ws.onclose = () => {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：JavaScript 与 Java 有何关系？为什么它们名字相似但技术截然不同？
@@ -1973,40 +1971,6 @@ setTimeout(() => console.log('done'), 0);
 
 ---
 
-## 10. 参考文献（ACM 格式）
-
-[1] Eich, B. (1995). *JavaScript: The First Ten Years*. HOPL III (History of Programming Languages Conference), San Diego, CA, USA.
-
-[2] Ecma International. (2024). *ECMA-262: ECMAScript 2024 Language Specification* (15th ed.). Geneva: Ecma International.
-
-[3] Crockford, D. (2008). *JavaScript: The Good Parts*. O'Reilly Media.
-
-[4] Flanagan, D. (2020). *JavaScript: The Definitive Guide* (7th ed.). O'Reilly Media.
-
-[5] Haverbeke, M. (2019). *Eloquent JavaScript* (3rd ed.). No Starch Press.
-
-[6] Simpson, K. (2015). *You Don't Know JS* (book series). O'Reilly Media.
-
-[7] Ryan Dahl. (2009). *Node.js: JavaScript on the Server*. JSConf EU, Berlin.
-
-[8] Ryan Dahl. (2018). *10 Things I Regret About Node.js*. JSConf EU, Berlin.
-
-[9] TC39. (2024). *TC39 Process: Proposals, Stages, and Specifications*. Retrieved from https://tc39.es/process-document/
-
-[10] V8 Team. (2024). *V8 JavaScript Engine Design*. Google. Retrieved from https://v8.dev/docs
-
-[11] Hejlsberg, A. (2012). *TypeScript: JavaScript at Scale*. Microsoft Build Conference.
-
-[12] Sumner, J. (2022). *Bun: A New JavaScript Runtime*. Bun Blog.
-
-[13] Garrett, J. J. (2005). *Ajax: A New Approach to Web Applications*. Adaptive Path.
-
-[14] Wilson, P. (2019). *The Evolution of JavaScript Modularity: From CommonJS to ES Modules*. npm Blog.
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - [MDN Web Docs - JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -2032,14 +1996,6 @@ setTimeout(() => console.log('done'), 0);
 - [Codecademy](https://www.codecademy.com/learn/introduction-to-javascript)
 - [Frontend Masters](https://frontendmasters.com/)
 - [Egghead.io](https://egghead.io/) - 短视频教程
-
-### 11.4 社区资源
-
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/javascript)
-- [GitHub](https://github.com/trending/javascript)
-- [Reddit r/javascript](https://www.reddit.com/r/javascript/)
-- [Dev.to](https://dev.to/t/javascript)
-- [JavaScript Weekly](https://javascriptweekly.com/) - 每周资讯邮件
 
 ### 11.5 工具与生态
 

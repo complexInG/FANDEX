@@ -1031,8 +1031,6 @@ actual class InstantSerializer actual constructor() : KSerializer<Instant> {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 #### 题 1
@@ -1162,44 +1160,6 @@ data class Item(
 
 ---
 
-## 参考文献
-
-以下参考文献遵循 ACM Reference Format，包含 DOI 链接。
-
-[1] JetBrains. 2024. kotlinx.serialization Documentation. Retrieved July 21, 2026 from https://github.com/Kotlin/kotlinx.serialization
-
-[2] Elizarov, R. 2017. Kotlin Serialization: Design and Implementation. In *Proceedings of the Kotlin Conf '17*. https://kotlinconf.com/2017/talks/serialization/
-
-[3] Kleppmann, M. 2017. *Designing Data-Intensive Applications*. O'Reilly Media. https://dataintensive.net/
-
-[4] Lamport, L. 1994. The temporal logic of actions. *ACM Transactions on Programming Languages and Systems* (TOPLAS) 16, 3 (May 1994), 872–923. DOI: https://doi.org/10.1145/177492.177726
-
-[5] Bocchino, R. et al. 2009. Impact of type systems on the correctness of parallel programs. In *Proceedings of the 14th ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming* (PPoPP '09). ACM, 175–186. DOI: https://doi.org/10.1145/1504176.1504201
-
-[6]_google. 2001. Protocol Buffers: Google's Data Interchange Format. https://developers.google.com/protocol-buffers
-
-[7] Bormann, C. and Hoffman, P. 2013. Concise Binary Object Representation (CBOR). RFC 7049. DOI: https://doi.org/10.17487/RFC7049
-
-[8] JSON RFC 8259. 2017. The JavaScript Object Notation (JSON) Data Interchange Format. RFC 8259. DOI: https://doi.org/10.17487/RFC8259
-
-[9] Suzuki, Y. et al. 2019. Performance evaluation of JSON parsers for modern web applications. In *Proceedings of the 2019 ACM SIGPLAN International Conference on Systems, Programming, and Applications* (SPLASH '19). ACM. DOI: https://doi.org/10.1145/3359061
-
-[10] Odersky, M. and Zenger, M. 2005. Scalable component abstractions. In *Proceedings of the 20th Annual ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications* (OOPSLA '05). ACM, 41–57. DOI: https://doi.org/10.1145/1094811.1094815
-
-[11] Courtney, A. et al. 2013. Better living through operational semantics: an optimization case study. In *Proceedings of the 18th ACM SIGPLAN International Conference on Functional Programming* (ICFP '13). ACM, 295–308. DOI: https://doi.org/10.1145/2500365.2500606
-
-[12] Kaminski, M. et al. 2016. Static checking of protocol-compliant component composition. In *Proceedings of the 15th International Conference on Software Engineering and Formal Methods* (SEFM '17). Springer.
-
-[13] Protobuf Performance. 2023. Benchmarking Protocol Buffers Against JSON. https://protobuf.dev/performance/
-
-[14] Nguyen, T. and Qin, S. 2018. Type-safe serialization for distributed systems. *Journal of Functional Programming* 28, e15. DOI: https://doi.org/10.1017/S0956796818000123
-
-[15] Wright, A. 2017. The Performance of JSON vs XML vs Protocol Buffers. *Communications of the ACM* 60, 8 (Aug. 2017), 38–39. DOI: https://doi.org/10.1145/3105444
-
----
-
-## 延伸阅读
-
 ### 官方文档
 
 - **kotlinx.serialization GitHub**：https://github.com/Kotlin/kotlinx.serialization
@@ -1232,12 +1192,6 @@ data class Item(
 - **Wire (Square)**：https://github.com/square/wire
   - 另一种 Protobuf 实现，可与 kotlinx.serialization 对比。
 
-### 社区资源
-
-- **Kotlin Slack #serialization 频道**：与 JetBrains 团队直接交流。
-- **StackOverflow `kotlinx.serialization` 标签**：社区问答。
-- **JetBrains Issue Tracker**：https://youtrack.jetbrains.com/issues/KT
-  - 报告 Bug 与功能请求。
 ## 序列化基础
 
 **基本写法：@Serializable 注解**

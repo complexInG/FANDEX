@@ -4,7 +4,7 @@ title: 函数与极限
 module: calculus
 category: 高等数学
 difficulty: beginner
-description: 函数概念、基本初等函数、极限定义（ε-δ/ε-N）、极限运算法则、两个重要极限、无穷小与无穷大、连续与间断。本篇以 Spivak/Apostol/Rudin 风格的严格分析视角,系统阐述从穷竭法到 ε-δ 语言的微积分基础理论,配套 40+ Python/SymPy 代码示例与 10 道 Spivak 风格习题。
+description: 函数概念、基本初等函数、极限定义（ε-δ/ε-N）、极限运算法则、两个重要极限、无穷小与无穷大、连续与间断。本篇以 Spivak/Apostol/Rudin 风格的严格分析视角,系统阐述从穷竭法到 ε-δ 语言的微积分基础理论,配套 40+ Python/SymPy 代码示例。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -2275,10 +2275,6 @@ print(f"细分 8 次后顶点数: {len(xs_final)}, 网格间距: {xs_final[1] - 
 # 极限: 网格间距 → 0, 离散 → 连续
 ```
 
-## 第 16 章 习题与解答
-
-本章汇集 10 道 Spivak 风格习题,涵盖填空、选择、代码修正、开放性论述四类题型,按 Bloom 认知层级递进。此处以文本形式展示,便于学习者离线研读。
-
 ### 填空题知识点讲解
 
 **习题 1（ex-calc-fb-01,记忆层级,难度 1）**
@@ -2294,51 +2290,6 @@ print(f"细分 8 次后顶点数: {len(xs_final)}, 网格间距: {xs_final[1] - 
 极限 $\lim_{x \to 0} \frac{\sin x}{x}$ 的值为 $\boxed{1}$,该结果是利用夹逼定理与单位圆几何不等式 $\cos x < \frac{\sin x}{x} < 1$ 共同建立的。
 
 **解答**:这是微积分中"第一个重要极限",其严格证明依赖 $\sin x$ 的几何定义与夹逼定理;它也是导出 $(\sin x)' = \cos x$ 的关键依据。
-
-### 选择题知识点讲解
-
-**习题 3（ex-calc-ch-01,理解层级,难度 3）**
-
-下列关于极限存在性的论断,哪一项是正确的?
-
-- A. 若 $\lim_{x \to x_0} f(x)$ 与 $\lim_{x \to x_0} g(x)$ 均不存在,则 $\lim_{x \to x_0} [f(x)+g(x)]$ 必不存在
-- B. 若 $\lim_{x \to x_0} f(x)$ 存在,$\lim_{x \to x_0} g(x)$ 不存在,则 $\lim_{x \to x_0} [f(x)+g(x)]$ 必不存在
-- C. 若 $\lim_{x \to x_0} f(x) g(x)$ 存在,则 $\lim_{x \to x_0} f(x)$ 与 $\lim_{x \to x_0} g(x)$ 均存在
-- D. 若 $\lim_{x \to x_0} f(x)/g(x)$ 存在且非零,则 $\lim_{x \to x_0} f(x)$ 与 $\lim_{x \to x_0} g(x)$ 必存在
-
-**解析讲解**：**B**
-
-**解答**:反证法,若 $f+g$ 极限存在且 $f$ 极限存在,则 $g = (f+g) - f$ 极限必存在,与已知矛盾。A 错(如 $f(x)=\sin(1/x)$, $g(x)=-\sin(1/x)$ 时 $f+g=0$ 极限存在);C 错(均无极限的乘积可能存在);D 错(比值非零存在时可反例)。
-
----
-
-**习题 4（ex-calc-ch-02,分析层级,难度 3）**
-
-当 $x \to 0$ 时,下列无穷小中与 $x^2$ 等价的是?
-
-- A. $1 - \cos x$
-- B. $\sin x^2$
-- C. $x \cdot \sin(1/x)$
-- D. $\ln(1+x^2)$
-
-**解析讲解**：**A**(同阶不等价视角下)
-
-**解答**:$1-\cos x \sim x^2/2$ 同阶但不等价;$\sin x^2 \sim x^2$ 等价;$\ln(1+x^2) \sim x^2$ 等价。严格意义上 B、D 都与 $x^2$ 等价,A 为同阶不等价。
-
----
-
-**习题 5（ex-calc-ch-03,分析层级,难度 2）**
-
-关于 ε-δ 定义 $\lim_{x \to x_0} f(x) = A$,下列陈述正确的是?
-
-- A. $\delta$ 必须取最大值
-- B. $\delta$ 可依赖于 $\varepsilon$,但不依赖于 $x$
-- C. $\delta$ 必须依赖于 $x$
-- D. 对每个 $\varepsilon$,$\delta$ 唯一存在
-
-**解析讲解**：**B**
-
-**解答**:ε-δ 定义的核心是对任意 $\varepsilon > 0$,存在 $\delta > 0$(通常依赖于 $\varepsilon$),使 $0 < |x-x_0| < \delta$ 时 $|f(x) - A| < \varepsilon$。$\delta$ 仅依赖于 $\varepsilon$ 与 $x_0$,不依赖于具体的 $x$;$\delta$ 不唯一(取更小者亦可);无需取最大值。
 
 ### 16.3 代码修正题（Code-fix）
 
@@ -2482,46 +2433,6 @@ verify_sinc_limit([0.1, 0.01, 0.001, 0.0001])
 **分析**:由 $\sin x = x - x^3/6 + O(x^5)$,得 $\frac{\sin x}{x} = 1 - \frac{x^2}{6} + O(x^4)$。故 $|\sin x / x - 1| \approx x^2/6$,令 $x^2/6 < \varepsilon$ 得 $\delta \approx \sqrt{6\varepsilon}$。实验值应与理论值高度吻合;当 $\varepsilon$ 极小时,浮点误差开始主导,需用 mpmath 高精度库。
 
 **关键技巧**:利用泰勒展开 $\sin x \approx x - x^3/6$ 反推 $\delta$;实现去心邻域采样;多个 $\varepsilon$ 值的循环验证;分析浮点误差对极小 $\varepsilon$ 的影响。Spivak 第 9 章习题 13 给出了类似实验性习题。
-
-## 第 17 章 参考文献
-
-本章参考文献遵循 **ACM Reference Format**,涵盖微积分经典教材（Spivak、Apostol、Rudin、Tao）、历史原典（Cauchy、Weierstrass）与现代拓展（Robinson 非标准分析、Bellman 动态规划）。元数据已结构化存储于 frontmatter 的 `references` 字段,可供引用管理工具（BibTeX/Zotero）直接导入。
-
-1. **Spivak, Michael** 2008. _Calculus_ (4th edition). Publish or Perish, Inc. DOI: [10.1007/978-0-387-09469-9](https://doi.org/10.1007/978-0-387-09469-9).  
-   _注:本书是 FANDEX 微积分模块的标杆教材,以严格分析视角与稠密习题著称。第 5 章极限理论与第 9 章连续性构成本篇第 3-7 章的形式化基础。_
-
-2. **Apostol, Tom M.** 1967. _Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra_ (2nd edition). John Wiley & Sons.  
-   _注:与 Spivak 并列的现代分析教材,Apostol 强调线性代数与微积分的整合,其积分理论的引入方式（先积分后微分）独树一帜。_
-
-3. **Rudin, Walter** 1976. _Principles of Mathematical Analysis_ (3rd edition). McGraw-Hill Education.  
-   _注:俗称"PMA"或"Baby Rudin",是实分析的标准入门教材。第 1-3 章对实数系、拓扑、序列与级数的处理构成本篇第 2-5 章的理论支撑。_
-
-4. **Tao, Terence** 2016. _Analysis I_ (3rd edition). Springer. DOI: [10.1007/978-981-10-1789-6](https://doi.org/10.1007/978-981-10-1789-6).  
-   _注:Tao 以渐进式严格化著称,先构造整数与有理数,再逐步建立实数系与极限理论。其证明风格清晰简洁,适合初学者。_
-
-5. **Courant, Richard, and Fritz John** 1999. _Introduction to Calculus and Analysis I_. Springer.  
-   _注:Courant 强调物理与几何直觉,与 Spivak/Rudin 的严格风格形成互补。_
-
-6. **Munkres, James R.** 1991. _Analysis on Manifolds_. Westview Press.  
-   _注:Munkres 第 1-3 章提供了多变量分析所需的单变量极限理论基础,是 Spivak《Calculus on Manifolds》的友好替代。_
-
-7. **Pugh, Charles C.** 2002. _Real Mathematical Analysis_. Springer. DOI: [10.1007/978-0-387-21668-2](https://doi.org/10.1007/978-0-387-21668-2).  
-   _注:Pugh 以图示丰富、习题精巧著称,其第 1-3 章对极限与连续的处理是 Spivak 风格的现代化扩展。_
-
-8. **Hardy, G. H.** 1952. _A Course of Pure Mathematics_ (10th edition). Cambridge University Press.  
-   _注:1908 年首版,是英语世界第一部严格分析的微积分教材。本篇第 13 章常见陷阱的多个案例取自 Hardy 第 4 章。_
-
-9. **Robinson, Abraham** 1966. _Non-standard Analysis_. North-Holland Publishing Company.  
-   _注:非标准分析的开山之作,通过模型论严格化了 Leibniz 的无穷小直觉。本篇第 12.3 节对比了标准与非标准分析。_
-
-10. **Cauchy, Augustin-Louis** 1821. _Cours d'Analyse de l'École Royale Polytechnique_. Debure frères, Paris.  
-    _注:Cauchy 在本书中首次以代数化形式给出极限定义,虽未完全严格化（仍依赖"无限趋近"的直觉）,但标志着现代分析的诞生。本篇第 2 章历史动机主要参考此书。_
-
-11. **Bellman, Richard** 1952. On the Theory of Dynamic Programming. _Proceedings of the National Academy of Sciences_ 38(8): 716-719. DOI: [10.1073/pnas.38.8.716](https://doi.org/10.1073/pnas.38.8.716).  
-    _注:动态规划的奠基论文,其最优性原理本质上是极限过程。本篇第 15.2 节引用了 Bellman 的思想。_
-
-12. **Weierstrass, Karl** 1872. Über continuirliche Functionen eines reellen Arguments, die für keinen Werth des letzteren einen bestimmten Differentialquotienten besitzen. _Gelesen in der Königl. Akademie der Wissenschaften zu Berlin_.  
-    _注:Weierstrass 首次构造了处处连续但处处不可导的函数,彻底否定了"连续函数几乎处处可导"的直觉,推动 ε-δ 严格化的必要性。_
 
 ## 第 18 章 延伸阅读
 

@@ -1647,8 +1647,6 @@ type Status = 'pending' | 'paid' | 'shipped';
 
 选择建议：与项目已有约定一致；同一项目内统一一个字段名。
 
-## 12. 参考资料
-
 ### 12.1 类型论经典
 
 1. Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press. ISBN: 978-0-262-16209-8
@@ -1687,8 +1685,6 @@ type Status = 'pending' | 'paid' | 'shipped';
 
 14. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design Patterns*. Addison-Wesley. DOI: 10.5555/186897
 
-## 13. 延伸阅读
-
 ### 13.1 书籍
 
 - Pierce, B. C. *Types and Programming Languages*（第 11 章 Subtyping、第 15 章 Subtyping Algorithm）
@@ -1707,13 +1703,6 @@ type Status = 'pending' | 'paid' | 'shipped';
 - [zod](https://github.com/colinhacks/zod)：运行时 schema 校验
 - [effect](https://github.com/effect-ts/effect)：Schema 驱动的 TypeScript 框架
 - [type-fest](https://github.com/sindresorhus/type-fest)：TypeScript 工具类型集合
-
-### 13.4 在线资源
-
-- TypeScript Handbook: [Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
-- TypeScript Handbook: [Type Aliases](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#type-aliases)
-- Basarat's TypeScript Guide: [Discriminated Unions](https://basarat.gitbook.io/typescript/type-system/discriminated-unions)
-- TC39 Pattern Matching Proposal: [GitHub](https://github.com/tc39/proposal-pattern-matching)
 
 ### 13.5 视频课程
 

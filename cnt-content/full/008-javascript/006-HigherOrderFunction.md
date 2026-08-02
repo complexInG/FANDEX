@@ -1234,49 +1234,6 @@ Ramda 的设计使函数组合更自然：`R.filter(predicate)` 返回新函数�
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个不是高阶函数？
-
-A. `Array.prototype.map`
-B. `Array.prototype.reduce`
-C. `Array.prototype.push`
-D. `Array.prototype.sort`
-
-**答案：C**
-
-`push` 不接受函数作为参数，也不返回函数，是普通方法。`map`、`reduce` 接受函数参数；`sort` 接受比较函数参数，都是高阶函数。
-
-**题目 2**：`compose(f, g, h)(x)` 等价于？
-
-A. `f(g(h(x)))`
-B. `h(g(f(x)))`
-C. `f(h(g(x)))`
-D. `g(f(h(x)))`
-
-**答案：A**
-
-`compose` 从右向左组合，最右边的函数最先执行。`compose(f, g, h)(x) = f(g(h(x)))`。
-
-**题目 3**：以下代码输出是什么？
-
-```javascript
-const arr = [1, 2, 3];
-const result = arr.map(x => x * 2).filter(x => x > 3);
-console.log(result);
-```
-
-A. `[2, 4, 6]`
-B. `[4, 6]`
-C. `[2, 4]`
-D. `[]`
-
-**答案：B**
-
-`map` 后：`[2, 4, 6]`；`filter(x > 3)` 后：`[4, 6]`。
-
 ### 填空题知识点讲解
 
 **题目 4**：函数在 JavaScript 中是一等公民，意味着它可以被 ______、______、______、______。
@@ -1389,43 +1346,6 @@ const onScroll = throttle(() => updateUI(), 100);
 window.addEventListener('scroll', onScroll);
 ```
 
-### 9.4 思考题
-
-**题目 10**：为什么 `Array.prototype.forEach` 无法用 `break` 中断？如何模拟中断？
-
-1. **原因**：`forEach` 的规范不支持中断，回调返回任何值都被忽略。
-2. **模拟中断**：
-   - 抛出异常（不推荐）
-   - 用 `some` 或 `every` 替代（`some` 返回 true 中断）
-   - 用 `for...of` 或传统 `for` 循环
-   
-3. **示例**：
-   ```javascript
-   // 用some模拟break
-   [1, 2, 3, 4, 5].some(x => {
-     if (x === 3) return true;  // 中断
-     console.log(x);
-   });
-   // 输出 1, 2
-   ```
-
-**题目 11**：高阶函数在性能敏感场景（如游戏循环、音视频处理）中是否适用？为什么？
-
-1. **慎用**：性能敏感场景下，高阶函数的回调开销（每次函数调用 + 闭包创建）可能不可接受。
-2. **原因**：
-   - V8 虽有内联优化，但回调中含 `try/catch`、复杂逻辑时去优化
-   - 中间数组分配增加 GC 压力
-   - 闭包链延长对象可达性
-3. **替代方案**：
-   - 显式 `for` 循环 + 内联逻辑
-   - TypedArray + 手动索引（数据局部性更好）
-   - WebAssembly 处理热路径
-4. **平衡**：90% 代码用高阶函数保证可读性，10% 热路径手动优化。
-
----
-
-## 10. 参考文献
-
 ### 10.1 规范与提案
 
 - ECMAScript 2024 Language Specification, §23.1.3 Array.prototype.map, §23.1.3 Array.prototype.filter, §23.1.3 Array.prototype.reduce. ECMA International, 2024. [Online]. Available: https://tc39.es/ecma262/
@@ -1460,8 +1380,6 @@ John Hughes. 1989. Why functional programming matters. *Comput. J.* 32, 2 (April
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **Abelson, H. and Sussman, G.** *Structure and Interpretation of Computer Programs* (2nd ed.). MIT Press, 1996. — 第 1-2 章是高阶函数与函数式抽象的圣经级教材。
@@ -1477,20 +1395,6 @@ John Hughes. 1989. Why functional programming matters. *Comput. J.* 32, 2 (April
 - **Hughes, J.** "Why Functional Programming Matters." *Computer Journal*, 1989. — 经典论文，论证函数式编程的本质优势。
 
 - **Wadler, P.** "Theorems for Free!" *FPCA '89*. DOI: 10.1145/99370.99404.
-
-### 11.3 在线资源
-
-- **MDN: Array.prototype.map**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
-
-- **MDN: Array.prototype.reduce**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
-
-- **Ramda 文档**：https://ramdajs.com/ — 数据置后高阶函数的范本。
-
-- **Lodash 文档**：https://lodash.com/ — 实用工具集大成。
-
-- **fp-ts**：https://gcanti.github.io/fp-ts/ — TypeScript 函数式编程库。
-
-- **Mostly Adequate Guide**：https://mostly-adequate.gitbook.io/mostly-adequate-guide/ — 函数式编程入门经典。
 
 ### 11.4 相关 FANDEX 文档
 

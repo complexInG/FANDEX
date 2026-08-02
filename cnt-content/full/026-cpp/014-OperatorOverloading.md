@@ -61,17 +61,6 @@ complex z = x + y + w;  /* 清晰、符合数学惯例 */
 | **C++23** | 2023 | `explicit operator bool` 在条件上下文简化；`static operator()`；`static operator[]`（C++23 后期） | P1169, P2589 |
 | **C++26** | 草案 | `static operator()` 推广；`<=>` 与 `==` 进一步细化 | P2741, P2932 |
 
-### 1.3 关键提案与文献
-
-- **Stroustrup 1985**：*An Overview of C++*，首次公开运算符重载语法与设计哲学。
-- **N2437 (Sutter, 2007)**：*Explicit Conversion Operators*，提出 `explicit operator bool` 解决安全布尔问题。
-- **N2765 (Maurer, 2008)**：*User-defined Literals*，引入 `operator""` 后缀。
-- **P0515 (Smith, 2017)**：*Consistent Comparison*，奠定 `<=>` 三路比较基础。
-- **P1185 (Spertus, 2018)**：*Defaulted comparison operators*，`<=>` 与 `==` 互相生成规则。
-- **P1946 (Bancila, 2019)**：*C++ Smart References*，探讨 `operator.` 重载（最终未纳入）。
-- **P1169 (Köppe, 2018)**：*static operator call*，`static operator()` 提案。
-- **P2589 (Bancila, 2022)**：*static operator[]*，C++26 候选特性。
-
 ### 1.4 设计哲学：语义一致性
 
 Stroustrup 在 *The C++ Programming Language* 第 4 版中提出运算符重载的核心准则：
@@ -1622,8 +1611,6 @@ int main() {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 1. **运算符分类**：下列哪些运算符必须作为成员函数重载？哪些必须为非成员？
@@ -1710,8 +1697,6 @@ int main() {
 
 18. **运算符重载的滥用**：举出三个运算符重载滥用的真实案例，分析其对代码可维护性的影响。
 
-## 10. 参考文献
-
 ### 标准文档
 
 - **ISO/IEC 14882:2023** — *Information technology — Programming languages — C++*，第 12 章 [over]、第 16 章 [over.oper]。
@@ -1736,20 +1721,11 @@ int main() {
 - **Alexandrescu, A.** *Modern C++ Design*, Addison-Wesley, 2001. 表达式模板与运算符重载高级应用。
 - **Vandevoorde, D., Josuttis, N. M., Gregor, D.** *C++ Templates: The Complete Guide*（2nd Edition）, Addison-Wesley, 2017. 模板运算符重载与 ADL。
 
-### 在线资源
-
-- **cppreference.com** — *Operator overloading*：https://en.cppreference.com/w/cpp/language/operators
-- **cppreference.com** — *Default comparisons*：https://en.cppreference.com/w/cpp/language/default_comparisons
-- **Stroustrup, B.** *PPP2*（Programming: Principles and Practice using C++, 2nd Edition）配套网站。
-- **ISO C++ FAQ** — *Operator overloading*：https://isocpp.org/wiki/faq/operator-overloading
-
 ### 学术论文
 
 - **Stroustrup, B.** *An Overview of C++*, SIGPLAN Notices, 1986.
 - **Reid, A.** *An Optimized Implementation of C++ Operators*, Journal of Object Technology, 2003.
 - **Dos Reis, G., Stroustrup, B.** *A General Constant Expression Mechanism for C++*, OOPSLA, 2010.
-
-## 11. 延伸阅读
 
 ### 书籍
 

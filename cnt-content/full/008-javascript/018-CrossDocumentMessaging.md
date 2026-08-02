@@ -1363,8 +1363,6 @@ Google Docs 使用 Operational Transformation（OT）算法，通过 `postMessag
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. （remember）BOM 的核心对象是 ______，它既是 ECMAScript 全局对象，也代表浏览器窗口。
@@ -1372,48 +1370,6 @@ Google Docs 使用 Operational Transformation（OT）算法，通过 `postMessag
 3. （remember）`navigator.clipboard` API 仅在 ______ 上下文中可用。
 4. （understand）结构化克隆算法无法克隆 ______ 类型的值（列举两种：函数、DOM 节点）。
 5. （remember）`window.devicePixelRatio` 表示 ______ 与物理像素之比。
-
-### 选择题知识点讲解
-
-1. （understand）下列哪个方法不会触发 `popstate` 事件？
-   - A. `history.back()`
-   - B. `history.pushState()`
-   - C. 用户点击浏览器后退按钮
-   - D. `history.go(-1)`
-
-   答案：B
-
-2. （analyze）`setTimeout(fn, 0)` 在嵌套超过 5 层后实际延迟约为多少？
-   - A. 0ms
-   - B. 1ms
-   - C. 4ms
-   - D. 16ms
-
-   答案：C
-
-3. （understand）下列哪个 API 不需要用户激活即可调用？
-   - A. `navigator.clipboard.readText()`
-   - B. `Notification.requestPermission()`
-   - C. `navigator.geolocation.getCurrentPosition()`
-   - D. `history.pushState()`
-
-   答案：D
-
-4. （evaluate）在跨域 iframe 通信中，以下哪种 `targetOrigin` 配置最安全？
-   - A. `'*'`
-   - B. `location.origin`
-   - C. 明确的接收方 origin（如 `'https://child.example.com'`）
-   - D. 不传该参数
-
-   答案：C
-
-5. （remember）`BroadcastChannel` 的通信范围是？
-   - A. 同源同浏览器多上下文
-   - B. 跨域多窗口
-   - C. 跨设备
-   - D. 同一页面内
-
-   答案：A
 
 ### 13.3 代码修复题
 
@@ -1554,8 +1510,6 @@ class SafeMessageChannel {
 
 ---
 
-## 14. 延伸阅读
-
 ### 14.1 规范文档
 
 - WHATWG. *HTML Living Standard*. https://html.spec.whatwg.org/
@@ -1586,15 +1540,6 @@ class SafeMessageChannel {
 - **zloirock/core-js**: BOM/ES Polyfill 集合。https://github.com/zloirock/core-js
 - **pillarjs/path-to-regexp**: 路由模式解析（BOM 路由底层）。https://github.com/pillarjs/path-to-regexp
 - **GoogleChrome/workbox**: PWA Service Worker 工具集。https://github.com/GoogleChrome/workbox
-
-### 14.5 在线资源
-
-- MDN Web Docs: Web APIs. https://developer.mozilla.org/en-US/docs/Web/API
-- web.dev: Progressive Web Apps. https://web.dev/learn/pwa/
-- Chrome for Developers: Identity & Security. https://developer.chrome.com/docs/extensions/mv3/security/
-- caniuse.com: 浏览器特性支持查询。https://caniuse.com/
-
----
 
 ## 15. 附录
 

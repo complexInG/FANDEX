@@ -1702,45 +1702,6 @@ func (la *LogAnalyzer) parseLine(line string) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**1. inotify 的 watch 描述符上限由哪个内核参数控制？**
-
-A. `max_user_instances`
-B. `max_user_watches`
-C. `max_queued_events`
-D. `file-max`
-
-**2. fsnotify 在 macOS 上使用哪种原生 API？**
-
-A. inotify
-B. kqueue
-C. FSEvents
-D. ReadDirectoryChangesW
-
-**3. 编辑器原子保存（write + rename）会产生哪种事件序列？**
-
-A. Write → Write → Write
-B. Create → Write → Rename
-C. Create → Remove
-D. Rename → Create
-
-**4. 以下哪种文件系统上 inotify 不可靠？**
-
-A. ext4
-B. xfs
-C. NFS
-D. tmpfs
-
-**5. fsnotify 不支持递归监控的根本原因是？**
-
-A. API 设计缺陷
-B. inotify 不支持递归
-C. 跨平台差异
-D. 性能考虑
-
 ### 简答题知识点讲解
 
 1. 解释 inotify 的 `IN_Q_OVERFLOW` 事件成因，并提出三种应对策略。
@@ -1770,20 +1731,6 @@ D. 性能考虑
 **4. 热重载服务器**
 
 实现 HTTP 服务器的热重载：监控二进制文件变化，优雅重启服务。
-
-### 9.4 思考题
-
-1. 在分布式系统中，文件监控能否替代消息队列？为什么？
-
-2. fsnotify 的事件顺序保证是什么？是否严格 FIFO？跨文件的事件顺序如何？
-
-3. 在 Serverless 场景下，文件监控有哪些特殊挑战？如何实现冷启动后的快速监控？
-
-4. macOS FSEvents 的"历史流"模型相比 inotify 的"实时流"模型，有哪些优势与劣势？
-
----
-
-## 10. 参考文献
 
 ### 10.1 官方文档
 
@@ -1816,8 +1763,6 @@ D. 性能考虑
 15. Andrew Gerrand. *Go tools & file watching*. https://pkg.go.dev/github.com/fsnotify/fsnotify
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 相关 Go 库
 

@@ -4,7 +4,7 @@ title: 树
 module: algorithm
 category: Algorithm/Tree
 difficulty: intermediate
-description: 树（Tree）的形式化定义、二叉树遍历、二叉搜索树（BST）、AVL 树、红黑树、B 树/B+ 树、Splay 伸展树、Treap 树堆、Trie 字典树、LSM 树的原理、复杂度分析与多语言实现，附 Python/C++/Java 实现与 CLRS 第 12-13 章风格习题。
+description: 树（Tree）的形式化定义、二叉树遍历、二叉搜索树（BST）、AVL 树、红黑树、B 树/B+ 树、Splay 伸展树、Treap 树堆、Trie 字典树、LSM 树的原理、复杂度分析与多语言实现，附 Python/C++/Java 实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -1988,47 +1988,6 @@ class Trie:
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**1. 关于 AVL 树，下列说法错误的是：**
-
-A. 含 $n$ 个节点的 AVL 树高度 $O(\log n)$
-B. 插入节点最多触发 1 次旋转
-C. 删除节点最多触发 $O(\log n)$ 次旋转
-D. AVL 树的平衡因子定义为 $BF(v) = h(v.\text{right}) - h(v.\text{left})$，要求 $|BF| \leq 1$
-
-**解析讲解**：D
-
-**解析讲解**：A、B、C 均正确。D 错误在于平衡因子定义方向：标准定义为 $BF(v) = h(v.\text{left}) - h(v.\text{right})$（左高减右高），$|BF| \leq 1$。虽然方向反过来也能定义，但教材标准约定是左减右。
-
-**2. 关于红黑树，下列哪个性质不是五大性质之一？**
-
-A. 根是黑色
-B. 红节点的子节点必为黑色
-C. 任意节点到叶子的所有路径黑高相同
-D. 任意节点到叶子的所有路径长度相同
-
-**解析讲解**：D
-
-**解析讲解**：红黑树只要求"黑高相同"（性质 5），不要求"路径长度相同"。事实上，红黑树最长路径最多是最短路径的 2 倍（因红节点不能连续，最短全黑，最长红黑相间）。
-
-**3. 关于 B+ 树与 B 树，下列说法正确的是：**
-
-A. B+ 树内部节点存储数据，B 树不存储
-B. B 树叶子节点通过链表相连，B+ 树不连
-C. B+ 树内部节点仅存索引键，数据全在叶子
-D. B 树查找可能提前在内部节点终止，B+ 树必须到叶子
-
-**解析讲解**：C、D
-
-**解析讲解**：
-- A 错：恰好相反，B+ 树内部节点仅索引，B 树内部节点可存数据；
-- B 错：恰好相反，B+ 树叶子有链表，B 树叶子无；
-- C 正确：B+ 树内部节点仅存索引键，数据全在叶子，扇出更大；
-- D 正确：B 树查找可能在内部节点命中即返回，B+ 树必须到叶子。
-
 ### 填空题知识点讲解
 
 **1.** 含 $n$ 个节点的完美二叉树高度为 _______。
@@ -2154,24 +2113,6 @@ Splay 树的单次操作最坏 $O(n)$（如退化为链表时访问叶子），�
 
 ---
 
-## 18. 参考文献
-
-1. Adelson-Velsky, G. M., & Landis, E. M. (1962). An algorithm for the organization of information. *Soviet Mathematics Doklady*, 3, 1259-1263.
-2. Bayer, R., & McCreight, E. M. (1972). Organization and maintenance of large ordered indexes. *Acta Informatica*, 1(3), 173-189. DOI: 10.1007/BF00288683
-3. Bayer, R. (1972). Symmetric binary B-trees: Data structure and maintenance algorithms. *Acta Informatica*, 1(4), 290-306. DOI: 10.1007/BF00289509
-4. Guibas, L. J., & Sedgewick, R. (1978). A dichromatic framework for balanced trees. *Proceedings of the 19th Annual Symposium on Foundations of Computer Science (SFCS)*, 8-21. DOI: 10.1109/SFCS.1978.3
-5. Sleator, D. D., & Tarjan, R. E. (1985). Self-adjusting binary search trees. *Journal of the ACM*, 32(3), 652-686. DOI: 10.1145/3828.3835
-6. Seidel, R., & Aragon, C. R. (1996). Randomized search trees. *Algorithmica*, 16(4-5), 464-497. DOI: 10.1007/s004539900061
-7. O'Neil, P., Cheng, E., Gawlick, D., & O'Neil, E. (1996). The log-structured merge-tree (LSM-tree). *Acta Informatica*, 33(4), 351-385. DOI: 10.1007/s002360050048
-8. Knuth, D. E. (1997). *The Art of Computer Programming, Volume 1: Fundamental Algorithms* (3rd ed.). Addison-Wesley Professional. ISBN 978-0201896831. Section 2.3 (Trees).
-9. Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2022). *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305. Chapter 12 (BST) and Chapter 13 (Red-Black Trees).
-10. Sedgewick, R., & Wayne, K. (2011). *Algorithms* (4th ed.). Addison-Wesley Professional. ISBN 978-0321573513. Section 3.2 (BST) and Section 3.3 (Balanced Search Trees).
-11. Comer, D. (1979). The ubiquitous B-tree. *ACM Computing Surveys*, 11(2), 121-137. DOI: 10.1145/356770.356776
-
----
-
-## 19. 延伸阅读
-
 ### 19.1 理论深入
 
 - **CLRS Chapter 13**：红黑树形式化证明与实现
@@ -2200,15 +2141,6 @@ Splay 树的单次操作最坏 $O(n)$（如退化为链表时访问叶子），�
 - **CMU 15-451 Algorithm Design**：Splay Trees Amortized Analysis
 - **Robert Sedgewick Princeton Algorithms**：Red-Black Tree Visualization
 
-### 19.5 在线练习
-
-- **LeetCode**：BST（98/173/230/235/108/109）、Trie（208/211/212）、平衡树相关题目
-- **LintCode**：二叉树与递归专题
-- **VisuAlgo**：可视化 AVL、红黑、B 树、Splay 操作
-- **USACO Guide**：高级树结构竞赛应用
-
----
-
 ## 附录 A：树结构复杂度速查表
 
 | 数据结构 | 查找 | 插入 | 删除 | 范围查询 | 空间 | 备注 |
@@ -2223,23 +2155,3 @@ Splay 树的单次操作最坏 $O(n)$（如退化为链表时访问叶子），�
 | Trie（$L$ 为键长） | $O(L)$ | $O(L)$ | $O(L)$ | $O(L + r)$ | $O(NL)$ | 前缀匹配 |
 | LSM 树（$L$ 层） | $O(L \log n)$ | $O(1)$ 摊还 | $O(1)$ 摊还 | $O(\log n + r)$ | $O(Ln)$ | 写优化 |
 | 跳跃表 | $O(\log n)$ 期望 | $O(\log n)$ 期望 | $O(\log n)$ 期望 | $O(\log n + r)$ | $O(n)$ | 概率平衡 |
-
-## 附录 B：常见面试题速查表
-
-| 题号 | 题目 | 难度 | 关键技巧 |
-| ---- | ---- | ---- | -------- |
-| LC94 | 二叉树中序遍历 | 简单 | 栈迭代 / Morris |
-| LC98 | 验证 BST | 中等 | 范围 (low, high) |
-| LC100 | 相同的树 | 简单 | 递归 |
-| LC101 | 对称二叉树 | 简单 | 递归 / 队列 |
-| LC102 | 层序遍历 | 中等 | BFS 队列 |
-| LC104 | 二叉树最大深度 | 简单 | 递归 / BFS |
-| LC105 | 前+中序构造二叉树 | 中等 | 递归 + 哈希 |
-| LC108 | 有序数组转 BST | 简单 | 分治 |
-| LC124 | 二叉树最大路径和 | 困难 | 后序 + 全局最大 |
-| LC173 | BST 迭代器 | 中等 | 栈模拟中序 |
-| LC208 | 实现 Trie | 中等 | 字典树 |
-| LC230 | BST 第 K 小 | 中等 | 中序遍历 |
-| LC235 | BST 最近公共祖先 | 简单 | 利用 BST 性质 |
-| LC297 | 序列化二叉树 | 困难 | 前序 + NULL 标记 |
-| LC450 | 删除 BST 节点 | 中等 | 三种情况分类 |

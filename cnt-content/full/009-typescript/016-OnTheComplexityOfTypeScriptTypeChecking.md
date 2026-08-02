@@ -1347,8 +1347,6 @@ tsc --extendedDiagnostics 2>&1 | grep Instantiations | awk '{print $2}'
 
 如果 `Instantiations` 超过 10,000,000，应触发告警。社区工具如 `typescript-performance` 可以做更细粒度的分析。
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. 条件类型 `T extends U ? X : Y` 中，当 `T` 是裸类型参数且为联合类型 `A | B` 时，结果为____。
@@ -1359,44 +1357,6 @@ tsc --extendedDiagnostics 2>&1 | grep Instantiations | awk '{print $2}'
 6. 在 `type OptionalKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? K : never }[keyof T]` 中，`-?` 修饰符的作用是____。
 7. `type Last<T extends readonly any[]> = T extends [...any[], infer L] ? L : never` 中，`...any[]` 的作用是匹配____元素。
 8. 在模板字面量类型 `${infer H}_${infer T}` 中，`H` 与 `T` 的关系是____。
-
-### 选择题知识点讲解
-
-1. 关于 TypeScript 类型系统的图灵完备性，下列哪一项是正确的？
-   - A. TypeScript 类型系统在 4.0 之后已完全图灵完备，可以表达任意计算
-   - B. TypeScript 类型系统具备图灵完备的潜在能力，但递归深度被限制为 100，因此实际不可表达任意计算
-   - C. TypeScript 类型系统是停机可判定的，因此不可能图灵完备
-   - D. TypeScript 类型系统图灵完备性已通过形式化证明，但禁止使用
-
-2. 下列哪种写法可以正确实现 `IsAny<T>`？
-   - A. `type IsAny<T> = T extends any ? true : false`
-   - B. `type IsAny<T> = 0 extends 1 & T ? true : false`
-   - C. `type IsAny<T> = T === any ? true : false`
-   - D. `type IsAny<T> = keyof T extends never ? true : false`
-
-3. 关于分布式条件类型，下列哪一项是不正确的？
-   - A. 当 `T` 是裸类型参数且为联合类型时，条件类型会分配到每个成员
-   - B. 用元组 `[T]` 包裹 `T` 可以阻止分布式
-   - C. `never` 在分布式条件类型中会被直接过滤
-   - D. 在条件类型中可以使用 `infer` 提取类型变量
-
-4. 下列哪种类型递归会被 TypeScript 4.5+ 优化为尾递归？
-   - A. `type T = T extends [infer H, ...infer R] ? [H, ...T<R>] : []`
-   - B. `type T = T extends [infer H, ...infer R] ? T<R, [...Acc, H]> : Acc`
-   - C. `type T = T extends [infer H, ...infer R] ? `${H}${T<R>}` : ''`
-   - D. `type T = T extends [infer H, ...infer R] ? { x: T<R> } : {}`
-
-5. 关于 `satisfies` 操作符，下列哪一项是正确的？
-   - A. `satisfies` 与 `as` 完全等价
-   - B. `satisfies` 用于校验表达式类型满足约束，同时保留原始字面量类型
-   - C. `satisfies` 会改变表达式的推断类型
-   - D. `satisfies` 仅适用于对象字面量
-
-6. 关于 TypeScript 的子类型关系，下列哪一项是错误的？
-   - A. `never` 是任何类型的子类型
-   - B. `unknown` 是任何类型的父类型
-   - C. 任何类型都是 `any` 的子类型也是 `any` 的父类型
-   - D. 联合类型 `A | B` 是 `A` 的子类型
 
 ### 18.3 代码修复题（code-fix）
 
@@ -1462,40 +1422,6 @@ type Flatten<T extends any[]> = T extends [infer H, ...infer R]
 
 5. 在 GitHub 上找出 type-challenges 仓库中你最喜欢的一道题，分析其题解的形式化推导，并讨论是否存在其他等价但更高效的解法。
 
-## 19. 参考文献
-
-[1] Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press, Cambridge, MA. ISBN 978-0-262-16209-8.
-
-[2] Bierman, G. M., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In *ECOOP 2014 — Object-Oriented Programming* (pp. 257-281). Springer, Berlin, Heidelberg. DOI: 10.1007/978-3-662-44202-9_11
-
-[3] Microsoft. 2018. TypeScript 2.8 Release Notes: Conditional Types. Retrieved July 20, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html
-
-[4] Microsoft. 2020. TypeScript 4.1 Release Notes: Template Literal Types. Retrieved July 20, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-1.html
-
-[5] Microsoft. 2021. TypeScript 4.5 Release Notes: Tail-Recursive Type Inference. Retrieved July 20, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html
-
-[6] Ajvani, B., Vahidi, S., and Itzhaki, S. 2023. Type-level Programming in TypeScript. *arXiv preprint arXiv:2302.09465*. DOI: 10.48550/arXiv.2302.09465
-
-[7] Bachmayr, C. et al. 2022. On the Complexity of TypeScript Type Checking. *Proceedings of the ACM on Programming Languages* 6, OOPSLA. DOI: 10.1145/3563308
-
-[8] Fu, A. 2020. type-challenges: Collection of TypeScript type challenges with online judge. GitHub repository. https://github.com/type-challenges/type-challenges
-
-[9] Hejlsberg, A. 2020. TypeScript 4.1: Template Literal Types. Microsoft Build conference talk.
-
-[10] Rosenwasser, D. 2023. Announcing TypeScript 5.0. Microsoft Developer Blog. https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/
-
-[11] Church, A. 1932. A set of postulates for the foundation of logic. *Annals of Mathematics* 33(2), 346-366. DOI: 10.2307/1968337
-
-[12] Martin-Löf, P. 1984. *Intuitionistic Type Theory*. Bibliopolis, Napoli. ISBN 978-88-7088-105-9.
-
-[13] Hosoya, H. and Pierce, B. C. 2003. Regular expression pattern matching for XML. *Journal of Functional Programming* 13(6), 961-1004. DOI: 10.1017/S0956796803001131
-
-[14] Xi, H. and Pfenning, F. 1999. Dependent Types in Practical Programming. In *Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '99)* (pp. 214-227). DOI: 10.1145/292540.292560
-
-[15] Freeman, T. and Pfenning, F. 1991. Refinement types for ML. In *Proceedings of the ACM SIGPLAN 1991 Conference on Programming Language Design and Implementation (PLDI '91)* (pp. 261-270). DOI: 10.1145/113445.113468
-
-## 20. 延伸阅读
-
 ### 20.1 书籍
 
 - Benjamin C. Pierce. *Types and Programming Languages* (TAPL). MIT Press, 2002.
@@ -1516,13 +1442,6 @@ type Flatten<T extends any[]> = T extends [infer H, ...infer R]
 - ts-toolbelt: https://github.com/millsp/ts-toolbelt
 - utility-types: https://github.com/piotrwitek/utility-types
 - total-typescript/type-transformations: https://github.com/total-typescript/type-transformations
-
-### 20.4 在线资源
-
-- TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/
-- TypeScript Type Manipulation: https://www.typescriptlang.org/docs/handbook/2/types-from-types.html
-- Matt Pocock's Total TypeScript: https://www.totaltypescript.com/
-- Type-Level TypeScript: https://type-level-typescript.com/
 
 ### 20.5 视频课程
 

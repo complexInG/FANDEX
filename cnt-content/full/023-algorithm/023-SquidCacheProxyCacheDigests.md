@@ -4,7 +4,7 @@ title: 布隆过滤器
 module: algorithm
 category: Algorithm/Probabilistic
 difficulty: intermediate
-description: 布隆过滤器（Bloom Filter）：一种空间高效的概率数据结构，由 Burton H. Bloom 1970《Space/Time Trade-offs in Hash Coding with Allowable Errors》Communications of the ACM 13(7):422-426 DOI:10.1145/362686.362692 提出。利用 k 个独立哈希函数将元素映射到 m 位的位数组，实现 O(k) 时间复杂度的成员查询，无假阴性但允许可控假阳性。本章涵盖 Bloom 原始动机、假阳性率 $P = (1 - e^{-kn/m})^k$ 的完整推导、最优哈希函数个数 $k_{\text{opt}} = (m/n)\ln 2$ 的极值分析、Counting Bloom Filter（Fan et al. 1998 USENIX Summary Cache）、Compressed Bloom Filter（Mitzenmacher 2002）、Cuckoo Filter（Fan et al. 2014 ACM TOCT）、Spectral Bloom Filter、Stable Bloom Filter 等变种；对比 Hash Set、Skip List、HyperLogLog、Cuckoo Filter 的空间/时间/精度权衡；附 Python/C++/Java 三语言实现、工业级应用（Cassandra、HBase、PostgreSQL、Chrome、Bitcoin SPV、Squid Proxy、Bigtable）、12 道习题含完整答案与 20 条 ACM 格式参考文献。
+description: 布隆过滤器（Bloom Filter）：一种空间高效的概率数据结构，由 Burton H. Bloom 1970《Space/Time Trade-offs in Hash Coding with Allowable Errors》Communications of the ACM 13(7):422-426 DOI:10.1145/362686.362692 提出。利用 k 个独立哈希函数将元素映射到 m 位的位数组，实现 O(k) 时间复杂度的成员查询，无假阴性但允许可控假阳性。本章涵盖 Bloom 原始动机、假阳性率 $P = (1 - e^{-kn/m})^k$ 的完整推导、最优哈希函数个数 $k_{\text{opt}} = (m/n)\ln 2$ 的极值分析、Counting Bloom Filter（Fan et al. 1998 USENIX Summary Cache）、Compressed Bloom Filter（Mitzenmacher 2002）、Cuckoo Filter（Fan et al. 2014 ACM TOCT）、Spectral Bloom Filter、Stable Bloom Filter 等变种；对比 Hash Set、Skip List、HyperLogLog、Cuckoo Filter 的空间/时间/精度权衡；附 Python/C++/Java 三语言实现、工业级应用（Cassandra、HBase、PostgreSQL、Chrome、Bitcoin SPV、Squid Proxy、Bigtable）。
 author: fanquanpp
 tags:
 - algorithm
@@ -2089,8 +2089,6 @@ WHERE age = 30 AND city = 'Beijing' AND gender = 'M';
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. 布隆过滤器由 Burton H. Bloom 于 ______ 年在 Communications of the ACM 13(7):______ 发表，论文标题为《__________________》。
@@ -2102,36 +2100,6 @@ WHERE age = 30 AND city = 'Beijing' AND gender = 'M';
 4. Counting Bloom Filter 由 Fan-Cao-Almeida-Broder 于 _______ 年在 SIGCOMM 会议提出，其核心改进是 __________________。
 
 5. 布隆过滤器的两条核心保证是：（1）__________（无假阴性）；（2）__________（有假阳性）。
-
-### 选择题知识点讲解
-
-**1. 下列关于布隆过滤器的描述，错误的是（  ）**
-
-A. 标准布隆过滤器不支持删除
-B. 假阳性率随插入元素数线性增长
-C. 假阴性率始终为 0
-D. 哈希函数个数 $k$ 的最优值与 $m/n$ 成正比
-
-**2. 给定 $n = 1000$ 元素、目标假阳性率 $\epsilon = 0.001$，最优 $m$ 和 $k$ 分别约为（  ）**
-
-A. $m = 9585$ bit，$k = 7$
-B. $m = 14377$ bit，$k = 10$
-C. $m = 19170$ bit，$k = 13$
-D. $m = 23963$ bit，$k = 17$
-
-**3. 关于 Cuckoo Filter 相对 Counting Bloom Filter 的优势，下列说法错误的是（  ）**
-
-A. 空间效率更高（每元素 bit 数更少）
-B. 查询性能更好（缓存友好）
-C. 假阳性率更低
-D. 支持删除操作
-
-**4. 下列场景中，最适合使用布隆过滤器的是（  ）**
-
-A. 银行账户余额查询（要求精确）
-B. 网站独立访客数统计（仅需基数估计）
-C. 缓存穿透防护（容忍少量假阳性）
-D. 用户购物车商品列表（需要枚举元素）
 
 ### 简答题知识点讲解
 
@@ -2205,8 +2173,6 @@ D. 用户购物车商品列表（需要枚举元素）
 
 ---
 
-## 11. 参考答案
-
 ### 填空题知识点讲解
 
 1. 1970；422-426；《Space/Time Trade-offs in Hash Coding with Allowable Errors》
@@ -2218,16 +2184,6 @@ D. 用户购物车商品列表（需要枚举元素）
 4. 1998；将每个位替换为 4 位计数器以支持元素删除
 
 5. 若 $x \in S$ 则查询 $x$ 必返回 true；若 $x \notin S$ 查询 $x$ 仍可能返回 true
-
-### 选择题知识点讲解
-
-1. **B**。假阳性率与插入元素数 $n$ 是指数关系 $(1 - e^{-kn/m})^k$，不是线性关系。
-
-2. **B**。$m = -1000 \ln(0.001) / (\ln 2)^2 \approx 1000 \times 6.9078 / 0.4805 \approx 14377$ bit，$k = (14377/1000) \ln 2 \approx 9.97 \approx 10$。
-
-3. **C**。Cuckoo Filter 的优势在于空间、性能、删除支持，假阳性率由参数决定，并不天然比 CBF 更低。
-
-4. **C**。缓存穿透防护是布隆过滤器最经典的应用场景。
 
 ### 简答题知识点讲解
 
@@ -2424,8 +2380,6 @@ class ConcurrentCountingBloomFilter:
 
 ---
 
-## 12. 参考文献
-
 ### 12.1 核心论文
 
 1. Bloom, B. H. (1970). Space/time trade-offs in hash coding with allowable errors. *Communications of the ACM*, 13(7), 422-426. DOI: [10.1145/362686.362692](https://doi.org/10.1145/362686.362692)
@@ -2464,16 +2418,6 @@ class ConcurrentCountingBloomFilter:
 
 16. Mitzenmacher, M., & Upfal, E. (2017). *Probability and Computing: Randomization and Probabilistic Techniques in Algorithms and Data Analysis* (2nd ed.). Cambridge University Press. ISBN 978-1107154889.
 
-### 12.4 在线资源
-
-17. Apache Software Foundation. (2026). *HBase Reference Guide: Bloom Filters*. https://hbase.apache.org/book.html#bloom.filters (accessed 2026-07-20)
-
-18. PostgreSQL Global Development Group. (2026). *PostgreSQL Documentation: BRIN and Bloom Indexes*. https://www.postgresql.org/docs/current/bloom.html (accessed 2026-07-20)
-
-19. Google LLC. (2026). *Chromium Safe Browsing: Bloom Filter Implementation*. https://chromium.googlesource.com/chromium/src/+/main/components/safe_browsing/ (accessed 2026-07-20)
-
-20. Wessels, D. (2026). *Squid Cache Proxy: Cache Digests*. http://www.squid-cache.org/Doc/FAQ/FAQ-16.html (accessed 2026-07-20)
-
 ### 12.5 补充文献
 
 21. Almeida, P. S., Baquero, C., Preguiça, N., & Hutchison, D. (2007). Scalable Bloom filters. *Information Processing Letters*, 101(6), 255-261. DOI: [10.1016/j.ipl.2006.10.007](https://doi.org/10.1016/j.ipl.2006.10.007)
@@ -2487,8 +2431,6 @@ class ConcurrentCountingBloomFilter:
 25. Goodrich, M. T., & Mitzenmacher, M. (2011). Invertible Bloom lookup tables. *Proceedings of Allerton 11*, 792-799. DOI: [10.1109/Allerton.2011.6120248](https://doi.org/10.1109/Allerton.2011.6120248)
 
 ---
-
-## 13. 延伸阅读
 
 ### 13.1 进阶变种
 
@@ -2505,8 +2447,6 @@ class ConcurrentCountingBloomFilter:
 - **Count-Min Sketch**（Cormode-Muthukrishnan 2005）：频率估计
 - **Quotient Filter**（Bender-Farach-Colton-Johnson-Kuszmaul-McCuley 2012）：缓存友好的替代方案
 - **Tombstone Filter**（Cohen-Daly-Jeavons 2018）：支持删除与计数
-
-### 13.3 推荐学习资源
 
 #### 12.3.1 教材章节
 
@@ -2675,4 +2615,3 @@ graph TD
 ---
 
 *本文档由 FANDEX Content Engineering 团队依据《内容工程规范》12 项质量基准编写，最后审阅日期：2026-07-20。*
-

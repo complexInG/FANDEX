@@ -1306,73 +1306,6 @@ func (s *Server) Apply(ctx context.Context, req *ApplyRequest) (*ApplyResponse, 
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 下列关于 `context.Context` 的描述，哪个是错误的？
-
-A. `context.Background()` 与 `context.TODO()` 行为相同
-B. `context.WithValue` 的 key 必须是 comparable 类型
-C. context 一旦创建就不可取消
-D. `ctx.Done()` 返回的 channel 在 context 取消时关闭
-
-**解析讲解**：C
-
-**解析讲解**：通过 `WithCancel`/`WithTimeout` 创建的 context 可通过 cancel 函数取消。C 错误。
-
----
-
-**Q2.** Go 1.21 引入的 `Cause(ctx)` 函数的作用是？
-
-A. 返回 context 的创建原因
-B. 返回 context 取消的原始原因（而非泛化的 Canceled）
-C. 返回 context 的父 context
-D. 等同于 `ctx.Err()`
-
-**解析讲解**：B
-
-**解析讲解**：`WithCancelCause` 创建的 context，cancel 时可携带原因 error，`Cause(ctx)` 返回该原始原因。
-
----
-
-**Q3.** 下列哪种用法是反模式？
-
-A. `func(ctx context.Context, name string) error`
-B. `type S struct { ctx context.Context }`
-C. `ctx, cancel := context.WithTimeout(ctx, 5*time.Second); defer cancel()`
-D. `context.AfterFunc(ctx, cleanup)`
-
-**解析讲解**：B
-
-**解析讲解**：context 不应作为 struct 字段，应作为函数首参传递。
-
----
-
-**Q4.** `context.WithValue` 的查找复杂度是？
-
-A. $O(1)$
-B. $O(\log n)$
-C. $O(n)$（n 是 context 链长度）
-D. $O(n^2)$
-
-**解析讲解**：C
-
-**解析讲解**：valueCtx 是单链表，沿父链线性查找。
-
----
-
-**Q5.** Go 1.22 引入的 `context.WithoutCancel` 的作用是？
-
-A. 创建一个不可取消的 root context
-B. 创建一个继承 parent Value 但不继承取消信号的 context
-C. 取消 parent context
-D. 等同于 `context.Background()`
-
-**解析讲解**：B
-
-**解析讲解**：`WithoutCancel` 保留 parent 的 Value 与 Deadline，但取消信号不传播。
-
 ### 填空题知识点讲解
 
 **Q1.** `Context` 接口的四个方法是 `Deadline`、____、____、`Value`。
@@ -1573,74 +1506,6 @@ func main() {
 }
 ```
 
-### 9.4 思考题
-
-**Q1.** 为什么 Go 强制 context 作为函数首参，而不像 Java 那样用 ThreadLocal？
-
-**参考答案要点**：
-
-- **Go 没有 ThreadLocal**：goroutine 是 M:N 调度，goroutine 可能被不同 OS thread 执行，ThreadLocal 语义不明确
-- **显式优于隐式**：context 作为参数，调用方明确知道函数依赖哪些 context 信息
-- **可测试性**：测试时可直接传入 mock context，无需 mock ThreadLocal
-- **跨 goroutine 传播**：context 可随 goroutine 创建传播，ThreadLocal 难以跨线程
-
----
-
-**Q2.** `context.Value` 查找是 $O(L)$，为何不改为 $O(1)$ 的 map？
-
-**参考答案要点**：
-
-- **设计哲学**：context 应**轻量**，Value 是辅助功能，不应主导设计
-- **内存开销**：每个 valueCtx 增加 map 会显著增加内存
-- **不可变性**：map 需要并发安全，增加锁开销
-- **替代方案**：若需 $O(1)$，可在外部用 map 缓存，context 只传 map 引用
-- **现实**：99% 的场景链长 < 10，$O(L)$ 完全可接受
-
----
-
-**Q3.** Go 1.21 引入 `WithCancelCause` 的动机是什么？与 `errors.Is/As` 有何关联？
-
-**参考答案要点**：
-
-- **动机**：原 `ctx.Err()` 只返回 `context.Canceled`，丢失了取消原因（如"用户主动断开"vs"超时"vs"下游错误"）
-- **与 errors.Is/As 关联**：`Cause(ctx)` 返回原始 error，可用 `errors.Is(Cause(ctx), ErrUserDisconnect)` 精确判断
-- **设计权衡**：保持向后兼容（未用 WithCancelCause 时 Cause 等同于 Err）
-
----
-
-**Q4.** 在 gRPC 中，context 如何跨进程传播？有哪些坑？
-
-**参考答案要点**：
-
-- **传播机制**：gRPC client 将 context 的 Deadline、Cancellation、Metadata 序列化为 HTTP/2 headers
-- **坑 1：Deadline 单位**：gRPC 用 `grpc-timeout` header，单位是 ns，但格式有 `1S`、`100m` 等变体
-- **坑 2：Cancellation 传播延迟**：HTTP/2 RST_STREAM 帧到达 server 才能取消，可能延迟
-- **坑 3：metadata 限制**：HTTP/2 header 大小有限制（默认 8KB），context.Value 不能传大数据
-- **坑 4：trace propagation**：需配合 OpenTelemetry 等 tracing 框架，手动注入/提取 trace context
-
----
-
-**Q5.** 设计一个支持"优先级取消"的 context（高优先级任务取消时，低优先级任务继续运行）。如何实现？
-
-**参考答案要点**：
-
-- **方案 A：多个 root context**
-  - 高优/低优用不同 root context
-  - 取消时只 cancel 高优 root
-- **方案 B：context 树分层**
-  - 父 context 是高优，子 context 是低优
-  - 高优取消时，子（低优）也被取消（不符合需求）
-  - 反之：用 `WithoutCancel` 让低优不继承
-- **方案 C：自定义 canceler**
-  - 实现 `canceler` 接口，自定义取消传播逻辑
-  - 复杂但灵活
-
-参考实现：Kubernetes 的 PriorityClass、Envoy 的优先级队列。
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档与规范
 
 [1] Sameer Ajmani. 2014. Go Concurrency Patterns: Context. (July 2014). Retrieved July 20, 2026 from https://go.dev/blog/context.
@@ -1673,8 +1538,6 @@ func main() {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 推荐书籍
 
 - **Alan A. A. Donovan, Brian W. Kernighan.** *The Go Programming Language*. Addison-Wesley, 2015. ISBN 978-0-13-419044-0.
@@ -1692,15 +1555,6 @@ func main() {
 - **Haller, P., and Odersky, M.** "Scala Actors: Unifying thread-based and event-based programming." *TCS* 410, 2-3 (2009), 202–220. DOI: 10.1016/j.tcs.2008.09.019.
   - Scala 的 Future cancellation，与 Go context 对比
 - **Bierman, G., Parkinson, M., and Pitts, A.** "MJ: An imperative core calculus for Java and Java with effects." (2003).
-
-### 11.3 在线资源
-
-- **Go Blog: Context** — https://go.dev/blog/context
-- **Go Blog: Contexts and structs** — https://go.dev/blog/context-and-structs
-- **Dave Cheney: Context isn't for cancellation** — https://dave.cheney.net/2017/01/26/context-isnt-for-cancellation
-- **Bryan C. Mills: GopherCon 2019 - Functional Options** — https://www.youtube.com/watch?v=5uQ6mx9DwYw
-- **Sourcegraph: Go context.go source** — https://sourcegraph.com/github.com/golang/go/-/blob/src/context/context.go
-- **OpenTelemetry Go: Context propagation** — https://opentelemetry.io/docs/instrumentation/go/
 
 ### 11.4 进阶主题
 

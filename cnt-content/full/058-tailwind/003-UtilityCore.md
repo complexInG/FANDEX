@@ -352,64 +352,6 @@ v4 在 4.2 版本还新增了 mauve（灰紫）、olive（橄榄）、mist（雾
 | 圆角图片四角发方 | 图片盖住了圆角 | 图片溢出容器圆角 | 容器加 `overflow-hidden` |
 | v3 透明度写法残留 | `bg-opacity-50` 无效 | v4 已移除该旧类 | 用 `bg-black/50` 斜杠修饰符 |
 
-## 12. 实战练习
-
-### 练习一：组合一个"价格卡片"
-
-题目描述：用工具类实现一个定价卡片：白色背景、圆角 12px、中等阴影、内边距 24px，内部有一个 24px 加粗的标题"月度会员"、一段灰色正文、一个蓝色胶囊按钮。
-
-提示：圆角 `rounded-xl`（12px）；内边距 `p-6`（24px）；胶囊按钮 `rounded-full bg-blue-600 px-6 py-2 text-white`。
-
-参考答案要点：`<div class="rounded-xl bg-white p-6 shadow-md">` 内放 `<h3 class="text-2xl font-bold">月度会员</h3>`、`<p class="mt-2 text-sm text-gray-500">...</p>`、`<button class="mt-4 rounded-full bg-blue-600 px-6 py-2 text-sm text-white hover:bg-blue-700">立即开通</button>`。
-
-### 练习二：用 divide 实现设置列表
-
-题目描述：用 `divide-y` 实现一个含四行的设置列表，每行内边距上下 12px，行间有一条浅灰色分隔线，整组列表放在描边卡片里。
-
-提示：`divide-y divide-gray-100`；每行 `py-3`；外层 `rounded-lg border border-gray-200`。
-
-参考答案要点：`<ul class="divide-y divide-gray-100 rounded-lg border border-gray-200 px-4">`，内部 `<li class="py-3 text-sm">账号设置</li>` 等四行。
-
-### 练习三：悬停去灰的课程封面
-
-题目描述：实现一个课程卡片：封面图默认灰度显示，鼠标悬停卡片时恢复彩色并加深阴影。
-
-提示：`grayscale` 与 `hover:grayscale-0`；整卡联动用 `group` + `group-hover:`。
-
-参考答案要点：外层 `<div class="group overflow-hidden rounded-xl border border-gray-200">`，图片 `<img class="h-40 w-full object-cover grayscale transition-all duration-300 group-hover:grayscale-0" />`，卡片 `group-hover:shadow-md`。
-
-### 练习四：颜色刻度找茬
-
-题目描述：以下类名中哪些是合法的 Tailwind 类名？指出非法项并说明原因：`bg-sky-600`、`text-rose-500`、`border-grey-200`、`bg-emerald-700`、`text-orange-50`、`bg-mauve-300`。
-
-提示：注意中性色拼写与 v4.2 新增色板。
-
-参考答案要点：非法项为 `border-grey-200`——Tailwind 的中性色拼写是 `gray`（美式）而非 `grey`（英式）。其余均为合法类名；`mauve-300` 是 v4.2 新增色板。
-
-### 练习五：把内联样式翻译成工具类
-
-题目描述：将下面的内联样式改写为等价的 Tailwind 工具类，要求行高、字距也使用预设刻度：
-
-```html
-<div style="background-color:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px 16px;color:#1d4ed8;font-size:14px;line-height:1.625;letter-spacing:0.025em">
-  提示信息
-</div>
-```
-
-提示：`#eff6ff` 对应 `blue-50`、`#bfdbfe` 对应 `blue-200`、`#1d4ed8` 对应 `blue-700`；圆角 6px 即 `rounded-md`。
-
-参考答案要点：`<div class="rounded-md border border-blue-200 bg-blue-50 px-4 py-2 text-sm leading-relaxed tracking-wide text-blue-700">提示信息</div>`。
-
 ## 13. 一句话记忆
 
 工具类就是成套扳手：按"属性前缀 + 刻度值"的规律从颜色、间距、排版、边框、圆角、阴影、滤镜七大族里挑选组合，状态切换靠 `hover:` 等前缀，刻度的例外用任意值与 `@utility` 补充。
-
-## 参考链接与延伸阅读
-
-- Tailwind CSS 官方文档（工具类索引）：https://tailwindcss.com/docs/utility-first
-- Tailwind CSS 官方颜色文档：https://tailwindcss.com/docs/colors
-- Tailwind CSS 中文文档：https://www.tailwindcss.cn/docs
-- Tailwind CSS 自定义样式（任意值、@utility）：https://tailwindcss.com/docs/adding-custom-styles
-- CSS 变量基础（MDN）：https://developer.mozilla.org/zh-CN/docs/Web/CSS/Using_CSS_custom_properties
-
-延伸阅读建议：下一篇《Tailwind CSS 布局系统》将从 Flex 与 Grid 的布局原理出发，讲解一维与二维布局的完整工具类；本模块的 006 号文档将进一步展开响应式与暗色模式专题。

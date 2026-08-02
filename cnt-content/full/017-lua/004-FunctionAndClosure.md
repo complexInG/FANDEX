@@ -1228,8 +1228,6 @@ local app = compose_middleware(logging_middleware, auth_middleware)(final_handle
 print(app({method = "GET", path = "/users", token = "abc"}).status)
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：实现一个闭包 `make_stack()`，返回一个栈对象，包含 `push`、`pop`、`peek`、`size` 方法。
@@ -1366,36 +1364,6 @@ local result = lazy_take(5, lazy_map(
 print(table.concat(result, ", "))  -- 4, 16, 36, 64, 100
 ```
 
-### 9.3 思考题
-
-**思考题 1**：为什么 Lua 的尾调用优化对游戏脚本重要？
-
-**解析讲解**：游戏脚本常需深度递归（如 AI 决策树、场景图遍历）。Lua 5.x 的尾调用优化保证 `return f(args)` 不增长栈，使得深度递归可处理任意深度输入而不会栈溢出。这对游戏循环中的状态机、事件分发至关重要。
-
-**思考题 2**：闭包与元表实现对象，分别适合什么场景？
-
-**解析讲解**：
-
-- **闭包**适合：简单状态封装、私有变量强隔离、函数式风格场景。
-- **元表**适合：需要继承、多态、操作符重载、复杂对象图的场景。
-- 闭包对象难以被反射、调试工具识别，元表对象更易被 `inspect` 类工具查看。
-- 在性能敏感场景，元表方法查找开销稳定，闭包则更轻量（直接调用）。
-
-**思考题 3**：在 Redis 脚本中使用闭包有何限制？
-
-**解析讲解**：
-
-1. Redis 脚本执行期间是单线程的，闭包不可用于并发编程。
-2. 脚本执行完毕，所有闭包状态销毁，不跨调用持久化。
-3. Redis 限制脚本执行时间，闭包内不可做长时间阻塞操作。
-4. 不能使用 `print`/`io` 等副作用库，所有输出必须通过 `redis.call` 返回。
-
-**思考题 4**：为什么 Lua 不实现 Python 风格的默认参数？
-
-**解析讲解**：
-
-Lua 设计哲学是保持语言核心最小化。默认参数可以通过 `param = param or default` 模式实现，且更灵活（可基于 nil 检查）。引入默认参数语法会增加语言复杂度，与 Lua 极简设计相悖。同时，Lua 的 nil 检查模式支持"使用默认值"，与 Python 显式默认参数在语义上等价。
-
 ### 9.4 项目题
 
 **项目题**：实现一个闭包化的 Promise 库，支持链式调用、错误处理与并发。
@@ -1510,8 +1478,6 @@ end):then(function(v)
 end)
 ```
 
-## 10. 参考文献
-
 ### 10.1 ACM Reference Format
 
 [1] Roberto Ierusalimschy, Luiz Henrique de Figueiredo, and Waldemar Celes. 1996. Lua-an extensible extension language. _Software: Practice and Experience_ 26, 6 (1996), 635–652. DOI: https://doi.org/10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P
@@ -1560,8 +1526,6 @@ end)
 
 **关于 lambda 演算形式化基础**，Church 1936 年论文（文献 [7]）奠定了闭包的理论根基，建议配合 Pierce 的 *Types and Programming Languages*（文献 [14]）系统学习。
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - Lua 5.4 Reference Manual: https://www.lua.org/manual/5.4/
@@ -1590,14 +1554,6 @@ end)
 - **Kong**: API 网关，基于 OpenResty，闭包化中间件 - https://konghq.com/
 - **LuaNode**: Node.js 风格 Lua 框架 - https://github.com/ignacio/LuaNode
 - **LÖVE**: 2D 游戏引擎，闭包化游戏循环 - https://love2d.org/
-
-### 11.5 社区资源
-
-- Lua Users Wiki: http://lua-users.org/wiki/
-- Lua Mailing List: https://www.lua.org/lua-l.html
-- Lua subreddit: https://www.reddit.com/r/lua/
-- Stack Overflow Lua tag: https://stackoverflow.com/questions/tagged/lua
-- Roblox Luau documentation: https://create.roblox.com/docs/luau
 
 ### 11.6 配套实验
 
@@ -1720,54 +1676,6 @@ flowchart TD
 | 64 位整数 | 否 | 否 | 是 | 是 | 是 |
 | 渐进式类型 | 否 | 否 | 否 | 否 | 是 |
 
-## 附录 E：自测题答案
-
-## 知识讲解与要点分析（原习题 1 答案）
-
-栈实现正确。注意 `pop` 在空栈时返回 `nil`，符合 Lua 习惯。
-
-## 知识讲解与要点分析（原习题 2 答案）
-
-Y 组合子实现正确。注意 Lua 5.x 支持 vararg 传递 `...`，使得 Y 组合子可处理多参数函数。
-
-## 知识讲解与要点分析（原习题 3 答案）
-
-debounce 与 throttle 实现依赖具体运行时（Love2D、Nginx 等提供不同的定时器 API）。在纯 Lua 中，可基于协程模拟：
-
-```lua
--- lua: 协程模拟 throttle
-local function throttle_coroutine(fn, interval)
-  local last = 0
-  return function(...)
-    local now = os.clock()
-    if now - last >= interval then
-      last = now
-      return fn(...)
-    end
-  end
-end
-```
-
-## 知识讲解与要点分析（原习题 4 答案）
-
-惰性列表通过闭包链实现。每个 `lazy_map`、`lazy_filter` 返回新的生成器函数，按需计算下一个值。
-
----
-
-文档至此完成。读者应能基于本章内容：
-
-1. 理解 Lua 函数与闭包的形式化语义与实现机制。
-2. 在工程实践中正确应用高阶函数、闭包、柯里化等函数式技术。
-3. 识别并避免常见陷阱与反模式。
-4. 在 Redis、Nginx、游戏脚本等场景中高效应用闭包。
-5. 设计基于闭包的领域特定语言与框架。
-
-下一步推荐学习：
-
-- 元表与元方法（学习面向对象与操作符重载）
-- 协程非抢占式调度（学习协程与闭包的结合）
-- 环境与全局变量管理（学习 `_ENV` 与模块系统）
-- C-API 栈操作（学习 Lua 与 C 的函数互操作）
 ## 函数定义
 
 **基本写法：基本函数**

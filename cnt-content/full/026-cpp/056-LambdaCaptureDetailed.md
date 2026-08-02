@@ -1873,8 +1873,6 @@ int main() {
 
 ---
 
-## 知识讲解与要点分析（原练习）
-
 ### 9.1 基础题
 
 **练习 1**：写一个 Lambda，捕获局部变量 `x`（值捕获）和 `y`（引用捕获），返回 `x + y`。
@@ -1947,23 +1945,6 @@ struct Worker : std::enable_shared_from_this<Worker> {
     }
 };
 // 使用：auto w = std::make_shared<Worker>();
-```
-
-### 综合题知识点讲解
-
-**练习 4**：实现一个累加器 Lambda，每次调用累加一个数并返回当前累加值。
-
-**解析讲解**：
-
-```cpp
-auto accumulator = [sum = 0](int x) mutable {
-    sum += x;
-    return sum;
-};
-
-std::cout << accumulator(10) << std::endl;  // 10
-std::cout << accumulator(20) << std::endl;  // 30
-std::cout << accumulator(30) << std::endl;  // 60
 ```
 
 ### 9.5 设计题
@@ -2296,8 +2277,6 @@ int main() {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 标准文档
 
 1. ISO/IEC 14882:2011. *Information technology — Programming languages — C++*. International Organization for Standardization, 2011. §5.1.2 [expr.prim.lambda].
@@ -2330,12 +2309,6 @@ int main() {
 19. Gregor, D., Jarvi, J., & Lumsdaine, A. (2006). *Lambda Expressions and Closures for C++*. Proceedings of the 2006 ACM Symposium on Applied Computing (SAC '06). DOI: 10.1145/1141277.1141571.
 20. Stroustrup, B., & Sutton, A. (2012). *The Design of the C++0x Standard Library*. Proceedings of the 2012 ACM Conference on Systems, Programming, and Applications: Software for Humanity (SPLASH '12). DOI: 10.1145/2384716.2384733.
 
-### 10.5 在线资源
-
-21. cppreference.com. *Lambda expressions*. Retrieved from https://en.cppreference.com/w/cpp/language/lambda
-22. Stroustrup, B. (2024). *C++ Core Guidelines: Lambda Expressions*. Retrieved from https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#SS-lambda
-23. Sutter, H. (2013). *GotW: Lambda Capture*. Retrieved from https://herbsutter.com/2013/01/09/gotw-8-solution/
-
 ### 10.6 编译器实现文档
 
 24. Clang Project. (2024). *Clang Language Extensions: Lambda Expressions*. Retrieved from https://clang.llvm.org/cxx_status.html
@@ -2348,8 +2321,6 @@ int main() {
 28. Boost Community. (2010). *Boost.Phoenix Library*. Retrieved from https://www.boost.org/doc/libs/release/libs/phoenix/
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 主题进阶
 

@@ -250,94 +250,11 @@ git remote show origin | grep "HEAD branch"
 
 ---
 
-## 八、实战练习
-
-### 练习 1：体验 fetch 的"不动声色"（入门）
-
-**题目**：在本地仓库执行 `git fetch origin`，用 `git status` 观察工作区是否发生变化，再用 `git log --oneline main..origin/main` 查看远程新增的提交。
-
-**提示**：需要一个已有远程的仓库；可以 clone 一个公开仓库练习。
-
-**参考答案要点**：
-
-```bash
-git fetch origin
-git status                    # 工作区无变化
-git log --oneline main..origin/main   # 列出远程比本地多的提交
-```
-
-### 练习 2：fetch + merge 手动整合（核心）
-
-**题目**：不直接 pull，用"fetch → 对比 → merge"三步手动完成同步，体会 pull 内部做了什么。
-
-**提示**：`git diff origin/main` 先看差异再合并。
-
-**参考答案要点**：
-
-```bash
-git fetch origin
-git diff origin/main          # 确认差异内容
-git merge origin/main         # 手动合并（等价于默认 pull 的后半段）
-```
-
-### 练习 3：用 pull --rebase 保持历史整洁（进阶）
-
-**题目**：在本地分支上有自己的提交，远程也有新提交，用 `git pull --rebase` 同步，并用 `git log --oneline --graph` 观察历史呈直线。
-
-**提示**：rebase 会把自己的提交"垫"到远程提交之后；冲突时用 `git rebase --continue`。
-
-**参考答案要点**：
-
-```bash
-git pull --rebase
-# 若无冲突：直接完成，历史直线
-# 若有冲突：解决 -> git add -> git rebase --continue
-git log --oneline --graph
-```
-
-### 练习 4：处理"不相关历史"合并（进阶）
-
-**题目**：本地 `git init` 建仓库并提交，关联远程已有仓库，执行 `git pull origin main --allow-unrelated-histories`，观察合并结果。
-
-**提示**：这是本地 init + 远程已有内容的典型场景。
-
-**参考答案要点**：
-
-```bash
-git init -b main
-git remote add origin https://github.com/user/repo.git
-# 直接 pull 会报 refusing to merge unrelated histories
-git pull origin main --allow-unrelated-histories
-```
-
-### 练习 5：清理远程"幽灵分支"（综合）
-
-**题目**：让队友（或自己）在 GitHub 上删除一个分支，本地执行 `git fetch --prune`，对比清理前后的 `git branch -r` 输出。
-
-**提示**：`--prune` 会删除本地已不存在的远程跟踪引用。
-
-**参考答案要点**：
-
-```bash
-git branch -r                 # 清理前：还显示已删除的远程分支
-git fetch --prune             # 清理
-git branch -r                 # 清理后：幽灵分支消失
-```
-
----
-
 ## 九、一句话记忆
 
 **`git fetch` 只更新远程"分身"（origin/main）不碰你的代码，`git pull` 是 fetch 加 merge（或 rebase）一步到位——先侦查用 fetch，快同步用 pull，冲突了记得 abort 或 continue。**
 
 ---
-
-## 参考链接
-
-- Git 官方文档（git pull）：https://git-scm.com/docs/git-pull
-- Git 官方文档（git fetch）：https://git-scm.com/docs/git-fetch
-- Pro Git 中文版 2.5 远程仓库的使用：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8
-- GitHub 文档（同步仓库）：https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork
 
 ## 延伸阅读
 

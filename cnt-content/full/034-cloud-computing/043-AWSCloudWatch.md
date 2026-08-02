@@ -478,17 +478,7 @@ aws cloudwatch put-metric-data \
   --metric-data '[{"MetricName":"Latency","Timestamp":"2026-07-31T00:00:00Z","Value":250,"Unit":"Milliseconds"}]'
 ```
 
-## 参考文献
-
-AWS 文档：https://docs.aws.amazon.com/
-Microsoft Azure 文档：https://learn.microsoft.com/zh-cn/azure/
-Google Cloud 文档：https://cloud.google.com/docs?hl=zh-cn
-阿里云文档：https://help.aliyun.com/
-CNCF 云原生全景：https://landscape.cncf.io/
-
 ## 延伸阅读
-
 虚拟化与容器，见 034-cloud-computing 模块相关文档。
 Kubernetes 架构，见 034-cloud-computing 模块 K8s 文档。
 DevOps 与 IaC，见 031-devops 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供云计算课程。

@@ -1471,49 +1471,6 @@ void mark_phase()
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个对象会直接分配在 LOH？
-
-A. `new int[100]`（400 字节）
-B. `new byte[85000]`（85KB）
-C. `new string('x', 10000)`（20KB）
-D. `new List<int>(1000)`
-
-**解析讲解**：B
-
-**解析讲解**：LOH 阈值为 85,000 字节（约 85KB）。`byte[85000]` = 85000 字节，恰好达到阈值。`string('x', 10000)` = 10000 * 2 + 24 ≈ 20024 字节（UTF-16）。`List<int>(1000)` 内部数组为 `int[1000]` = 4000 字节。
-
----
-
-**题目 2**：以下哪种 GC 模式在 ASP.NET Core 服务中默认推荐？
-
-A. Workstation GC + Concurrent
-B. Server GC + Background
-C. Workstation GC + Non-concurrent
-D. Server GC + Non-concurrent
-
-**解析讲解**：B
-
-**解析讲解**：ASP.NET Core 服务端推荐 Server GC（多核并行）+ Background GC（Gen 2 回收时不阻塞 Gen 0/1 分配）。
-
----
-
-**题目 3**：关于 `ValueTask<T>` 的多次 await，以下哪个说法正确？
-
-A. 可以多次 await，行为与 `Task<T>` 一致
-B. 仅可 await 一次，多次 await 行为未定义
-C. 可以多次 await，但第二次 await 必然抛异常
-D. 仅可 await 两次
-
-**解析讲解**：B
-
-**解析讲解**：`ValueTask<T>` 是结构体，可能基于同步结果（`IValueTaskSource<T>` 池化），多次 await 行为未定义。需要多次 await 时应调用 `.AsTask()`。
-
----
-
 ### 填空题知识点讲解
 
 **题目 4**：.NET GC 中，Gen 0 的预算默认约为 ____ KB 到 ____ MB。
@@ -1636,40 +1593,6 @@ public sealed class GcMonitor : IDisposable
 
 ---
 
-### 9.4 思考题
-
-**题目 9**：为什么 .NET GC 选择 3 代而不是 2 代或 5 代？
-
-**答案要点**：
-- 2 代（nursery + old）：Ungar 经典分代，但中间代缺失，老年代压力大。
-- 5 代：分代过多，记忆集开销大，提升路径长。
-- 3 代：Gen 0/1 为新生代（短寿命），Gen 2 为老年代。Gen 1 作为缓冲，避免 Gen 0 直接进 Gen 2。
-- 经验上 3 代在多数应用上效果最佳，是工程上的"甜点"。
-
----
-
-**题目 10**：Server GC 在容器中（限制 1 核）是否仍然适用？
-
-**答案要点**：
-- Server GC 默认在多核上启用，每核一个堆。
-- 容器限制 1 核时，Server GC 会降级为单堆模式，但仍保留 Server GC 的标记/清除策略。
-- 在 1 核容器中，Server GC 与 Workstation GC 性能差异较小。
-- 建议在 2 核以上容器启用 Server GC，1 核容器使用 Workstation GC。
-
----
-
-**题目 11**：LOH 不默认压缩的设计权衡是什么？
-
-**答案要点**：
-- **优势**：避免大对象复制的 CPU 开销（85KB+ 复制成本高）。
-- **代价**：LOH 碎片化可能导致 OOM。
-- **.NET 8+ 调整**：默认在 Gen 2 GC 时压缩 LOH（如果碎片率高），平衡 CPU 与内存。
-- **手动控制**：`GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true)` 强制压缩。
-
----
-
-## 10. 参考文献
-
 ### 10.1 经典论文
 
 [1] D. Ungar. 1984. Generation scavenging: A non-disruptive high performance storage reclamation algorithm. In *Proceedings of the 1984 ACM Symposium on LISP and Functional Programming* (LFP '84). ACM, New York, NY, USA, 157-164. DOI: https://doi.org/10.1145/800055.802042
@@ -1738,8 +1661,6 @@ public sealed class GcMonitor : IDisposable
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **《The Garbage Collection Handbook》**（Jones, Hosking, Moss）：GC 算法圣经，涵盖所有主流 GC 算法。
@@ -1752,14 +1673,6 @@ public sealed class GcMonitor : IDisposable
 - **Wilson, Johnstone, Neely, Boles (1992)**: *Dynamic Storage Allocation: A Survey and Critical Review* —— 内存分配综述。
 - **Jones, Ryder (2008)**: *A Study of Java Object Demographics* —— 对象生命周期统计研究。
 - **Yang, Leung, Soffa (2014)**: *Generational Garbage Collection* —— 分代 GC 综述。
-
-### 11.3 在线资源
-
-- **.NET Runtime GitHub**: https://github.com/dotnet/runtime
-- **CoreCLR GC 源码**: https://github.com/dotnet/runtime/tree/main/src/coreclr/gc
-- **Stephen Toub 性能博客**: https://devblogs.microsoft.com/dotnet/author/stoub/
-- **Maoni Stephens GC 博客**: https://devblogs.microsoft.com/dotnet/author/maoni/
-- **Pro .NET Memory Management 配套代码**: https://github.com/sidristij/dotnet-memory
 
 ### 11.4 视频与课程
 

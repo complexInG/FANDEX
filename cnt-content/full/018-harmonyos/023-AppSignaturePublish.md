@@ -1336,8 +1336,6 @@ jobs:
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **常见疑问 1**：HarmonyOS 签名体系的三个核心组件是什么？分别说明作用。
@@ -1386,49 +1384,8 @@ jobs:
 
 ---
 
-## 10. 参考文献
-
-1. Huawei. HarmonyOS Application Signing. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-signing-0000001583489144
-
-2. Huawei. AppGallery Connect Documentation. 2024. https://developer.huawei.com/consumer/cn/doc/agc-guides
-
-3. Huawei. HAP Package Structure. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/hap-package-0000001583489145
-
-4. Huawei. hvigor Build Tool. HarmonyOS 5.0. 2024. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-0000001063839249
-
-5. NIST. FIPS 186-5: Digital Signature Standard (DSS). 2023. https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf
-
-6. SECG. SEC 1: Elliptic Curve Cryptography. 2009. https://www.secg.org/sec1-v2.pdf
-
-7. Google. Android APK Signature Scheme v2. Android Developer Documentation. 2024. https://developer.android.com/about/versions/nougat/android-7.0#apk_signature_v2
-
-8. Apple Inc. Code Signing Guide. Apple Developer Documentation. 2024. https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Introduction/Introduction.html
-
-9. Microsoft. Authenticode. Microsoft Learn. 2024. https://learn.microsoft.com/en-us/windows-hardware/drivers/install/authenticode
-
-10. Johnson, D., Menezes, A., and Vanstone, S. 2001. The Elliptic Curve Digital Signature Algorithm (ECDSA). International Journal of Information Security 1(1): 36-63. https://doi.org/10.1007/s102070100002
-
-11. Adams, C. and Lloyd, S. 2003. Understanding PKI: Concepts, Standards, and Deployment Considerations. 2nd ed. Addison-Wesley. ISBN: 978-0672323911
-
-12. Chen, L. et al. 2023. A Comparative Study of Mobile Application Signing Schemes. In Proceedings of the 2023 IEEE Symposium on Security and Privacy (S&P '23). IEEE. https://doi.org/10.1109/SP46215.2023.00189
-
-13. Wang, H. and Zhang, Y. 2024. Hardening Techniques for Mobile Applications: A Systematic Review. ACM Computing Surveys 56(3): 1-38. https://doi.org/10.1145/3672198
-
----
-
 ## 11. 延伸阅读
-
-- **HarmonyOS 官方文档**：[应用签名](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-signing-0000001583489144)
-- **AppGallery Connect**：[应用发布指南](https://developer.huawei.com/consumer/cn/doc/agc-guides)
-- **NIST**：[FIPS 186-5 数字签名标准](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf)
-- **RFC 5280**：[Internet X.509 Public Key Infrastructure](https://datatracker.ietf.org/doc/html/rfc5280)
-- **RFC 5758**：[Internet X.509 Public Key Infrastructure: Additional Algorithms](https://datatracker.ietf.org/doc/html/rfc5758)
-- **OpenSSL**：[官方文档](https://www.openssl.org/docs/)
-- **Android 安全**：[APK 签名方案](https://source.android.com/security/apksigning)
-- **iOS 安全**：[Code Signing Guide](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/)
-
 ---
-
 ## 附录 A：签名配置速查表
 
 | 字段 | 说明 | 示例 |

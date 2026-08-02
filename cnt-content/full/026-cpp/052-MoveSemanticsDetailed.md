@@ -1215,68 +1215,6 @@ public:
 - 拷贝构造/赋值被 `delete` 禁用；
 - 移动构造/赋值使用 `noexcept`，确保容器可用。
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：. 以下哪个表达式是 xvalue？
-
-- A. `42`
-- B. `int x = 42; x`
-- C. `std::move(x)`
-- D. `"hello"`
-
-**解析讲解**：C
-
-- A 是 prvalue；
-- B 是 lvalue；
-- C 是 xvalue（`std::move` 将 lvalue 转为 xvalue）；
-- D 是 lvalue（字符串字面量是 const char 数组，可取地址）。
-
-**常见疑问 2**：. 以下代码输出什么？
-
-```cpp
-std::string a = "hello";
-std::string b = std::move(a);
-std::cout << a.size();
-```
-
-- A. 编译错误
-- B. 0
-- C. 5
-- D. 未定义行为
-
-**解析讲解**：B（在主流实现中）
-
-`std::move(a)` 后，`a` 处于 "valid but unspecified" 状态。标准保证 `a.size()` 是合法操作，但不保证具体值。在 libstdc++ 和 libc++ 的实现中，移动后的 `std::string` 会将 size 设为 0。严格来说答案 C 也可能正确，但 0 是主流实现的行为。
-
-**常见疑问 3**：. 以下代码会发生什么？
-
-```cpp
-const std::vector<int> v = {1, 2, 3};
-auto v2 = std::move(v);
-```
-
-- A. 移动构造
-- B. 拷贝构造
-- C. 编译错误
-- D. UB
-
-**解析讲解**：B
-
-`v` 是 `const`，`std::move(v)` 将其转为 `const vector<int>&&`。但 `vector` 的移动构造签名为 `vector(vector&&)`，不能接受 `const vector&&`。重载决议退回到 `vector(const vector&)` 拷贝构造。
-
-**常见疑问 4**：. 为什么移动构造必须标记 `noexcept`？
-
-- A. 为了性能（编译器优化）
-- B. 因为移动不允许抛异常
-- C. 影响 `std::vector::reserve` 的策略
-- D. 强制要求
-
-**解析讲解**：C
-
-`std::vector` 在扩容时若 `is_nothrow_move_constructible_v<T>` 为真，则使用移动；否则退化为拷贝以保证强异常安全。非 `noexcept` 的移动构造会导致 vector 退化为拷贝，失去性能优势。
-
 ### 填空题知识点讲解
 
 **常见疑问 5**：. C++17 起，对 prvalue 的拷贝消除变为 ______（强制/可选）。
@@ -1428,75 +1366,6 @@ int main() {
 }
 ```
 
-### 9.4 思考题
-
-**常见疑问 12**：. 为什么 C++ 不像 Rust 那样在编译期禁止使用移动后的对象？
-
-C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
-- 大量已有代码依赖"移动后对象仍可析构"的语义；
-- C++ 类型系统不支持借用检查器（borrow checker）级别的所有权追踪；
-- 移动后的对象状态 "valid but unspecified" 允许析构、赋值等基本操作；
-- Rust 通过编译期分析实现了更严格的所有权模型，但代价是更陡的学习曲线和更难表达的某些模式（如自引用结构）。
-
-两者是设计哲学的不同选择，各有取舍。
-
-**常见疑问 13**：. 在什么场景下应该使用 `std::move`，什么场景下应该让编译器隐式移动？
-
-显式 `std::move` 的场景：
-- 容器 `push_back(emplace_back)` 时传入局部变量；
-- 函数参数为 `T&&`，转发到另一个 `T&&` 接口；
-- 实现移动构造/赋值时，转移成员所有权。
-
-不使用 `std::move` 的场景：
-- 返回局部变量 `return x;`（编译器自动应用 NRVO 或隐式移动）；
-- 按值传入的参数已属于函数，直接使用；
-- 对 `const` 对象（无意义，退化为拷贝）。
-
-简言之：**只有确需将 lvalue 强制转为 rvalue 时才 `std::move`**。
-
-**常见疑问 14**：. 移动语义能完全替代 `std::shared_ptr` 吗？为什么？
-
-不能。`std::shared_ptr` 解决的是**共享所有权**问题，多个所有者共同管理同一对象的生命周期；移动语义解决的是**独占所有权**的转移问题。
-
-在以下场景仍需 `shared_ptr`：
-- 多个观察者需要持有同一对象引用，且对象生命周期由所有观察者共同决定（如观察者模式）；
-- 图结构中节点互相引用；
-- 异步任务间共享结果。
-
-但对于独占所有权，应优先使用 `unique_ptr` 配合移动语义，性能更优、语义更清晰。
-
-## 10. 参考文献
-
-引用采用 ACM Reference Format，含 DOI 链接。
-
-1. Hinnant, H., Stroustrup, B., and Kozicki, R. 2008. *A foundation to build on: rvalue references*. ISO/IEC JTC1/SC22/WG21 N2812. DOI: 10.6028/NIST.IR.8200. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2812.html
-
-2. Stroustrup, B. 2013. *The C++ Programming Language* (4th ed.). Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0321563842.
-
-3. ISO/IEC. 2020. *Information technology — Programming languages — C++*. ISO/IEC 14882:2020. International Organization for Standardization, Geneva, Switzerland. Available at: https://www.iso.org/standard/79358.html
-
-4. ISO/IEC. 2023. *Information technology — Programming languages — C++*. ISO/IEC 14882:2023. International Organization for Standardization, Geneva, Switzerland. Available at: https://www.iso.org/standard/83626.html
-
-5. Josuttis, N. M. 2021. *C++ Move Semantics — The Complete Guide* (2nd ed.). Leanpub. ISBN: 978-3967498040.
-
-6. Meyers, S. 2014. *Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14*. O'Reilly Media, Sebastopol, CA, USA. ISBN: 978-1491903995.
-
-7. Hinnant, H. 2011. *Move Semantics: A Perspective*. N2027. ISO/IEC JTC1/SC22/WG21. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2027.html
-
-8. Spertus, M. and Williams, A. 2016. *Wording for guaranteed copy elision through simplified value categories*. P0135R1. ISO/IEC JTC1/SC22/WG21. DOI: 10.1145/3194034. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0135r1.html
-
-9. Abrahams, D. 2009. *Rvalue References and Exception Safety*. ISO/IEC JTC1/SC22/WG21 N2855. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/n2855.html
-
-10. Gregor, D. 2006. *A Proposal to Add a Polymorphic Function Object Wrapper to the Standard Library*. N2098. ISO/IEC JTC1/SC22/WG21. Available at: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2098.html
-
-11. Halpern, P. and Hinnant, H. 2020. *C++ Standard Library Issues*. LWG Issues List. Available at: https://cplusplus.github.io/LWG/lwg-toc.html
-
-12. Hooper, A. 2017. *Move Semantics and Rvalue References: A Comprehensive Analysis*. ACM SIGPLAN Notices 52, 7, 45–54. DOI: 10.1145/3140571.3140576
-
-13. Koskinen, J. and Parrish, A. 2021. *Performance Evaluation of Move Semantics in Modern C++*. Software: Practice and Experience 51, 5, 1023–1045. DOI: 10.1002/spe.2941
-
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **《C++ Move Semantics — The Complete Guide》**（Nicolai M. Josuttis, 2021）：最权威的移动语义专著，覆盖 C++11/14/17/20 完整演进。
@@ -1514,15 +1383,6 @@ C++ 设计哲学强调零开销抽象和向后兼容。在 C++ 中：
 - **P0784**: More constexpr containers (Dimov, 2017) — constexpr 与移动结合。
 - **P0288**: `std::move_only_function` (Spertus, 2018) — C++23 可移动函数包装器。
 - **P2266**: Simpler implicit move (Spertus, 2021) — C++20 简化隐式移动规则。
-
-### 11.3 在线资源
-
-- **cppreference.com**: [Value categories](https://en.cppreference.com/w/cpp/language/value_category), [Move constructors](https://en.cppreference.com/w/cpp/language/move_constructor), [std::move](https://en.cppreference.com/w/cpp/utility/move), [std::forward](https://en.cppreference.com/w/cpp/utility/forward)
-- **Compiler Explorer (godbolt.org)**: 在线查看不同编译器对移动语义的代码生成。
-- **C++ Insights (cppinsights.io)**: 展开模板、揭示编译器如何处理 `std::move`/`std::forward`。
-- **Howard Hinnant's Blog**: <https://howardhinnant.github.io/> — 一系列关于移动语义、`std::tuple`、`std::chrono` 的深度文章。
-- **Sutter's Mill (Herb Sutter)**: <https://herbsutter.com/> — C++ 标准化进程与最佳实践。
-- **ISO C++ Committee Papers**: <https://www.open-std.org/jtc1/sc22/wg21/> — 全部 WG21 提案原文。
 
 ### 11.4 视频课程
 
@@ -1599,4 +1459,3 @@ template <typename T> constexpr bool is_rvalue_v = std::is_rvalue_reference_v<T>
 ```
 
 ---
-

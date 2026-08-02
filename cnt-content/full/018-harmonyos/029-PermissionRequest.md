@@ -2072,65 +2072,6 @@ atManager.on('permissionChange', (info) => {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：HarmonyOS 权限等级分为哪三级？
-
-A. normal、dangerous、signature
-B. normal、system_basic、system_core
-C. install、runtime、signature
-D. privacy、security、system
-
-**解析讲解**：B
-
-**解析讲解**：HarmonyOS 权限等级分为 `normal`（普通权限）、`system_basic`（系统基础权限）、`system_core`（系统核心权限）。选项 A 是 Android 的权限等级分类，选项 C 混淆了授权方式与等级，选项 D 是无意义的分类。
-
-**题目 2**：以下哪个权限必须通过 `user_grant` 方式授权？
-
-A. `ohos.permission.INTERNET`
-B. `ohos.permission.GET_NETWORK_INFO`
-C. `ohos.permission.CAMERA`
-D. `ohos.permission.SET_TIME`
-
-**解析讲解**：C
-
-**解析讲解**：`CAMERA` 涉及用户隐私，必须通过 `user_grant` 方式授权（运行时弹窗）。`INTERNET` 与 `GET_NETWORK_INFO` 是 `normal` 权限，采用 `system_grant`（安装时自动授予）。`SET_TIME` 是 `system_core` 权限，仅系统应用可申请。
-
-**题目 3**：`requestPermissionsFromUser` 的弹窗由谁渲染？
-
-A. 应用进程
-B. 系统进程（Ability Manager Service）
-C. 第三方 UI 库
-D. 应用自定义
-
-**解析讲解**：B
-
-**解析讲解**：为防范 Clickjacking 攻击与权限诱导，`requestPermissionsFromUser` 的弹窗由**系统进程**（Ability Manager Service 启动的 `PermissionDialog Ability`）渲染，应用进程无法修改弹窗 UI（仅可通过 `reason` 字段定制文案）。
-
-**题目 4**：用户在设置中撤销已授予的权限后，应用应如何响应？
-
-A. 应用崩溃
-B. 应用无影响，继续使用已打开的资源
-C. 系统服务主动断开受保护资源，应用收到 `onError` 回调
-D. 应用自动重新申请权限
-
-**解析讲解**：C
-
-**解析讲解**：HarmonyOS 设计中，系统服务（如 camera_service）会主动断开受保护资源的连接，应用通过 `onError` 回调感知。应用需自行清理已读取的数据与缓存，系统不强制删除已持久化的数据。应用应监听 `permissionChange` 事件，主动释放资源。
-
-**题目 5**：关于权限组（Permission Group），以下说法正确的是？
-
-A. 组内权限授予一个即全部授予
-B. 组内权限仍需独立弹窗申请
-C. 权限组仅用于展示，不影响授权逻辑
-D. 权限组是 Android 独有概念
-
-**解析讲解**：B
-
-**解析讲解**：HarmonyOS 的权限组**不**支持"组内自动授予"，组内每个权限仍需独立弹窗申请。但弹窗文案会提示"该应用已获得组内其他权限"。权限组的主要作用是减少用户的认知分类负担，而非简化授权流程。
-
 ### 填空题知识点讲解
 
 **题目 1**：HarmonyOS 权限授权方式分为 `______` 与 `______` 两种。
@@ -2341,87 +2282,6 @@ export class PermissionHistoryStore {
 }
 ```
 
-### 9.4 思考题
-
-**题目 1**：为什么 HarmonyOS 选择"权限组内仍独立弹窗"而非 Android 的"组内自动授予"？请从安全性与用户体验两个维度分析。
-
-**安全性维度**：
-
-- 组内自动授予会导致"权限放大"风险：用户仅意图授予"大致位置"，却同时授予了"精确位置"。
-- 独立弹窗确保用户对每个权限的明确知情同意，符合 GDPR 等隐私法规的"目的限定"原则。
-- 防止应用通过"低敏感权限"作为跳板获取"高敏感权限"。
-
-**用户体验维度**：
-
-- 独立弹窗增加了用户决策次数，可能引起"弹窗疲劳"。
-- HarmonyOS 通过弹窗文案提示"已获得组内其他权限"，缓解用户的认知负担。
-- 长期看，独立弹窗培养用户对权限的审慎态度，提升整体生态安全。
-
-**权衡结论**：HarmonyOS 选择安全性优先，是"隐私即设计"原则的体现。虽然短期用户体验略受影响，但长期提升了用户对系统的信任度。
-
-**题目 2**：在分布式场景下，若设备 A 被攻陷，攻击者是否可通过权限同步机制在设备 B 上获得权限？HarmonyOS 如何防御？
-
-**攻击路径分析**：
-
-1. 攻击者攻陷设备 A，获得 `user_grant` 权限授予状态。
-2. 触发权限同步，将 A 上的权限状态同步到设备 B。
-3. 在设备 B 上获得对应权限。
-
-**HarmonyOS 防御机制**：
-
-1. **同步前校验**：设备 B 接收到同步请求时，校验请求是否来自可信设备圈。若设备 A 已被标记为"不可信"，同步请求被拒绝。
-2. **同步范围限制**：仅同步同账号下应用的 `user_grant` 权限，跨账号不同步。攻击者需先攻陷华为账号体系。
-3. **用户可控**：用户可在设置中关闭"跨设备权限同步"，或为单设备单独撤销。
-4. **审计日志**：同步事件写入审计日志，包含源设备、目标设备、权限名、时间戳。异常同步模式（如短时间内大量同步）会触发告警。
-5. **设备绑定**：`system_basic` 与 `system_core` 权限不参与同步，避免系统权限扩散。
-6. **二次确认**：高敏感权限（如 LOCATION、MICROPHONE）首次同步到新设备时，系统弹窗询问用户。
-
-**结论**：HarmonyOS 通过多层防御（可信圈校验、范围限制、用户可控、审计日志、设备绑定、二次确认）将攻陷单设备的风险隔离，无法通过同步机制横向扩散到其他设备。
-
-**题目 3**：如果让你设计一个"AI 驱动的权限风险识别系统"，你会如何实现？需要解决哪些关键问题？
-
-**系统设计**：
-
-1. **数据采集层**：
-   - 应用权限使用频率（如每小时调用 CAMERA 次数）。
-   - 应用权限使用上下文（如调用栈、调用时机）。
-   - 应用行为模式（如后台调用、短时间内爆发调用）。
-   - 应用元数据（如类别、开发者信誉、用户评价）。
-
-2. **特征工程层**：
-   - 时序特征：权限使用的时间分布（白天/夜间、工作日/周末）。
-   - 上下文特征：权限调用与用户操作的关联度。
-   - 异常特征：偏离同类应用均值的标准差。
-   - 网络特征：应用数据传输量与权限使用的相关性。
-
-3. **模型层**：
-   - 监督学习：基于人工标注的恶意/ benign 应用训练分类模型（XGBoost、深度学习）。
-   - 无监督学习：聚类分析识别异常模式（Isolation Forest、Autoencoder）。
-   - 联邦学习：跨设备联合训练，保护用户隐私。
-
-4. **决策层**：
-   - 风险评分：0-100 分，高于阈值触发告警。
-   - 分级响应：低风险（记录日志）、中风险（用户提示）、高风险（限制权限）。
-   - 人工审核：高风险应用提交安全团队复审。
-
-5. **反馈层**：
-   - 用户反馈：用户标记"此应用权限使用合理/不合理"。
-   - 误报修正：模型基于反馈持续优化。
-
-**关键问题**：
-
-1. **隐私悖论**：识别权限风险本身需要采集权限使用数据，可能侵犯用户隐私。解决方案：联邦学习 + 差分隐私。
-2. **误报率**：合法应用可能因业务特殊性被误判。解决方案：人工审核兜底 + 开发者申诉通道。
-3. **冷启动**：新应用缺乏历史数据，难以评估风险。解决方案：基于应用类别先验 + 开发者信誉迁移。
-4. **对抗攻击**：恶意应用可能"模拟"正常行为模式。解决方案：多维度交叉验证 + 动态特征更新。
-5. **设备性能**：本地模型推理开销。解决方案：云端推理 + 端侧轻量模型。
-
-**HarmonyOS NEXT 实践**：HarmonyOS NEXT 已引入初步的 AI 风险识别，基于应用行为识别"过度索权"，向用户告警。未来可扩展为完整的 AI 权限治理系统。
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术文献
 
 [1] J. Anderson. 1972. *Computer Security Technology Planning Study*. Technical Report ESD-TR-73-51, Vol. II, Electronic Systems Division, Air Force Systems Command, Hanscom Field, Bedford, MA. DOI: 10.21236/753901.
@@ -2473,14 +2333,6 @@ export class PermissionHistoryStore {
 [22] X. Jin, R. Krishnan, and R. Sandhu. 2012. A unified attribute-based access control model covering DAC, MAC and RBAC. In *Proceedings of the 27th Annual IFIP WG 11.3 Conference on Data and Applications Security and Privacy (DBSec '12)*. Springer, 41–55. DOI: 10.1007/978-3-642-39200-6_4.
 
 ---
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **HarmonyOS 权限列表**：[https://developer.huawei.com/consumer/cn/doc/harmonyos-references/permissions](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/permissions) —— 完整的 `ohos.permission.*` 权限清单及等级、授权方式说明。
-- **OpenHarmony 安全子系统**：[https://gitee.com/openharmony/security_access_token](https://gitee.com/openharmony/security_access_token) —— 权限管理模块源码，可深入了解实现细节。
-- **HarmonyOS 安全指南**：[https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/security-overview](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/security-overview) —— 涵盖应用安全、数据安全、设备安全的完整指南。
 
 ### 11.2 经典教材
 

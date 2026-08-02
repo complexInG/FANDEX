@@ -2251,8 +2251,6 @@ class CachedConfig {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码的输出是什么？
@@ -2485,8 +2483,6 @@ fun main() {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. JetBrains. "Delegated Properties." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/delegated-properties.html
@@ -2508,16 +2504,6 @@ fun main() {
 7. JetBrains. "KEEP-7: Property delegation." *Kotlin Evolution and Enhancement Process*, 2015. https://github.com/Kotlin/KEEP/blob/master/proposals/signature-polymorphic-callables.md
 
 8. Belyaev, Andrey. "KEEP-17: provideDelegate operator." *Kotlin Evolution and Enhancement Process*, 2016. https://github.com/Kotlin/KEEP/blob/master/proposals/provide-delegate.md
-
-### 10.4 跨语言参考
-
-9. Apple. "Property Wrappers." *Swift Language Guide*, 2024. https://docs.swift.org/swift-book/LanguageGuide/Properties.html
-
-10. Lattner, Chris. "Swift Property Observers." *Swift Evolution Proposals*, 2015.
-
-11. Python Software Foundation. "Implementing Descriptors." *Python Documentation*, 2024. https://docs.python.org/3/howto/descriptor.html
-
-12. ECMA International. "ECMAScript 2024: Proxy." *ECMA-262 Specification*, 2024.
 
 ### 10.5 工程实践
 
@@ -2557,8 +2543,6 @@ fun main() {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 进阶主题
 
 - **Kotlin 2.0 K2 编译器对委托属性的内联优化**：理解 K2 如何减少委托方法调用开销。
@@ -2580,13 +2564,6 @@ fun main() {
 - **《Effective Kotlin》**（Marcin Moskala）：第 3 章 委托属性最佳实践。
 - **《Functional Programming in Kotlin》**（Marco Vermeulen）：函数式委托。
 - **《Kotlin Cookbook》**（Ken Kousen）：委托属性实战技巧。
-
-### 11.4 社区资源
-
-- **Kotlin Slack**：`#delegates` 频道。
-- **Kotlin Discussions**：https://discuss.kotlinlang.org/，委托属性讨论。
-- **Stack Overflow**：`kotlin-delegated-properties` 标签。
-- **GitHub Issues**：https://github.com/JetBrains/kotlin/issues，官方追踪。
 
 ### 11.5 实践项目
 

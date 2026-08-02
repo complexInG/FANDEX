@@ -1628,73 +1628,6 @@ for sub in subs:
     print(f"[{sub.start} -> {sub.end}] {sub.text}")
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题 1**：正则表达式 `a*b+` 匹配以下哪个字符串？
-
-A. `b`  
-B. `aaab`  
-C. `abbb`  
-D. 以上都是  
-
-**解析讲解**：D
-
-**解析讲解**：`a*` 匹配零个或多个 a，`b+` 匹配一个或多个 b。所有选项都符合。
-
----
-
-**题 2**：以下哪个正则可以匹配有效的 IPv4 地址？
-
-A. `\d+\.\d+\.\d+\.\d+`  
-B. `(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.\1){3}`  
-C. `\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}`  
-D. `[0-9]{1,3}(\.[0-9]{1,3}){3}`  
-
-**解析讲解**：C（D 也可，但 C 更清晰）
-
-**解析讲解**：选项 C 匹配 1-3 位的数字四组，是简化版 IPv4 验证。严格版需要选项 B 的格式。
-
----
-
-**题 3**：在 Python 中，`re.findall(r"(\w+)(\d+)", "a1b22c333")` 返回什么？
-
-A. `['a1', 'b22', 'c333']`  
-B. `[('a', '1'), ('b', '22'), ('c', '333')]`  
-C. `['a', 'b', 'c']`  
-D. `['1', '22', '333']`  
-
-**解析讲解**：B
-
-**解析讲解**：当正则包含分组时，`findall` 返回元组列表，每个元组对应一个分组的捕获。
-
----
-
-**题 4**：以下哪个标志让 `.` 匹配换行符？
-
-A. `re.IGNORECASE`  
-B. `re.MULTILINE`  
-C. `re.DOTALL`  
-D. `re.VERBOSE`  
-
-**解析讲解**：C
-
-**解析讲解**：`re.DOTALL`（别名 `re.S`）使 `.` 匹配包括换行符在内的任意字符。
-
----
-
-**题 5**：正则 `(?<=\$)\d+` 在文本 "$100 and $200" 中匹配什么？
-
-A. `['100', '200']`  
-B. `['$100', '$200']`  
-C. `['$']`  
-D. `[]`  
-
-**解析讲解**：A
-
-**解析讲解**：`(?<=\$)` 是后顾断言，匹配 `$` 之后的位置但不消耗 `$`，所以只返回数字部分。
-
 ### 填空题知识点讲解
 
 **题 1**：Python 正则模块的全名是 ______，正则表达式对应的自动机模型是 ______ 。
@@ -1880,58 +1813,6 @@ for pwd in test_passwords:
     print(f"  详情: {result.checks}")
 ```
 
-### 9.4 思考题
-
-**题 1**：为什么说 Python `re` 模块基于回溯 NFA 而非 DFA？这对性能有何影响？
-
-**参考答案要点**：
-
-1. **回溯 NFA 的优势**：支持反向引用、零宽断言、可变长度分组，这些是 DFA 无法实现的；
-2. **回溯 NFA 的劣势**：最坏时间复杂度 $O(2^n)$，存在灾难性回溯风险；
-3. **DFA 的优势**：线性时间 $O(mn)$，无回溯；
-4. **DFA 的劣势**：不支持反向引用，状态空间可能爆炸；
-5. **折中方案**：RE2 在编译时分析模式，若不支持则回退；lazy DFA（Rust regex）按需构造状态；
-6. **实践建议**：可信输入用 `re`，不可信输入用 RE2 或设置超时。
-
----
-
-**题 2**：何时应该使用正则表达式，何时应该改用专用解析器？
-
-**参考答案要点**：
-
-**适合正则**：
-- 简单文本模式匹配
-- 数据验证（邮箱、电话、URL）
-- 日志解析（行级格式固定）
-- 字符串替换
-
-**不适合正则**：
-- 嵌套结构（HTML、XML、JSON）
-- 数学表达式（涉及优先级）
-- 配置文件（TOML、YAML、INI）
-- 语法分析（需要 AST）
-
-**判断标准**：
-- 是否涉及递归结构？是 → 解析器
-- 是否需要错误恢复？是 → 解析器
-- 是否需要 AST？是 → 解析器
-- 是否只是模式匹配？是 → 正则
-
----
-
-**题 3**：解释 `\b` 单词边界的精确语义，并说明在 Unicode 文本中的行为。
-
-**参考答案要点**：
-
-1. **定义**：`\b` 匹配 `\w` 与 `\W` 之间的位置，或 `\w` 与字符串首尾之间的位置；
-2. **示例**：在 `"hello world"` 中，`\b` 匹配 4 个位置（每个单词前后）；
-3. **Python 3 默认行为**：`\w` 等价于 `[a-zA-Z0-9_]` 加上 Unicode 字母数字；
-4. **re.ASCII 标志**：将 `\w` 限制为 ASCII 范围；
-5. **边界情况**：`"_hello_"` 中下划线视为单词字符，`\b` 仅在 `_` 之外匹配；
-6. **多字节字符**：中文字符的边界由 Unicode 属性决定，需注意编码。
-
-## 10. 参考文献
-
 ### 10.1 经典论文与书籍
 
 - [1] S. C. Kleene, "Representation of events in nerve nets and finite automata," in *Automata Studies*, C. E. Shannon and J. McCarthy, Eds. Princeton, NJ: Princeton University Press, 1956, pp. 3-42. doi: 10.1515/9781400882618-002
@@ -1961,8 +1842,6 @@ for pwd in test_passwords:
 - [16] R. S. Cox, "Regular Expression Matching in the Wild," *Dr. Dobb's J.*, 2010. [Online]. Available: https://swtch.com/~rsc/regexp/regexp3.html
 - [17] M. Becchi and P. Crowley, "Extending finite automata to efficiently match Perl-compatible regular expressions," in *Proc. 2008 ACM/IEEE Symp. Archit. Netw. Commun. Syst. (ANCS)*, 2008, pp. 109-120. doi: 10.1109/ANCS.2008.4526175
 - [18] T. Peng, T. Fang, and P. B. G. M. K. H. Kuo, "A survey on regular expression denial of service attacks," *Comput. Secur.*, vol. 92, p. 101756, 2020. doi: 10.1016/j.cose.2020.101756
-
-## 11. 延伸阅读
 
 ### 11.1 推荐书籍
 

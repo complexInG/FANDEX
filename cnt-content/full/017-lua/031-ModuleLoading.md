@@ -1214,75 +1214,6 @@ Love2D 通过 `love.filesystem` 提供跨平台文件访问。
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：. `require` 函数搜索模块的顺序是：
-
-A. `package.searchers` → `package.preload` → `package.loaded`
-B. `package.loaded` → `package.preload` → `package.searchers`
-C. `package.path` → `package.cpath` → `package.preload`
-D. `package.loaded` → `package.searchers` → `package.preload`
-
-**解析讲解**：B
-
-**解析讲解**：`require` 首先检查 `package.loaded` 缓存，然后 `package.preload`，最后通过 `package.searchers` 搜索。
-
----
-
-**常见疑问 2**：. Lua 5.2 移除 `module()` 函数的主要原因是：
-
-A. 性能问题
-B. 污染全局环境，破坏封装
-C. 不支持 C 模块
-D. 与 `require` 冲突
-
-**解析讲解**：B
-
-**解析讲解**：`module()` 函数会隐式设置全局环境，破坏模块封装性，推荐使用"返回模块表"模式。
-
----
-
-**常见疑问 3**：. C 模块的入口函数命名规则是：
-
-A. `lua_module_<name>`
-B. `luaopen_<name>`
-C. `<name>_luaopen`
-D. `register_<name>`
-
-**解析讲解**：B
-
-**解析讲解**：C 模块的入口函数必须命名为 `luaopen_<name>`，其中 `<name>` 是模块名（点号替换为下划线）。
-
----
-
-**常见疑问 4**：. 强制重新加载模块的方法是：
-
-A. `require(name, true)`
-B. `reload(name)`
-C. `package.loaded[name] = nil; require(name)`
-D. `dofile(name)`
-
-**解析讲解**：C
-
-**解析讲解**：`require` 检查 `package.loaded` 缓存，置 nil 后会重新加载。
-
----
-
-**常见疑问 5**：. `package.path` 中的 `?` 表示：
-
-A. 任意字符
-B. 模块名占位符
-C. 路径分隔符
-D. 文件扩展名
-
-**解析讲解**：B
-
-**解析讲解**：`?` 在路径模板中被替换为模块名（点号转为路径分隔符）。
-
----
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：. Lua 5.1 中的 `package.loaders` 在 Lua 5.2 中改名为 `______`，强调其"搜索"语义。
@@ -1496,84 +1427,6 @@ print(math_utils.fibonacci(20))   -- 6765
 
 ---
 
-### 8.4 思考题
-
-**常见疑问 14**：. 为什么 Lua 5.2 移除了 `module()` 函数？请从语言设计角度分析。
-
-**解析讲解**：
-
-`module()` 函数的设计问题：
-
-1. **全局环境污染**：`module("foo")` 自动设置 `_G.foo`，破坏命名空间隔离。
-2. **隐式 `seeall`**：默认使模块可访问全局变量，破坏封装。
-3. **难以静态分析**：模块导出的符号在运行时才能确定。
-4. **不符合"显式优于隐式"原则**：返回模块表模式更清晰。
-5. **与 `local` 不兼容**：`module()` 后无法使用局部变量。
-
-设计哲学：Lua 5.2 倾向于"显式、最小化"的设计，移除 `module()` 是这一原则的体现。
-
----
-
-**常见疑问 15**：. 比较 `package.loaded` 与 Python 的 `sys.modules` 的异同。
-
-**解析讲解**：
-
-相同点：
-
-- 都是模块缓存表，键为模块名，值为模块对象。
-- 都用于避免重复加载。
-- 都可以通过置 nil 强制重新加载。
-
-不同点：
-
-- **Python `sys.modules`** 是 C 实现的字典，Lua `package.loaded` 是 Lua table。
-- **Python** 在导入失败时不会写入 `sys.modules`，Lua 可能写入 `true`。
-- **Python** 支持 `__main__` 模块，Lua 无此概念。
-- **Python** 的模块对象有 `__name__`、`__file__` 等属性，Lua 模块是普通表。
-- **Python** 的 `importlib.reload` 保留模块对象引用，Lua 需重新 require。
-
----
-
-**常见疑问 16**：. 设计一个支持热重载的开发环境，需考虑哪些问题？
-
-**解析讲解**：
-
-1. **模块状态保存**：热重载时需保存模块的状态（如配置、缓存）。
-2. **引用更新**：持有旧模块引用的代码需更新引用。
-3. **依赖关系**：重载一个模块可能触发其依赖的重载。
-4. **副作用清理**：旧模块的副作用（如全局表修改）需清理。
-5. **错误处理**：重载失败时回滚到旧版本。
-6. **C 模块限制**：C 模块无法热重载（动态库符号已加载）。
-
-实现方案：
-
-```lua
-local function hot_reload(name)
-    -- 1. 保存旧状态
-    local old = package.loaded[name]
-
-    -- 2. 清除缓存
-    package.loaded[name] = nil
-
-    -- 3. 尝试重新加载
-    local ok, new = pcall(require, name)
-    if not ok then
-        -- 回滚
-        package.loaded[name] = old
-        error(new)
-    end
-
-    -- 4. 通知依赖该模块的代码更新引用
-    -- （需要额外的引用追踪机制）
-
-    return new
-end
-```
-
----
-
-## 9. 参考文献
-
 ### 9.1 核心文献
 
 - [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, *Lua 5.4 Reference Manual*, PUC-Rio, 2020. [Online]. Available: https://www.lua.org/manual/5.4/
@@ -1606,8 +1459,6 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 
 ---
 
-## 10. 延伸阅读
-
 ### 10.1 书籍
 
 - Roberto Ierusalimschy, *Programming in Lua*, 4th Edition, Chapter 15
@@ -1618,20 +1469,6 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 
 - "The Implementation of Lua 5.0"（JUCS 2005）
 - "LuaRocks: A Package Manager for Lua"（Hisham Muhammad）
-
-### 10.3 在线资源
-
-- Lua 官方站点：https://www.lua.org/
-- LuaRocks：https://luarocks.org/
-- Lua Users Wiki - Modules：http://lua-users.org/wiki/ModulesTutorial
-- Lua 文档：https://www.lua.org/manual/5.4/manual.html#6.3
-
-### 10.4 开源项目参考
-
-- **lua-cjson**：JSON 编解码模块，C 实现
-- **lua-socket**：网络库，多文件模块组织
-- **luafilesystem**：文件系统模块
-- **lpeg**：解析表达式文法库
 
 ### 10.5 与本文档相关章节
 

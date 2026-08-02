@@ -1505,8 +1505,6 @@ future<> processRequest(Request req) {
 
 Seastar 利用模板参数传递 Lambda,确保每个 `.then` 回调内联,实现零开销异步。这与 C++20 协程的设计理念一致,但 Seastar 早于协程标准化多年。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**:写出以下 Lambda 的等价函数对象类:
@@ -1680,54 +1678,6 @@ std::vector<std::move_only_function<void(int)>> callbacksC;
 - **方式 B (模板参数)**:适用热路径、库内泛型算法。缺点:无法在运行时动态注册,类型泄漏到 API。
 - **方式 C (move_only_function)**:适用异步任务、移动捕获资源。缺点:不可复制,需 C++23。
 
-## 参考文献
-
-[1] ISO/IEC 14882:2011. Information technology — Programming languages — C++ [S]. Geneva: ISO, 2011. https://www.iso.org/standard/50372.html
-
-[2] ISO/IEC 14882:2014. Information technology — Programming languages — C++ [S]. Geneva: ISO, 2014. https://www.iso.org/standard/64029.html
-
-[3] ISO/IEC 14882:2017. Information technology — Programming languages — C++ [S]. Geneva: ISO, 2017. https://www.iso.org/standard/68564.html
-
-[4] ISO/IEC 14882:2020. Information technology — Programming languages — C++ [S]. Geneva: ISO, 2020. https://www.iso.org/standard/79358.html
-
-[5] ISO/IEC 14882:2024. Information technology — Programming languages — C++ [S]. Geneva: ISO, 2024. https://www.iso.org/standard/83614.html
-
-[6] Stroustrup B. The C++ Programming Language [M]. 4th ed. Upper Saddle River: Addison-Wesley, 2013. ISBN 978-0-321-56384-2
-
-[7] Stroustrup B, Järvi J, Powell G, et al. Lambda Expressions and Closures: Wording for Monomorphic Lambdas (N2550) [R]. ISO/IEC JTC1/SC22/WG21, 2008. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2550.pdf
-
-[8] Willcock J, Järvi J, Gregor D, et al. Lambda Expressions and Closures for C++ (N2329) [R]. ISO/IEC JTC1/SC22/WG21, 2007. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2329.pdf
-
-[9] Sutter H. Exceptional C++: 47 Engineering Puzzles, Programming Problems, and Solutions [M]. Upper Saddle River: Addison-Wesley, 1999. ISBN 978-0-201-61562-3
-
-[10] Sutter H, Alexandrescu A. C++ Coding Standards: 101 Rules, Guidelines, and Best Practices [M]. Upper Saddle River: Addison-Wesley, 2004. ISBN 978-0-321-11358-0
-
-[11] Meyers S. Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14 [M]. Sebastopol: O'Reilly Media, 2014. ISBN 978-1-4919-0399-5
-
-[12] Järvi J, Powell G, Lumsdaine A. Lambda Expressions and Closures for C++ [C]//Proceedings of the 2007 ACM Symposium on Applied Computing (SAC'07). New York: ACM, 2007: 1158-1163. DOI: 10.1145/1244002.1244256
-
-[13] Gregor D, Järvi J, Siek J, et al. Generic Programming in C++: Concepts and Their Implementation [C]//Proceedings of the 2006 ACM Symposium on Applied Computing (SAC'06). New York: ACM, 2006: 162-167. DOI: 10.1145/1141277.1141317
-
-[14] Sutter H. Thoughts on `std::function` Performance [EB/OL]. (2019-03-15). https://herbsutter.com/2019/03/15/should-you-store-stdfunction/
-
-[15] Alexandrescu A. Modern C++ Design: Generic Programming and Design Patterns Applied [M]. Boston: Addison-Wesley, 2001. ISBN 978-0-201-70431-0
-
-[16] Kiss C, Järvi J. Generic Lambdas: C++14 Language Feature and Its Implementation [C]//Proceedings of the 2014 C++Now Conference. 2014. https://github.com/boostcon/cppnow_presentations_2014
-
-[17] Spertus M. Deducing This (P0847R7) [R]. ISO/IEC JTC1/SC22/WG21, 2021. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0847r7.html
-
-[18] Doust B. Generalized Lambda Capture (Init-capture) (N3648) [R]. ISO/IEC JTC1/SC22/WG21, 2013. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3648.html
-
-[19] Wang Z. Pack Expansion in Lambda Init-Capture (P0780R2) [R]. ISO/IEC JTC1/SC22/WG21, 2019. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0780r2.html
-
-[20] Reis G D, Stroustrup B. General Constant Expressions for System Programming (N3291) [R]. ISO/IEC JTC1/SC22/WG21, 2011. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3291.pdf
-
-[21] Sutton A. C++20 Concepts: The Definitive Guide [EB/OL]. (2020-04-01). https://brevzin.github.io/c++/2020/04/01/concepts-tutorial/
-
-[22] Folly. Folly::Function Documentation [EB/OL]. (2023). https://github.com/facebook/folly/blob/main/folly/docs/Function.md
-
-## 延伸阅读
-
 ### 官方文档
 
 - cppreference: Lambda expressions [EB/OL]. https://en.cppreference.com/w/cpp/language/lambda
@@ -1749,13 +1699,6 @@ std::vector<std::move_only_function<void(int)>> callbacksC;
 - P0624R2: Default Constructible and Assignable Stateless Lambdas [R]. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0624r2.pdf
 - P0847R7: Deducing This (C++23 Recursive Lambda) [R]. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0847r7.html
 - P2280R4: Using Unknown References in Constant Expressions [R]. https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2280r4.html
-
-### 在线资源
-
-- Jason Turner. C++ Weekly Episode 42: Lambda Expressions [EB/OL]. https://www.youtube.com/watch?v=9LF6Jj_9tAM
-- Jason Turner. C++ Weekly Episode 167: C++20's Template Lambdas [EB/OL]. https://www.youtube.com/watch?v=8U8eQyAyNMQ
-- Bartek Filipek. C++20: Lambdas in C++20 [EB/OL]. https://www.cppstories.com/2020/07/lambdas-cpp20.html
-- Bartek Filipek. C++23: Deducing This [EB/OL]. https://www.cppstories.com/2023/02/deducing-this-cpp23/
 
 ### 实战项目
 

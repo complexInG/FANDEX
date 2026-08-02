@@ -1440,8 +1440,6 @@ print(config.database.url)      -- postgres://localhost:5432/mydb
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：编写模式，从字符串 `"Hello, World! 2026"` 中提取 `"Hello"` 和 `"World"` 两个单词。
@@ -1529,38 +1527,6 @@ end
 
 ---
 
-## 10. 参考文献
-
-本节参考文献遵循 ACM Reference Format。
-
-[1] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 1996. Lua—an extensible extension language. *Software: Practice and Experience* 26, 6 (Jun. 1996), 635-652. DOI: https://doi.org/10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P
-
-[2] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2007. The evolution of Lua. In *Proceedings of the Third ACM SIGPLAN Conference on History of Programming Languages* (HOPL III). ACM, New York, NY, 2-1-2-26. DOI: https://doi.org/10.1145/1238844.1238846
-
-[3] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2016. Passing a language through the eye of a needle: how an embeddable language survived. *Communications of the ACM* 59, 7 (Jun. 2016),44-51. DOI: https://doi.org/10.1145/2908116
-
-[4] Ierusalimschy, R. 2013. *Programming in Lua*, 3rd ed. Lua.org, Rio de Janeiro, Brazil.
-
-[5] Ierusalimschy, R. 2009. A text pattern-matching tool based on Parsing Expression Grammars. *Software: Practice and Experience* 39, 3 (Mar. 2009), 221-258. DOI: https://doi.org/10.1002/spe.v39:3
-
-[6] Ford, B. 2004. Parsing expression grammars: a recognition-based syntactic foundation. In *Proceedings of the 31st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (POPL '04). ACM, New York, NY, 111-122. DOI: https://doi.org/10.1145/964001.964012
-
-[7] Hopcroft, J. E., Motwani, R., and Ullman, J. D. 2006. *Introduction to Automata Theory, Languages, and Computation*, 3rd ed. Addison-Wesley, Boston, MA.
-
-[8] Aho, A. V. 1990. Algorithms for finding patterns in strings. In *Handbook of Theoretical Computer Science (Vol. A): Algorithms and Complexity*. MIT Press, Cambridge, MA, 255-300.
-
-[9] Cox, R. 2007. Regular expression matching can be simple and fast (but is slow in Java, Perl, PHP, Python, Ruby, ...). Retrieved from https://swtch.com/~rsc/regexp/regexp1.html
-
-[10] Davis, J., Cerrudo, C., and Manico, J. 2018. Regular expression denial of service (ReDoS). OWASP Cheat Card Series. Retrieved from https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS
-
-[11] Lua.org. 2020. *Lua 5.4 Reference Manual*. Lua.org, Rio de Janeiro, Brazil. DOI: https://doi.org/10.13140/RG.2.2.13787.34089
-
-[12] Steele, G. L., Sussman, G. J., and Fahlman, S. E. 1983. Fast regex matching with finite automata. In *Conference Record of the 1983 ACM Symposium on LISP and Functional Programming*. ACM, New York, NY, 85-92. DOI: https://doi.org/10.1145/800051.802941
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **Lua 5.4 Reference Manual**（https://www.lua.org/manual/5.4/manual.html#6.4）：官方模式匹配 API 文档，覆盖 `string.find/match/gmatch/gsub` 完整语义。
@@ -1586,13 +1552,6 @@ end
 - **LuaJIT**（https://luajit.org/）：高性能 Lua 实现，对模式匹配有专门优化。
 - **OpenResty**（https://openresty.org/）：Nginx + LuaJIT 平台，大量使用模式匹配实现 Web 路由与解析。
 - **Kong**（https://konghq.com/）：API 网关，基于 OpenResty，含大量模式匹配实战代码。
-
-### 11.5 社区资源
-
-- **Lua Users Wiki**（http://lua-users.org/wiki/）：社区知识库，含大量模式匹配技巧。
-- **Stack Overflow Lua 标签**（https://stackoverflow.com/questions/tagged/lua）：活跃的问答社区。
-- **Lua 邮件列表**（https://www.lua.org/lua-l.html）：Lua 官方邮件列表，设计讨论与经验分享。
-- **Reddit /r/lua**（https://www.reddit.com/r/lua/）：Lua 社区讨论区。
 
 ### 11.6 相关工具
 

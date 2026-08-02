@@ -2545,8 +2545,6 @@ const apolloServer = new ApolloServer({
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. **（remember）** ECMAScript 内置的 6 个错误子类分别是 Error、TypeError、______、______、______、______、URIError（含已废弃的 EvalError）。
@@ -2560,62 +2558,6 @@ const apolloServer = new ApolloServer({
 3. **（understand）** `Error.captureStackTrace(target, constructorOpt)` 中第二个参数 `constructorOpt` 的作用是 ______。
 
    **答案**：跳过 `constructorOpt` 函数及其之前的所有调用帧，让堆栈从调用方开始
-
-### 选择题知识点讲解
-
-1. **（analyze）** 下列代码在原生 ES6+ 环境（无 transpile）中的输出是？
-```javascript
-class A extends Error {
-  constructor(m) { super(m); this.name = 'A'; }
-}
-class B extends A {
-  constructor(m) { super(m); this.name = 'B'; }
-}
-const err = new B('test');
-console.log(err instanceof B, err instanceof A, err instanceof Error, err.name);
-```
-
-   - A. `true true true 'A'`
-   - B. `true true true 'B'`
-   - C. `true false true 'B'`
-   - D. `true true false 'B'`
-
-   **答案**：B
-
-   **解释**：原生 ES6+ 环境下 class extends 原型链正确建立，instanceof 链完整（B → A → Error）；name 在 B 的构造函数中被显式设置为 'B'。
-
-2. **（analyze）** 下列代码的输出是？
-```javascript
-const p1 = Promise.reject(new TypeError('A'));
-const p2 = Promise.reject(new RangeError('B'));
-const p3 = Promise.reject(new SyntaxError('C'));
-
-Promise.any([p1, p2, p3]).catch(e => {
-  console.log(e.constructor.name);
-  console.log(e.errors.map(err => err.constructor.name));
-  console.log(e.errors.length);
-});
-```
-
-   - A. `Error`, `['TypeError', 'RangeError', 'SyntaxError']`, `3`
-   - B. `AggregateError`, `['TypeError', 'RangeError', 'SyntaxError']`, `3`
-   - C. `AggregateError`, `['Error', 'Error', 'Error']`, `3`
-   - D. `TypeError`, `['TypeError']`, `1`
-
-   **答案**：B
-
-   **解释**：Promise.any 在所有 Promise 都 reject 时抛出 AggregateError，其 errors 数组保留原始错误实例与顺序。
-
-3. **（evaluate）** 关于自定义 Error 子类的层次设计，下列哪种说法最准确？
-
-   - A. 错误层次越深越好，便于精确分支
-   - B. 应该完全扁平，所有错误直接继承 Error
-   - C. 按业务域分组，每域 2-4 层深度，平衡精确性与可维护性
-   - D. 应该用错误码（code）替代层次设计
-
-   **答案**：C
-
-   **解释**：过深的层次增加维护成本，过浅无法精确分支；按业务域分组并控制深度是工业实践推荐方案。
 
 ### 13.3 代码修复题（code-fix）
 
@@ -2747,8 +2689,6 @@ class AppError extends Error {
 
 ---
 
-## 14. 延伸阅读
-
 ### 14.1 官方规范与提案
 
 - **ECMAScript 2026 Language Specification** - ECMA-262, 17th Edition. Error Objects 章节。https://tc39.es/ecma262/#sec-error-objects
@@ -2779,15 +2719,6 @@ class AppError extends Error {
 - **ow** - https://github.com/kamilkisiela/ow - 函数式参数校验库
 - **zod** - https://github.com/colinhacks/zod - TypeScript 优先的 Schema 校验库
 - **superstruct** - https://github.com/ianstormtaylor/superstruct - 另一个流行的校验库
-
-### 14.5 在线资源
-
-- **MDN Error Reference** - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
-- **V8 Stack Trace API** - https://v8.dev/docs/stack-trace-api
-- **Node.js Error Documentation** - https://nodejs.org/api/errors.html
-- **TC39 Proposal Process** - https://tc39.es/process-document/
-
----
 
 ## 15. 附录
 

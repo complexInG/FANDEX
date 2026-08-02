@@ -4,7 +4,7 @@ title: 查找算法
 module: algorithm
 category: Algorithm/Search
 difficulty: intermediate
-description: 查找（Search）算法的形式化定义、顺序查找 $O(n)$、二分查找 $O(\log n)$、插值查找 $O(\log \log n)$、斐波那契查找、哈希查找 $O(1)$、BST/AVL/红黑树查找、B 树查找、跳表查找（Pugh 1990）、字符串查找（KMP 1977、Boyer-Moore 1977、Rabin-Karp）、布隆过滤器（Bloom 1970）的原理、实现与对比分析，涵盖 Mauchly 1946 二分查找、Luhn 1953 哈希表、Bayer-McCreight 1972 B 树、Guibas-Sedgewick 1978 红黑树、Bloom 1970 布隆过滤器、Knuth-Morris-Pratt 1977 KMP、Boyer-Moore 1977 字符串匹配等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 11/12/13 章、Sedgewick 第 3 章风格习题。
+description: 查找（Search）算法的形式化定义、顺序查找 $O(n)$、二分查找 $O(\log n)$、插值查找 $O(\log \log n)$、斐波那契查找、哈希查找 $O(1)$、BST/AVL/红黑树查找、B 树查找、跳表查找（Pugh 1990）、字符串查找（KMP 1977、Boyer-Moore 1977、Rabin-Karp）、布隆过滤器（Bloom 1970）的原理、实现与对比分析，涵盖 Mauchly 1946 二分查找、Luhn 1953 哈希表、Bayer-McCreight 1972 B 树、Guibas-Sedgewick 1978 红黑树、Bloom 1970 布隆过滤器、Knuth-Morris-Pratt 1977 KMP、Boyer-Moore 1977 字符串匹配等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 11/12/13 章。
 author: fanquanpp
 tags:
 - algorithm
@@ -2404,44 +2404,6 @@ i += max(1, j - bad_char.get(text[i + j], -1))
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：在一个长度为 $n$ 的有序数组中，二分查找的最坏比较次数是多少？
-- A) $n$
-- B) $n/2$
-- C) $\log_2 n$
-- D) $\lfloor \log_2 n \rfloor + 1$
-
-**解析讲解**：D
-
-**解析讲解**：二分查找每次将区间减半，$n$ 个元素最多比较 $\lfloor \log_2 n \rfloor + 1$ 次。例如 $n = 8$ 时，$\lfloor \log_2 8 \rfloor + 1 = 4$。
-
----
-
-**常见疑问 2**：布隆过滤器的误判率 $P_{\text{fp}}$ 与以下哪个参数**无关**？
-- A) 位数组大小 $m$
-- B) 哈希函数个数 $k$
-- C) 已插入元素数 $n$
-- D) 哈希函数的具体实现
-
-**解析讲解**：D
-
-**解析讲解**：误判率 $P_{\text{fp}} \approx (1 - e^{-kn/m})^k$，与 $m$、$k$、$n$ 均有关；但与哈希函数的具体实现无关（假设满足简单一致哈希）。
-
----
-
-**常见疑问 3**：跳表的期望查找复杂度是 $O(\log n)$，其推导基于以下哪种概率分布？
-- A) 正态分布
-- B) 指数分布
-- C) 几何分布
-- D) 泊松分布
-
-**解析讲解**：C
-
-**解析讲解**：跳表每层节点以概率 $p$ 出现在上一层，层高服从几何分布。期望层高 $E[L] = \log_{1/p} n$，每层期望前进 $1/(1-p)$ 步，故总期望比较次数 $O(\log n)$。
-
 ### 填空题知识点讲解
 
 **常见疑问 4**：KMP 算法中，`next[i]` 表示 `pattern[0..i]` 的最长 ______ 等于 ______ 的长度。
@@ -2527,8 +2489,6 @@ Dijkstra 算法的核心操作是 `extract_min`（$V$ 次）与 `decrease_key`�
 
 ---
 
-## 18. 参考文献
-
 ### 18.1 经典教材
 
 1. **Knuth, Donald E.** (1998). *The Art of Computer Programming, Volume 3: Sorting and Searching* (2nd ed.). Addison-Wesley Professional. ISBN 978-0201896855.
@@ -2582,8 +2542,6 @@ Dijkstra 算法的核心操作是 `extract_min`（$V$ 次）与 `decrease_key`�
 
 ---
 
-## 19. 延伸阅读
-
 ### 19.1 理论深入
 
 - **MIT 6.006 Introduction to Algorithms**：第 1 讲 Binary Search、第 7 讲 Hashing、第 9 讲 Balanced Trees、第 10 讲 B-Trees，公开课视频与讲义。URL: https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/.
@@ -2599,15 +2557,6 @@ Dijkstra 算法的核心操作是 `extract_min`（$V$ 次）与 `decrease_key`�
 - **Linux kernel `lib/rbtree.c` 与 `mm/mmap.c`**：红黑树在 VMA（虚拟内存区域）管理中的应用。
 - **Apache Lucene `FST.java`**：FST（Finite State Transducer）在搜索引擎倒排索引字典中的应用，是 Trie 的工业级优化。
 - **Caffeine 缓存 `ProbabilisticFilter.java`**：布隆过滤器与 Cuckoo Filter 在现代 Java 缓存库中的对比应用。
-
-### 19.3 工程实现练习
-
-- **LeetCode 二分查找专题**：https://leetcode.cn/tag/binary-search/（共 300+ 题，按难度递增）。
-- **LeetCode 哈希表专题**：https://leetcode.cn/tag/hash-table/（共 500+ 题，从两数之和到设计类问题）。
-- **LeetCode 字典树专题**：https://leetcode.cn/tag/trie/（含 14 题经典 Trie 题目）。
-- **LeetCode 字符串匹配专题**：https://leetcode.cn/tag/string-matching/（含 KMP、BM、Rabin-Karp 实现）。
-- **Project Euler**：第 351 题 Hexagonal orchards 用到哈希查找优化、第 493 题 Under the rainbow 用到概率分析。
-- **Codeforces Rating 2400+ 字符串题单**：考察 KMP 的 next 数组扩展、Z 函数、AC 自动机等高阶字符串数据结构。
 
 ### 19.4 教学视频
 

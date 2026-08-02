@@ -1181,8 +1181,6 @@ JRebel 通过 Java Agent + 字节码增强实现 **不重启** 的热部署：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 简述类加载生命周期的 5 个阶段，并说明哪些阶段可延迟。
@@ -1249,34 +1247,6 @@ c.cast(o);  // ClassCastException
 15. 比较 JVM 类加载与 Python 模块加载的本质差异。
 16. 在云原生时代，类加载机制是否还重要？GraalVM Native Image 的"无类加载"模式是否会成为主流？
 
-### 综合题知识点讲解
-
-17. 阅读以下代码，回答问题：
-
-```java
-public class Singleton {
-    private static Singleton instance = new Singleton();
-    public static int counter1;
-    public static int counter2 = 0;
-
-    private Singleton() {
-        counter1++;
-        counter2++;
-    }
-
-    public static Singleton getInstance() {
-        return instance;
-    }
-}
-```
-
-问：`Singleton.getInstance()` 后，`counter1` 与 `counter2` 的值分别是多少？为什么？
-
-18. 设计一个基于 ByteBuddy 的 SQL 慢查询监控 Agent，要求：
-    - 拦截 `java.sql.Statement.execute*` 方法。
-    - 记录 SQL 文本与耗时。
-    - 超过阈值时上报到监控中心。
-
 ### 9.7 代码题
 
 19. 实现一个支持版本化的 ClassLoader，可同时加载同一类的多个版本，并通过版本号获取对应实例。
@@ -1284,8 +1254,6 @@ public class Singleton {
 20. 实现一个类加载器隔离测试，验证两个 ClassLoader 加载同类后互相赋值抛 `ClassCastException`，并给出解决方案。
 
 ---
-
-## 10. 参考文献
 
 ### 10.1 官方规范
 
@@ -1309,20 +1277,6 @@ public class Singleton {
 12. **Bracha, G.** "The Java Module System: A Survey". JCP, 2016.
 13. **Winterhalter, R.** "Byte Buddy: Code Generation Made Easy". Java Magazine, 2019.
 
-### 10.4 在线资源
-
-14. OpenJDK Class Loading Guide. https://openjdk.org/groups/core-libs/ClassLoaderGuide.html
-15. Spring Boot Reference: Executable JAR. https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html
-16. Tomcat ClassLoader HOW-TO. https://tomcat.apache.org/tomcat-10.1-doc/class-loader-howto.html
-17. OSGi Core Specification. https://docs.osgi.org/specification/osgi.core/8.0.0/
-18. ASM User Guide. https://asm.ow2.io/asm4-guide.pdf
-19. ByteBuddy Tutorial. https://bytebuddy.net/#/tutorial
-20. Arthas Documentation. https://arthas.aliyun.com/doc/
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 相关章节
 
 - `java/JVM内存模型`：类存储在方法区与堆的细节。
@@ -1339,15 +1293,6 @@ public class Singleton {
 - **JEP 483**：Ahead-of-Time Class Loading & Linking（Java 23+）。
 - **Project Leyden**：Java 静态镜像，挑战 Native Image。
 - **JFR Class Loading Events**：生产环境类加载监控。
-
-### 11.3 社区资源
-
-- OpenJDK Class Library & Tools 邮件列表：core-libs-dev@openjdk.org
-- Spring Framework Issues：https://github.com/spring-projects/spring-framework/issues
-- ByteBuddy GitHub：https://github.com/raphw/byte-buddy
-- Arthas GitHub：https://github.com/alibaba/arthas
-
----
 
 ## 附录 A：常用 JVM 参数速查
 

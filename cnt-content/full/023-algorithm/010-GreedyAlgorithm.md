@@ -4,7 +4,7 @@ title: 贪心算法
 module: algorithm
 category: Algorithm/Greedy
 difficulty: intermediate
-description: 贪心（Greedy）算法的形式化定义、贪心选择性质与最优子结构、拟阵理论（Edmonds 1971）统一框架、交换论证/保持领先/势能下降三大正确性证明方法、活动选择、哈夫曼编码（Huffman 1952）、Kruskal 最小生成树（Kruskal 1956）、Prim 最小生成树（Prim 1957）、Dijkstra 单源最短路（Dijkstra 1959）、分数背包、任务调度、区间调度的原理、实现与对比分析，涵盖 Huffman 1952 MIT、Kruskal 1956 Proc. AMS、Prim 1957 BSTJ、Dijkstra 1959 Numerische Mathematik、Rado 1957、Edmonds 1971 Mathematical Programming 的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 16/23/24 章、Kleinberg-Tardos 第 4 章风格习题。
+description: 贪心（Greedy）算法的形式化定义、贪心选择性质与最优子结构、拟阵理论（Edmonds 1971）统一框架、交换论证/保持领先/势能下降三大正确性证明方法、活动选择、哈夫曼编码（Huffman 1952）、Kruskal 最小生成树（Kruskal 1956）、Prim 最小生成树（Prim 1957）、Dijkstra 单源最短路（Dijkstra 1959）、分数背包、任务调度、区间调度的原理、实现与对比分析，涵盖 Huffman 1952 MIT、Kruskal 1956 Proc. AMS、Prim 1957 BSTJ、Dijkstra 1959 Numerische Mathematik、Rado 1957、Edmonds 1971 Mathematical Programming 的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 16/23/24 章。
 author: fanquanpp
 tags:
 - algorithm
@@ -1025,55 +1025,6 @@ Kruskal 对重边无影响（按权重排序后重边按任意顺序处理），
 
 LeetCode 621 中冷却 $n$ 表示同类任务间至少 $n$ 个间隔，非总间隔。
 
-## 14. 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**1. 下列问题中，能用贪心算法最优求解的是：**
-
-A. 0-1 背包  
-B. 旅行商问题  
-C. 分数背包  
-D. 加权区间调度
-
-**解析讲解**：C。分数背包满足贪心选择性质；0-1 背包需 DP；TSP NP-hard；加权区间调度需 DP。
-
-**2. Kruskal 算法的时间复杂度（并查集 + 排序）为：**
-
-A. $O(V^2)$  
-B. $O(E \log V)$  
-C. $O(E \log E)$  
-D. $O(V + E)$
-
-**解析讲解**：C。排序 $O(E \log E)$，DSU $O(E \alpha(V))$，总和 $O(E \log E)$。
-
-**3. 下列关于拟阵的描述，错误的是：**
-
-A. 图拟阵的独立集是森林  
-B. 拟阵上贪心必最优  
-C. 拟阵满足遗传性、扩张性、空集性  
-D. 0-1 背包可行解集构成拟阵
-
-**解析讲解**：D。0-1 背包可行解集不满足扩张性（添物品可能超重），不构成拟阵。
-
-**4. Dijkstra 算法在何种情况下失效：**
-
-A. 边权为 0  
-B. 边权为正  
-C. 存在负边  
-D. 图不连通
-
-**解析讲解**：C。Dijkstra 假设非负边权，负边时已确定顶点可能被更新。
-
-**5. Huffman 编码的正确性证明使用的主要方法是：**
-
-A. 保持领先  
-B. 交换论证 + 最优子结构  
-C. 势能下降  
-D. 拟阵归约
-
-**解析讲解**：B。Huffman 通过交换论证证明贪心选择性质（最深兄弟是频率最小的两个），再用最优子结构归纳。
-
 ### 填空题知识点讲解
 
 **1.** Kruskal 算法使用 ____ 数据结构检测环，复杂度近似 ____。
@@ -1151,8 +1102,6 @@ def dijkstra_buggy(adj, src):
 
 **解析讲解**：稀疏图（$E \approx V$）：Kruskal $O(E \log E) = O(V \log V)$ 优于 Prim $O(E \log V) = O(V \log V)$（相当）或 $O(V^2)$（邻接矩阵）。稠密图（$E \approx V^2$）：Prim 邻接矩阵 $O(V^2)$ 优于 Kruskal $O(V^2 \log V)$。原因：Kruskal 全局排序边，稠密图排序成本高；Prim 顶点扩展，邻接矩阵直接遍历邻居 $O(V)$，总 $O(V^2)$。
 
-## 15. 参考文献
-
 ### 15.1 经典教材
 
 1. **Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C.** (2022). *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305. Chapter 16 (Greedy Algorithms), Chapter 23 (MST), Chapter 24 (Dijkstra).
@@ -1180,16 +1129,6 @@ def dijkstra_buggy(adj, src):
 17. **Kubernetes Scheduler.** https://kubernetes.io/docs/concepts/scheduling-eviction/.
 18. **CPython heapq.** https://github.com/python/cpython/blob/main/Lib/heapq.py.
 
-### 15.4 在线资源
-
-19. **VisuAlgo.** https://visualgo.net/. MST 与 Dijkstra 可视化。
-20. **LeetCode Greedy.** https://leetcode.com/tag/greedy/.
-21. **CP-Algorithms.** https://cp-algorithms.com/graph/mst_kruskal.html.
-22. **CMU 15-211 Lecture Notes.** Greedy Correctness Proofs.
-23. **Stanford CS161.** Design and Analysis of Algorithms.
-
-## 16. 延伸阅读
-
 ### 16.1 理论深入
 
 - **Lawler, E. L.** (1976). *Combinatorial Optimization: Networks and Matroids*. Holt, Rinehart and Winston. 拟阵优化经典；
@@ -1203,15 +1142,6 @@ def dijkstra_buggy(adj, src):
 - **在线算法**：贪心在线决策（缓存替换 LRU/K-LRU）；
 - **子模优化**：子模函数最大化的贪心 $(1-1/e)$ 近似（Nemhauser 1978）；
 - **机器学习**：决策树 ID3/C4.5 用信息增益贪心选择特征。
-
-### 16.3 工程实现练习
-
-1. **实现一个完整的 Huffman 压缩/解压器**：含文件 I/O、规范化哈夫曼、自适应哈夫曼；
-2. **实现 Kruskal + 并查集**：含路径压缩、按秩合并；
-3. **实现 Dijkstra + Fibonacci 堆**：达到 $O(E + V \log V)$；
-4. **实现一个 OSPF 路由模拟器**：Dijkstra 计算路由表；
-5. **实现 Kubernetes 风格的 bin-packing 调度器**：贪心装箱；
-6. **实现一个 JPEG 简化版**：DCT + 量化 + Huffman。
 
 ### 16.4 教学视频
 
@@ -1297,16 +1227,7 @@ flowchart TD
 
 > **核心要点**：贪心算法通过局部最优达到全局最优，正确性靠贪心选择性质 + 最优子结构保证。Edmonds 1971 拟阵理论提供统一判据。六大经典贪心算法（活动选择、Huffman 编码、Kruskal、Prim、Dijkstra、分数背包）覆盖压缩、网络设计、最短路、调度四大应用领域。掌握交换论证、保持领先、拟阵归约三大证明方法，是算法工程师的核心素养。
 
-## 参考文献
-
-算法导论（CLRS）：https://mitpress.mit.edu/9780262046305/
-LeetCode：https://leetcode.cn/
-OI Wiki：https://oi-wiki.org/
-Visualgo 可视化：https://visualgo.net/zh
-
 ## 延伸阅读
-
 数据结构与算法基础，见 023-algorithm 模块文档。
 数学基础（离散数学），见 028-discrete-math 模块。
 编程语言实现，见各语言模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供算法课程。

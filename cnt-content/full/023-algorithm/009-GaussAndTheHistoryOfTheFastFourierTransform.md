@@ -4,7 +4,7 @@ title: 分治算法
 module: algorithm
 category: Algorithm Strategies
 difficulty: intermediate
-description: 分治（Divide and Conquer）算法的形式化定义、三步范式（分解-解决-合并）、递推关系 $T(n) = aT(n/b) + f(n)$ 与主定理（Master Theorem, Bentley-Haken-Saxe 1980）三种情况的完整证明、分治与递归的关系、归并排序（von Neumann 1945 EDVAC）、快速排序（Hoare 1961）、Karatsuba 大整数乘法（Karatsuba-Ofman 1963 Soviet Physics-Doklady 7:595-596）、Strassen 矩阵乘法（Strassen 1969 Numerische Mathematik 13(4):354-356）、快速傅里叶变换 FFT（Cooley-Tukey 1965 Mathematics of Computation 19:297-301）、最近点对（Bentley-Shamos 1976）的原理、实现与对比分析，涵盖 von Neumann 1945 EDVAC、Karatsuba 1960 莫斯科大学研讨会、Cooley-Tukey 1965 IBM Watson、Strassen 1969 突破 $O(n^3)$、Bentley-Haken-Saxe 1980 主定理的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 2/4/7 章、Kleinberg-Tardos 第 5 章风格习题。
+description: 分治（Divide and Conquer）算法的形式化定义、三步范式（分解-解决-合并）、递推关系 $T(n) = aT(n/b) + f(n)$ 与主定理（Master Theorem, Bentley-Haken-Saxe 1980）三种情况的完整证明、分治与递归的关系、归并排序（von Neumann 1945 EDVAC）、快速排序（Hoare 1961）、Karatsuba 大整数乘法（Karatsuba-Ofman 1963 Soviet Physics-Doklady 7:595-596）、Strassen 矩阵乘法（Strassen 1969 Numerische Mathematik 13(4):354-356）、快速傅里叶变换 FFT（Cooley-Tukey 1965 Mathematics of Computation 19:297-301）、最近点对（Bentley-Shamos 1976）的原理、实现与对比分析，涵盖 von Neumann 1945 EDVAC、Karatsuba 1960 莫斯科大学研讨会、Cooley-Tukey 1965 IBM Watson、Strassen 1969 突破 $O(n^3)$、Bentley-Haken-Saxe 1980 主定理的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 2/4/7 章。
 author: fanquanpp
 tags:
 - algorithm
@@ -1513,50 +1513,6 @@ def reducer(word, counts):
 
 10. **并行分治任务窃取不均**：子问题规模差异大导致某些 worker 空闲。**解决**：用 work-stealing 调度器（如 Java ForkJoinPool、Intel TBB）。
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-1. 主定理 $T(n) = 4T(n/2) + O(n)$ 的解为：
-   - A. $\Theta(n)$
-   - B. $\Theta(n \log n)$
-   - C. $\Theta(n^2)$
-   - D. $\Theta(n^2 \log n)$
-
-   **答案**：C。$\log_2 4 = 2$，$f(n) = O(n) = O(n^{2-\epsilon})$，情况 1，$T(n) = \Theta(n^2)$。
-
-2. Karatsuba 算法把 4 次乘法减为 3 次，其代数恒等式核心是：
-   - A. $(a+b)^2 = a^2 + 2ab + b^2$
-   - B. $(a+b)(c+d) = ac + ad + bc + bd$
-   - C. $a^2 - b^2 = (a+b)(a-b)$
-   - D. $(ab)^n = a^n b^n$
-
-   **答案**：B。用 $(a+b)(c+d) = ac + ad + bc + bd$ 一次乘法代替 $ad + bc$ 两次乘法。
-
-3. Strassen 算法把 8 次乘法减为 7 次，复杂度从 $O(n^3)$ 降到：
-   - A. $O(n^{2.5})$
-   - B. $O(n^{\log_2 7}) \approx O(n^{2.807})$
-   - C. $O(n^2 \log n)$
-   - D. $O(n^2)$
-
-   **答案**：B。$T(n) = 7T(n/2) + O(n^2)$，$\log_2 7 \approx 2.807$。
-
-4. Cooley-Tukey FFT 把 DFT 从 $O(N^2)$ 降到 $O(N \log N)$，其核心利用的性质是：
-   - A. 单位根的对称性 $\omega_N^{k+N/2} = -\omega_N^k$
-   - B. 实数的传递性
-   - C. 复数的共轭性
-   - D. 多项式的因式分解
-
-   **答案**：A。利用 $\omega_N^{k+N/2} = -\omega_N^k$ 把 $N$ 点 DFT 分为两个 $N/2$ 点 DFT。
-
-5. 最近点对 strip 检查中，每点至多检查 7 个邻居，原因是：
-   - A. 平面几何定理保证
-   - B. strip 宽度 $2d$，每 $d \times d$ 方格至多 4 个点，7 个邻居覆盖
-   - C. 经验值，实际可调
-   - D. 主定理推导
-
-   **答案**：B。strip 宽度 $2d$，按 $y$ 排序后，每点只需检查 $y$ 差小于 $d$ 的点。$d \times d$ 方格至多 4 个点（鸽笼），故 7 邻居足够。
-
 ### 填空题知识点讲解
 
 1. 主定理情况 2 的形式化条件是 $f(n) = \Theta(n^{\log_b a} \log^k n)$，对应 $T(n) = \Theta($______$)$。
@@ -1646,8 +1602,6 @@ else:
 
    **参考答案**：(1) **Divide**：HDFS 把大文件切成 64-128MB 的块，每块分配给一个 Mapper；(2) **Conquer**：每个 Mapper 独立处理自己块，对每行分词后输出 `(word, 1)`；(3) **Combine**：Shuffle 阶段按 word 聚合，Reducer 接收 `(word, [1,1,...])` 后求和输出 `(word, total_count)`。这与归并排序结构同构——Map = 分解+递归，Shuffle = 收集子结果，Reduce = 合并。MapReduce 还可选 Combiner（本地 Reducer）减少网络传输，类似归并排序的预合并小段。
 
-## 14. 参考文献
-
 ### 14.1 经典教材
 
 1. Cormen, T. H., Leiserson, C. E., Rivest, R. L., Stein, C. (2022). *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305. Chapter 2 (Merge Sort), Chapter 4 (Divide-and-Conquer, Master Theorem, Strassen), Chapter 7 (Quicksort), Chapter 33 (Closest Pair).
@@ -1676,15 +1630,6 @@ else:
 18. Heideman, M. T., Johnson, D. H., Burrus, C. S. (1984). Gauss and the history of the fast Fourier transform. *IEEE ASSP Magazine* 1(4):14-21.（Gauss 1805 FFT 史料）
 19. Harvey, D., van der Hoeven, J. (2021). Integer multiplication in time $O(n \log n)$. *Annals of Mathematics* 193(2):563-617.（大整数乘法最优上界）
 
-### 14.4 在线资源
-
-20. **VisuAlgo**: https://visualgo.net/ — 排序、分治可视化
-21. **USC EE 599**: https://hal.archives-ouvertes.fr/hal-02389203/ — FFT 工程实践
-22. **MIT 6.046J**: https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2015/ — 分治算法课
-23. **CMU 15-451**: https://www.cs.cmu.edu/~15451/ — 算法设计课
-
-## 15. 延伸阅读
-
 ### 15.1 理论深入
 
 - **Akra-Bazzi 定理**：更通用的递推解法，处理 $T(n) = \sum_i a_i T(n/b_i) + g(n)$（多个不同 $b_i$）。Akra-Bazzi 1998 在《Computing* 61(2):115-127 提出。
@@ -1698,14 +1643,6 @@ else:
 - **机器学习**：决策树训练（ID3/C4.5）、Kd 树最近邻搜索、K-Means 初始化。
 - **数据库**：外部归并排序、B+ 树分裂、Hash Join 分桶。
 - **分布式系统**：MapReduce、Spark RDD 分区、Gossip 协议。
-
-### 15.3 工程实现练习
-
-1. **实现 introsort**：C++ std::sort 风格，快排+堆排+插入排序混合，保证 $O(n \log n)$ 最坏。
-2. **实现 Timsort**：Python list.sort 风格，归并+二分插入+自然段检测。
-3. **实现 FFTW 风格 FFT**：迭代+SIMD+缓存优化。
-4. **实现并行归并排序**：使用 OpenMP 或 C++17 parallel STL。
-5. **实现 MapReduce 词频统计**：用 Python multiprocessing 或 Hadoop streaming。
 
 ### 15.4 教学视频
 

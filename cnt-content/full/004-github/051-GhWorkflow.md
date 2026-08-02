@@ -5,7 +5,7 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: 以"运行一个 workflow 的完整生命周期"为主线，讲解 gh workflow 系列命令，涵盖查看、手动触发、参数传递、启用与禁用，配以原理讲解、错误对策与实战练习。
+description: 以"运行一个 workflow 的完整生命周期"为主线，讲解 gh workflow 系列命令，涵盖查看、手动触发、参数传递、启用与禁用，配以原理讲解、错误对策。
 author: fanquanpp
 updated: '2026-08-02'
 related: []
@@ -259,93 +259,13 @@ gh workflow enable deploy.yml
 
 ---
 
-## 实战练习
-
-### 练习 1：列出并读懂仓库流水线（入门）
-
-- **题目**：在你自己或任意公开仓库中，列出所有 workflow，并查看其中一条的 YAML 定义。
-- **提示**：先 `gh workflow list`，再 `gh workflow view <名字> --yaml`；可在 `-R owner/repo` 指定别人的仓库练手（如 `cli/cli`）。
-- **参考答案要点**：
-  ```bash
-  gh workflow list
-  gh workflow view deploy.yml --yaml
-  ```
-
-### 练习 2：手动触发并传参（入门）
-
-- **题目**：为练习仓库创建一份支持手动触发的 workflow（含一个 `message` 输入），然后从命令行触发并传值。
-- **提示**：workflow 文件要放 `.github/workflows/`；`on.workflow_dispatch.inputs.message` 声明参数；触发用 `-f message=你好`。
-- **参考答案要点**：
-  ```yaml
-  # .github/workflows/hello.yml
-  name: hello
-  on:
-    workflow_dispatch:
-      inputs:
-        message:
-          description: 问候语
-          default: world
-  jobs:
-    say:
-      runs-on: ubuntu-latest
-      steps:
-        - run: echo "hello ${{ github.event.inputs.message }}"
-  ```
-  ```bash
-  git add .github/workflows/hello.yml && git commit -m "add hello workflow" && git push
-  gh workflow run hello.yml -f message=大家好
-  ```
-
-### 练习 3：监控运行进度（进阶）
-
-- **题目**：触发一次运行后，用命令列出运行记录、找到最新一条并实时跟随到结束，最后查看失败日志。
-- **提示**：`gh run list` 拿到 ID；`gh run watch` 跟随；`gh run view <ID> --log-failed` 看失败日志。
-- **参考答案要点**：
-  ```bash
-  gh workflow run hello.yml -f message=test
-  gh run list --workflow hello.yml
-  gh run watch <上一步拿到的 RUN_ID>
-  ```
-
-### 练习 4：启停与恢复（进阶）
-
-- **题目**：临时禁用 `hello.yml` 流水线，验证 `list` 中状态变为 disabled，再恢复启用。
-- **提示**：`disable` 后 `gh workflow list --all` 查看状态。
-- **参考答案要点**：
-  ```bash
-  gh workflow disable hello.yml
-  gh workflow list --all
-  gh workflow enable hello.yml
-  ```
-
-### 练习 5：JSON 方式批量传参（挑战）
-
-- **题目**：把 `{"message":"auto","count":"3"}` 这样的 JSON 通过标准输入传给 workflow 触发，验证参数正确写入。
-- **提示**：`echo '...' | gh workflow run hello.yml --json`；workflow 中需额外声明 `count` 输入。
-- **参考答案要点**：
-  ```bash
-  echo '{"message":"auto","count":"3"}' | gh workflow run hello.yml --json
-  gh run list --workflow hello.yml
-  ```
-
----
-
 ## 一句话记忆
 
 **Workflow 是流水线配置文件，`gh workflow run` 是启动按钮（只对声明了 workflow_dispatch 的流水线有效），`list/view` 负责检查，`disable/enable` 负责拉闸与送电。**
 
 ---
 
-## 参考链接
-
-- GitHub CLI 官方手册 gh workflow：https://cli.github.com/manual/gh_workflow
-- GitHub CLI 官方手册 gh workflow run：https://cli.github.com/manual/gh_workflow_run
-- GitHub CLI 官方手册 gh workflow view：https://cli.github.com/manual/gh_workflow_view
-- GitHub 文档：手动运行工作流：https://docs.github.com/zh/actions/managing-workflow-runs/manually-running-a-workflow
-
 ## 延伸阅读
-
 - GitHub Actions 原理与 YAML 编写，见 004-github 模块《GitHubActionsCICD》。
 - Actions 触发方式详解，见 004-github 模块《ActionsTrigger》。
 - 运行监控与日志查看，可查阅 `gh run --help` 及官方手册。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

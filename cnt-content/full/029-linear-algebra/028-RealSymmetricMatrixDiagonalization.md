@@ -4,13 +4,12 @@ title: 实对称矩阵的对角化
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: advanced
-description: 实对称矩阵的性质（特征值为实数、不同特征值特征向量正交），谱定理，正交对角化步骤与应用（二次型、PCA），含 0 基础类比、完整例题、常见错误对策与实战练习。
+description: 实对称矩阵的性质（特征值为实数、不同特征值特征向量正交），谱定理，正交对角化步骤与应用（二次型、PCA），含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/特征值性质'
   - 'linear-algebra/矩阵对角化'
-  - 'linear-algebra/特征值典型例题'
   - 'linear-algebra/二次型的标准形'
 prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
@@ -174,8 +173,6 @@ PCA 的核心是对协方差矩阵（实对称矩阵）做正交对角化：
 
 由于特征值可排序、特征向量标准正交，PCA 的"取前 $k$ 个主成分降维"就是取谱分解的前 $k$ 大谱项——这就是"对称性"在数据科学中的直接红利。
 
-## 5. 典型例题
-
 ### 例1（三阶实对称矩阵反求矩阵）
 
 设 $A$ 为 3 阶实对称矩阵，$r(A) = 2$，$A^2 + 2A = O$，求 $A$ 的特征值。
@@ -219,58 +216,6 @@ $$A = \|\boldsymbol{\alpha}\|^2 \boldsymbol{q}_1\boldsymbol{q}_1^T + 0 \cdot (\c
 | 用"秩 = 非零特征值个数"处理不可对角化矩阵 | 前提条件忽略 | 忘记该结论依赖可对角化 | 先确认矩阵可对角化（实对称/特征值互异）再使用 |
 | $Q^TAQ$ 中把 $Q^T$ 写成 $Q^{-1}$ 后不再处理 | 计算规范问题 | 忘记 $Q^{-1} = Q^T$ 的便利 | 验证时直接用 $Q^TAQ$，不必算 $Q^{-1}$ |
 
-## 7. 实战练习
-
-### 练习1（基础：二阶正交对角化）
-
-将 $A = \begin{pmatrix} 1 & -2 \\ -2 & 1 \end{pmatrix}$ 正交对角化。
-
-**提示**：特征多项式 $(1-\lambda)^2 - 4$；两个特征值互异，特征向量自动正交，只需单位化。
-
-**参考答案要点**：$\lambda_1 = 3$，$\lambda_2 = -1$；$\boldsymbol{q}_1 = \frac{1}{\sqrt{2}}(1, -1)^T$，$\boldsymbol{q}_2 = \frac{1}{\sqrt{2}}(1, 1)^T$；$Q = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ -1 & 1 \end{pmatrix}$，$\Lambda = \begin{pmatrix} 3 & 0 \\ 0 & -1 \end{pmatrix}$。
-
-### 练习2（进阶：三阶重根正交对角化）
-
-将 $A = \begin{pmatrix} 1 & 2 & 2 \\ 2 & 1 & 2 \\ 2 & 2 & 1 \end{pmatrix}$ 正交对角化。
-
-**提示**：特征值 $5$（单）与 $-1$（二重，见 025 篇 3.4）；对 $\lambda = -1$ 的两个基础解系向量做施密特正交化再单位化。
-
-**参考答案要点**：$\lambda = 5$：$\boldsymbol{q}_1 = \frac{1}{\sqrt{3}}(1, 1, 1)^T$；$\lambda = -1$：先取 $\boldsymbol{\alpha}_1 = (-1, 1, 0)^T$，$\boldsymbol{\alpha}_2 = (-1, 0, 1)^T$，正交化得 $\boldsymbol{q}_2 = \frac{1}{\sqrt{2}}(-1, 1, 0)^T$，$\boldsymbol{q}_3 = \frac{1}{\sqrt{6}}(-1, -1, 2)^T$。$Q^TAQ = \text{diag}(5, -1, -1)$。
-
-### 练习3（进阶：证明对称矩阵正交可对角化条件）
-
-证明：若 $A$ 可正交对角化（存在正交 $Q$ 使 $Q^TAQ$ 为对角矩阵），则 $A$ 必为对称矩阵。
-
-**提示**：对 $A = Q\Lambda Q^T$ 两边取转置，利用 $(\Lambda)^T = \Lambda$。
-
-**参考答案要点**：$A^T = (Q\Lambda Q^T)^T = (Q^T)^T\Lambda^T Q^T = Q\Lambda Q^T = A$，故 $A$ 对称。这说明"可正交对角化"与"实对称"互为充要条件。
-
-### 练习4（综合：利用特征值反求矩阵）
-
-设 $A$ 为 2 阶实对称矩阵，特征值为 $3$ 与 $-1$，且属于 $3$ 的特征向量为 $(1, 1)^T$，求 $A$。
-
-**提示**：用谱分解 $A = 3\boldsymbol{q}_1\boldsymbol{q}_1^T + (-1)\boldsymbol{q}_2\boldsymbol{q}_2^T$，其中 $\boldsymbol{q}_2$ 与 $\boldsymbol{q}_1$ 正交。
-
-**参考答案要点**：$\boldsymbol{q}_1 = \frac{1}{\sqrt{2}}(1, 1)^T$，$\boldsymbol{q}_2 = \frac{1}{\sqrt{2}}(1, -1)^T$。$A = 3 \cdot \frac{1}{2}\begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix} - 1 \cdot \frac{1}{2}\begin{pmatrix} 1 & -1 \\ -1 & 1 \end{pmatrix} = \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}$。验证：$A(1,1)^T = (3, 3)^T$，$A(1,-1)^T = (-1, 1)^T$。
-
-### 练习5（挑战：谱分解的应用）
-
-设 $A$ 为 $n$ 阶实对称矩阵，证明 $A = O$ 当且仅当 $A$ 的所有特征值为 0。
-
-**提示**：必要性显然；充分性用谱分解 $A = Q\Lambda Q^T$，$\Lambda = O$ 时 $A = Q \cdot O \cdot Q^T = O$。
-
-**参考答案要点**：若 $\Lambda = O$，则 $A = QOQ^T = O$。反方向：$A = O$ 时特征值全为 0 显然。故等价。推论：实对称矩阵 $\text{tr}(A^k) = 0$（对所有 $k$）时必有 $A = O$（因为特征值全为 0 且可对角化）。
-
 ## 8. 一句话记忆
 
 **实对称矩阵是"对称建筑"：特征值全是实数，不同特征值的特征向量自动正交，且必可正交对角化 $A = Q\Lambda Q^T$——同一特征值的向量用施密特正交化补正交，最后全部单位化拼成 $Q$。**
-
-## 参考链接与延伸阅读
-
-- 同济大学数学科学学院《工程数学 线性代数（第七版）》，高等教育出版社，第 5 章 §4 对称矩阵的对角化（三个引理与谱定理的权威表述）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- 山东理工大学线性代数课件 §5.4 实对称矩阵的相似对角形（特征值为实数的完整证明）：https://etcnew.sdut.edu.cn/meol/common/script/preview/download_preview.jsp?fileid=2451101&resid=524131&lid=39469&preview=preview
-- Purdue University《Linear Algebra and its Applications》（Lay 教材讲义，§7.1 对称矩阵的对角化与谱定理，含不同特征值特征向量正交的证明）：https://www.math.purdue.edu/~xu1121/Sec7.1
-- MIT 18.06 Linear Algebra（Strang 第 24-25 讲对称矩阵与正定矩阵、谱分解）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- LibreTexts Linear Algebra（8.2 正交对角化与主轴定理）：https://math.libretexts.org/Bookshelves/Linear_Algebra/Linear_Algebra_with_Applications_(Nicholson)/08%3A_Orthogonality/8.02%3A_Orthogonal_Diagonalization
-
-延伸阅读：矩阵对角化（一般情形，前置知识）；施密特正交化（本篇第 4 步的工具）；二次型的标准形（正交对角化的直接应用）；特征值典型例题（实对称矩阵综合题）。

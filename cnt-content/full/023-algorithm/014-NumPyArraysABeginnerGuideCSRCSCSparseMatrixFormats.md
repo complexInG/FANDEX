@@ -4,7 +4,7 @@ title: 数组与动态数组
 module: algorithm
 category: Algorithm/Array
 difficulty: beginner
-description: 数组（Array）与动态数组（Dynamic Array）的连续内存模型、随机访问 $O(1)$ 原理、倍增扩容均摊 $O(1)$ 分析、行优先/列优先多维布局、稀疏数组 CSR/CSC、双指针/滑动窗口/前缀和/差分等核心技巧，涵盖 Von Neumann 1945 EDVAC、Iverson 1962 APL、Stepanov 1994 STL 等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 10 章、Sedgewick 第 1 章风格习题。
+description: 数组（Array）与动态数组（Dynamic Array）的连续内存模型、随机访问 $O(1)$ 原理、倍增扩容均摊 $O(1)$ 分析、行优先/列优先多维布局、稀疏数组 CSR/CSC、双指针/滑动窗口/前缀和/差分等核心技巧，涵盖 Von Neumann 1945 EDVAC、Iverson 1962 APL、Stepanov 1994 STL 等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 10 章。
 author: fanquanpp
 tags:
 - algorithm
@@ -2160,43 +2160,6 @@ s1[1] = 99  // 不影响 s2
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**1.1** 关于动态数组的 `append` 操作，下列说法正确的是：
-
-A. 最坏情况时间复杂度为 $O(1)$
-B. 平均情况时间复杂度为 $O(1)$
-C. 均摊时间复杂度为 $O(1)$
-D. 渐进时间复杂度为 $O(n)$
-
-**解析讲解**：C
-
-**解析讲解**：最坏情况（触发扩容）为 $O(n)$，但均摊到 $n$ 次操作后为 $O(1)$。"平均"在算法分析中通常指期望复杂度（需假设输入分布），而"均摊"是对操作序列的严格分析。
-
-**1.2** 一个容量为 8 的动态数组，倍增扩容策略下，从空开始连续 `append` 17 个元素，共触发多少次扩容？
-
-A. 3 次
-B. 4 次
-C. 5 次
-D. 6 次
-
-**解析讲解**：C
-
-**解析讲解**：扩容发生在 size = 1, 2, 4, 8, 16 时（capacity 0→1→2→4→8→16→32），共 5 次扩容。
-
-**1.3** 关于缩容阈值，下列说法正确的是：
-
-A. 用 `size < capacity/2` 作为缩容阈值，均摊复杂度仍为 $O(1)$
-B. 用 `size < capacity/4` 作为缩容阈值，可避免扩缩抖动
-C. 缩容阈值越大，内存利用率越高
-D. 缩容操作不产生代价
-
-**解析讲解**：B
-
-**解析讲解**：1/2 阈值会在临界点反复扩缩，均摊复杂度退化为 $O(n)$；1/4 阈值留出缓冲，均摊 $O(1)$。
-
 ### 填空题知识点讲解
 
 **2.1** 对于 `m × n` 的二维数组（行优先存储，元素大小为 `size` 字节），元素 `A[i][j]` 的地址公式为 $\text{base} + $ ____。
@@ -2289,25 +2252,6 @@ def pop(self):
 
 ---
 
-## 15. 参考文献
-
-1. von Neumann, J. (1945). *First Draft of a Report on the EDVAC*. Moore School of Electrical Engineering, University of Pennsylvania. 101 pages. Reprinted in IEEE Annals of the History of Computing, 15(4), 27-75 (1993).
-2. Iverson, K. E. (1962). *A Programming Language*. John Wiley & Sons. ISBN 978-0471430160.
-3. Stepanov, A., & Lee, M. (1995). *The Standard Template Library*. HP Laboratories Technical Report HPL-95-11 (R.1).
-4. Knuth, D. E. (1997). *The Art of Computer Programming, Volume 1: Fundamental Algorithms* (3rd ed.). Addison-Wesley. Section 2.2 (Linear Lists), Section 2.2.2 (Sequential Allocation). ISBN 978-0201896831.
-5. Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2022). *Introduction to Algorithms* (4th ed.). MIT Press. Chapter 10 (Elementary Data Structures), Chapter 17 (Amortized Analysis). ISBN 978-0262046305.
-6. Sedgewick, R., & Wayne, K. (2011). *Algorithms* (4th ed.). Addison-Wesley. Section 1.1 (Basics), Section 1.4 (Analysis of Algorithms), Section 1.3 (ResizingArrayStack). ISBN 978-0321573513.
-7. Stroustrup, B. (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley. Chapter 31 (STL Containers). ISBN 978-0321563842.
-8. Tanenbaum, A. S., & Bos, H. (2014). *Modern Operating Systems* (4th ed.). Pearson. Chapter 2 (Processes and Threads) - CPU cache hierarchy. ISBN 978-0133591620.
-9. Hennessy, J. L., & Patterson, D. A. (2017). *Computer Architecture: A Quantitative Approach* (6th ed.). Morgan Kaufmann. Appendix B (Memory Hierarchy Design). ISBN 978-0128119051.
-10. Python Software Foundation. (2024). *CPython listobject.c - List object implementation*. https://github.com/python/cpython/blob/main/Objects/listobject.c
-11. Bulavin, P. (2024). *NumPy Arrays: Sparse Matrix Formats (CSR, CSC, COO)*. SciPy Documentation.
-12. Tarjan, R. E. (1985). *Amortized computational complexity*. SIAM Journal on Algebraic Discrete Methods, 6(2), 306-318. DOI: 10.1137/0606031.
-
----
-
-## 16. 延伸阅读
-
 ### 16.1 理论深入
 
 - **CLRS Chapter 17**：均摊分析的三种方法（聚合、核算、势能），含动态表扩容的完整证明。
@@ -2335,16 +2279,6 @@ def pop(self):
 - **Berkeley CS 61B Lecture 5**：Arrays and Linked Lists（含缓存性能对比实验）。
 - **Stanford CS106L Lecture 3**：STL Containers and Iterators（深入 std::vector 设计）。
 
-### 16.5 在线练习
-
-- **LeetCode 数组专题**：leetcode.com/tag/array/
-- **LeetCode 双指针专题**：leetcode.com/tag/two-pointers/
-- **LeetCode 滑动窗口专题**：leetcode.com/tag/sliding-window/
-- **LeetCode 前缀和专题**：leetcode.com/tag/prefix-sum/
-- **Codeforces 数组题目**：codeforces.com/problemset?tags=arrays
-
----
-
 ## 附录 A：数组复杂度速查表
 
 | 操作 | 静态数组 | 动态数组 | 链表 | 循环缓冲 |
@@ -2365,27 +2299,3 @@ def pop(self):
 | 内存开销 | 仅元素 | 元素 + 预留 | 元素 + 指针 | 仅元素 |
 
 ---
-
-## 附录 B：常见面试题速查表
-
-| LeetCode 题号 | 题目 | 难度 | 技巧 | 时间复杂度 |
-| ------------- | ---- | ---- | ---- | ---------- |
-| 1 | 两数之和 | Easy | 哈希表 | $O(n)$ |
-| 11 | 盛最多水的容器 | Medium | 双指针 | $O(n)$ |
-| 15 | 三数之和 | Medium | 排序+双指针 | $O(n^2)$ |
-| 26 | 删除有序数组中的重复项 | Easy | 快慢指针 | $O(n)$ |
-| 41 | 缺失的第一个正数 | Hard | 原地哈希 | $O(n)$ |
-| 42 | 接雨水 | Hard | 双指针/单调栈 | $O(n)$ |
-| 88 | 合并两个有序数组 | Easy | 双指针 | $O(m+n)$ |
-| 209 | 长度最小的子数组 | Medium | 滑动窗口 | $O(n)$ |
-| 238 | 除自身以外数组的乘积 | Medium | 前缀积+后缀积 | $O(n)$ |
-| 303 | 区域和检索 | Easy | 前缀和 | $O(1)$ 查询 |
-| 370 | 区间加法 | Medium | 差分数组 | $O(1)$ 更新 |
-| 560 | 和为 K 的子数组 | Medium | 前缀和+哈希 | $O(n)$ |
-| 739 | 每日温度 | Medium | 单调栈 | $O(n)$ |
-| 1109 | 航班预订统计 | Medium | 差分数组 | $O(n+m)$ |
-| 152 | 乘积最大子数组 | Medium | 动态规划 | $O(n)$ |
-
----
-
-> **教学提示**：数组是所有数据结构的基石。理解了数组的连续存储模型、随机访问 $O(1)$ 原理、动态数组倍增扩容的均摊分析，你就掌握了 80% 的数据结构选型依据。后续学习排序、查找、动态规划等算法时，数组都将作为默认的存储载体出现。建议读者动手实现一个完整的 DynamicArray 类（含倍增扩容、缩容、边界检查、迭代器），并对比 Python list / C++ std::vector / Java ArrayList 的源码实现，深入理解工程级动态数组的设计哲学。

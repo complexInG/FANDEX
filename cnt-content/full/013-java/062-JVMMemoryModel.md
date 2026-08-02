@@ -1818,75 +1818,6 @@ jcmd <pid> VM.native_memory detail
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个区域不会发生 OOM？
-
-A. 堆
-B. 方法区
-C. 虚拟机栈
-D. 程序计数器
-
-**解析讲解**：D
-
-**解析讲解**：程序计数器是唯一不会发生 OOM 的区域，因为它只存储当前线程执行的字节码行号，空间固定且极小。
-
----
-
-**常见疑问 2**：volatile 关键字能保证以下哪个特性？
-
-A. 原子性
-B. 可见性
-C. 有序性
-D. B 和 C
-
-**解析讲解**：D
-
-**解析讲解**：volatile 保证可见性（强制刷新主内存）与有序性（内存屏障禁止重排序），但不保证原子性（如 `i++` 仍需 synchronized 或 atomic）。
-
----
-
-**常见疑问 3**：Java 21 中，以下哪个收集器的 STW 时间最短？
-
-A. G1
-B. Parallel
-C. ZGC（分代）
-D. Shenandoah
-
-**解析讲解**：C
-
-**解析讲解**：ZGC 分代模式（Java 21+）STW 通常 < 1ms，是当前最低延迟的收集器。
-
----
-
-**常见疑问 4**：以下哪个对象不是 GC Roots？
-
-A. 虚拟机栈中的本地变量
-B. 方法区中的 static 字段
-C. 堆中的对象
-D. 本地方法栈中的 JNI 引用
-
-**解析讲解**：C
-
-**解析讲解**：堆中的对象不是 GC Roots，它们是被 GC Roots 引用的目标。GC Roots 是可达性分析的起点。
-
----
-
-**常见疑问 5**：Metaspace 与 PermGen 的主要区别是？
-
-A. Metaspace 在 JVM 堆内
-B. PermGen 在本地内存
-C. Metaspace 在本地内存
-D. 二者无区别
-
-**解析讲解**：C
-
-**解析讲解**：JDK 8+ 的 Metaspace 使用本地内存（native memory），而 PermGen（JDK 7 及之前）在 JVM 堆内。
-
----
-
 ### 简答题知识点讲解
 
 **常见疑问 6**：解释 Java 内存模型的 happens-before 八条规则。
@@ -2151,87 +2082,6 @@ public class FixedCache {
 
 ---
 
-### 综合题知识点讲解
-
-**Q**：设计一个生产级 JVM 配置方案，满足以下需求：
-
-- 应用：电商订单服务，QPS 5000
-- 部署：K8s，每个 Pod 限制 4 核 CPU、8GB 内存
-- SLA：P99 < 200ms
-- 特性：长连接、缓存、异步任务
-
-**解析讲解**：
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: order-service
-spec:
-  template:
-    spec:
-      containers:
-      - name: app
-        resources:
-          requests:
-            memory: "6Gi"
-            cpu: "3"
-          limits:
-            memory: "8Gi"
-            cpu: "4"
-        env:
-        - name: JAVA_TOOL_OPTIONS
-          value: >
-            -XX:MaxRAMPercentage=60.0
-            -XX:InitialRAMPercentage=50.0
-            -XX:+UseG1GC
-            -XX:MaxGCPauseMillis=100
-            -XX:G1HeapRegionSize=16m
-            -XX:InitiatingHeapOccupancyPercent=35
-            -XX:G1ReservePercent=20
-            -XX:ParallelGCThreads=4
-            -XX:ConcGCThreads=2
-            -XX:MaxMetaspaceSize=256m
-            -XX:MaxDirectMemorySize=512m
-            -XX:+UseContainerSupport
-            -XX:+HeapDumpOnOutOfMemoryError
-            -XX:HeapDumpPath=/dump
-            -XX:NativeMemoryTracking=summary
-            -XX:+ExitOnOutOfMemoryError
-            -Xlog:gc*:file=/log/gc.log:time,uptime,level,tags:filecount=10,filesize=100m
-            -XX:+UnlockDiagnosticVMOptions
-            -XX:+PrintCommandLineFlags
-```
-
-**配置理由**：
-
-1. `MaxRAMPercentage=60`：堆 4.8GB（8GB × 60%），保留 native 内存
-2. `UseG1GC`：堆 4.8GB 适合 G1，P99 < 200ms 可达
-3. `MaxGCPauseMillis=100`：目标 100ms，留余量
-4. `G1HeapRegionSize=16m`：8GB 堆对应 512 个 Region
-5. `InitiatingHeapOccupancyPercent=35`：提前并发标记，避免 Full GC
-6. `MaxMetaspaceSize=256m`：限制元空间
-7. `MaxDirectMemorySize=512m`：Netty/长连接用
-8. `HeapDumpOnOutOfMemoryError`：OOM 自动 dump
-9. `ExitOnOutOfMemoryError`：OOM 退出，K8s 自动重启
-10. `NativeMemoryTracking=summary`：监控 native 内存
-
-**监控配置**：
-
-```yaml
-# Prometheus jmx_exporter
-- javaagent:jmx_prometheus_javaagent.jar=12345:config.yml
-# 关键指标：
-# - jvm_memory_bytes_used{area="heap"}
-# - jvm_gc_pause_seconds
-# - jvm_threads_states_threads
-# - jvm_classes_loaded
-```
-
----
-
-## 14. 参考文献
-
 ### 14.1 规范与标准
 
 1. Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., and Lea, D. 2006. *Java Concurrency in Practice*. Addison-Wesley Professional. DOI: 10.5555/1198453
@@ -2270,8 +2120,6 @@ spec:
 
 ---
 
-## 15. 延伸阅读
-
 ### 15.1 推荐书籍
 
 1. **《Java Performance: In-Depth Advice for Tuning and Programming Java 8, 11, and Beyond》** - Scott Oaks
@@ -2302,17 +2150,6 @@ spec:
 
 4. **A Study of Concurrent Garbage Collectors** - Yang 等 (ISMM 2016)
    - 多种并发 GC 的对比
-
-### 15.3 在线资源
-
-1. **OpenJDK 官方文档**: https://openjdk.org/
-2. **JEP 索引**: https://openjdk.org/jeps/0
-3. **Java GC Tuning Guide（Oracle）**: https://docs.oracle.com/en/java/javase/21/gctuning/
-4. **JDK Mission Control**: https://github.com/openjdk/jmc
-5. **Eclipse MAT**: https://www.eclipse.org/mat/
-6. **JOL（Java Object Layout）**: https://github.com/openjdk/jol
-7. **GC Viewer**: https://github.com/chewiebug/GCViewer
-8. **JITWatch**: https://github.com/AdoptOpenJDK/jitwatch
 
 ### 15.4 视频课程
 

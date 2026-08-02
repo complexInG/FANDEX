@@ -1244,65 +1244,6 @@ Twitter Web 在迁移到 React 18 后，将全局状态从 Redux 迁移到 Zusta
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 以下哪种场景**不适合**使用 `React.memo`？
-
-A. 纯展示组件，props 不常变化
-B. 列表项组件，父组件频繁 setState 但 props 引用稳定
-C. 父组件每次渲染都创建新对象作为 props
-D. 组件内部使用 useState 频繁更新
-
-**答案：C**
-
-`React.memo` 通过浅比较 props 判断是否跳过渲染。若父组件每次都创建新对象（如 `style={{ color: 'red' }}`），浅比较永远返回 false，memo 失效，反而增加比较开销。应配合 `useMemo`/`useCallback` 或提取常量。
-
-**Q2.** React 18 自动批处理（Automatic Batching）相比 React 17 的改进是？
-
-A. 自动代码分割
-B. 在 Promise、setTimeout 中也能批处理多个 setState
-C. 自动 memo 化所有组件
-D. 自动启用并发模式
-
-**答案：B**
-
-React 17 仅在 React 事件处理器内批处理；React 18 通过 `createRoot` 在所有上下文（Promise、setTimeout、原生事件）中批处理。这减少了不必要的 Render 次数。
-
-**Q3.** 关于 `useTransition` 与 `useDeferredValue`，下列说法**错误**的是？
-
-A. `useTransition` 标记状态更新为低优先级
-B. `useDeferredValue` 延迟某个值的传递
-C. 两者都能让用户输入保持响应
-D. `useTransition` 可用于监听外部 store 的变化
-
-**答案：D**
-
-`useTransition` 用于将 `setState` 标记为低优先级；`useDeferredValue` 用于延迟某个值的消费。两者都用于让高优先级更新（如输入）插队。`useSyncExternalStore` 才是用于监听外部 store 的 Hook。
-
-**Q4.** 下列哪种 key 策略**最不**可能导致性能问题？
-
-A. 使用数组 index 作为 key
-B. 使用 Math.random() 生成 key
-C. 使用数据中稳定的唯一 id
-D. 不设置 key（让 React 自动用 index）
-
-**答案：C**
-
-稳定的唯一 id 让 React 能精确识别元素身份，最小化 DOM 操作。index 在列表顺序变化时会导致 React 错误地复用 DOM；Math.random() 每次渲染都不同，导致全量重建。
-
-**Q5.** React Compiler 的核心假设是？
-
-A. 所有组件都是纯函数
-B. 所有状态都不可变
-C. 所有副作用都在 useEffect 中
-D. 所有依赖数组都正确
-
-**答案：A**
-
-React Compiler 假设组件、Hook 是纯函数（相同输入产生相同输出，无副作用）。在此假设下，编译器可以安全地缓存中间结果。违反该假设（如 render 中修改全局变量）会导致编译产物行为不正确。
-
 ### 填空题知识点讲解
 
 **Q1.** React Fiber 架构中，工作循环（Work Loop）默认的时间切片长度约为 `______` ms。
@@ -1488,47 +1429,6 @@ export default function VirtualTable() {
 }
 ```
 
-### 9.4 思考题
-
-**Q1.** 为什么 React 选择"组件级渲染 + memo 精细化"而非 Vue 的"字段级响应式"？请从设计哲学、可预测性、生态成熟度三个角度论述。
-
-1. **设计哲学**：React 强调"UI 是状态的函数" $f(state) = UI$，组件级渲染保证语义清晰；Vue 字段级响应式更接近原生 JS 心智模型，但隐式追踪增加黑盒。
-2. **可预测性**：组件级渲染使开发者能通过 `React.memo`、`Profiler` 精确控制边界；字段级追踪在大型应用中难以调试（"为什么这个 watcher 触发了？"）。
-3. **生态成熟度**：组件级模型催生了 Redux、Zustand 等成熟状态库；字段级模型在 SSR、Time Travel 调试上挑战更大。
-4. **权衡**：React 19 的 React Compiler 实际上在编译期达到了字段级优化效果，同时保留了组件级的心智模型。
-
-**Q2.** 在一个包含 5000 个表单项的复杂表单应用中，你会如何设计性能优化方案？请列出至少 5 项策略并说明理由。
-
-1. **状态拆分**：每个表单项独立 `useState`，避免任一输入触发全表单重渲染。
-2. **非受控组件**：用 `useRef` 存储值，仅在提交时读取，避免每次按键触发 setState。
-3. **react-hook-form**：内部基于非受控 + 受控按需切换，性能远优于纯受控方案。
-4. **虚拟化**：仅渲染可视区域内的表单项（`react-window`）。
-5. **useDeferredValue**：搜索/筛选场景延迟过滤。
-6. **校验节流**：用 `useDebouncedCallback` 延迟校验，避免每次按键触发正则。
-7. **代码分割**：分步骤表单按步骤懒加载。
-8. **React Compiler**：自动 memo 化所有 props 与中间值。
-
-**Q3.** 假设你的 React 应用在低端 Android 设备上 INP（Interaction to Next Paint）为 600ms，请设计一套诊断与优化流程。
-
-诊断：
-1. 使用 Chrome DevTools Performance 录制交互，识别 Long Task。
-2. React DevTools Profiler 录制交互，定位重渲染耗时最高的组件。
-3. 检查是否有同步阻塞（大 JSON.parse、复杂正则、深拷贝）。
-4. 检查是否未启用并发模式（仍用 `ReactDOM.render`）。
-
-优化：
-1. 将耗时计算迁移到 Web Worker。
-2. 用 `useTransition` 标记非紧急更新。
-3. 虚拟化长列表。
-4. 启用 React Compiler。
-5. 拆分大组件，降低单次渲染 Fiber 节点数。
-6. 静态内容用 Server Components 或 `dangerouslySetInnerHTML`。
-7. 监控：上报 INP 到 RUM 平台，建立 P95 < 200ms 的 SLA。
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Abramov, D. and Clark, S. 2022. React 18: Concurrent features, automatic batching, and transitions. In *Proceedings of the 37th ACM/SIGAPP Symposium on Applied Computing (SAC '22)*. Association for Computing Machinery, New York, NY, USA, 1–8. DOI: https://doi.org/10.1145/3474319.3476200
@@ -1561,8 +1461,6 @@ export default function VirtualTable() {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Carl Menger, Lydia Hallie, Addy Osmani. *React Performance in Action*. O'Reilly Media, 2025.
@@ -1576,23 +1474,6 @@ export default function VirtualTable() {
 - Sebastian Markbåge. *React Fiber Principles*. GitHub Gist, 2016.
 - Andrew Clark. *React Concurrent Mode Internals*. React Conf, 2021.
 - Lauren Tan. *React Server Components*. React Conf, 2020.
-
-### 11.3 在线资源
-
-- **React Official Docs**（新版）: https://react.dev/
-- **web.dev Performance**: https://web.dev/performance/
-- **Chrome DevTools Docs**: https://developer.chrome.com/docs/devtools/performance/
-- **React DevTools Profiler Guide**: https://react.dev/learn/render-and-commit#step-3-react-commits-changes-to-the-dom
-- **Bundlephobia**（包体积查询）: https://bundlephobia.com/
-- **State of JS Performance Survey**: https://stateofjs.com/
-
-### 11.4 开源项目参考
-
-- **react-window**（虚拟化）: https://github.com/bvaughn/react-window
-- **TanStack Virtual**（虚拟化）: https://github.com/TanStack/virtual
-- **react-helmet-async**（SSR head 管理）: https://github.com/staylor/react-helmet-async
-- **react-compiler**（自动 memo 化）: https://github.com/facebook/react/tree/main/compiler
-- **why-did-you-render**（重渲染检测）: https://github.com/welldone-software/why-did-you-render
 
 ### 11.5 进阶主题
 

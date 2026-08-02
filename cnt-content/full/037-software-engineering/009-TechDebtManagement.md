@@ -192,22 +192,6 @@ flowchart TD
 
 **误区五：还债要"一次性还清"。** → 大爆炸式重构风险极高。**渐进式偿还**（每 Sprint 还一点）更安全、更可持续。
 
-## 7. 实战练习
-
-1. **债务盘点**：用第 2 节的"五个信号"检查你（或团队）的项目，列出至少 3 项技术债务，评估每项的影响和修复成本。
-
-2. **债务 Backlog**：把你发现的债务写进"技术债务 Backlog"（ID/描述/影响/成本/ROI/优先级），并按 ROI 排序。
-
-3. **债务预算设计**：为你的 Sprint 设计"债务预算"（新功能/Bug/债务的比例），说明分配依据。
-
-4. **童子军规则实践**：选择你最近修改的一段代码，用"童子军规则"（离开时比来时干净）改进它，并记录改进点。
-
-## 8. 参考资源
-
-- Martin Fowler《技术债务》：https://martinfowler.com/bliki/TechnicalDebt.html
-- Ward Cunningham《技术债务》原文：https://wiki.c2.com/?TechnicalDebt
-- SonarQube（技术债务量化工具）：https://docs.sonarqube.org/
-
 ## 9. 延伸阅读
 
 - 债务的识别工具（度量），见本模块《软件度量》

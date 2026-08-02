@@ -2093,8 +2093,6 @@ print(response.status, response.body)  -- 200  Hello, Lua!
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：编写函数 `reverse_words(s)`，反转字符串中的单词顺序。如 `"hello world lua"` -> `"lua world hello"`。
@@ -2166,38 +2164,6 @@ end
 
 ---
 
-## 10. 参考文献
-
-本节参考文献遵循 ACM Reference Format。
-
-[1] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 1996. Lua—an extensible extension language. *Software: Practice and Experience* 26, 6 (Jun. 1996), 635-652. DOI: https://doi.org/10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P
-
-[2] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2007. The evolution of Lua. In *Proceedings of the Third ACM SIGPLAN Conference on History of Programming Languages* (HOPL III). ACM, New York, NY, 2-1-2-26. DOI: https://doi.org/10.1145/1238844.1238846
-
-[3] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2016. Passing a language through the eye of a needle: how an embeddable language survived. *Communications of the ACM* 59, 7 (Jun. 2016), 44-51. DOI: https://doi.org/10.1145/2908116
-
-[4] Ierusalimschy, R. 2013. *Programming in Lua*, 3rd ed. Lua.org, Rio de Janeiro, Brazil.
-
-[5] Lua.org. 2020. *Lua 5.4 Reference Manual*. Lua.org, Rio de Janeiro, Brazil. DOI: https://doi.org/10.13140/RG.2.2.13787.34089
-
-[6] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2005. The implementation of Lua 5.0. *Journal of Universal Computer Science* 11, 7 (Jul. 2005), 1159-1176. DOI: https://doi.org/10.3217/jucs-011-07-1159
-
-[7] Steffen, J. L. 2014. *Implementing Lua in C++*. CreateSpace Independent Publishing Platform.
-
-[8] Maiorano, F. 2019. *Lua Programming: A Step-by-Step Guide for Beginners*. Independently published.
-
-[9] Jung, K. 2015. *Mastering Lua*. Packt Publishing, Birmingham, UK.
-
-[10] Figueiredo, L. H., Ierusalimschy, R., and Celes, W. 2018. The design and implementation of a language for extending applications. In *Proceedings of XXI Brazilian Symposium on Programming Languages* (SBLP 2017). ACM, New York, NY, 1-10. DOI: https://doi.org/10.1145/3125374.3125376
-
-[11] Antoniol, G., Di Penta, M., and Masone, G. 2004. Lua: a scripting language for embedding. *Software: Practice and Experience* 34, 5 (Apr. 2004), 437-467. DOI: https://doi.org/10.1002/spe.573
-
-[12] Pall, M. 2005. The LuaJIT compiler. Retrieved from https://luajit.org/
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **Lua 5.4 Reference Manual**（https://www.lua.org/manual/5.4/）：官方标准库 API 文档，权威定义。
@@ -2221,13 +2187,6 @@ end
 - **LuaJIT**（https://luajit.org/）：高性能 Lua 实现，对标准库有 JIT 优化。
 - **OpenResty**（https://openresty.org/）：Nginx + LuaJIT，扩展了 io、os 库以支持高并发。
 - **Luarocks**（https://luarocks.org/）：Lua 包管理器，提供大量第三方库。
-
-### 11.5 社区资源
-
-- **Lua Users Wiki**（http://lua-users.org/wiki/）：社区知识库，含标准库使用技巧。
-- **Stack Overflow Lua 标签**（https://stackoverflow.com/questions/tagged/lua）：活跃问答社区。
-- **Lua 邮件列表**（https://www.lua.org/lua-l.html）：官方邮件列表，设计讨论。
-- **Reddit /r/lua**（https://www.reddit.com/r/lua/）：Lua 社区讨论区。
 
 ### 11.6 相关工具
 

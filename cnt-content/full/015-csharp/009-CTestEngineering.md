@@ -1861,8 +1861,6 @@ public class UserServiceBenchmarks
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（L1-L2）
 
 **习题 10.1.1**：简述 xUnit 与 NUnit 在测试隔离性上的区别。
@@ -2095,8 +2093,6 @@ public class DatabaseTests
 
 [20] Fowler, M. 2006. Continuous Integration. https://martinfowler.com/articles/continuousIntegration.html
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档与教程
 
 - **Microsoft Learn - .NET 测试**：https://learn.microsoft.com/dotnet/core/testing/
@@ -2141,17 +2137,6 @@ public class DatabaseTests
 
 - **Verify**：https://github.com/VerifyTests/Verify
   快照测试工具
-
-### 11.4 社区资源
-
-- **.NET 测试社区**：https://github.com/dotnet/testing
-  微软官方测试相关项目集合
-
-- **Awesome .NET Testing**：https://github.com/альность/awesome-dotnet-testing
-  精选的 .NET 测试资源
-
-- **Gitter - xUnit**：https://gitter.im/xunit/xunit
-  xUnit 社区讨论
 
 ## 12. 总结
 

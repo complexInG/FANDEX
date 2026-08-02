@@ -376,91 +376,9 @@ desktop.ini
 | `.env` 里的密钥还是被推送了，事后才发现 | 安全事故 | 忽略了 `.env` 但密钥硬编码在 `src/config.js` 中 | 全局搜索密钥（`git grep "sk_live"`），轮换密钥，并使用环境变量 + GitHub Secrets |
 | `git status` 不显示某文件，但 `git add` 报错 | `The following paths are ignored by one of your .gitignore files` | 想添加一个被忽略的文件 | 确认是否真的要添加；若要添加，用 `git add -f 文件名` 强制添加，或调整忽略规则 |
 
-## 8. 实战练习
-
-### 练习 1：为你的第一个 Node.js 项目写忽略清单（入门）
-
-**题目描述**：你新建了一个 Node.js 项目，目录中包含 `node_modules/`、`dist/`、`.env`、`.vscode/`、`package.json`、`src/index.js`。请写出一个最小可用的 `.gitignore`。
-
-**提示**：对照第 2.1 节的基本语法，逐类文件判断是否需要忽略。
-
-**参考答案要点**：
-
-```gitignore
-node_modules/
-dist/
-.env
-.vscode/
-```
-
-### 练习 2：取反规则实战（进阶）
-
-**题目描述**：你的项目里 `*.md` 全被忽略，但根目录的 `README.md` 必须提交。同时 `logs/` 目录整体忽略，但其中的 `logs/.gitkeep`（用于保留空目录的占位文件）需要提交。请写出规则并说明顺序。
-
-**提示**：注意"父目录陷阱"，`logs/.gitkeep` 需要先让 `logs/` 内部可见。
-
-**参考答案要点**：
-
-```gitignore
-*.md
-!README.md
-
-# 忽略日志目录内容，但保留占位文件
-logs/*
-!logs/.gitkeep
-```
-
-### 练习 3：排查"为什么文件还在仓库里"（进阶）
-
-**题目描述**：你配置了 `.gitignore` 忽略 `build/`，但 `git push` 后仓库里依然有 `build/`。用命令排查问题并修复。
-
-**提示**：用 `git check-ignore -v build/app.js` 确认规则生效；再用 `git ls-files build/` 查看文件是否已被跟踪。
-
-**参考答案要点**：
-
-```bash
-# 1. 确认规则生效
-git check-ignore -v build/app.js
-
-# 2. 查看已被跟踪的文件
-git ls-files build/
-
-# 3. 若存在已跟踪文件，停止跟踪并提交
-git rm -r --cached build/
-git commit -m "chore: 移除已跟踪的构建产物"
-git push
-```
-
-### 练习 4：为 Python 项目配置全局忽略（综合）
-
-**题目描述**：你同时维护多个 Python 项目，希望把 `__pycache__/`、`.vscode/`、`.DS_Store` 统一在全局忽略，并在每个项目内只保留项目特定的规则（如 `.env`、`.venv/`）。请给出完整配置流程。
-
-**提示**：全局文件用 `git config --global core.excludesfile` 指定。
-
-**参考答案要点**：
-
-```bash
-# 1. 配置全局忽略文件（Windows 示例）
-git config --global core.excludesfile "$env:USERPROFILE\.gitignore_global"
-# 内容：
-# __pycache__/
-# .vscode/
-# .DS_Store
-
-# 2. 项目内 .gitignore 只写项目特定内容
-# .venv/
-# .env
-# *.log
-
-# 3. 验证
-git status --ignored
-```
-
 ## 9. 一句话记忆
 
 > **`.gitignore` 就是仓库的"搬家清单"——只列"不装什么"：能再生的构建产物、能重装的依赖、不能给别人看的密钥，以及别人不需要的 IDE 和系统文件。**
-
-## 参考链接与延伸阅读
 
 ### 官方文档
 
@@ -470,9 +388,7 @@ git status --ignored
 - gitignore.io 组合模板生成器：https://www.toptal.com/developers/gitignore
 
 ### 延伸阅读
-
 - 分支模型与分支保护规则，见 004-github 模块 007 文档。
 - 开源许可证选择（LICENSE 文件的管理思路与 .gitignore 类似），见 004-github 模块 009 文档。
 - 依赖安全选项（锁定文件与 Dependabot 的配合使用），见 004-github 模块 010 文档。
 - Git 协作基础（git add / commit / push 流程），见 003-git 模块。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

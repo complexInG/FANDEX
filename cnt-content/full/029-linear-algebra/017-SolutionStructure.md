@@ -10,7 +10,6 @@ updated: '2026-08-02'
 related:
   - 'linear-algebra/齐次线性方程组'
   - 'linear-algebra/非齐次线性方程组'
-  - 'linear-algebra/线性方程组典型例题'
   - 'linear-algebra/线性相关性'
 prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
@@ -63,12 +62,6 @@ $$x_1 = -2x_2 - x_4, \qquad x_3 = 0$$
 
 **推论（秩-零度定理）**：$r(A) + \dim N(A) = n$。这是线性代数中最重要的"守恒律"之一：变换的"输出维数"与"压缩掉的维数"之和等于"输入维数"。
 
-### 2.3 例题：维数定理的直接应用
-
-**例 1**：设 $A$ 为 $4 \times 7$ 矩阵，$r(A) = 3$，求 $Ax = 0$ 的解空间维数；又问 $Ax = b$（若有解）的解集维数。
-
-**解**：$\dim N(A) = 7 - 3 = 4$。非齐次解集是 $N(A)$ 的平移，维数同样为 4，故 $Ax = b$ 的解集是 $\mathbb{R}^7$ 中一个 4 维仿射子空间。
-
 ## 3. 定理 B：非齐次通解的结构
 
 ### 3.1 陈述与证明
@@ -119,20 +112,6 @@ $A = (1, 1, 1)$，$r(A) = 1$，$n = 3$，$t = 2$。解集是 $\mathbb{R}^3$ 中�
 
 $$\begin{pmatrix} x \\ y \\ z \end{pmatrix} = \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix} + k_1\begin{pmatrix} -1 \\ 1 \\ 0 \end{pmatrix} + k_2\begin{pmatrix} -1 \\ 0 \\ 1 \end{pmatrix}$$
 
-## 5. 结构定理的综合例题
-
-**例 4**：设 $A$ 为 $3 \times 4$ 矩阵，$Ax = 0$ 的基础解系为 $\boldsymbol{\xi}_1 = (1, 0, 1, 0)^T$，$\boldsymbol{\xi}_2 = (0, 1, 0, 1)^T$，$\boldsymbol{\eta}^* = (1, 1, 1, 1)^T$ 是 $Ax = b$ 的一个特解。求 $Ax = b$ 的通解。
-
-**解**：$n = 4$，基础解系含 2 个向量，故 $r(A) = 2$。由定理 B：
-
-$$x = \boldsymbol{\eta}^* + k_1\boldsymbol{\xi}_1 + k_2\boldsymbol{\xi}_2 = \begin{pmatrix} 1 \\ 1 \\ 1 \\ 1 \end{pmatrix} + k_1\begin{pmatrix} 1 \\ 0 \\ 1 \\ 0 \end{pmatrix} + k_2\begin{pmatrix} 0 \\ 1 \\ 0 \\ 1 \end{pmatrix} = \begin{pmatrix} 1 + k_1 \\ 1 + k_2 \\ 1 + k_1 \\ 1 + k_2 \end{pmatrix}$$
-
-**例 5（结构定理的反向使用）**：已知 $Ax = b$ 的通解是 $x = (1, 0, 2)^T + k(2, 1, -1)^T$，问 $r(A)$、$Ax = 0$ 的通解、以及 $b$ 的一个可能形式。
-
-**解**：通解是"特解 + 1 参数"，说明 $n - r(A) = 1$，又 $n = 3$，故 $r(A) = 2$。$Ax = 0$ 的通解为 $k(2, 1, -1)^T$。由 $A \cdot (1, 0, 2)^T = b$ 可验算任意满足条件的 $A$；若取 $A = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0 \end{pmatrix}$ 则需调整，实际这类题通常只要求维数信息。
-
-**思路提炼**：通解的形式（参数个数、向量结构）可以直接反推出秩与解空间的全部信息，这是"结构"一词的威力——知道骨架，就知道整栋楼。
-
 ## 6. 结构定理与更深的联系
 
 - **与列空间/行空间**：$\mathbb{R}^n = \mathrm{Row}(A) \oplus N(A)$（行空间与零空间互为**正交补**），$\mathbb{R}^m = \mathrm{Col}(A) \oplus N(A^T)$。解空间不是孤立的，它是"四个基本子空间"拼图中的一块。
@@ -150,42 +129,9 @@ $$x = \boldsymbol{\eta}^* + k_1\boldsymbol{\xi}_1 + k_2\boldsymbol{\xi}_2 = \beg
 | 通解参数个数与自由变量数对不上 | 数量失配 | 少给参数或多给参数 | 参数个数 $= n - r(A)$，逐个核对 |
 | 把 $A = O$ 时 $Ax = 0$ 的解空间说成 0 维 | 极端情形漏判 | 忘记 $A = O$ 时一切向量都是解 | $A = O$：$r = 0$，$\dim N(A) = n$ |
 
-## 8. 实战练习
-
-**练习 1（基础）**：设 $A$ 为 $5 \times 6$ 矩阵，$r(A) = 4$，求 $Ax = 0$ 的基础解系含几个向量。
-
-- **提示**：套维数公式。
-- **参考答案要点**：$6 - 4 = 2$ 个。
-
-**练习 2（进阶）**：设 $A$ 为 $4$ 阶方阵，$r(A) = 2$，$\boldsymbol{\eta}_1, \boldsymbol{\eta}_2$ 是 $Ax = b$ 的两个不同解，写出 $Ax = b$ 的通解的一般形式。
-
-- **提示**：$\boldsymbol{\eta}_2 - \boldsymbol{\eta}_1$ 是导出组的非零解；基础解系应有 $4 - 2 = 2$ 个向量，但这里只知道一个方向。
-- **参考答案要点**：$x = \boldsymbol{\eta}_1 + k_1(\boldsymbol{\eta}_2 - \boldsymbol{\eta}_1) + k_2\boldsymbol{\xi}_2$，其中 $\boldsymbol{\xi}_2$ 是导出组中与 $\boldsymbol{\eta}_2 - \boldsymbol{\eta}_1$ 线性无关的另一个基向量（需另行确定）。
-
-**练习 3（进阶）**：设 $A$ 为 $n$ 阶方阵且 $A^2 = O$，证明 $N(A)$ 的维数不小于 $n/2$。
-
-- **提示**：$A^2 = O \Rightarrow \mathrm{Col}(A) \subseteq N(A)$，再用秩-零度定理与 $r(A) \le \dim N(A)$。
-- **参考答案要点**：$\mathrm{Col}(A) \subseteq N(A)$ 推出 $r(A) \le n - r(A)$，故 $r(A) \le n/2$，$\dim N(A) = n - r(A) \ge n/2$。
-
-**练习 4（综合）**：设 $Ax = b$ 的解集是一条不过原点的直线，问 $r(A)$ 与 $n$ 的关系。
-
-- **提示**：直线是 1 维仿射子空间。
-- **参考答案要点**：$n - r(A) = 1$，即 $r(A) = n - 1$；且 $b \neq 0$ 时直线不过原点，对应 $Ax = b$ 有解且非齐次。
-
-**练习 5（综合）**：证明：若 $Ax = b_1$ 与 $Ax = b_2$ 都有解，则 $Ax = b_1 + b_2$ 也有解，且 $Ax = b_1 - b_2$ 也有解。
-
-- **提示**：把两个解直接相加/相减。
-- **参考答案要点**：设 $x_1, x_2$ 分别为两组解，则 $A(x_1 + x_2) = b_1 + b_2$，$A(x_1 - x_2) = b_1 - b_2$，得证——解集对"右边"是线性的。
-
 ## 9. 一句话记忆
 
 > **解的结构就两条定理：齐次解空间维数 $= n - r(A)$（自由变量的个数）；非齐次通解 $=$ 特解 $+$ 导出组通解（落脚点 $+$ 全部方向）。**
-
-## 参考文献
-
-- 同济大学数学科学学院. 工程数学 线性代数（第七版）[M]. 北京: 高等教育出版社, 2023. （第 4 章 §5 线性方程组的解的结构）https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- MIT 18.06 Linear Algebra（Strang）: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- Interactive Linear Algebra（Georgia Tech）: https://textbooks.math.gatech.edu/ila/
 
 ## 延伸阅读
 

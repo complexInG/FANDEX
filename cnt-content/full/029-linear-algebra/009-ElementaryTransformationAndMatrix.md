@@ -200,49 +200,9 @@ $$(A \mid B) \xrightarrow{\text{行变换}} (I \mid A^{-1}B)$$
 | 化行阶梯形时主元位置不递增 | 结构错误 | 未理解"阶梯"定义 | 每行主元列号必须严格递增，否则继续消元 |
 | 求逆时把 $I$ 部分也参与列交换 | 概念错误 | 混淆行/列变换性质 | 只有行变换；一旦做列变换，结果不再是 $A^{-1}$ |
 
-## 8. 实战练习
-
-**练习 1**：对 $A = \begin{pmatrix} 1 & 3 \\ 2 & 6 \end{pmatrix}$ 做 $r_2 - 2r_1$，得到什么？说明 $A$ 的秩。
-
-提示：变换后第二行全为零。
-
-参考答案要点：得 $\begin{pmatrix} 1 & 3 \\ 0 & 0 \end{pmatrix}$，非零行 1 行，$r(A) = 1$。
-
-**练习 2**：写出三阶倍加初等矩阵 $E(2,1(3))$，并验证左乘 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \\ 5 & 6 \end{pmatrix}$ 的效果。
-
-提示：$E(2,1(3))$ 是把 $I$ 的第 1 行乘 3 加到第 2 行。
-
-参考答案要点：$E(2,1(3)) = \begin{pmatrix} 1 & 0 & 0 \\ 3 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}$，左乘后 $A$ 的第 2 行变为原第 2 行加原第 1 行的 3 倍。
-
-**练习 3**：用初等行变换求 $A = \begin{pmatrix} 1 & 1 \\ 0 & 2 \end{pmatrix}$ 的逆矩阵。
-
-提示：$(A \mid I) \to (I \mid A^{-1})$。
-
-参考答案要点：$\xrightarrow{\frac{1}{2}r_2} \xrightarrow{r_1 - r_2}$ 得 $A^{-1} = \begin{pmatrix} 1 & -1/2 \\ 0 & 1/2 \end{pmatrix}$。
-
-**练习 4**：把 $A = \begin{pmatrix} 1 & 0 & 2 \\ 0 & 1 & 1 \end{pmatrix}$ 化为等价标准形。
-
-提示：用列变换 $c_3 - 2c_1 - c_2$。
-
-参考答案要点：$\xrightarrow{c_3 - 2c_1 - c_2}$ 得 $\begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix} = (I_2 \mid O)$，$r(A) = 2$。
-
-**练习 5**：用初等变换解矩阵方程 $AX = B$，$A = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}$，$B = \begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix}$。
-
-提示：$(A \mid B)$ 行变换到 $(I \mid A^{-1}B)$。
-
-参考答案要点：$X = A^{-1}B = \begin{pmatrix} 1 & -1 \\ -1 & 2 \end{pmatrix}\begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix} = \begin{pmatrix} 1 & 1 \\ -1 & 0 \end{pmatrix}$。
-
 ## 9. 一句话记忆
 
 初等变换三兄弟（对换、倍乘、倍加）是线性代数的"动作单元"：**行变换 = 左乘初等矩阵，列变换 = 右乘初等矩阵**，而"化行阶梯形求秩、$(A \mid I)$ 求逆、$(A \mid B)$ 解方程"三件事用的是同一套操作。
-
-## 10. 参考链接与延伸阅读
-
-### 参考链接
-
-- 同济大学数学科学学院：《工程数学 线性代数（第七版）》，高等教育出版社，第 3 章 §1"矩阵的初等变换"、§2"矩阵的秩"：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- 康奈尔大学讲义 Lec 27（行阶梯形、行空间与秩）：https://pi.math.cornell.edu/~andreim/Lec27.pdf
-- 矩阵秩与初等变换的系统讲解（博客园）：https://www.cnblogs.com/haohai9309/p/21202512
 
 ### 延伸阅读
 

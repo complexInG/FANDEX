@@ -263,44 +263,9 @@ jobs:
 | 里程碑进度不准 | 完成百分比与实情不符 | 部分 Issue 未关联里程碑或状态未更新 | 把所有相关 Issue 关联到里程碑；及时关闭已解决的 Issue |
 | Actions 自动化失败 | 打标签/分配任务工作流报错 | GITHUB_TOKEN 权限不足或 workflow 语法错误 | 检查 `permissions` 字段；查看 Actions 日志定位语法问题 |
 
-## 7. 实战练习
-
-### 练习 1：创建第一个 Issue（入门）
-- **题目描述**：在你自己的仓库中创建一个 Bug Issue，按模板格式填写环境、复现步骤、期望/实际行为，并打上 `bug` 标签。
-- **提示**：Issues → New issue；如果仓库还没有模板，可以先手动按 2.2 节格式填写。
-- **参考答案要点**：Issue 包含完整五要素（环境/步骤/期望/实际/截图）；标签正确；提交后出现在 Issue 列表。
-
-### 练习 2：搭建 Issue 模板（进阶）
-- **题目描述**：为仓库创建 `bug_report.md` 和 `feature_request.md` 两个模板及 config.yml，推送后验证新建 Issue 出现模板选择页。
-- **提示**：按第 2 节目录结构与文件内容创建。
-- **参考答案要点**：推送后点击 New issue 看到模板选择界面；选择 Bug 报告后表单已按模板预填。
-
-### 练习 3：设计标签体系（进阶）
-- **题目描述**：用 `gh label` 命令为仓库创建"类型 + 优先级 + 难度"三组共 6 个标签，并删除一个不需要的默认标签。
-- **提示**：`gh label create <名称> --description "..." --color <颜色>`。
-- **参考答案要点**：创建 `bug/enhancement/priority:high/priority:low/good-first-issue/help-wanted`；删除冗余默认标签；`gh label list` 验证。
-
-### 练习 4：里程碑管理（综合）
-- **题目描述**：创建里程碑 `v0.1-alpha`（截止日期设一周后），把 3 个 Issue 关联进去，随后依次关闭观察完成百分比变化。
-- **提示**：Milestones → New milestone；在 Issue 右侧栏选择里程碑。
-- **参考答案要点**：关闭 0 个显示 0%，关闭 1 个显示 33%，全部关闭显示 100%；体会里程碑的进度跟踪价值。
-
-### 练习 5：自动关闭与自动打标签（综合）
-- **题目描述**：配置 Actions 自动打标签工作流，并创建一个关联 `Fixes #N` 的 PR，合并后验证 Issue 自动关闭。
-- **提示**：按 5.1/5.2 小节；`#N` 换成你的 Issue 编号。
-- **参考答案要点**：PR 描述含 `Fixes #N` 且合并到默认分支后，Issue 自动变为 Closed；Actions 工作流为新 Issue 自动打上预设标签。
-
 ## 8. 一句话记忆
 
 **Issue 是"工单"，模板保证工单填得全，标签让工单分得清，里程碑让目标看得见，Actions 让流转自动化——四件套齐了，问题跟踪不再靠吼。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：配置 Issue 模板](https://docs.github.com/zh/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
-- [GitHub 文档：创建议题](https://docs.github.com/zh/issues/tracking-your-work-with-issues/creating-an-issue)
-- [GitHub 文档：管理标签](https://docs.github.com/zh/issues/using-labels-and-milestones-to-track-work/managing-labels)
-- [GitHub 文档：关于里程碑](https://docs.github.com/zh/issues/using-labels-and-milestones-to-track-work/about-milestones)
-- [GitHub 文档：使用关键词自动关闭议题](https://docs.github.com/zh/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
 
 ### 延伸阅读
 

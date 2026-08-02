@@ -1597,8 +1597,6 @@ const booking = await prisma.booking.findFirst({
 // booking 的类型完全自动推导，无需手动定义
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. **（remember）** Kysely 由 ______ 在 2021 年开源，名称取自芬兰语 ______，意为"查询"。
@@ -1610,40 +1608,6 @@ const booking = await prisma.booking.findFirst({
 4. **（analyze）** PostgreSQL 的 `BIGINT` 类型在 TypeScript 中应映射为 ______ 而非 `number`，原因是 ______。
 
 5. **（evaluate）** Prisma 通过 `prisma ______` 命令生成 TypeScript 类型与客户端代码，这是 schema-first 设计的核心。
-
-### 选择题知识点讲解
-
-1. **（understand）** 下列关于三个 ORM 的描述，哪项正确？
-   - A. Prisma 不依赖代码生成，所有类型由 schema.prisma 直接推导
-   - B. Kysely 通过 `prisma generate` 生成类型化客户端
-   - C. Drizzle 使用 const 断言保留列定义的字面量类型
-   - D. 三个 ORM 都依赖 Rust Engine 进行查询执行
-
-   **答案**：C
-
-2. **（analyze）** 下列关于 JOIN 类型推导的描述，哪项错误？
-   - A. Kysely 的 JOIN 会扩展泛型 T 为表名联合
-   - B. Drizzle 通过表对象的累积实现 JOIN 类型变化
-   - C. Prisma 的 include 自动推导关联表的类型
-   - D. 三个 ORM 都自动处理 JOIN 后的字段冲突
-
-   **答案**：D
-
-3. **（evaluate）** 下列哪种场景最适合选择 Prisma？
-   - A. 嵌入式设备，内存预算严格
-   - B. Edge Functions，冷启动要求 < 100ms
-   - C. 大型企业应用，需要可视化工具与迁移管理
-   - D. 微服务架构，零依赖要求
-
-   **答案**：C
-
-4. **（create）** 设计一个支持类型安全的批量插入 API，下列哪种签名最合适？
-   - A. `function insertMany(table: string, rows: any[]): Promise<void>`
-   - B. `function insertMany<T>(table: T, rows: Partial<T>[]): Promise<void>`
-   - C. `function insertMany<DB, T extends keyof DB>(table: T, rows: DB[T][]): Promise<void>`
-   - D. `function insertMany(rows: unknown[]): Promise<void>`
-
-   **答案**：C
 
 ### 10.3 代码修正题
 
@@ -1751,38 +1715,6 @@ function groupBy<T extends Record<string, any>, K extends keyof T & string>(
 
 4. **（create）** 假设你要为图数据库（如 Neo4j）设计一个类型安全查询构建器，会面临哪些 TypeScript 类型系统的限制？请给出至少 3 个具体限制，并说明你将如何缓解。
 
-## 11. 参考文献
-
-[1] Klebanov, I. 2024. Kysely Documentation: Type-safe SQL Query Builder for TypeScript. https://kysely.dev/docs
-
-[2] Drizzle Team. 2024. Drizzle ORM Documentation. https://orm.drizzle.team/docs
-
-[3] Prisma Inc. 2024. Prisma Documentation: Type-safe ORM for Node.js and TypeScript. https://www.prisma.io/docs
-
-[4] Bierman, G. M., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP'14), 257–281. DOI: 10.1007/978-3-662-44202-9_11
-
-[5] Klebanov, I. 2022. Kysely: A Type-safe SQL Query Builder Built from the Ground Up. GitHub Repository. https://github.com/kysely-org/kysely
-
-[6] Brodsky, A. and Olsen, D. 2020. Type-safe Database Access in Modern Web Applications. Communications of the ACM 63, 4, 78–87. DOI: 10.1145/3374135
-
-[7] Henglein, F. 2010. Type Inference with Polymorphic Recursion. ACM Transactions on Programming Languages and Systems 15, 2, 1–50. DOI: 10.1145/1734209
-
-[8] Bierman, G. 2018. Programming in TypeScript: Making JavaScript Scale. O'Reilly Media.
-
-[9] Microsoft. 2024. TypeScript 5.4 Release Notes: NoInfer and Improved Type Inference. https://devblogs.microsoft.com/typescript/announcing-typescript-5-4/
-
-[10] ISO/IEC. 2023. Information technology — Database languages — SQL. ISO/IEC 9075:2023.
-
-[11] Shinnar, A. and Pinsker, E. 2019. Compiling SQL to Type-Safe Code. In Proceedings of the 11th Conference on Innovative Data Systems Research (CIDR'19).
-
-[12] Ajvani, B., Vahidi, S., and Itzhaki, S. 2023. Type-level Programming in TypeScript. arXiv preprint arXiv:2302.09465. DOI: 10.48550/arXiv.2302.09465
-
-[13] Codd, E. F. 1970. A Relational Model of Data for Large Shared Data Banks. Communications of the ACM 13, 6, 377–387. DOI: 10.1145/362384.362685
-
-[14] Stonebraker, M. and Hellerstein, J. 2005. What Goes Around Comes Around. In Readings in Database Systems, 4th Edition. MIT Press.
-
-## 12. 延伸阅读
-
 ### 12.1 书籍
 
 1. **Hellerstein, J. M. et al.** *Architecture of a Database System* (Now Publishers, 2007) — 数据库系统架构的权威综述。
@@ -1802,14 +1734,6 @@ function groupBy<T extends Record<string, any>, K extends keyof T & string>(
 3. **prisma** (prisma/prisma) — Schema-first 类型安全 ORM。
 4. **postgres** (porsager/postgres) — 现代 PostgreSQL 客户端。
 5. **slonik** (gajus/slonik) — PostgreSQL 客户端与查询构建器。
-
-### 12.4 在线资源
-
-1. **Kysely 官方文档** — https://kysely.dev/docs
-2. **Drizzle 官方文档** — https://orm.drizzle.team/docs
-3. **Prisma 官方文档** — https://www.prisma.io/docs
-4. **PostgreSQL 文档** — https://www.postgresql.org/docs/
-5. **TypeScript 性能调优** — https://github.com/microsoft/TypeScript/wiki/Performance
 
 ### 12.5 视频课程
 

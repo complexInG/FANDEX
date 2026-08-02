@@ -2134,8 +2134,6 @@ flowchart TD
 5. **动画系统**——学习 `animateTo`、转场动画、属性动画
 6. **性能优化**——深入 ArkUI 渲染机制与优化技巧
 
-## 11. 参考资料
-
 ### 11.1 官方文档
 
 - **ArkUI 开发文档**——https://developer.harmonyos.com/cn/docs/arkui/
@@ -2439,8 +2437,6 @@ struct TabBar {
 }
 ```
 
-## 附录 E:练习题
-
 ### E.1 基础题
 
 **题目 1**:实现一个温度转换器,输入摄氏度,实时显示华氏度。
@@ -2594,21 +2590,6 @@ struct CartPage {
   }
 }
 ```
-
-### E.3 综合题
-
-**题目 4**:实现一个支持增删改查的笔记应用,数据持久化到 `AppStorage`。
-
-提示:
-
-- 使用 `@Observed` 包装 `Note` 类
-- 使用 `AppStorage` 存储笔记数组
-- 实现 `NoteList`、`NoteEditor`、`NoteDetail` 三个组件
-- 支持按标题搜索
-
-(参考答案见官方 Sample)
-
----
 
 ## 附录 F:术语表
 

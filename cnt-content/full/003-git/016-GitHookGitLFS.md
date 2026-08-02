@@ -327,11 +327,6 @@ flowchart TD
 ```
 
 ## 11. 延伸阅读
-
-- [Git 官方钩子文档](https://git-scm.com/docs/githooks)
-- [Git LFS 官方文档](https://git-lfs.github.com/)
-- [husky 文档](https://typicode.github.io/husky/)
-- [commitlint 文档](https://commitlint.js.org/)
   通过本教程，你已经了解了 Git 钩子和 Git LFS 的核心概念和实践技巧。在实际项目中，你可以使用这些工具来自动化工作流程、管理大文件，提高开发效率和代码质量
 ## 安装与初始化
 
@@ -702,16 +697,7 @@ git lfs prune --dry-run
 git lfs fetch --recent
 ```
 
-## 参考文献
-
-Git 官方文档：https://git-scm.com/doc
-Pro Git 中文版：https://git-scm.com/book/zh/v2
-Git 参考手册：https://git-scm.com/docs
-Conventional Commits：https://www.conventionalcommits.org/zh-hans/
-
 ## 延伸阅读
-
 Git 基础操作与分支，见 003-git 模块文档。
 GitHub 协作与 PR，见 004-github 模块。
 CI/CD 自动化，见 031-devops 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Git 课程。

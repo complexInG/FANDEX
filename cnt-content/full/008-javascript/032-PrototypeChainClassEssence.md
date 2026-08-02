@@ -1000,8 +1000,6 @@ console.log(JSON.stringify(btn.render(), null, 2));
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 写出以下代码的输出：
@@ -1114,31 +1112,6 @@ console.log(e.describe());
 // "Vehicle with 4 wheels, max 200 km/h, brand Tesla, fuel electric, battery 75 kWh"
 ```
 
-### 9.4 思考题
-
-6. 为什么 `class` 不能像 Java 一样支持多重继承？JavaScript 是如何"绕过"这一限制的？
-
-7. `Object.create(null)` 创建的对象在 `instanceof` 检查时会返回什么？为什么？
-
-8. 写一段代码证明：`new.target` 在被继承时，子类调用 `super()` 时 `new.target` 仍指向子类。
-
-```javascript
-class A {
-  constructor() {
-    console.log('A.new.target =', new.target.name);
-  }
-}
-class B extends A {
-  constructor() {
-    super();
-    console.log('B.new.target =', new.target.name);
-  }
-}
-new B();
-// 输出：A.new.target = B
-// 输出：B.new.target = B
-```
-
 ### 9.5 调试题
 
 9. 找出以下代码的 bug 并修复：
@@ -1185,38 +1158,6 @@ console.log(Object.getPrototypeOf(B) === A); // true （class 自身也构成原
 
 ---
 
-## 10. 参考文献
-
-以下引用采用 ACM 参考文献格式（ACM Reference Format）：
-
-[1] Brendan Eich. 1995. JavaScript 1.0 Specification. Netscape Communications Corporation. Retrieved from https://web.archive.org/web/20070930144617/http://wp.netscape.com/eng/mozilla/3.0/handbook/javascript/
-
-[2] Douglas Crockford. 2008. JavaScript: The Good Parts. O'Reilly Media, Sebastopol, CA, USA. ISBN 978-0-596-51774-8.
-
-[3] Ecma International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th Edition). Ecma International, Geneva, Switzerland. Retrieved from https://tc39.es/ecma262/
-
-[4] David Ungar and Randall B. Smith. 1987. Self: The power of simplicity. In Proceedings of the 2nd ACM SIGPLAN Conference on Object-Oriented Programming Systems, Languages and Applications (OOPSLA '87). ACM, New York, NY, USA, 227–242. DOI: https://doi.org/10.1145/38767.38828
-
-[5] Henry Lieberman. 1986. Using prototypical objects to implement shared behavior in object-oriented systems. In Conference Proceedings on Object-Oriented Programming Systems, Languages and Applications (OOPSLA '86). ACM, New York, NY, USA, 214–223. DOI: https://doi.org/10.1145/28697.28718
-
-[6] Kyle Simpson. 2014. You Don't Know JS: this & Object Prototypes. O'Reilly Media, Sebastopol, CA, USA. ISBN 978-1-4919-0415-2.
-
-[7] Axel Rauschmayer. 2014. Speaking JavaScript: An In-Depth Guide for Programmers. O'Reilly Media, Sebastopol, CA, USA. ISBN 978-1-4493-6443-5.
-
-[8] Allen Wirfs-Brock and Brendan Eich. 2010. JavaScript: The First 20 Years. Proceedings of the ACM on Programming Languages 4, HOPL, Article 85 (June 2020). DOI: https://doi.org/10.1145/3386327
-
-[9] Mathias Bynens. 2019. V8 internals for JavaScript developers. V8 Blog. Retrieved from https://v8.dev/blog
-
-[10] Mozilla Developer Network. 2024. Inheritance and the prototype chain. MDN Web Docs. Retrieved from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain
-
-[11] Seth Thompson. 2016. ES6 Inheritance Patterns. Crockford Corporation. Retrieved from https://www.crockford.com/javascript/
-
-[12] Nicholas C. Zakas. 2016. Understanding ECMAScript 6. No Starch Press, San Francisco, CA, USA. ISBN 978-1-59327-757-4.
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 规范与标准
 
 - **ECMA-262 规范**（最新版）：<https://tc39.es/ecma262/>
@@ -1252,24 +1193,6 @@ console.log(Object.getPrototypeOf(B) === A); // true （class 自身也构成原
  最早提出原型对象共享行为的论文。
 - **"JavaScript: The First 20 Years"**（Wirfs-Brock & Eich, 2020）
   JavaScript 历史的权威回顾，由规范作者与语言作者合著。
-
-### 11.5 在线资源
-
-- **MDN Web Docs**：<https://developer.mozilla.org/>
-  权威参考，特别推荐《Classes》、《Inheritance and the prototype chain》。
-- **JavaScript.info**：<https://javascript.info/>
-  交互式教程，原型与 class 章节附有大量可运行示例。
-- **Exploring JS**：<https://exploringjs.com/>
-  Axel Rauschmayer 维护的免费在线书籍，覆盖 ES1 到 ES2024。
-
-### 11.6 推荐练习
-
-- 实现 lodash `_.create`、`_.assign`、`_.defaults` 函数，深入理解原型与属性合并。
-- 实现一个简易 ORM，通过继承 `Model` 基类提供 CRUD 方法。
-- 实现一个插件系统，基类定义接口、子类实现具体逻辑，支持运行时注册。
-- 阅读 Backbone.js `Model.extend` 源码，对比寄生组合式继承的现代实现。
-
----
 
 ## 附录 A：原型链查找速查表
 
@@ -1464,8 +1387,6 @@ flowchart TD
     T31 --> T35
 ```
 
-## 附录 I：常见面试题精选
-
 ### I.1 简答题
 
 **Q1：`__proto__` 与 `prototype` 的区别？**
@@ -1538,41 +1459,6 @@ function multiExtend(target, ...mixins) {
   }
   return target;
 }
-```
-
-### I.3 思考题
-
-**Q7：为什么 JavaScript 不支持真正的多重继承（像 C++）？**
-
-A：JavaScript 通过原型链实现单根继承，每个对象只有一个 `[[Prototype]]`。多重继承会引入"菱形问题"（diamond problem），即两个父类有同名方法时，子类无法决定调用哪个。JavaScript 选择单继承 + Mixin 模式，由开发者手动解决冲突。这与 Java、Ruby 等单继承语言的设计哲学一致。
-
-**Q8：`class A extends null {}` 会发生什么？**
-
-A：`class A extends null {}` 会创建一个原型为 `null` 的类。但 `new A()` 会失败，因为构造函数需要调用 `super()`，而 `null` 没有 `constructor`。需要显式定义构造函数：
-
-```javascript
-class A extends null {
-  constructor() {
-    // 不调用 super，手动创建对象
-    return Object.create(new.target.prototype);
-  }
-}
-const a = new A();
-console.log(Object.getPrototypeOf(a)); // null
-```
-
-**Q9：解释 `Symbol.hasInstance` 的作用。**
-
-A：`Symbol.hasInstance` 是一个 well-known symbol，用于自定义 `instanceof` 行为：
-
-```javascript
-class EvenNumber {
-  static [Symbol.hasInstance](x) {
-    return typeof x === 'number' && x % 2 === 0;
-  }
-}
-console.log(4 instanceof EvenNumber); // true
-console.log(5 instanceof EvenNumber); // false
 ```
 
 ## 附录 J：相关规范章节索引

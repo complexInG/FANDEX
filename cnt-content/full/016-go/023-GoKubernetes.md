@@ -1225,8 +1225,6 @@ func init() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：为什么 Kubernetes 选择 List + Watch 而非纯 Watch？
@@ -1264,64 +1262,6 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 }
 ```
 
-### 9.3 思考题
-
-**题目 4**：为何 Reconcile 必须是幂等的？如何保证幂等性？
-
-**提示**：考虑"至少一次"（at-least-once）语义，同一资源可能被多次 Reconcile。幂等性通过：检查当前状态、避免副作用、使用 `resourceVersion` 乐观锁来保证。
-
-**题目 5**：Leader Election 的 `LeaseDuration`、`RenewDeadline`、`RetryPeriod` 如何权衡？
-
-**解析讲解**：
-- `LeaseDuration` 长 → 故障切换慢，但抗网络抖动。
-- `LeaseDuration` 短 → 故障切换快，但易误判。
-- `RenewDeadline` 必须 < `LeaseDuration`，留出续约失败重试时间。
-- `RetryPeriod` 影响 API Server 压力与切换延迟。
-- 典型配置：`15s / 10s / 2s`，切换时间 15-30 秒。
-
-### 9.4 实战题
-
-**题目 6**：设计一个 Redis Operator，支持主从复制、哨兵模式、集群模式三种部署形态。
-
-**设计要点**：
-1. CRD 定义 `RedisCluster`，`spec.mode` 区分三种模式。
-2. 每种模式对应独立的 Reconcile 逻辑。
-3. 使用 StatefulSet 管理有状态 Pod。
-4. 通过 ConfigMap 动态注入配置。
-5. 实现 Failover：监听 Pod 故障，自动提升从节点为主节点。
-
----
-
-## 10. 参考文献
-
-1. Kubernetes Documentation: https://kubernetes.io/docs/home/
-2. client-go Repository: https://github.com/kubernetes/client-go
-3. Kubebuilder Book: https://book.kubebuilder.io/
-4. controller-runtime Documentation: https://pkg.go.dev/sigs.k8s.io/controller-runtime
-5. Operator SDK Documentation: https://sdk.operatorframework.io/
-6. Kubernetes API Conventions: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md
-7. "Kubernetes: Up and Running" (Hightower, Burns, Beda), O'Reilly.
-8. "Programming Kubernetes" (Muehl, Evenson, Sutter), O'Reilly.
-9. "Kubernetes Patterns" (Bilgin, Sutter), O'Reilly.
-10. CoreOS Operator Introduction (2016): https://coreos.com/blog/introducing-operators.html
-11. Kubernetes Controller Architecture: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/controllers.md
-12. API Machinery SIG: https://github.com/kubernetes/community/tree/master/sig-api-machinery
-13. "Designing Data-Intensive Applications" (Kleppmann) - 适用于分布式系统设计参考.
-14. etcd Documentation: https://etcd.io/docs/
-15. Kubernetes Enhancement Proposals (KEPs): https://github.com/kubernetes/enhancements
-
----
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **Kubernetes API Reference**: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/
-- **client-go Examples**: https://github.com/kubernetes/client-go/tree/master/examples
-- **Kubebuilder Quick Start**: https://book.kubebuilder.io/quick-start.html
-- **controller-runtime API**: https://pkg.go.dev/sigs.k8s.io/controller-runtime
-- **CRD Documentation**: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
-
 ### 11.2 进阶主题
 
 - **Server-Side Apply**: https://kubernetes.io/docs/reference/using-api/server-side-apply/ - 声明式资源管理的新范式。
@@ -1337,26 +1277,12 @@ func (r *ConfigMapSyncReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 - **Go与数据库**: Operator 常用于管理数据库，理解数据库复制原理有助于编写数据库 Operator。
 - **Context详解**: K8s API 调用大量使用 `context.Context` 传递超时与取消信号。
 
-### 11.4 社区资源
-
-- **Kubernetes Slack**: https://kubernetes.slack.com/ - `#client-go-misc`、`#kubebuilder` 频道。
-- **Kubernetes SIG API Machinery**: https://github.com/kubernetes/community/tree/master/sig-api-machinery - API 机制设计与实现。
-- **OperatorHub.io**: https://operatorhub.io/ - 社区 Operator 目录。
-- **Awesome Kubernetes Operators**: https://github.com/operator-framework/awesome-operators - 优秀 Operator 集合。
-
 ### 11.5 学术论文
 
 - **"Borg, Omega, and Kubernetes"** (Burns, Brewer, Oppenheimer, 2016) - K8s 设计哲学的源流。
 - **"Large-scale cluster management at Google with Borg"** (Verma et al., 2015) - Borg 系统的学术形式化。
 - **"Formal Verification of Kubernetes Controller"** (各种学术论文) - Controller 协调循环的形式化验证。
 - **"Toward a Formal Semantics for Kubernetes"** - K8s 声明式 API 的形式化语义研究。
-
-### 11.6 视频资源
-
-- **"Kubernetes Deconstructed"** (Hightower) - K8s 架构深度讲解。
-- **"Building Kubernetes Operators"** (Red Hat) - Operator 开发实战。
-- **"Deep Dive: client-go Informers"** (KubeCon) - Informer 机制详解。
-- **"Controller Runtime Internals"** (KubeCon) - controller-runtime 源码解析。
 
 ### 11.7 实战项目
 
@@ -1450,8 +1376,6 @@ A: 使用 `RequeueAfter` 实现轮询，或使用外部事件源（如 NATS、Ka
 | Istio Operator        | Istio          | Service Mesh 控制平面管理         |
 
 ---
-
-## 附录 D：Go Operator 开发常见面试题
 
 ### D.1 Informer 机制相关
 

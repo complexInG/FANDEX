@@ -1843,8 +1843,6 @@ end)
 p:then_(function(v) print("got " .. v) end)
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. **概念题**:解释 `__index` 元方法的表形态与函数形态的区别,以及各自的适用场景。
@@ -1896,22 +1894,6 @@ print(a.x, b.x)
     - 嵌套 schema
     - 序列化/反序列化
 
-### 9.3 思考题
-
-11. **开放题**:Lua 元表机制相比 JavaScript 原型链、Python dunder、C++ 运算符重载,在设计哲学上有何根本差异?这些差异如何影响代码风格与可维护性?
-
-12. **性能题**:在 LuaJIT 环境下,以下两种类实现哪个性能更好?为什么?
-    - 实现 A:每个对象独立元表,元表 `__index` 指向类
-    - 实现 B:所有对象共享同一元表,元表 `__index` 指向类
-
-13. **演化题**:Lua 5.0-5.5 中元表机制的演化趋势是什么?从 `tag method` 到 `__pairs` 废弃,反映了哪些设计取舍?
-
-14. **应用题**:在 ECS(Entity-Component-System)架构中,如何利用元表实现高效的组件查找?讨论不同方案的性能权衡。
-
-15. **批判题**:Lua 元表机制不支持访问控制(私有/保护),这是设计缺陷还是刻意选择?对大型项目有何影响?
-
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes. *Lua 5.4 Reference Manual*. Lua.org, 2020. https://www.lua.org/manual/5.4/
@@ -1934,16 +1916,6 @@ print(a.x, b.x)
 
 8. *Lua 5.4 Source Code: ltm.c*. 元方法实现源码,https://www.lua.org/source/5.4/ltm.c.html
 
-### 10.4 社区资源
-
-9. *Lua Users Wiki: Metamethods Tutorial*. http://lua-users.org/wiki/MetamethodsTutorial
-
-10. *Lua Users Wiki: Metatables Tutorial*. http://lua-users.org/wiki/MetatablesTutorial
-
-11. *LuaJIT FFI Documentation*. Mike Pall. https://luajit.org/ext_ffi.html
-
-12. *Luau Type Checking*. Roblox. https://luau-lang.org/typecheck
-
 ### 10.5 对比研究
 
 13. *ECMAScript 2024 Specification: Ordinary Object Internal Methods*. ECMA International. https://tc39.es/ecma262/
@@ -1951,8 +1923,6 @@ print(a.x, b.x)
 14. *Python Data Model*. Python Software Foundation. https://docs.python.org/3/reference/datamodel.html
 
 15. *C++ Operator Overloading*. ISO/IEC 14882:2020.
-
-## 11. 延伸阅读
 
 ### 11.1 进阶主题
 

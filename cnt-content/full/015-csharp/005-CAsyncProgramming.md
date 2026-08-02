@@ -1891,45 +1891,6 @@ public sealed class AsyncLazy<T>
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个 `async` 方法的实现最优化？
-
-A. `public async Task<int> GetAsync() => await Task.FromResult(42);`
-B. `public Task<int> GetAsync() => Task.FromResult(42);`
-C. `public async Task<int> GetAsync() { return 42; }`
-D. `public async Task<int> GetAsync() { return await Task.Run(() => 42); }`
-
-**解析讲解**：B。直接返回 `Task.FromResult(42)`，避免生成多余的状态机。
-
-**常见疑问 2**：在 WinForms 应用中，以下代码会发生什么？
-
-```csharp
-private void button_Click(object sender, EventArgs e)
-{
-    var data = FetchAsync().Result;
-    label.Text = data;
-}
-```
-
-A. 正常工作
-B. 死锁
-C. 编译错误
-D. 抛 `InvalidOperationException`
-
-**解析讲解**：B。`FetchAsync` 捕获 UI 同步上下文，`.Result` 阻塞 UI 线程，导致死锁。
-
-**常见疑问 3**：关于 `ValueTask<T>`，以下哪个说法正确？
-
-A. 可以多次 `await` 同一个实例
-B. 总是零分配
-C. 适合热路径，可能同步返回时避免堆分配
-D. 不能用于 `async` 方法返回类型
-
-**解析讲解**：C。`ValueTask<T>` 是 `Task<T>` 与 `T` 的并集，同步可用时零分配，但不可多次 `await`。
-
 ### 简答题知识点讲解
 
 **常见疑问 4**：解释 `ConfigureAwait(false)` 的作用，为何库代码推荐使用？
@@ -2020,65 +1981,6 @@ channel.Writer.Complete();
 await Task.WhenAll(consumers);
 ```
 
-### 9.4 思考题
-
-**常见疑问 8**：在 ASP.NET Core 中，为何 `ConfigureAwait(false)` 不再是必需？
-
-**解析讲解**：ASP.NET Core 默认不设置 `SynchronizationContext`，`await` 后续在线程池执行，无需捕获上下文。因此不会死锁，`ConfigureAwait(false)` 仅是性能微优化。但库代码仍推荐使用，因为库可能被其他上下文（WinForms/WPF）调用。
-
-**常见疑问 9**：`ValueTask<T>` 何时优于 `Task<T>`？何时相反？
-
-**解析讲解**：
-- 优于：异步方法可能同步返回结果（缓存命中、参数校验失败），热路径上避免堆分配。
-- 不优于：异步方法总是异步完成（IO 操作），`ValueTask` 反而比 `Task` 占用更多内存（结构体更大）。此外，`ValueTask` 不可多次 `await`，不可直接暴露给不可信调用方。
-
-**常见疑问 10**：分析 `Task.WhenAll` 与 `Parallel.ForEachAsync` 的差异。
-
-**解析讲解**：
-- `Task.WhenAll`：并行启动所有任务，无并发限制，可能瞬时创建大量任务耗尽资源。
-- `Parallel.ForEachAsync`：限流并发，按 `MaxDegreeOfParallelism` 控制同时执行数，资源友好。
-- 适用场景：少量任务用 `WhenAll`，大量任务（如 1000+ URL）用 `ForEachAsync`。
-
----
-
-## 10. 参考文献
-
-> 采用 ACM Reference Format。
-
-[1] Stephen Toub. 2012. Async/Await FAQ. .NET Parallel Programming blog. https://devblogs.microsoft.com/dotnet/async-await-faq/.
-
-[2] Stephen Toub. 2012. Async in C# 5.0. Microsoft Developer Network. https://docs.microsoft.com/en-us/archive/msdn-magazine/2012/march/async-in-csharp-5-awaiting-task-s-and-synchronizationcontext.
-
-[3] Eric Lippert. 2011. What is Asynchronous Programming?. Fabulous Adventures In Coding. https://ericlippert.com/2011/11/17/what-is-asynchronous-programming/.
-
-[4] Microsoft. 2024. Asynchronous Programming Patterns. .NET Documentation. https://learn.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/.
-
-[5] Microsoft. 2024. Task-based Asynchronous Pattern (TAP). .NET Documentation. https://learn.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap.
-
-[6] Microsoft. 2024. Asynchronous Programming with async and await. C# Programming Guide. https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/.
-
-[7] Microsoft. 2024. CancellationToken. .NET API Browser. https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken.
-
-[8] Microsoft. 2024. IAsyncEnumerable<T> Interface. .NET API Browser. https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iasync enumerable-1.
-
-[9] Microsoft. 2024. System.Threading.Channels. .NET Documentation. https://learn.microsoft.com/en-us/dotnet/api/system.threading.channels.
-
-[10] Microsoft. 2024. Parallel.ForEachAsync. .NET API Browser. https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.parallel.foreachasync.
-
-[11] Microsoft. 2024. ValueTask<TResult>. .NET API Browser. https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1.
-
-[12] Stephen Toub. 2017. Understanding the Whys, Whats, and Whens of ValueTask. .NET Parallel Programming blog. https://devblogs.microsoft.com/dotnet/understanding-the-whys-whats-and-whens-of-valuetask/.
-
-[13] Stephen Toub. 2020. Consuming IAsyncEnumerable<T>. .NET Blog. https://devblogs.microsoft.com/dotnet/consuming-iasyncenumerable-c-8/.
-
-[14] Stephen Cleary. 2013. Don't Block on Async Code. Stephen Cleary's Blog. https://blog.stephencleary.com/2012/07/dont-block-on-async-code.html.
-
-[15] Stephen Cleary. 2015. Async/Await - Best Practices in Asynchronous Programming. MSDN Magazine. https://learn.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming.
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **C# 异步编程**：https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/
@@ -2106,20 +2008,6 @@ await Task.WhenAll(consumers);
 - Mark Michaelis. 2022. *Essential C# 11.0*. Addison-Wesley Professional.
 - Andrew Troelsen, Phil Japikse. 2022. *Pro C# 10 with .NET 6*. Apress.
 - Jon Skeet. 2019. *C# in Depth*. Manning Publications, 4th Edition.
-
-### 11.4 社区资源
-
-- **Stephen Cleary's Blog**：https://blog.stephencleary.com/（async/await 权威博客）
-- **Stephen Toub's GitHub**：https://github.com/stephentoub
-- **dotnet/runtime 仓库**：https://github.com/dotnet/runtime
-- **Async/Await FAQ**：https://devblogs.microsoft.com/dotnet/async-await-faq/
-
-### 11.5 视频资源
-
-- **Channel 9: Async/Await in C#**：https://channel9.msdn.com/
-- **NDC Conference: Async Deep Dive**：https://www.ndcconferences.com/
-- **.NET Conf**：https://www.dotnetconf.net/
-- **Microsoft Learn: Asynchronous Programming in C#**：https://learn.microsoft.com/training/paths/csharp-async/
 
 ### 11.6 工具
 

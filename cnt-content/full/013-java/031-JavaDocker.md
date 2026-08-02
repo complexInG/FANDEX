@@ -1460,8 +1460,6 @@ docker buildx build \
 
 **结果**：迁移到 ARM64 后，单实例性价比提升 30%，年节省 30 万美元。
 
-## 知识讲解与要点分析（原习题）
-
 ### 选择题
 
 **1. JVM 容器感知从哪个版本开始默认启用？**
@@ -1662,88 +1660,6 @@ spec:
 
 </details>
 
-## 知识讲解与要点分析（原思考题）
-
-**1. 为什么在容器内存 < 512MB 时，`MaxRAMPercentage=75` 极易导致 OOM Killed？请从 JVM 内存模型角度分析。**
-
-<details>
-<summary>参考答案</summary>
-
-JVM 总内存 = 堆 + Metaspace + Code Cache + Direct Buffer + Thread Stack + GC 内部 + JNI。
-
-容器 512MB 时：
-- 堆 = 512 × 0.75 = 384MB
-- Metaspace（默认无上限，但实际约 80-150MB）
-- Code Cache（默认 240MB 上限，实际约 50-100MB）
-- Direct Buffer（应用依赖，通常 50-150MB）
-- Thread Stack（200 线程 × 1MB = 200MB，虚拟线程后大幅减少）
-- GC 内部（G1 约 50MB，ZGC 约 100MB）
-
-总和约 384 + 100 + 80 + 100 + 100 + 100 = 864MB，远超 512MB。
-
-解决方案：
-1. 降低 `MaxRAMPercentage` 到 50-55
-2. 限制 Metaspace：`-XX:MaxMetaspaceSize=80m`
-3. 限制 Code Cache：`-XX:ReservedCodeCacheSize=60m`
-4. 限制 Direct Buffer：`-Djdk.nio.maxCachedBufferSize=262144`
-5. 使用虚拟线程减少线程栈占用
-6. 使用 ZGC 减少 GC 内部内存
-
-</details>
-
-**2. 对比 GraalVM Native Image 与 CRaC 在 Serverless 场景下的优劣，给出选型建议。**
-
-<details>
-<summary>参考答案</summary>
-
-| 维度 | GraalVM Native Image | CRaC |
-| --- | --- | --- |
-| 启动时间 | 0.02-0.1s | 0.05-0.1s |
-| 峰值吞吐 | 70-85%（无 JIT） | 100%（完整 JIT） |
-| 构建时间 | 5-15 分钟 | 与普通构建相同 |
-| 反射/动态代理 | 需配置文件 | 完全支持 |
-| 调试友好度 | 低（堆栈信息少） | 高（完整 JVM） |
-| 内存占用 | 极低（30-50MB） | 中（100-200MB） |
-| 适用框架 | 需 Native Image 支持 | 任意 Java 应用 |
-| 平台支持 | 通用 | 需 CRaC JDK + 内核支持 |
-| 检查点一致性 | N/A | 需注意文件描述符、线程状态 |
-
-选型建议：
-- **短生命周期函数（< 1 分钟）**：GraalVM Native Image，内存占用低、密度高
-- **中等生命周期（1-10 分钟）**：CRaC，吞吐优势明显
-- **依赖反射的复杂应用**：CRaC，避免 Native Image 配置成本
-- **AWS Lambda**：优先 SnapStart（基于 Firecracker 快照，类似 CRaC）
-- **Azure Functions / GCP Cloud Run**：GraalVM Native Image
-- **自建 K8s**：CRaC，弹性伸缩场景下成本最优
-
-</details>
-
-## 参考文献
-
-[1] Oracle Corporation. 2024. JEP 318: Host/Container Awareness. Java Enhancement Proposals. Retrieved July 21, 2026 from https://openjdk.org/jeps/318
-
-[2] M. Voelp, D. Damon, and R. Warrender. 2018. Java in Containers: A Performance Comparison. In Proceedings of the 15th International Conference on Quantitative Evaluation of Systems (QEST 2018). Springer, 299–316. DOI: 10.1007/978-3-319-99154-2_19
-
-[3] D. Bernstein. 2014. Containers and Cloud: From LXC to Docker to Kubernetes. Cloud Computing 1, 5 (2014), 35–42. DOI: 10.1109/MCC.2014.51
-
-[4] R. D. Schaller, M. K. McKusick, and K. Bostic. 2020. The Evolution of Container Runtime Isolation. Communications of the ACM 63, 2 (Feb. 2020), 48–55. DOI: 10.1145/3376766
-
-[5] Spring Team. 2024. Spring Boot Reference Documentation 3.3.x: Container Images. VMware. Retrieved July 21, 2026 from https://docs.spring.io/spring-boot/docs/3.3.x/reference/htmlsingle/#container-images
-
-[6] A. Klimo, P. Kacur, and M. Krajcovic. 2022. Performance Evaluation of Java Applications in Docker Containers. In Proceedings of the 19th International Conference on Informatics (INFORMATICS 2022). IEEE, 145–150. DOI: 10.1109/INFORMATICS55457.2022.9913542
-
-[7] GraalVM Team. 2024. GraalVM Native Image Reference Manual. Oracle Labs. Retrieved July 21, 2026 from https://www.graalvm.org/latest/reference-manual/native-image/
-
-[8] R. Pressler. 2023. JEP 423: Coordinated Restore at Checkpoint (CRaC). OpenJDK. Retrieved July 21, 2026 from https://openjdk.org/jeps/423
-
-[9] C. Fournier, S. Nusrat, and F. C. Liu. 2023. A Comparative Study of Container Image Build Tools: Dockerfile, Jib, and Buildpacks. Journal of Systems and Software 205 (Nov. 2023), 111768. DOI: 10.1016/j.jss.2023.111768
-
-[10] Linux Containers Working Group. 2024. cgroups v2 Documentation. Linux Kernel Documentation. Retrieved July 21, 2026 from https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html
-
-[11] R. K. Arvind, A. Anwar, and A. S. M. L. Hoque. 2023. Securing Container Supply Chain: Image Signing, SBOM, and Policy Enforcement. IEEE Security & Privacy 21, 4 (July 2023), 56–65. DOI: 10.1109/MSEC.2023.3263681
-
-[12] Cloud Native Computing Foundation. 2024. Container Runtime Interface (CRI) Specification v1.30. CNCF. Retrieved July 21, 2026 from https://github.com/kubernetes/cri-api/blob/master/pkg/apis/runtime/v1/api.proto
-
 ## 延伸阅读
 
 - **JEP 439: Generational ZGC**：JDK 21 分代 ZGC 的官方设计文档，理解低延迟 GC 在容器内的行为。
@@ -1756,4 +1672,3 @@ JVM 总内存 = 堆 + Metaspace + Code Cache + Direct Buffer + Thread Stack + GC
 - **Docker BuildKit Reference**：BuildKit 缓存挂载、多平台构建、SBOM 生成等高级特性的官方文档。
 - **Trivy / Grype / cosign / Kyverno 文档**：镜像供应链安全工具链的实践指南。
 - **Project Leyden**（JEP 483 等）：Java AOT 演进方向，未来可能替代 GraalVM Native Image 的官方方案。
-

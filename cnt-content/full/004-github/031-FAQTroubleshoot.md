@@ -639,25 +639,7 @@ pull-requests: write
 3. 添加重试机制
 4. 检查网络连接
 
-## 11. 延伸阅读
-
-- [Troubleshooting connectivity](https://docs.github.com/en/authentication/troubleshooting-ssh) <!-- nofollow -->
-- [Working with large files](https://docs.github.com/en/repositories/working-with-files/managing-large-files) <!-- nofollow -->
-- [Configuring Git to handle line endings](https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings) <!-- nofollow -->
-- [Working with submodules](https://docs.github.com/en/repositories/working-with-files/submodules) <!-- nofollow -->
-- [About commit signature verification](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification) <!-- nofollow -->
-- [Managing GitHub Actions settings for a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository) <!-- nofollow -->
-
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
-
 ## 延伸阅读
-
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。
 DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

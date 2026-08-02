@@ -8,7 +8,6 @@ description: 无偏性、有效性、一致性（相合性）的定义与判定�
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'probability-statistics/抽样分布典型例题'
   - 'probability-statistics/点估计'
   - 'probability-statistics/区间估计'
   - 'probability-statistics/正态总体参数的区间估计'
@@ -81,22 +80,6 @@ $$D(\hat{\theta}_1) \leq D(\hat{\theta}_2)$$
 $$D(\hat{\theta}^*) \leq D(\hat{\theta})$$
 
 则称 $\hat{\theta}^*$ 为 $\theta$ 的**最小方差无偏估计**（MVUE）。这是"无偏 + 有效"的完美结合，是评选体系中的"冠军"。
-
-### 2.3 完整例题：比较 $\bar{X}$ 与 $X_1$ 的有效性
-
-**例题**：设 $X_1, \cdots, X_n \sim N(\mu, \sigma^2)$，比较 $\bar{X}$ 与 $X_1$ 作为 $\mu$ 的估计的有效性。
-
-**解**：两者都是 $\mu$ 的无偏估计（第一关都通过）：
-
-$$E(\bar{X}) = \mu, \quad E(X_1) = \mu$$
-
-比较方差（第二关分高下）：
-
-$$D(\bar{X}) = \frac{\sigma^2}{n}, \quad D(X_1) = \sigma^2$$
-
-当 $n > 1$ 时，$D(\bar{X}) = \dfrac{\sigma^2}{n} < \sigma^2 = D(X_1)$，故 $\bar{X}$ 比 $X_1$ **有效**。
-
-**结论**：样本均值把 $n$ 个观测的信息都利用起来，"平均"天然地压缩了随机波动；只用 $X_1$ 则浪费了其余 $n-1$ 个观测。
 
 ### 2.4 克拉默-拉奥下界（C-R 下界）：有效性的"天花板"
 
@@ -181,53 +164,11 @@ MSE 把"方差"和"偏差"打包成一个数：偏差大了不行（不准），
 | 忽略 C-R 下界条件 | 任意分布都套 C-R 下界 | 正则条件不满足（如均匀分布） | 均匀分布等"定义域依赖 $\theta$"的分布没有常规 C-R 下界，不能套用 |
 | MSE 计算错误 | 忘记展开式 | 把 MSE 当方差 | $\text{MSE} = D(\hat{\theta}) + [\text{偏差}]^2$，偏差为零时才退化为方差 |
 
-## 6. 实战练习
-
-**练习 1（无偏性判断）**：设 $X_1, \cdots, X_n \sim U(0, \theta)$，判断 $\hat{\theta}_1 = 2\bar{X}$ 与 $\hat{\theta}_2 = X_{(n)}$ 是否 $\theta$ 的无偏估计。
-
-**提示**：$E(X) = \theta/2$；最大值 $X_{(n)}$ 的密度为 $f(x) = \dfrac{n}{\theta^n}x^{n-1}$。
-
-**参考答案要点**：$E(\hat{\theta}_1) = 2 \cdot \dfrac{\theta}{2} = \theta$，无偏；$E(\hat{\theta}_2) = \int_0^\theta x \cdot \dfrac{n}{\theta^n}x^{n-1}dx = \dfrac{n}{n+1}\theta$，有偏。修正版 $\hat{\theta}_3 = \dfrac{n+1}{n}X_{(n)}$ 无偏。
-
-**练习 2（有效性比较）**：沿用练习 1，比较 $\hat{\theta}_1 = 2\bar{X}$ 与 $\hat{\theta}_3 = \dfrac{n+1}{n}X_{(n)}$ 的有效性（两者均无偏）。
-
-**提示**：$D(\bar{X}) = \dfrac{\theta^2}{12n}$；$D(X_{(n)}) = \dfrac{n\theta^2}{(n+1)^2(n+2)}$。
-
-**参考答案要点**：$D(\hat{\theta}_1) = \dfrac{\theta^2}{3n}$；$D(\hat{\theta}_3) = \dfrac{\theta^2}{n(n+2)}$。当 $n \geq 2$ 时 $\dfrac{\theta^2}{n(n+2)} < \dfrac{\theta^2}{3n}$，故 $\hat{\theta}_3$ 更有效（它利用了最大值这个"充分信息"）。
-
-**练习 3（相合性判定）**：设 $X_1, \cdots, X_n \sim N(\mu, \sigma^2)$，证明 $\bar{X}$ 与 $S^2$ 分别是 $\mu$ 与 $\sigma^2$ 的相合估计。
-
-**提示**：用判定定理：渐近无偏 + 方差趋于 0。
-
-**参考答案要点**：$E(\bar{X}) = \mu$（无偏），$D(\bar{X}) = \sigma^2/n \to 0$，故 $\bar{X} \xrightarrow{P} \mu$；$E(S^2) = \sigma^2$（无偏），$D(S^2) = \dfrac{2\sigma^4}{n-1} \to 0$，故 $S^2 \xrightarrow{P} \sigma^2$。
-
-**练习 4（C-R 下界）**：设 $X \sim P(\lambda)$（泊松分布），求 Fisher 信息量 $I(\lambda)$，并说明 $\bar{X}$ 是否为 $\lambda$ 的有效估计。
-
-**提示**：$\ln f(x;\lambda) = x\ln\lambda - \lambda - \ln(x!)$，用 $I(\lambda) = -E\left[\dfrac{\partial^2 \ln f}{\partial \lambda^2}\right]$。
-
-**参考答案要点**：$\dfrac{\partial^2 \ln f}{\partial \lambda^2} = -\dfrac{x}{\lambda^2}$，$I(\lambda) = \dfrac{E(X)}{\lambda^2} = \dfrac{\lambda}{\lambda^2} = \dfrac{1}{\lambda}$。下界为 $\dfrac{1}{nI(\lambda)} = \dfrac{\lambda}{n} = D(\bar{X})$，达到下界，故 $\bar{X}$ 是 $\lambda$ 的有效估计（也是 MVUE）。
-
-**练习 5（MSE 权衡）**：设 $\hat{\theta}_a = a\bar{X}$（$0 < a < 1$）用于估计正态总体 $N(\mu, 1)$ 的均值 $\mu$。求 $\text{MSE}(\hat{\theta}_a)$ 关于 $a$ 的最小值，并讨论"牺牲无偏换 MSE"的利弊。
-
-**提示**：$\text{MSE} = D(\hat{\theta}_a) + [E(\hat{\theta}_a) - \mu]^2 = \dfrac{a^2}{n} + (a-1)^2\mu^2$，对 $a$ 求导。
-
-**参考答案要点**：$\dfrac{d\text{MSE}}{da} = \dfrac{2a}{n} + 2(a-1)\mu^2 = 0$，得 $a^* = \dfrac{n\mu^2}{1 + n\mu^2} < 1$。当 $\mu$ 很大时 $a^*$ 接近 1（几乎无偏）；$\mu$ 很小时明显收缩。结论：有偏但方差小的估计（如收缩估计）可能在 MSE 意义上更优——这是岭回归的思想源头。
-
 ## 7. 一句话记忆
 
 **评选估计量看三关：无偏性（平均打中靶心）、有效性（无偏者中方差最小）、相合性（样本越大越准），三关可统一成均方误差 MSE = 方差 + 偏差平方。**
 
-## 参考文献
-
-- 盛骤、谢式千、潘承毅，《概率论与数理统计》（浙大版第四版），高等教育出版社：第七章第二节"估计量的评选标准"。
-- University of Oxford Statistics 讲义 Chapter 4（Interval estimation 与估计量性质；C-R 不等式相关内容）：https://www.stats.ox.ac.uk/~reinert/stattheory/chapter407.pdf
-- 浙江大学概率论与数理统计 MOOC 第 47-48 讲（无偏性、有效性、相合性）：https://www.icourse163.org/course/ZJU-1001743002
-- Khan Academy 统计与概率：https://zh.khanacademy.org/math/statistics-probability
-- OpenIntro Statistics：https://www.openintro.org/book/os/
-
 ## 延伸阅读
-
 - 矩估计与极大似然估计的具体求法，见《点估计》。
 - 点估计只给一个数，区间估计给"有把握的范围"，见《区间估计》。
 - 正态总体均值与方差的具体区间公式，见《正态总体参数的区间估计》。
-- 估计与检验的综合案例，见《参数估计典型例题》。

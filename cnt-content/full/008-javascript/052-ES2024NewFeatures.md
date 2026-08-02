@@ -331,22 +331,11 @@ Math.f16round(1.337); // 按 float16 精度舍入
 
 ---
 
-## 参考文献
-
-MDN JavaScript 文档：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
-ECMAScript 规范：https://tc39.es/ecma262/
-Node.js 官方文档：https://nodejs.org/docs/latest/api/
-JavaScript 秘密花园：https://bonsaiden.github.io/JavaScript-Garden/
-Can I use：https://caniuse.com/
-
 ## 延伸阅读
-
 JavaScript 基础语法，见 008-javascript 模块文档。
 TypeScript 类型系统，见 009-typescript 模块。
 浏览器 DOM 与事件，见 006-html5/007-css 模块。
 前端框架 React/Vue，见 011-react/010-vue3 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 JavaScript 课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

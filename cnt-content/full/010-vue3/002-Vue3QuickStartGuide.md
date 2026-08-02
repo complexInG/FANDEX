@@ -325,14 +325,6 @@ const counterStore = useCounterStore();
 - **服务器部署**：Nginx、Apache 等
 - **容器化部署**：Docker
 
-## 7. 学习资源
-
-- [Vue3 官方文档](https://v3.vuejs.org/)
-- [Vue 3 教程 - 中文](https://cn.vuejs.org/)
-- [Vite 官方文档](https://vitejs.dev/)
-- [Vue Router 官方文档](https://router.vuejs.org/)
-- [Pinia 官方文档](https://pinia.vuejs.org/)
-
 ## 8. 快速开发提示
 
 1. **使用 TypeScript**：提供类型安全，减少运行时错误
@@ -343,22 +335,11 @@ const counterStore = useCounterStore();
 6. **性能优化**：使用 `v-memo`、`v-once` 等指令优化渲染性能
    通过本快速入门指南，你已经了解了 Vue3 的基本使用方法。接下来可以深入学习各个核心概念和高级特性。
 
-## 参考文献
-
-Vue 官方文档：https://vuejs.org/
-Vue Router：https://router.vuejs.org/zh/
-Pinia：https://pinia.vuejs.org/zh/
-Vue 3 迁移指南：https://v3-migration.vuejs.org/
-VueUse 组合函数库：https://vueuse.org/
-
 ## 延伸阅读
-
 Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
 Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。
 Vue Router 导航守卫，见 010-vue3/030-VueRouterNavigationGuard 文档。
 TypeScript 与 Vue 组合，见 009-typescript 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vue3 课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

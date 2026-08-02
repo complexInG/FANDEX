@@ -1192,8 +1192,6 @@ const [user, setUser] = useState<{ name: string } | null>(null);
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 10.1**：实现 `IsEqual<A, B>` 类型，判断两个类型是否相等。
@@ -1291,68 +1289,6 @@ type B = Join<['hello'], '-'>;        // 'hello'
 type C =Join<[], '-'>;                // ''
 ```
 
-### 9.3 思考题
-
-**思考题 10.7**：为什么 TypeScript 选择"分布式"作为条件类型对联合类型的默认行为？从类型论与工程实践两个角度分析。
-
-**参考答案要点**：
-
-1. **类型论角度**：联合类型在类型论中是和类型（Sum Type），对和类型的映射（map）操作天然是分布式的。`NonNullable<T> = T extends null | undefined ? never : T` 的实现正是对 `T` 的每个成员判定是否为 `null | undefined`，分布式是自然的。
-2. **工程实践角度**：分布式使 `NonNullable`、`Exclude`、`Extract` 等工具类型可一行实现，极大地降低了类型体操的复杂度。若默认不分发，这些工具需要复杂的递归实现。
-
-**思考题 10.8**：条件类型与函数重载在 API 设计中各有什么优劣？何时该用前者，何时该用后者？
-
-**参考答案要点**：
-
-- **条件类型优势**：
-  - 自动推导，无需重载声明。
-  - 类型层面的分支，无运行时开销。
-  - 可与其他类型工具组合（如映射类型、`infer`）。
-- **函数重载优势**：
-  - 运行时实现与类型声明分离，可读性更好。
-  - 支持复杂的运行时分支逻辑。
-  - 错误信息更友好（重载列表）。
-- **何时用条件类型**：纯类型层计算（如工具类型、类型推导）。
-- **何时用函数重载**：API 有多个语义不同的签名（如 `String(x)` 与 `String.fromCharCode(...codes)`）。
-
-**思考题 10.9**：`infer R` 与 `unknown` 在模式匹配中的区别是什么？为什么 `infer` 更强大？
-
-**参考答案要点**：
-
-- `unknown` 是顶层类型，不携带具体信息。
-- `infer R` 在模式匹配时绑定具体子类型到 `R`，可在 `?` 分支中使用 `R`。
-- `infer` 是"既判断又提取"，`unknown` 是"仅判断"。
-
----
-
-## 10. 参考文献
-
-> 采用 ACM Reference Format。
-
-- Bierman, G. M., Abadi, M., & Torgersen, M. (2014). *Understanding TypeScript*. In Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP '14), Article 10, 1–29. DOI: 10.4230/LIPIcs.ECOOP.2014.10.
-
-- Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press. — 第 15 章子类型，第 16 章元编程的数学基础。
-
-- Ratanotayanon, S., & Dewey, D. (2019). *Type-Level Programming with TypeScript: A Practical Guide*. ACM SIGPLAN Notices, 54(8), 1–12. DOI: 10.1145/3359061.3359068.
-
-- Microsoft. (2018). *Conditional Types in TypeScript 2.8*. Microsoft Developer Blog. https://devblogs.microsoft.com/typescript/announcing-typescript-2-8/
-
-- Microsoft. (2024). *TypeScript Language Specification, Version 5.4*. Microsoft Corporation. https://github.com/microsoft/TypeScript/blob/main/doc/spec-archived.md
-
-- Freeman, J. (2023). *Programming TypeScript: Making Your JavaScript Applications Scale* (2nd ed.). O'Reilly Media.
-
-- Cherny, B. (2020). *Programming TypeScript* (1st ed.). O'Reilly Media.
-
-- Wadler, P., & Blott, S. (1989). *How to Make Ad-Hoc Polymorphism Less Ad Hoc*. In Proceedings of the 16th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '89), 60–76. — 类型类（Haskell）的经典论文，与条件类型的设计有渊源。
-
-- Kiselyov, O., & Peyton Jones, S. (2017). *Type-Level Computation in Haskell*. ACM SIGPLAN Haskell Symposium, 1–12.
-
-- Vasava, P. (2022). *Conditional Types: The Backbone of TypeScript Type-Level Programming*. Journal of JavaScript Engineering, 7(4), 51–73.
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **TypeScript Handbook: Conditional Types** — https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
@@ -1363,20 +1299,6 @@ type C =Join<[], '-'>;                // ''
 
 - **TypeScript 4.7 Release Notes: infer extends** — https://devblogs.microsoft.com/typescript/announcing-typescript-4-7/
   `infer` 约束语法的官方介绍。
-
-### 11.2 社区资源
-
-- **type-fest** — https://github.com/sindresorhus/type-fest
-  社区维护的类型工具库，包含数百个基于条件类型的工具。
-
-- **utility-types** — https://github.com/piotrwitek/utility-types
-  另一个流行的类型工具库，与 `type-fest` 互补。
-
-- **TypeScript Deep Dive: Conditional Types** — https://basarat.gitbook.io/typescript/type-system/conditional-types
-  Basarat Ali Syed 的深度教程。
-
-- **type-challenges** — https://github.com/type-challenges/type-challenges
-  类型体操练习题，从入门到高级。
 
 ### 11.3 相关课程
 

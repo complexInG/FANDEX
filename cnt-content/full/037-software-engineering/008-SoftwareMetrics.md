@@ -183,23 +183,6 @@ $$\text{MI} = 171 - 5.2 \ln(\text{avgHV}) - 0.23 \text{avgCC} - 16.2 \ln(\text{a
 
 **误区五：指标越多越好。** → 指标太多会淹没重点，团队不知道该优化哪个。**少而关键**（6-8 个）才有效。
 
-## 7. 实战练习
-
-1. **圈复杂度计算**：找一段你写的含分支的代码，数出决策点数，计算圈复杂度，判断风险等级。
-
-2. **缺陷分析**：分析你最近的项目：缺陷密度、缺陷泄漏率各是多少？泄漏率高说明什么？
-
-3. **仪表盘设计**：为你的项目设计一个度量仪表盘（6-8 个指标 + 目标值），说明每个指标为什么重要。
-
-4. **Goodhart 案例**：想一个"度量被优化作弊"的真实案例（如"考核代码行数"），说明它带来了什么副作用。
-
-## 8. 参考资源
-
-- IEEE Software 期刊：https://www.computer.org/csdl/magazine/so
-- Martin Fowler《软件度量》：https://martinfowler.com/bliki/SoftwareMetric.html
-- SonarQube 官方文档：https://docs.sonarqube.org/
-- 12 因素应用：https://12factor.net/zh_cn/
-
 ## 9. 延伸阅读
 
 - 度量发现问题后如何改进，见本模块《代码重构》《技术债务管理》

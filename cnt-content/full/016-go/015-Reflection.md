@@ -1604,8 +1604,6 @@ func (c *Container) Invoke(function interface{}) error {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题 1**：写出反射三定律的形式化表述，并解释每条定律的工程含义。
@@ -1671,23 +1669,6 @@ func Convert(rows []map[string]interface{}, dest interface{}) error {
 - 要求使用泛型约束类型，使用反射获取字段值。
 - 支持 diff 嵌套结构体与切片。
 
-### 9.4 参考答案要点
-
-**题 2 答案**：第一行输出 `false`（因为 `MyInt` 与 `int` 是不同类型），第二行输出 `true`（因为两者 Kind 都是 `reflect.Int`）。
-
-**题 3 答案**：
-
-```go
-v := reflect.ValueOf(&cfg).Elem()
-v.FieldByName("Port").SetInt(9090)
-```
-
-**题 6 答案要点**：瓶颈是 `FieldByName` 在内循环每次 O(n) 扫描。优化方案是预构建 `map[string]int` 字段索引缓存，循环内通过索引 `Field(idx)` 访问，从 O(n) 降到 O(1)。
-
----
-
-## 10. 参考文献
-
 ### 10.1 经典论文与文献
 
 [1] Smith, B. C. 1982. *Procedural Reflection in Programming Languages*. Ph.D. thesis. Massachusetts Institute of Technology, Cambridge, MA, USA. DOI: https://doi.org/10.5555/1896862
@@ -1715,14 +1696,6 @@ v.FieldByName("Port").SetInt(9090)
 [10] Uber Technologies Inc. 2023. *dig: A dependency injection kit for Go*. GitHub Repository. Available: https://github.com/uber-go/dig
 
 ---
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- Go reflect 包文档：https://pkg.go.dev/reflect
-- Go reflect 源码注释：https://github.com/golang/go/blob/master/src/reflect/type.go
-- Russ Cox 博客系列：https://research.swtch.com/
 
 ### 11.2 经典教材
 

@@ -201,68 +201,6 @@ Vite 8：
 | 5 | 部署后资源 404 | `base` 配置与部署路径不匹配（部署在子路径却用了默认 `/`） | 设置 `base: '/子路径/'`，参见 004 篇 |
 | 6 | 环境变量拿到 undefined | 变量未加 `VITE_` 前缀，或用了动态访问 `import.meta.env[key]` | 变量加 `VITE_` 前缀；使用完整字面量写法 `import.meta.env.VITE_X` |
 
-## 10. 实战练习
-
-### 练习 1：观察原生 ESM 的按需加载
-
-**题目**：创建一个 `vanilla` 模板的 Vite 项目，打开浏览器开发者工具的 Network 面板，观察首次加载时浏览器请求了多少个 JS 文件。
-
-**提示**：请求的是单个文件（而不是一个打包后的 bundle）；新增一个 `import` 后刷新，观察多出的请求。
-
-**参考答案要点**：
-1. 创建项目：`pnpm create vite demo-01 --template vanilla`，安装依赖并 `pnpm dev`；
-2. Network 面板中可以看到 `/src/main.js` 等单个模块请求，浏览器逐个下载；
-3. 这就是原生 ESM 按需加载的直接证据，与传统打包器"一个 bundle"形成鲜明对比。
-
-### 练习 2：理解依赖预构建缓存
-
-**题目**：找到 `node_modules/.vite` 目录，观察其中的文件；然后删除该目录并重启 `pnpm dev`，观察发生了什么。
-
-**提示**：`.vite` 中存放的是预构建后的依赖文件，文件名带有内容哈希。
-
-**参考答案要点**：
-1. `.vite/deps` 下是合并后的依赖 ESM 文件，如 `react.js?v=xxx`；
-2. 删除后重启，终端会重新执行依赖预构建并重新生成目录；
-3. 结论：预构建缓存是"启动时生成、内容变化时失效"的，删除缓存目录是最通用的重置手段。
-
-### 练习 3：对比 dev 与 build 的产物差异
-
-**题目**：写一个包含 3 个组件的页面，分别运行 `pnpm dev` 与 `pnpm build`，对比"浏览器实际加载的文件"与"dist 目录的产物结构"。
-
-**提示**：dev 阶段浏览器按需请求源码；build 后 `dist/` 里是合并压缩后的产物。
-
-**参考答案要点**：
-1. dev 阶段：Network 面板中是分散的源码模块（含 HMR WebSocket 连接）；
-2. build 后：`dist/assets/` 下是带哈希的压缩产物（`index-xxx.js`、`index-xxx.css`）；
-3. 结论：Vite 开发与生产是两条完全不同的管线，这正是"开发要快、生产要优"的设计取舍。
-
-### 练习 4：改造一个项目中的 Tree Shaking 场景
-
-**题目**：`import { a, b } from './utils.js'` 中 `utils.js` 导出 3 个函数，只使用其中 1 个。build 后查看产物体积，体会 Tree Shaking 的作用。
-
-**提示**：生产构建默认开启 Tree Shaking，未使用的导出不会被包含进产物。
-
-**参考答案要点**：
-1. 生产构建默认开启 Tree Shaking，未使用的导出不会被包含进产物；
-2. 通过产物搜索未使用函数的名称，确认其被删除；
-3. 结论：Vite（Rolldown）在生产构建中自动删除未使用代码，这是体积优化的基础。
-
 ## 11. 一句话记忆
 
 Vite 的"快"来自三个设计：**开发时用浏览器原生 ESM 按需加载，依赖交给预构建合并，生产时用 Rolldown 全量优化——把"开发体验"和"生产质量"两条管线彻底分开**。
-
-## 12. 参考链接与延伸阅读
-
-- Vite 官方文档（英文）：https://vite.dev/guide/
-- Vite 中文文档：https://cn.vite.dev/guide/
-- Vite 8.0 发布公告：https://vite.dev/blog/announcing-vite8.html
-- Vite 功能指南（ESM、HMR、TypeScript）：https://cn.vite.dev/guide/features
-- 为什么选择 Vite：https://cn.vite.dev/guide/why
-- Vite 生态插件目录（registry.vite.dev）：https://registry.vite.dev/
-
-延伸阅读：
-
-- 本模块 002 篇《Vite 快速上手与项目结构》：亲手跑通一个 Vite 项目；
-- 本模块 006 篇《开发服务器与 HMR》：深入 HMR 协议与模块图；
-- 本模块 009 篇《Vite 8 与 Rolldown》：Vite 8 架构变革深度解析；
-- Astro 框架底层即构建于 Vite 之上，见 055-astro 模块。

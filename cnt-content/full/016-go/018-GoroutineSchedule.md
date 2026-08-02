@@ -1489,8 +1489,6 @@ Prometheus 查询引擎使用 worker pool 限制并发查询数：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 选择题
 
 **1. 关于 GMP 模型，下列哪个描述是错误的？**
@@ -1780,106 +1778,6 @@ func (d *LeakDetector) Stop() {
 }
 ```
 
-## 知识讲解与要点分析（原思考题）
-
-**1.** 为什么 Go 选择 work stealing 而不是全局队列？请从 cache 局部性、锁竞争、负载均衡三个角度分析。
-
-<details>
-<summary>参考答案</summary>
-
-- **cache 局部性**：work stealing 让 G 倾向于在同一个 P 上执行，复用 M 的 CPU cache（L1/L2/L3），减少 cache miss
-- **锁竞争**：全局队列需要 mutex 保护，高并发下成为瓶颈；本地队列使用 lock-free 的 CAS 实现（`runqget`/`runqput`）
-- **负载均衡**：work stealing 在 P 之间动态均衡负载，比全局队列的 FIFO 调度更灵活
-
-</details>
-
-**2.** 假设你正在设计一个 HTTP 服务器，预期 QPS=10000，每个请求平均耗时 50ms（含 40ms I/O 等待）。应该如何配置 GOMAXPROCS？是否需要限制并发 goroutine 数量？
-
-<details>
-<summary>参考答案</summary>
-
-- **GOMAXPROCS**：4 核 CPU 即可（CPU 利用率低，I/O 等待为主）
-- **并发 goroutine 数量**：10000 QPS × 50ms = 500 并发，应限制并发数避免 goroutine 爆炸
-- **推荐**：使用 `errgroup` 或信号量，限制并发到 500-1000，超过的请求排队或返回 503
-- **netpoller**：网络 I/O 不占用 P，因此 500 个 goroutine 实际只占用约 100 个 P 时间片
-
-</details>
-
-**3.** Go 1.14 的异步抢占使用 `SIGURG`，为什么不用 `SIGUSR1` 或 `SIGUSR2`？
-
-<details>
-<summary>参考答案</summary>
-
-- `SIGUSR1`/`SIGUSR2` 在某些库中被使用（如 profiling 工具），冲突风险高
-- `SIGURG` 默认动作是忽略（不会被默认终止进程），更安全
-- `SIGURG` 在 Go runtime 之前未使用，不会破坏用户代码
-- `SIGURG` 可通过 `tgkill` 定向发送给特定线程
-
-</details>
-
-**4.** 在容器环境（cgroup v1）下，为什么 Go 1.22 之前的 `GOMAXPROCS` 会被设置为宿主机 CPU 核数？这会导致什么问题？
-
-<details>
-<summary>参考答案</summary>
-
-- **原因**：cgroup v1 的 CPU 配额在 `/sys/fs/cgroup/cpu/cpu.cfs_quota_us`，Go runtime 不读取该文件，只调用 `sched_getaffinity` 获取宿主机 CPU 数
-- **问题**：容器 CPU 限制 2 核，但 GOMAXPROCS=64（宿主机核数），导致：
-  1. 频繁 context switch（64 个 M 争抢 2 个 CPU）
-  2. cache miss 增加
-  3. 调度开销增大
-  4. GC 暂停时间变长
-- **解决方案**：使用 `go.uber.org/automaxprocs` 库，在 init 阶段读取 cgroup 并设置 GOMAXPROCS
-
-</details>
-
-**5.** 描述一个 goroutine 从创建到销毁的完整生命周期，包括栈的增长、状态的转移、上下文切换。
-
-<details>
-<summary>参考答案</summary>
-
-1. `go func()` 调用 `runtime.newproc`，分配 G 结构体（含 2KB 初始栈）
-2. G 加入当前 P 的本地队列（满则一半进入全局队列）
-3. M 通过 `schedule()` 选中该 G，调用 `gogo()` 切换上下文
-4. G 执行过程中栈不足，触发 `morestack`，分配双倍栈并拷贝
-5. G 阻塞（channel/syscall），状态变为 `_Gwaiting`，M 调用 `schedule()` 切换到其他 G
-6. 阻塞解除，G 重新加入 runnable 队列
-7. G 被 `preemptone` 抢占（Go 1.14+），上下文保存到 `g.sched`
-8. G 函数返回，调用 `runtime.goexit`，状态变为 `_Gdead`，栈释放（或缓存复用）
-
-</details>
-
----
-
-## 参考文献
-
-[1] Vyukov, D., Cox, R., & Perry, R. (2013). *Runtime scheduler design in Go*. Google. Retrieved from https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLkhJnDaFU3fkA94UW0lg
-
-[2] Cox, R. (2014). *Go 1.4 async preemption*. Google. Retrieved from https://go.googlesource.com/proposal/+/master/design/24543-non-cooperative-preemption.md
-
-[3] Donovan, A. A., & Kernighan, B. W. (2015). *The Go Programming Language* (1st ed.). Addison-Wesley Professional. ISBN: 978-0134190440
-
-[4] Beyer, B., Jones, C., Petoff, J., & Murphy, N. R. (Eds.). (2016). *Site Reliability Engineering: How Google Runs Production Systems*. O'Reilly Media. ISBN: 978-1491929127. DOI: 10.5555/3035112
-
-[5] Kleppmann, M. (2017). *Designing Data-Intensive Applications* (1st ed.). O'Reilly Media. ISBN: 978-1449373320. DOI: 10.5555/2944398
-
-[6] Cohen, E., & Dash, A. (2018). *Preemptive scheduling in Go 1.14*. The Go Blog. Retrieved from https://go.dev/blog/
-
-[7] Kim, M., & Song, Y. (2020). *Performance analysis of Go runtime scheduler on multicore systems*. In *Proceedings of the 2020 ACM SIGPLAN International Conference on Systems, Programming, Languages, and Applications* (SPLASH '20). DOI: 10.1145/3428246
-
-[8] Burns, B., Grant, B., Oppenheimer, D., Brewer, E., & Wilkes, J. (2016). Borg, omega, and Kubernetes. *Communications of the ACM*, 59(5), 50-57. DOI: 10.1145/2890784
-
-[9] Ousterhout, J., et al. (2015). *The case for ramcloud*. *Communications of the ACM*, 58(7), 42-51. DOI: 10.1145/2735551
-
-[10] Pallipadi, V., & Kar, S. (2022). *Virtual threads in Java: A new era of concurrency*. *IEEE Software*, 39(6), 78-85. DOI: 10.1109/MS.2022.3213456
-
-[11] Armstrong, J. (2010). *Erlang*. *Communications of the ACM*, 53(9), 68-75. DOI: 10.1145/1810891.1810910
-
-[12] Go Team. (2024). *Go runtime source code (Go 1.22)*. Retrieved from https://github.com/golang/go/blob/master/src/runtime/proc.go
-
----
-
-## 延伸阅读
-
 ### 书籍
 
 1. **《Programming in Go: Creating Applications for the 21st Century》** - Mark Summerfield
@@ -1905,21 +1803,6 @@ func (d *LeakDetector) Stop() {
    - 用户态调度的早期实践
 5. **Von Behren, R., Condit, J., & Brewer, E. (2003). *Why events are a bad idea (for high-concurrency servers)***. HOTOS.
    - 对比事件驱动与线程模型，理解 Go 选择 M:N 的动机
-
-### 在线资源
-
-1. **Go 官方文档**：https://go.dev/doc/
-2. **Go Runtime 源码**：https://github.com/golang/go/tree/master/src/runtime
-3. **Go Blog: Go 1.14 异步抢占**：https://go.dev/blog/
-4. **Dmitry Vyukov 的调度器提案**：https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLkhJnDaFU3fkA94UW0lg
-5. **Dave Cheney 的 Go 并发博客**：https://dave.cheney.net/
-6. **uber-go/goleak**：https://github.com/uber-go/goleak
-7. **uber-go/automaxprocs**：https://github.com/uber-go/automaxprocs
-8. **Go Memory Model**：https://go.dev/ref/mem
-9. **Google SRE Book**（免费在线）：https://sre.google/sre-book/table-of-contents/
-10. **MIT 6.5840 Distributed Systems**：https://pdos.csail.mit.edu/6.824/
-11. **CMU 15-440 Distributed Systems**：http://www.cs.cmu.edu/~dga/15-440/S14/
-12. **Stanford CS244B Distributed Systems**：https://web.stanford.edu/class/cs244b/
 
 ### 视频课程
 

@@ -907,8 +907,6 @@ func ParseTCP(buf []byte) *TCPHeader {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1.1**:计算以下结构体在 amd64 平台的大小:
@@ -1034,30 +1032,7 @@ func (bigEndian) PutUint16(b []byte, v uint16) {
 }
 ```
 
-## 参考文献
-
-[1] Intel Corporation. 2023. *Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 1: Basic Architecture*. Intel Corporation, Santa Clara, CA, USA. Available at: https://www.intel.com/sdm
-
-[2] Bryant, R. E., and O'Hallaron, D. R. 2015. *Computer Systems: A Programmer's Perspective* (3rd ed.). Pearson, Boston, MA, USA. ISBN: 978-0134092660.
-
-[3] Hennessy, J. L., and Patterson, D. A. 2017. *Computer Architecture: A Quantitative Approach* (6th ed.). Morgan Kaufmann, Burlington, MA, USA. ISBN: 978-0128119051.
-
-[4] Thompson, M. 2011. *Designing for Performance*. LMAX Disruptor Technical Paper. LMAX Group, London, UK. Available at: https://lmax-exchange.github.io/disruptor/
-
-[5] Google Inc. 2021. Go 1.17 Release Notes. *The Go Programming Language*. Available at: https://go.dev/doc/go1.17
-
-[6] Donovan, A. A. A., and Kernighan, B. W. 2015. *The Go Programming Language*. Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0134190440.
-
-[7] Drepper, U. 2007. *What Every Programmer Should Know About Memory*. Red Hat, Inc. Available at: https://people.freebsd.org/~lstewart/articles/cpumemory.pdf
-
-[8] Silberschatz, A., Galvin, P. B., and Gagne, G. 2018. *Operating System Concepts* (10th ed.). Wiley, Hoboken, NJ, USA. ISBN: 978-1119320913.
-
-[9] Click, C. 2017. *Java Performance: Lessons from the Disruptor*. InfoQ Presentation. Available at: https://www.infoq.com/presentations/disruptor-performance/
-
-[10] Bovet, D. P., and Cesati, M. 2005. *Understanding the Linux Kernel* (3rd ed.). O'Reilly Media, Sebastopol, CA, USA. ISBN: 978-0596005658.
-
 ## 延伸阅读
-
 - **《Computer Systems: A Programmer's Perspective》**(Bryant & O'Hallaron, 2015):第 3 章与第 6 章详细讨论对齐、缓存、虚拟内存。
 - **《What Every Programmer Should Know About Memory》**(Drepper, 2007):内存子系统权威文档,涵盖缓存行、NUMA、TLB。
 - **Disruptor 论文与代码**:无锁并发与缓存行优化的工业实践标杆。
@@ -1066,7 +1041,6 @@ func (bigEndian) PutUint16(b []byte, v uint16) {
 - **Intel Software Developer Manual Volume 3**:cache 一致性协议 MESI 详解。
 - **Go 源码 `runtime/atomic_pointer.go`**:原子操作与对齐的实现细节。
 - **《Performance Analysis and Tuning on Modern CPUs》**(Geron, 2020):使用 perf/VTune 分析 cache miss 与伪共享。
-- **LMAX Disruptor GitHub**:https://github.com/LMAX-Exchange/disruptor
 - **Go fieldalignment 工具**:自动检测结构体对齐优化机会。
 ## 基本类型大小
 

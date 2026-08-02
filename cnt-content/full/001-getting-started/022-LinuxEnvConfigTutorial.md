@@ -673,15 +673,6 @@ echo 'export LANG=zh_CN.UTF-8' >> ~/.bashrc
 > [!tip] 远程开发
 > 如果你的开发环境在远程 Linux 服务器上，推荐使用 VS Code 的 **Remote - SSH** 扩展。本地 VS Code 通过 SSH 连接远程服务器，获得与本地开发相同的体验，而代码编译运行都在服务器端完成。
 
-## 参考文献
-
-本模块各文档：环境搭建、编程基础、调试思维等。
-MDN 学习区：https://developer.mozilla.org/zh-CN/docs/Learn_web_development
-freeCodeCamp：https://www.freecodecamp.org/chinese/
-黑马程序员官网：https://www.itheima.com/
-
 ## 延伸阅读
-
 从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
 语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供基础课程。

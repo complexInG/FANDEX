@@ -311,98 +311,11 @@ git clone git@github.com:user/repo.git
 
 ---
 
-## 八、实战练习
-
-### 练习 1：三分钟完成首次提交（入门）
-
-**题目**：新建目录 `practice-init`，初始化仓库，创建 `hello.txt` 并写入一行文字，完成首次提交。
-
-**提示**：按顺序执行 `mkdir`、`cd`、`git init`、写文件、`git add`、`git commit -m`。
-
-**参考答案要点**：
-
-```bash
-mkdir practice-init
-cd practice-init
-git init
-echo "Hello Git" > hello.txt
-git add hello.txt
-git commit -m "feat: 第一个文件"
-```
-
-### 练习 2：理解暂存区快照（核心概念）
-
-**题目**：提交一个文件后，修改它但不 add，再提交一次，观察两次提交的内容差异。
-
-**提示**：重点观察 `git status` 中"Changes not staged for commit"提示，体会 add 与工作区的区别。
-
-**参考答案要点**：
-
-```bash
-echo "v1" > demo.txt
-git add demo.txt && git commit -m "v1"
-echo "v2" > demo.txt        # 修改但忘记 add
-git commit -m "v2"          # 会报错：nothing to commit
-git add demo.txt && git commit -m "v2"   # 这才是正确的第二次提交
-```
-
-### 练习 3：带 main 分支的初始化（贴近团队规范）
-
-**题目**：用 `git init -b main` 初始化一个新仓库，观察 `git branch` 的输出，并把它和默认 master 的仓库做对比。
-
-**提示**：`git init -b main` 是 Git 2.28+ 提供的选项；也可用 `git config --global init.defaultBranch main` 一劳永逸。
-
-**参考答案要点**：
-
-```bash
-git init -b main
-git branch          # 输出：* main
-git status          # 提示 On branch main，与 GitHub 默认分支一致
-```
-
-### 练习 4：clone 一个真实仓库（进阶）
-
-**题目**：clone 任意一个公开仓库（如 `https://github.com/octocat/Hello-World.git`），用 `git log --oneline` 查看它已有的提交历史。
-
-**提示**：clone 后会自动生成远程引用 origin，可用 `git remote -v` 验证。
-
-**参考答案要点**：
-
-```bash
-git clone https://github.com/octocat/Hello-World.git
-cd Hello-World
-git remote -v          # 看到 origin 的 fetch/push 地址
-git log --oneline      # 查看该仓库已有的提交
-```
-
-### 练习 5：提交身份的最佳实践（综合）
-
-**题目**：为练习仓库单独设置"仓库级"身份，覆盖全局身份，并验证 `git config user.name` 的输出变化。
-
-**提示**：不带 `--global` 的配置只写进 `.git/config`，优先级高于全局。
-
-**参考答案要点**：
-
-```bash
-git config user.name "练习专用"
-git config user.email "practice@example.com"
-git config --list --show-origin   # 观察两个配置各自的来源文件
-```
-
----
-
 ## 九、一句话记忆
 
 **`git init` 是给项目打地基（生成 .git 数据库），`git add` 是把材料搬进候选区（暂存区），`git commit` 是浇下第一块楼板（生成首个快照）——地基打好，版本控制的大厦从此拔地而起。**
 
 ---
-
-## 参考链接
-
-- Git 官方文档（git init）：https://git-scm.com/docs/git-init
-- Pro Git 中文版 2.1 获取 Git 仓库：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E8%8E%B7%E5%8F%96-Git-%E4%BB%93%E5%BA%93
-- Pro Git 中文版 2.2 记录每次更新到仓库：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E8%AE%B0%E5%BD%95%E6%AF%8F%E6%AC%A1%E6%9B%B4%E6%96%B0%E5%88%B0%E4%BB%93%E5%BA%93
-- GitHub 文档（创建仓库）：https://docs.github.com/zh/repositories/creating-and-managing-repositories/creating-a-new-repository
 
 ## 延伸阅读
 

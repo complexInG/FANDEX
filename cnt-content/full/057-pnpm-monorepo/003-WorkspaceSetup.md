@@ -263,22 +263,6 @@ pnpm -F @fandex/web --filter "…{@fandex/utils}…" test  # 连同依赖一起
 
 **陷阱五：glob 模式写错。** `apps/*` 只匹配一层，`apps/**` 匹配多层。→ 根据目录深度选择合适的写法。
 
-## 8. 实战练习
-
-1. **从零搭建**：按第 2 节步骤，搭建一个包含 `apps/web` 和 `packages/utils` 的最小 workspace，执行 `pnpm install`，验证生成了 `pnpm-lock.yaml`。
-
-2. **命令对比**：分别执行 `pnpm -r build` 与 `pnpm -r --topological build`，观察构建顺序差异（可以故意让 web 依赖 utils 来验证）。
-
-3. **根脚本设计**：为你的 workspace 设计根 package.json 的 scripts（build/dev/lint/test 四个命令），要求新人只需记住根命令。
-
-4. **陷阱排查**：CI 报 `ERR_PNPM_OUTDATED_LOCKFILE`，用本章第 7 节的知识分析原因并给出解决方案。
-
-## 9. 参考资源
-
-- pnpm workspaces 官方文档：https://pnpm.io/zh/workspaces
-- pnpm 过滤语法：https://pnpm.io/zh/filtering
-- pnpm CLI 命令参考：https://pnpm.io/zh/cli/install
-
 ## 10. 延伸阅读
 
 - workspace 的底层机制，见本模块《pnpm 核心特性》

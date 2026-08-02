@@ -1208,8 +1208,6 @@ class SensorProcessor {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：以下代码是否能编译通过？说明原因。
@@ -1333,30 +1331,6 @@ value class Money(val cents: Long) : Comparable<Money> {
 - Native 平台对 value class 的 boxing 时机与 JVM 略有不同（取决于运行时表示）
 - 跨平台代码中应使用 `expect/actual` 处理平台差异
 
-## 参考文献
-
-[1] Elizarov, R. 2018. Inline classes in Kotlin 1.3. Kotlin Blog. https://blog.jetbrains.com/kotlin/2018/10/inline-classes-kotlin-1-3/
-
-[2] Breslav, A. 2021. Kotlin 1.5.0 Released. JetBrains Blog. https://blog.jetbrains.com/kotlin/2021/05/kotlin-1-5-0-released/
-
-[3] Kotlin Documentation. 2024. Inline classes and value classes. https://kotlinlang.org/docs/inline-classes.html
-
-[4] Jemerov, D. and Isakova, S. 2017. Kotlin in Action. Manning Publications. ISBN: 978-1617293280
-
-[5] Marlow, S. and Peyton Jones, S. 2012. Making a fast curry: push/enter vs. eval/apply for higher-order languages. Journal of Functional Programming 16, 4-5 (2006), 415-449. https://doi.org/10.1017/S0956796806005995
-
-[6] Kennedy, A. and Syme, D. 2001. Design and Implementation of Generics for the .NET Common Language Runtime. Journal of Functional Programming 11, 6 (Nov. 2001), 605-664. https://doi.org/10.1017/S0956796801004250
-
-[7] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2018. Passing a language through the eye of a needle. Communications of the ACM 61, 9 (Sep. 2018), 38-45. https://doi.org/10.1145/3230624
-
-[8] Peyton Jones, S. et al. 1993. Implementing lazy functional languages on stock hardware: the Spineless Tagless G-machine. Journal of Functional Programming 2, 2 (April 1992), 127-202. https://doi.org/10.1017/S0956796800000319
-
-[9] Scala Documentation. 2024. Value Classes. https://docs.scala-lang.org/overviews/core/value-classes.html
-
-[10] Microsoft. 2024. C# struct types. https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/struct
-
-## 延伸阅读
-
 ### 官方文档
 
 - **Kotlin Inline Classes**：https://kotlinlang.org/docs/inline-classes.html
@@ -1387,11 +1361,6 @@ value class Money(val cents: Long) : Comparable<Money> {
 - **Ktor**：https://github.com/ktorio/ktor
   - 在 HTTP API 中使用 value class 作为类型安全 ID
 
-### 社区资源
-
-- **Kotlin Slack**：#language 频道讨论 value class 设计
-- **Roman Elizarov 博客**：https://elizarov.medium.com/
-- **Kotlin Weekly**：定期推送 value class 相关文章
 ## 定义内联类
 
 **基本写法：定义 value class**

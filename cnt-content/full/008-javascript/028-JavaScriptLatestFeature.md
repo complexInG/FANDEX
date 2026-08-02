@@ -1093,8 +1093,6 @@ function gameLoop() {
 - 单帧物理计算耗时从 12ms 降至 2.5ms。
 - JS-Wasm 边界调用开销约 0.5ms（每帧一次）。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下哪个表达式在 ES2024+ 中合法且返回 `true`？
@@ -1246,40 +1244,6 @@ wasm.free(ptr);
 
 - **优化 2**：用 `WebAssembly.Function` 与 `WebAssembly.Table` 减少类型检查开销。
 - **优化 3**：对热路径函数，使用 V8 的 fast API calls（需 Wasm 模块标注 `__attribute__((import_module))`）。
-
-## 10. 参考文献
-
-[1] Ecma International. 2026. ECMAScript 2026 Language Specification (16th Edition). Standard ECMA-262. Geneva, Switzerland. https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
-
-[2] Daniel Ehrenberg, Philipp Dunkel, et al. 2025. Temporal Proposal for ECMAScript. TC39 Stage 3. https://github.com/tc39/proposal-temporal
-
-[3] Kevin Gibbons, Michael Ficarra, et al. 2025. Promise.try Proposal. TC39 Stage 3. https://github.com/tc39/proposal-promise-try
-
-[4] Michael Ficarra, Kevin Gibbons, et al. 2024. Iterator Helpers Proposal. TC39 Stage 3. https://github.com/tc39/proposal-iterator-helpers
-
-[5] Google Inc. 2026. V8 Engine Design Documents. https://v8.dev/docs
-
-[6] Andreas Rossberg, Ben Smith, et al. 2017. WebAssembly Specification Version 1.0. W3C Recommendation. https://www.w3.org/TR/wasm-core-1/
-
-[7] Jaroslav Sevcik and Robert Griesemer. 2025. Maglev: A Fast Mid-tier Optimizing Compiler for V8. In Proceedings of the 42nd ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '21). DOI: https://doi.org/10.1145/3453483.3454067
-
-[8] Oleksandr Skachkov and Ross Kirsling. 2024. JavaScriptCore Optimization Pipeline. WebKit Blog. https://webkit.org/blog/13891/jsc-optimization-pipeline/
-
-[9] Ashley Williams, Lin Clark, et al. 2024. The WebAssembly System Interface (WASI). Bytecode Alliance. https://wasi.dev/
-
-[10] Joyee Cheung, Anna Henningsen, et al. 2025. Node.js 22 Release Notes. OpenJS Foundation. https://nodejs.org/en/blog/announcement/v22-release-announce
-
-[11] Ryan Dahl. 2018. 10 Things I Regret About Node.js. JSConf EU. https://www.youtube.com/watch?v=M3BM9TB-8yA
-
-[12] Jarred Sumner. 2023. Bun: A Fast All-in-One JavaScript Runtime. Bun Blog. https://bun.sh/blog/bun-v1.0
-
-[13] Brendan Eich. 1998. JavaScript at 10 Years. Mozilla. https://brendaneich.com/2005/06/javascript-at-10-years/
-
-[14] Dave Herman, Luke Wagner, et al. 2017. ShadowRealm Proposal. TC39 Stage 3. https://github.com/tc39/proposal-shadowrealm
-
-[15] Andreas Rossberg. 2023. Wasm Components and Interface Types. Bytecode Alliance. https://component-model.bytecodealliance.org/
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

@@ -1952,75 +1952,6 @@ Hugging Face 使用 ONNX Runtime + Triton Inference Server 部署 Stable Diffusi
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 以下哪个不是 PyTorch 自动微分的核心组件？
-
-A. `torch.Tensor` 的 `requires_grad` 属性
-B. `backward()` 方法
-C. `torch.autograd.Function`
-D. `tf.GradientTape`
-
-**答案：D**
-
-解析讲解：`tf.GradientTape` 是 TensorFlow 2.x 的自动微分 API，不属于 PyTorch。PyTorch 通过 `requires_grad`、`backward()` 与 `torch.autograd.Function` 实现自动微分。
-
----
-
-**Q2.** 关于 PyTorch 与 TensorFlow 的计算图，下列说法正确的是？
-
-A. PyTorch 是静态图，TensorFlow 2.x 是动态图
-B. PyTorch 是动态图，TensorFlow 1.x 是静态图
-C. 两者都是动态图
-D. 两者都是静态图
-
-**答案：B**
-
-解析讲解：PyTorch 默认是动态图（Define-by-Run），TensorFlow 1.x 是静态图，TensorFlow 2.x 引入 Eager Execution 后变为动态图。
-
----
-
-**Q3.** Adam 优化器中，一阶矩估计 $m_t$ 与二阶矩估计 $v_t$ 的偏差修正确确形式是？
-
-A. $\hat{m}_t = m_t / (1 - \beta_1)$, $\hat{v}_t = v_t / (1 - \beta_2)$
-B. $\hat{m}_t = m_t / (1 - \beta_1^t)$, $\hat{v}_t = v_t / (1 - \beta_2^t)$
-C. $\hat{m}_t = m_t \cdot (1 - \beta_1^t)$, $\hat{v}_t = v_t \cdot (1 - \beta_2^t)$
-D. 不需要偏差修正
-
-**答案：B**
-
-解析讲解：Adam 的偏差修正公式为 $\hat{m}_t = m_t / (1 - \beta_1^t)$ 与 $\hat{v}_t = v_t / (1 - \beta_2^t)$，以消除初始化偏差。
-
----
-
-**Q4.** 关于混合精度训练（AMP），下列说法错误的是？
-
-A. AMP 使用 FP16 存储权重和梯度
-B. AMP 使用 FP32 累积梯度
-C. Loss scaling 用于避免梯度下溢
-D. AMP 总是能加速训练 10 倍以上
-
-**答案：D**
-
-解析讲解：AMP 加速通常为 1.5-3 倍，而非 10 倍以上。加速比取决于硬件（A100 上更显著）、模型结构与 batch size。
-
----
-
-**Q5.** Transformer 自注意力的计算复杂度是？
-
-A. $O(n \cdot d)$
-B. $O(n^2 \cdot d)$
-C. $O(n \cdot d^2)$
-D. $O(n^2 \cdot d^2)$
-
-**答案：B**
-
-解析讲解：自注意力 $QK^\top$ 的矩阵乘法复杂度为 $O(n^2 \cdot d)$，其中 $n$ 为序列长度，$d$ 为嵌入维度。
-
----
-
 ### 填空题知识点讲解
 
 **Q1.** PyTorch 中，将张量从 CPU 移到 GPU 的方法是 ________。
@@ -2239,66 +2170,6 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 ---
 
-### 9.4 思考题
-
-**Q1.** 为什么 PyTorch 在研究领域胜过 TensorFlow？请从 API 设计、调试体验、社区生态三个维度分析。
-
-**参考答案：**
-- API 设计：PyTorch 的 Define-by-Run 与 Python 控制流无缝集成，符合直觉
-- 调试体验：动态图允许使用 `pdb`、`print` 直接调试，错误堆栈清晰
-- 社区生态：Hugging Face、PyTorch Lightning 等生态优先支持 PyTorch
-- 历史路径：PyTorch 0.1 发布后 FAIR/MILA 等顶级实验室迅速采用，研究论文默认 PyTorch
-
----
-
-**Q2.** 为什么 Transformer 取代了 RNN 在 NLP 中的主导地位？请从并行性、长距离依赖、训练效率三个角度分析。
-
-**参考答案：**
-- 并行性：Transformer 自注意力可并行计算所有位置，RNN 必须顺序计算
-- 长距离依赖：自注意力直接连接任意两个位置，路径长度 O(1)；RNN 为 O(n)
-- 训练效率：Transformer 在 GPU/TPU 上利用率更高，训练速度提升 5-10x
-- 可扩展性：Transformer 易于扩展到千亿参数（GPT-3 175B），RNN 难以扩展
-
----
-
-**Q3.** 假设你要训练一个 ResNet-50 在 ImageNet 上，但只有 1 张 GPU（11GB 显存），如何最大化训练效率？
-
-**参考答案：**
-1. **混合精度训练**：开启 AMP，显存减半，速度提升 1.5-2x
-2. **梯度累积**：用 batch=32 累积 4 步，等效 batch=128
-3. **数据增强**：CutMix、MixUp、AutoAugment 提升泛化
-4. **学习率调度**：OneCycleLR 或 Cosine Annealing with warmup
-5. **分布式训练**：使用 PyTorch DDP 跨多机器
-6. **优化器**：AdamW + weight_decay=0.05
-7. **冻结早期层**：微调时冻结 stem 与早期 residual blocks
-
----
-
-**Q4.** 为什么大模型训练需要 ZeRO 优化？请简述 ZeRO-1/2/3 的区别。
-
-**参考答案：**
-- 标准数据并行（DDP）每张卡持有完整模型副本，千亿参数模型单卡装不下
-- ZeRO-1：分片优化器状态（如 Adam 的 m, v）
-- ZeRO-2：分片优化器状态 + 梯度
-- ZeRO-3：分片优化器状态 + 梯度 + 参数（最彻底）
-- 显存节省：ZeRO-3 可训练 1T 参数（2000 亿参数级别）
-
----
-
-**Q5.** 模型量化（INT8）会带来什么风险？如何评估量化对精度的影响？
-
-**参考答案：**
-- 风险：精度损失、敏感层异常、激活值分布漂移
-- 评估方法：
-  1. 训练后量化（PTQ）：使用校准数据集统计激活分布，对比 FP32 与 INT8 的精度
-  2. 量化感知训练（QAT）：在训练中模拟量化误差，通常比 PTQ 精度更高
-  3. 逐层敏感性分析：识别对量化敏感的层，保持 FP16
-  4. PSNR/SSIM（图像）、BLEU/ROUGE（文本）评估输出质量
-
----
-
-## 10. 参考文献
-
 ### 10.1 基础论文
 
 [1] Rumelhart, D.E., Hinton, G.E., and Williams, R.J. 1986. Learning representations by back-propagating errors. Nature 323, 6088 (Oct. 1986), 533–536. DOI: 10.1038/323533a0.
@@ -2345,8 +2216,6 @@ augmented = transform(img)  # (3, 224, 224) tensor
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **Goodfellow, I., Bengio, Y., and Courville, A. 2016.** *Deep Learning*. MIT Press. — 深度学习圣经，涵盖数学基础与现代方法。
@@ -2362,14 +2231,6 @@ augmented = transform(img)  # (3, 224, 224) tensor
 - **Stanford CS224n: Natural Language Processing with Deep Learning** — http://web.stanford.edu/class/cs224n/
 - **CMU 11-785: Introduction to Deep Learning** — http://deeplearning.cs.cmu.edu/
 - **fast.ai Practical Deep Learning** — https://course.fast.ai/
-
-### 11.3 在线资源
-
-- **PyTorch 官方文档与教程** — https://pytorch.org/tutorials/
-- **TensorFlow 官方文档** — https://www.tensorflow.org/tutorials
-- **Hugging Face Course** — https://huggingface.co/course
-- **Papers with Code** — https://paperswithcode.com/
-- **The Gradient** — https://thegradient.pub/
 
 ### 11.4 经典论文合集
 

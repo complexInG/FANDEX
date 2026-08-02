@@ -200,91 +200,9 @@ console.log(store.list()); // 输出所有待办
 | 忘写许可证 | 访客不敢使用你的代码 | 没有 LICENSE 文件 | README 引用 LICENSE 文件，并说明开源协议类型 |
 | 代码示例不可运行 | 访客复制后直接报错 | 示例缺少上下文或依赖 | 写完后在干净环境实测一遍再发布 |
 
-## 5. 实战练习
-
-### 练习 1：为你的第一个仓库写 README（入门）
-
-**题目描述**：创建一个新仓库，写一个 README，至少包含项目名称、一句话简介、安装/运行三步。可以是你刚做完的任意小项目。
-
-**提示**：先想清楚"谁在看这个 README"，再动笔；安装步骤要具体到命令。
-
-**参考答案要点**：
-
-```markdown
-# 我的第一个项目
-
-这是我的 Python 学习项目：一个命令行版猜数字游戏。
-
-## 运行方法
-
-```bash
-python3 game.py
-```
-
-## 功能
-
-- 随机生成 1-100 的整数
-- 提示用户猜大还是猜小
-```
-要点：有一句话简介、可运行的命令、功能列表。
-
-### 练习 2：用对比法审查别人的仓库（进阶）
-
-**题目描述**：打开 GitHub 上任意一个你感兴趣的开源项目（比如 Vue、axios），逐条对照"五个问题"清单，找出它的 README 回答了哪些、没回答哪些，写一段 100 字的分析。
-
-**提示**：五个问题是"做什么、为什么有用、怎么开始、去哪求助、谁维护"。
-
-**参考答案要点**：例如 Vue 的 README 用一句话简介 + 官方文档链接 + 赞助信息覆盖了前四个问题；分析时注意它把详细文档外链到 `v2.vuejs.org`，这正是"README 放概览、详细文档放外部/Wiki"的实践。
-
-### 练习 3：加入徽章和折叠区（进阶）
-
-**题目描述**：为练习 1 的 README 添加 2 个徽章（使用 shields.io），并把"详细安装截图"放到 `<details>` 折叠区块中。
-
-**提示**：shields.io 支持自定义文本，例如 `https://img.shields.io/badge/语言-Python-blue`。
-
-**参考答案要点**：
-
-```markdown
-![语言](https://img.shields.io/badge/语言-Python-blue)
-![状态](https://img.shields.io/badge/状态-开发中-yellow)
-
-<details>
-<summary>点击展开安装截图</summary>
-
-![安装截图](docs/install.png)
-
-</details>
-```
-
-### 练习 4：用 Mermaid 画架构图（挑战）
-
-**题目描述**：你的项目如果有一个模块超过 3 个，尝试用 Mermaid 的 `graph TD` 语法画一张模块关系图放进 README。
-
-**提示**：GitHub 原生支持 ` ```mermaid ` 代码块渲染。
-
-**参考答案要点**：
-
-```mermaid
-graph TD
-    A[用户输入] --> B[参数解析]
-    B --> C{校验通过?}
-    C -- 是 --> D[执行逻辑]
-    C -- 否 --> E[返回错误提示]
-```
-要点：节点名用中文时加 `[]`，分支用 `{}`，关系用 `-->` 和 `-- 是/否 -->`。
-
 ## 6. 一句话记忆
 
 **README 就是仓库的招牌和产品说明书——用最少的文字回答"这是什么、为什么有用、怎么开始用、去哪求助、谁在维护"，让访客 30 秒内决定要不要继续了解你的项目。**
-
-## 7. 参考链接与延伸阅读
-
-### 权威资料（GitHub 官方中文文档）
-
-- 关于存储库 README 文件：https://docs.github.com/zh/repositories/managing-your-repository-s-settings-and-features/customizing-your-repository/about-readmes
-- 将项目上传到 GitHub（含 README 编辑入门）：https://docs.github.com/zh/get-started/start-your-journey/uploading-a-project-to-github
-- 基础写作与格式语法（GitHub Flavored Markdown）：https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
-- 使用 Fork 工作流前的开源许可证选择：https://choosealicense.com/
 
 ### 延伸阅读（站内文档）
 

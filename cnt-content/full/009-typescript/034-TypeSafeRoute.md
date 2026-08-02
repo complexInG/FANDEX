@@ -1678,8 +1678,6 @@ const userRoutes = filterRoutesByRole(allRoutes, "user");
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**：实现 `ExtractParams<T>`，从路径模板提取参数名。
@@ -1854,36 +1852,6 @@ function routesToMermaid<R extends Record<string, any>>(routes: R): string {
 
 ---
 
-## 参考文献
-
-1. TanStack. (2023). TanStack Router: Type-safe routing for React. https://github.com/TanStack/router
-
-2. React Training. (2022). React Router v6 documentation. https://reactrouter.com/
-
-3. Vercel. (2023). Next.js App Router documentation. https://nextjs.org/docs/app
-
-4. Microsoft. (2020). TypeScript 4.1 release notes: Template literal types. https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-1.html
-
-5. Eisenberg, L., & Voss, J. (2014). A history of URL fragments and the hashchange event. *W3C Working Draft*. https://www.w3.org/TR/hashchange/
-
-6. Hickson, I. (2011). HTML5: A vocabulary and associated APIs for HTML and XHTML — Session history and navigation. W3C Recommendation. https://www.w3.org/TR/html5/browsers.html#the-history-interface
-
-7. Pierce, B. C. (2002). *Types and programming languages*. MIT Press. https://mitpress.mit.edu/9780262162098/types-and-programming-languages/
-
-8. Fielding, R. T. (2000). *Architectural styles and the design of network-based software architectures* [Doctoral dissertation, University of California, Irvine]. https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
-
-9. Piech, C., & Sahami, M. (2014). URL routing and the single-page application. *ACM SIGCSE Bulletin*, 46(1), 123-128. https://doi.org/10.1145/2538862.2538901
-
-10. Chen, T., et al. (2021). Type-safe web routing: A formal analysis. *Proceedings of the ACM on Programming Languages*, 5(OOPSLA), 1-25. https://doi.org/10.1145/3485486
-
-11. Hutton, G. (2007). *Programming in Haskell*. Cambridge University Press. https://www.cs.nott.ac.uk/~pszgmh/pih.html
-
-12. Wadler, P. (2015). Propositions as types. *Communications of the ACM*, 58(12), 75-84. https://doi.org/10.1145/2699407
-
----
-
-## 延伸阅读
-
 ### 官方文档
 
 - **TanStack Router Documentation**: https://tanstack.com/router/latest
@@ -1903,22 +1871,6 @@ function routesToMermaid<R extends Record<string, any>>(routes: R): string {
 - Chen, T., et al. (2021). Type-safe web routing: A formal analysis. OOPSLA 2021. 路由类型系统的形式化分析。
 - Krishnamurthi, S., et al. (2007). Modeling web interactions. 路由作为 Web 交互模型的形式化。
 - Cooper, E., et al. (2008). Links: Web programming without tiers. 端到端 Web 类型安全的早期探索。
-
-### 开源项目参考
-
-- **TanStack Router**: https://github.com/TanStack/router - 当前类型安全最强的 React 路由库。
-- **Next.js**: https://github.com/vercel/next.js - 文件系统路由的代表。
-- **React Router**: https://github.com/remix-run/react-router - 最流行的 React 路由库。
-- **Vue Router**: https://github.com/vuejs/router - Vue 官方路由库。
-- **@tanstack/react-location**: https://github.com/TanStack/location - TanStack 早期路由实验。
-- **wouter**: https://github.com/molefrog/wouter - 轻量级 React 路由库。
-- **universal-router**: https://github.com/kriasoft/universal-router - 同构路由库。
-
-### 社区资源
-
-- **TypeScript Deep Dive - Routing**: https://basarat.gitbook.io/typescript/
-- **React Router Deep Dive**: https://reactrouter.com/web/guides/deep-diving
-- **Type Challenges**: https://github.com/type-challenges/type-challenges - 路径类型练习题。
 
 ### 工具与扩展
 

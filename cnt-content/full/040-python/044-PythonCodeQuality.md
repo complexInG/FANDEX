@@ -1368,62 +1368,6 @@ ignore_missing_imports = true  # Django stubs 不完整
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个工具主要职责是**自动格式化**代码而非检查？
-
-- A. Ruff
-- B. mypy
-- C. Black
-- D. bandit
-
-**解析讲解**：C
-
-**解析讲解**：Black 是不妥协的格式化器，自动重写代码风格。Ruff 现在也内置了 formatter，但历史上 Black 是专门的 formatter。mypy 是类型检查器，bandit 是安全扫描器。
-
----
-
-**常见疑问 2**：以下代码的圈复杂度是多少？
-
-```python
-def f(x, y):
-    if x > 0:
-        if y > 0:
-            return 1
-        elif y < 0:
-            return 2
-        else:
-            return 3
-    elif x < 0:
-        return 4
-    else:
-        return 5
-```
-
-- A. 4
-- B. 5
-- C. 6
-- D. 7
-
-**解析讲解**：C
-
-**解析讲解**：决策点为 `if x > 0`、`if y > 0`、`elif y < 0`、`elif x < 0` 共 4 个 `if/elif`，加上每个 `if` 隐含一个 else 分支。圈复杂度 = 决策点 + 1 = 5。但仔细看，`if x > 0` 的 else 分支中又有一个 `elif x < 0`，这是独立的决策点。总决策点：`x > 0`、`y > 0`、`y < 0`、`x < 0` 共 4 个，复杂度 = 4 + 1 = 5。注意 `else` 不计入决策点。但 `elif` 等价于 `else: if`，所以每个 `elif` 也算一个决策点。重新数：`x > 0`（1）、`y > 0`（2）、`y < 0`（3）、`x < 0`（4），共 4 个决策点，复杂度 = 5。答案应为 B。
-
----
-
-**常见疑问 3**：关于 mypy 的 `Any` 类型，以下说法错误的是？
-
-- A. `Any` 与所有类型兼容
-- B. `Any` 是渐进式类型系统的核心
-- C. `Any` 等价于 `object`
-- D. `disallow_any_explicit` 可禁止显式使用 `Any`
-
-**解析讲解**：C
-
-**解析讲解**：`Any` 与 `object` 不同。`object` 是所有类型的父类，但将 `str` 赋值给 `object` 后，再取用时需显式 cast。`Any` 则双向兼容，可任意赋值与取用。
-
 ### 填空题知识点讲解
 
 **常见疑问 4**：Python 类型系统中，函数参数类型是 ________ 的，返回类型是 ________ 的。
@@ -1548,49 +1492,6 @@ repos:
         pass_filenames: true
 ```
 
-### 9.4 思考题
-
-**常见疑问 9**：你接手一个 5 万行的 Python 遗留项目，无类型注解、无测试、无 lint 配置。请设计一个 6 个月的代码质量提升路线图，包含里程碑与可量化指标。
-
-**参考思路**：
-
-| 月份 | 里程碑 | 指标 |
-| ---- | ------ | ---- |
-| 第 1 月 | 引入 Ruff + Black，修复基础风格 | lint 错误 0 |
-| 第 2 月 | 引入 pytest，覆盖核心模块 | 覆盖率 30% |
-| 第 3 月 | 核心模块添加类型注解 | mypy strict 覆盖 20% |
-| 第 4 月 | 扩展测试到 80% 覆盖率 | 覆盖率 80% |
-| 第 5 月 | 全项目类型注解 | mypy strict 覆盖 80% |
-| 第 6 月 | 引入 bandit + pre-commit + CI | 安全漏洞 0 高危 |
-
----
-
-**常见疑问 10**：为什么"100% 测试覆盖率"不是高质量代码的充分条件？请举例说明。
-
-**解析讲解**：
-
-覆盖率衡量"代码被执行过"，但不衡量"代码被正确测试过"。反例：
-
-```python
-def add(a, b):
-    return a - b  # bug：减号而非加号
-
-def test_add():
-    add(0, 0)  # 覆盖率 100%，但未验证结果
-    assert True  # 无意义断言
-```
-
-此测试 100% 覆盖 `add` 函数，但未发现 bug。高质量测试需要：
-
-1. **断言充分**：验证关键输出。
-2. **边界覆盖**：测试 0、负数、大数、None。
-3. **异常覆盖**：测试错误输入是否抛出正确异常。
-4. **性质覆盖**：加法交换律、结合律等数学性质。
-
-覆盖率是必要条件，非充分条件。
-
----
-
 ## 10. 工具链选型决策树
 
 ```mermaid
@@ -1632,44 +1533,6 @@ flowchart TD
 
 ---
 
-## 11. 参考文献
-
-[1] Van Rossum, G., Warsaw, B., and Coghlan, N. 2001. *PEP 8: Style Guide for Python Code*. https://peps.python.org/pep-0008/
-
-[2] Van Rossum, G., Lehtosalo, J., and Langa, Ł. 2014. *PEP 484: Type Hints*. https://peps.python.org/pep-0484/
-
-[3] Langa, Ł. 2019. *PEP 571: Black: The Uncompromising Code Formatter*. https://black.readthedocs.io/
-
-[4] Marsh, C. 2022. *Ruff: An Extremely Fast Python Linter*. Astral. https://astral.sh/ruff
-
-[5] Lehtosalo, J. 2012. *mypy: Optional Static Typing for Python*. http://mypy-lang.org/
-
-[6] Sottile, A. 2014. *pre-commit: A Framework for Managing and Maintaining Multi-language Pre-commit Hooks*. https://pre-commit.com/
-
-[7] McCabe, T. J. 1976. A complexity measure. *IEEE Transactions on Software Engineering* SE-2, 4, 308–320. DOI: 10.1109/TSE.1976.233837
-
-[8] Halstead, M. H. 1977. *Elements of Software Science*. Elsevier North-Holland. ISBN: 978-0444002052
-
-[9] Rice, H. G. 1953. Classes of recursively enumerable sets and their decision problems. *Transactions of the American Mathematical Society* 74, 2, 358–366. DOI: 10.1090/S0002-9947-1953-0053042-2
-
-[10] Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press. ISBN: 978-0262162098
-
-[11] Beck, K. 2002. *Test-Driven Development: By Example*. Addison-Wesley. ISBN: 978-0321146533
-
-[12] Fowler, M. 2018. *Refactoring: Improving the Design of Existing Code* (2nd ed.). Addison-Wesley. ISBN: 978-0134757599
-
-[13] Cohn, M. 2009. *Succeeding with Agile: Software Development Using Scrum*. Addison-Wesley. ISBN: 978-0321579362
-
-[14] Ramírez, S. 2018. *FastAPI: Modern, Fast Web Framework for Building APIs with Python*. https://fastapi.tiangolo.com/
-
-[15] Salgado, M. 2017. Type Checking at Instagram. PyCon 2017. https://www.youtube.com/watch?v=qCFQsoEAvP0
-
-[16] Lehtosalo, J. 2018. Mypy: Optional Static Typing for Python. EuroPython 2018.
-
----
-
-## 12. 延伸阅读
-
 ### 12.1 书籍
 
 - **《Clean Code in Python》**（Mariano Anaya, 2nd ed., 2022, Packt）：Python 代码质量实战指南。
@@ -1683,26 +1546,6 @@ flowchart TD
 - **O'Callaghan, M.** "Static Analysis at Scale: Instagram's Type Checking Journey." *IEEE Software* 35, 4 (2018), 76–82.
 - **Ayewah, N. et al.** "Using Static Analysis to Find Bugs." *IEEE Software* 25, 5 (2008), 22–29.
 - **Padioleau, Y. et al.** "Learning Natural Coding Style for Linting." *ICSE '22*.
-
-### 12.3 在线资源
-
-- **官方文档**：
-  - Ruff — https://docs.astral.sh/ruff/
-  - mypy — https://mypy.readthedocs.io/
-  - pytest — https://docs.pytest.org/
-  - pre-commit — https://pre-commit.com/
-  - Black — https://black.readthedocs.io/
-- **PEP 索引**：https://peps.python.org/
-- **Real Python - Code Quality**：https://realpython.com/python-code-quality/
-- **Talks**：
-  - Łukasz Langa: "Behind the Scenes of Black" (PyCon 2019)
-  - Charlie Marsh: "Ruff: A Fast Python Linter" (PyCon 2023)
-  - Jukka Lehtosalo: "Type Checking Python Programs" (PyCon 2017)
-- **开源项目参考**：
-  - `pallets/flask` — 类型注解完整
-  - `fastapi/fastapi` — 类型驱动设计
-  - `pydantic/pydantic` — 类型校验库
-  - `astral-sh/uv` — Ruff 同公司产品
 
 ### 12.4 进阶路线图
 

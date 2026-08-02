@@ -1492,8 +1492,6 @@ javaVersion(21)
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**：解释扩展函数的「静态解析」特性，并给出一个体现该特性的代码示例。
@@ -1708,42 +1706,6 @@ val result = streamOf(1, 2, 3, 4)
 
 ---
 
-## 参考文献
-
-[1] Breslav, A. 2012. Kotlin: New Hope for the JVM. JetBrains. Retrieved July 21, 2026 from https://kotlinlang.org/docs/extensions.html
-
-[2] Jézéquel, J.-M. and Barais, O. 2008. Extension Methods: A first-class pattern for language engineering. Proc. Int. Conf. on Software Engineering and Knowledge Engineering (SEKE '08).
-
-[3] Warth, A., Ohshima, Y., Kaehler, T., and Kay, A. 2011. Worldst: An experiment in extending a programming language. Proc. ACM SIGPLAN Int. Conf. on Dynamic Languages (DLS '11). DOI: 10.1145/2047849.2047856
-
-[4] Odersky, M. and Micheloud, S. 2008. Scala by Example. EPFL. (Implicit conversions as extension mechanism.)
-
-[5] Osborne, M. and Jones, S. 2014. C# in Depth. Manning Publications. (Extension methods in C# 3.0.)
-
-[6] Eckel, B. 2017. On Kotlin Extension Functions. Mindview LLC. Retrieved July 21, 2026 from https://www.bruc Eckel.com/2017/01/on-kotlin-extension-functions/
-
-[7] Elmas, T. and Budiu, M. 2019. Type-safe DSL construction in Kotlin. Proc. ACM SIGPLAN Int. Conf. on Generative Programming (GPCE '19). DOI: 10.1145/3357765.3357775
-
-[8] Click, C. 2018. Optimizing Kotlin Extension Functions for High-Performance Systems. GOTO Berlin 2018.
-
-[9] Sergey, I. et al. 2020. Polymorphic Extension Methods for Type-Class Pattern in Modern JVM Languages. Proc. ACM SIGPLAN Int. Symp. on New Ideas in Programming. DOI: 10.1145/3394462.3394690
-
-[10] Prokopec, A. 2016. ScalaMeter: A microbenchmarking harness for Scala. Journal of Functional Programming 26, e12. DOI: 10.1017/S0956796816000122
-
-[11] Breslav, A. 2017. Kotlin in Action. Manning Publications. (Chapter 5: Extensions.)
-
-[12] Skeet, J. 2019. C# in Depth (4th ed.). Manning Publications. (Chapter 10: Extension methods.)
-
-[13] Odersky, M., Spoon, L., and Venners, B. 2016. Programming in Scala (3rd ed.). Artima Press. (Implicit conversions as extensions.)
-
-[14] JetBrains. 2020. Kotlin Standard Library Source Code. Retrieved July 21, 2026 from https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
-
-[15] Kalibera, T. and Jones, R. 2013. Rigorous benchmarking in reasonable time. Proc. ACM SIGPLAN Int. Symp. on Memory Management (ISMM '13). DOI: 10.1145/2466485.2466488
-
----
-
-## 延伸阅读
-
 ### 官方文档
 
 - Kotlin 扩展函数官方指南：https://kotlinlang.org/docs/extensions.html
@@ -1765,19 +1727,6 @@ val result = streamOf(1, 2, 3, 4)
 - Wu, Y. et al. 《Compiler-Aware Extension Function Optimization for JVM》，PLDI 2022；
 - Barlas, G. et al. 《Multi-platform Extension Function Semantics in Kotlin Multiplatform》，ECOOP 2023。
 
-### 开源项目参考
-
-- Kotlin 标准库扩展实现：https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib/src/kotlin
-- Android KTX 扩展集合：https://github.com/androidx/androidx
-- Arrow 函数式库扩展：https://github.com/arrow-kt/arrow
-- Ktor HTTP DSL：https://github.com/ktorio/ktor
-
-### 社区资源
-
-- Kotlin Slack #extensions 频道
-- Kotlin Discussions 论坛
-- JetBrains Blog 关于 Kotlin 扩展的设计文章
-- Medium 「Kotlin Extension Functions in Practice」系列文章
 ## 扩展函数基础
 
 **基本写法：为 String 添加扩展函数**

@@ -784,25 +784,9 @@ prerequisites:
 - 检查端口是否正确
 
 ## 9. 延伸阅读
-
-- [C 语言参考手册](https://en.cppreference.com/w/c)
-- [Linux 系统编程](https://www.man7.org/linux/man-pages/)
-- [TCP/IP 网络编程](https://beej.us/guide/bgnet/)
-- [C 语言程序设计](https://www.amazon.com/C-Programming-Language-2nd/dp/0131103628)
   通过本教程，你已经了解了 C 语言的高级特性和系统编程技巧。在实际项目中，你可以使用这些技术来开发高性能、可靠的系统级应用程序。
-
-## 参考文献
-
-cppreference C 文档：https://zh.cppreference.com/w/c
-C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/
-GCC 官方文档：https://gcc.gnu.org/onlinedocs/
-Linux man pages：https://man7.org/linux/man-pages/
-C 语言常见误解：https://www.yodaiken.com/
-
 ## 延伸阅读
-
 C 指针与数组深入，见 025-c 模块指针文档。
 C 枚举与 typedef，见 025-c/007-EnumTypedef 文档。
 C++ 面向对象与模板，见 026-cpp 模块。
 嵌入式 C 与硬件交互，见 035-iot 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 C 语言课程。

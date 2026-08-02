@@ -428,28 +428,10 @@ export const permissionGuard: NavigationGuard = async (to, from) => {
 
 为什么 `beforeEnter` 不重复触发：路由记录级守卫只在初始进入时执行，参数变化属于同一路由记录内的更新，应使用组件内守卫。这是面试与实战中的高频易错点。
 
-## 10. 参考文献
-
-Vue Router 官方文档, Navigation Guards, 访问日期 2026-08-01, https://router.vuejs.org/guide/advanced/navigation-guards.html
-
-Vue Router 官方 API 参考, 访问日期 2026-08-01, https://router.vuejs.org/api/
-
-Vue.js 官方文档, 路由与组合式 API, 访问日期 2026-08-01, https://vuejs.org/guide/scaling-up/state-management.html
-
-Vue Router 迁移指南（Vue 2 到 Vue 3）, 访问日期 2026-08-01, https://router.vuejs.org/guide/migration/
-
 ## 11. 延伸阅读
-
 与路由守卫紧密相关的组件生命周期与缓存机制，见本模块 027-KeepAliveCacheLifecycle 文档；
-
 浮层组件的路由关闭协作模式，见本模块 026-TeleportPortalApp 文档；
-
 Pinia 状态管理与守卫配合的完整示例，见 010-vue3 模块的 Pinia 相关文档；
-
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vue3 全家桶视频课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前后端分离实战课程；
-
-Vue Router 官方示例仓库：https://github.com/vuejs/router 。
-
 ### 1. 全局守卫
 
 #### 1.1 beforeEach
@@ -527,4 +509,3 @@ export default {
 | `true` / `undefined` | 允许导航 |
 | `false`              | 取消导航 |
 | 路由对象             | 重定向   |
-

@@ -2899,8 +2899,6 @@ if __name__ == '__main__':
     print(f"\n数据库 URL: {db_url}")
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：解释十二因素应用方法论中关于配置的核心原则，并说明为什么配置应该存储在环境变量中而不是代码中。
@@ -3000,44 +2998,6 @@ load_env()
 - 环境变量优势：简单、启动即用、与应用代码解耦。
 - 环境变量劣势：不适合大配置、不支持热更新、变量名冲突风险。
 - 选择依据：少量简单配置用环境变量，大量或需要热更新的配置用挂载卷。
-
-## 10. 参考文献
-
-[1] Wiggins, A. (2011). *The Twelve-Factor App*. Heroku. Available at: https://12factor.net/config
-
-[2] Pydantic Team. (2024). *Pydantic Settings Documentation*. Available at: https://docs.pydantic.dev/latest/concepts/pydantic_settings/
-
-[3] Renne, B. (2024). *Dynaconf Documentation*. Available at: https://www.dynaconf.com/
-
-[4] python-dotenv. (2024). *python-dotenv Documentation*. Available at: https://github.com/theskumar/python-dotenv
-
-[5] Preston-Werner, T. (2013). *TOML: Tom's Obvious, Minimal Language*. Available at: https://toml.io/
-
-[6] Python Software Foundation. (2024). *tomllib — Parse TOML files*. Python Documentation. Available at: https://docs.python.org/3/library/tomllib.html
-
-[7] PEP 680 — tomllib: Support TOML parsing in the Standard Library. (2022). Python Enhancement Proposals. Available at: https://peps.python.org/pep-0680/
-
-[8] PEP 518 — Specifying minimum build system requirements for Python projects. (2016). Python Enhancement Proposals. Available at: https://peps.python.org/pep-0518/
-
-[9] HashiCorp. (2024). *HashiCorp Vault Documentation*. Available at: https://developer.hashicorp.com/vault
-
-[10] Amazon Web Services. (2024). *AWS Secrets Manager Documentation*. Available at: https://docs.aws.amazon.com/secretsmanager/
-
-[11] Ctrip. (2024). *Apollo: A reliable configuration management system*. Available at: https://www.apolloconfig.com/
-
-[12] Alibaba. (2024). *Nacos: Dynamic Naming and Configuration Service*. Available at: https://nacos.io/
-
-[13] Kubernetes. (2024). *ConfigMap and Secret*. Kubernetes Documentation. Available at: https://kubernetes.io/docs/concepts/configuration/
-
-[14] Feingold, R. (2017). *Configuration Management in Microservices*. IEEE Software, 34(3), 88-93. DOI: 10.1109/MS.2017.66
-
-[15] Newman, S. (2021). *Building Microservices: Designing Fine-Grained Systems* (2nd ed.). O'Reilly Media. ISBN: 978-1492034025
-
-[16] Ford, N., Parsons, R., & Kua, P. (2017). *Building Evolutionary Architectures*. O'Reilly Media. ISBN: 978-1491986363
-
-[17] Humble, J., & Farley, D. (2010). *Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation*. Addison-Wesley. ISBN: 978-0321601919
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

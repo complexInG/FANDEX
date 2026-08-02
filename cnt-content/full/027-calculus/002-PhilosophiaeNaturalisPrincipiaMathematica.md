@@ -4,7 +4,7 @@ title: 导数与微分
 module: calculus
 category: 高等数学
 difficulty: beginner
-description: 导数与微分的严格理论体系：ε-δ 定义、Carathéodory 定义、链式法则证明、中值定理（Rolle/Lagrange/Cauchy）、Taylor 定理及余项、高阶导数与 Leibniz 公式。配套 40+ Python/SymPy/PyTorch 代码示例（数值求导、符号求导、自动求导、神经网络反向传播），4 个 Mermaid 图与 50+ KaTeX 公式，10 道 Spivak 风格习题与 12 条 ACM 格式参考文献。本篇以 Spivak Calculus 4th、Apostol Vol 1、Rudin PMA 与 Tao Analysis I 为标杆，采用严格分析风格。
+description: 导数与微分的严格理论体系：ε-δ 定义、Carathéodory 定义、链式法则证明、中值定理（Rolle/Lagrange/Cauchy）、Taylor 定理及余项、高阶导数与 Leibniz 公式。配套 40+ Python/SymPy/PyTorch 代码示例（数值求导、符号求导、自动求导、神经网络反向传播），4 个 Mermaid 图与 50+ KaTeX 公式，与 12 条 ACM 格式参考文献。本篇以 Spivak Calculus 4th、Apostol Vol 1、Rudin PMA 与 Tao Analysis I 为标杆，采用严格分析风格。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -2448,10 +2448,6 @@ for epoch in range(1000):
 
 **关键洞察**：反向传播的本质是链式法则在计算图上的高效组织——通过"反向"传播输出层误差，避免了"前向"模式中对每个参数单独计算梯度的 $O(n)$ 重复开销，使总复杂度降为 $O(L \cdot |\theta|)$（与参数量同阶）。这是深度学习能够训练上亿参数模型的算法基础。
 
-## 第 16 章 习题与解答
-
-本章节汇总 10 道习题的参考答案要点，便于学习者快速查阅。完整题目与评分关键点见本章正文。
-
 ### 填空题知识点讲解
 
 **习题 ex-calc-diff-fb-01**（ε-δ 定义填空）
@@ -2459,17 +2455,6 @@ for epoch in range(1000):
 
 **习题 ex-calc-diff-fb-02**（Carathéodory 定义填空）
 解析讲解：$\varphi(x)$。Carathéodory 等价定义将差商结构提取为连续函数 $\varphi(x)$，使 $f(x) - f(x_0) = \varphi(x) \cdot (x - x_0)$，且 $\varphi(x_0) = f'(x_0)$。
-
-### 选择题知识点讲解
-
-**习题 ex-calc-diff-ch-01**（$|x|$ 在 0 处可导性）
-解析讲解：B。$f'_-(0) = -1$，$f'_+(0) = 1$，左右导数存在但不相等，故不可导。$|x|$ 在 0 处连续，排除 C；可导必蕴含导数存在，排除 A、D。
-
-**习题 ex-calc-diff-ch-02**（$x^2 \sin(1/x)$ 在 0 处可导性与导数连续性）
-解析讲解：B。由夹逼定理 $|h \sin(1/h)| \leq |h| \to 0$ 知 $f'(0) = 0$；但 $x \neq 0$ 时 $f'(x) = 2x \sin(1/x) - \cos(1/x)$ 在 $x \to 0$ 时因 $\cos(1/x)$ 振荡而无极限，故 $f'$ 在 0 处不连续。这是"可导但导数不连续"的经典反例。
-
-**习题 ex-calc-diff-ch-03**（Lagrange 中值定理理解）
-解析讲解：B。Lagrange 中值定理的几何意义是切线斜率等于端点弦斜率。$\xi$ 是横坐标而非原函数值，且不一定唯一（如 $x^3$ 在 $[-1, 1]$ 上有三个 $\xi$ 满足条件），也不必为中点。
 
 ### 16.3 代码修正题
 
@@ -2489,27 +2474,6 @@ for epoch in range(1000):
 
 **习题 ex-calc-diff-oe-03**（Lagrange 中值定理证明 Rolle 定理的逆命题讨论）
 讨论要点：Rolle 定理是 Lagrange 中值定理在 $f(a) = f(b)$ 时的特例；逆命题"若 $f'(c) = 0$ 则 $c$ 是极值点"不成立（反例：$f(x) = x^3$ 在 $c = 0$ 处 $f'(0) = 0$ 但非极值）。正确的相关结论是 Fermat 引理：若 $c$ 是 $f$ 的极值点且 $f$ 在 $c$ 处可导，则 $f'(c) = 0$。
-
-## 第 17 章 参考文献
-
-本章节列出 frontmatter `references` 字段中已声明的 12 条 ACM Reference Format 参考文献，按引用顺序排列。完整字段（作者、年份、标题、出版商、DOI 等）见 frontmatter。
-
-1. Spivak, M. (2008). _Calculus_ (4th ed.). Publish or Perish, Inc. https://doi.org/10.1007/978-0-387-09469-9
-2. Apostol, T. M. (1967). _Calculus, Volume 1: One-Variable Calculus with an Introduction to Linear Algebra_ (2nd ed.). John Wiley & Sons.
-3. Rudin, W. (1976). _Principles of Mathematical Analysis_ (3rd ed.). McGraw-Hill Education.
-4. Tao, T. (2016). _Analysis I_ (3rd ed.). Springer. https://doi.org/10.1007/978-981-10-1789-6
-5. Courant, R., & John, F. (1999). _Introduction to Calculus and Analysis I_. Springer.
-6. Hardy, G. H. (1952). _A Course of Pure Mathematics_ (10th ed.). Cambridge University Press.
-7. Pugh, C. C. (2002). _Real Mathematical Analysis_. Springer. https://doi.org/10.1007/978-0-387-21668-2
-8. Carathéodory, C. (1950). _Vorlesungen über reelle Funktionen_ (3rd ed.). Chelsea Publishing Company.
-9. Baydin, A. G., Pearlmutter, B. A., Radul, A. A., & Siskind, J. M. (2018). Automatic differentiation in machine learning: a survey. _Journal of Machine Learning Research_, 18(153), 1-43.
-10. Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). Learning representations by back-propagating errors. _Nature_, 323(6088), 533-536. https://doi.org/10.1038/323533a0
-11. Leibniz, G. W. (1684). Nova methodus pro maximis et minimis, itemque tangentibus, quae nec fractas, nec irrationales quantitates moratur, et singulare pro illis calculi genus. _Acta Eruditorum_.
-12. Newton, I. (1687). _Philosophiae Naturalis Principia Mathematica_. Royal Society of London.
-
-**引用规范说明**：本节遵循 ACM Reference Format，期刊文献包含卷号、期号、页码与 DOI，书籍包含版次与出版社。在正文中以"Spivak (2008)"或"(Rumelhart et al., 1986)"形式引用。
-
-## 第 18 章 延伸阅读
 
 ### 18.1 关联模块
 

@@ -1441,8 +1441,6 @@ fun main() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：编写一个带契约的函数 `isBlank(s: String?): Boolean`，当且仅当 `s` 为 null 或全为空白字符时返回 true。契约应承诺"返回 false 意味着 `s` 非空"。
@@ -1642,38 +1640,6 @@ fun demoAssertions(x: Any?, flag: Boolean) {
 
 ---
 
-## 10. 参考文献
-
-参考文献按 ACM Reference Format 给出，包含 DOI 链接（如有）。
-
-[1] Meyer, B. 1997. *Object-Oriented Software Construction* (2nd ed.). Prentice Hall, Upper Saddle River, NJ, USA. DOI: https://doi.org/10.5555/550114
-
-[2] JetBrains. 2018. *Kotlin Contracts KEEP-134*. Retrieved July 21, 2026 from https://github.com/Kotlin/KEEP/blob/master/proposals/contracts
-
-[3] Belyakovich, A. 2018. *Kotlin 1.3 Contracts: What Are They and How to Use Them*. JetBrains Blog. Retrieved July 21, 2026 from https://blog.jetbrains.com/kotlin/2018/10/kotlin-1-3/
-
-[4] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 1996. Lua—an extensible extension language. *Software: Practice and Experience* 26, 6 (June 1996), 635–652. DOI: https://doi.org/10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P
-
-[5] Barnett, M., Fähndrich, M., Leino, K. R. M., Müller, P., Schulte, W., and Tillmann, N. 2011. Specification and verification: the Spec# experience. *Communications of the ACM* 54, 6 (June 2011), 81–91. DOI: https://doi.org/10.1145/1953122.1953145
-
-[6] Leino, K. R. M. and Müller, P. 2009. A basis for verifying multi-threaded programs. In *Proceedings of the 18th European Symposium on Programming Languages and Systems (ESOP'09)*, 270–289. DOI: https://doi.org/10.1007/978-3-642-00590-9_20
-
-[7] Fähndrich, M., Barnett, M., and Leino, K. R. M. 2010. From hoare logic to symbolic execution for program verification. In *Proceedings of the 18th International Symposium on Formal Methods (FM'09)*, 2–9. DOI: https://doi.org/10.1007/978-3-642-05089-3_2
-
-[8] JetBrains. 2024. *Kotlin 2.0 Release Notes: K2 Compiler*. Retrieved July 21, 2026 from https://kotlinlang.org/docs/whatsnew20.html
-
-[9] Ushakov, D. 2023. *K2 Compiler and Contracts: Current Status*. JetBrains Internal Report. Retrieved July 21, 2026 from https://youtrack.jetbrains.com/issue/KT-57520
-
-[10] Odersky, M., Spoon, L., and Venners, B. 2019. *Programming in Scala* (5th ed.). Artima Press, Walnut Creek, CA, USA. ISBN: 978-0-9815316-4-9
-
-[11] Rust Community. 2020. *The Rust Programming Language*. Retrieved July 21, 2026 from https://doc.rust-lang.org/book/
-
-[12] Dijkstra, E. W. 1975. Guarded commands, nondeterminacy and formal derivation of programs. *Communications of the ACM* 18, 8 (Aug. 1975), 453–457. DOI: https://doi.org/10.1145/360933.360975
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **Kotlin 官方文档 - Contracts**: https://kotlinlang.org/docs/whatsnew13.html#contracts
@@ -1706,13 +1672,6 @@ fun demoAssertions(x: Any?, flag: Boolean) {
   - 契约效果传播：`org.jetbrains.kotlin.resolve.calls.inference`
 - **Kotlin KEEP 仓库**: https://github.com/Kotlin/KEEP
   - 契约相关 KEEP 提案的讨论历史
-
-### 11.5 社区资源
-
-- **Kotlin Slack - #contracts 频道**: 与 JetBrains 团队和其他开发者讨论契约设计。
-- **Kotlin YouTrack**: 报告契约相关的 bug 与 feature request。
-- **Reddit r/Kotlin**: 契约相关的实践分享与讨论。
-- **Medium - Kotlin 契约系列文章**: 多位作者撰写的契约实践文章，涵盖从入门到进阶。
 
 ### 11.6 相关工具
 

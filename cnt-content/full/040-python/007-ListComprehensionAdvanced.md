@@ -1337,110 +1337,6 @@ $ python3.12 -m timeit -s "data = list(range(1000))" "[x**2 for x in data]"
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 以下哪个不是 Python 推导式的合法形式？
-
-A. `[x for x in range(10)]`
-B. `{x for x in range(10)}`
-C. `{x: x**2 for x in range(10)}`
-D. `(x for x in range(10))`
-E. `<x for x in range(10)>`
-
-**答案：E**
-
-解析讲解：Python 推导式有 4 种合法形式：列表 `[]`、集合 `{}`、字典 `{k: v}`、生成器 `()`。尖括号 `<>` 不是推导式定界符。
-
----
-
-**Q2.** 以下代码在 Python 3.11 中的输出是什么？
-
-```python
-x = 100
-result = [x for x in range(3)]
-print(x)
-```
-
-A. `100`
-B. `0`
-C. `2`
-D. 抛出 `NameError`
-
-**答案：A**
-
-解析讲解：Python 3 中推导式有独立作用域，循环变量 `x` 不会泄漏到外层。外层 `x = 100` 保持不变。
-
----
-
-**Q3.** 以下哪种写法在内存占用上最优？
-
-A. `sum([x**2 for x in range(10**8)])`
-B. `sum(x**2 for x in range(10**8))`
-C. `sum(map(lambda x: x**2, range(10**8)))`
-D. `total = 0; for x in range(10**8): total += x**2`
-
-**答案：B、C、D 等价最优**
-
-解析讲解：B 是生成器表达式，C 是 `map` 迭代器，D 是显式循环，三者均不构建完整列表，内存 O(1)。A 构建亿元素列表，内存约 800MB。
-
----
-
-**Q4.** 以下嵌套推导式的等价循环是？
-
-```python
-result = [(i, j) for i in range(3) for j in range(3) if i != j]
-```
-
-A.
-```python
-for i in range(3):
-    for j in range(3):
-        if i != j:
-            result.append((i, j))
-```
-
-B.
-```python
-for j in range(3):
-    for i in range(3):
-        if i != j:
-            result.append((i, j))
-```
-
-C.
-```python
-for i in range(3):
-    if i != j:
-        for j in range(3):
-            result.append((i, j))
-```
-
-**答案：A**
-
-解析讲解：推导式的 `for` 子句按从左到右顺序嵌套，`if` 作用于其左侧最近的一层 `for`。等价于 A。
-
----
-
-**Q5.** 以下代码输出是？
-
-```python
-funcs = [lambda: i for i in range(3)]
-print([f() for f in funcs])
-```
-
-A. `[0, 1, 2]`
-B. `[2, 2, 2]`
-C. `[0, 0, 0]`
-D. 抛出异常
-
-**答案：B**
-
-解析讲解：`lambda: i` 捕获的是变量 `i` 的引用，而非值。所有 lambda 共享同一个 `i`，循环结束时 `i = 2`。修复：`lambda i=i: i`。
-
----
-
 ### 填空题知识点讲解
 
 **Q1.** Python 列表推导式首次在 ________（PEP 编号）中提出，于 Python ________ 版本正式引入。
@@ -1596,75 +1492,6 @@ assert take(5, gen) == [0, 1, 4, 9, 16]
 
 ---
 
-### 9.4 思考题
-
-**Q1.** 为什么 Python 推导式在 Python 2 中泄漏循环变量，而在 Python 3 中不泄漏？这一改动对代码迁移有何影响？
-
-**参考答案：**
-Python 2 的实现将推导式视为语法糖，直接展开为循环，导致循环变量与外层共享作用域。Python 3 引入独立函数对象，使推导式具有独立作用域。影响：
-1. 依赖变量泄漏的旧代码（如 `[x for x in xs]; print(x)`）在 Python 3 中会报 `NameError`
-2. 闭包捕获行为更清晰，避免意外共享
-3. 性能略降（函数调用开销），但 PEP 709 内联优化已弥补
-
----
-
-**Q2.** 推导式与 `map`/`filter` 在函数式编程范式中各有什么优劣？为何 PEP 8 倾向于推导式？
-
-**参考答案：**
-- 推导式优势：可读性高，支持多 `for` 嵌套，语法直观
-- `map`/`filter` 优势：可与其他高阶函数（`reduce`、`partial`）组合，函数式纯度高
-- PEP 8 倾向推导式的原因：Python 不是纯函数式语言，可读性优先；推导式可读性显著优于 `map(lambda x: x**2, filter(lambda x: x > 0, xs))`
-
----
-
-**Q3.** 假设你需要处理一个 100GB 的日志文件，逐行解析并统计各级别日志数量。应使用列表推导式还是生成器表达式？为什么？
-
-**参考答案：**
-必须使用生成器表达式或逐行读取。原因：
-- 列表推导式会一次性加载所有行到内存，100GB 日志将导致 OOM
-- 生成器表达式逐行 yield，内存 O(1)
-- 配合 `collections.Counter` 可流式统计：
-
-```python
-from collections import Counter
-
-def count_levels(path: Path) -> Counter:
-    with path.open() as f:
-        return Counter(json.loads(line)["level"] for line in f)
-```
-
----
-
-**Q4.** Rust 的迭代器适配器（`.iter().map().filter()`）与 Python 生成器表达式在概念上等价，但 Rust 称之为"零成本抽象"。请解释这一差异的本质。
-
-**参考答案：**
-- Rust 在编译期将迭代器链单态化（monomorphization）并内联，生成等价的 `for` 循环，运行时无额外开销
-- Python 生成器表达式在运行时创建 generator 对象，每次 `next()` 调用涉及帧切换
-- Python 字节码解释器无法做内联优化（即便 PEP 709 也仅对列表推导式部分内联）
-- 本质差异：静态编译 vs 动态解释，强类型推断 vs 鸭子类型
-
----
-
-**Q5.** 推导式与异步推导式（`async for`）有何区别？在什么场景下应使用异步推导式？
-
-**参考答案：**
-- 同步推导式：处理同步可迭代对象（实现 `__iter__`）
-- 异步推导式：处理异步可迭代对象（实现 `__aiter__` + `__anext__`），必须在 `async` 函数内使用
-- 适用场景：异步数据库游标、异步 HTTP 流、`asyncio.Queue` 等
-
-```python
-async def fetch_all(urls: list[str]) -> list[bytes]:
-    async def fetch(url: str) -> bytes:
-        async with httpx.AsyncClient() as client:
-            r = await client.get(url)
-            return r.content
-    return [data async for data in fetch_stream(urls)]
-```
-
----
-
-## 10. 参考文献
-
 ### 10.1 PEP 与官方文档
 
 [1] Warsaw, B. 2000. PEP 202: List Comprehensions. Python Enhancement Proposals. https://peps.python.org/pep-0202/. DOI: 10.5281/zenodo.10678420.
@@ -1707,8 +1534,6 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **Ramalho, L. 2022.** *Fluent Python (2nd ed.)*. O'Reilly Media. — 第 2 章"An Array of Sequences"、第 7 章"Closures and Decorators"对推导式有深度剖析。
@@ -1727,14 +1552,6 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 - **PEP 8** — Style Guide for Python Code（推导式相关章节）
 - **CPython Internals: Compilation of comprehensions** — https://github.com/python/cpython/blob/main/Python/compile.c
 
-### 11.3 在线资源
-
-- **Python Language Reference, §6.2.4 Displays for lists, sets and dictionaries** — https://docs.python.org/3/reference/expressions.html#displays-for-lists-sets-and-dictionaries
-- **Real Python: When to Use a List Comprehension in Python** — https://realpython.com/list-comprehension-python/
-- **Hettinger's PyCon Talks** — "Transforming Code into Beautiful, Idiomatic Python"
-- **PyPy Status Blog: List comprehension optimization** — https://pypy.org/posts/
-- **PEP 709 implementation deep dive by Brandt Bucher** — https://github.com/python/cpython/pull/104497
-
 ### 11.4 相关 PEP 主题
 
 - **PEP 274** — Dict/Set Comprehensions
@@ -1743,16 +1560,6 @@ async def fetch_all(urls: list[str]) -> list[bytes]:
 - **PEP 525** — Asynchronous Generators
 - **PEP 572** — Assignment Expressions (海象运算符)
 - **PEP 695** — Type Parameter Syntax (Python 3.12)
-
-### 11.5 跨语言参考
-
-- **Haskell Report 2020** — §3.11 List Comprehensions
-- **Rust Book** — §13.2 Processing a Series of Items with Iterators
-- **Scala Collection API** — for-comprehension
-- **MDN Web Docs: Array.prototype.map/filter** — JavaScript 数组方法
-- **C# Language Reference: LINQ Query Expressions**
-
----
 
 ## 附录 A：速查表
 

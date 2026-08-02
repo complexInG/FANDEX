@@ -1868,8 +1868,6 @@ const r2 = createResponse(404, { name: 'Alice' });
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. TypeScript 4.1 引入的模板字面量类型允许在类型层使用 ES2015 模板字符串语法，其占位符内只能放置____类型或____类型。
@@ -1895,48 +1893,6 @@ const r2 = createResponse(404, { name: 'Alice' });
 6. 在键重映射 `[K in keyof T as NewKey<K>]: T[K]` 中，当 `NewKey<K>` 返回____时，该键被过滤掉，不会出现在结果类型中。
    - **答案**：never
    - **Bloom**：apply
-
-### 选择题知识点讲解
-
-1. 下列哪种类型表达式**无法**通过 TypeScript 编译？
-   - A. `type T = \`id-${number}\``
-   - B. `type T = \`id-${string}\``
-   - C. `type T = \`id-${boolean}\``
-   - D. `type T = \`id-${'a' | 'b'}\``
-   - **答案**：C
-   - **Bloom**：apply
-
-2. 关于 `Uppercase<S>` 在编译期与运行时的等价性，下列描述正确的是？
-   - A. 完全等价于 `String.prototype.toUpperCase` 的 Unicode 完整大小写映射
-   - B. 使用简单 ASCII 大小写映射，不支持 locale-sensitive 转换
-   - C. 在所有 Unicode 字符上都与运行时 `toUpperCase` 一致
-   - D. 可以通过传入 locale 参数实现土耳其语 İ 映射
-   - **答案**：B
-   - **Bloom**：analyze
-
-3. 关于模板字面量类型的递归深度限制，下列描述最准确的是？
-   - A. 没有递归深度限制
-   - B. TypeScript 4.5+ 引入尾递归优化后，所有递归都不会触发深度错误
-   - C. 类型实例化有深度上限（约 50 展开层），尾递归优化仅对符合条件的尾位置有效
-   - D. 递归模板字面量类型只能展开 100 层
-   - **答案**：C
-   - **Bloom**：evaluate
-
-4. 下列哪种场景**不适合**使用模板字面量类型？
-   - A. 根据路由字符串字面量推导参数类型
-   - B. 为对象类型派生 getter 方法签名
-   - C. 处理用户运行时输入的 SQL 查询
-   - D. 根据事件名联合派生 `on${Event}` 处理器映射
-   - **答案**：C
-   - **Bloom**：evaluate
-
-5. 关于键重映射 `[K in keyof T as \`prefix-${K & string}\`]`，下列描述错误的是？
-   - A. `K & string` 确保 K 是字符串类型
-   - B. 仅对字符串键进行重映射，数字键与 symbol 键被保留
-   - C. `as never` 会过滤掉该键
-   - D. 重映射后的键名必须为字面量类型
-   - **答案**：B
-   - **Bloom**：analyze
 
 ### 16.3 代码修复题
 
@@ -2051,42 +2007,6 @@ type Reverse<S extends string> =
 
 ---
 
-## 17. 参考文献
-
-1. Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In *28th European Conference on Object-Oriented Programming (ECOOP 2014)*. LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-
-2. Rosenwasser, D. 2020. Announcing TypeScript 4.1. Microsoft Developer Blog. Available at: https://devblogs.microsoft.com/typescript/announcing-typescript-4-1/
-
-3. ECMA International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th edition). Section 6.1.4.1 StringToUpperCase. Standard ECMA-262. DOI: https://doi.org/10.1145/3180267
-
-4. Hosoya, H. and Pierce, B. C. 2003. Regular expression types for XML. *ACM Transactions on Programming Languages and Systems* 25, 4 (July 2003), 439–470. DOI: https://doi.org/10.1145/380796.380798
-
-5. Tabareau, N., Tanter, É., and Sozeau, M. 2018. Equations for the working Coq user. In *Proceedings of the 7th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2018)*. ACM, 97–111. DOI: https://doi.org/10.1145/3167081
-
-6. TypeScript Team. 2024. TypeScript Handbook: Template Literal Types. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html
-
-7. Chapman, P. 2021. Type-level TypeScript: Template literal types. Available at: https://type-level-typescript.com/template-literal-types
-
-8. ECMA International. 2024. ECMAScript 2024: 22.1.3.27 String.prototype.toUpperCase. Standard ECMA-262, 15th edition.
-
-9. Fu, P. and Komendantskaya, E. 2017. Type-based termination of recursion in Haskell. In *Proceedings of the 26th European Symposium on Programming (ESOP 2017)*. LNCS 10201, 384–410. DOI: https://doi.org/10.1007/978-3-662-54434-1_15
-
-10. Danielsson, N. A. and Altenkirch, T. 2010. Subtyping, declaratively. In *Proceedings of the 10th International Conference on Mathematics of Program Construction (MPC 2010)*. LNCS 6120, 100–118. DOI: https://doi.org/10.1007/978-3-642-13321-3_8
-
-11. Liskov, B. H. and Wing, J. M. 1994. A behavioral notion of subtyping. *ACM Transactions on Programming Languages and Systems* 16, 6 (Nov. 1994), 1811–1841. DOI: https://doi.org/10.1145/197320.197383
-
-12. Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press, Cambridge, MA, USA.
-
-13. Cardelli, L. and Wegner, P. 1985. On understanding types, data abstraction, and polymorphism. *ACM Computing Surveys* 17, 4 (Dec. 1985), 471–523. DOI: https://doi.org/10.1145/6041.6042
-
-14. Appel, A. W. and Felty, A. P. 2004. A semantic model of types and machine instructions for proof-carrying code. *ACM Transactions on Programming Languages and Systems* 26, 3 (May 2004), 551–582. DOI: https://doi.org/10.1145/982158.982163
-
-15. Xi, H. and Pfenning, F. 1999. Dependent types in practical programming. In *Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '99)*. ACM, 214–227. DOI: https://doi.org/10.1145/292540.292560
-
----
-
-## 18. 延伸阅读
-
 ### 18.1 官方文档
 
 - TypeScript Handbook: Template Literal Types — https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html
@@ -2106,12 +2026,6 @@ type Reverse<S extends string> =
 - ts-toolbelt — https://github.com/millsp/ts-toolbelt
 - typepark — https://github.com/kgtkr/typepark
 - utility-types — https://github.com/piotrwitek/utility-types
-
-### 18.4 社区资源
-
-- Type-Level TypeScript — https://type-level-typescript.com/
-- TypeScript Type Challenges — https://github.com/type-challenges/type-challenges
-- Effective TypeScript — https://effectivetypescript.com/
 
 ### 18.5 相关 FANDEX 文档
 
@@ -2249,8 +2163,6 @@ flowchart TD
 ```
 
 ---
-
-## 附录 E：自测清单
 
 ### E.1 基础概念
 

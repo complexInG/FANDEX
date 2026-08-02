@@ -1864,8 +1864,6 @@ C++20 协程是异步编程的现代化方案，特别适合 I/O 密集场景。
 
 模块可改善多线程库的导入速度，特别是大量模板的并发库（如 Boost.MPL、TBB）。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：以下代码是否有数据竞争？若有，如何修复？
@@ -1995,59 +1993,7 @@ assert(data == 42);
 - 调试困难（无标准 backtrace）；
 - 异常处理复杂。
 
-## 参考文献
-
-- [1] Boehm, H.-J. and Adve, S. V. 2008. Foundations of the C++ concurrency memory model. In Proceedings of the 29th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '08). ACM, 68–78. DOI: 10.1145/1375581.1375591.
-
-- [2] McKenney, P. E. and Slingwine, J. D. 1998. Read-copy update: using execution history to solve concurrency problems. In Proceedings of the 10th International Conference on Parallel and Distributed Computing and Systems (PDCS '98). IASTED, 509–518.
-
-- [3] Herlihy, M. and Shavit, N. 2012. The Art of Multiprocessor Programming, Revised Reprint (1st ed.). Morgan Kaufmann, Cambridge, MA, USA.
-
-- [4] Meyers, S. 2014. Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14 (1st ed.). O'Reilly Media, Sebastopol, CA, USA.
-
-- [5] Williams, A. 2019. C++ Concurrency in Action (2nd ed.). Manning Publications, Shelter Island, NY, USA.
-
-- [6] Sutter, H. 2005. The free lunch is over: a fundamental turn toward concurrency in software. Dr. Dobb's Journal 30, 3 (March 2005), 202–210.
-
-- [7] Adve, S. V. and Boehm, H.-J. 2005. Memory consistency models and C++. In Proceedings of the Workshop on Memory Systems Performance and Correctness (MSPC '05). ACM, 1–6. DOI: 10.1145/1113933.1113934.
-
-- [8] Coffman, E. G., Elphick, M. J., and Shoshani, A. 1971. System deadlocks. ACM Computing Surveys 3, 2 (June 1971), 67–78. DOI: 10.1145/356586.356588.
-
-- [9] Dijkstra, E. W. 1965. Solution of a problem in concurrent programming control. Communications of the ACM 8, 9 (Sept. 1965), 569. DOI: 10.1145/365559.365617.
-
-- [10] Hoare, C. A. R. 1974. Monitors: an operating system structuring concept. Communications of the ACM 17, 10 (Oct. 1974), 549–557. DOI: 10.1145/355620.361161.
-
-- [11] Michael, M. M. and Scott, M. L. 1996. Simple, fast, and practical non-blocking and blocking concurrent queue algorithms. In Proceedings of the 15th Annual ACM Symposium on Principles of Distributed Computing (PODC '96). ACM, 267–275. DOI: 10.1145/248052.248106.
-
-- [12] Herlihy, M. 1991. Wait-free synchronization. ACM Transactions on Programming Languages and Systems 13, 1 (Jan. 1991), 124–149. DOI: 10.1145/114005.102808.
-
-- [13] Treiber, R. K. 1986. Systems programming: coping with parallelism. IBM Research Report RJ 5118. IBM Almaden Research Center.
-
-- [14] Lamport, L. 1979. How to make a multiprocessor computer that correctly executes multiprocess programs. IEEE Transactions on Computers C-28, 9 (Sept. 1979), 690–691. DOI: 10.1109/TC.1979.1675439.
-
-- [15] Adve, S. V. and Gharachorloo, K. 1996. Shared memory consistency models: a tutorial. Computer 29, 12 (Dec. 1996), 66–76. DOI: 10.1109/2.546611.
-
-- [16] ISO/IEC 14882:2011. Information technology — Programming languages — C++. International Organization for Standardization, Geneva, Switzerland.
-
-- [17] ISO/IEC 14882:2020. Information technology — Programming languages — C++. International Organization for Standardization, Geneva, Switzerland.
-
-- [18] Stone, J., Gohara, D., and Shi, G. 2010. OpenCL: a parallel programming standard for heterogeneous computing systems. Computing in Science and Engineering 12, 3 (May 2010), 66–73. DOI: 10.1109/MCSE.2010.69.
-
-- [19] Lea, D. 2000. A Java fork/join framework. In Proceedings of the ACM 2000 Java Grande Conference. ACM, 36–43. DOI: 10.1145/337465.337486.
-
-- [20] Dagum, L. and Menon, R. 1998. OpenMP: an industry standard API for shared-memory programming. IEEE Computational Science and Engineering 5, 1 (Jan. 1998), 46–55. DOI: 10.1109/99.660313.
-
-- [21] Reinders, J. 2007. Intel Threading Building Blocks: Outfitting C++ for Multi-core Processor Parallelism (1st ed.). O'Reilly Media, Sebastopol, CA, USA.
-
-- [22] Nichols, B., Buttlar, D., and Proulx Farrell, J. 1996. Pthreads Programming: A POSIX Standard for Better Multiprocessing (1st ed.). O'Reilly Media, Sebastopol, CA, USA.
-
-- [23] Schmidt, D. C. and Huston, S. D. 2002. C++ Network Programming, Volume 1: Sockets and PatternAce Frameworks (1st ed.). Addison-Wesley, Boston, MA, USA.
-
-- [24] Attiya, H. and Welch, J. 2004. Distributed Computing: Fundamentals, Simulations, and Advanced Topics (2nd ed.). Wiley-Interscience, Hoboken, NJ, USA.
-
 ## 延伸阅读
-
-- **C++ Reference**: <https://en.cppreference.com/w/cpp/thread>
 - **C++ Concurrency in Action, 2nd Edition**: Anthony Williams 的经典著作，深入讲解 C++ 并发。
 - **The Art of Multiprocessor Programming**: Maurice Herlihy 与 Nir Shavit 的并发编程圣经。
 - **Java Concurrency in Practice**: Brian Goetz 等著，虽以 Java 为例，但并发思想通用。
@@ -2055,12 +2001,9 @@ assert(data == 42);
 - **P0660 "Cooperative Cancellation"**: C++20 jthread 的协作停止提案。
 - **P0534 "C++20 Synchronization"**: semaphore、latch、barrier 提案。
 - **P0912 "Merge Coroutines TS"**: C++20 协程并入主标准。
-- **ThreadSanitizer**: <https://clang.llvm.org/docs/ThreadSanitizer.html>
-- **Intel TBB**: <https://github.com/oneapi-src/oneTBB>
 - **Folly Futures**: Facebook 的异步库，提供 future 组合子。
 - **Boost.Asio**: 网络与异步 I/O 库，基于 proactor 模式。
 - **Seastar**: ScyllaDB 的高性能异步框架。
-- **Cpp-Taskflow**: <https://github.com/taskflow/taskflow>，现代 C++ 并行任务流库。
 - **Moodycamel ConcurrentQueue**: 高性能无锁 MPMC 队列。
 - **Concurrency Hazards**: Intel 的并发陷阱文档系列。
 - **Preshing on Programming**: Jeff Preshing 的并发编程博客，深入讲解内存模型。

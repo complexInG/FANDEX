@@ -647,10 +647,3 @@ git push backup main;
 # 从备份仓库拉取 main 分支
 git pull backup main;
 ```
-
-## 参考文献
-
-Git 官方文档：https://git-scm.com/doc
-Pro Git 中文版：https://git-scm.com/book/zh/v2
-Git 参考手册：https://git-scm.com/docs
-Conventional Commits：https://www.conventionalcommits.org/zh-hans/

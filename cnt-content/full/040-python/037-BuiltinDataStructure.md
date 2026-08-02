@@ -1326,12 +1326,3 @@ matrix = {
 ```
 
 ---
-
-## 参考文献
-
-Python 官方文档：https://docs.python.org/zh-cn/3/
-PEP 8 样式指南：https://peps.python.org/pep-0008/
-Python 之禅（PEP 20）：https://peps.python.org/pep-0020/
-Python 类型注解指南（PEP 484）：https://peps.python.org/pep-0484/
-Python 打包用户指南：https://packaging.python.org/
-Real Python 教程站：https://realpython.com/

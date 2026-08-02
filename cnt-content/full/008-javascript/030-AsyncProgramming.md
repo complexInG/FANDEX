@@ -1259,51 +1259,6 @@ const dbStream = database.queryStream('SELECT * FROM large_table');
 await exportToCsv(dbStream, '/tmp/export.csv');
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下代码的输出顺序是？
-
-```javascript
-console.log('A');
-setTimeout(() => console.log('B'), 0);
-Promise.resolve().then(() => console.log('C'));
-console.log('D');
-```
-
-- A. A, B, C, D
-- B. A, D, C, B
-- C. A, C, D, B
-- D. A, D, B, C
-
-**解析讲解**：B。同步代码先执行（A, D），然后微任务（C），最后宏任务（B）。
-
-**题目 2**：`Promise.all` 在以下哪种情况下会 reject？
-
-- A. 任一 Promise reject
-- B. 全部 Promise reject
-- C. 第一个完成的 Promise reject
-- D. 永远不会 reject
-
-**解析讲解**：A。`Promise.all` 是"fail-fast"，任一 Promise reject 即立即 reject。
-
-**题目 3**：以下代码的输出是？
-
-```javascript
-async function foo() {
-  return 1;
-}
-console.log(foo());
-```
-
-- A. `1`
-- B. `Promise { 1 }`
-- C. `Promise { undefined }`
-- D. `TypeError`
-
-**解析讲解**：B。async 函数永远返回 Promise。
-
 ### 简答题知识点讲解
 
 **题目 4**：解释 `process.nextTick`、`Promise.then`、`setTimeout(fn, 0)` 在 Node.js 中的执行优先级。
@@ -1415,34 +1370,6 @@ async function runWithConcurrency(tasks, limit) {
   return results;
 }
 ```
-
-## 9. 参考文献
-
-1. Ecma International. (2024). *ECMAScript 2024 Language Specification (ECMA-262, 15th edition)*. ECMA International. https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
-
-2. L. Denicola. (2017). *Async functions - making promises friendly*. TC39 Proposal. https://github.com/tc39/proposal-async-await
-
-3. D. Mihhailova, M. Nitsche. (2024). *Promise.try proposal*. TC39. https://github.com/tc39/proposal-promise-try
-
-4. J. L. V8 Team. (2018). *Faster async functions and promises*. V8 blog. https://v8.dev/blog/fast-async
-
-5. WHATWG. (2024). *HTML Living Standard - Event loops*. https://html.spec.whatwg.org/multipage/webappapis.html#event-loops
-
-6. Node.js Foundation. (2024). *Node.js Event Loop, Timers, and process.nextTick()*. https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick
-
-7. libuv Contributors. (2024). *libuv design overview*. https://docs.libuv.org/en/v1.x/design.html
-
-8. C. Angerer. (2023). *AsyncContext for JavaScript*. TC39 Proposal. https://github.com/tc39/proposal-async-context
-
-9. J. Dalton. (2022). *AbortController and AbortSignal*. MDN Web Docs. https://developer.mozilla.org/en-US/docs/Web/API/AbortController
-
-10. M. S. Tsirkin, B. Y. Zaks. (2021). *Backpressure in Node.js Streams: A Formal Analysis*. *ACM Transactions on Programming Languages and Systems*, 43(4), 1-32. https://doi.org/10.1145/3468224
-
-11. A. Birman. (2019). *Promise combinators in JavaScript*. *Communications of the ACM*, 62(11), 56-65. https://doi.org/10.1145/3341087
-
-12. G. H. Tan, J. C. Lau. (2020). *A Comparative Study of Asynchronous Programming Models in JavaScript*. *Proceedings of the ACM on Programming Languages*, 4(OOPSLA), 1-28. https://doi.org/10.1145/3428255
-
-## 10. 延伸阅读
 
 ### 10.1 规范与提案
 

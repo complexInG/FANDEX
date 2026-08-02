@@ -1000,55 +1000,6 @@ public class CliApp {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 以下哪个 Java 版本不是 LTS？
-
-A. Java 8  
-B. Java 11  
-C. Java 17  
-D. Java 18
-
-**D**。Java 18 不是 LTS。Java LTS 序列为 8、11、17、21、25。Java 18 是非 LTS 版本，仅支持 6 个月。
-
-**Q2.** 关于 `public static void main(String[] args)`，下列说法正确的是？
-
-A. `args` 可以为 `null`  
-B. 当无命令行参数时，`args.length == 0`  
-C. 返回值 `int` 也可作为入口签名  
-D. `public` 可省略
-
-**B**。JVM 会在调用 `main` 时传入长度为 0 的数组而非 `null`。`main` 必须是 `public static void`，返回 `int` 不会被识别为入口（C 错）。`public` 是 JVM 跨类加载器访问要求，不可省略（D 错）。
-
-**Q3.** 以下 class 文件头四个字节（magic number）是？
-
-A. `0x4A41 5641` (`JAVA`)  
-B. `0xCAFEBABE`  
-C. `0x7F45 4C46` (`ELF`)  
-D. `0x4D5A` (`MZ`)
-
-**B**。`0xCAFEBABE` 是 class 文件的 magic number，由 Patrick Naughton 选定。其他选项：ELF 是 Linux 可执行格式，MZ 是 Windows PE。
-
-**Q4.** `var` 关键字的使用范围是？
-
-A. 类字段  
-B. 方法参数  
-C. 局部变量  
-D. 方法返回类型
-
-**C**。`var`（Java 10+）仅用于**局部变量**声明，不能用于字段、方法参数、方法返回类型。`var` 是编译时语法糖，不影响字节码。
-
-**Q5.** Java 21 引入的虚拟线程（Virtual Thread）属于？
-
-A. Project Loom  
-B. Project Panama  
-C. Project Valhalla  
-D. Project Skynet
-
-**A**。虚拟线程属于 Project Loom（JEP 444）。Panama 是外部函数与内存 API，Valhalla 是 Value Types，Skynet 不存在。
-
 ### 填空题知识点讲解
 
 **Q1.** JDK 21 的 class 文件 major version 是 ________。
@@ -1197,64 +1148,6 @@ public class VirtualThreadDemo {
 }
 ```
 
-### 9.4 思考题
-
-**Q1.** 为什么 Java 选择类型擦除（Type Erasure）而非具化泛型（Reified Generics）？这对库设计有什么影响？
-
-- **兼容性**：Java 5 引入泛型时必须保证与 JDK 1.4 的二进制兼容性，类型擦除使泛型类在字节码层面与非泛型类完全一致；
-- **简单性**：JVM 不需要支持泛型类型，对字节码与 verifier 改动最小；
-- **代价**：无法在运行时获取泛型类型（`new T()` 不可行、`instanceof List<String>` 不可行）；
-- **库设计影响**：必须用 `Class<T>` token 或 `TypeReference<T>` 模式传递类型信息（如 Jackson、Gson、Hibernate）；
-- **未来**：Project Valhalla 可能引入 Specialized Generics，部分解决此问题。
-
-**Q2.** Java 21 虚拟线程与 Reactor 模式（如 Reactor Core、RxJava）有何本质区别？何时该选哪一个？
-
-- **本质区别**：
-  - 虚拟线程：JVM 级别的轻量级线程，调度由 JVM 在用户态完成，编写风格与平台线程一致（同步阻塞写法）；
-  - Reactor：库级别的异步数据流抽象，编写风格是声明式 / 链式；
-- **优势对比**：
-  - 虚拟线程：调试器友好、栈跟踪完整、能直接使用现有阻塞 API；
-  - Reactor：背压支持、组合语义丰富（`zip`、`merge`、`flatMap`）；
-- **选型建议**：
-  - 新项目优先虚拟线程；
-  - 已有响应式生态（Spring WebFlux）继续用 Reactor；
-  - 需要背压与流式语义的场景用 Reactor。
-
-**Q3.** Java 选择 AOT（GraalVM Native Image）作为 Java 25 LTS 标准特性的工程动因是什么？
-
-- **云端原生趋势**：容器化、Serverless 场景对启动时间敏感（< 100ms）；
-- **资源成本**：传统 JVM 启动需 200-500MB 内存，Native Image 可压至 50MB 以下；
-- **GraalVM 成熟**：经过 5 年孵化，已支持 Spring Native、Quarkus、Micronaut；
-- **代价**：放弃反射的动态性（需配置 `reflect-config.json`）、不能动态加载类、构建时间长。
-
----
-
-## 10. 参考文献（ACM Reference Format）
-
-1. Gosling, J., Joy, B., Steele, G., et al. 2024. *The Java Language Specification, Java SE 21 Edition* (Java SE 21). Oracle America, Inc. https://docs.oracle.com/javase/specs/jls/se21/html/index.html
-
-2. Lindholm, Y., Bracha, G., Smith, V., et al. 2024. *The Java Virtual Machine Specification, Java SE 21 Edition*. Oracle America, Inc. https://docs.oracle.com/javase/specs/jvms/se21/html/index.html
-
-3. Gosling, J. and McGilton, H. 1996. *The Java Language Environment: A White Paper*. Sun Microsystems. https://doi.org/10.1145/365949 (Retrieved from Sun Archives)
-
-4. Wesslén, O. 2023. *Project Loom: Virtual Threads* (JEP 444). OpenJDK. https://openjdk.org/jeps/444
-
-5. Simon, D. and Wrigstad, T. 2024. *Ahead-of-Time Compilation* (JEP 484). OpenJDK. https://openjdk.org/jeps/484
-
-6. Buckley, A. 2022. *JEP 400: UTF-8 by Default*. OpenJDK. https://openjdk.org/jeps/400
-
-7. Anderson, L. W. and Krathwohl, D. R. 2001. *A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives*. Longman.
-
-8. Evans, B. and Verburg, M. 2023. *The Well-Grounded Java Developer: Modern Java Practices for the Java 21 Era* (3rd ed.). Manning Publications.
-
-9. Urma, R.-G. and Myatt, A. 2023. *Modern Java in Action: Lambdas, Streams, Functional and Reactive Programming* (Java 21 Updated). Manning Publications.
-
-10. Forshaw, A. and Sandoz, P. 2024. *JEP 511: Module Import Declarations*. OpenJDK. https://openjdk.org/jeps/511
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Bloch, J. *Effective Java* (3rd ed., 2018). Addison-Wesley.
@@ -1266,18 +1159,6 @@ public class VirtualThreadDemo {
 
 - Würthinger, T., Wimmer, C., Wöss, A., et al. 2013. *Self-Attribution: A Self-Profiling Approach to JIT Compilation*. ACM SIGPLAN Notices, 48(10), 75-84. https://doi.org/10.1145/2544173.2509521
 - Wimmer, C. and Mössenböck, H. 2015. *Automatic Truffle-Assisted Debugging of Compiler Optimizations*. ACM OOPSLA, 1-15. https://doi.org/10.1145/2858965
-
-### 11.3 在线资源
-
-- **OpenJDK**: https://openjdk.org/
-- **Java Enhancement Proposals (JEPs)**: https://openjdk.org/jeps/0
-- **Oracle Java Documentation**: https://docs.oracle.com/en/java/javase/21/
-- **JEP 444 Virtual Threads**: https://openjdk.org/jeps/444
-- **JEP 484 AOT Compilation**: https://openjdk.org/jeps/484
-- **Spring Boot Reference**: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/
-- **GraalVM Documentation**: https://www.graalvm.org/latest/docs/
-- **Maven Documentation**: https://maven.apache.org/guides/
-- **Gradle User Manual**: https://docs.gradle.org/current/userguide/userguide.html
 
 ### 11.4 开源学习项目
 
@@ -1296,4 +1177,3 @@ public class VirtualThreadDemo {
 4. **专家阶段（持续）**：阅读 JEP 与 JSR 提案、跟踪 OpenJDK 邮件列表、研究 Valhalla / Loom / Panama / Skila 孵化项目。
 
 ---
-

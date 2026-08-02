@@ -1531,8 +1531,6 @@ return offline_devices
 - Lua 脚本保证状态更新的原子性。
 - TTL 机制实现自动离线检测。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下哪个命令用于执行已缓存的 Lua 脚本？
@@ -1816,34 +1814,6 @@ redis-cli FCALL queue.push 1 my_queue "task1" 1
 redis-cli FCALL queue.pop 1 my_queue
 ```
 
-## 10. 参考文献
-
-[1] Salvatore Sanfilippo. 2012. Redis 2.6.0 Release Notes: Lua Scripts Support. Redis Project. https://raw.githubusercontent.com/redis/redis/2.6/00-RELEASENOTES
-
-[2] Redis Ltd. 2024. Redis Lua Scripting Documentation. https://redis.io/docs/manual/programmability/lua/
-
-[3] Redis Ltd. 2024. Redis Functions Documentation. https://redis.io/docs/manual/programmability/functions/
-
-[4] Roberto Ierusalimschy, Luiz Henrique de Figueiredo, and Waldemar Celes. 2018. Lua 5.4 Reference Manual. PUC-Rio. https://www.lua.org/manual/5.4/
-
-[5] Martin Kleppmann. 2017. Designing Data-Intensive Applications. O'Reilly Media, Chapter 8: The Trouble with Distributed Systems.
-
-[6] Salvatore Sanfilippo. 2014. Is Redlock Safe?. Redis Blog. http://antirez.com/news/101
-
-[7] Martin Fowler. 2015. Circuit Breaker. https://martinfowler.com/bliki/CircuitBreaker.html
-
-[8] Tao Wang and Junji Zhi. 2021. Distributed Rate Limiting with Redis and OpenResty. In Proceedings of the International Conference on Web Engineering (ICWE 2021). Springer, 234–248. DOI: 10.1007/978-3-030-77096-6_18
-
-[9] Apache Software Foundation. 2024. Apache APISIX Rate Limiting Plugin. https://apisix.apache.org/docs/apisix/plugins/limit-req/
-
-[10] Redis Ltd. 2023. Redis Cluster Specification. https://redis.io/docs/reference/cluster-spec/
-
-[11] Cloudflare. 2022. How Cloudflare Uses Redis for Rate Limiting. Cloudflare Blog. https://blog.cloudflare.com/
-
-[12] Zhang Wei and Li Ming. 2020. Designing a High-Throughput Seckill System with Redis. In Proceedings of the IEEE International Conference on Web Services (ICWS 2020). IEEE, 312–319. DOI: 10.1109/ICWS49710.2020.00047
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **Redis Lua 脚本文档**：https://redis.io/docs/manual/programmability/lua/
@@ -1860,17 +1830,6 @@ redis-cli FCALL queue.pop 1 my_queue
 - **《Redis 设计与实现》**（黄健宏 著）：深入理解 Redis 内部机制，包括 Lua 脚本执行流程。
 - **《Redis 实战》**（Josiah L. Carlson 著）：包含大量 Lua 脚本实战案例。
 - **《数据密集型应用系统设计》**（Martin Kleppmann 著）：分布式系统理论的经典之作，含分布式锁的深度讨论。
-
-### 11.3 社区资源
-
-- **Redis GitHub**：https://github.com/redis/redis
-  源码、issue、PR，跟踪最新进展。
-
-- **Redis 邮件列表**：https://groups.google.com/g/redis-db
-  与开发者交流，获取技术支持。
-
-- **Redis 中文社区**：https://redis.cn/
-  中文文档与讨论。
 
 ### 11.4 进阶主题
 

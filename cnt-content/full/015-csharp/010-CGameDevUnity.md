@@ -679,16 +679,7 @@ public class EnemyAI : MonoBehaviour
 | **物理优化**   | 简化碰撞体、分层                | 减少 CPU 开销  |
 | **Burst 编译** | 数学运算、热路径代码            | 2-10x 加速     |
 
-## 参考文献
-
-Microsoft Learn C# 文档：https://learn.microsoft.com/zh-cn/dotnet/csharp/
-.NET 官方文档：https://learn.microsoft.com/zh-cn/dotnet/
-ASP.NET Core 文档：https://learn.microsoft.com/zh-cn/aspnet/core/
-C# 语言规范：https://learn.microsoft.com/zh-cn/dotnet/csharp/language-reference/
-
 ## 延伸阅读
-
 C# 与 .NET 生态，见 015-csharp 模块基础文档。
 异步编程与 Task，见 015-csharp 模块异步文档。
 SQL 与 EF Core，见 019-sql 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 .NET 课程。

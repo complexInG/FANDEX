@@ -2280,8 +2280,6 @@ _Static_assert(DEBUG == 0 || DEBUG == 1, "DEBUG must be 0 or 1");
 constexpr int DEBUG = 1;  /* C23 constexpr (若支持) */
 ```
 
-### 12.7 学习资源
-
 #### 12.7.1 标准文档
 
 - ISO/IEC 9899:2023(C23 标准)
@@ -2294,13 +2292,6 @@ constexpr int DEBUG = 1;  /* C23 constexpr (若支持) */
 - 《C: A Reference Manual》(Harbison & Steele):预处理器详细参考
 - 《Modern C》(Jens Gustedt):C11 与 C17 的预处理器
 - 《21st Century C》(Ben Klemens):现代 C 实践
-
-#### 12.7.3 在线资源
-
-- GCC 文档:Preprocessor(https://gcc.gnu.org/onlinedocs/cpp/)
-- Clang 文档:Preprocessor(https://clang.llvm.org/docs/)
-- cppreference:https://en.cppreference.com/w/c/preprocessor
-- Linux 内核源码:经典的宏使用案例
 
 #### 12.7.4 实战项目学习
 

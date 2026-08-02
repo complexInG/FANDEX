@@ -1204,8 +1204,6 @@ fun main() {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：以下代码的输出是什么？
@@ -1330,30 +1328,6 @@ html {
 - 每个块都是一个 `Tag.() -> Unit` 类型的 Lambda，`this` 是对应的 Tag 对象
 - 子 DSL 只能调用该 Tag 的方法，编译器保证类型安全
 
-## 参考文献
-
-[1] Breslav, A. 2016. Kotlin 1.0 Released: Pragmatic Language for JVM and Android. JetBrains Blog. https://blog.jetbrains.com/kotlin/2016/02/1-0-released/
-
-[2] Jemerov, D. and Isakova, S. 2017. Kotlin in Action. Manning Publications. ISBN: 978-1617293280
-
-[3] Kotlin Standard Library Documentation. 2024. Scope Functions. https://kotlinlang.org/docs/scope-functions.html
-
-[4] Elizarov, R. 2017. Inline Functions in Kotlin. Kotlin Blog. https://elizarov.medium.com/inline-functions-in-kotlin-5e8b0a1e8c6e
-
-[5] Bloch, J. 2018. Effective Java (3rd Edition). Addison-Wesley Professional. ISBN: 978-0134685991
-
-[6] Skeet, J. 2019. C# in Depth (4th Edition). Manning Publications. ISBN: 978-1617294532
-
-[7] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2018. Passing a language through the eye of a needle. Communications of the ACM 61, 9 (Sep. 2018), 38-45. https://doi.org/10.1145/3230624
-
-[8] Ruby Documentation. 2024. Object#tap. https://ruby-doc.org/core/Object.html#method-i-tap
-
-[9] Groovy Documentation. 2024. with() method. https://docs.groovy-lang.org/latest/html/groovy-jdk/java/lang/Object.html#with(groovy.lang.Closure)
-
-[10] TypeScript Handbook. 2024. Utility Types. https://www.typescriptlang.org/docs/handbook/utility-types.html
-
-## 延伸阅读
-
 ### 官方文档
 
 - **Kotlin Scope Functions**：https://kotlinlang.org/docs/scope-functions.html
@@ -1383,12 +1357,6 @@ html {
 - **Gradle Kotlin DSL**：https://github.com/gradle/kotlin-dsl
   - 构建脚本的 DSL 基于 Kotlin 作用域函数
 
-### 社区资源
-
-- **Kotlin Slack**：#stdlib 频道讨论作用域函数
-- **Marcin Moskala 博客**：https://marcinmoskala.com/
-  - 多篇关于作用域函数选型的深度文章
-- **Kotlin Weekly**：定期推送作用域函数相关文章
 ## let 函数
 
 **基本写法：let 转换对象**

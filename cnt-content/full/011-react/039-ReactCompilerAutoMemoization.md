@@ -1471,65 +1471,6 @@ Shopify Hydrogen 7 在 2025 年集成 Compiler：
 
 ---
 
-## 知识讲解与要点分析（原练习）
-
-### 选择题知识点讲解
-
-**题目 1**：React Compiler 的核心假设是什么？
-
-- A. 组件必须是函数组件
-- B. 组件必须是纯函数
-- C. 组件必须使用 TypeScript
-- D. 组件必须用 React 19
-
-**B. 组件必须是纯函数**
-
-Compiler 假设组件是纯函数：相同的输入（props/state/context）产生相同的输出（JSX）。违反纯函数假设会导致记忆化错误。
-
-**题目 2**：Compiler 生成的代码使用哪个底层 Hook？
-
-- A. `useMemo`
-- B. `useCallback`
-- C. `useMemoCache`
-- D. `useRef`
-
-**C. `useMemoCache`**
-
-`useMemoCache` 是 React 18.3 引入的底层 Hook，比 `useMemo` 更高效。它通过索引访问缓存槽，避免 Hook 调用开销。
-
-**题目 3**：以下哪段代码会触发 Compiler 警告？
-
-- A. `const x = a + b;`
-- B. `setState([...state, item]);`
-- C. `state.push(item);`
-- D. `useEffect(() => {}, [dep]);`
-
-**C. `state.push(item);`**
-
-直接修改 state 违反不可变更新规则。Compiler 会通过 ESLint 插件报告此错误。
-
-**题目 4**：Compiler 与 React.memo 的关系是？
-
-- A. 互斥，只能选一个
-- B. 互补，可以组合使用
-- C. Compiler 取代 React.memo
-- D. React.memo 取代 Compiler
-
-**B. 互补，可以组合使用**
-
-Compiler 在组件**内部**保持值引用稳定，`React.memo` 在组件**外部**（props 层面）进行浅比较。两者结合形成双层记忆化。
-
-**题目 5**：在 Vite 中启用 Compiler，需要配置哪个文件？
-
-- A. `tsconfig.json`
-- B. `package.json`
-- C. `vite.config.ts`
-- D. `.babelrc`
-
-**C. `vite.config.ts`**
-
-在 `vite.config.ts` 的 `react()` 插件配置中添加 `babel.plugins`，包含 `babel-plugin-react-compiler`。
-
 ### 填空题知识点讲解
 
 **题目 1**：React Compiler 原名 ________。
@@ -1761,72 +1702,6 @@ console.log(`P95 渲染时间: ${result1.p95RenderTime.toFixed(3)}ms → ${resul
 console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / result1.avgRenderTime * 100).toFixed(2)}%`);
 ```
 
-### 9.4 思考题
-
-**题目 1**：为什么 React Compiler 选择在编译期优化，而非运行时自动追踪依赖（如 Solid.js）？这种选择带来了哪些优势与劣势？
-
-**优势**：
-1. **零运行时开销**：编译期完成分析，运行时无需依赖追踪
-2. **保持心智模型**：React 的"重新渲染"模型不变，开发者无需学习新概念
-3. **生态兼容**：现有 React 库无需改造即可受益（部分场景）
-4. **可调试性**：编译输出是普通 JavaScript，易于调试
-
-**劣势**：
-1. **优化粒度粗**：编译期分析无法捕捉运行时才知道的信息
-2. **纯函数约束**：要求代码遵守 Rules of React，对老代码不友好
-3. **第三方库限制**：未启用 Compiler 的库无法被优化
-4. **构建时间增加**：编译期分析增加构建耗时
-
-**设计权衡**：React 团队选择编译期是为了保持向后兼容与心智模型一致性，代价是优化效果略逊于 Solid.js 的运行时细粒度响应式。
-
-**题目 2**：在什么场景下应该启用 Compiler，什么场景下应该暂缓？请给出至少 3 个判断维度。
-
-**适合启用的场景**：
-1. **新项目**：从一开始就遵守 Rules of React，无历史包袱
-2. **中型以上项目**：手动 memo 维护成本高，Compiler 收益明显
-3. **团队 React 经验丰富**：能理解 Compiler 的输出与限制
-4. **使用 React 18.3+**：运行时支持 useMemoCache
-
-**暂缓启用的场景**：
-1. **遗留项目**：大量违反 Rules of React 的代码，迁移成本高
-2. **强依赖第三方库**：第三方库未启用 Compiler，收益有限
-3. **Class Component 为主**：Compiler 只优化函数组件
-4. **React 版本低于 18.3**：运行时不支持 useMemoCache
-
-**判断维度**：
-- 代码库的 Rules of React 合规率
-- React 版本与运行时支持
-- 团队对 Compiler 的理解程度
-- 第三方库的兼容性
-
-**题目 3**：Compiler 自动记忆化后，`useMemo`/`useCallback` 是否完全无用？请说明保留它们的场景。
-
-**Compiler 不完全取代 useMemo/useCallback**，以下场景仍需保留：
-
-1. **第三方库调用**：Compiler 无法优化未启用的库内部代码
-   ```tsx
-   const formatted = useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
-   ```
-
-2. **昂贵的同步计算**：明确需要避免重复计算
-   ```tsx
-   const parsed = useMemo(() => parseLargeXML(xmlString), [xmlString]);
-   ```
-
-3. **与外部系统的引用契约**：需要保证引用稳定的场景
-   ```tsx
-   const config = useMemo(() => ({ url, timeout }), [url, timeout]);
-   useEffect(() => { connect(config); }, [config]);
-   ```
-
-4. **向后兼容**：库开发者为未启用 Compiler 的用户提供优化
-
-**原则**：启用 Compiler 后，移除大部分 `useMemo`/`useCallback`，只在必要时保留，并通过性能基准测试验证决策。
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档与 RFC
 
 1. Meta Platforms Inc. *React Compiler*. React Documentation, 2024. https://react.dev/learn/react-compiler
@@ -1859,8 +1734,6 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Abramov, D., and Clark, A. *React 19 实战手册*. 人民邮电出版社, 2025.
@@ -1875,14 +1748,6 @@ console.log(`性能提升: ${((result1.avgRenderTime - result2.avgRenderTime) / 
 - *Migrating to React Compiler: Lessons Learned* — Meta Engineering Blog
 - *React Compiler vs Solid.js: A Technical Comparison* — CSS-Tricks
 - *Understanding useMemoCache* — Bytecode Attack Blog
-
-### 11.3 在线资源
-
-- React Compiler 官方文档: https://react.dev/learn/react-compiler
-- React Compiler Playground: https://playground.react.dev
-- babel-plugin-react-compiler GitHub: https://github.com/facebook/react/tree/main/compiler
-- ESLint Plugin React Compiler: https://www.npmjs.com/package/eslint-plugin-react-compiler
-- React Compiler 讨论: https://github.com/facebook/react/discussions
 
 ### 11.4 开源项目
 

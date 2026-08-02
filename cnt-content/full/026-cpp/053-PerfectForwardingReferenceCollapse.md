@@ -53,26 +53,6 @@ C++11 通过三个核心机制联合解决：
 
 这一组合使"零开销转发任意参数"成为可能，是现代 C++ 工程的基础设施。
 
-### 1.3 关键提案与文献
-
-| 提案 | 作者 | 年份 | 内容 |
-| :--- | :--- | :--- | :--- |
-| N1377 | H.-J. Nelson | 2002 | *A Proposal to Add Move Semantics Support to the C++ Language* |
-| N1385 | M. Ellis, B. Stroustrup | 2002 | *A Fix for Rvalue References*，奠定 `T&&` 语法 |
-| N1610 | H. Hinnant | 2004 | *A Proposal to Add an Rvalue Reference to the C++ Language* |
-| N1690 | N. Narodytska | 2004 | *Extending move semantics to \*this* |
-| N1858 | H. Hinnant, B. Stroustrup, B. Kozicki | 2005 | *A Brief Introduction to Rvalue References* |
-| N2035 | D. Abrahams | 2006 | *Move Semantics and Rvalue References in C++* |
-| N2342 | D. Gregor | 2007 | *Variadic Templates*（可变参数模板） |
-| N2555 | D. Gregor | 2008 | *Variadic Templates (Revision 5)* |
-| N3141 | H. Hinnant | 2010 | *A Proposal to Add a Deleter to std::forward* |
-| N3471 | W. E. Brown | 2012 | *Making std::forward constexpr noexcept* |
-| P0220 | J. Park | 2016 | *C++ Standard Library Extensions* |
-| P0780 | A. Kosiński | 2017 | *Pack expansion in lambda init-capture* |
-| P0735 | L. Dionne | 2017 | *Mandating the Standard Library: Clause 20 — Utilities* |
-| P0769 | B. Revzin | 2017 | *Implicit lambda capture of \*this* |
-| P0641 | R. Smith | 2017 | *Resolving const qualifier drop in aliasing rules* |
-
 ### 1.4 C++14/17/20/23 演进
 
 | 标准 | 关键变化 | 影响 |
@@ -1766,8 +1746,6 @@ auto curried = curry(add3);
 std::cout << curried(1)(2)(3) << "\n";  // 6
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（Remember / Understand）
 
 **习题 1**：以下哪些是转发引用？
@@ -1956,56 +1934,6 @@ tuple_for_each([](auto&& x) {
 }, t);
 ```
 
-## 10. 参考文献
-
-[1] Stroustrup, B. 1985. *An Overview of C++*. SIGPLAN Notices 20(6): 47-64. DOI: 10.1145/17919.17922.
-
-[2] ISO/IEC 14882:2011. *Programming languages — C++*. International Organization for Standardization.
-
-[3] ISO/IEC 14882:2023. *Programming languages — C++*. International Organization for Standardization.
-
-[4] Stroustrup, B. 2013. *The C++ Programming Language* (4th ed.). Addison-Wesley. ISBN: 978-0321563842.
-
-[5] Meyers, S. 2014. *Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14*. O'Reilly Media. ISBN: 978-1491903995.
-
-[6] Vandevoorde, D., Josuttis, N. M., and Gregor, D. 2017. *C++ Templates: The Complete Guide* (2nd ed.). Addison-Wesley. ISBN: 978-0321714121.
-
-[7] Sutter, H. and Alexandrescu, A. 2004. *C++ Coding Standards: 101 Rules, Guidelines, and Best Practices*. Addison-Wesley. ISBN: 978-0321113580.
-
-[8] N1377, Nelson, H.-J. 2002. *A Proposal to Add Move Semantics Support to the C++ Language*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N1377>.
-
-[9] N1385, Ellis, M. and Stroustrup, B. 2002. *A Fix for Rvalue References*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N1385>.
-
-[10] N1610, Hinnant, H. 2004. *A Proposal to Add an Rvalue Reference to the C++ Language*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N1610>.
-
-[11] N1858, Hinnant, H., Stroustrup, B., and Kozicki, B. 2005. *A Brief Introduction to Rvalue References*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N1858>.
-
-[12] N2035, Abrahams, D. 2006. *Move Semantics and Rvalue References in C++*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N2035>.
-
-[13] N2342, Gregor, D. 2007. *Variadic Templates*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N2342>.
-
-[14] N2555, Gregor, D. 2008. *Variadic Templates (Revision 5)*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/N2555>.
-
-[15] P0780, Kosiński, A. 2017. *Pack expansion in lambda init-capture*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/P0780>.
-
-[16] P0220, Park, J. 2016. *C++ Standard Library Extensions*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/P0220>.
-
-[17] P0641, Smith, R. 2017. *Resolving const qualifier drop in aliasing rules*. ISO/IEC JTC1/SC22/WG21. Available: <https://wg21.link/P0641>.
-
-[18] Becker, P. 2011. *The C++ Standard Library Extensions: A Tutorial and Reference*. Addison-Wesley. ISBN: 978-0321410993.
-
-[19] Josuttis, N. M. 2012. *The C++ Standard Library: A Tutorial and Reference* (2nd ed.). Addison-Wesley. ISBN: 978-0321623218.
-
-[20] Stroustrup, B. and Sutter, H. (eds.) 2021. *C++ Core Guidelines*. Available: <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>.
-
-[21] Stroustrup, B. 2020. *C++20 — Reaching for the Aims of C++*. Keynote at CppCon 2020. Available: <https://www.youtube.com/watch?v=25r8gZEwYXc>.
-
-[22] Sutter, H. 2014. *Back to the Basics! Essentials of Modern C++ Style*. CppCon 2014.
-
-[23] Meyers, S. 2014. *Move Semantics, auto, and Smart Pointers*. CppCon 2014.
-
-## 11. 延伸阅读
-
 ### 11.1 标准文献
 
 - ISO/IEC 14882:2023 §9.4.3 *References*：引用的标准化定义。
@@ -2022,18 +1950,6 @@ tuple_for_each([](auto&& x) {
 - *The C++ Programming Language* (4th ed.) by Stroustrup, §11-12（模板）。
 - *C++ Coding Standards* by Sutter & Alexandrescu, Items 90-94（参数传递、转发）。
 - *Exceptional C++* by Sutter, Items 16-18（编译期引用安全）。
-
-### 11.3 在线资源
-
-- cppreference.com: *Reference declaration* <https://en.cppreference.com/w/cpp/language/reference>
-- cppreference.com: *std::forward* <https://en.cppreference.com/w/cpp/utility/forward>
-- cppreference.com: *std::move* <https://en.cppreference.com/w/cpp/utility/move>
-- cppreference.com: *std::index_sequence* <https://en.cppreference.com/w/cpp/utility/integer_sequence>
-- cppreference.com: *std::apply* <https://en.cppreference.com/w/cpp/utility/apply>
-- cppreference.com: *Fold expressions* <https://en.cppreference.com/w/cpp/language/fold>
-- cppreference.com: *Variadic templates* <https://en.cppreference.com/w/cpp/language/parameter_pack>
-- ISO C++ FAQ: *References* <https://isocpp.org/wiki/faq/references>
-- C++ Core Guidelines: *T.43: Prefer using nullptr over NULL or 0* <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>
 
 ### 11.4 视频与课程
 

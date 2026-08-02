@@ -411,49 +411,6 @@ Java 是一种强类型语言，数据类型分为两大类：
  }
 ```
 
-### 7.3 示例 3：类型转换练习
-
-```java
- public class TypeConversionDemo {
-  public static void main(String[] args) {
-  // 自动类型转换
-  byte b = 10;
-  short s = b;
-  int i = s;
-  long l = i;
-  float f = l;
-  double d = f;
-  System.out.println("自动类型转换:");
-  System.out.println("byte: " + b);
-  System.out.println("short: " + s);
-  System.out.println("int: " + i);
-  System.out.println("long: " + l);
-  System.out.println("float: " + f);
-  System.out.println("double: " + d);
-  // 强制类型转换
-  double pi = 3.14159;
-  int piInt = (int) pi;
-  System.out.println("\n强制类型转换:");
-  System.out.println("double pi: " + pi);
-  System.out.println("int pi: " + piInt);
-  // 字符串转换
-  String str = "12345";
-  int strToInt = Integer.parseInt(str);
-  System.out.println("\n字符串转换:");
-  System.out.println("String: " + str);
-  System.out.println("int: " + strToInt);
-  // 装箱和拆箱
-  Integer iObj = 100;
-  int iUnboxed = iObj;
-  System.out.println("\n装箱和拆箱:");
-  System.out.println("Integer: " + iObj);
-  System.out.println("int: " + iUnboxed);
-  }
- }
-```
-
----
-
 ## 整数类型
 
 **基本写法：byte 类型**
@@ -782,19 +739,8 @@ BigDecimal bd2 = new BigDecimal("0.2");
 BigDecimal sum = bd1.add(bd2);
 ```
 
-## 参考文献
-
-Oracle Java 官方文档：https://docs.oracle.com/en/java/
-OpenJDK 项目：https://openjdk.org/
-Java 语言规范：https://docs.oracle.com/javase/specs/
-Spring 官方文档：https://spring.io/projects/spring-boot
-Baeldung 教程站：https://www.baeldung.com/
-Maven 官方文档：https://maven.apache.org/guides/
-
 ## 延伸阅读
-
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
 Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
 数据库访问（JDBC/JPA），见 019-sql 模块相关文档。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Java 全栈课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Java 进阶课程。

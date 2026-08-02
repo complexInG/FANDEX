@@ -2684,8 +2684,6 @@ class atomic_shared_ptr {
 | libstdc++ | `std::shared_ptr`                        | 标准实现                 |
 | libc++    | `std::shared_ptr`                        | 标准实现                 |
 
-## 第 13 章 习题与解答
-
 ### 填空题知识点讲解
 
 **习题 1**（remember，难度 1）：`std::unique_ptr` 的复制构造函数被声明为 ____（C++ 关键字），因此它是 move-only 类型。
@@ -2705,41 +2703,6 @@ class atomic_shared_ptr {
 **解析讲解**：控制块（control block）
 
 **解析讲解**：shared_ptr 的两级回收机制：strong count 归零时调用析构函数释放托管对象；weak count 也归零时才释放控制块本身。这是 `weak_ptr::lock` 必须原子读取 strong count 的根本原因。
-
-### 选择题知识点讲解
-
-**习题 4**（understand，难度 2）：关于 `std::make_shared` 与直接 `std::shared_ptr<T>(new T)` 的对比，下列哪项正确？
-
-- A. 两者都进行两次堆分配
-- B. `make_shared` 进行一次堆分配，将对象与控制块放在同一块内存
-- C. 两者性能完全相同
-- D. `make_shared` 不构造控制块
-
-**解析讲解**：B
-
-**解析讲解**：`make_shared` 将对象本体与控制块合并为单次堆分配，提升缓存局部性并减少分配次数。直接构造方式先 `new` 分配对象、再在 `shared_ptr` 构造内部分配控制块，共两次堆分配。
-
-**习题 5**（analyze，难度 3）：以下关于 `std::weak_ptr::lock()` 的描述，哪项正确？
-
-- A. `lock()` 会增加 strong count
-- B. `lock()` 返回 `shared_ptr`，若对象已析构则返回空的 `shared_ptr`
-- C. `lock()` 是非原子操作，多线程下不安全
-- D. `lock()` 等价于 `expired()`
-
-**解析讲解**：B
-
-**解析讲解**：`lock()` 原子地执行"检查 strong count 是否为 0 + 若不为 0 则 +1"的复合操作，避免 TOCTOU 竞态。返回一个新的 `shared_ptr`；若 strong count 已为 0（对象已析构）则返回空 `shared_ptr`。
-
-**习题 6**（evaluate，难度 4）：某类继承 `std::enable_shared_from_this<T>`，在其构造函数中调用 `shared_from_this()` 会发生什么？
-
-- A. 返回空的 `shared_ptr`
-- B. 返回指向 this 的 `shared_ptr`
-- C. 抛出 `std::bad_weak_ptr` 异常
-- D. 编译错误
-
-**解析讲解**：C
-
-**解析讲解**：`enable_shared_from_this` 内部持有一个 `weak_ptr`，仅在 `shared_ptr` 首次构造该对象时被初始化。构造函数执行期间尚未被 `shared_ptr` 管理，`weak_ptr` 为空，`shared_from_this` 调用 `weak_ptr::lock` 抛出 `std::bad_weak_ptr`。
 
 ### 13.3 代码修正题
 
@@ -2922,32 +2885,6 @@ let w = Arc::downgrade(&p);           // 弱引用 +1
 
 **设计哲学差异**：C++ 信任程序员，`shared_ptr` 可绕过类型系统（裸指针构造、custom deleter）但易错；Rust 将所有权提升为类型系统规则，`Arc<T>` 必须通过 `Arc::clone` 共享，避免 double-free。Rust 鼓励生命周期静态分析为主、`Arc<T>` 为辅，C++ 则将 `shared_ptr` 作为通用动态所有权方案。
 
-## 第 14 章 参考文献
-
-本章参考文献遵循 ACM Reference Format，同时在 frontmatter `references` 字段中以结构化形式存储。
-
-1. ISO/IEC. 2023. _ISO/IEC 14882:2023. Information technology — Programming languages — C++_ (8th ed.). Geneva: ISO. §7.2.2 (Compound types), §20.11 (Smart pointers), §20.11.2 (Class template unique_ptr), §20.11.3 (Class template shared_ptr), §20.11.4 (Class template weak_ptr).
-
-2. Stroustrup, B. 2013. _The C++ Programming Language_ (4th ed.). Addison-Wesley Professional. ISBN 978-0321563842. Chapter 5 (Pointers, Arrays, References), Chapter 34 (Smart Pointers).
-
-3. Meyers, S. 2015. _Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14_ (1st ed.). O'Reilly Media. ISBN 978-1491903995. Items 18-22 (Smart pointers).
-
-4. Sutter, H. and Alexandrescu, A. 2004. _C++ Coding Standards: 101 Rules, Guidelines, and Best Practices_. Addison-Wesley Professional. ISBN 978-0321113580. Items 13, 49-55 (Resource management).
-
-5. Alexandrescu, A. 2001. _Modern C++ Design: Generic Programming and Design Patterns Applied_. Addison-Wesley Professional. ISBN 978-0201704310. Chapter 7 (Smart Pointers).
-
-6. Williams, A. 2019. _C++ Concurrency in Action_ (2nd ed.). Manning Publications. ISBN 978-1617294693. Chapter 7 (Lock-free data structures with atomic shared_ptr).
-
-7. cppreference.com. 2024. _Smart pointers — cppreference.com_. https://en.cppreference.com/w/cpp/memory (accessed December 1, 2024).
-
-8. Sutter, H. 2013. _GotW #89 Solution: Smart Pointers_. https://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/ (accessed December 1, 2024).
-
-9. C++ Core Guidelines Contributors. 2024. _C++ Core Guidelines — Resource Management (R-series)_. https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines (accessed December 1, 2024).
-
-10. ISO/IEC WG21. 2014. _N4089 — Deleting safe_bool in favor of explicit bool_. ISO C++ Committee.
-
-## 第 15 章 延伸阅读
-
 ### 15.1 关联模块
 
 - [cpp/指针](cpp/指针)：裸指针的内存模型与算术运算（基础）
@@ -2976,14 +2913,6 @@ let w = Arc::downgrade(&p);           // 弱引用 +1
 - **Alexandrescu, Andrei. 2001. _Modern C++ Design_** — Chapter 7 Smart Pointers，Loki 库的策略化智能指针设计，影响 Boost 与标准库。
 - **Williams, Anthony. 2019. _C++ Concurrency in Action_** (2nd ed.) — Chapter 7 论述 `std::atomic<std::shared_ptr>` 与无锁数据结构。
 - **Stroustrup, Bjarne. 2013. _The C++ Programming Language_** (4th ed.) — Chapter 34 Smart Pointers，由语言设计者亲自阐述设计动机。
-
-#### 15.2.3 在线资源
-
-- **cppreference**：[en.cppreference.com/w/cpp/memory](https://en.cppreference.com/w/cpp/memory) — 最权威的 C++ 标准库参考，含 `unique_ptr`、`shared_ptr`、`weak_ptr`、`make_unique`、`make_shared`、`allocate_shared`、`enable_shared_from_this`、`static_pointer_cast`、`dynamic_pointer_cast`、`const_pointer_cast`、`reinterpret_pointer_cast` 的完整 API 与示例。
-- **Herb Sutter's Blog**：[herbsutter.com](https://herbsutter.com/) — GotW 系列对智能指针的深度分析，特别是 GotW #89 与 GotW #103。
-- **ISO C++ Foundation**：[isocpp.org](https://isocpp.org/) — 官方推荐的最佳实践与教学资源。
-- **LLVM libc++ 文档**：[libcxx.llvm.org](https://libcxx.llvm.org/) — LLVM 对智能指针的实现细节与 ABI 稳定性保证。
-- **MSVC STL 文档**：[github.com/microsoft/STL](https://github.com/microsoft/STL) — 微软 STL 实现的源码与设计文档，含 Windows 平台特定的优化。
 
 #### 15.2.4 开源项目源码研读
 
@@ -3063,4 +2992,3 @@ let w = Arc::downgrade(&p);           // 弱引用 +1
 - LLVM、Chromium、Qt、Boost、Folly 等开源项目的工程实践
 - Scott Meyers、Herb Sutter、Bjarne Stroustrup、Andrei Alexandrescu 等专家的著作与演讲
 - MIT 6.001、Stanford CS106L、CMU 15-410 等顶尖课程的教学范式
-

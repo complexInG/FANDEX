@@ -1764,8 +1764,6 @@ export class NewsRepository {
 2. **缓存过期策略要灵活**：新闻列表可接受 5 分钟过期，但用户收藏必须立即生效
 3. **后台刷新要节流**：避免短时间内多次刷新同一资源
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：解释 HTTP 状态码 200、201、204、301、304、400、401、403、404、500、502、503 的含义。
@@ -1829,34 +1827,6 @@ const response = await httpRequest.request(url, {
 **习题 6**：论述 HTTP/3 的 QUIC 协议如何解决 TCP 队头阻塞问题。
 
 **参考答案要点**：TCP 是字节流协议，一个包丢失会阻塞整个流；QUIC 在 UDP 之上实现多流（Multi-Stream），每个流独立有序，一个流的丢包不影响其他流。此外 QUIC 支持连接迁移（基于 Connection ID 而非四元组），切换网络（如 WiFi→蜂窝）无需重新握手。
-
-## 参考文献
-
-[1] Fielding, R., Reschke, J. 2014. *Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content*. RFC 7231, IETF. DOI: https://doi.org/10.17487/RFC7231
-
-[2] Belshe, M., Peon, R., Thomson, M. 2015. *Hypertext Transfer Protocol Version 2 (HTTP/2)*. RFC 7540, IETF. DOI: https://doi.org/10.17487/RFC7540
-
-[3] Bishop, M. 2022. *HTTP/3*. RFC 9114, IETF. DOI: https://doi.org/10.17487/RFC9114
-
-[4] Rescorla, E. 2018. *The Transport Layer Security (TLS) Protocol Version 1.3*. RFC 8446, IETF. DOI: https://doi.org/10.17487/RFC8446
-
-[5] Fette, I., Melnikov, A. 2011. *The WebSocket Protocol*. RFC 6455, IETF. DOI: https://doi.org/10.17487/RFC6455
-
-[6] Fielding, R. T. 2000. *Architectural Styles and the Design of Network-based Software Architectures*. Ph.D. Dissertation. University of California, Irvine, CA, USA.
-
-[7] Breslau, L., Cao, P., Fan, L., Phillips, G., and Shenker, S. 1999. *Web Caching and Zipf-like Distributions: Evidence and Implications*. In *Proceedings of IEEE INFOCOM '99*. IEEE, 126–134. DOI: https://doi.org/10.1109/INFCOM.1999.749260
-
-[8] Krishnan, R. and Madhyastha, H. V. 2009. *Moving Beyond End-to-End Paths in the Internet*. In *Proceedings of the 9th ACM SIGCOMM Workshop on Hot Topics in Networks (Hotnets-IX)*. ACM, New York, NY, USA. DOI: https://doi.org/10.1145/1868450.1868462
-
-[9] Ha, S. and Rhee, I. 2011. *Taming the Elephants: New TCP Slow Start*. Computer Networks 55, 9 (June 2011), 2099–2115. DOI: https://doi.org/10.1016/j.comnet.2011.01.014
-
-[10] Cardwell, N., Cheng, Y., Gunn, C. S., Yeganeh, S. H., and Jacobson, V. 2017. *BBR: Congestion-Based Congestion Control*. Communications of the ACM 60, 2 (Jan. 2017), 35–44. DOI: https://doi.org/10.1145/3009824
-
-[11] Gilbert, S. and Lynch, N. 2002. *Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services*. ACM SIGACT News 33, 2 (June 2002), 51–59. DOI: https://doi.org/10.1145/564585.564601
-
-[12] Nielsen, J. 1995. *Response Times: The Three Important Limits*. Usability Engineering. Morgan Kaufmann, San Francisco, CA, USA.
-
-## 延伸阅读
 
 ### 官方文档
 
@@ -2442,4 +2412,3 @@ ws.on('error', (err) => {
   console.error(`WebSocket 错误: ${JSON.stringify(err)}`);
 });
 ```
-

@@ -851,43 +851,6 @@ const selectCount = (state) => state.counter.count;
 
 ---
 
-## 9. 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个表达式返回 `true`？
-
-A. `{a:1} === {a:1}`
-B. `Object.freeze({a:1}) === Object.freeze({a:1})`
-C. `#{a:1} === #{a:1}`
-D. `Immutable.Map({a:1}) === Immutable.Map({a:1})`
-
-**答案：C**
-
-Record/Tuple 使用值语义比较，相同内容即相等。A、B 都是普通对象，引用不同。D 中 Immutable.js 仍使用引用比较，需调用 `.equals()`。
-
-**题目 2**：以下哪段代码会抛出 `TypeError`？
-
-A. `const r = #{ a: 1 }; r.a = 2;`
-B. `const t = #[1, 2]; t.push(3);`
-C. `const r = #{ arr: [1, 2] };`
-D. 以上都是
-
-**答案：D**
-
-A：Record 不可修改，会抛 TypeError。B：Tuple 没有 push 方法，会抛 TypeError。C：Record 不能包含可变数组，会抛 TypeError。
-
-**题目 3**：使用 `Tuple.from([1, {a:1}])` 会发生什么？
-
-A. 返回 `#[1, {a:1}]`
-B. 抛出 TypeError，因为对象不能放入 Tuple
-C. 自动将 `{a:1}` 转为 `#{a:1}`
-D. 返回 `#[1, #[‘a’, 1]]`
-
-**答案：B**
-
-Tuple 的值域与 Record 相同，不能包含可变对象。若需放入，必须显式转换：`Tuple.from([1, Record({a:1})])`。
-
 ### 填空题知识点讲解
 
 **题目 4**：Record 的键只能是 ______ 或 ______。
@@ -991,30 +954,6 @@ console.log(lru.get(#[1, 'a']));  // undefined（已驱逐）
 console.log(lru.get(#[2, 'b']));  // 'second'
 ```
 
-### 9.4 思考题
-
-**题目 9**：为什么 Record/Tuple 不允许包含函数？这对函数式编程有何影响？如何绕过这一限制？
-
-1. **原因**：函数是引用类型，包含闭包与环境引用。若允许放入 Record，则 Record 的值语义无法保证——相同源代码的两个函数引用不同环境，无法判定相等。
-2. **影响**：无法在 Record 中直接存储事件处理器、策略对象等函数式常见模式。
-3. **绕过**：
-   - 使用 Symbol 作为键，外部 Map 存储实际函数
-   - 用字符串名 + 查找表（如 Flux 标准的 action type）
-   - 用 `Tuple` 存储参数，外部 `apply` 函数
-
-**题目 10**：假设 Record/Tuple 进入 ES2026 标准，React 是否会完全移除 `React.memo` 的 `areEqual` 参数？为什么？
-
-1. **不会完全移除**，但默认行为会变好。
-2. **原因**：
-   - 仍需 `React.memo` 来跳过重渲染（默认浅比较仍是 `Object.is`）
-   - 但若 props 全部为 Record/Tuple，浅比较即等价于深比较，无需自定义 `areEqual`
-   - 混合 props（含函数、可变对象）时仍需自定义比较
-3. **演进方向**：React Forget 编译器可自动将状态转为 Record，使绝大多数 `areEqual` 变得冗余。
-
----
-
-## 10. 参考文献
-
 ### 10.1 规范与提案
 
 - TC39 Proposal: Records & Tuples [Online]. Available: https://github.com/tc39/proposal-record-tuple
@@ -1046,8 +985,6 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **Okasaki, C.** *Purely Functional Data Structures*. Cambridge University Press, 1999. — 持久化数据结构的奠基之作，理解 Record/Tuple 性能权衡的理论基础。
@@ -1061,20 +998,6 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 - **Baker, H. G.** "USE-LIVE Variable Analysis". *SIGPLAN Notices*, 1995. — 关于引用语义与值语义在 GC 中的影响。
 
 - **Appel, A. W.** "A Profiling Method for Automatic Cycle Removal in Purely Functional Collections". *Journal of Functional Programming*, 1994.
-
-### 11.3 在线资源
-
-- **TC39 提案仓库**：https://github.com/tc39/proposal-record-tuple — 提案最新进展、规范文本、会议记录。
-
-- **Bloomberg Polyfill**：https://github.com/bloomberg/record-tuple-polyfill — 生产可用 polyfill。
-
-- **V8 实现笔记**：https://v8.dev/blog/records-tuples — V8 团队的工程实践分享。
-
-- **MDN Web Docs**（草案）：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Record — MDN 文档（提案阶段可能未上线）。
-
-- **Immutable.js 文档**：https://immutable-js.com/ — 对比理解持久化数据结构。
-
-- **Immer 文档**：https://immerjs.github.io/immer/ — 对比理解写时复制。
 
 ### 11.4 相关 FANDEX 文档
 
@@ -1151,18 +1074,8 @@ new Set().add(#[1,2]).has(#[1,2]);        // true
 
 *本文档基于 TC39 Stage 2 提案撰写，最终标准可能调整。生产环境使用前请查阅最新规范。*
 
-## 参考文献
-
-MDN JavaScript 文档：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
-ECMAScript 规范：https://tc39.es/ecma262/
-Node.js 官方文档：https://nodejs.org/docs/latest/api/
-JavaScript 秘密花园：https://bonsaiden.github.io/JavaScript-Garden/
-Can I use：https://caniuse.com/
-
 ## 延伸阅读
-
 JavaScript 基础语法，见 008-javascript 模块文档。
 TypeScript 类型系统，见 009-typescript 模块。
 浏览器 DOM 与事件，见 006-html5/007-css 模块。
 前端框架 React/Vue，见 011-react/010-vue3 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 JavaScript 课程。

@@ -816,8 +816,6 @@ java -XX:+UseZGC -XX:+ZGenerational \
 
 **效果**：Major GC 频率降至每 4 小时一次，吞吐损失 5%。
 
-## 知识讲解与要点分析（原习题）
-
 ### 选择题
 
 **1. JDK 21 分代 ZGC 通过哪个参数启用？**
@@ -982,48 +980,6 @@ public final class ZgcStatsCollector {
 }
 ```
 
-## 知识讲解与要点分析（原思考题）
-
-**1.** 为什么 ZGC 选择 load barrier 而非 write barrier？这种设计有何优劣？
-
-**参考答案**：ZGC 的核心挑战是并发转移——对象在应用线程访问时可能正在被转移。Load barrier 在每次加载引用时检查颜色并按需转发，保证应用线程始终访问最新地址。优势：转移可与应用并发进行，停顿与堆大小解耦。劣势：load barrier 开销较高（约 5–10% 吞吐损失），因为读操作远多于写。Shenandoah 选择 Brooks pointer（每对象额外指针），开销更均匀但 footprint 更高。ZGC 的设计在低延迟场景下更优，因为读屏障可由 JIT 优化（如比较颜色后快速路径）。
-
-**2.** 分代 ZGC 引入 remembered set 后，是否会重新引入类似 G1 的写屏障开销？
-
-**参考答案**：是，但开销更低。分代 ZGC 的 remembered set 仅在 old → young 跨代写时触发，且采用 card-and-table 混合结构，写屏障仅为简单的位标记。相比 G1 的 SATB + 卡表双屏障，分代 ZGC 的写屏障更轻量。实测显示，分代 ZGC 的总屏障开销（读 + 写）仍低于非分代 ZGC 的纯读屏障，因为新生代回收频率高但范围小，总扫描成本下降。
-
-**3.** 假设你管理一个 32GB 堆、P99 < 5ms 的服务，目前使用 G1，P99 实测 80ms。如何评估是否迁移到分代 ZGC？
-
-**参考答案**：(1) 确认 JDK 版本 ≥ 21；(2) 在预发环境部署分代 ZGC，使用相同负载跑 1 小时；(3) 通过 JFR 采集 P50/P99/P99.9 停顿、分配停顿、吞吐量、footprint；(4) 若 P99 < 5ms 且吞吐损失 < 10%，则迁移；(5) 灰度发布：5% → 25% → 100%，每阶段观察 24 小时；(6) 关注分配停顿 `jdk.ZAllocationStall`，若 P99 > 10ms 需调参（SoftMaxHeapSize、ZAllocationSpikeTolerance）；(7) 准备回滚方案（G1 配置保留）。
-
-## 参考文献
-
-[1] Yang, X., et al. 2018. The Z Garbage Collector. OpenJDK JEP 377. Available at: https://openjdk.org/jeps/377
-
-[2] Yang, X., et al. 2023. Generational ZGC. OpenJDK JEP 439. Available at: https://openjdk.org/jeps/439
-
-[3] Click, C. 2005. Azul pauseless GC. In *Companion to the 20th Annual ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '05)*. ACM, New York, NY, USA, 282–283. DOI: https://doi.org/10.1145/1094855.1094917
-
-[4] Detlefs, D., Flood, C., Heller, S., and Printezis, T. 2004. Garbage-first garbage collection. In *Proceedings of the 4th international symposium on Memory management (ISMM '04)*. ACM, New York, NY, USA, 37–48. DOI: https://doi.org/10.1145/1029873.1029879
-
-[5] Flood, C., et al. 2023. Shenandoah: The garbage collector that could. In *Companion to the 28th ACM SIGPLAN Annual Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '23 Companion)*. ACM, New York, NY, USA, 1–2. DOI: https://doi.org/10.1145/3622780.3622781
-
-[6] Dijkstra, E. W., Lamport, L., Martin, A. J., Scholten, C. S., and Steffens, E. F. M. 1978. On-the-fly garbage collection: An exercise in cooperation. *Communications of the ACM* 21, 11 (Nov. 1978), 966–975. DOI: https://doi.org/10.1145/359642.359655
-
-[7] Lieberman, H. and Hewitt, C. 1983. A real-time garbage collector based on the lifetimes of objects. *Communications of the ACM* 26, 6 (June 1983), 419–429. DOI: https://doi.org/10.1145/358141.358147
-
-[8] Appel, A. W. 1989. Simple generational garbage collection and fast allocation. *Software: Practice and Experience* 19, 2, 171–183. DOI: https://doi.org/10.1002/spe.4380190206
-
-[9] Jones, R., Hosking, A., and Moss, E. 2011. *The Garbage Collection Handbook: The Art of Automatic Memory Management* (2nd ed.). Chapman & Hall/CRC, Boca Raton, FL, USA.
-
-[10] Oracle Corporation. 2023. *The Java Virtual Machine Specification, Java SE 21 Edition*. Oracle, Redwood City, CA, USA.
-
-[11] Yang, X., Blackburn, S. M., McKinley, K. S., and Frampton, D. 2017. Barriers: friend or foe? In *Proceedings of the 2017 ACM SIGPLAN International Symposium on Memory Management (ISMM 2017)*. ACM, New York, NY, USA, 24–36. DOI: https://doi.org/10.1145/3080207.3080217
-
-[12] Bacon, D. F., Cheng, P., and Rajan, V. T. 2004. A unified theory of garbage collection. In *Proceedings of the 19th Annual ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '04)*. ACM, New York, NY, USA, 50–68. DOI: https://doi.org/10.1145/1028976.1028982
-
-## 延伸阅读
-
 ### 书籍
 
 - **Jones, R., Hosking, A., and Moss, E.** *The Garbage Collection Handbook* (2nd ed.). CRC Press, 2011. — GC 算法百科全书，涵盖 ZGC 理论基础。
@@ -1035,17 +991,6 @@ public final class ZgcStatsCollector {
 - **Baker, H. G.** *List Processing in Real Time on a Serial Computer*. CACM, 1978. — 增量复制 GC 奠基论文。
 - **Wilson, P. R.** *Uniprocessor Garbage Collection Techniques*. IWMM, 1992. — 经典综述。
 - **Printezis, T. and Detlefs, D.** *A Generational Mostly-concurrent Garbage Collector*. ISMM, 2000. — CMS 设计论文，分代 ZGC 的灵感来源。
-
-### 在线资源
-
-- **JEP 439: Generational ZGC**：https://openjdk.org/jeps/439
-- **JEP 377: ZGC: A Scalable Low-Latency Garbage Collector**：https://openjdk.org/jeps/377
-- **ZGC Documentation (Oracle)**：https://docs.oracle.com/en/java/javase/21/gctuning/z-garbage-collector.html
-- **ZGC 源码（OpenJDK）**：https://github.com/openjdk/jdk/tree/master/src/hotspot/share/gc/z
-- **JDK Mission Control**：https://github.com/openjdk/jmc
-- **zgc-stat 在线工具**：https://chriswhocodes.com/zgc-stat/
-- **GCEasy**：https://gceasy.io
-- **Hacker News: ZGC Discussion**：https://news.ycombinator.com/item?id=37575555
 
 ### 相关课程
 

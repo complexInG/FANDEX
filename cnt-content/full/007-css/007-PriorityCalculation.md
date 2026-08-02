@@ -1815,77 +1815,6 @@ import { Button } from 'antd';
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下选择器优先级最高的是？
-
-A. `#header .title`
-B. `.nav .list .item`
-C. `div.container > p`
-D. `:where(#main) .text`
-
-**解析讲解**：A
-
-**解析讲解**：
-
-- A: `#header .title` → (0, 1, 1, 0)
-- B: `.nav .list .item` → (0, 0, 3, 0)
-- C: `div.container > p` → (0, 0, 1, 2)
-- D: `:where(#main) .text` → (0, 0, 1, 0)（`:where()` 恒为 0）
-
-A 的 (0, 1, 1, 0) 中 B=1，绝对高于其他选项的 B=0。
-
-**题目 2**：关于 `@layer` 的描述，正确的是？
-
-A. 层内高优先级样式可以覆盖未分层样式
-B. 层的声明顺序决定优先级，后声明的层优先级低
-C. 未分层样式总是优先于分层样式
-D. `@layer` 内不能使用 `!important`
-
-**解析讲解**：C
-
-**解析讲解**：
-
-- A 错误：层间不可越级，层内优先级不影响层间关系。
-- B 错误：后声明的层优先级**高**。
-- C 正确：未分层样式优先于所有分层样式。
-- D 错误：`@layer` 内可以使用 `!important`，且 `!important` 在层间反转（分层 `!important` 高于未分层 `!important`）。
-
-**题目 3**：`:is(.a, #b)` 的优先级是？
-
-A. (0, 0, 1, 0)
-B. (0, 1, 0, 0)
-C. (0, 0, 0, 0)
-D. (0, 1, 1, 0)
-
-**解析讲解**：B
-
-**解析讲解**：`:is()` 取参数中最具体的选择器优先级。`.a` 为 (0,0,1,0)，`#b` 为 (0,1,0,0)，取较高者 (0,1,0,0)。
-
-**题目 4**：以下哪种方式可以有效覆盖内联样式 `style="color: red;"`？
-
-A. `.element { color: blue; }`
-B. `#element { color: blue; }`
-C. `.element { color: blue !important; }`
-D. `div.element { color: blue; }`
-
-**解析讲解**：C
-
-**解析讲解**：内联样式优先级为 (1,0,0,0)，普通规则无法覆盖。`!important` 声明优先级高于内联 normal 声明，可以覆盖。若内联也是 `!important`，则需更高来源的 `!important`（如用户 `!important`）。
-
-**题目 5**：Tailwind CSS 中 `!bg-red-500` 的作用是？
-
-A. 设置背景色为红色 500
-B. 强制设置背景色为红色 500（生成 `!important`）
-C. 排除背景色设置
-D. 设置背景色为红色 500 的 50% 透明度
-
-**解析讲解**：B
-
-**解析讲解**：Tailwind 的 `!` 前缀（important modifier）生成带 `!important` 的声明，用于确保覆盖其他样式。例如 `!bg-red-500` 编译为 `background-color: #ef4444 !important;`。
-
 ### 填空题知识点讲解
 
 **题目 1**：CSS 优先级四元组 (A, B, C, D) 中，A 表示 ________ 的数量，B 表示 ________ 的数量。
@@ -2074,79 +2003,6 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 
 **解析讲解**：生产环境推荐使用 [`specificity`](https://www.npmjs.com/package/specificity) 库，其解析更精确。
 
-### 9.4 思考题
-
-**题目 1**：为什么 CSS 优先级使用四元组而非单一数字？这种设计有哪些优劣？
-
-**解析讲解**：
-
-**优势**：
-
-1. **语义清晰**：四元组直接反映选择器的结构（内联、ID、类、元素），便于理解。
-2. **基数无限**：基于字典序比较，避免「10 个类是否等于 1 个 ID」的歧义。
-3. **可扩展性**：未来可增加分量（如 `@layer` 层级）而不破坏现有逻辑。
-
-**劣势**：
-
-1. **心智负担**：开发者需理解字典序比较，而非简单数值比较。
-2. **计算复杂**：复杂选择器的优先级需逐项统计，易出错。
-3. **缺乏工具支持**：早期开发者需手工计算，现代工具（如 DevTools）已改善。
-
-**题目 2**：`@layer` 的引入对现有 CSS 架构（如 BEM、ITCSS）有何影响？是否应全面迁移到 `@layer`？
-
-**解析讲解**：
-
-**影响**：
-
-1. **BEM**：`@layer` 与 BEM 互补。BEM 提供命名隔离，`@layer` 提供层级隔离。可结合使用：在 `@layer components` 内使用 BEM 命名。
-2. **ITCSS**：`@layer` 与 ITCSS 的分层思想高度契合，可作为 ITCSS 的显式实现。
-3. **CSS Modules**：CSS Modules 提供编译时隔离，`@layer` 提供运行时层级控制。两者可共存。
-
-**迁移建议**：
-
-- **渐进迁移**：新项目可全面采用 `@layer`，旧项目逐步引入。
-- **兼容性**：`@layer` 浏览器支持已达 95%+（2024 年），可放心使用。
-- **工具支持**：PostCSS 插件 `@csstools/postcss-cascade-layers` 可自动降级。
-- **团队培训**：`@layer` 引入新的心智模型，需团队培训。
-
-**结论**：不应一刀切全面迁移，应结合项目实际情况，渐进引入 `@layer`，与现有架构协同。
-
-**题目 3**：在微前端架构中，多个子应用的样式如何隔离？`@layer` 能否解决微前端的样式冲突？
-
-**解析讲解**：
-
-**微前端样式隔离方案**：
-
-1. **Shadow DOM**：彻底隔离，但样式无法穿透，组件库适配成本高。
-2. **CSS Modules / CSS-in-JS**：编译时生成唯一类名，但仅限组件级。
-3. **iframe**：完全隔离，但通信成本高，UX 受影响。
-4. **`@layer`**：显式层级控制，可分配每个子应用独立层。
-5. **CSS 前缀**：如 qiankun 的 `sandbox` 自动添加前缀。
-
-**`@layer` 的适用性**：
-
-- **优势**：可显式声明子应用层优先级，避免冲突。
-- **局限**：`@layer` 不提供完全隔离，子应用间仍需协调层名。
-- **实践**：
-
-```css
-@layer app1, app2, app3;
-
-@layer app1 {
-  /* 子应用 1 的样式 */
-}
-
-@layer app2 {
-  /* 子应用 2 的样式 */
-}
-```
-
-**结论**：`@layer` 是微前端样式隔离的有效补充，但应与 Shadow DOM 或 CSS Modules 结合使用，形成多层防护。
-
----
-
-## 10. 参考文献
-
 ### 10.1 W3C 规范
 
 - World Wide Web Consortium. (2021). *CSS Cascading and Inheritance Level 4*. W3C Recommendation. https://www.w3.org/TR/css-cascade-4/
@@ -2189,22 +2045,12 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 经典书籍
 
 - **《CSS Secrets》** - Lea Verou 著，深入探讨 CSS 的高级技巧与优先级管理。
 - **《CSS: The Definitive Guide》** - Eric A. Meyer 著，CSS 完整参考。
 - **《CSS in Depth》** - Keith J. Grant 著，现代 CSS 工程实践。
 - **《Enduring CSS》** - Ben Frain 著，大型项目的 CSS 架构。
-
-### 11.2 在线资源
-
-- **MDN Web Docs: Specificity** - https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
-- **MDN Web Docs: Cascade** - https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade
-- **MDN Web Docs: @layer** - https://developer.mozilla.org/en-US/docs/Web/CSS/@layer
-- **CSS Tricks: Specificity** - https://css-tricks.com/specifics-on-css-specificity/
-- **web.dev: Cascade Layers** - https://web.dev/articles/cascade-layers
 
 ### 11.3 视频课程
 

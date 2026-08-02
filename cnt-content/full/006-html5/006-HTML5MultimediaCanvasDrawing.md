@@ -1256,10 +1256,3 @@ gainNode.connect(audioCtx.destination);
 oscillator.start();
 oscillator.stop(audioCtx.currentTime + 2); // 2 秒后停止
 ```
-
-## 参考文献
-
-WHATWG HTML Living Standard：https://html.spec.whatwg.org/
-MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML
-W3C Markup Validation Service：https://validator.w3.org/
-WebAIM 可访问性指南：https://webaim.org/

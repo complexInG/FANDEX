@@ -2034,8 +2034,6 @@ try {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（记忆 / 理解）
 
 **习题 1**：列举虚拟线程与平台线程的 5 个关键差异。
@@ -2111,8 +2109,6 @@ public class UserService {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档与规范
 
 1. Pressler, R. (2023). *JEP 444: Virtual Threads*. Oracle Corporation. https://openjdk.org/jeps/444
@@ -2140,20 +2136,6 @@ public class UserService {
 10. Nurkiewicz, T., & Christensen, B. (2023). *Java Concurrency in Practice Revisited*. Cambridge University Press.
 
 11. Pressler, R. (2024). *Virtual Threads: A Deep Dive into Project Loom*. O'Reilly Media.
-
-### 10.4 在线资源
-
-12. Pressler, R. (2023). *Virtual Threads: The Complete Guide*. https://inside.java/2023/07/26/virtual-threads-complete-guide/
-
-13. Spring Team. (2024). *Spring Boot 3.2 Virtual Threads Support*. https://spring.io/blog/2023/11/23/spring-boot-3-2
-
-14. Oracle. (2024). *Helidon Níma: The First Web Server Built on Virtual Threads*. https://helidon.io/docs/v4/se/guides/nima
-
-15. Netflix Technology Blog. (2024). *Migrating Zuul to Virtual Threads*. https://netflixtechblog.com/
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 深入理解 Project Loom
 

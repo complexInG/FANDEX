@@ -247,98 +247,11 @@ git clean -i
 
 ---
 
-## 七、实战练习
-
-### 练习 1：第一次寄存与取回（入门）
-
-**题目**：在分支上改一个文件但不提交，执行 `git stash`，用 `git status` 确认工作区干净，再 `git stash pop` 取回。
-
-**提示**：观察 stash 前后 `git status` 的变化。
-
-**参考答案要点**：
-
-```bash
-echo "改动" >> app.py
-git status                 # 有 modified
-git stash
-git status                 # clean（改动被寄存）
-git stash list             # 显示 stash@{0}
-git stash pop              # 改动恢复
-```
-
-### 练习 2：带说明的暂存与按索引恢复（入门）
-
-**题目**：连续暂存两次改动（各带说明），用 `git stash list` 查看，再分别用索引恢复指定的那条。
-
-**提示**：`stash@{0}` 是最新的。
-
-**参考答案要点**：
-
-```bash
-echo "A" >> f1.txt && git stash push -m "改动A"
-echo "B" >> f2.txt && git stash push -m "改动B"
-git stash list             # stash@{0} 改动B；stash@{1} 改动A
-git stash pop stash@{1}    # 恢复改动A
-```
-
-### 练习 3：三档回退大实验（核心）
-
-**题目**：制造两次提交，分别用 `--soft`、`--mixed`、`--hard` 回退一次，每次用 `git status` 观察暂存区和工作区的变化。
-
-**提示**：用三件套记忆——软(指针)、混(指针+暂存)、硬(指针+暂存+工作区)。
-
-**参考答案要点**：
-
-```bash
-git reset --soft HEAD~1     # 提交撤销，改动在暂存区（A 状态）
-git reset --mixed HEAD~1    # 提交+暂存撤销，改动在工作区（M 状态）
-git reset --hard HEAD~1     # 全部撤销，改动丢失
-```
-
-### 练习 4：revert 安全撤销已推送提交（进阶）
-
-**题目**：模拟一次"已推送"的坏提交，用 `git revert` 撤销它，观察历史中多了一个反向提交而不是被抹掉。
-
-**提示**：revert 适合公共历史；对比 reset 的区别。
-
-**参考答案要点**：
-
-```bash
-git log --oneline          # 记下坏提交 ID
-git revert abc1234
-git log --oneline          # 多了一个 Revert "..." 提交，原提交还在
-```
-
-### 练习 5：clean 安全清理（综合）
-
-**题目**：创建几个未跟踪的临时文件，先用 `git clean -n` 预览，确认无误后再 `-f` 删除；再用 `-fd` 处理未跟踪目录。
-
-**提示**：先预览后删除是铁律。
-
-**参考答案要点**：
-
-```bash
-echo "temp" > tmp.log
-mkdir tmp-dir && echo "x" > tmp-dir/x.txt
-git clean -n               # 预览：列出将被删除的文件
-git clean -f               # 删除未跟踪文件（tmp.log）
-git clean -fd              # 删除未跟踪目录（tmp-dir）
-```
-
----
-
 ## 八、一句话记忆
 
 **stash 是寄存柜（存：`stash push -u`，看：`stash list`，取：`pop` 删记录 / `apply` 留记录，清：`clear`）；reset 是时光机（软拨指针、混拨暂存、硬全拨——`--hard` 慎用，先 stash 备份）；已推送的提交用 `revert` 反向抵消；`restore` 撤工作区/暂存区，`clean` 清未跟踪——先 `-n` 预览再动手。**
 
 ---
-
-## 参考链接
-
-- Git 官方文档（git stash，中文）：https://git-scm.com/docs/git-stash/zh_HANS-CN.html
-- Git 官方文档（git reset）：https://git-scm.com/docs/git-reset
-- Pro Git 中文版 2.4 撤销操作：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%92%A4%E9%94%80%E6%93%8D%E4%BD%9C
-- Pro Git 中文版 7.3 存储与清理：https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%98%E5%82%A8%E4%B8%8E%E6%B8%85%E7%90%86
 
 ## 延伸阅读
 

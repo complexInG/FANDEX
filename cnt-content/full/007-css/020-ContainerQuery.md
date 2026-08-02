@@ -1724,73 +1724,6 @@ Ant Design v5 部分组件支持容器查询：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：容器查询的核心优势是什么？
-
-A. 比 `@media` 性能更好
-B. 组件能感知自身容器尺寸而非视口
-C. 替代 JavaScript 的 ResizeObserver
-D. 支持所有浏览器
-
-**答案：B**
-
-**解析讲解**：容器查询的核心优势是让组件能感知自身容器的尺寸，从而实现真正的组件级响应式设计。这与媒体查询（基于视口）有本质区别。
-
-- A：容器查询与媒体查询性能相当，并非优势。
-- C：容器查询无法完全替代 ResizeObserver（后者支持复杂逻辑）。
-- D：旧浏览器不支持（需 polyfill）。
-
-**题目 2**：`container-type: size` 与 `container-type: inline-size` 的关键差异是？
-
-A. `size` 仅查询宽度，`inline-size` 查询宽高
-B. `size` 查询宽高，`inline-size` 仅查询 inline 方向
-C. `size` 性能更好
-D. 两者完全相同
-
-**答案：B**
-
-**解析讲解**：`container-type: size` 允许查询容器的宽与高，但会触发 `contain: size`，导致容器高度必须显式设置。`inline-size` 仅查询 inline 方向（通常是宽度），容器高度仍可被子元素撑开。
-
-**题目 3**：以下哪个单位是相对于容器 inline 方向的 1%？
-
-A. `vw`
-B. `cqw`
-C. `cqi`
-D. `cqh`
-
-**答案：C**
-
-**解析讲解**：`cqi`（container query inline）是容器 inline 方向的 1%。`cqw` 是宽度的 1%，`cqh` 是高度的 1%。在水平书写模式下，`cqi` 等价于 `cqw`。
-
-**题目 4**：以下哪种写法在 `@container` 中是**无效**的？
-
-A. `@container (min-width: 400px)`
-B. `@container card (min-width: 400px)`
-C. `@container style(--theme: dark)`
-D. `@container (min-viewport-width: 400px)`
-
-**答案：D**
-
-**解析讲解**：`@container` 仅支持查询容器自身的尺寸或样式，不支持视口相关条件。`min-viewport-width` 不是有效的容器查询条件。
-
-- A：尺寸查询，有效。
-- B：命名容器查询，有效。
-- C：样式查询（实验性），有效。
-
-**题目 5**：以下哪种情况会触发循环依赖问题？
-
-A. `container-type: inline-size` 容器内查询宽度
-B. `container-type: size` 容器内查询高度
-C. 不声明 `container-type` 的容器
-D. 命名容器嵌套
-
-**答案：C**
-
-**解析讲解**：未声明 `container-type` 的容器不会触发 `contain`，若尝试查询其尺寸，子元素样式变化可能回流影响容器尺寸，形成循环。这正是 CSS Containment 通过 `container-type` 解决的问题。
-
 ### 填空题知识点讲解
 
 **题目 1**：容器查询的规范属于 CSS ________ Module Level 3。
@@ -2120,136 +2053,6 @@ D. 命名容器嵌套
 </html>
 ```
 
-### 9.4 思考题
-
-**题目 1**：容器查询是否会取代媒体查询？请论证你的观点。
-
-**观点**：容器查询不会完全取代媒体查询，两者将共存。
-
-**论据**：
-1. **适用场景不同**：媒体查询适用于「页面级」布局（如导航栏、整体布局），容器查询适用于「组件级」布局（如卡片、表格）。
-2. **SSR 友好性**：媒体查询在 SSR 下表现更好（视口尺寸已知），容器查询在 SSR 下有局限。
-3. **特性查询不同**：媒体查询支持 `prefers-color-scheme`、`prefers-reduced-motion` 等用户偏好查询，容器查询不支持。
-4. **未来共存**：媒体查询负责「视口级」响应式，容器查询负责「组件级」响应式，互补而非替代。
-
-**结论**：新项目应优先使用容器查询管理组件级响应式，保留媒体查询用于视口级布局与用户偏好。
-
-**题目 2**：在 SSR 场景下，如何处理容器查询的布局抖动问题？
-
-**问题**：服务端渲染时，容器尺寸未知，`@container` 规则无法预先评估。客户端 hydration 后，容器尺寸变化可能导致布局抖动（CLS）。
-
-**解决方案**：
-
-1. **提供默认样式**：在 `@container` 规则外提供基础样式，确保 SSR 渲染结果可用。
-2. **使用 `@supports` 渐进增强**：仅在支持容器查询的浏览器中应用 `@container` 规则。
-3. **关键 CSS 内联**：将首屏样式内联到 HTML，减少 CLS。
-4. **占位符策略**：为容器设置 `min-height` 占位符，避免 hydration 后高度变化。
-5. **客户端检测**：使用 JS 检测容器尺寸，动态添加类名。
-
-```html
-<!-- SSR 默认样式 -->
-<style>
-  .card {
-    display: flex;
-    flex-direction: column;
-    min-height: 200px; /* 占位符 */
-  }
-</style>
-
-<!-- 客户端容器查询 -->
-<style>
-  @supports (container-type: inline-size) {
-    .card-container {
-      container-type: inline-size;
-    }
-    @container (min-width: 400px) {
-      .card {
-        flex-direction: row;
-      }
-    }
-  }
-</style>
-```
-
-**题目 3**：设计一套基于容器查询的设计系统，要求支持主题切换、响应式字体、可访问性。
-
-**设计方案**：
-
-1. **设计令牌层**：
-```css
-:root {
-  /* 容器断点 */
-  --container-sm: 240px;
-  --container-md: 400px;
-  --container-lg: 600px;
-
-  /* 主题 */
-  --bg: #ffffff;
-  --text: #212529;
-}
-
-[data-theme="dark"] {
-  --bg: #1a1a1a;
-  --text: #f8f9fa;
-}
-```
-
-2. **容器查询包装器**：
-```css
-.cq-container {
-  container-type: inline-size;
-  container-name: cq;
-}
-```
-
-3. **响应式字体**：
-```css
-.cq-title {
-  font-size: clamp(1rem, 5cqi, 2rem);
-  line-height: 1.2;
-}
-```
-
-4. **响应式布局**：
-```css
-.cq-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-@container cq (min-width: 400px) {
-  .cq-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-```
-
-5. **可访问性**：
-```css
-@media (prefers-reduced-motion: reduce) {
-  .cq-grid {
-    transition: none;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1a1a1a;
-    --text: #f8f9fa;
-  }
-}
-```
-
-6. **自动化测试**：
-- Storybook 测试各种容器尺寸
-- Chromatic 视觉回归
-- Playwright CLS 检测
-
----
-
-## 10. 参考文献
-
 ### 10.1 W3C 规范
 
 [1] Miriam Suzanne and Tab Atkins Jr. 2024. *CSS Containment Module Level 3*. W3C Working Draft. Retrieved from https://www.w3.org/TR/css-contain-3/
@@ -2267,16 +2070,6 @@ D. 命名容器嵌套
 [6] Atkins, T. 2021. *CSS Containment Level 3: Container Queries*. W3C Editor's Draft. Retrieved from https://drafts.csswg.org/css-contain-3/
 
 [7] Verou, L. 2022. *CSS Variables and Container Queries*. Smashing Magazine. Retrieved from https://www.smashingmagazine.com/2022/css-variables-container-queries/
-
-### 10.3 在线资源
-
-[8] MDN Web Contributors. 2024. *CSS Container Queries*. MDN Web Docs. Retrieved from https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries
-
-[9] MDN Web Contributors. 2024. *Using container size and style queries*. MDN Web Docs. Retrieved from https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_size_and_style_queries
-
-[10] Chrome Team. 2022. *Container Queries in Chrome 105*. Chromium Blog. Retrieved from https://blog.chromium.org/2022/08/chrome-105-container-queries.html
-
-[11] WebKit Team. 2022. *Container Queries in Safari 16*. WebKit Blog. Retrieved from https://webkit.org/blog/13188/webkit-features-in-safari-16-0/
 
 ### 10.4 框架文档
 
@@ -2296,8 +2089,6 @@ D. 命名容器嵌套
 > Suzanne, M. and Atkins, T. Jr. 2024. CSS Containment Module Level 3. W3C Working Draft. Retrieved from https://www.w3.org/TR/css-contain-3/
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 书籍
 
@@ -2323,23 +2114,6 @@ D. 命名容器嵌套
 
 3. **Bramus. 2022. *Container Queries in Chrome 105*. web.dev.**
    - Chrome 实现细节与性能分析。
-
-### 11.3 在线资源
-
-1. **MDN Web Docs** — https://developer.mozilla.org/
-   - 容器查询权威文档。
-
-2. **CSS-Tricks Container Queries Almanac** — https://css-tricks.com/almanac/
-   - 容器查询实战文章集。
-
-3. **web.dev Container Queries** — https://web.dev/articles/container-queries
-   - Google 出品的容器查询指南。
-
-4. **Can I Use Container Queries** — https://caniuse.com/css-container-queries
-   - 浏览器兼容性查询。
-
-5. **Container Queries Playground** — https://labs.containerqueries.com/
-   - 在线容器查询实验场。
 
 ### 11.4 视频课程
 

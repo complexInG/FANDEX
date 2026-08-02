@@ -1651,76 +1651,6 @@ flowchart TD
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个不是 .NET 的核心组成？
-- A. CLR
-- B. BCL
-- C. JVM
-- D. AppModel
-
-**解析讲解**：C。JVM 是 Java 的虚拟机。
-
-**常见疑问 2**：C# 由谁设计？
-- A. James Gosling
-- B. Anders Hejlsberg
-- C. Bjarne Stroustrup
-- D. Guido van Rossum
-
-**解析讲解**：B。Anders Hejlsberg 也是 Turbo Pascal 与 TypeScript 的设计者。
-
-**常见疑问 3**：以下哪个版本引入了 async/await？
-- A. C# 1.0
-- B. C# 3.0
-- C. C# 5.0
-- D. C# 7.0
-
-**解析讲解**：C。C# 5.0（2012）引入 async/await。
-
-**常见疑问 4**：以下哪个 C# 版本引入了顶级语句？
-- A. C# 8.0
-- B. C# 9.0
-- C. C# 10.0
-- D. C# 11.0
-
-**解析讲解**：B。C# 9.0（2020）。
-
-**常见疑问 5**：Native AOT 在哪个 .NET 版本正式可用？
-- A. .NET 5
-- B. .NET 6
-- C. .NET 7
-- D. .NET 8
-
-**解析讲解**：D。.NET 8 正式支持 Native AOT 发布。
-
-### 选择题知识点讲解
-
-**常见疑问 6**：以下关于 .NET GC 说法正确的是？
-- A. 第 0 代回收时间最长
-- B. LOH 用于存储大于 85,000 字节的对象
-- C. Server GC 适合客户端应用
-- D. GC 始终是停止世界的
-
-**解析讲解**：B。LOH 阈值约 85KB；第 0 代回收最快；Server GC 适合服务端；.NET GC 支持后台并发回收。
-
-**常见疑问 7**：以下关于 NuGet 的说法错误的是？
-- A. NuGet 是 .NET 的包管理器
-- B. `dotnet add package` 会自动还原
-- C. NuGet 包始终包含源代码
-- D. NuGet 支持 private feed
-
-**解析讲解**：C。NuGet 包通常只包含编译后的 DLL，不含源代码。
-
-**常见疑问 8**：以下关于 JIT 与 AOT 说法正确的是？
-- A. JIT 启动速度比 AOT 快
-- B. AOT 不能进行任何运行时优化
-- C. JIT 可基于运行时 profile 进行优化
-- D. AOT 体积一定大于 JIT
-
-**解析讲解**：C。JIT 拥有运行时信息，可进行 profile-guided optimization。
-
 ### 简答题知识点讲解
 
 **常见疑问 9**：简述 C# 与 Java 在泛型实现上的差异。
@@ -1825,26 +1755,6 @@ sw.Stop();
 Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds} ms");
 ```
 
-### 9.5 思考题
-
-**常见疑问 14**：为什么微软要放弃 .NET Framework，重写 .NET Core？请从技术、商业、生态三个维度分析。
-
-**参考答案要点**：
-
-- **技术**：跨平台需求（Linux 容器化）、性能瓶颈（Framework 太重）、模块化（NuGet 化）、新场景（云原生、IoT）。
-- **商业**：与 Java 在企业市场（尤其 Linux 服务器）竞争；Azure 云服务需要轻量运行时。
-- **生态**：开源社区贡献需要更友好的开发模型；F#、VB.NET、IronPython 等共享运行时。
-
-**常见疑问 15**：如果让你设计 C# 的下一项新特性，你会提议什么？请说明动机与潜在风险。
-
-**参考答案示例**：
-
-提议：**协变返回类型扩展** —— 允许方法重写返回更窄的具体类型，包括值类型。当前 C# 9 支持引用类型协变返回，但不支持值类型。
-
-动机：领域驱动设计中，基类 `Repository<T>` 的 `Find(id)` 返回 `T`，子类 `UserRepository` 想返回 `User`，目前无法做到零装箱。
-
-风险：可能导致 ABI 不兼容；需评估 CLR 是否需要扩展。
-
 ### 9.6 综合应用题
 
 **常见疑问 16**：你要为公司搭建一个内部微服务，技术选型在 .NET 8 与 Spring Boot 3 之间犹豫。请列出选型要点，并给出推荐。
@@ -1864,44 +1774,6 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 推荐：若团队以 C# 为主且追求启动速度（如 AWS Lambda 函数计算），选 .NET 8 + Native AOT。若团队以 Java 为主且需要复杂业务集成（如大型金融系统），选 Spring Boot 3。
 
 ---
-
-## 10. 参考文献
-
-以下参考文献遵循 **ACM Reference Format**：
-
-1. Hejlsberg, A., Torgersen, M., Wiltamuth, S., and Golde, P. 2010. *The C# Programming Language* (4th ed.). Addison-Wesley Professional, Boston, MA, USA.
-
-2. Microsoft Corporation. 2024. *C# Language Specification*. Retrieved July 21, 2026 from <https://learn.microsoft.com/dotnet/csharp/language-reference/>
-
-3. Microsoft Corporation. 2024. *.NET Documentation*. Retrieved July 21, 2026 from <https://learn.microsoft.com/dotnet/>
-
-4. Wagner, B. 2017. *Effective C# (Covers C# 7.0)* (3rd ed.). Addison-Wesley Professional, Boston, MA, USA.
-
-5. Wagner, B. 2018. *More Effective C#: 50 Specific Ways to Improve Your C#* (2nd ed.). Addison-Wesley Professional, Boston, MA, USA.
-
-6. Skeet, J. 2019. *C# in Depth* (4th ed.). Manning Publications, Shelter Island, NY, USA.
-
-7. Abramson, N., Torgersen, M., Huguet, P., and Wiltamuth, S. 2020. *C# 9.0 on the record*. Microsoft Build. Retrieved July 21, 2026 from <https://devblogs.microsoft.com/dotnet/welcome-to-csharp-9/>
-
-8. Torgersen, M. 2023. *Welcome to C# 12*. Microsoft .NET Blog. Retrieved July 21, 2026 from <https://devblogs.microsoft.com/dotnet/welcome-to-csharp-12/>
-
-9. Kennedy, A., and Syme, D. 2001. *Design and Implementation of Generics for the .NET Common Language Runtime*. Journal of Functional Programming 11, 6 (Nov. 2001), 605-628. DOI: <https://doi.org/10.1017/S0956796801004256>
-
-10. Bierman, G. M., Parkinson, M. J., and Pitts, A. M. 2003. *The effect of a null-able type on the Java programming language*. In *ECOOP 2003 – Object-Oriented Programming*, Springer, Berlin, Germany, 30-45.
-
-11. Duffy, J. 2010. *Concurrent Programming on Windows*. Addison-Wesley Professional, Boston, MA, USA.
-
-12. Richter, J. 2012. *CLR via C#* (4th ed.). Microsoft Press, Redmond, WA, USA.
-
-13. Stovell, D., and Park, S. 2023. *.NET Microservices: Architecture for Containerized .NET Applications* (2nd ed.). Microsoft Developer Division. Retrieved July 21, 2026 from <https://learn.microsoft.com/dotnet/architecture/microservices/>
-
-14. Solomon, A., and Rousos, D. 2023. *.NET Microservices: Architecture for Containerized .NET Applications*. Microsoft Press, Redmond, WA, USA.
-
-15. Miller, J., and Ragsdale, S. 2006. *Common Language Infrastructure (CLI) Standard* (ECMA-335). ECMA International, Geneva, Switzerland.
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 
@@ -1933,22 +1805,6 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - Oren Eini. *Pro .NET Memory Management and Pointers* (Apress, 2022).
 - Stephen Cleary. *Concurrency in C# Cookbook* (O'Reilly, 2019).
 
-### 11.4 社区资源
-
-- .NET 官方博客：<https://devblogs.microsoft.com/dotnet/>
-- C# 设计会议记录：<https://github.com/dotnet/csharplang>
-- Stack Overflow `c#` 标签：<https://stackoverflow.com/questions/tagged/c%23>
-- Reddit `r/csharp`：<https://www.reddit.com/r/csharp/>
-- Microsoft Learn 学习路径：<https://learn.microsoft.com/training/paths/>
-
-### 11.5 视频资源
-
-- Microsoft Build 大会 .NET Sessions：<https://build.microsoft.com/>
-- .NET Conf（每年 11 月）：<https://dotnetconf.com/>
-- YouTube `dotnet` 官方频道：<https://www.youtube.com/@dotnet>
-- Nick Chapsas 视频教程：<https://www.youtube.com/@nickchapsas>
-- Milan Jovanovic 工程实战：<https://www.youtube.com/@MilanJovanovicTech>
-
 ### 11.6 工具与扩展
 
 - dotnet-format：代码格式化工具
@@ -1960,22 +1816,6 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 - dotMemory：JetBrains 内存分析（付费）
 - dotTrace：JetBrains CPU 分析（付费）
 - ILSpy / dnSpy：反编译工具
-
-### 11.7 习题答案汇总
-
-| 题号 | 答案 |
-|------|------|
-| Q1 | C |
-| Q2 | B |
-| Q3 | C |
-| Q4 | B |
-| Q5 | D |
-| Q6 | B |
-| Q7 | C |
-| Q8 | C |
-| Q9-Q16 | 见各题参考答案 |
-
----
 
 ## 结语
 

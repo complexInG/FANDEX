@@ -1281,8 +1281,6 @@ gRPC 将 `grpc-timeout` header 编码为字符串传输，支持多种精度：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题 1**：解释 Go `time.Time` 内部存储的字段及其作用。
@@ -1335,25 +1333,6 @@ func Watch(events <-chan int) {
 - 支持任务依赖与重试。
 - 考虑时钟漂移与网络延迟。
 
-### 9.4 参考答案要点
-
-**题 1 答案**：`time.Time` 内部存储三个字段：wall clock（自 1885 年起的秒数）、ext（扩展字段，存储单调时钟或纳秒）、loc（时区指针）。Go 1.9+ 在 wall 中通过最高位标记是否包含单调时钟。
-
-**题 2 答案**：输出约 `1s` 与 `false`。`Sub` 返回 Duration 约 1 秒，`Before` 因为 t2 在 t1 之后返回 false。
-
-**题 3 答案**：
-
-```go
-loc, _ := time.LoadLocation("Asia/Shanghai")
-t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
-```
-
-**题 5 答案要点**：每次 select 创建新的 1 小时 Timer，若事件频繁，Timer 在堆中堆积。修复方案：使用 `NewTimer` + `Reset`，或在每次循环前重置。
-
----
-
-## 10. 参考文献
-
 ### 10.1 经典论文与文献
 
 [1] Lamport, L. 1978. *Time, clocks, and the ordering of events in a distributed system*. Communications of the ACM 21, 7 (July 1978), 558–565. DOI: https://doi.org/10.1145/359545.359563
@@ -1389,14 +1368,6 @@ t, _ := time.ParseInLocation("2006-01-02 15:04:05", "2026-07-21 14:30:00", loc)
 [13] Kleppmann, M. 2017. *Designing Data-Intensive Applications*. O'Reilly Media, Chapter 8: The Trouble with Distributed Systems. ISBN: 978-1491950357.
 
 ---
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- Go time 包文档：https://pkg.go.dev/time
-- Go time 包源码：https://github.com/golang/go/blob/master/src/time/
-- Go 1.9 Release Notes（单调时钟引入）：https://go.dev/doc/go1.9
 
 ### 11.2 经典教材
 

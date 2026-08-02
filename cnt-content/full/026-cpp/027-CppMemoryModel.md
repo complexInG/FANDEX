@@ -1329,8 +1329,6 @@ Rust 借鉴 C++ 内存模型但更严格:
 
 Rust 的 Send/Sync trait 在编译期阻止数据竞争,而 C++ 依赖运行时工具 (TSan)。但 C++ 的灵活性允许更激进的优化。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **1.** 以下代码是否存在数据竞争?若存在,如何修复?
@@ -1487,52 +1485,6 @@ public:
 - 跨架构测试:x86 (基线) vs ARM (弱模型)
 - 工具:llvm-lit、concurrency-kit、relacy
 
-## 参考文献
-
-以下参考文献遵循 ACM Reference Format。
-
-1. Boehm, H.-J., and Adve, S. V. 2008. Foundations of the C++ concurrency memory model. In *Proceedings of the 29th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '08)*. ACM, 68-78. DOI: https://doi.org/10.1145/1375581.1375591
-
-2. Lamport, L. 1979. How to make a multiprocessor computer that correctly executes multiprocess programs. *IEEE Transactions on Computers* C-28, 9, 690-691. DOI: https://doi.org/10.1109/TC.1979.1675439
-
-3. Manson, J., Pugh, W., and Adve, S. V. 2005. The Java memory model. In *Proceedings of the 32nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '05)*. ACM, 378-391. DOI: https://doi.org/10.1145/1040305.1040336
-
-4. Adve, S. V., and Gharachorloo, K. 1996. Shared memory consistency models: A tutorial. *IEEE Computer* 29, 12, 66-76. DOI: https://doi.org/10.1109/2.546611
-
-5. Herlihy, M., and Shavit, N. 2012. *The Art of Multiprocessor Programming* (2nd ed.). Morgan Kaufmann, Burlington, MA.
-
-6. McKenney, P. E. 2017. *Is Parallel Programming Hard, And, If So, What Can You Do About It?* kernel.org. https://kernel.org/pub/linux/kernel/people/paulmck/perfbook/perfbook.html
-
-7. Batty, M., Owens, S., Sarkar, S., Sewell, P., and Weber, T. 2011. Mathematizing C++ concurrency. In *Proceedings of the 38th Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '11)*. ACM, 55-66. DOI: https://doi.org/10.1145/1926385.1926394
-
-8. Sewell, P., Sarkar, S., Owens, S., Nardelli, F. Z., and Myreen, M. O. 2010. x86-TSO: A rigorous and usable programmer's model for x86 multiprocessors. *Communications of the* ACM 53, 7, 89-97. DOI: https://doi.org/10.1145/1785414.1785443
-
-9. Michael, M. M. 2004. Hazard pointers: Safe memory reclamation for lock-free objects. *IEEE Transactions on Parallel and Distributed Systems* 15, 6, 491-504. DOI: https://doi.org/10.1109/TPDS.2004.8
-
-10. Herlihy, M. 1991. Wait-free synchronization. *ACM Transactions on Programming Languages and Systems (TOPLAS)* 13, 1, 124-149. DOI: https://doi.org/10.1145/114005.102808
-
-11. International Organization for Standardization. 2020. *Information technology — Programming languages — C++* (ISO/IEC 14882:2020). ISO, Geneva, Switzerland.
-
-12. Williams, A. 2019. *C++ Concurrency in Action* (2nd ed.). Manning Publications, Shelter Island, NY.
-
-13. McKenney, P. E., Appavoo, J., Kleen, A., Krieger, O., Russell, R., and Heo, P. 2001. Read-copy update. In *Proceedings of the Ottawa Linux Symposium (OLS '01)*.
-
-14. Fraser, K., and Harris, T. 2007. Concurrent programming without locks. *ACM Transactions on Computer Systems (TOCS)* 25, 2, Article 5, 1-61. DOI: https://doi.org/10.1145/1233307.1233309
-
-15. Michael, M. M., and Scott, M. L. 1996. Simple, fast, and practical non-blocking and blocking concurrent queue algorithms. In *Proceedings of the 15th Annual ACM Symposium on Principles of Distributed Computing (PODC '96)*. ACM, 267-275. DOI: https://doi.org/10.1145/248052.248106
-
-16. Dice, D., Lev, Y., Marathe, V. J., Moir, M., Nussbaum, D., and Olszewski, M. 2009. Simplifying concurrent algorithms by exploiting hardware transactional memory. In *Proceedings of the 22nd ACM Symposium on Operating Systems Principles (SOSP '09)*. ACM, 57-72. DOI: https://doi.org/10.1145/1629575.1629582
-
-17. Adve, S. V., and Boehm, H.-J. 2010. Memory models: A case for rethinking parallel languages and hardware. *Communications of the* ACM 53, 8, 90-101. DOI: https://doi.org/10.1145/1787234.1787255
-
-18. Demsky, B., and Lam, P. 2015.SATCheck: Sat-based model checking of memory models. In *Proceedings of the 10th Workshop on Programming Languages and Analysis for Security (PLAS '15)*. ACM, 32-44. DOI: https://doi.org/10.1145/2786557.2786563
-
-19. Lahav, O., Vafeiadis, V., Kang, J., Hur, C.-K., and Dreyer, D. 2017. Repairing sequential consistency in C/C++11. In *Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '17)*. ACM, 618-632. DOI: https://doi.org/10.1145/3062341.3062352
-
-20. Chakraborty, S., and Vafeiadis, V. 2019. Validating optimizations of concurrent C/C++ programs. In *Proceedings of the 2019 International Symposium on Code Generation and Optimization (CGO '19)*. IEEE, 102-114. DOI: https://doi.org/10.1109/CGO.2019.8661186
-
-## 延伸阅读
-
 ### 官方文档
 
 - C++ Reference: Atomic operations library (https://en.cppreference.com/w/cpp/atomic)
@@ -1553,14 +1505,6 @@ public:
 - Batty et al. "Mathematizing C++ Concurrency" (POPL 2011) - 形式化语义
 - Lahav et al. "Repairing Sequential Consistency in C/C++11" (PLDI 2017) - 修复 seq_cst 漏洞
 - Chakraborty & Vafeiadis "Validating Optimizations of Concurrent C/C++ Programs" (CGO 2019) - 优化正确性
-
-### 在线资源
-
-- Preshing on Programming: Memory model 系列教程 (https://preshing.com)
-- Herb Sutter's Blog: C++ memory model 深度解析 (https://herbsutter.com)
-- Relacy Race Detector: 无锁代码测试工具 (http://relacy.com)
-- LLVM ThreadSanitizer: 数据竞争检测 (https://clang.llvm.org/docs/ThreadSanitizer.html)
-- CppMem: C++ 内存模型在线模拟器 (http://svr-pes20-cppmem.cl.cam.ac.uk)
 
 ### 相关课程
 

@@ -1421,8 +1421,6 @@ class MyPromise {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 10.1 基础题
 
 **题目 1**：解释以下代码输出，并说明原因。
@@ -1518,30 +1516,6 @@ sum(1000000);
 - TCO 复用栈帧，栈空间为 O(1)
 - V8 暂未实现 TCO，Safari 已实现
 - 非严格模式下 V8 也不实现，需 `'use strict'`
-
-## 11. 参考文献
-
-[1] ECMA International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th Edition). Retrieved July 21, 2024 from https://tc39.es/ecma262/
-
-[2] David Flanagan. 2020. *JavaScript: The Definitive Guide*, 7th ed. O'Reilly Media. ISBN: 978-1491952023.
-
-[3] Kyle Simpson. 2019. *You Don't Know JS: Scope & Closures*, 2nd ed. O'Reilly Media. Retrieved from https://github.com/getify/You-Dont-Know-JS
-
-[4] Douglas Crockford. 2008. *JavaScript: The Good Parts*. O'Reilly Media. ISBN: 978-0596517748.
-
-[5] Allen Wirfs-Brock and Brendan Eich. 2012. "JavaScript: The First 20 Years." *Proceedings of the ACM on Programming Languages* 4, HOPL (June 2020), Article 189, 189 pages. DOI: 10.1145/3386327.
-
-[6] John C. Reynolds. 1998. "Theories of Programming Languages." Cambridge University Press. DOI: 10.1017/CBO9780511624197.
-
-[7] Gerald J. Sussman and Guy L. Steele. 1975. "Scheme: An Interpreter for Extended Lambda Calculus." MIT AI Memo 349. Retrieved from https://dspace.mit.edu/handle/1721.1/5794
-
-[8] Philip Wadler and Stephen Blott. 1989. "How to make ad-hoc polymorphism less ad hoc." *Proceedings of the 16th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (POPL '89). DOI: 10.1145/75277.75283.
-
-[9] Simon Peyton Jones. 2003. "Haskell 98 Language and Libraries: The Revised Report." *Journal of Functional Programming* 13, 1 (January 2003). DOI: 10.1017/S0956796803001180.
-
-[10] Harold Abelson and Gerald Jay Sussman. 1996. *Structure and Interpretation of Computer Programs*, 2nd ed. MIT Press. ISBN: 978-0262510875.
-
-## 12. 延伸阅读
 
 ### 12.1 官方文档
 

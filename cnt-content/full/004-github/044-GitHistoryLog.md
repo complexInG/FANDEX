@@ -334,92 +334,11 @@ git log --left-right --oneline main...feature
 
 ---
 
-## 八、实战练习
-
-### 练习 1：写出你的"案件卷宗"（入门）
-
-**题目**：在练习仓库中制造 5 次不同前缀的提交（feat/fix/docs），用 `git log --oneline` 查看，并用 `git log --oneline --graph` 观察图形输出。
-
-**提示**：提交信息用 Conventional Commits 前缀，便于后续筛选。
-
-**参考答案要点**：
-
-```bash
-git log --oneline
-git log --oneline --graph
-git log --author="你的名字"     # 只看自己的
-```
-
-### 练习 2：追踪"谁改坏了代码"（核心）
-
-**题目**：在文件里故意制造一个 Bug 提交，然后用 `git log -S "bug代码"` 和 `git blame` 定位是哪个提交、哪一行引入的。
-
-**提示**：`-S` 找引入/移除某字符串的提交，`blame` 看行归属。
-
-**参考答案要点**：
-
-```bash
-git log -S "oops" --oneline        # 找到引入 bug 的提交
-git blame -L 1,20 app.py           # 查看相关行是谁改的
-git show <提交ID>                  # 查看该提交的完整改动
-```
-
-### 练习 3：对比两个版本（进阶）
-
-**题目**：用 `git diff` 对比两个相邻提交、两个分支，并用 `--stat` 和 `--name-only` 分别查看统计与文件名。
-
-**提示**：`git diff HEAD~1 HEAD` 对比最近两次提交。
-
-**参考答案要点**：
-
-```bash
-git diff HEAD~1 HEAD --stat      # 最近提交改了哪些文件
-git diff main..feature           # 分支间差异
-git diff main...feature          # 三点比较（更聚焦 feature 独有改动）
-```
-
-### 练习 4：查看某个文件的前世今生（进阶）
-
-**题目**：对 `README.md` 使用 `git log --follow -p` 查看它的完整演变过程（含每次改动的 diff）。
-
-**提示**：`--follow` 能跨重命名追踪。
-
-**参考答案要点**：
-
-```bash
-git log --follow -p README.md
-git show HEAD:README.md          # 看当前版本文件内容
-```
-
-### 练习 5：reflog 时光机救场（综合）
-
-**题目**：故意 `git reset --hard HEAD~2` 丢掉两次提交，然后用 `git reflog` 找回并恢复到原状态。
-
-**提示**：reset 后 log 里看不到的提交，reflog 里一定还有足迹。
-
-**参考答案要点**：
-
-```bash
-git reset --hard HEAD~2          # 故意"丢"两次提交
-git log --oneline                # 确认提交消失了
-git reflog                       # 找到丢之前的 HEAD@{n}
-git reset --hard HEAD@{2}        # 恢复（以 reflog 实际输出为准）
-```
-
----
-
 ## 九、一句话记忆
 
 **查历史像破案：`git log` 看总览（--oneline 精简、--graph 画图），`--author/--since/-S` 筛线索，`git diff` 对现场，`git show` 看单份案卷，`git blame` 追每行来源，`git reflog` 是最后保险丝——误删别慌，reflog 里找回来。**
 
 ---
-
-## 参考链接
-
-- Git 官方文档（git log）：https://git-scm.com/docs/git-log
-- Git 官方文档（git diff）：https://git-scm.com/docs/git-diff
-- Pro Git 中文版 2.3 查看提交历史：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%9F%A5%E7%9C%8B%E6%8F%90%E4%BA%A4%E5%8E%86%E5%8F%B2
-- Pro Git 中文版 2.4 撤销操作（reflog 相关）：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E6%92%A4%E9%94%80%E6%93%8D%E4%BD%9C
 
 ## 延伸阅读
 

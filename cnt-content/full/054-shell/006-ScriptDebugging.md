@@ -220,23 +220,6 @@ shfmt -d script.sh      # 只显示差异（diff）
 
 **误区四：`trap` 只在出错时触发。** → `trap ... EXIT` 无论正常结束还是出错退出都会触发，是"无论成败都要清理"的标准姿势。
 
-## 9. 实战练习
-
-1. **严格模式体验**：写一个脚本，分别在有/无 `set -euo pipefail` 时运行 `false` 后的命令，观察行为差异。
-
-2. **调试追踪**：写一个有变量插值的脚本，用 `bash -x` 和 `PS4='+ $LINENO: '` 两种方式追踪，对比输出。
-
-3. **trap 清理**：写一个创建临时文件的脚本，用 `trap cleanup EXIT` 保证出错也清理，验证中途 `false` 触发清理。
-
-4. **静态检查**：写一个含 3 个以上 shellcheck 警告的脚本，用 shellcheck 找出并用 shfmt 格式化，直到 0 warning。
-
-## 10. 参考资源
-
-- Bash 手册（set 内建命令）：https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
-- Bash 手册（trap 内建命令）：https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html
-- ShellCheck 官网：https://www.shellcheck.net/
-- shfmt：https://github.com/mvdan/sh
-
 ## 11. 延伸阅读
 
 - 调试在实际脚本中的应用，见本模块《实战脚本案例》

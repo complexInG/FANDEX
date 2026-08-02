@@ -1105,8 +1105,6 @@ console.log(m.groups.title);  // 'GitHub Homepage'
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **习题 1**（Remember，难度 1）：具名捕获组使用 `(?<name>...)` 语法声明，通过 `match.groups.name` 形式访问捕获结果。
@@ -1114,20 +1112,6 @@ console.log(m.groups.title);  // 'GitHub Homepage'
 **习题 2**（Remember，难度 2）：在正则内部引用具名捕获组使用 `\k<name>` 语法，在替换字符串中引用使用 `$<name>` 语法。
 
 **习题 3**（Understand，难度 3）：具名捕获组提案于 2017 年进入 TC39 Stage 4，正式纳入 ES2018 标准，提案作者为 Daniel Ehrenberg 与 Brian Terlson。
-
-### 选择题知识点讲解
-
-**习题 4**（Understand，难度 3）：下列哪项不是具名捕获组相对于数字索引捕获组的优势？
-- A. 提升正则可读性，通过语义化名称标识捕获内容
-- B. 在插入新捕获组时无需调整其他捕获组的索引引用
-- C. 在所有 JavaScript 引擎中性能优于数字索引捕获组
-- D. 在替换字符串中通过 `$<name>` 引用，避免数字索引混乱
-
-**习题 5**（Analyze，难度 3）：执行 `const m = '2026-07-20'.match(/(?<y>\d{4})-(?<m>\d{2})-(?<d>\d{2})/);` 后，下列哪个表达式返回 `'07'`？
-- A. `m[1]`
-- B. `m.groups.m`
-- C. `m.groups['m']`
-- D. `m.groups.month`
 
 ### 9.3 代码修正题
 
@@ -1164,34 +1148,6 @@ reverseDate('2026-07-20');
 
 ---
 
-## 10. 参考文献
-
-按 ACM Reference Format 列出本篇引用的主要文献：
-
-1. Ecma International. 2018. _ECMAScript 2018 Language Specification (ECMA-262, 9th Edition)_. Ecma International. DOI: 10.1145/3178987. URL: https://www.ecma-international.org/publications/standards/Ecma-262.htm
-
-2. Daniel Ehrenberg and Brian Terlson. 2017. _Proposal: RegExp Named Capture Groups (TC39 Stage 4)_. TC39 ECMAScript Proposals. URL: https://github.com/tc39/proposal-regexp-named-groups
-
-3. MDN Web Docs. 2025. _Named capture group: (?<name>...)_. Mozilla Developer Network. URL: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group
-
-4. Jeffrey E. F. Friedl. 2006. _Mastering Regular Expressions_ (3rd Edition). O'Reilly Media. DOI: 10.5555/1211414
-
-5. David M. Beazley and Brian K. Jones. 2013. _Python Cookbook: Recipes for Mastering Python 3_. O'Reilly Media.
-
-6. ISO/IEC. 2022. _ISO/IEC 9945:2009 Information technology — Programming languages — Regular expressions_. ISO. URL: https://www.iso.org/standard/50534.html
-
-7. David Mazières and Eddie Kohler. 2015. The Case for Generic File System Semantics. _Proceedings of the 2015 USENIX Annual Technical Conference_, 373-386.
-
-8. Axel Rauschmayer. 2017. ES2018: RegExp named capture groups. _2ality - JavaScript and more_. URL: https://2ality.com/2017/05/regexp-named-capture-groups.html (accessed July 20, 2026)
-
-9. Anderson, L. W., and Krathwohl, D. R. (Eds.). 2001. _A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives_. Longman.
-
-10. Aho, A. V., Lam, M. S., Sethi, R., and Ullman, J. D. 2006. _Compilers: Principles, Techniques, and Tools_ (2nd Edition). Addison-Wesley.
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Friedl, J. E. F. _Mastering Regular Expressions_ (3rd Edition). O'Reilly Media, 2006. —— 正则表达式领域经典著作，第 3 章详解捕获组机制
@@ -1210,13 +1166,6 @@ reverseDate('2026-07-20');
 - **`regexp-tree`**（https://github.com/DmitrySoshnikov/regexp-tree）：正则表达式 AST 处理工具
 - **`safe-regex`**（https://github.com/davisjam/safe-regex）：检测潜在的回溯灾难正则
 - **`re2`**（https://github.com/google/re2）：Google 的高性能正则引擎
-
-### 11.4 在线资源
-
-- **Regex 101**：https://regex101.com/ —— 在线正则测试（支持具名捕获组）
-- **Regexr**：https://regexr.com/ —— 在线正则学习与测试
-- **TC39 提案追踪**：https://github.com/tc39/proposals —— ECMAScript 提案动态
-- **MDN 正则指南**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
 
 ### 11.5 标准文档
 

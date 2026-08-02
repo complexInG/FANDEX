@@ -1318,8 +1318,6 @@ public class RateLimitLock extends AbstractQueuedSynchronizer {
 
 ---
 
-## 十、习题
-
 ### 10.1 基础题
 
 **题 1.1**(记忆/理解) `ThreadPoolExecutor` 提交任务时,核心线程、工作队列、最大线程、拒绝策略的触发顺序是什么?为什么 `Executors.newFixedThreadPool()` 使用的无界队列会导致 `maximumPoolSize` 永远不生效?
@@ -1519,32 +1517,6 @@ class MergeSortTask extends RecursiveAction {
 理论加速比:由 4.3 节推导,严格分治任务并行执行时间为 $O(n \log n / P + P \log P)$,加速比约 $P$(理想情况)。实际受 merge 串行部分与 GC 影响,典型加速比 0.6P~0.8P。
 
 ---
-
-## 十一、参考文献
-
-[1] Lea, D. 2000. *A Java fork/join framework.* In Proceedings of the ACM 2000 Java Grande Conference (JAVA '00). ACM, New York, NY, USA, 36-43. DOI: https://doi.org/10.1145/337449.337465
-
-[2] Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., and Lea, D. 2006. *Java Concurrency in Practice.* Addison-Wesley Professional, Boston, MA, USA. ISBN: 978-0321349606.
-
-[3] Blumofe, R. D. and Leiserson, C. E. 1999. *Scheduling multithreaded computations by work stealing.* Journal of the ACM 46, 5 (September 1999), 720-748. DOI: https://doi.org/10.1145/324133.324234
-
-[4] Manson, J., Pugh, W., and Adve, S. V. 2005. *The Java memory model.* In Proceedings of the 32nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '05). ACM, New York, NY, USA, 378-391. DOI: https://doi.org/10.1145/1040305.1040336
-
-[5] Herlihy, M. and Shavit, N. 2012. *The Art of Multiprocessor Programming, Revised Reprint* (2nd. ed.). Morgan Kaufmann, Burlington, MA, USA. ISBN: 978-0123973375.
-
-[6] Oracle Corporation. 2024. *Java SE 21 API Specification: java.util.concurrent.* Retrieved July 21, 2026 from https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/package-summary.html
-
-[7] Pressler, R. 2023. *JEP 444: Virtual Threads.* Oracle Corporation. Retrieved July 21, 2026 from https://openjdk.org/jeps/444
-
-[8] Adya, A., Howell, J., Theimer, M., Bolosky, W. J., and Douceur, J. R. 2002. *Coordinating client synchronization.* In Proceedings of the 16th International Symposium on Distributed Computing (DISC '02). Springer, Berlin, Germany, 30-44. DOI: https://doi.org/10.1007/3-540-45741-8_3
-
-[9] Fraser, K. and Harris, T. 2007. *Concurrent programming without locks.* ACM Transactions on Computer Systems 25, 2 (May 2007), Article 5, 1-61. DOI: https://doi.org/10.1145/1233307.1233309
-
-[10] Michael, M. M. and Scott, M. L. 1996. *Simple, fast, and practical non-blocking and blocking concurrent queue algorithms.* In Proceedings of the 15th Annual ACM Symposium on Principles of Distributed Computing (PODC '96). ACM, New York, NY, USA, 267-275. DOI: https://doi.org/10.1145/248052.248106
-
----
-
-## 十二、延伸阅读
 
 ### 12.1 经典书籍
 

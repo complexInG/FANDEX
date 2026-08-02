@@ -254,22 +254,6 @@ log ERROR "连接超时"
 
 **陷阱四：循环内调用函数修改全局变量。** 意外改变循环变量（如 `i`），函数内尽量 `local`。
 
-## 8. 实战练习
-
-1. **函数封装**：把"日志函数"（第 6 节）复制到你的脚本，改造它支持时间戳格式参数。
-
-2. **getopts 实战**：写一个命令行工具，支持 `-f`（必填文件）、`-v`（详细模式）、`-h`（帮助），验证组合选项和非法选项。
-
-3. **返回值辨析**：写一个函数，分别用"退出码"和"stdout"两种方式返回信息，并说明各自的使用场景。
-
-4. **重构练习**：把一个 100 行的脚本拆分成 3-4 个函数 + 主流程，观察可读性的提升。
-
-## 9. 参考资源
-
-- Bash 函数手册：https://www.gnu.org/software/bash/manual/html_node/Shell-Functions.html
-- getopts 详解：https://www.gnu.org/software/bash/manual/html_node/Shell-Builtin-Commands.html
-- Bash 位置参数：https://www.gnu.org/software/bash/manual/html_node/Positional-Parameters.html
-
 ## 10. 延伸阅读
 
 - 函数的实际应用，见本模块《实战脚本案例》

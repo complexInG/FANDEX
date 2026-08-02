@@ -2001,8 +2001,6 @@ struct AdaptivePage {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（Basic）
 
 **B1**：HarmonyOS 的"1+8+N"战略中，"8"代表什么？
@@ -2075,52 +2073,6 @@ D. 3000
 **C5**：分析 HarmonyOS 与 OpenHarmony 的关系，论证华为"开源底座 + 商业版"双轨策略的优劣，并预测未来 3 年生态演进方向。
 
 ---
-
-## 10. 参考文献
-
-本章参考文献遵循 ACM Reference Format，所有引用均包含 DOI 链接以供溯源。
-
-1. Yu, D., Zhang, Y., and Li, X. 2019. HarmonyOS: A distributed operating system for the multi-device era. In *Proceedings of the 14th ACM SIGCOMM Workshop on Network and Operating Systems Support for Digital Audio and Video* (NOSSDAV '19). ACM, 1–6. DOI: [10.1145/3325133.3325138](https://doi.org/10.1145/3325133.3325138)
-
-2. Liedtke, J. 1995. On micro-kernel construction. *ACM SIGOPS Operating Systems Review* 29, 5 (Dec. 1995), 237–250. DOI: [10.1145/224057.224075](https://doi.org/10.1145/224057.224075)
-
-3. Klein, G., Elphinstone, K., Heiser, G., et al. 2009. seL4: Formal verification of an OS kernel. In *Proceedings of the ACM SIGOPS 22nd Symposium on Operating Systems Principles* (SOSP '09). ACM, 207–220. DOI: [10.1145/1629575.1629596](https://doi.org/10.1145/1629575.1629596)
-
-4. Zhang, W., Chen, Y., and Wang, H. 2020. ArkUI: A declarative UI framework for cross-device applications. *Proceedings of the IEEE* 108, 8 (Aug. 2020), 1325–1340. DOI: [10.1109/JPROC.2020.2995612](https://doi.org/10.1109/JPROC.2020.2995612)
-
-5. Huawei Technologies Co., Ltd. 2024. *HarmonyOS Developer Documentation*. Huawei Developer. Retrieved July 21, 2024 from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides
-
-6. OpenAtom Foundation. 2024. *OpenHarmony Source Code*. GitHub. Retrieved July 21, 2024 from https://gitee.com/openharmony
-
-7. Clarke, J. and Wilson, R. 2021. Distributed soft bus: A unified communication layer for IoT devices. *IEEE Internet of Things Journal* 8, 12 (June 2021), 9876–9890. DOI: [10.1109/JIOT.2021.3057421](https://doi.org/10.1109/JIOT.2021.3057421)
-
-8. Sun, Y., Liu, J., and Zhang, H. 2022. ArkCompiler: A static compilation framework for improving mobile application performance. In *Proceedings of the 31st ACM SIGSOFT International Symposium on Software Testing and Analysis* (ISSTA '22). ACM, 421–432. DOI: [10.1145/3533767.3534321](https://doi.org/10.1145/3533767.3534321)
-
-9. Anderson, T. E., Culler, D. E., Patterson, D. A., and the NOW team. 1995. A case for NOW (Networks of Workstations). In *Proceedings of the 7th ACM SIGOPS European Workshop on System Support for Worldwide Applications*. ACM, 71–84. DOI: [10.1145/506415.506424](https://doi.org/10.1145/506415.506424)
-
-10. Chen, L. and Huang, W. 2023. Atomic service: A lightweight application delivery model for HarmonyOS. *ACM Transactions on Software Engineering and Methodology* 32, 4 (Sept. 2023), 1–28. DOI: [10.1145/3579421](https://doi.org/10.1145/3579421)
-
-11. Stallings, W. 2017. *Operating Systems: Internals and Design Principles* (9th ed.). Pearson, Hoboken, NJ, USA. ISBN: 978-0-13-467098-2.
-
-12. Tanenbaum, A. S. and Bos, H. 2014. *Modern Operating Systems* (4th ed.). Pearson, Boston, MA, USA. ISBN: 978-0-13-359162-0.
-
-13. Bloom, B. S. 1956. *Taxonomy of Educational Objectives, Handbook I: The Cognitive Domain*. David McKay Co Inc., New York, NY, USA.
-
-14. Pohn-Weidinger, S., Srinivasan, V., and Jalote, P. 2024. Mobile OS architecture comparison: HarmonyOS vs Android vs iOS. *IEEE Transactions on Mobile Computing* 23, 5 (May 2024), 5678–5692. DOI: [10.1109/TMC.2023.3321456](https://doi.org/10.1109/TMC.2023.3321456)
-
-15. Liu, X., Zhao, M., and Wang, J. 2024. hvigorw: A Node.js-based build system for HarmonyOS. In *Companion Proceedings of the 32nd ACM International Conference on the Foundations of Software Engineering* (FSE '24). ACM, 456–467. DOI: [10.1145/3663574.3663589](https://doi.org/10.1145/3663574.3663589)
-
----
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **HarmonyOS 开发者官网**：https://developer.huawei.com/consumer/cn/harmonyos
-- **HarmonyOS API 文档**：https://developer.huawei.com/consumer/cn/doc/harmonyos-references
-- **DevEco Studio 下载**：https://developer.huawei.com/consumer/cn/deveco-studio
-- **HarmonyOS 设计规范**：https://developer.huawei.com/consumer/cn/doc/design-guides
-- **HarmonyOS 应用市场**：https://developer.huawei.com/consumer/cn/agconnect
 
 ### 11.2 开源项目
 

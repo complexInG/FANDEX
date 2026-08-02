@@ -585,16 +585,7 @@ document.querySelectorAll('[id]').forEach((el) => {
 - 长文档在每章末尾添加返回目录链接
 - 使用自动目录生成工具而非手动维护
 
-## 参考文献
-
-CommonMark 规范：https://spec.commonmark.org/
-GFM 规范：https://github.github.com/gfm/
-Markdown 指南：https://www.markdownguide.org/
-Markdownlint：https://github.com/DavidAnson/markdownlint
-
 ## 延伸阅读
-
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
 文档站构建（Astro），见 056-astro 模块（如已加入）。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供文档写作课程。

@@ -2054,8 +2054,6 @@ val content = fileResource.use { it.readBytes() }
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：判断以下代码是否能编译，并解释原因。
@@ -2145,51 +2143,6 @@ val ints: List<Int> = list.filterByType()  // [1, 3]
 val strings: List<String> = list.filterByType()  // ["two", "four"]
 ```
 
-### 综合题知识点讲解
-
-**题目 9**：设计一个类型安全的 `Cache<K, V>` 类，要求：
-
-- `K` 必须是 `Hashable`（即 `Any`，因为有 `hashCode`/`equals`）。
-- `V` 是协变的（`out V`）。
-- 提供 `get(key: K): V?` 方法。
-- 不提供 `put` 方法（因为协变不能写）。
-
-**解析讲解**：
-
-```kotlin
-interface Cache<in K : Any, out V> {
-    fun get(key: K): V?
-}
-
-class MutableCache<K : Any, V> : Cache<K, V> {
-    private val map = mutableMapOf<K, V>()
-
-    override fun get(key: K): V? = map[key]
-
-    fun put(key: K, value: V) {
-        map[key] = value
-    }
-}
-
-// 使用
-val cache: Cache<String, Any> = MutableCache<String, String>().apply {
-    put("a", "hello")
-}
-val v: Any? = cache.get("a")  // hello
-```
-
-**题目 10**：解释为什么 `Array<String>` 不能赋给 `Array<Any>`，而 `List<String>` 可以赋给 `List<Any>`。
-
-**解析讲解**：
-
-- `Array` 在 Kotlin 中是可变的（`Array<T>` 有 `set(index, value: T)`），所以必须不变。如果允许协变，则可以通过 `Array<Any>` 写入非 String 元素，导致 `ArrayStoreException`（Java 的问题）。
-- `List` 在 Kotlin 中是只读的（`List<out E>` 协变），没有 `set` 方法，所以可以安全协变。
-- `MutableList` 是可变的，所以不变。
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 1. Cardelli, L., & Wegner, P. (1985). "On Understanding Types, Data Abstraction, and Polymorphism." *ACM Computing Surveys*, 17(4), 471-523.
@@ -2215,18 +2168,6 @@ val v: Any? = cache.get("a")  // hello
 15. Odersky, M., Spoon, L., & Venners, B. (2019). *Programming in Scala* (5th ed.). Artima Press. （Variance 章节）
 16. Pierce, B. C. (2002). *Types and Programming Languages*. MIT Press.
 17. Cline, M. (2019). *Kotlin in Action* (2nd ed.). Manning Publications.
-
-### 10.4 在线资源
-
-18. Kotlin Playground. https://play.kotlinlang.org/
-19. Kotlin by Example: Generics. https://play.kotlinlang.org/byExample/01_introduction/05_Functions
-20. KotlinConf talks on type system. https://kotlinconf.com/
-21. Arrow library documentation. https://arrow-kt.io/
-22. Kotlin Standard Library source code. https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 高级类型理论
 

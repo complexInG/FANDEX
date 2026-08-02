@@ -3281,8 +3281,6 @@ cd /tmp && npm install my-lib && node -e "console.log(require('my-lib').version)
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **习题 19.1.1**：TypeScript 声明文件使用____扩展名，其中只能包含____声明，不能包含____。
@@ -3304,53 +3302,6 @@ cd /tmp && npm install my-lib && node -e "console.log(require('my-lib').version)
 **习题 19.1.5**：三斜线指令 `/// <reference types="node" />` 用于引入____，而 `/// <reference path="./utils.d.ts" />` 用于引入____。
 
 **解析讲解**：@types 包；相对路径声明文件
-
-### 选择题知识点讲解
-
-**习题 19.2.1**：下列哪种声明方式能正确扩展 Express 的 Request 接口？
-
-A. `interface Request { userId: string; }`
-B. `declare global { interface Request { userId: string; } }`
-C. `declare module 'express' { interface Request { userId: string; } }`
-D. `namespace Express { interface Request { userId: string; } }`
-
-**解析讲解**：C
-
-**习题 19.2.2**：关于 .d.ts 文件中的 `export {}` 语句，下列描述正确的是？
-
-A. 导出空对象，无实际作用
-B. 将文件标记为模块而非全局脚本，使 declare global 生效
-C. 用于声明空模块
-D. 等价于 export default {}
-
-**解析讲解**：B
-
-**习题 19.2.3**：下列哪种情况会导致 "Duplicate identifier" 错误？
-
-A. 两个同名 interface 各自声明不冲突的成员
-B. 两个同名 namespace 各自声明不冲突的成员
-C. 两个同名 interface 各自声明同名但类型不同的属性
-D. 一个 interface 与一个同名 namespace 同时存在
-
-**解析讲解**：C
-
-**习题 19.2.4**：关于 DefinitelyTyped 与 @types 生态，下列描述错误的是？
-
-A. DefinitelyTyped 是 GitHub 上的一个 monorepo，托管社区维护的 .d.ts 文件
-B. 安装 @types/lodash 会自动将 lodash 的类型声明加入编译
-C. @types 包必须发布到 npm 的 @types 命名空间下
-D. 库自身可以同时发布 .d.ts 与对应的 @types 包，TypeScript 会优先使用 @types 包
-
-**解析讲解**：D
-
-**习题 19.2.5**：关于 package.json 的 typesVersions 字段，下列描述最准确的是？
-
-A. 用于声明库支持的所有 TypeScript 版本列表
-B. 用于为不同 TypeScript 版本提供不同的类型声明入口，键为 semver 范围
-C. 等价于 types 字段，仅用于向后兼容
-D. 仅用于 DefinitelyTyped 包，普通库不应使用
-
-**解析讲解**：B
 
 ### 19.3 代码修复题
 
@@ -3466,42 +3417,6 @@ declare module 'config-loader' {
 **解析讲解**：见第 18.4 节案例 4 与第 12.2 节。
 
 ---
-
-## 20. 参考文献
-
-1. Bierman, G., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In *28th European Conference on Object-Oriented Programming (ECOOP 2014)*. LIPIcs 33, 1–29. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2014.257
-
-2. TypeScript Team. 2024. *TypeScript Handbook: Declaration Files*. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html
-
-3. TypeScript Team. 2024. *TypeScript Handbook: Declaration Merging*. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/declaration-merging.html
-
-4. TypeScript Team. 2024. *TypeScript Handbook: Modules Reference*. Microsoft. Available at: https://www.typescriptlang.org/docs/handbook/modules/reference.html
-
-5. ECMA International. 2024. *ECMAScript 2024 Language Specification (ECMA-262, 15th edition)*. Section 8.2 Module Records. Standard ECMA-262. DOI: https://doi.org/10.1145/3180267
-
-6. Node.js Foundation. 2024. *Node.js Modules API: Package Exports*. Available at: https://nodejs.org/api/packages.html
-
-7. DefinitelyTyped Contributors. 2024. *DefinitelyTyped: The repository for high quality TypeScript type definitions*. Available at: https://github.com/DefinitelyTyped/DefinitelyTyped
-
-8. Guarneri, S. and Gardner, P. 2021. A formal semantics for ES modules. In *Proceedings of the 30th European Symposium on Programming (ESOP 2021)*. LNCS 12648, 287–314. DOI: https://doi.org/10.1007/978-3-030-72019-3_11
-
-9. Wadler, P. and Findler, R. B. 2009. Well-typed programs can't be blamed. In *Proceedings of the 18th European Symposium on Programming (ESOP 2009)*. LNCS 5502, 1–16. DOI: https://doi.org/10.1007/978-3-642-00590-9_1
-
-10. Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press, Cambridge, MA, USA. Chapter 11: Simple Extensions (Records). Section 11.7 on Recursive Types and Module Systems.
-
-11. Drossopoulou, S., Eisenbach, S., and Khurshid, S. 1999. Is the Java Type System Sound? *Theory and Practice of Object Systems* 5, 1, 3–19. DOI: https://doi.org/10.1002/(SICI)1096-9942(199901/03)5:1<3::AID-TAPO3>3.0.CO;2-L
-
-12. Amin, N. and Tate, R. 2016. Java and Scala's type systems are unsound: the existential crisis of null pointers. In *Proceedings of the 25th European Symposium on Programming (ESOP 2016)*. LNCS 9632, 270–297. DOI: https://doi.org/10.1007/978-3-662-49498-1_11
-
-13. Crary, K., Harper, R., and Puri, S. 1999. What is a recursive module? In *Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '99)*. ACM, 50–63. DOI: https://doi.org/10.1145/292540.292556
-
-14. Cardelli, L. and Leroy, X. 1990. *Abstract types and the dot notation*. Digital Systems Research Center Research Report 56.
-
-15. MacQueen, G. 1984. Modules for Standard ML. In *Proceedings of the 1984 ACM Symposium on LISP and Functional Programming (LFP '84)*. ACM, 198–207. DOI: https://doi.org/10.1145/800055.802036
-
----
-
-## 21. 延伸阅读
 
 ### 21.1 官方文档
 
@@ -3954,66 +3869,6 @@ flowchart TD
     T8 --> T9
     T9 --> T10
 ```
-
----
-
-## 附录 E：自测清单
-
-### E.1 基础概念自测
-
-- [ ] 能否说出 .d.ts 文件与 .ts 文件的三个主要区别？
-- [ ] 能否写出 declare 关键字的五种形式？
-- [ ] 能否解释为什么 .d.ts 文件不能包含实现代码？
-- [ ] 能否说出 declare module 与 declare namespace 的区别？
-- [ ] 能否解释 export {} 的作用？
-
-### E.2 声明合并自测
-
-- [ ] 能否说出接口合并的冲突解决规则？
-- [ ] 能否说出命名空间合并时非导出成员的可见性？
-- [ ] 能否写出 class + namespace 合并的语法约束？
-- [ ] 能否说出函数重载合并的顺序规则？
-- [ ] 能否解释模块扩展与命名空间合并的差异？
-
-### E.3 模块声明自测
-
-- [ ] 能否为 CommonJS 库编写 declare module 声明？
-- [ ] 能否为 ES 模块库编写 declare module 声明？
-- [ ] 能否编写通配符模块声明（如 `declare module '*.css'`）？
-- [ ] 能否编写虚拟模块声明（如 `declare module 'virtual:env'`）？
-- [ ] 能否解释 UMD 声明的使用场景与约束？
-
-### E.4 模块扩展自测
-
-- [ ] 能否为 Express Request 编写模块扩展添加 userId 字段？
-- [ ] 能否为 Vue ComponentCustomProperties 编写模块扩展添加 $myHelper？
-- [ ] 能否解释模块扩展为什么必须 import 原模块？
-- [ ] 能否说出模块扩展与全局类型增强的差异？
-- [ ] 能否解释模块扩展的副作用管理方法？
-
-### E.5 发布实践自测
-
-- [ ] 能否配置 package.json 的 exports 字段支持 ESM/CJS 双格式？
-- [ ] 能否解释 types 条件为什么必须放在 exports 的最前面？
-- [ ] 能否配置 typesVersions 字段为旧版 TypeScript 提供回退入口？
-- [ ] 能否使用 tsc --declaration 自动生成 .d.ts 文件？
-- [ ] 能否说出三种发布方式（bundled types / separate @types / no types）的优劣？
-
-### E.6 三斜线指令自测
-
-- [ ] 能否说出三种三斜线指令（path/types/lib）的用途？
-- [ ] 能否解释三斜线指令与现代 import 的区别？
-- [ ] 能否说出三斜线指令的适用场景？
-- [ ] 能否解释为什么 lib 指令不能被 import 替代？
-- [ ] 能否在 .d.ts 文件中正确使用三斜线指令引用其他声明？
-
-### E.7 工程实践自测
-
-- [ ] 能否为一个 JavaScript 库编写完整的 .d.ts 声明？
-- [ ] 能否为一个 npm 包配置完整的类型发布方案？
-- [ ] 能否在 monorepo 中管理跨包类型引用？
-- [ ] 能否使用 dtslint 或 tsd 测试 .d.ts 文件？
-- [ ] 能否诊断与修复 "Could not find a declaration file for module 'xxx'" 错误？
 
 ---
 

@@ -1903,50 +1903,6 @@ private static async IAsyncEnumerable<T> WhereAwaitCore<T>(
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个操作符是**立即执行**的？
-
-A. `Select`  
-B. `Where`  
-C. `OrderBy`  
-D. `Count`
-
-**答案：D**
-
-`Select`、`Where` 是延迟流式操作符。`OrderBy` 是延迟但缓冲的操作符。`Count` 是立即执行操作符，调用时立即枚举源并返回计数。
-
-**题目 2**：以下代码会触发几次数据库查询？
-
-```csharp
-var q = dbContext.Users.Where(u => u.Age > 18);
-var list1 = q.ToList();
-var list2 = q.ToList();
-var count = q.Count();
-```
-
-A. 1 次  
-B. 2 次  
-C. 3 次  
-D. 0 次
-
-**答案：C**
-
-每次 `ToList` 和 `Count` 都触发一次数据库查询（因为 `q` 是 `IQueryable`，延迟执行）。共 3 次：两次 `SELECT * FROM Users WHERE Age > 18` 和一次 `SELECT COUNT(*) FROM Users WHERE Age > 18`。修复：将 `q` 缓存为 `List`。
-
-**题目 3**：以下哪个表达式是**表达式树**？
-
-A. `Func<int, bool> f = x => x > 0;`  
-B. `Expression<Func<int, bool>> e = x => x > 0;`  
-C. `var f = (int x) => x > 0;`  
-D. `delegate(int x) { return x > 0; };`
-
-**答案：B**
-
-当 Lambda 被赋值给 `Expression<Func<T, T2>>` 类型时，编译器将其编译为表达式树（AST 数据），而非委托（IL 代码）。其他选项都是委托。
-
 ### 填空题知识点讲解
 
 **题目 4**：`yield return` 编译器生成的状态机实现了 _________ 接口。
@@ -2183,62 +2139,6 @@ public class Program
 }
 ```
 
-### 9.4 思考题
-
-**题目 9**：为什么 `IEnumerable<T>` 支持多次枚举，而 `IObservable<T>` 与 Java `Stream<T>` 不支持？
-
-`IEnumerable<T>` 是**拉取模型**（pull-based），消费者主动调用 `MoveNext`，每次枚举都是新的状态机实例（除非源本身是单次流如 `FileStream`）。
-
-`IObservable<T>` 是**推送模型**（push-based），订阅时数据开始推送，取消订阅后无法重启。
-
-Java `Stream<T>` 设计上明确禁止多次使用，因为：
-
-1. 可能持有外部资源（如文件句柄），多次使用会泄漏。
-2. 强制单次使用鼓励开发者显式管理数据流。
-3. 避免意外的多次枚举开销。
-
-C# `IEnumerable<T>` 的多次枚举既有便利性（`foreach` + `Count` + `ToList`），也有陷阱（多次执行）。.NET 6+ 的 `TryGetNonEnumeratedCount` 缓解了 `Count` 的开销。
-
-**题目 10**：在 EF Core 中，`IQueryable<T>` 翻译为 SQL 时有哪些限制？
-
-EF Core 翻译限制：
-
-1. **C# 方法不可调用**：自定义方法无法翻译，除非使用 `EF.Functions`。
-2. **`DateTime.Now` 客户端求值**：在 `Where` 中使用会在客户端求值（EF Core 3.0+ 抛异常）。
-3. **`List<T>.Contains` 需翻译为 `IN`**：支持但需注意性能。
-4. **复杂的 `GroupBy` 限制**：某些数据库不支持 `GroupBy` + 字段选择。
-5. **`Join` 与导航属性**：导航属性优于显式 `Join`。
-6. **聚合函数**：`Average`、`Sum` 等需在 `Select` 中调用，不能在 `Where` 中。
-7. **自定义比较器**：无法翻译 `IEqualityComparer<T>`。
-8. **LINQ 操作符限制**：`Last`、`ElementAt` 在 SQL 中无直接对应（使用 `OrderByDescending + First`）。
-
-EF Core 7+ 显著扩展了翻译能力，但仍有限制。开发者应使用 `ToQueryString()` 检查生成的 SQL。
-
-**题目 11**：表达式树如何用于动态编译与元编程？
-
-表达式树是 C# 的"代码即数据"机制。通过 `Expression.Lambda<T>(body).Compile()` 可将表达式树编译为委托，实现动态代码生成。
-
-应用场景：
-
-1. **动态查询构建**：根据用户输入构建 `Where` 谓词（见题目 8）。
-2. **ORM 翻译**：EF Core 将表达式树翻译为 SQL。
-3. **规则引擎**：将业务规则表示为表达式树，运行时编译执行。
-4. **序列化优化**：使用表达式树生成属性访问器，比反射快 100 倍。
-5. **DSL 解析**：将 DSL 翻译为表达式树，再编译为可执行代码。
-
-```csharp
-// 表达式树编译为委托
-Expression<Func<int, int>> expr = x => x * x + 1;
-var compiled = expr.Compile();
-Console.WriteLine(compiled(5));  // 26
-```
-
-.NET 9 引入 `Expression.TryGetRefGCData` 等扩展，进一步增强元编程能力。
-
----
-
-## 10. 参考文献
-
 ### 10.1 规范与官方文档
 
 [1] Ecma International. 2023. *ECMA-334: The C# Language Specification (6th edition)*. Geneva, Switzerland: Ecma International. https://www.ecma-international.org/wp-content/uploads/ECMA-334_6th_edition_december_2022.pdf
@@ -2287,8 +2187,6 @@ Console.WriteLine(compiled(5));  // 26
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 进阶书籍
 
 - **Jon Skeet**. *C# in Depth (4th ed.)* — 第 9-12 章深入讲解 LINQ。
@@ -2301,27 +2199,12 @@ Console.WriteLine(compiled(5));  // 26
 - **Stanford CS107 Programming Paradigms** — https://web.stanford.edu/class/cs107/ — 函数式编程基础。
 - **CMU 15-411 Compiler Design** — http://www.cs.cmu.edu/~fp/courses/15411-f08/ — 表达式树与 AST。
 
-### 11.3 在线资源
-
-- **101 LINQ Samples** — https://learn.microsoft.com/dotnet/csharp/linq/standard-query-operators/ — 官方示例集。
-- **LINQ Pad** — https://www.linqpad.net/ — Joe Albahari 的交互式 LINQ 工具，必备。
-- **EF Core documentation** — https://learn.microsoft.com/ef/core/ — 官方 EF Core 文档。
-- **Stephen Toub's Performance Blog** — https://devblogs.microsoft.com/dotnet/ — LINQ 性能优化。
-
 ### 11.4 相关源码
 
 - **dotnet/runtime/src/libraries/System.Linq/** — LINQ to Objects 实现。
 - **dotnet/efcore/src/EFCore/Query/** — EF Core 查询翻译。
 - **dotnet/roslyn/src/Compilers/CSharp/Portable/Lowering/IteratorRewriter/** — `yield return` 状态机重写。
 - **dotnet/reactive/** — System.Reactive（IObservable）实现。
-
-### 11.5 视频资源
-
-- **Channel 9: LINQ Series** — https://channel9.msdn.com/ — Bart De Smet 系列。
-- **Erik Meijer's Talks** — LINQ 设计师的多次演讲。
-- **Jon Skeet's Pluralsight Courses** — C# 与 LINQ 深度课程。
-
----
 
 ## 附录 A：LINQ 操作符速查表
 

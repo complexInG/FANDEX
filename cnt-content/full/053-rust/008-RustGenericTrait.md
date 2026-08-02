@@ -256,26 +256,6 @@ fn main() {
 
 讲解：`T: Display + Clone` 表示 T 必须同时实现两个 trait（多约束）；参数 `&T` 是借用，内部需要所有权时用 clone。泛型函数最常见的三个关键词组合：`Display`（打印）、`Clone`（复制）、借用引用（避免移动）。
 
-## 6. 实战练习
-
-1. **泛型函数**：写一个泛型函数 `find_max`，返回切片中的最大值（约束 `T: PartialOrd`），分别用整数、浮点、字符数组验证。
-
-2. **Trait 设计**：定义一个 `Area` trait（`fn area(&self) -> f64`），为 `Circle` 和 `Rectangle` 实现，写一个接受 `&impl Area` 的函数打印面积。
-
-3. **Trait 对象**：把练习 2 改为返回 `Box<dyn Area>`，体会静态分发与动态分发的区别。
-
-4. **derive 实践**：定义一个 `User` 结构体，`#[derive(Debug, Clone, PartialEq, Default)]`，测试每个派生 trait 的用法。
-
-5. **生命周期**：写一个 `choose` 函数（两个引用返回较大的），手写 `'a` 标注；尝试不标注观察编译器报错。
-
-## 7. 参考资源
-
-TRPL 第 10 章（泛型、Trait 与生命周期）：https://kaisery.github.io/trpl-zh-cn/ch10-00-generics.html
-
-TRPL 第 17 章（Trait 对象）：https://kaisery.github.io/trpl-zh-cn/ch17-00-oop.html
-
-Rust 参考（Trait）：https://doc.rust-lang.org/reference/items/traits.html
-
 ## 8. 小结
 
 泛型解决"对多种类型写一份代码"，Trait 定义"行为的接口"，生命周期保证"引用不悬垂"。三者组合让 Rust 既能写出抽象代码，又保持零运行时开销与内存安全。下一步进入测试与调试，学会验证自己的代码。

@@ -345,19 +345,9 @@ GitHub 支持将仓库标记为**模板仓库**，其他用户可以基于模板
 2. 其他用户点击 "Use this template" 创建新仓库
 3. 新仓库不包含 Git 历史，从零开始
 
-## 参考文献
-
-本模块各文档：环境搭建、编程基础、调试思维等。
-MDN 学习区：https://developer.mozilla.org/zh-CN/docs/Learn_web_development
-freeCodeCamp：https://www.freecodecamp.org/chinese/
-黑马程序员官网：https://www.itheima.com/
-
 ## 延伸阅读
-
 从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
 语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供基础课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

@@ -2560,8 +2560,6 @@ print(f"Cell contents: {counter.__closure__[0].cell_contents}")
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码的输出是什么？解释原因。
@@ -3072,18 +3070,6 @@ if __name__ == "__main__":
     manager.reload(new_config)  # Config updated: debug True -> False
 ```
 
-### 9.6 思考题
-
-**思考题 1**：为什么 Python 不引入 `const` 关键字？如果引入会有什么问题？
-
-**思考题 2**：Python 的 `is` 运算符在什么场景下应该使用？什么场景下不应该使用？
-
-**思考题 3**：在异步编程中，如何安全地管理请求级别的变量？`contextvars` 与 `threading.local` 有何区别？
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. Python Software Foundation. *The Python Language Reference* [EB/OL]. (2024-10-07). https://docs.python.org/3/reference/.
@@ -3111,15 +3097,6 @@ if __name__ == "__main__":
 17. Rhodes, B. *Practices of the Pythonic Pro* [C]. PyCon 2018, 2018. https://www.youtube.com/watch?v=Ljx7mOlOLgE.
 18. Shaw, Z. D. *Learn Python 3 the Hard Way* [M]. Boston: Addison-Wesley, 2017.
 
-### 10.4 在线资源
-
-19. Python Software Foundation. *Python Module of the Week: copy* [EB/OL]. https://pymotw.com/3/copy/.
-20. Real Python. *Python Variables* [EB/OL]. https://realpython.com/python-variables/.
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 进阶主题
 
 - **Python 内存模型**：深入理解 CPython 的内存管理、对象分配与回收机制。
@@ -3146,14 +3123,6 @@ if __name__ == "__main__":
 - **attrs**：替代 dataclass 的第三方库，更强大的功能。
 - **cachetools**：缓存库，提供 `TTLCache`、`LRUCache` 等。
 - **objgraph**：内存分析工具，可视化对象引用关系。
-
-### 11.4 社区资源
-
-- **Python 官方论坛**：https://discuss.python.org/
-- **Reddit r/Python**：https://reddit.com/r/Python
-- **Stack Overflow Python 标签**：https://stackoverflow.com/questions/tagged/python
-- **Python Weekly**：每周 Python 新闻邮件
-- **Talk Python To Me**：Python 播客
 
 ### 11.5 学习路径
 

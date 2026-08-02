@@ -223,52 +223,9 @@ config/credentials.json
 | 组织席位限制 | 无法修改计划 | 由组织统一分配 | 联系组织管理员，个人不能改 |
 | 代码无法运行 | 采纳后编译报错 | 建议只是"最可能的后续"，不保证正确 | 运行测试验证；不信任 AI 写的边界逻辑 |
 
-## 8. 实战练习
-
-### 练习 1：完成第一次补全（入门）
-
-**题目描述**：在 VS Code 安装 Copilot 扩展并登录，新建一个 Python 文件，写注释"把列表中的偶数过滤出来"，观察建议并 Tab 采纳，然后用 `Alt+]` 尝试切换其他候选。
-
-**提示**：扩展市场搜索 "GitHub Copilot"；没有网络建议时先检查登录状态。
-
-**参考答案要点**：验证三种响应：Tab 全量采纳、Esc 拒绝、Alt+] 切换候选。参考输出：`result = [x for x in nums if x % 2 == 0]`。体验后小结"注释越具体建议越准"。
-
-### 练习 2：注释驱动写一个完整函数（入门）
-
-**题目描述**：不写任何实现，只靠注释 + 函数签名，让 Copilot 生成一个"校验密码强度"的函数（至少包含长度、大小写、数字三类检查），并人工审查补全代码是否安全正确。
-
-**提示**：把约束写进注释，如"返回布尔值""至少 8 位""必须含数字"。
-
-**参考答案要点**：检查点：长度判断是否准确；是否用了 `isupper`/`islower`/`isdigit`；边界（空字符串）是否处理；这是"审查 AI 输出"的第一次实战。
-
-### 练习 3：配置仓库指令文件（进阶）
-
-**题目描述**：在你的项目根目录创建 `.github/copilot-instructions.md`，写入技术栈和 3 条编码规范，然后在仓库里写一段代码验证 Copilot 是否遵守（例如指定"禁止使用 any"后，看它是否还会生成 any）。
-
-**提示**：指令文件生效依赖编辑器版本；修改后重开文件或重启编辑器更稳妥。
-
-**参考答案要点**：指令文件格式参考 5.2；验证方法：写"处理用户数据"的模糊注释，观察补全是否遵循"interface 优先、不用 any"。若不生效，检查文件路径是否为 `.github/copilot-instructions.md`。
-
-### 练习 4：用 Chat 完成一次"解释-重构-测试"循环（挑战）
-
-**题目描述**：找一段你自己写的 30 行以上的代码，依次用 Chat 完成三步：解释它、重构它（要求更清晰/更高效）、为重构版生成测试，然后人工审查并对比前后差异，写 100 字复盘。
-
-**提示**：选中代码后再提问，上下文更准；每一步都要求"用中文回答"。
-
-**参考答案要点**：复盘模板："原代码 35 行，重构后 22 行，可读性提升；Chat 给出的解释遗漏了 X 边界情况，说明 AI 解释也可能不完整；生成的测试覆盖了主路径，但未覆盖空输入，需要人工补。"——核心结论：**AI 是加速器，不是裁判，最终正确性由人负责**。
-
 ## 9. 一句话记忆
 
 **Copilot 是坐在你身边的 AI 结对编程助手：注释写清楚它就能接代码，选中代码就能问它；订阅先免费后按需升级，用 copilot-instructions.md 给它立规矩——但永远记住：AI 的建议要审查，正确性最终由你负责。**
-
-## 10. 参考链接与延伸阅读
-
-### 权威资料（GitHub 官方中文文档）
-
-- GitHub Copilot 文档中心：https://docs.github.com/zh/copilot
-- 个人计划与权益（Free/Pro/Pro+ 对比）：https://docs.github.com/zh/copilot/concepts/billing/individual-plans
-- 在环境中配置 GitHub Copilot：https://docs.github.com/zh/copilot/configuring-github-copilot/configuring-github-copilot-in-your-environment
-- 管理你的 Copilot 计划（查看/更改/取消）：https://docs.github.com/zh/copilot/how-tos/manage-your-account/view-and-change-your-copilot-plan
 
 ### 延伸阅读（站内文档）
 

@@ -297,95 +297,9 @@ codeql query run mydb ./custom-queries/sql-injection.ql
 | 扫描时间过长 | CI 超时 | 仓库过大或语言过多 | 并行矩阵（fail-fast: false）；按目录拆分扫描；只扫改动文件（PR 模式） |
 | 想让 PR 阻止合并 | 有漏洞仍合并了 | 未启用状态检查强制 | 分支保护规则勾选对应 status check 为 required |
 
-## 7. 实战练习
-
-### 练习 1：理解语义分析的优势（入门）
-
-**题目描述**：对比以下两段代码，说明为什么传统 Linter 可能放过它们，而 CodeQL 会报警。
-
-```python
-# 代码A
-query = "SELECT * FROM users WHERE name = '" + user_input + "'"
-
-# 代码B
-name = input()
-query = "SELECT * FROM users WHERE name = ?"  # 参数化查询，安全
-```
-
-**提示**：思考"代码是否语法正确"与"数据是否流经危险操作"的差别。
-
-**参考答案要点**：两段代码语法都正确，Linter 难以区分。CodeQL 通过污点分析追踪：代码 A 中 `user_input`（不可信输入）流入 `execute()` 的 SQL 参数，构成注入链，报警；代码 B 使用参数化查询，数据流被拦截，不报警。这就是"语义分析"胜过"语法检查"之处。
-
-### 练习 2：启用默认代码扫描（入门）
-
-**题目描述**：为你的 Python 仓库启用默认设置的 CodeQL 代码扫描，并说明它会自动完成哪三件事。
-
-**提示**：路径为 Settings → Code security and analysis → Code scanning。
-
-**参考答案要点**：在 Code scanning 设置页选择 Default 并 Enable。自动完成：1. 自动选择语言（Python）；2. 自动选择默认查询套件；3. 自动配置触发事件（push / PR / 每周定时）。启用后可在 Actions 中看到 CodeQL 工作流运行。
-
-### 练习 3：编写高级设置工作流（进阶）
-
-**题目描述**：编写一个 CodeQL 工作流，要求：在 PR 时扫描 JavaScript 与 Python；使用自定义配置文件；将告警写入 security-events。
-
-**提示**：参考第 2.2 节模板，注意语言标识符与 `config-file` 参数。
-
-**参考答案要点**：
-
-```yaml
-name: "CodeQL"
-on:
-  pull_request:
-    branches: [ "main" ]
-jobs:
-  analyze:
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-    strategy:
-      matrix:
-        language: [ 'javascript-typescript', 'python' ]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-          config-file: ./.github/codeql/codeql-config.yml
-      - uses: github/codeql-action/analyze@v3
-```
-
-### 练习 4：配置自定义扫描范围（进阶）
-
-**题目描述**：你的仓库包含 `src/`（业务代码）和 `legacy/`（老代码，误报多）。希望只扫描 `src/`，跳过测试目录，并使用 security-and-quality 套件。
-
-**提示**：用 `paths`、`paths-ignore`、`queries` 三个键。
-
-**参考答案要点**：
-
-```yaml
-# .github/codeql/codeql-config.yml
-name: "Custom Config"
-paths:
-  - src
-paths-ignore:
-  - '**/test/**'
-queries:
-  - uses: security-and-quality
-```
-
-### 练习 5：分析告警并设计处理流程（综合）
-
-**题目描述**：代码扫描产生 200 条告警：5 条 Critical、30 条 Warning、165 条 Note，其中大量 Note 集中在测试目录。设计一套处理与持续改进流程。
-
-**提示**：从分级处置、噪音治理、预防机制三个层面组织。
-
-**参考答案要点**：1. 分级处置：Critical 立即修复并优先合并；Warning 建 Issue 分派；Note 批量评估，测试目录的误报批量关闭并注明原因；2. 噪音治理：在 codeql-config.yml 增加 `paths-ignore: '**/test/**'` 减少后续噪音；3. 预防机制：在分支保护中把 CodeQL 状态检查设为 required，保证后续 PR 不引入新 Critical 告警。
-
 ## 8. 一句话记忆
 
 > **CodeQL 是代码世界的"安检机"：它不看代码表面（语法），而是给代码拍"透视照片"（数据库）再用"规则眼睛"（查询）扫描——发现 SQL 注入、XSS 这类藏在结构里的深层漏洞，并在 PR 合并前拦下它们。**
-
-## 参考链接与延伸阅读
 
 ### 官方文档
 
@@ -395,9 +309,7 @@ queries:
 - GitHub 官方查询库 github/codeql：https://github.com/github/codeql
 
 ### 延伸阅读
-
 - 密钥扫描（保护另一类资产：密钥），见 004-github 模块 018 文档。
 - Dependabot（扫描"别人的代码"——依赖），见 004-github 模块 016 文档。
 - 依赖安全选项（供应链安全全景），见 004-github 模块 010 文档。
 - GitHub Actions 触发器（push / pull_request / schedule 详解），见 004-github 模块 030 文档。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

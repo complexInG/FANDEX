@@ -4,7 +4,7 @@ title: 定积分与应用
 module: calculus
 category: 高等数学
 difficulty: intermediate
-description: 定积分的 Riemann/Darboux 形式化定义、Newton-Leibniz 公式与微积分基本定理、换元与分部、反常积分、面积/体积/弧长/功。本篇以 Spivak/Apostol/Rudin 风格的严格分析视角,系统阐述从穷竭法到 Riemann 严格化再到 Lebesgue 测度与 Henstock-Kurzweill 积分的演化,配套 40+ Python/SymPy/scipy 代码示例、6 个 Mermaid 图与 10 道 Spivak 风格习题。
+description: 定积分的 Riemann/Darboux 形式化定义、Newton-Leibniz 公式与微积分基本定理、换元与分部、反常积分、面积/体积/弧长/功。本篇以 Spivak/Apostol/Rudin 风格的严格分析视角,系统阐述从穷竭法到 Riemann 严格化再到 Lebesgue 测度与 Henstock-Kurzweill 积分的演化,配套 40+ Python/SymPy/scipy 代码示例。
 author: fanquanpp
 created: 2026-06-14
 updated: 2026-07-18
@@ -2858,10 +2858,6 @@ flowchart LR
 
 ---
 
-## 第 12 章 习题与解答
-
-本章给出 frontmatter 中 10 道习题的详细解答,涵盖 fill-blank、choice、code-fix、open-ended 四类题型。所有证明题均给出完整证明步骤,代码题给出可运行的参考实现。
-
 ### 填空题知识点讲解
 
 **习题 ex-calc-di-fb-01**:Riemann 可积的极限值与 ____ 及 ξ_i 的取法无关。
@@ -2875,57 +2871,6 @@ flowchart LR
 **解答**:原函数(或一个原函数)。
 
 **详细解释**:微积分第二基本定理表明,若 $f$ 在 $[a, b]$ 上连续,$F$ 是 $f$ 的原函数(即 $F'(x) = f(x)$),则 $\int_a^b f(x)\,dx = F(b) - F(a)$。连续性是充分条件;对 Riemann 可积但有不连续点的函数,需用更一般的 Lebesgue 微分定理形式。
-
-### 选择题知识点讲解
-
-**习题 ex-calc-di-ch-01**:Riemann 可积性论断。
-
-**正确答案**:B(闭区间上单调函数必 Riemann 可积,即使存在不连续点)。
-
-**完整分析**:
-
-- **A 错**:Dirichlet 函数 $f(x) = \begin{cases} 1, & x \in \mathbb{Q} \\ 0, & x \notin \mathbb{Q} \end{cases}$ 有界但处处不连续,任何区间上振幅均为 1,不可积。
-- **B 对**:单调函数的间断点至多可数,且在每个区间上振幅 $\omega_k \leq |f(x_k) - f(x_{k-1})|$,故 $U - L \leq (f(b) - f(a)) \cdot \|P\| \to 0$。
-- **C 错**:Thomae 函数虽在 $[0, 1]$ 上可积(间断点为有理数集,可数,测度为零),但陈述"必可积"过强;若函数有第二类间断点(如 $1/x$ 在 $[0, 1]$ 上无界)则不可积。
-- **D 错**:反例 $f(x) = \begin{cases} 1, & x \in \mathbb{Q} \\ -1, & x \notin \mathbb{Q} \end{cases}$,则 $|f| \equiv 1$ 可积,但 $f$ 不可积。
-
-**习题 ex-calc-di-ch-02**:换元法求 $\int_0^1 x^2 (1+x)^{1/2}\,dx$。
-
-**正确答案**:C(令 $t = \sqrt{1+x}$)。
-
-**完整计算**:
-
-$$
-t = \sqrt{1+x}, \quad x = t^2 - 1, \quad dx = 2t\,dt
-$$
-
-当 $x = 0$ 时 $t = 1$;当 $x = 1$ 时 $t = \sqrt{2}$。
-
-$$
-\int_0^1 x^2 (1+x)^{1/2}\,dx = \int_1^{\sqrt{2}} (t^2 - 1)^2 \cdot t \cdot 2t\,dt = 2\int_1^{\sqrt{2}} (t^2 - 1)^2 t^2\,dt
-$$
-
-展开 $(t^2 - 1)^2 t^2 = t^6 - 2t^4 + t^2$,逐项积分:
-
-$$
-2 \left[ \frac{t^7}{7} - \frac{2t^5}{5} + \frac{t^3}{3} \right]_1^{\sqrt{2}} = 2 \left( \frac{8\sqrt{2}}{7} - \frac{8\sqrt{2}}{5} + \frac{2\sqrt{2}}{3} - \frac{1}{7} + \frac{2}{5} - \frac{1}{3} \right)
-$$
-
-**习题 ex-calc-di-ch-03**:$\int_1^\infty \frac{\sin x}{x}\,dx$ 的收敛性。
-
-**正确答案**:B(条件收敛)。
-
-**完整证明**:
-
-1. **收敛性**(Dirichlet 判别法):$g(x) = 1/x$ 单调递减趋于 $0$,$\int_1^A \sin x\,dx = \cos 1 - \cos A$ 有界($|\cdot| \leq 2$),故 $\int_1^\infty \sin x / x\,dx$ 收敛。
-
-2. **非绝对收敛**:在区间 $[k\pi, (k+1)\pi]$ 上,$|\sin x| \geq |\sin(x - k\pi)|$,故
-
-$$
-\int_{k\pi}^{(k+1)\pi} \frac{|\sin x|}{x}\,dx \geq \frac{1}{(k+1)\pi} \int_{k\pi}^{(k+1)\pi} |\sin x|\,dx = \frac{2}{(k+1)\pi}
-$$
-
-求和 $\sum_{k=1}^\infty \frac{2}{(k+1)\pi} = \infty$,故 $\int_1^\infty |\sin x|/x\,dx$ 发散。
 
 ### 12.3 代码修正题解答
 
@@ -3043,7 +2988,6 @@ $$
 **习题 ex-calc-di-oe-03**:设计 Python 实验验证 $\int_0^1 \sqrt{x}\,dx = 2/3$。
 
 ```python
-## 知识讲解与要点分析（原习题 oe-03:数值验证 ∫_0^1 √x dx = 2/3）
 import numpy as np
 from scipy.integrate import quad
 import sympy as sp
@@ -3097,10 +3041,6 @@ for n in [10, 100, 1000, 10000]:
 **结果分析**:由于 $\sqrt{x}$ 在 $x = 0$ 处导数无界,Riemann 和的收敛速度仅为 $O(1/n)$ 而非 $O(1/n^2)$。这提示:**光滑性影响数值积分的收敛阶**。
 
 ---
-
-## 第 13 章 参考文献
-
-本章节按 ACM Reference Format 列出本篇引用的全部学术文献。完整元数据见 frontmatter 的 `references` 字段。
 
 ### 13.1 教材类
 

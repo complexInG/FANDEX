@@ -1243,8 +1243,6 @@ runCoroutine(processVideo(file));
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码输出什么？解释原因。
@@ -1387,32 +1385,6 @@ function findPairsOptimized(arr, target) {
 ```
 
 ---
-
-## 10. 参考文献
-
-[1] Ecma International. 2024. *ECMAScript 2024 Language Specification (ECMA-262, 15th edition)*. Geneva, Switzerland: Ecma International. https://www.ecma-international.org/wp-content/uploads/ECMA-262_15th_edition_june_2024.pdf
-
-[2] Dijkstra, E. W. 1968. Go to statement considered harmful. *Communications of the ACM* 11, 3 (March 1968), 147–148. DOI: https://doi.org/10.1145/362929.362947
-
-[3] Böhm, C. and Jacopini, G. 1966. Flow diagrams, Turing machines and languages with only two formation rules. *Communications of the ACM* 9, 5 (May 1966), 366–371. DOI: https://doi.org/10.1145/355572.365646
-
-[4] Anderson, L. W. and Krathwohl, D. R. (Eds.). 2001. *A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives*. Longman, New York, NY.
-
-[5] Hoare, C. A. R. 1969. An axiomatic basis for computer programming. *Communications of the ACM* 12, 10 (October 1969), 576–580. DOI: https://doi.org/10.1145/363235.363259
-
-[6] Eich, B. 1999. *JavaScript at Ten Years*. Microsoft Corporation, Redmond, WA. (Invited talk at ICSE 1999.) https://brendaneich.com/2005/04/javascript-at-ten-years/
-
-[7] Wirfs-Brock, A. and Eich, B. 2020. *JavaScript: The First 20 Years*. *Proceedings of the ACM on Programming Languages* 4, HOPL (June 2020), 1–189. DOI: https://doi.org/10.1145/3386327
-
-[8] Servo Project. 2024. *ECMAScript Control Flow Graph Specification*. Mozilla Foundation, San Francisco, CA. https://github.com/servo/servo/blob/main/components/script/dom/bindings/codegen/CFG.md
-
-[9] Nielsen, J. 1994. *Usability Engineering*. Morgan Kaufmann, San Francisco, CA. DOI: https://doi.org/10.1016/B978-0-08-052029-2.50007-9
-
-[10] Pombrio, J. and Krishnamurthi, S. 2020. *Sweetness: Evaluating and improving prettier's control flow formatting*. Brown University, Providence, RI. https://cs.brown.edu/~sk/Memos/Trimming-Whitespace/
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

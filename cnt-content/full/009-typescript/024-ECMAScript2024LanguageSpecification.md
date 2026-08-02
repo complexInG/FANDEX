@@ -1587,8 +1587,6 @@ Zod 的 `z.infer` 实现简化版：
 type infer<T extends ZodType> = T extends ZodType<infer Output, any> ? Output : never;
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. **（remember）** TypeScript 2.8 引入 `infer` 的 PR 编号是 ______。
@@ -1600,40 +1598,6 @@ type infer<T extends ZodType> = T extends ZodType<infer Output, any> ? Output : 
 4. **（analyze）** 在分布式条件类型中，若 T 是 `never`，则 `T extends Promise<infer U> ? U : T` 的结果是 ______，因为 never 在分布式条件下会被 ______。
 
 5. **（evaluate）** TypeScript 4.5 引入的 `Awaited<T>` 内置类型，其对 `Promise<Promise<Promise<T>>>` 的求值结果是 ______。
-
-### 选择题知识点讲解
-
-1. **（understand）** 下列哪种 `infer` 写法是合法的？
-   - A. `type F<T> = infer U extends T ? U : never;`
-   - B. `type F<T> = T extends infer U ? U : never;`
-   - C. `type F<T> = T extends (x: infer U extends string) => void ? U : never;`
-   - D. `type F<T> = T extends Promise<infer U> extends Promise<infer V> ? U : V : never;`
-
-   **答案**：C
-
-2. **（analyze）** 下列关于 `infer` 在元组中的行为，哪项正确？
-   - A. `infer R` 在 rest 元素位置总是推断为数组类型
-   - B. `infer R` 在 rest 元素位置的推断类型取决于输入元组的形态
-   - C. `type Tail<T> = T extends [any, ...infer R] ? R : never` 中，R 一定是 `any[]`
-   - D. `infer` 不能在元组的 rest 位置使用
-
-   **答案**：B
-
-3. **（evaluate）** 下列哪种实现能正确判断类型 T 是否为 `any`？
-   - A. `type IsAny<T> = T extends any ? true : false;`
-   - B. `type IsAny<T> = 0 extends 1 & T ? true : false;`
-   - C. `type IsAny<T> = keyof T extends never ? true : false;`
-   - D. `type IsAny<T> = T === any ? true : false;`
-
-   **答案**：B
-
-4. **（create）** 下列哪种方案能正确实现 `DeepReadonly` 且不破坏函数、Date 等类型？
-   - A. 直接递归映射所有属性
-   - B. 在递归前先用条件类型排除函数、Date、Map、Set 等
-   - C. 使用 `Readonly<T>` 即可
-   - D. 用 `Object.freeze` 包装
-
-   **答案**：B
 
 ### 13.3 代码修正题
 
@@ -1702,38 +1666,6 @@ type Path<T, Prefix extends string = ''> =
 
    请给出形式化定义与至少 1 个应用示例。
 
-## 14. 参考文献
-
-[1] Hejlsberg, A. 2018. Conditional Types. Microsoft/TypeScript Pull Request #21496. https://github.com/microsoft/TypeScript/pull/21496
-
-[2] Bierman, G. M., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP'14), 257–281. DOI: 10.1007/978-3-662-44202-9_11
-
-[3] Pierce, B. C. 2002. Types and Programming Languages. MIT Press.
-
-[4] Pierce, B. C. and Turner, D. N. 2000. Local Type Inference. ACM Transactions on Programming Languages and Systems (TOPLAS) 22, 1, 1–44. DOI: 10.1145/345099.345100
-
-[5] Ajvani, B., Vahidi, S., and Itzhaki, S. 2023. Type-level Programming in TypeScript. arXiv preprint arXiv:2302.09465. DOI: 10.48550/arXiv.2302.09465
-
-[6] Hosoya, H. and Pierce, B. C. 2003. Regular Expression Pattern Matching for XML. Journal of Functional Programming 13, 6, 961–1004. DOI: 10.1017/S0956796803000314
-
-[7] Cardelli, L., Martini, S., Mitchell, J. C., and Scedrov, A. 1994. An Extension of System F with Subtyping. Information and Computation 109, 1–2, 4–36. DOI: 10.1006/inco.1994.1093
-
-[8] Microsoft. 2024. TypeScript Handbook: Conditional Types. https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
-
-[9] Microsoft. 2024. TypeScript Handbook: Type Inference. https://www.typescriptlang.org/docs/handbook/type-inference.html
-
-[10] Scherer, G. 2020. Type Inference: What does an inference algorithm infer? SIGPLAN Blogs. https://blog.sigplan.org/2020/04/07/type-inference-what-does-an-inference-algorithm-infer/
-
-[11] ECMA International. 2024. ECMAScript 2024 Language Specification. ECMA-262 15th Edition. https://tc39.es/ecma262/
-
-[12] Robinson, J. A. 1965. A Machine-Oriented Logic Based on the Resolution Principle. Journal of the ACM (JACM) 12, 1, 23–41. DOI: 10.1145/321250.321253
-
-[13] Rémy, D. 1989. Type Inference for Records in a Natural Extension of ML. In Proceedings of the 16th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL'89), 242–249. DOI: 10.1145/75277.75303
-
-[14] Owens, S., Weirich, D., and Ramsay, F. 2011. A Type System for JavaScript. In Proceedings of the 38th Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL'11), 1–12. DOI: 10.1145/1926385.1926387
-
-## 15. 延伸阅读
-
 ### 15.1 书籍
 
 1. **Pierce, B. C.** *Types and Programming Languages* (MIT Press, 2002) — 类型论的经典教材，第 10-11 章详细讲解合一与类型推导。
@@ -1754,13 +1686,6 @@ type Path<T, Prefix extends string = ''> =
 3. **type-challenges** (type-challenges/type-challenges) — TypeScript 类型体操题集，包含从入门到进阶的练习。
 4. **effective-typescript** (danvk/effective-typescript) — Effective TypeScript 一书的配套代码。
 5. **typepark** (piotrwitek/typepark) — 类型体操实验场。
-
-### 15.4 在线资源
-
-1. **TypeScript 官方手册** — https://www.typescriptlang.org/docs/handbook/intro.html
-2. **TypeScript 深入教程** — https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html
-3. **TypeScript 严格模式指南** — https://www.typescriptlang.org/tsconfig
-4. **TypeScript 性能调优** — https://github.com/microsoft/TypeScript/wiki/Performance
 
 ### 15.5 视频课程
 

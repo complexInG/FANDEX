@@ -1873,8 +1873,6 @@ struct Step1Form {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题 1**：简述 ArkTS 与 TypeScript 的核心差异，至少列出 3 项。
@@ -2031,8 +2029,6 @@ class TimeTravelStore<T> {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 [1] Huawei Device Co., Ltd. 2024. ArkTS Application Development Guide. (Version 5.0). HarmonyOS Official Documentation. Retrieved July 21, 2026 from https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/arkts-getting-started-V5. DOI: 10.1234/harmonyos.arkts.2024.001.
@@ -2069,8 +2065,6 @@ class TimeTravelStore<T> {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档与资源
 
 - **HarmonyOS Developer 官网**：https://developer.harmonyos.com/
@@ -2105,17 +2099,6 @@ class TimeTravelStore<T> {
   - 响应式编程范式的综述
 - **"Cross-Platform Mobile Development: A Comparative Study"** IEEE Transactions on Software Engineering, 2024
   - 跨端移动开发的对比研究
-
-### 11.4 社区资源
-
-- **HarmonyOS Developers Gitee**：https://gitee.com/harmonyos
-  - 官方代码仓库与开源项目
-- **51CTO HarmonyOS 专区**：https://harmonyos.51cto.com/
-  - 中文社区技术文章
-- **掘金 HarmonyOS 标签**：https://juejin.cn/tag/HarmonyOS
-  - 开发者实践分享
-- **Stack Overflow HarmonyOS**：https://stackoverflow.com/questions/tagged/harmonyos
-  - 国际社区问答
 
 ### 11.5 相关课程
 

@@ -2150,8 +2150,6 @@ class MyServiceTest {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码的输出是什么？
@@ -2452,8 +2450,6 @@ class UserRepository(
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. JetBrains. "Coroutines exceptions handling." *Kotlin Coroutines Documentation*, 2024. https://kotlinlang.org/docs/coroutine-exceptions.html
@@ -2490,16 +2486,6 @@ class UserRepository(
 
 14. Pivotal Software. "Project Reactor Reference." *Spring Framework Documentation*, 2024. https://projectreactor.io/docs/core/release/reference/
 
-### 10.5 跨语言参考
-
-15. Swift Evolution. "SE-0296: Async/await." *Swift Evolution Proposals*, 2020. https://github.com/apple/swift-evolution/blob/main/proposals/0296-async-await.md
-
-16. Swift Evolution. "SE-0306: Concurrency Interoperability with Objective-C." *Swift Evolution Proposals*, 2020.
-
-17. Go Documentation. "Concurrency patterns." *Go Programming Language Documentation*, 2024. https://go.dev/blog/pipelines
-
-18. ECMA International. "ECMAScript 2024: Promise.allSettled." *ECMA-262 Specification*, 2024.
-
 ### 10.6 工程实践
 
 19. Google. "Android Kotlin Flow: Handle errors." *Android Developers Documentation*, 2024. https://developer.android.com/kotlin/flow#errors
@@ -2528,8 +2514,6 @@ class UserRepository(
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 进阶主题
 
 - **Kotlin 2.0 K2 编译器对协程异常堆栈的优化**：理解 K2 如何减少异常堆栈的中间帧。
@@ -2551,13 +2535,6 @@ class UserRepository(
 - **《The Joy of Kotlin》**（Pierre-Yves Saumont）：第 9-11 章 异常处理与函数式错误。
 - **《Functional Programming in Kotlin》**（Marco Vermeulen）：第 8 章 处理错误。
 - **《Kotlin Coroutines Deep Dive》**（Roman Elizarov, Marcin Moskala）：协程异常处理的完整解析。
-
-### 11.4 社区资源
-
-- **Kotlin Slack**：`#coroutines` 频道，与 JetBrains 团队直接交流。
-- **Kotlin Discussions**：https://discuss.kotlinlang.org/，协程异常处理讨论。
-- **Stack Overflow**：`kotlin-coroutines` 标签，常见问题与解答。
-- **GitHub Issues**：https://github.com/Kotlin/kotlinx.coroutines/issues，官方追踪与讨论。
 
 ### 11.5 实践项目
 

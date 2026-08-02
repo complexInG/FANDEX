@@ -354,23 +354,6 @@ public class MysqlOrderRepository implements OrderRepository {
 
 **对策**：分层的深度要和系统复杂度匹配——小项目用 2-3 层即可，不要为了"规范"而过度分层。
 
-## 9. 实战练习
-
-1. **画层图**：为你熟悉的一个功能（比如"登录"）画出分层调用链：表现层做了什么 → 业务层做了什么 → 持久层做了什么。
-
-2. **反例识别**：在你的代码库（或网上开源项目）中找到 3 个"分层被破坏"的例子（如 Controller 直接操作数据库、Service 里出现 SQL），说明如何修正。
-
-3. **设计决策**：某个"只读报表"功能，你会用严格分层还是松散分层？说出你的理由和边界条件。
-
-4. **手写分层**：用你熟悉的语言，实现一个"用户注册"功能的分层结构（Controller → Service → Repository），接口和实现分离。
-
-## 10. 参考资源
-
-- 分层架构模式（Martin Fowler）：https://martinfowler.com/bliki/PresentationDomainDataLayering.html
-- 六边形架构（Alistair Cockburn）：https://alistair.cockburn.us/hexagonal-architecture/
-- 洋葱架构（Jeffrey Palermo）：https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/
-- ArchUnit（Java 架构测试）：https://www.archunit.org/
-
 ## 11. 延伸阅读
 
 - 分层之外的另一种架构形态（服务级拆分），见本模块《微服务架构》

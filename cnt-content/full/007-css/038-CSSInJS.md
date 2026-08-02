@@ -586,26 +586,9 @@ flowchart TD
 **解决方案**：使用设备模拟器测试，调整断点
 
 ## 13. 延伸阅读
-
-- [MDN CSS 文档](https://developer.mozilla.org/en-US/docs/Web/CSS)
-- [CSS Grid 指南](https://css-tricks.com/snippets/css/complete-guide-grid/)
-- [Flexbox 指南](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
-- [styled-components 文档](https://styled-components.com/docs)
-- [Tailwind CSS 文档](https://tailwindcss.com/docs)
   通过本教程，你已经了解了 CSS-in-JS 和高级布局技巧的核心概念和实践方法。在实际项目中，你可以根据具体需求选择合适的技术方案，创建美观、响应式、高性能的布局。
-
-## 参考文献
-
-MDN CSS 文档：https://developer.mozilla.org/zh-CN/docs/Web/CSS
-CSS 规范（W3C）：https://www.w3.org/Style/CSS/
-CSS-Tricks：https://css-tricks.com/
-Can I use：https://caniuse.com/
-Tailwind CSS：https://tailwindcss.com/
-
 ## 延伸阅读
-
 CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
 CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
 CSS 函数与变量，见 007-css/022-Function 文档。
 HTML 结构与语义，见 006-html5 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 CSS 课程。

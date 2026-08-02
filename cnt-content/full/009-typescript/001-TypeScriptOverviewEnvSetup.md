@@ -512,15 +512,6 @@ export function calculateTotal(items) {
 | **与 ESLint 集成**   | 规则冲突 | 使用 @typescript-eslint/eslint-plugin |
 | **与 Prettier 集成** | 格式冲突 | 配置 Prettier 与 ESLint 配合          |
 
-## 8. 学习资源
-
-### 8.1 官方资源
-
-- **TypeScript 官网**: [https://www.typescriptlang.org/](https://www.typescriptlang.org/)
-- **TypeScript 文档**: [https://www.typescriptlang.org/docs/](https://www.typescriptlang.org/docs/)
-- **TypeScript playground**: [https://www.typescriptlang.org/play](https://www.typescriptlang.org/play)
-- **TypeScript GitHub**: [https://github.com/microsoft/TypeScript](https://github.com/microsoft/TypeScript)
-
 ### 8.2 书籍
 
 - **《TypeScript 实战》** - 梁宵
@@ -804,11 +795,3 @@ c.home; // "/" 字面量
 ```
 
 ---
-
-## 参考文献
-
-TypeScript 官方文档：https://www.typescriptlang.org/docs/
-TS 手册中文版：https://www.typescriptlang.org/zh/docs/handbook/
-TypeScript 发布计划：https://github.com/microsoft/TypeScript/wiki/Roadmap
-tsconfig 参考：https://www.typescriptlang.org/tsconfig/
-Type Challenges：https://github.com/type-challenges/type-challenges

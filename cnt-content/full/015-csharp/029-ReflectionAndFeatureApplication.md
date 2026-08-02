@@ -1624,82 +1624,6 @@ service.DoWork();
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 以下哪种方式获取 `Type` 对象**不会**触发程序集加载？
-
-A. `typeof(Person)`
-B. `Type.GetType("MyNamespace.Person, MyAssembly")`
-C. `personInstance.GetType()`
-D. `Assembly.Load("MyAssembly").GetType("Person")`
-
-**解析讲解**：A
-
-**解析讲解**：`typeof(Person)` 在编译期解析，运行时直接返回已加载类型的 Type 对象。其他方式都可能触发程序集加载（B、D 必然加载，C 取决于实例）。
-
----
-
-**Q2.** 关于 `CustomAttributeData` 与 `GetCustomAttribute<T>` 的区别，下列哪项**正确**？
-
-A. 前者返回特性实例，后者返回元数据
-B. 前者不实例化特性，后者实例化
-C. 两者完全等价
-D. 前者仅支持读取构造参数，后者支持读取命名参数
-
-**解析讲解**：B
-
-**解析讲解**：`CustomAttributeData` 直接读取元数据，不实例化特性；`GetCustomAttribute<T>` 通过反射调用特性构造函数创建实例。
-
----
-
-**Q3.** 以下代码的输出是？
-
-```csharp
-public class Base { public virtual void M() { } }
-public class Derived : Base { public override void M() { } }
-
-var methodOnBase = typeof(Base).GetMethod("M");
-var methodOnDerived = typeof(Derived).GetMethod("M");
-Console.WriteLine(methodOnBase == methodOnDerived);
-```
-
-A. `True`
-B. `False`
-C. 编译错误
-D. 运行时异常
-
-**解析讲解**：B
-
-**解析讲解**：`MethodInfo` 的 `==` 比较基于 `MetadataToken` 与 `Module`。`Base.M` 与 `Derived.M` 是不同的方法定义（不同的 MetadataToken），故不相等。但 `methodOnBase.Invoke(derivedInstance, null)` 会调用 `Derived.M`（虚方法分派）。
-
----
-
-**Q4.** Source Generator 相比运行时反射的**最大优势**是？
-
-A. 性能更高
-B. 支持 NativeAOT
-C. 代码可读性更好
-D. 调试更方便
-
-**解析讲解**：B
-
-**解析讲解**：Source Generator 在编译期生成代码，无运行时反射开销，因此**支持 NativeAOT**。性能更高是结果，但根本优势是 AOT 兼容性。
-
----
-
-**Q5.** 关于 `[DynamicallyAccessedMembers]` 特性，下列哪项**错误**？
-
-A. 用于指导 trimmer 保留成员
-B. 可应用于类型参数与参数
-C. 编译器会检查注解一致性
-D. 运行时影响反射行为
-
-**解析讲解**：D
-
-**解析讲解**：`[DynamicallyAccessedMembers]` 仅在编译期与 trim 分析时生效，运行时不影响反射行为。
-
 ### 填空题知识点讲解
 
 **Q6.** `MethodInfo.CreateDelegate` 创建的委托调用比 `MethodInfo.Invoke` 快约 `________` 倍。
@@ -1830,71 +1754,6 @@ public class UserDto
 2. 编写单元测试验证生成代码。
 3. 与 AutoMapper 库对比性能。
 
-### 9.4 思考题
-
-**Q13.** 为什么 .NET Core 精简了反射 API？请从 AOT、体积、安全三个角度分析。
-
-**AOT**：移除 `AppDomain`、`ReflectionOnlyLoad` 等 API，减少 NativeAOT 体积。
-
-**体积**：移除不常用 API（如 `Assembly.LoadFrom` 的部分重载），降低部署包大小。
-
-**安全**：移除 `ReflectionEmit` 的部分能力，降低代码注入风险。
-
----
-
-**Q14.** Source Generator 是否能完全替代运行时反射？请论述。
-
-**不能完全替代**。
-
-**能替代的场景**：
-- ORM 映射（编译期生成）
-- JSON 序列化器
-- 依赖注入注册
-- 模型绑定
-
-**不能替代的场景**：
-- 插件系统：运行时加载未知程序集
-- 动态代码生成：基于运行时输入生成类型
-- 反射分析工具：如 ILdasm、dotPeek
-- COM 互操作：动态调度
-- 测试框架：发现 `[Test]` 标记
-
-**结论**：Source Generator 适合编译期已知的场景；运行时动态发现仍需反射，但应配合缓存与 `CreateDelegate` 优化。
-
----
-
-**Q15.** 在 NativeAOT 场景下，如何实现插件系统？请给出方案。
-
-**方案**：基于接口契约 + 编译期注册。
-
-1. **接口契约**：定义 `IPlugin` 接口，所有插件实现此接口。
-2. **编译期注册**：使用 Source Generator 扫描所有实现 `IPlugin` 的类型，生成注册代码。
-3. **加载机制**：使用 `AssemblyLoadContext` 加载插件程序集（受限），调用 `IPlugin.Initialize`。
-
-```csharp
-// 接口
-public interface IPlugin { void Initialize(); }
-
-// 插件示例
-public class MyPlugin : IPlugin { public void Initialize() { /* ... */ } }
-
-// Source Generator 生成的注册器
-public static class PluginRegistry
-{
-    public static IEnumerable<IPlugin> LoadAll() => new IPlugin[]
-    {
-        new MyPlugin(),
-        // ... 其他插件
-    };
-}
-```
-
-**限制**：插件必须编译期已知；运行时下载的插件需使用解释器（如 Lua、Python）。
-
----
-
-## 10. 参考文献
-
 ### 10.1 标准与规范
 
 [1] ECMA International. *ECMA-335: Common Language Infrastructure (CLI)*. 6th ed. Geneva: ECMA International, 2012.
@@ -1923,20 +1782,6 @@ public static class PluginRegistry
 
 [11] Abrams, Brad. *The .NET Framework Standard Library Annotated Reference*. Addison-Wesley, 2004.
 
-### 10.4 在线资源
-
-[12] Microsoft Learn. *Reflection in .NET*. https://learn.microsoft.com/en-us/dotnet/fundamentals/reflection/reflection
-
-[13] Microsoft Learn. *Source Generators*. https://learn.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview
-
-[14] Jon Skeet. *C# in Depth*. 4th ed., Manning Publications, 2019.
-
-[15] Joseph Albahari. *C# 12 in a Nutshell*. O'Reilly Media, 2024.
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 推荐书籍
 
 1. **《Metaprogramming in .NET》** — Kevin Hazzard, Jason Bock, Manning Publications, 2013
@@ -1961,26 +1806,6 @@ public static class PluginRegistry
 
 3. **"Type-Safe Reflection"** — Jacques Garrigue, 2010
    - 类型安全反射的形式化。
-
-### 11.3 在线资源
-
-1. **Microsoft Learn - Reflection**
-   https://learn.microsoft.com/en-us/dotnet/fundamentals/reflection/reflection
-
-2. **Roslyn Source Generators Cookbook**
-   https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md
-
-3. **System.Reflection.Metadata Documentation**
-   https://learn.microsoft.com/en-us/dotnet/api/system.reflection.metadata
-
-4. **.NET NativeAOT Reflection Limitations**
-   https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/?tabs=windows%2Ccli
-
-5. **Sharplab.io** — 查看反射的 IL 生成
-   https://sharplab.io/
-
-6. **Roslyn Syntax Visualizer** — VS 扩展
-   https://marketplace.visualstudio.com/items?itemName=vs-pkg-projects.RoslynSyntaxVisualizer
 
 ### 11.4 进阶学习路径
 
@@ -2014,22 +1839,6 @@ flowchart TD
     T9 --> T12
     T9 --> T13
 ```
-
-### 11.5 社区资源
-
-1. **Stack Overflow - [reflection] 标签**
-   https://stackoverflow.com/questions/tagged/reflection
-
-2. **Roslyn GitHub Discussions**
-   https://github.com/dotnet/roslyn/discussions
-
-3. **C# Discord Community**
-   https://discord.com/invite/csharp
-
-4. **.NET Foundation YouTube**
-   https://www.youtube.com/@dotnet
-
----
 
 ## 附录 A：反射 API 速查表
 

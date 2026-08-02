@@ -2097,8 +2097,6 @@ end)
 -- 4. 数据库连接池在 worker 内复用
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：编写 Lua 5.2+ 代码，使用 `load` 在指定环境中执行代码，使变量 `x` 的赋值写入指定表。
@@ -2278,46 +2276,6 @@ local function load_config(filename, schema)
 end
 ```
 
-### 9.3 思考题
-
-**思考题 1**：为什么 Lua 5.2 选择用 `_ENV` 替代 `setfenv`/`getfenv`？从语言设计、性能、可组合性三个角度分析。
-
-参考要点：
-
-1. **语言设计**：`_ENV` 作为普通局部变量，统一了作用域规则，消除了"环境"这一特殊概念。
-2. **性能**：编译期将全局访问翻译为 `_ENV.x`，运行时无额外检查。
-3. **可组合性**：`_ENV` 可被闭包捕获、作为参数传递，与词法作用域一致。
-
-**思考题 2**：Lua 沙箱能否实现完全不可逃逸？如果不能，最大的漏洞是什么？
-
-参考要点：理论上白名单严格时不可逃逸，但实践中常见漏洞：
-
-1. `string.dump` 转储字节码泄露信息。
-2. `pcall` 错误对象携带原环境引用。
-3. `debug` 库访问 upvalue。
-4. 元方法 `__index` 引入额外访问路径。
-5. `coroutine` 跨环境捕获。
-
-**思考题 3**：设计一个支持热重载的插件系统，环境如何管理？旧状态如何迁移？
-
-参考要点：
-
-1. 每个插件独立环境，通过 `load` 加载。
-2. 保留旧环境的状态（约定 `get_state()`/`on_reload(state)`）。
-3. 新版本加载时调用 `on_reload(old_state)` 进行迁移。
-4. 失败回滚：保留旧版本，新版本失败时不替换。
-
-**思考题 4**：在微服务架构中，如何用 Lua 沙箱实现"用户脚本"功能（如 FaaS）？
-
-参考要点：
-
-1. 每个请求创建独立沙箱，请求结束销毁。
-2. 限制 CPU 时间（协程 + 超时检测）。
-3. 限制内存（需 C 层支持，或周期性 `collectgarbage("count")` 检查）。
-4. 限制网络访问（仅通过受控 API）。
-5. 限制文件系统访问（仅临时目录）。
-6. 沙箱间数据隔离（独立 `_ENV`）。
-
 ### 9.4 项目题
 
 **项目 1**：实现一个完整的插件系统，要求：
@@ -2362,8 +2320,6 @@ end
 
 return PluginSystem
 ```
-
-## 10. 参考文献
 
 ### 10.1 主要参考文献
 
@@ -2414,8 +2370,6 @@ return PluginSystem
 [19] Blizzard Entertainment, "World of Warcraft API," Blizzard Documentation, 2024. [Online]. Available: https://wowpedia.fandom.com/wiki/World_of_Warcraft_API
 
 [20] Roblox Corporation, "Luau: Fast, Safe, Typed Language for Roblox," Roblox Documentation, 2024. [Online]. Available: https://luau.org/
-
-## 11. 延伸阅读
 
 ### 11.1 源码与实现
 
@@ -2539,157 +2493,6 @@ local safe_sandbox = {
 | `<close>` 属性 | 否 | 否 | 否 | 否 | 是 | 是 | 否 | 否 |
 | 代际 GC | 否 | 否 | 否 | 否 | 是 | 是 | 否 | 否 |
 
-## 附录 E：习题答案
-
-## 知识讲解与要点分析（原习题 1 答案）
-
-```lua
-local env = {}
-local code = "x = 10"
-local fn = load(code, "test", "t", env)
-fn()
-print(env.x)  -- 10
-```
-
-## 知识讲解与要点分析（原习题 2 答案）
-
-```lua
-local env = {}
-local fn = loadstring("x = 10")
-setfenv(fn, env)
-fn()
-print(env.x)  -- 10
-```
-
-## 知识讲解与要点分析（原习题 3 答案）
-
-```lua
-local sandbox = {
-  print = print,
-  math = math,
-  string = string,
-}
-local code = "print(math.sqrt(16))"
-local fn = load(code, "sandbox", "t", sandbox)
-fn()  -- 4
-```
-
-## 知识讲解与要点分析（原习题 4 答案）
-
-```lua
-local declared = {}
-setmetatable(_G, {
-  __newindex = function(t, k, v)
-    if not declared[k] then
-      error("undeclared: " .. k, 2)
-    end
-    rawset(t, k, v)
-  end,
-  __index = function(t, k)
-    if not declared[k] then
-      error("undeclared: " .. k, 2)
-    end
-    return rawget(t, k)
-  end,
-})
-
-rawset(_G, "MY_CONST", 42)
-declared.MY_CONST = true
-print(MY_CONST)  -- 42
-```
-
-## 知识讲解与要点分析（原习题 5 答案）
-
-```lua
-local function set_env(fn, env)
-  if setfenv then
-    return setfenv(fn, env)
-  else
-    error("Lua 5.2+: use load(code, name, mode, env) instead")
-  end
-end
-```
-
-## 知识讲解与要点分析（原习题 6 答案）
-
-```lua
-local function chain_env(...)
-  local envs = {...}
-  return setmetatable({}, {
-    __index = function(t, k)
-      for i = #envs, 1, -1 do
-        local v = envs[i][k]
-        if v ~= nil then return v end
-      end
-      return nil
-    end,
-  })
-end
-
-local env = chain_env({x = 1}, {y = 2}, _G)
-print(env.x)  -- 1
-print(env.y)  -- 2
-print(env.print)  -- function
-```
-
-## 知识讲解与要点分析（原习题 7 答案）
-
-```lua
-local function run_sandboxed(code, timeout_ms)
-  local sandbox = {
-    print = print, math = math, string = string, table = table,
-    pairs = pairs, ipairs = ipairs, type = type,
-    tostring = tostring, tonumber = tonumber,
-    error = error, pcall = pcall, assert = assert,
-    os = {time = os.time, clock = os.clock, date = os.date},
-  }
-
-  local fn = load(code, "sandbox", "t", sandbox)
-  if not fn then return nil, "load failed" end
-
-  local start = os.clock()
-  local ok, result = pcall(fn)
-  local elapsed = (os.clock() - start) * 1000
-
-  if not ok then return nil, result end
-  return result, elapsed
-end
-```
-
-## 知识讲解与要点分析（原习题 8 答案）
-
-```lua
-local function load_config(filename, schema)
-  local env = {}
-  local file = io.open(filename, "r")
-  if not file then return nil, "file not found" end
-  local code = file:read("*a")
-  file:close()
-
-  local fn = load(code, filename, "t", env)
-  if not fn then return nil, "load failed" end
-  local ok, err = pcall(fn)
-  if not ok then return nil, err end
-
-  local result = {}
-  for key, spec in pairs(schema) do
-    local value = env[key]
-    if value == nil then
-      if spec.required then
-        return nil, "missing: " .. key
-      elseif spec.default ~= nil then
-        result[key] = spec.default
-      end
-    else
-      if spec.type and type(value) ~= spec.type then
-        return nil, "type error: " .. key
-      end
-      result[key] = value
-    end
-  end
-  return result
-end
-```
 ## _G 全局表
 
 **基本写法：访问 _G**

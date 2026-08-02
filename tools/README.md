@@ -16,6 +16,7 @@ tools/
 | 类别 | 脚本 | 用途 |
 | --- | --- | --- |
 | 合并/提升 | map-mobile-to-full.py、merge-mobile-into-full.py、promote-mobile-to-full.py | mobile 内容并入 full 并注册文档 ID（幂等，可复跑） |
+| 清理/精简 | remove-exercises-and-links.py | 移除全库"例题/练习"小节、删除纯例题专册、精简尾部外链（默认干跑，--apply 写回，幂等） |
 | 修复/校验 | fix-bad-images.py、repair-registry-modules.py、check-content.py、verify-cleanup.py、verify-no-ascii-diagrams.py、scan-ascii-diagrams.py、scan-bad-images.py、scan-entry-docs.py、scan-islands.py、scan-sections.py、scan-toc-sections.py | 内容质量门禁与巡检 |
 
 ## 已清理的一次性脚本（2026-08-02）

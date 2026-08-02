@@ -1253,8 +1253,6 @@ func roundUpClass(cap int) int {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码的输出是什么？解释原因。
@@ -1323,105 +1321,6 @@ func Flat[T any](s [][]T) []T {
 }
 ```
 
-### 9.3 思考题
-
-**题目 5**：为什么 Go 1.18 将扩容阈值从 1024 降至 256？这对实际性能有何影响？
-
-**提示**：考虑小切片与大切片的内存浪费比例、GC 压力、缓存友好性。
-
-**题目 6**：以下两种方式哪个更高效？为什么？
-
-```go
-// 方式 A
-s := make([]int, 0, 100)
-for i := 0; i < 100; i++ {
-    s = append(s, i)
-}
-
-// 方式 B
-s := make([]int, 100)
-for i := 0; i < 100; i++ {
-    s[i] = i
-}
-```
-
-**解析讲解**：方式 B 更高效。方式 A 每次 `append` 都需要检查 `len < cap`，虽有快速路径但有分支开销。方式 B 直接索引赋值，无分支，且编译器可向量化优化。
-
-### 9.4 实战题
-
-**题目 7**：实现一个并发安全的 `Slice[T]` 泛型容器，支持 `Append`、`Get`、`Len`、`Range` 方法。
-
-```go
-type Slice[T any] struct {
-    mu sync.RWMutex
-    s  []T
-}
-
-func (s *Slice[T]) Append(v T) {
-    s.mu.Lock()
-    defer s.mu.Unlock()
-    s.s = append(s.s, v)
-}
-
-func (s *Slice[T]) Get(i int) (T, bool) {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    var zero T
-    if i < 0 || i >= len(s.s) {
-        return zero, false
-    }
-    return s.s[i], true
-}
-
-func (s *Slice[T]) Len() int {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    return len(s.s)
-}
-
-func (s *Slice[T]) Range(f func(int, T) bool) {
-    s.mu.RLock()
-    defer s.mu.RUnlock()
-    for i, v := range s.s {
-        if !f(i, v) {
-            break
-        }
-    }
-}
-```
-
----
-
-## 10. 参考文献
-
-1. Go Runtime Source Code, `src/runtime/slice.go`, `growslice` function. https://github.com/golang/go/blob/master/src/runtime/slice.go
-2. Go Specification: Slice types. https://go.dev/ref/spec#Slice_types
-3. Go Blog: "Go Slices: usage and internals" (Andrew Gerrand, 2011). https://go.dev/blog/go-slices-usage-and-internals
-4. Go Blog: "Arrays, slices (and strings): The mechanics of 'append'" (Rob Pike, 2013). https://go.dev/blog/slices
-5. Go 1.18 Release Notes: Runtime changes for slice growth. https://go.dev/doc/go1.18
-6. Dave Cheney: "If a function returns an error, you must check it" (切片与错误处理实践). https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully
-7. Russell Cox: "Go Data Structures: Interfaces" (切片与接口的交互). https://research.swtch.com/interfaces
-8. Keith Randall: "Contiguous stacks in Go" (切片与栈增长的关系). https://docs.google.com/document/d/1wAxaf3q1qkRD7xcDv4xYy9cpH0ip-_CtgxnRQfM4l-M/edit
-9. Dmitry Vyukov: "Go scheduler: MPG model" (切片在调度中的角色). https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLkhJnDNy6kzD4X1x3MA/edit
-10. Go Wiki: "SliceTricks" (社区维护的切片技巧集). https://github.com/golang/go/wiki/SliceTricks
-11. "Effective Go" - Slices. https://go.dev/doc/effective_go#slices
-12. "The Go Programming Language" (Donovan & Kernighan), Chapter 4: Composite Types.
-13. "Go in Action" (William Kennedy), Chapter 2: Package types and variables.
-14. "Concurrency in Go" (Katherine Cox-Buday), Chapter 3: Goroutines and channels (切片与 channel 的交互).
-15. "Language Design in the Fast Lane" (Robert Griesemer, 2019) - 切片设计的早期考量.
-
----
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **Go Memory Model**: https://go.dev/ref/mem - 切片在并发访问下的内存可见性保证。
-- **Go Slices: usage and internals**: https://go.dev/blog/go-slices-usage-and-internals - 官方博客对切片的入门讲解。
-- **Go 1.18 Release Notes**: https://go.dev/doc/go1.18 - 扩容算法的变更细节。
-- **Go 1.22 Release Notes**: https://go.dev/doc/go1.22 - `for range` 迭代变量语义变更。
-- **`slices` package documentation**: https://pkg.go.dev/slices - Go 1.21+ 的泛型切片工具函数。
-
 ### 11.2 进阶主题
 
 - **`unsafe.Pointer` 与切片**: https://pkg.go.dev/unsafe - 零拷贝 `[]byte` 与 `string` 互转的技术细节。
@@ -1437,27 +1336,12 @@ func (s *Slice[T]) Range(f func(int, T) bool) {
 - **内存对齐**: 切片元素的内存对齐影响 `Data` 指针的步长与缓存行利用率。
 - **垃圾回收与 GC 调优**: 切片的底层数组是 GC 的主要回收对象，影响 GC 频率与停顿时间。
 
-### 11.4 社区资源
-
-- **Go Wiki: SliceTricks**: https://github.com/golang/go/wiki/SliceTricks - 社区维护的切片操作技巧大全，包括插入、删除、过滤、反转、去重等。
-- **Go by Example: Slices**: https://gobyexample.com/slices - 切片用法的交互式示例。
-- **A Tour of Go**: https://go.dev/tour/moretypes/7 - 官方教程中的切片章节。
-- **Stack Overflow: go-slice tag**: https://stackoverflow.com/questions/tagged/go-slice - 常见问题与解答。
-- **r/golang Reddit**: https://www.reddit.com/r/golang/ - 社区讨论与最佳实践分享。
-
 ### 11.5 学术论文
 
 - **"The Go Programming Language and Environment"** (Donovan, 2020) - Go 语言设计与切片语义的学术视角。
 - **"Go at Google: Language Design in the Service of Software Engineering"** (Pike, 2012) - 切片设计的服务于工程实践理念。
 - **"Escape Analysis for Go"** (Choi et al., 2019) - 逃逸分析算法的学术形式化。
 - **"Getting to Go: The Story of Three Gophers"** (Cox, 2019) - 切片与泛型设计的权衡考量。
-
-### 11.6 视频资源
-
-- **"Go: A Simple Programming Environment"** (Pike, 2012) - 切片设计的原始动机讲解。
-- **"Go Proverbs"** (Pike, 2015) - "Don't communicate by sharing memory, share memory by communicating" 中切片的角色。
-- **"Designing Go's Garbage Collector"** (Hudson, 2018) - 切片对 GC 设计的影响。
-- **"Inside the Map Implementation"** (Cox, 2016) - map 与切片的对比实现。
 
 ### 11.7 实战项目
 

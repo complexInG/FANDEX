@@ -684,18 +684,8 @@ function update() {
 <span v-pre>{{ this will not be compiled }}</span>
 ```
 
-## 参考文献
-
-Vue 官方文档：https://vuejs.org/
-Vue Router：https://router.vuejs.org/zh/
-Pinia：https://pinia.vuejs.org/zh/
-Vue 3 迁移指南：https://v3-migration.vuejs.org/
-VueUse 组合函数库：https://vueuse.org/
-
 ## 延伸阅读
-
 Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
 Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。
 Vue Router 导航守卫，见 010-vue3/030-VueRouterNavigationGuard 文档。
 TypeScript 与 Vue 组合，见 009-typescript 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vue3 课程。

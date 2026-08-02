@@ -363,28 +363,11 @@ KeepAlive 的本质是“实例级缓存”：缓存的是组件实例与 DOM，
 
 缓存管理三件套：`include` 控制谁缓存，`exclude` 排除谁，`max` 限制总量。动态修改 include 是清理缓存的官方途径；理解 LRU 淘汰机制可以解释 max 的行为。
 
-## 10. 参考文献
-
-Vue.js 官方文档, Built-in Components: KeepAlive, 访问日期 2026-08-01, https://vuejs.org/guide/built-ins/keep-alive.html
-
-Vue.js 官方 API 参考, KeepAlive, 访问日期 2026-08-01, https://vuejs.org/api/built-in-components.html#keepalive
-
-Vue.js 官方文档, 组合式 API 生命周期钩子, 访问日期 2026-08-01, https://vuejs.org/api/composition-api-lifecycle.html
-
-Vue.js 官方文档, 动态组件与异步组件, 访问日期 2026-08-01, https://vuejs.org/guide/components/async.html
-
 ## 11. 延伸阅读
-
 KeepAlive 与路由守卫的协作，见本模块 030-VueRouterNavigationGuard 文档；
-
 KeepAlive 与 Teleport 的组合模式，见本模块 026-TeleportPortalApp 文档；
-
 状态管理方案对比，见 010-vue3 模块的 Pinia 相关文档；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Vue3 实战课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Vue3 全家桶课程。
-
 ---
-
 ### 1. KeepAlive 基础
 
 #### 1.1 基本用法
@@ -799,4 +782,3 @@ onActivated(async () => {
 });
 </script>
 ```
-

@@ -1565,8 +1565,6 @@ const increment = (): void => {
 - 引入类型覆盖率脚本，每周报告。
 - 将迁移任务拆分为 2 周一个 Sprint，与业务迭代并行。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**：解释 `allowJs` 与 `checkJs` 的区别。
@@ -1914,36 +1912,6 @@ module.exports = {
   ],
 };
 ```
-
-## 参考文献
-
-参考文献遵循 ACM Reference Format，含 DOI 链接：
-
-1. Bierman, G., Abadi, M., and Torgersen, M. (2014). Understanding TypeScript. In Proceedings of the 28th European Conference on Object-Oriented Programming (ECOOP'14), 257-281. DOI: https://doi.org/10.1007/978-3-662-44202-9_11
-
-2. Riba, C. (2017). Gradual Typing in TypeScript. In Proceedings of the 16th ACM SIGPLAN International Conference on Generative Programming: Concepts and Experiences (GPCE'17), 23-34. DOI: https://doi.org/10.1145/3136040.3136045
-
-3. Gao, Z., Chen, L., and Yang, Y. (2021). An Empirical Study of TypeScript Migration in JavaScript Projects. In Proceedings of the 43rd International Conference on Software Engineering (ICSE'21), 1234-1246. DOI: https://doi.org/10.1109/ICSE43902.2021.00114
-
-4. Microsoft. (2024). TypeScript Documentation: Migrating from JavaScript. https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html
-
-5. Airbnb. (2020). ts-migrate: A Tool for Migrating to TypeScript at Scale. Airbnb Engineering Blog. https://medium.com/airbnb-engineering/ts-migrate-a-tool-for-migrating-to-typescript-at-scale-cd23bfeb5cc
-
-6. Pocock, M. (2024). TypeScript Migration Guide. TotalTypeScript. https://www.totaltypescript.com/articles/migrating-to-typescript
-
-7. Ciera, C., Newman, S., and Safarov, S. (2020). An Empirical Investigation of Type Annotation Usage in JavaScript Projects. In Proceedings of the 14th ACM / IEEE International Symposium on Empirical Software Engineering and Measurement (ESEM'20), 1-11. DOI: https://doi.org/10.1145/3382494.3410678
-
-8. Pearson, J. and Greco, D. (2022). Type Safety in Large-Scale JavaScript Applications. Communications of the ACM, 65(8), 44-49. DOI: https://doi.org/10.1145/3547111
-
-9. Vitousek, M., Kent, A. M., Siek, J. G., and Baker, J. (2019). Design and Evaluation of Gradual Typing for Python. In Proceedings of the 10th ACM SIGPLAN Dynamic Languages Symposium (DLS'19), 45-59. DOI: https://doi.org/10.1145/3359619.3359742
-
-10. TypeScript. (2024). TypeScript tsconfig Reference. https://www.typescriptlang.org/tsconfig
-
-11. Vitousek, M. and Siek, J. (2018). Gradual Typing: A New Direction for Static Analysis. In Proceedings of the 8th Workshop on Programming Language Design and Analysis (PLDI'18), 1-12. DOI: https://doi.org/10.1145/3210588.3210596
-
-12. Feldthaus, J. and Møller, A. (2018). Checking Correctness of TypeScript Interface Declarations. In Proceedings of the 33rd IEEE/ACM International Conference on Automated Software Engineering (ASE'18), 254-265. DOI: https://doi.org/10.1145/3238147.3238205
-
-## 延伸阅读
 
 ### 官方文档
 

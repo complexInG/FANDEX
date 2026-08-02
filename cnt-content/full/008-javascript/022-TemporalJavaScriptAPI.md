@@ -1626,8 +1626,6 @@ console.log(exactSeconds);  // 2678400（31 天）
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. **（remember）** Temporal API 中表示"绝对时刻"的类型是 ______，表示"带时区的完整日期时间"的类型是 ______。
@@ -1641,54 +1639,6 @@ console.log(exactSeconds);  // 2678400（31 天）
 3. **（understand）** Temporal.Duration 不能直接换算为单一数值（如秒），因为 ______ 与 ______ 单位的长度不固定。
 
    答案：月；年（月有 28-31 天，年有 365 或 366 天）
-
-### 选择题知识点讲解
-
-1. **（analyze）** 下列代码输出是？
-
-   ```javascript
-   const zdt = Temporal.ZonedDateTime.from('2026-03-08T02:30:00[America/New_York]');
-   ```
-
-   选项：
-   - A. 创建成功，时间为 2026-03-08T02:30:00-05:00
-   - B. 创建成功，时间自动调整为 2026-03-08T03:30:00-04:00
-   - C. 抛出 RangeError（不存在该时刻）
-   - D. 创建成功，时间为 2026-03-08T01:30:00-05:00
-
-   答案：B
-
-   解释：默认 disambiguation 为 'compatible'，春季前拨的不存在时刻会自动调整到更晚的有效时刻。
-
-2. **（evaluate）** 下列哪种类型最适合存储用户生日？
-
-   选项：
-   - A. Temporal.Instant
-   - B. Temporal.ZonedDateTime
-   - C. Temporal.PlainDate
-   - D. Temporal.PlainTime
-
-   答案：C
-
-   解释：生日与所在地时区无关，且无需精确时刻，PlainDate 最合适。
-
-3. **（analyze）** 下列代码输出是？
-
-   ```javascript
-   const d1 = Temporal.PlainDate.from('2026-01-31');
-   const d2 = d1.add({ months: 1 });
-   console.log(d2.toString());
-   ```
-
-   选项：
-   - A. 2026-02-31
-   - B. 2026-02-28
-   - C. 2026-03-03
-   - D. 抛出 RangeError
-
-   答案：B
-
-   解释：默认 overflow 为 'constrain'，2 月无 31 日，自动截断到月末。
 
 ### 13.3 代码修复题（code-fix）
 
@@ -1750,8 +1700,6 @@ console.log(exactSeconds);  // 2678400（31 天）
 
 ---
 
-## 14. 延伸阅读
-
 ### 14.1 书籍
 
 - **David Flanagan**：《JavaScript: The Definitive Guide, 7th Edition》（O'Reilly, 2020）——第 15 章日期与时间。
@@ -1772,15 +1720,6 @@ console.log(exactSeconds);  // 2678400（31 天）
 - **date-fns** (https://github.com/date-fns/date-fns)：函数式日期库。
 - **Day.js** (https://github.com/iamkun/dayjs)：轻量 Date 替代。
 - **chrono-node** (https://github.com/wanasit/chrono)：自然语言日期解析。
-
-### 14.4 在线资源
-
-- **MDN: Temporal** (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal)：完整 API 参考。
-- **Temporal Docs** (https://tc39.es/proposal-temporal/docs/)：TC39 官方教程。
-- **IANA Time Zone Database** (https://www.iana.org/time-zones)：时区数据库官方。
-- **Time Zone Converter** (https://www.timeanddate.com/)：在线时区转换工具。
-
----
 
 ## 15. 附录
 

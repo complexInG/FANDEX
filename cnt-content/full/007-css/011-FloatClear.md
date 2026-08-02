@@ -396,38 +396,8 @@ p {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-1. （填空）`float` 的默认值是 _____；`clear: both` 的作用是 _____。
-2. （选择）以下哪种方式创建 BFC 且没有溢出裁剪副作用？
-   A. `overflow: hidden`  B. `display: flow-root`  C. `position: static`  D. `display: contents`
-3. （代码修正）给定塌陷代码，改用 `display: flow-root` 修复。
-4. （开放题）用 float 实现两栏布局后，为什么移动端通常改用 Flexbox？请给出三点理由。
-5. （分析）`float: inline-start` 在 `direction: rtl` 下表现为什么？
-6. （创造）实现"左图右文 + 右下金句"的完整组件，要求三种修复方式至少使用一种。
-
-参考答案见各题 `explanation` 字段与案例研究章节。
-
----
-
-## 10. 参考文献
-
-1. W3C. CSS 2.1 §9.5 Floats. [https://www.w3.org/TR/CSS2/visuren.html#floats](https://www.w3.org/TR/CSS2/visuren.html#floats)
-2. MDN Web Docs. float - CSS. [https://developer.mozilla.org/en-US/docs/Web/CSS/float](https://developer.mozilla.org/en-US/docs/Web/CSS/float)
-3. MDN Web Docs. clear - CSS. [https://developer.mozilla.org/en-US/docs/Web/CSS/clear](https://developer.mozilla.org/en-US/docs/Web/CSS/clear)
-4. MDN Web Docs. Floats - Learn web development. [https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Floats](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Floats)
-5. W3C. CSS Display Module Level 3. [https://www.w3.org/TR/css-display-3/](https://www.w3.org/TR/css-display-3/)
-6. CSS-Tricks. All About Floats. [https://css-tricks.com/all-about-floats/](https://css-tricks.com/all-about-floats/)
-
----
-
 ## 11. 延伸阅读
-
 - MDN：CSS 布局学习路径（Flexbox、Grid）：
-  [https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout)
 - CSS-Tricks：A Complete Guide to Flexbox：
-  [https://css-tricks.com/snippets/css/a-guide-to-flexbox/](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
 - CSS-Tricks：A Complete Guide to Grid：
-  [https://css-tricks.com/snippets/css/complete-guide-grid/](https://css-tricks.com/snippets/css/complete-guide-grid/)
 - W3C：CSS Logical Properties and Values Level 1：
-  [https://www.w3.org/TR/css-logical-1/](https://www.w3.org/TR/css-logical-1/)

@@ -227,44 +227,9 @@ git push origin main
 - **注入风险**：字符串拼接 SQL/命令/HTML 的地方是否做了参数化或转义。
 - **错误处理**：异常是否被静默吞掉，是否会泄露内部堆栈信息。
 
-## 9. 实战练习
-
-### 练习 1：完成一次最小 PR（入门）
-- **题目描述**：在个人仓库从 main 创建分支，修改 README，推送后创建 PR 并合并。
-- **提示**：按第 2-5 节流程；合并策略选 Squash。
-- **参考答案要点**：走完"分支→提交→PR→合并"四步；合并后 main 上出现对应改动；PR 显示 Merged 状态。
-
-### 练习 2：练习 Request changes 审查（进阶）
-- **题目描述**：和同伴结对，A 创建 PR，B 用 Request changes 提出一条修改意见，A 修改后重新请求审查并最终批准合并。
-- **提示**：B 在 Files changed 具体行留评论；A 回复评论后推新提交，再 @B 复核。
-- **参考答案要点**：体验"请求修改 → 修改推送 → PR 自动更新 → 批准合并"的完整反馈循环。
-
-### 练习 3：冲突处理演练（进阶）
-- **题目描述**：两人先后修改同一文件的同一区域，第二个人推送时制造冲突，然后本地解决并推送。
-- **提示**：`git pull origin main` 后手动编辑冲突标记 `<<<<<<<` / `=======` / `>>>>>>>`。
-- **参考答案要点**：解决冲突后 `git add` + `git commit` + `git push`；PR 恢复可合并状态。
-
-### 练习 4：Squash 与 Merge 对比（综合）
-- **题目描述**：同一功能分别用 Merge commit 和 Squash and merge 合并两次，用 `git log --oneline` 对比 main 历史差异。
-- **提示**：先在测试仓库操作，观察两种历史形态。
-- **参考答案要点**：Merge 保留每个开发提交；Squash 只剩一个干净提交；体会为什么团队常用 Squash。
-
-### 练习 5：Fork 同步演练（综合）
-- **题目描述**：Fork 一个公开仓库，克隆后配置 upstream，模拟上游新增提交后同步自己的 fork。
-- **提示**：按第 7 节命令；同步后 `git push origin main` 让 GitHub 上的 fork 也更新。
-- **参考答案要点**：`git fetch upstream && git merge upstream/main` 后本地 main 含上游新提交；推送后 GitHub fork 显示 "This branch is not behind the upstream"。
-
 ## 10. 一句话记忆
 
 **PR 全流程六步走：分支开发 → 推送 → 发起 PR（核对 base）→ 审查修改 → 合并（Squash 最常用）→ 清理关闭；Fork 场景多配一个 upstream 远程同步即可。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：创建拉取请求](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
-- [GitHub 文档：关于 PR 审查](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/about-pull-request-reviews)
-- [GitHub 文档：合并拉取请求](https://docs.github.com/zh/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request)
-- [GitHub 文档：关联 PR 与 Issue（自动关闭关键词）](https://docs.github.com/zh/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue)
-- [GitHub 文档：你好，世界（PR 工作流入门教程）](https://docs.github.com/zh/get-started/start-your-journey/hello-world)
 
 ### 延伸阅读
 

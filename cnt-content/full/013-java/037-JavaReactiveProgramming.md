@@ -1854,8 +1854,6 @@ public class StreamProcessingPipeline {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 解释 Reactive Streams 规范的 4 条核心规则，并说明为什么需要这些规则。
@@ -1888,71 +1886,6 @@ public class StreamProcessingPipeline {
 
 10. 解释 `flatMap`、`concatMap`、`switchMap` 的并发语义差异，并给出各自适用的场景。
 
-### 9.3 思考题
-
-11. **虚拟线程会取代响应式编程吗？** 请从编程模型、性能、可维护性、生态 4 个维度论证你的观点。
-
-12. **响应式编程的"回调地狱"问题**：虽然响应式避免了回调嵌套，但链式操作符是否也带来了"链式地狱"？如何缓解？
-
-13. **响应式与事务**：传统事务基于 `ThreadLocal` 传递 Connection，响应式如何实现事务传播？请描述 R2DBC 的事务模型。
-
-14. **响应式调试**：为什么响应式代码的栈跟踪经常不完整？Reactor 的 `ReactorDebugAgent` 如何解决这一问题？有什么代价？
-
-15. **响应式 vs 命令式 + 虚拟线程**：如果你现在要设计一个高并发电商订单系统，你会选哪种？为什么？
-
-### 9.4 实战题
-
-16. 用 Spring WebFlux + R2DBC 实现一个简单的博客系统，包含文章 CRUD、评论流式推送（SSE）。
-
-17. 用 Reactive Kafka 实现一个订单事件消费者，要求：
-    - 至少一次（at-least-once）语义
-    - 错误隔离（单条消息失败不影响整体）
-    - 背压控制（消费慢时暂停拉取）
-
-18. 用 RSocket 实现一个双向聊天室，服务端能向所有在线客户端广播消息。
-
-19. 设计一个响应式数据管道：从 Kafka 读取传感器数据，每 10 秒窗口聚合统计，写入 Redis 与 PostgreSQL，并对异常数据生成告警。
-
-20. **性能对比实验**：实现同一个 REST API（用户查询）的两个版本——Spring MVC + JDBC 和 Spring WebFlux + R2DBC，用 wrk 压测对比吞吐量、延迟、内存占用，并分析差异原因。
-
----
-
-## 10. 参考文献
-
-1. **Reactive Streams Specification**. "Reactive Streams v1.0.3". 2019. https://www.reactive-streams.org/
-
-2. **Lightbend, Netflix, Pivotal**. "Reactive Streams Specification for the JVM". 2015.
-
-3. **Elliott, Conal**. "Push-Pull Functional Reactive Programming". Haskell Symposium, 2009.
-
-4. **Meijer, Erik**. "Your Mouse is a Database". ACM Queue, 2012.
-
-5. **Project Reactor Documentation**. VMware. https://projectreactor.io/docs/core/release/reference/
-
-6. **Spring WebFlux Reference**. VMware. https://docs.spring.io/spring-framework/reference/web/webflux.html
-
-7. **RxJava 3 Wiki**. Netflix. https://github.com/ReactiveX/RxJava/wiki
-
-8. **R2DBC Specification**. Pivotal. https://r2dbc.io/
-
-9. **RSocket Protocol**. Netifi. https://rsocket.io/
-
-10. **Okasaki, Chris**. "Purely Functional Data Structures". Cambridge University Press, 1999.（响应式流的不可变性理论基础）
-
-11. **Bainomugisha, Englebert et al.** "A Survey on Reactive Programming". ACM Computing Surveys, 2013.
-
-12. **Pressler, Philipp**. "Adding Context to Reactive Streams". Project Loom, 2020.（虚拟线程与响应式的关系讨论）
-
-13. **Goetz, Brian**. "JEP 444: Virtual Threads". JDK 21, 2023.
-
-14. **JDK 9 `java.util.concurrent.Flow`**. Oracle. https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Flow.html
-
-15. **Reactor Debug Agent**. VMware. https://projectreactor.io/docs/core/release/reference/#debug-agent
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 学术论文
 
 - Elliott, C., Hudak, P. "Functional Reactive Animation". ICFP 1997.
@@ -1966,15 +1899,6 @@ public class StreamProcessingPipeline {
 - "Learning Reactive Programming with Java 8". Nickolay Tsvetinov. Packt, 2015.
 - "Reactive Design Patterns". Roland Kuhn et al. Manning, 2016.
 - "Reactive Messaging Patterns with the Actor Model". Vaughn Vernon. Addison-Wesley, 2015.
-
-### 11.3 在线资源
-
-- Project Reactor 官方参考文档：https://projectreactor.io/docs/core/release/reference/
-- Spring WebFlux 官方文档：https://docs.spring.io/spring-framework/reference/web/webflux.html
-- Reactive Streams 规范：https://github.com/reactive-streams/reactive-streams-jvm
-- R2DBC 规范：https://r2dbc.io/spec/0.9.1.RELEASE/
-- RSocket 协议规范：https://github.com/rsocket/rsocket/blob/master/Protocol.md
-- "Reactive Programming in Java" 教程（Baeldung）：https://www.baeldung.com/java-reactive-programming
 
 ### 11.4 相关 JEP（JDK Enhancement Proposal）
 

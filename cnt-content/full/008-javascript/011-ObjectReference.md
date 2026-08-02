@@ -2054,8 +2054,6 @@ console.log(validator.validate({ age: 25 }));
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. **（remember）** `Object.keys` 仅返回对象的 ______ 属性，而 `Object.getOwnPropertyNames` 返回所有 ______ 属性。
@@ -2069,56 +2067,6 @@ console.log(validator.validate({ age: 25 }));
 3. **（understand）** `Object.assign` 使用 ______ 操作赋值，因此会触发目标对象（或其原型链上）的 ______。
 
    答案：`[[Set]]`；setter
-
-### 选择题知识点讲解
-
-1. **（analyze）** 下列代码的输出是？
-
-   ```javascript
-   const a = { x: 1 };
-   const b = Object.assign({}, a);
-   console.log(b === a, b.x === a.x);
-   ```
-
-   选项：
-   - A. true true
-   - B. false true
-   - C. false false
-   - D. true false
-
-   答案：B
-
-   解释：`Object.assign` 返回新对象，故 `b === a` 为 false；但 `x` 是基本类型，被复制，故 `b.x === a.x` 为 true。
-
-2. **（analyze）** 下列代码的输出是？
-
-   ```javascript
-   const obj = Object.freeze({ list: [1, 2, 3] });
-   obj.list.push(4);
-   console.log(obj.list.length);
-   ```
-
-   选项：
-   - A. 3
-   - B. 4
-   - C. 抛出 TypeError
-   - D. undefined
-
-   答案：B
-
-   解释：`Object.freeze` 是浅层冻结，嵌套数组未被冻结，`push` 成功。
-
-3. **（evaluate）** 下列哪种方式能正确克隆一个含 `Date` 与 `Map` 的对象？
-
-   选项：
-   - A. `Object.assign({}, obj)`
-   - B. `{ ...obj }`
-   - C. `JSON.parse(JSON.stringify(obj))`
-   - D. `structuredClone(obj)`
-
-   答案：D
-
-   解释：A/B 是浅拷贝；C 会丢失 Date 与 Map；D 是深拷贝且支持 Date/Map/Set。
 
 ### 12.3 代码修复题（code-fix）
 
@@ -2200,8 +2148,6 @@ console.log(validator.validate({ age: 25 }));
 
 ---
 
-## 13. 延伸阅读
-
 ### 13.1 书籍
 
 - **Nicholas C. Zakas**：《Principles of Object-Oriented JavaScript》（No Starch Press, 2014）——深入讲解 JavaScript 对象模型与原型链。
@@ -2221,14 +2167,6 @@ console.log(validator.validate({ age: 25 }));
 - **Immer** (https://github.com/immerjs/immer)：基于 Proxy 的 Copy-on-Write 不可变库，开发体验最佳。
 - **Lodash** (https://github.com/lodash/lodash)：`_.merge`、`_.cloneDeep`、`_.set` 等工具函数的工业实现。
 - **Ramda** (https://github.com/ramda/ramda)：函数式编程库，强调不可变与无副作用。
-
-### 13.4 在线资源
-
-- **MDN: Object** (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)：最完整的 API 参考。
-- **TC39 Proposals** (https://github.com/tc39/proposals)：所有进入流程的提案列表。
-- **You Don't Know JS** (https://github.com/getify/You-Dont-Know-JS)：开源版系列书籍。
-
----
 
 ## 14. 附录
 

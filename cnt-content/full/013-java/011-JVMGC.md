@@ -682,8 +682,6 @@ java -XX:+UseZGC -XX:+ZGenerational \
 
 **结果**：分代 ZGC 在 64GB 堆下，单次停顿 P99 = 0.8ms，吞吐损失 6%。
 
-## 知识讲解与要点分析（原习题）
-
 ### 选择题
 
 **1. 下列哪种 GC 算法在存活对象比例高时效率最差？**
@@ -866,48 +864,6 @@ public final class NativeResource implements AutoCloseable {
 }
 ```
 
-## 知识讲解与要点分析（原思考题）
-
-**1.** 为什么 Go 放弃分代 GC？这种设计在什么场景下劣势明显？
-
-**参考答案**：Go 团队认为：分代假说在 Go 程序中并不显著成立（Go 编译器逃逸分析将大量短生命周期对象栈分配，堆上对象存活率较高）；分代回收需要 write barrier 维护跨代引用，增加运行时复杂度。Go 选择不分代 + 并发标记，简化实现并保持低延迟。劣势场景：大量长生命周期对象混合短生命周期对象，且无法被逃逸分析消除（如反射、接口装箱），此时 Go 的堆增长更快、GC 频率更高。
-
-**2.** 假设你需要为一个 32GB 堆、P99 延迟 < 5ms 的服务选择 GC，会选 G1 还是 ZGC？为什么？
-
-**参考答案**：选 ZGC（JDK 21 分代）。理由：(1) G1 在 32GB 堆下，单次 Mixed GC 停顿通常 50–200ms，难以满足 P99 < 5ms；(2) ZGC 通过染色指针 + 并发转移，停顿与堆大小解耦，32GB 下仍可保持 < 1ms；(3) JDK 21 分代 ZGC 已 GA，吞吐损失降至 3–8%，可接受。需注意：ZGC footprint 略高（约 10–15%），需预留堆空间。
-
-**3.** 解释"GC 不可能三角"，并给出一个工程上"取两舍一"的真实案例。
-
-**参考答案**：GC 不可能三角指吞吐量、延迟、footprint 三者不可同时最优。案例：高频交易系统选择 ZGC（延迟 + 吞吐）牺牲 footprint（堆利用率约 85%）；嵌入式设备选择 Serial GC（footprint + 简单）牺牲延迟与吞吐；批处理 ETL 选择 Parallel GC（吞吐 + footprint）牺牲延迟。
-
-## 参考文献
-
-[1] McCarthy, J. 1960. Recursive functions of symbolic expressions and their computation by machine, Part I. *Communications of the ACM* 3, 4 (April 1960), 184–195. DOI: https://doi.org/10.1145/367177.367199
-
-[2] Dijkstra, E. W., Lamport, L., Martin, A. J., Scholten, C. S., and Steffens, E. F. M. 1978. On-the-fly garbage collection: An exercise in cooperation. *Communications of the ACM* 21, 11 (Nov. 1978), 966–975. DOI: https://doi.org/10.1145/359642.359655
-
-[3] Lieberman, H. and Hewitt, C. 1983. A real-time garbage collector based on the lifetimes of objects. *Communications of the ACM* 26, 6 (June 1983), 419–429. DOI: https://doi.org/10.1145/358141.358147
-
-[4] Appel, A. W. 1989. Simple generational garbage collection and fast allocation. *Software: Practice and Experience* 19, 2, 171–183. DOI: https://doi.org/10.1002/spe.4380190206
-
-[5] Detlefs, D., Flood, C., Heller, S., and Printezis, T. 2004. Garbage-first garbage collection. In *Proceedings of the 4th international symposium on Memory management (ISMM '04)*. ACM, New York, NY, USA, 37–48. DOI: https://doi.org/10.1145/1029873.1029879
-
-[6] Yang, X., Blackburn, S. M., McKinley, K. S., and Frampton, D. 2017. Barriers: friend or foe? In *Proceedings of the 2017 ACM SIGPLAN International Symposium on Memory Management (ISMM 2017)*. ACM, New York, NY, USA, 24–36. DOI: https://doi.org/10.1145/3080207.3080217
-
-[7] Oracle Corporation. 2023. *The Java Virtual Machine Specification, Java SE 21 Edition*. Oracle, Redwood City, CA, USA.
-
-[8] Oracle Corporation. 2023. *JEP 439: Generational ZGC*. OpenJDK. Available at: https://openjdk.org/jeps/439
-
-[9] Flood, C., et al. 2023. Shenandoah: The garbage collector that could. In *Companion to the 28th ACM SIGPLAN Annual Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '23 Companion)*. ACM, New York, NY, USA, 1–2. DOI: https://doi.org/10.1145/3622780.3622781
-
-[10] Click, C. 2005. Azul pauseless GC. In *Companion to the 20th Annual ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA '05)*. ACM, New York, NY, USA, 282–283. DOI: https://doi.org/10.1145/1094855.1094917
-
-[11] Jones, R., Hosking, A., and Moss, E. 2011. *The Garbage Collection Handbook: The Art of Automatic Memory Management* (2nd ed.). Chapman & Hall/CRC, Boca Raton, FL, USA.
-
-[12] Yang, X., et al. 2016. The Z Garbage Collector. OpenJDK Project. Available at: https://openjdk.org/jeps/377
-
-## 延伸阅读
-
 ### 书籍
 
 - **Jones, R., Hosking, A., and Moss, E.** *The Garbage Collection Handbook* (2nd ed.). CRC Press, 2011. — GC 算法与实现百科全书。
@@ -920,17 +876,6 @@ public final class NativeResource implements AutoCloseable {
 - **Baker, H. G.** *List Processing in Real Time on a Serial Computer*. CACM, 1978. — 增量复制 GC 的奠基论文。
 - **Wilson, P. R.** *Uniprocessor Garbage Collection Techniques*. In Proc. IWMM, 1992. — 经典综述，涵盖所有主要 GC 算法。
 - **Printezis, T. and Detlefs, D.** *A Generational Mostly-concurrent Garbage Collector*. ISMM, 2000. — CMS 设计论文。
-
-### 在线资源
-
-- **OpenJDK ZGC 文档**：https://openjdk.org/groups/hotspot/docs/ZGC_Presentation.pdf
-- **G1 GC Tuning Guide (Oracle)**：https://docs.oracle.com/en/java/javase/21/gctuning/
-- **GCEasy 在线 GC 日志分析**：https://gceasy.io
-- **JDK Mission Control**：https://github.com/openjdk/jmc
-- **async-profiler**：https://github.com/async-profiler/async-profiler
-- **Eclipse MAT**：https://eclipse.dev/mat/
-- **JEP 439: Generational ZGC**：https://openjdk.org/jeps/439
-- **JEP 377: ZGC: A Scalable Low-Latency Garbage Collector**：https://openjdk.org/jeps/377
 
 ### 相关课程
 

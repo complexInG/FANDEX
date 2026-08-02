@@ -462,21 +462,10 @@ class DigitalTwin:
 4. **异常检测**从简单阈值到深度学习，需根据场景选择
 5. **数字孪生**是 IoT 的高级应用，实现预测性维护和优化控制
 
-## 参考文献
-
-MQTT 规范：https://mqtt.org/
-CoAP（RFC 7252）：https://www.rfc-editor.org/rfc/rfc7252
-EMQX 文档：https://www.emqx.io/docs/zh/latest/
-AWS IoT Core：https://aws.amazon.com/iot-core/
-InfluxDB 文档：https://docs.influxdata.com/
-
 ## 延伸阅读
-
 MQTT 与设备接入，见 035-iot 模块文档。
 嵌入式 C 与硬件，见 025-c 模块。
 时序数据与数据平台，见 052-big-data 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供物联网课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

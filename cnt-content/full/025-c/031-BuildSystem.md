@@ -1513,72 +1513,6 @@ Boost 是 C++ 库集合，使用自研的 B2（Boost.Build）系统。
 
 **B2 的局限**：Jam 语法独特，学习成本高；社区生态小于 CMake，导致 Boost 部分模块提供 CMake 配置作为补充。
 
-## 知识讲解与要点分析（原练习）
-
-### 基础练习
-
-1. **创建最小 CMake 项目**：编写 `CMakeLists.txt` 构建一个 Hello World 程序，设置 C17 标准，要求 `CMAKE_C_STANDARD_REQUIRED` 为 ON，并添加 `-Wall -Wextra` 编译选项。
-
-2. **多目录项目**：将练习 1 扩展为多目录结构：`lib/` 包含静态库 `mylib`，`app/` 包含可执行文件 `myapp` 链接 `mylib`。要求使用 `add_subdirectory` 和 `target_link_libraries`。
-
-3. **构建类型切换**：在 CMake 中配置 Debug 和 Release 两种构建类型，分别使用 `-g3 -O0` 和 `-O3 -DNDEBUG`，通过命令行 `-DCMAKE_BUILD_TYPE=` 切换。
-
-4. **外部库查找**：使用 `find_package(Threads REQUIRED)` 和 `find_package(ZLIB REQUIRED)`，在代码中使用 `<pthread.h>` 和 `<zlib.h>`。
-
-### 进阶练习
-
-5. **FetchContent 集成**：使用 `FetchContent` 引入 cJSON 库（v1.7.17），编写程序解析 JSON 字符串并打印结果。
-
-6. **交叉编译**：编写 ARM Linux 工具链文件，配置 CMake 交叉编译一个简单程序。验证生成的二进制为 ARM 架构（`file myapp` 应显示 `ELF 32-bit LSB executable, ARM`）。
-
-7. **CTest 测试**：编写三个测试程序，使用 `add_test` 注册到 CTest，设置不同超时和标签，运行 `ctest --output-on-failure` 查看结果。
-
-8. **CMake Presets**：为练习 1-4 编写 `CMakePresets.json`，定义 `debug`、`release`、`asan`、`coverage` 四个预设，使用 `cmake --preset` 命令切换。
-
-### 挑战练习
-
-9. **完整项目骨架**：设计一个完整的 C 项目骨架，包含：
-   - 顶层 `CMakeLists.txt` 与子目录
-   - 静态库 `mylib` 与动态库 `mylib_shared`
-   - 可执行文件 `myapp` 与测试 `tests/`
-   - CMake Presets（debug/release/asan/coverage）
-   - GitHub Actions CI 配置（多平台多编译器矩阵）
-   - 安装规则（`GNUInstallDirs`）与 CPack 打包
-
-10. **构建系统迁移**：选择一个使用 Makefile 的开源项目（如 Redis 6.0），为其编写 CMake 构建脚本，要求：
-    - 保持原有功能完整
-    - 支持原 Makefile 的命令行参数（如 `MALLOC=jemalloc`）
-    - 生成 `compile_commands.json`
-    - 通过原有测试套件
-
-## 参考文献
-
-1. Feldman, S. I. (1979). Make—A program for maintaining computer programs. _Software: Practice and Experience_, 9(4), 255-265. https://doi.org/10.1002/spe.4380090404
-
-2. Martin, E., Jones, M., & Holloway, J. (2010). Ninja: A simple way to build things quickly. _Google Tech Talk_. https://ninja-build.org/manual.html
-
-3. Kitware Inc. (2023). CMake Reference Documentation (Version 3.27). https://cmake.org/cmake/help/v3.27/
-
-4. Miller, P. (1998). Recursive Make considered harmful. _AUUGN Journal_, 19(1), 14-25. https://doi.org/10.1.1.37.2811
-
-5. Pakkanen, J. (2023). Meson Build System Manual. https://mesonbuild.com/manual.html
-
-6. Google. (2023). Bazel Build System Documentation. https://bazel.build/rules/rules
-
-7. Stallman, R. M., & McGrath, R. (2023). GNU Make Manual (Version 4.4). Free Software Foundation. https://www.gnu.org/software/make/manual/
-
-8. Bernstein, D. (2014). Quick build with ninja. _Linux Journal_, 2014(247). https://www.linuxjournal.com/article/17.1.html
-
-9. Srinivasan, S. (2022). Modern CMake for C++: Discover a more effective way to build, test, and package your C++ projects. Packt Publishing. ISBN 978-1803238721
-
-10. Torchiano, M., & Tomassetti, F. (2018). CMake: A cross-platform build system. _IEEE Software_, 35(2), 96-101. https://doi.org/10.1109/MS.2017.265152832
-
-11. Citron, D., Tal, A., & Yom-Tov, E. (2003). Make: A case study in build system design. _ACM SIGPLAN Notices_, 38(7), 24-33. https://doi.org/10.1145/979565.979569
-
-12. Neamtiu, I., & Pradel, M. (2018). Build systems: A case study of CMake and Bazel. _Proceedings of the 40th International Conference on Software Engineering_ (ICSE), pp. 1055-1066. https://doi.org/10.1145/3183519.3183532
-
-## 延伸阅读
-
 ### 官方文档
 
 - **CMake 官方教程**：https://cmake.org/cmake/help/latest/guide/tutorial/
@@ -1599,13 +1533,6 @@ Boost 是 C++ 库集合，使用自研的 B2（Boost.Build）系统。
 - **《Modern CMake for C++》**（Tomislav Doresic, 2022）：现代 CMake 实践，强调目标（target）而非全局变量。
 - **《Software Build Systems: Principles and Experience》**（Peter Smith, 2011）：构建系统理论与实践全面覆盖。
 - **《Large-Scale C++ Software Design》**（John Lakos, 1996）：大型项目构建与物理设计。
-
-### 社区资源
-
-- **CMake Community Wiki**：https://gitlab.kitware.com/cmake/community
-- **CMake Recipes on GitHub**：https://github.com/dev-cafe/cmake-cookbook
-- **cppitertools articles on CMake**：https://cppitertools.sourceforge.net/
-- **CMake Examples by ttroy50**：https://github.com/ttroy50/cmake-examples
 
 ### 工具生态
 

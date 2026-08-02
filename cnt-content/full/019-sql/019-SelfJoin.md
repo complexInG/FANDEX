@@ -349,32 +349,12 @@ ORDER BY ct.ancestor;
 
 性能上自连接的最大风险是笛卡尔积与缺少索引。写完后用 EXPLAIN 验证，是每个 SQL 开发者的基本素养。
 
-## 10. 参考文献
-
-PostgreSQL 官方文档, WITH 查询（递归 CTE）, 访问日期 2026-08-01, https://www.postgresql.org/docs/current/queries-with.html
-
-PostgreSQL 官方文档, 表连接, 访问日期 2026-08-01, https://www.postgresql.org/docs/current/tutorial-join.html
-
-MySQL 官方文档, WITH（公共表表达式）, 访问日期 2026-08-01, https://dev.mysql.com/doc/refman/8.0/en/with.html
-
-E. F. Codd, A Relational Model of Data for Large Shared Data Banks, Communications of the ACM, 1970
-
-SQL 标准 ISO/IEC 9075-2（SQL:2023）中连接与递归查询相关条款。
-
 ## 11. 延伸阅读
-
 连接类型详解与索引优化，见 019-sql 模块的 JOIN 文档；
-
 窗口函数（LAG/LEAD/ROW_NUMBER），见 019-sql 模块的窗口函数文档；
-
 PostgreSQL 递归查询与物化路径对比，见 021-postgresql 模块相关文档；
-
 树结构与图数据建模，见 020-mysql 模块或 021-postgresql 模块相关文档；
-
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 MySQL 高级课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供数据库课程。
-
 ---
-
 ### 1. 自连接概述
 
 自连接（Self Join）是将同一张表与自身进行连接的操作。表在自连接中扮演两个不同角色，需要使用不同的别名区分。
@@ -725,4 +705,3 @@ SELECT name, salary
 FROM employees
 WHERE salary = (SELECT MAX(salary) FROM employees);
 ```
-

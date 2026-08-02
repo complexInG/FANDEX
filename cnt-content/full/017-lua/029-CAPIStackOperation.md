@@ -1392,75 +1392,6 @@ static int l_graphics_rectangle(lua_State *L) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：. 在 Lua C-API 中，栈索引 -1 表示：
-
-A. 栈底元素
-B. 栈顶元素
-C. 第一个参数
-D. 无效索引
-
-**解析讲解**：B
-
-**解析讲解**：负索引从栈顶向下计数，-1 是栈顶元素。
-
----
-
-**常见疑问 2**：. `lua_pcall(L, nargs, nresults, errfunc)` 的第四个参数 `errfunc` 表示：
-
-A. 错误代码
-B. 错误处理函数的栈索引
-C. 错误消息
-D. 错误重试次数
-
-**解析讲解**：B
-
-**解析讲解**：`errfunc` 是错误处理函数的栈索引，若为 0 则不使用错误处理函数。
-
----
-
-**常见疑问 3**：. 下列关于 `lua_tostring` 的描述，错误的是：
-
-A. 返回 `const char*`
-B. 不会抛出错误
-C. 可能修改 number 类型栈值
-D. 返回的指针永久有效
-
-**解析讲解**：D
-
-**解析讲解**：`lua_tostring` 返回的指针仅在栈未变化时有效，一旦栈发生变化（如 pop），指针可能失效。
-
----
-
-**常见疑问 4**：. `lua_next(L, idx)` 返回 0 表示：
-
-A. 出错
-B. 遍历结束
-C. 表为空
-D. 表不存在
-
-**解析讲解**：B
-
-**解析讲解**：`lua_next` 返回 0 表示遍历结束，否则返回非零并压入 key 和 value。
-
----
-
-**常见疑问 5**：. `luaL_checktype(L, idx, t)` 在类型不匹配时会：
-
-A. 返回 0
-B. 返回 NULL
-C. 抛出 Lua 错误
-D. 转换类型
-
-**解析讲解**：C
-
-**解析讲解**：`luaL_checktype` 在类型不匹配时调用 `luaL_error` 抛出错误，不会返回。
-
----
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：. `lua_State` 是 Lua 与 C 交互的核心数据结构，其内部维护______、______、______三部分。
@@ -1681,79 +1612,6 @@ int luaopen_mergelib(lua_State *L) {
 
 ---
 
-### 8.4 思考题
-
-**常见疑问 14**：. 为什么 Lua 使用虚拟栈而非直接内存引用？
-
-**解析讲解**：
-
-虚拟栈的设计带来以下优势：
-
-1. **类型安全**：C 端不直接操作 Lua 对象内存，避免指针误用。
-2. **GC 友好**：栈中所有对象受 GC 管理，无需手动 refcount。
-3. **可移植性**：栈抽象屏蔽不同平台的内存模型差异。
-4. **可调试性**：栈状态显式可见，便于调试。
-5. **API 简洁**：所有操作通过统一接口，学习曲线平缓。
-
-代价是：
-
-- 性能开销（相比直接引用）
-- 需要手动管理栈平衡
-
----
-
-**常见疑问 15**：. 比较 `lua_call` 和 `lua_pcall` 的性能差异，并说明何时应使用 `lua_pcall`。
-
-**解析讲解**：
-
-性能差异：
-
-- `lua_call` 不设置错误处理 longjmp 跳板，开销小。
-- `lua_pcall` 需设置 `setjmp` 跳板，约多 5-10% 开销。
-
-何时使用 `lua_pcall`：
-
-1. **执行用户脚本**：用户代码可能出错，必须保护。
-2. **调用可能失败的库函数**：如 `string.format`。
-3. **C 应用嵌入 Lua**：Lua 错误不应传播到 C 端。
-
-何时使用 `lua_call`：
-
-1. **C 端内部调用已知安全的 Lua 函数**。
-2. **极高性能敏感场景**。
-3. **错误已通过其他方式处理**。
-
----
-
-**常见疑问 16**：. 解释 `luaL_checkinteger` 和 `lua_tointeger` 的差异，并分析在何时应使用 `luaL_optinteger`。
-
-**解析讲解**：
-
-| API | 类型不匹配时 | 是否可获取默认值 | 适用场景 |
-|-----|--------------|------------------|----------|
-| `luaL_checkinteger` | 抛出错误 | 否 | 严格要求参数 |
-| `lua_tointeger` | 返回 0 | 否 | 宽松处理（需手动检查） |
-| `luaL_optinteger` | 返回默认值 | 是 | 可选参数 |
-
-`luaL_optinteger` 适用于：
-
-```lua
-function f(x, y)
-    y = y or 10  -- Lua 端等价
-end
-```
-
-C 端：
-
-```c
-lua_Integer x = luaL_checkinteger(L, 1);
-lua_Integer y = luaL_optinteger(L, 2, 10);
-```
-
----
-
-## 9. 参考文献
-
 ### 9.1 核心文献
 
 - [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, *Lua 5.4 Reference Manual*, PUC-Rio, 2020. [Online]. Available: https://www.lua.org/manual/5.4/
@@ -1788,8 +1646,6 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2007. The evolution of Lua.
 
 ---
 
-## 10. 延伸阅读
-
 ### 10.1 书籍
 
 - Roberto Ierusalimschy, *Programming in Lua*, 4th Edition
@@ -1801,21 +1657,6 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 2007. The evolution of Lua.
 - "The Implementation of Lua 5.0"（JUCS 2005）
 - "A No-Frills Introduction to Lua 5.1 VM Instructions"（Kein-Hong Man）
 - "LuaJIT 2.0: A Just-In-Time Compiler for Lua"（Mike Pall）
-
-### 10.3 在线资源
-
-- Lua 官方站点：https://www.lua.org/
-- Lua Users Wiki：http://lua-users.org/wiki/
-- LuaJIT 项目：http://luajit.org/
-- Lua 文档：https://www.lua.org/manual/5.4/manual.html#4
-- Lua 教学教程：https://learnxinyminutes.com/docs/lua/
-
-### 10.4 开源项目参考
-
-- **lua-stdio**：标准库扩展，大量使用栈操作
-- **Lua-cURL**：cURL 绑定，复杂参数传递
-- **lua-socket**：网络库，使用 `lua_pcall` 处理回调
-- **lpeg**：解析表达式文法，深度使用栈
 
 ### 10.5 与本文档相关章节
 

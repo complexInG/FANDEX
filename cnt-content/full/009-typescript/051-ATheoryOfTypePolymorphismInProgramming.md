@@ -2083,8 +2083,6 @@ const result = pipe(
 
 fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative）。
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. **[remember]** TypeScript 的类型兼容性采用 ____ 子类型化规则，即如果 S 的结构包含 T 的所有成员，则 S 是 T 的子类型。
@@ -2106,99 +2104,6 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 9. **[remember]** TypeScript 的类型擦除发生在 ____ 阶段，运行时无任何类型信息。
 
 10. **[understand]** 映射类型 `{ [P in keyof T]: U }` 是 ____ 操作，可将现有类型映射为新类型。
-
-### 选择题知识点讲解
-
-1. **[understand]** 下列关于结构化类型与名义化类型的描述，哪一项是正确的？
-   - A. Java 的泛型是结构化的
-   - B. TypeScript 默认采用名义化类型
-   - C. Rust 的类型系统是名义化的
-   - D. Go 的接口是名义化的
-
-   答案：C
-
-2. **[understand]** 关于 TypeScript 的类型擦除，下列哪一项是错误的？
-   - A. interface 在编译后完全消失
-   - B. type 别名在编译后完全消失
-   - C. enum 会编译为 JavaScript 对象
-   - D. class 在编译后完全消失
-
-   答案：D
-
-3. **[apply]** 以下代码的输出类型是什么？
-
-   ```typescript
-   type T = ('a' | 'b' | 'c') extends 'a' ? true : false;
-   ```
-
-   - A. true
-   - B. false
-   - C. boolean
-   - D. true | false
-
-   答案：B（非分布式，因为 'a' | 'b' | 'c' 是单一联合类型作为整体判断）
-
-   注意：实际上为分布式条件类型，结果为 `true | false | false`，简化为 `boolean`。答案：C
-
-4. **[analyze]** 以下代码的输出类型是什么？
-
-   ```typescript
-   type Unwrap<T> = T extends Promise<infer U> ? U : T;
-   type R = Unwrap<Promise<string> | number>;
-   ```
-
-   - A. string | number
-   - B. string
-   - C. number
-   - D. Promise<string> | number
-
-   答案：A（分布式条件类型）
-
-5. **[evaluate]** 关于 unknown 与 any 的比较，下列哪一项是错误的？
-   - A. unknown 是类型安全的顶类型
-   - B. any 关闭类型检查
-   - C. unknown 可赋值给任何类型
-   - D. 任何类型可赋值给 unknown
-
-   答案：C（unknown 不可直接赋值给非 unknown 类型，需先窄化）
-
-6. **[understand]** 以下代码的输出类型是什么？
-
-   ```typescript
-   type Keys<T> = keyof T;
-   type R = Keys<{ a: 1; b: 2 }>;
-   ```
-
-   - A. 'a' | 'b'
-   - B. 'a' & 'b'
-   - C. number
-   - D. string
-
-   答案：A
-
-7. **[analyze]** 以下代码的输出类型是什么？
-
-   ```typescript
-   type PickByValue<T, V> = {
-     [P in keyof T as T[P] extends V ? P : never]: T[P];
-   };
-   type R = PickByValue<{ a: string; b: number; c: string }, string>;
-   ```
-
-   - A. { a: string; b: number; c: string }
-   - B. { a: string; c: string }
-   - C. { b: number }
-   - D. {}
-
-   答案：B
-
-8. **[evaluate]** 关于 TypeScript 的协变/逆变规则，下列哪一项是正确的？
-   - A. 数组是逆变的
-   - B. Promise 是逆变的
-   - C. strictFunctionTypes 启用后函数参数逆变
-   - D. 只读属性是不变的
-
-   答案：C
 
 ### 19.3 代码修复题（code-fix）
 
@@ -2339,62 +2244,6 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 | 声明合并 | 同名声明合并 | interface、namespace |
 | 图灵完备 | 类型级可计算 | 元组长度 + 条件 + 递归 |
 
-## 21. 参考文献（ACM Reference Format）
-
-[1] Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press, Cambridge, MA.
-
-[2] Church, A. 1940. A formulation of the simple theory of types. *Journal of Symbolic Logic* 5, 2, 56-68. DOI: 10.2307/2266170.
-
-[3] Girard, J.-Y. 1971. Une extension de l'interprétation de Gödel à l'analyse, et son application à l'élimination des coupures dans l'analyse et la théorie des types. In *Proceedings of the Second Scandinavian Logic Symposium*. North-Holland, 63-92.
-
-[4] Reynolds, J. C. 1974. Towards a theory of type structure. In *Proceedings of the Colloque sur la Programmation*. Springer, 408-425. DOI: 10.1007/3-540-06859-7_148.
-
-[5] Hindley, J. R. 1969. The principal type-scheme of an object in combinatory logic. *Journal of Symbolic Logic* 34, 3, 437-441. DOI: 10.2307/2270866.
-
-[6] Milner, R. 1978. A theory of type polymorphism in programming. *Journal of Computer and System Sciences* 17, 3, 348-375. DOI: 10.1016/0022-0000(78)90014-4.
-
-[7] Damas, L. and Milner, R. 1982. Principal type-schemes for functional programs. In *Proceedings of the 9th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (POPL '82). ACM, New York, NY, 207-212. DOI: 10.1145/582153.582176.
-
-[8] Cardelli, L. and Wegner, P. 1985. On understanding types, data abstraction, and polymorphism. *ACM Computing Surveys* 17, 4, 471-523. DOI: 10.1145/6041.6042.
-
-[9] Cardelli, L. 1997. Type systems. In *Handbook of Computer Science and Engineering*. CRC Press.
-
-[10] Turner, D. A. 1985. Miranda: A non-strict functional language with polymorphic types. In *Functional Programming Languages and Computer Architecture*. Springer, 1-16. DOI: 10.1007/3-540-15975-4_26.
-
-[11] Wadler, P. and Blott, S. 1989. How to make ad-hoc polymorphism less ad hoc. In *Proceedings of the 16th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (POPL '89). ACM, New York, NY, 60-76. DOI: 10.1145/75277.75283.
-
-[12] Appel, A. W. 1992. *Compiling with Continuations*. Cambridge University Press.
-
-[13] Wright, A. K. and Felleisen, M. 1994. A syntactic approach to type soundness. *Information and Computation* 115, 1, 38-94. DOI: 10.1006/inco.1994.1093.
-
-[14] Harper, R. 2016. *Practical Foundations for Programming Languages*. Cambridge University Press.
-
-[15] Hejlsberg, A. 2012. TypeScript: JavaScript development at scale. Microsoft Build Conference.
-
-[16] Bierman, G. M., Abadi, M., and Torgersen, M. 2014. Understanding TypeScript. In *Proceedings of the 28th European Conference on Object-Oriented Programming* (ECOOP 2014). Schloss Dagstuhl. DOI: 10.1007/978-3-662-44202-9_10.
-
-[17] Bierman, G. M. and Torgersen, M. 2010. Integrating generics and virtual functions. In *Proceedings of the 24th European Conference on Object-Oriented Programming* (ECOOP 2010). DOI: 10.1007/978-3-642-14107-2_4.
-
-[18] Amin, N. and Tate, R. 2016. Java and Scala's type systems are unsound: The existential crisis of null pointers. In *Proceedings of the 2016 ACM SIGPLAN International Conference on Object-Oriented Programming, Systems, Languages, and Applications* (OOPSLA 2016). ACM. DOI: 10.1145/2983990.2984046.
-
-[19] Rastogi, A., Swamy, N., and Fournet, C. 2015. Gradual typing with unification-based inference. In *Proceedings of the 2015 ACM SIGPLAN International Conference on Object-Oriented Programming, Systems, Languages, and Applications* (OOPSLA 2015). ACM. DOI: 10.1145/2814270.2814303.
-
-[20] Siek, J. G. and Taha, W. 2006. Gradual typing for functional languages. In *Proceedings of the Scheme and Functional Programming Workshop*.
-
-[21] Siek, J. G. and Wadler, P. 2010. Threesomes, with and without blame. In *Proceedings of the 2010 ACM SIGPLAN Workshop on Partial Evaluation and Program Manipulation* (PEPM 2010). ACM. DOI: 10.1145/1706356.1706366.
-
-[22] Swamy, N., et al. 2014. Gradual typing embedded securely in JavaScript. In *Proceedings of the 41st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (POPL 2014). ACM. DOI: 10.1145/2535838.2535889.
-
-[23] Chlipala, A. 2013. *Certified Programming with Dependent Types*. MIT Press.
-
-[24] The Univalent Foundations Program. 2013. *Homotopy Type Theory: Univalent Foundations of Mathematics*. Institute for Advanced Study.
-
-[25] Microsoft. 2026. TypeScript language specification. Retrieved from https://www.typescriptlang.org/docs/.
-
-[26] Hejlsberg, A. and Rosenwasser, D. 2020. TypeScript 4.1: Template literal types. Microsoft Blog.
-
-## 22. 延伸阅读
-
 ### 22.1 经典书籍
 
 - Benjamin C. Pierce. *Types and Programming Languages*. MIT Press, 2002.
@@ -2459,28 +2308,6 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 - **范畴论**：Functor、Monad、自然变换
 - **可计算性**：图灵机、Lambda 演算、递归函数
 - **形式化验证**：Coq、Isabelle、Lean 的应用
-
-## 23. 附录 A：Bloom 分类法与习题映射
-
-本文习题按 Bloom 分类法设计，覆盖六个认知层级：
-
-| 层级 | 习题类型 | 示例 |
-| ---- | -------- | ---- |
-| remember | 填空题 | 复述类型论史、术语定义 |
-| understand | 填空题、选择题 | 解释子类型规则、对比概念 |
-| apply | 选择题、代码修复题 | 运用规则预测结果、修复缺陷 |
-| analyze | 选择题、代码修复题 | 拆解类型推导、识别陷阱 |
-| evaluate | 选择题、开放题 | 评估方案优劣、论证等价性 |
-| create | 代码修复题、开放题 | 设计类型级抽象、构造 DSL |
-
-建议学习路径：
-
-1. 先读类型论基础（STLC、System F、HM）建立数学框架
-2. 学习 TypeScript 的具体实现（结构化类型、子类型）
-3. 通过代码示例验证理解
-4. 完成填空与选择题巩固基础
-5. 挑战代码修复与开放题
-6. 阅读案例研究连接实践
 
 ## 24. 附录 B：术语对照表
 

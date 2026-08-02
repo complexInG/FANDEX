@@ -463,22 +463,6 @@ flowchart LR
 
 **对策**：只对"架构级、影响深远、难以逆转"的决策写 ADR。能轻易改回来的决策（比如"这个页面用蓝色"）不需要 ADR。
 
-## 9. 实战练习
-
-**练习 1（RFC）**：为一个你熟悉的功能（比如"用户注册支持手机号+验证码"）写一份 RFC，包含：摘要、目标/非目标、详细设计（API 或流程）、至少 2 个替代方案、风险表。
-
-**练习 2（ADR）**：回想你最近做的一个技术选型（框架、数据库、工具），写一篇 ADR：状态、背景、决策、理由、正负后果、替代方案。要求 15 分钟内完成。
-
-**练习 3（评审）**：找一篇网上的技术方案博客，用本章的"评审要点"清单审一遍：它有没有"非目标"？有没有认真写替代方案？风险表是否完整？你能提出 3 个作者没考虑到的问题吗？
-
-## 10. 参考资源
-
-- ADR 社区（MADR 模板）：https://adr.github.io/
-- MADR 官方模板：https://adr.github.io/madr/
-- RFC 与 ADR 的区别（英文）：https://designdoc.tech/blog/rfcs-vs-adrs
-- Rust RFC 流程（业界范例）：https://github.com/rust-lang/rfcs
-- Google 设计文档写作指南（英文）：https://www.industrialempathy.com/posts/design-docs-at-google/
-
 ## 11. 延伸阅读
 
 - 设计文档写完后如何评审，见本模块《技术方案评审》文档

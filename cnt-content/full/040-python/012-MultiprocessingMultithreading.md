@@ -1269,60 +1269,6 @@ Django 服务的标准部署：`gunicorn --workers=4 --worker-class=sync myproje
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下代码在 4 核机器上运行，`counter` 最终值最可能是多少？
-
-```python
-from threading import Thread
-counter = 0
-def inc():
-    global counter
-    for _ in range(100_000):
-        counter += 1
-ts = [Thread(target=inc) for _ in range(4)]
-for t in ts: t.start()
-for t in ts: t.join()
-print(counter)
-```
-
-- A. 400000
-- B. 约 100000-400000 之间随机
-- C. 100000
-- D. 0
-
-**解析讲解**：B
-
-**解析讲解**：`counter += 1` 非原子，GIL 可能在 LOAD/STORE 之间切换线程，导致丢失更新。最终值取决于线程调度，介于 100000（每次都丢失）和 400000（无丢失）之间。
-
----
-
-**常见疑问 2**：关于 `multiprocessing` 启动方式，以下说法正确的是？
-
-- A. Linux 默认 `spawn`
-- B. macOS 自 Python 3.8 起默认 `fork`
-- C. Windows 仅支持 `spawn`
-- D. `forkserver` 在所有平台都可用
-
-**解析讲解**：C
-
-**解析讲解**：Linux 默认 `fork`，macOS 自 3.8 起默认 `spawn`（因 macOS 的 fork 不安全，与 CoreFoundation 冲突），Windows 仅支持 `spawn`（无 `fork` 系统调用），`forkserver` 在 Windows 不可用。
-
----
-
-**常见疑问 3**：以下哪种情况会触发 GIL 释放？
-
-- A. 执行 `a + b`
-- B. 调用 `time.sleep(1)`
-- C. 执行 `for i in range(1000): pass`
-- D. `print("hello")`
-
-**解析讲解**：B
-
-**解析讲解**：`time.sleep` 是阻塞系统调用，CPython 在调用前主动释放 GIL。`a + b`、`for` 循环、`print` 都是纯 Python 字节码，不会在单条指令内释放（仅在 `sys.setswitchinterval` 到期时切换）。
-
 ### 填空题知识点讲解
 
 **常见疑问 4**：Python GIL 的全称是 ________，它保证了同一时刻只有一个线程在执行 ________。
@@ -1456,49 +1402,6 @@ if __name__ == "__main__":
         print(f"{word}: {n}")
 ```
 
-### 9.4 思考题
-
-**常见疑问 9**：假设你设计一个实时日志聚合服务，每秒接收 10000 条日志（每条平均 500B），需要解析、过滤、写入 Elasticsearch。你会选择 `threading`、`multiprocessing`、`asyncio` 还是混合方案？请给出架构图与决策依据。
-
-**提示**：考虑以下因素：
-
-1. 日志解析是 CPU 密集（正则）还是 IO 密集（写 ES）？
-2. 是否需要严格顺序？分片键是什么？
-3. ES 客户端是否支持 asyncio？（`elasticsearch-async` vs `elasticsearch-py`）
-4. 失败重试与背压策略？
-
-**参考思路**：
-
-```mermaid
-flowchart LR
-    P[Producers<br/>Kafka] --> L[asyncio loop<br/>10k conn]
-    L --> PP[ProcessPool 4<br/>regex parse]
-    PP --> PQ[parsed log]
-    L --> BQ[BatchQueue<br/>maxsize=1k]
-    PQ --> BQ
-    BQ --> ES[ES Bulk API<br/>asyncio]
-```
-
-决策依据：asyncio 处理高并发 IO（Kafka 消费 + ES 写入），ProcessPool 处理 CPU 密集的解析（绕过 GIL）。BatchQueue 实现背压。
-
----
-
-**常见疑问 10**：PEP 703 移除 GIL 后，以下场景的推荐方案会如何变化？
-
-1. CPU 密集型多线程计算
-2. 现有 `multiprocessing` 代码迁移
-3. C 扩展兼容性
-4. 性能基准（单线程是否会变慢？）
-
-**解析讲解**：
-
-1. **CPU 密集型多线程**：从 `multiprocessing` 切换到 `threading`，避免 IPC 开销，内存共享更自然。
-2. **现有 multiprocessing 代码**：仍可运行，但应逐步迁移到 threading；Manager/Queue 等 IPC 机制可保留用于隔离场景。
-3. **C 扩展兼容性**：需重新审视线程安全，原本依赖 GIL 隐式保护的扩展需显式加锁。CPython 团队提供 `Py_MODINIT_FUNC` 兼容层。
-4. **单线程性能**：PEP 703 采用 biased reference counting 与延迟引用计数，单线程性能下降约 5-10%（Python 3.13 实测），但多线程并行收益远超此成本。
-
----
-
 ## 10. PEP 703 与未来展望
 
 ### 10.1 PEP 703 概述
@@ -1539,42 +1442,6 @@ python -X gil=0 script.py
 
 ---
 
-## 11. 参考文献
-
-[1] Van Rossum, G. 1991. *Python Tutorial*. CWI Report CS-R9526. DOI: 10.5281/zenodo.31753
-
-[2] Van Rossum, G. and Warsaw, B. 2001. *PEP 8: Style Guide for Python Code*. Python Enhancement Proposal. https://peps.python.org/pep-0008/
-
-[3] Noller, J. and Oussena, S. 2008. *PEP 371: Addition of the multiprocessing package to the standard library*. https://peps.python.org/pep-0371/
-
-[4] Quinlan, B. 2010. *PEP 3148: futures - execute computations asynchronously*. https://peps.python.org/pep-3148/
-
-[5] Gross, S. 2023. *PEP 703: Making the GIL Optional in Python*. https://peps.python.org/pep-0703/
-
-[6] Coffman, E. G., Elphick, M., and Shoshani, A. 1971. System deadlocks. *ACM Computing Surveys* 3, 2 (June 1971), 67–78. DOI: 10.1145/356586.356588
-
-[7] Amdahl, G. M. 1967. Validity of the single processor approach to achieving large scale computing capabilities. In *Proceedings of the spring joint computer conference* (AFIPS '67). ACM, New York, NY, USA, 483–485. DOI: 10.1145/1465482.1465560
-
-[8] Little, J. D. C. 1961. A Proof for the Queuing Formula L = λW. *Operations Research* 9, 3, 383–387. DOI: 10.1287/opre.9.3.383
-
-[9] Herlihy, M. and Shavit, N. 2012. *The Art of Multiprocessor Programming* (2nd ed.). MIT Press. ISBN: 978-0123973375
-
-[10] Tanenbaum, A. S. and Bos, H. 2014. *Modern Operating Systems* (4th ed.). Pearson. ISBN: 978-0133591620
-
-[11] Kleppmann, M. 2017. *Designing Data-Intensive Applications*. O'Reilly Media. ISBN: 978-1449373320
-
-[12] Bruestle, J. 2024. *Python Concurrency with asyncio* (2nd ed.). Manning. ISBN: 978-1633438669
-
-[13] CPython Source Code. 2024. *Python/ceval.c — GIL implementation*. https://github.com/python/cpython/blob/main/Python/ceval.c
-
-[14] Python Software Foundation. 2024. *Python Language Reference — Execution model*. https://docs.python.org/3/reference/execmodel.html
-
-[15] Pillai, S. 2023. Multiprocessing shared memory in Python 3.13. *Python Quarterly* 12, 4, 23–41. DOI: 10.1145/3628745.3628760
-
----
-
-## 12. 延伸阅读
-
 ### 12.1 书籍
 
 - **《Python Concurrency with asyncio》**（Matthew Fowler, 2022, Manning）：asyncio 权威指南。
@@ -1588,23 +1455,6 @@ python -X gil=0 script.py
 - **Gross, S. et al.** "NoGIL: Making Python Fast and Thread-Safe." *USENIX ATC '23*.
 - **Patterson, D. A. and Hennessy, J. L.** *Computer Architecture: A Quantitative Approach*（6th ed.）, Chapter 5 "Thread-Level Parallelism".
 - **Adve, S. V. and Gharachorloo, K.** "Shared memory consistency models: A tutorial." *IEEE Computer* 29, 12 (1996), 66–76.
-
-### 12.3 在线资源
-
-- **Python 官方文档**：
-  - `threading` — https://docs.python.org/3/library/threading.html
-  - `multiprocessing` — https://docs.python.org/3/library/multiprocessing.html
-  - `concurrent.futures` — https://docs.python.org/3/library/concurrent.futures.html
-- **PEP 索引**：https://peps.python.org/
-- **Real Python - Concurrency**：https://realpython.com/python-concurrency/
-- **Talks**：
-  - Raymond Hettinger: "Thinking about Concurrency" (PyCon 2016)
-  - David Beazley: "Python Concurrency from the Ground Up" (PyCon 2015)
-  - Sam Gross: "Faster CPython without the GIL" (PyCon 2023)
-- **开源项目参考**：
-  - `celery/celery` — 分布式任务队列
-  - `pytest-xdist` — pytest 并行执行
-  - `uvicorn` — asyncio ASGI 服务器
 
 ### 12.4 进阶路线图
 

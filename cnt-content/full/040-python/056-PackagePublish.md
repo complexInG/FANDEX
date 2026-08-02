@@ -1320,73 +1320,6 @@ Instagram（Meta）的 Python monorepo 规模超过 1000 万行代码，每日�
 4. CI 缓存 wheel，构建时间从 30 分钟降至 3 分钟；
 5. 使用 `uv` 替代 `pip` 后，依赖解析速度提升 10 倍以上。
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题 1**：以下哪个 PEP 标准化了 `pyproject.toml` 中的 `[project]` 表？
-
-A. PEP 517  
-B. PEP 518  
-C. PEP 621  
-D. PEP 660  
-
-**解析讲解**：C
-
-**解析讲解**：PEP 517 定义构建后端接口，PEP 518 引入 `[build-system]`，PEP 621 标准化 `[project]` 表，PEP 660 标准化可编辑安装。
-
----
-
-**题 2**：以下版本号哪个符合 PEP 440？
-
-A. `1.0.beta`  
-B. `1.0-beta`  
-C. `1.0b1`  
-D. `v1.0.0`  
-
-**解析讲解**：C
-
-**解析讲解**：PEP 440 不允许 `1.0.beta`、`1.0-beta` 或 `v1.0.0`。`1.0b1` 表示 1.0 的第一个 beta。
-
----
-
-**题 3**：以下哪个不是 wheel 文件名的合法组成部分？
-
-A. distribution  
-B. version  
-C. build tag  
-D. license  
-
-**解析讲解**：D
-
-**解析讲解**：wheel 文件名格式为 `distribution-version-build_tag-python_tag-abi_tag-platform_tag.whl`，不包含 license。
-
----
-
-**题 4**：使用 Trusted Publisher 发布到 PyPI 时，CI workflow 需要的权限是？
-
-A. `contents: write`  
-B. `id-token: write`  
-C. `packages: write`  
-D. `deployments: write`  
-
-**解析讲解**：B
-
-**解析讲解**：Trusted Publisher 基于 OIDC，需要 `id-token: write` 权限获取短期 token，无需存储长期凭证。
-
----
-
-**题 5**：以下哪种依赖说明符在 Python 3.11+ 上会跳过 `tomli` 安装？
-
-A. `tomli >= 2.0`  
-B. `tomli >= 2.0 ; python_version > "3.11"`  
-C. `tomli >= 2.0 ; python_version < "3.11"`  
-D. `tomli >= 2.0 ; sys_platform == "linux"`  
-
-**解析讲解**：C
-
-**解析讲解**：`python_version < "3.11"` 表示仅在 Python 3.11 之前安装，因为 Python 3.11+ 内置 `tomllib`。
-
 ### 填空题知识点讲解
 
 **题 1**：Python 打包生态中，构建后端接口由 PEP ______ 规范，元数据表 `[project]` 由 PEP ______ 规范，可编辑安装由 PEP ______ 规范。
@@ -1592,44 +1525,6 @@ if __name__ == "__main__":
     print("Sorted:", sort_versions(test_cases))
 ```
 
-### 9.4 思考题
-
-**题 1**：为什么 PyPI 推荐使用 Trusted Publisher 而非 API Token？请从安全模型角度分析。
-
-**参考答案要点**：
-
-1. **短期凭证 vs 长期凭证**：API Token 是长期凭证，泄漏后可被任意使用；Trusted Publisher 使用 OIDC 短期 token，单次有效。
-2. **可审计性**：Trusted Publisher 记录每次发布的 issuer、repository、workflow 路径，便于审计。
-3. **最小权限原则**：API Token 通常拥有较大权限；OIDC token 仅对特定 workflow 有效。
-4. **凭证管理成本**：Trusted Publisher 无需存储任何凭证在 CI Secrets，降低管理成本。
-5. **抗供应链攻击**：即使 workflow 配置文件被泄漏，攻击者也无法在其他仓库重放 token。
-
----
-
-**题 2**：在 monorepo 中管理多个相互依赖的包，应该选择 setuptools、hatchling、poetry、uv workspace 中的哪个？说明理由。
-
-**参考答案要点**：
-
-1. **uv workspace**（2024+）：原生支持 monorepo，性能最优（Rust 实现），依赖解析快 10 倍以上，支持 workspace 内部依赖声明；
-2. **poetry**：支持多包管理但需要每个包独立 `pyproject.toml`，依赖解析较慢；
-3. **hatchling**：不原生支持 workspace，需配合外部工具；
-4. **setuptools**：传统方案，需手动管理版本与依赖；
-5. **推荐**：新项目首选 uv workspace，已有项目可逐步迁移。
-
----
-
-**题 3**：解释为什么 src 布局能避免测试时导入未安装的代码。
-
-**参考答案要点**：
-
-1. **路径隔离**：src 布局下，包不在项目根目录，`python -c "import mypkg"` 不会从 cwd 导入；
-2. **强制安装**：必须通过 `pip install -e .` 才能导入，保证测试的是已安装版本；
-3. **元数据可用**：安装后 `importlib.metadata.version()` 可正常返回版本号；
-4. **打包产物一致**：测试覆盖的就是 wheel 安装后的真实文件结构；
-5. **MIT 课程建议**：MIT 6.S977 课程明确推荐 src 布局，遵循"测你所发"原则。
-
-## 10. 参考文献
-
 ### 10.1 PEP 规范
 
 - [1] B. Cannon, N. Smith, N. Coghlan, and R. Collins, "PEP 517: A build-system independent format for source trees," Python Software Foundation, 2017. [Online]. Available: https://peps.python.org/pep-0517/
@@ -1665,8 +1560,6 @@ if __name__ == "__main__":
 - [22] C. Pitt, "FastAPI's path to a million downloads per month," *FastAPI Blog*, 2023. [Online]. Available: https://fastapi.tiangolo.com/
 - [23] NumPy Developers, "Building NumPy wheels: A practical guide," 2024. [Online]. Available: https://numpy.org/devdocs/building/
 - [24] Django Software Foundation, "Django's release process," 2024. [Online]. Available: https://docs.djangoproject.com/en/dev/internals/release-process/
-
-## 11. 延伸阅读
 
 ### 11.1 推荐书籍
 

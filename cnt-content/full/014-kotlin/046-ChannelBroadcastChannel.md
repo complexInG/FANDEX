@@ -2438,75 +2438,6 @@ class AsyncTaskService(
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪种 `Channel` 容量模式是默认的？
-
-A. `UNLIMITED`
-B. `BUFFERED`
-C. `RENDEZVOUS`
-D. `CONFLATED`
-
-**解析讲解**：C
-
-**解析讲解**：`Channel<T>()` 不传参时默认使用 `RENDEZVOUS`，即无缓冲模式，发送方必须等待接收方就绪。
-
----
-
-**题目 2**：`BroadcastChannel` 在哪个 Kotlin 版本被标记为 `@ObsoleteCoroutinesApi`？
-
-A. Kotlin 1.3
-B. Kotlin 1.4
-C. Kotlin 1.5
-D. Kotlin 2.0
-
-**解析讲解**：C
-
-**解析讲解**：Kotlin 1.5 将 `BroadcastChannel` 标记为 `@ObsoleteCoroutinesApi`，推荐使用 `SharedFlow` 替代。
-
----
-
-**题目 3**：以下哪个不是 `Channel` 的关闭操作？
-
-A. `close()`
-B. `cancel()`
-C. `dispose()`
-D. `consumeEach` 完成后自动关闭
-
-**解析讲解**：C
-
-**解析讲解**：`Channel` 没有 `dispose()` 方法。`close()` 关闭发送端，`cancel()` 关闭接收端，`consumeEach` 完成后会取消 `Channel`。
-
----
-
-**题目 4**：`select` 表达式在多个 clause 同时就绪时的行为是？
-
-A. 选择第一个 clause
-B. 选择最后一个 clause
-C. 随机选择一个 clause
-D. 抛出异常
-
-**解析讲解**：C
-
-**解析讲解**：`select` 在多个 clause 同时就绪时随机选择一个，避免饥饿。
-
----
-
-**题目 5**：以下哪个 API 是 `Channel` 与 `Flow` 的桥接？
-
-A. `asFlow()`
-B. `receiveAsFlow()`
-C. `toFlow()`
-D. `flowOf()`
-
-**解析讲解**：B
-
-**解析讲解**：`receiveAsFlow()` 将 `ReceiveChannel<T>` 转换为 `Flow<T>`，`consumeAsFlow()` 是单次消费版本。
-
----
-
 ### 填空题知识点讲解
 
 **题目 1**：`Channel` 的四种容量类型分别是 ______、______、______、______。
@@ -2744,74 +2675,6 @@ suspend fun main() = coroutineScope {
     delay(500)
 }
 ```
-
----
-
-### 9.4 思考题
-
-**思考题 1**：为什么 Kotlin 选择 `RENDEZVOUS` 作为默认容量，而不是 `BUFFERED`？
-
-**分析方向**：
-
-- `RENDEZVOUS` 强制会合，提供强同步语义。
-- 避免缓冲区堆积导致的内存压力。
-- 符合 CSP 模型的原始设计哲学。
-- 但在实际工程中，`BUFFERED` 可能更常用，需要开发者根据场景显式选择。
-
----
-
-**思考题 2**：`BroadcastChannel` 被废弃的根本原因是什么？`SharedFlow` 解决了哪些问题？
-
-**分析方向**：
-
-- `BroadcastChannel` 缺少 replay 缓冲，新订阅者无法获取历史值。
-- 缺少 `BufferOverflow` 策略，无法精细控制溢出行为。
-- 与 `Flow` 生态不统一，需要手动桥接。
-- `SharedFlow` 提供统一的 API、丰富的配置选项、与 `Flow` 无缝集成。
-
----
-
-**思考题 3**：在高吞吐量场景下，`Channel` 与 `SharedFlow` 哪个更优？为什么？
-
-**分析方向**：
-
-- `Channel` 是点对点通信，无多播开销，吞吐量更高。
-- `SharedFlow` 需要为每个订阅者复制数据，开销较大。
-- 但 `SharedFlow` 提供了 replay、多订阅等高级特性。
-- 选择取决于场景：点对点用 `Channel`，多播用 `SharedFlow`。
-
----
-
-**思考题 4**：`select` 表达式相对回调组合的优势是什么？
-
-**分析方向**：
-
-- 可读性：`select` 是线性的，回调组合是嵌套的。
-- 取消语义：`select` 自动取消未选中的 clause。
-- 类型安全：`select` 的返回类型自动推断。
-- 性能：`select` 内部优化，减少对象分配。
-
----
-
-**思考题 5**：为什么 `Channel` 不支持默认多播？这是设计缺陷还是有意为之？
-
-**分析方向**：
-
-- `Channel` 的 CSP 模型本身就是点对点的。
-- 多播需要额外的复制与同步开销。
-- `SharedFlow` 提供了多播语义，与 `Channel` 形成互补。
-- 这是有意为之的设计：单一职责，最小开销。
-
----
-
-**思考题 6**：在结构化并发中，`Channel` 的生命周期应如何管理？
-
-**分析方向**：
-
-- `Channel` 应绑定到创建它的 `CoroutineScope`。
-- 使用 `produce { ... }` 自动管理生命周期。
-- 手动创建的 `Channel` 必须显式 `close()`。
-- 取消 `CoroutineScope` 时应级联关闭 `Channel`。
 
 ---
 
@@ -3100,8 +2963,6 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. JetBrains. (2024). *Kotlin Coroutines Documentation: Channels*. Retrieved from https://kotlinlang.org/docs/channels.html
@@ -3128,14 +2989,6 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 
 10. Goetz, B., et al. (2006). *Java Concurrency in Practice*. Addison-Wesley Professional. ISBN: 978-0321349606
 
-### 10.4 在线资源
-
-11. Elizarov, R. (2018). *Kotlin Coroutines in Practice*. Retrieved from https://medium.com/@elizarov/kotlin-coroutines-in-practice-9180 - 5b0a1 / [KotlinConf 2018 talk]
-
-12. Elizarov, R. (2020). *Structured Concurrency*. Retrieved from https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/
-
-13. Russian, A. (2023). *Kotlin Coroutines Deep Dive*. Retrieved from https://kt.academy/article/cc-coro
-
 ### 10.5 相关项目
 
 14. JetBrains. (2024). *kotlinx.coroutines: Library support for Kotlin coroutines*. GitHub Repository. https://github.com/Kotlin/kotlinx.coroutines
@@ -3145,8 +2998,6 @@ actual class PlatformSerializer actual constructor() : MessageSerializer {
 16. Google. (2024). *Android Architecture Components: ViewModel with Coroutines*. Retrieved from https://developer.android.com/topic/libraries/architecture/viewmodel
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 深入学习 CSP 模型
 
@@ -3431,16 +3282,6 @@ launch {
 - 编码规范：遵循 [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html)
 - 注释：关键逻辑配备中文注释
 - 可编译性：所有示例可直接复制运行（依赖 Gradle 配置）
-
-### E.4 参考文献说明
-
-参考文献遵循 ACM Reference Format：
-
-- 期刊：`Author. (Year). Title. Journal Name, Volume(Issue), Pages. https://doi.org/xxx`
-- 书籍：`Author. (Year). Title (Edition). Publisher. ISBN: xxx`
-- 在线资源：`Author. (Year). Title. Retrieved from URL`
-
----
 
 ## 总结
 

@@ -268,24 +268,6 @@ $$\sum_{v \in V} \deg^+(v) = \sum_{v \in V} \deg^-(v) = |E|$$
 
 **误区四：二部图一定没有三角形。** → 正确！三角形是 3 圈（奇圈），二部图无奇圈，所以二部图不可能有三角形。
 
-## 9. 实战练习
-
-1. **握手定理**：一个图有 8 个顶点，7 个顶点的度分别为 3,3,3,3,4,4,5,5，求第 8 个顶点的度。
-
-2. **欧拉判定**：判断 $K_4$、$K_5$、Petersen 图各有欧拉回路吗？各有欧拉通路吗？
-
-3. **二部图判定**：用着色法判断一个六边形（含对角线）是否二部图，并说明理由。
-
-4. **最小生成树**：画一个 5 顶点带权图，分别用 Kruskal 和 Prim 求最小生成树，比较结果。
-
-5. **Hall 定理**：3 个男生分别认识 {a,b,c}、{a,b}、{a,c}，判断能否完美匹配。
-
-## 10. 参考资源
-
-- MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-- Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-- Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
 ## 11. 延伸阅读
 
 - 图的高级主题（平面图、着色），见本模块《图论进阶》

@@ -197,21 +197,6 @@ pnpm why <包名>
 
 **排查**：先确认 web 的 import 路径指向哪里（源码 or dist），再检查构建配置。
 
-## 7. 实战练习
-
-1. **搭建引用链**：在 workspace 中创建 `packages/utils`（导出 `formatId` 函数）和 `apps/web`（使用该函数），通过 `workspace:*` 引用并成功运行。
-
-2. **发布验证**：对 `packages/utils` 执行 `pnpm pack`，查看生成的产物里 `workspace:*` 是否被替换为真实版本号。
-
-3. **幽灵依赖排查**：web 直接 import 一个 utils 的间接依赖（如 lodash），观察 pnpm 下的报错，然后正确修复（在 web 中显式声明）。
-
-4. **peer 设计**：设计一个 React 组件库包，用 peerDependencies 声明 react，用 devDependencies 提供本地测试版本，并说明这样设计的原因。
-
-## 8. 参考资源
-
-- pnpm workspace 协议官方文档：https://pnpm.io/zh/workspaces
-- pnpm 过滤与 workspace 脚本：https://pnpm.io/zh/scripts
-
 ## 9. 延伸阅读
 
 - workspace 的底层机制，见本模块《pnpm 核心特性》

@@ -9,7 +9,6 @@ author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/克莱姆法则'
-  - 'linear-algebra/行列式典型例题'
   - 'linear-algebra/逆矩阵'
   - 'linear-algebra/初等变换与初等矩阵'
 prerequisites: []
@@ -205,49 +204,9 @@ $$\text{tr}(A) = \sum_{i=1}^{n} a_{ii}$$
 | 转置乘积忘了反序：$(AB)^T$ 写成 $A^TB^T$ | 公式错误 | 顺序记忆混乱 | 记"穿衣脱衣"：后穿（先乘的）的先脱（先转置） |
 | 把 $|AB|$ 与 $AB$ 混用 | 概念混淆 | 没区分矩阵与行列式 | $AB$ 是矩阵，$|AB| = |A||B|$ 是数（只对方阵） |
 
-## 8. 实战练习
-
-**练习 1**：设 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$，$B = \begin{pmatrix} 4 & 3 \\ 2 & 1 \end{pmatrix}$，求 $A + B$、$2A - B$。
-
-提示：对应位置运算。
-
-参考答案要点：$A + B = \begin{pmatrix} 5 & 5 \\ 5 & 5 \end{pmatrix}$；$2A - B = \begin{pmatrix} -2 & 1 \\ 4 & 7 \end{pmatrix}$。
-
-**练习 2**：设 $A = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}$，$B = \begin{pmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{pmatrix}$，求 $AB$。
-
-提示：$A$ 是 $2 \times 3$，$B$ 是 $3 \times 2$，结果为 $2 \times 2$。
-
-参考答案要点：$AB = \begin{pmatrix} 1+0+3 & 0+2+3 \\ 4+0+6 & 0+5+6 \end{pmatrix} = \begin{pmatrix} 4 & 5 \\ 10 & 11 \end{pmatrix}$。
-
-**练习 3**：验证 $(A + B)(A - B) = A^2 - B^2$ 在矩阵世界一般不成⽴，其中 $A = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}$，$B = \begin{pmatrix} 0 & 0 \\ 1 & 0 \end{pmatrix}$。
-
-提示：展开时 $(A + B)(A - B) = A^2 - AB + BA - B^2$，只有 $AB = BA$ 时才等于 $A^2 - B^2$。
-
-参考答案要点：$AB = \begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}$，$BA = \begin{pmatrix} 0 & 0 \\ 0 & 1 \end{pmatrix}$，$AB \neq BA$，故公式不成立——这就是"乘法公式"在矩阵世界的失效案例。
-
-**练习 4**：设 $A = \begin{pmatrix} 1 & 2 \\ 0 & 3 \end{pmatrix}$，求 $A^3$。
-
-提示：$A^3 = A^2 \cdot A$，逐步乘。
-
-参考答案要点：$A^2 = \begin{pmatrix} 1 & 8 \\ 0 & 9 \end{pmatrix}$，$A^3 = \begin{pmatrix} 1 & 26 \\ 0 & 27 \end{pmatrix}$。
-
-**练习 5**：证明 $A + A^T$ 是对称矩阵、$A - A^T$ 是反对称矩阵。
-
-提示：直接对转置验证。
-
-参考答案要点：$(A + A^T)^T = A^T + (A^T)^T = A^T + A$；$(A - A^T)^T = A^T - A = -(A - A^T)$。
-
 ## 9. 一句话记忆
 
 矩阵运算是"表"的批量化操作：**加法对位相加、数乘逐格放大、乘法行乘列求和、转置行列互换**——而"交换律与消去律双双失效"是它与普通数运算的最大分水岭。
-
-## 10. 参考链接与延伸阅读
-
-### 参考链接
-
-- 同济大学数学科学学院：《工程数学 线性代数（第七版）》，高等教育出版社，第 2 章 §2"矩阵的运算"：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- 机器学习数学基础开源书（矩阵运算与编程实践对照）：https://lqlab.readthedocs.io/en/latest/math4ML/linearalgebra/matrixoperation.html
-- NumPy 官方文档（矩阵乘法的编程实现参考）：https://numpy.org/doc/stable/reference/generated/numpy.dot.html
 
 ### 延伸阅读
 

@@ -4,7 +4,7 @@ title: 递归与回溯
 module: algorithm
 category: Algorithm Strategies
 difficulty: intermediate
-description: 递归（Recursion）的形式化定义、递归三要素（基线条件/递归条件/状态收缩）、递归树模型与主定理回顾、尾递归优化（TCO）、记忆化递归（Memoization）、回溯算法（Backtracking, Golomb-Baumert 1965 JACM 12(4):516-524）的系统化模板（选择-递归-撤销）、子集/排列/组合/N 皇后（Bezzel 1848）/数独/分割/括号生成/单词搜索的原理、实现与剪枝优化（排序剪枝/边界剪枝/条件剪枝/记忆化剪枝/位运算剪枝）、分支限界法（Land-Doig 1960）与 Dancing Links（Knuth 2000）的原理、对比分析与工程实践，涵盖 McCarthy 1960 LISP 递归系统化、Golomb-Baumert 1965 回溯法、Tarjan 1972 DFS、Bezzel 1848 N 皇后、Land-Doig 1960 分支限界、Knuth 2000 Dancing Links 的历史脉络，附 Python/C++/Java 多语言实现与 CLRS第4/22章、Kleinberg-Tardos第5章、Sedgewick第2章风格习题。
+description: 递归（Recursion）的形式化定义、递归三要素（基线条件/递归条件/状态收缩）、递归树模型与主定理回顾、尾递归优化（TCO）、记忆化递归（Memoization）、回溯算法（Backtracking, Golomb-Baumert 1965 JACM 12(4):516-524）的系统化模板（选择-递归-撤销）、子集/排列/组合/N 皇后（Bezzel 1848）/数独/分割/括号生成/单词搜索的原理、实现与剪枝优化（排序剪枝/边界剪枝/条件剪枝/记忆化剪枝/位运算剪枝）、分支限界法（Land-Doig 1960）与 Dancing Links（Knuth 2000）的原理、对比分析与工程实践，涵盖 McCarthy 1960 LISP 递归系统化、Golomb-Baumert 1965 回溯法、Tarjan 1972 DFS、Bezzel 1848 N 皇后、Land-Doig 1960 分支限界、Knuth 2000 Dancing Links 的历史脉络，附 Python/C++/Java 多语言实现与 CLRS第4/22章、Kleinberg-Tardos第5章。
 author: fanquanpp
 tags:
 - algorithm
@@ -1981,50 +1981,6 @@ def backtrack(...):
 # 必须转 int 比较
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：N 皇后问题（$n = 8$）共有多少个解（含对称）？
-- A. 64
-- B. 92
-- C. 96
-- D. 128
-
-**解析讲解**：B. 92（参考 OEIS A000170）
-
-**常见疑问 2**：Knuth Dancing Links 主要解决哪类问题？
-- A. 最短路径
-- B. 精确覆盖
-- C. 最小生成树
-- D. 字符串匹配
-
-**解析讲解**：B. 精确覆盖（Exact Cover）
-
-**常见疑问 3**：以下哪种剪枝策略**不能**加速 N 皇后求解？
-- A. 列冲突剪枝
-- B. 对角线冲突剪枝
-- C. 排序后相邻去重
-- D. 位运算状态压缩
-
-**解析讲解**：C. 排序去重（N 皇后无重复元素，排序无意义）
-
-**常见疑问 4**：分支限界与回溯的关键区别是？
-- A. 分支限界用 BFS，回溯用 DFS
-- B. 分支限界剪去次优分支，回溯剪去不可行分支
-- C. 分支限界只用于最优化问题，回溯只用于决策问题
-- D. 分支限界需要排序预处理
-
-**解析讲解**：B. 分支限界用界限剪去次优分支（最优化剪枝），回溯用可行性剪枝
-
-**常见疑问 5**：朴素斐波那契 `fib(n) = fib(n-1) + fib(n-2)` 的时间复杂度是？
-- A. $O(n)$
-- B. $O(n \log n)$
-- C. $O(\phi^n)$，$\phi \approx 1.618$
-- D. $O(2^n)$
-
-**解析讲解**：C. $O(\phi^n)$，$\phi$ 为黄金比
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：回溯算法的三步范式是 ______、______、______。
@@ -2176,8 +2132,6 @@ def total_n_queens(n):
   - 副对角线 `row + col` 在下一行变为 `(row+1) + col`，即向右偏移 1（列号加 1）→ `dales` 右移 1。
 - **正确性**：通过左移/右移，下一行的对角线占用位自动对齐到正确列位置，从而 `(cols | hills | dales)` 准确反映下一行的所有冲突列。
 
-## 14. 参考文献
-
 ### 14.1 经典教材
 
 1. **CLRS** Cormen, T.H., Leiserson, C.E., Rivest, R.L., Stein, C. *Introduction to Algorithms* 4th ed. MIT Press, 2022. Chapter 4 (Recurrences), Chapter 22 (DFS), Chapter 34 (NP-Completeness). ISBN 978-0262046305.
@@ -2209,15 +2163,6 @@ def total_n_queens(n):
 21. **MiniZinc Modeling Language** https://www.minizinc.org/
 22. **Knuth TAOCP Vol. 4 Fascicle 5** Dancing Links extended treatment, 2019. ISBN 978-0134671796.
 
-### 14.4 在线资源
-
-23. **Stanford CS106B Backtracking Lectures** https://web.stanford.edu/class/cs106b/
-24. **MIT 6.006 Introduction to Algorithms** https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/
-25. **CMU 15-211 Data Structures** https://www.cs.cmu.edu/~15110-f10/
-26. **OEIS A000170 N-Queens Solutions** https://oeis.org/A000170
-
-## 15. 延伸阅读
-
 ### 15.1 理论深入
 
 - **Kleene 1952**《Introduction to Metamathematics》：递归函数论的数学基础；
@@ -2231,16 +2176,6 @@ def total_n_queens(n):
 - **SAT 求解**：CDCL（Conflict-Driven Clause Learning）回溯 + 子句学习，Moskewicz et al. 2001 Chaff；
 - **CP 求解**：Apt 2003《Principles of Constraint Programming》；
 - **组合优化**：Schrijver 2003《Combinatorial Optimization》。
-
-### 15.3 工程实现练习
-
-- **数独求解器 Web App**：实现回溯 + MRV + 约束传播，前端 React/Vue 可视化；
-- **N 皇后可视化**：用 D3.js 或 ECharts 可视化回溯过程，展示剪枝效果；
-- **Prolog 解释器**：实现带回溯的小型逻辑编程解释器；
-- **SAT 求解器**：实现 CDCL 求解器并对比 DPLL 性能；
-- **Crossword 填字游戏**：用回溯 + 词典约束求解；
-- **Sokoban 求解器**：状态空间搜索 + 回溯 + 启发式；
-- **Polyomino 拼图**：用 Dancing Links 精确覆盖求解。
 
 ### 15.4 教学视频
 

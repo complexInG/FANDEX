@@ -1191,8 +1191,6 @@ fun handleResult(result: ContentNegotiationResult) = when (result) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 #### 题 1
@@ -1319,44 +1317,6 @@ fun handle(result: Result): String = when (result) {
 
 ---
 
-## 参考文献
-
-以下参考文献遵循 ACM Reference Format，包含 DOI 链接。
-
-[1] JetBrains. 2024. Sealed Classes and Interfaces in Kotlin. Retrieved July 21, 2026 from https://kotlinlang.org/docs/sealed-classes.html
-
-[2] Pierce, B. C. 2002. *Types and Programming Languages*. MIT Press.
-
-[3] Howard, W. A. 1980. The formulae-as-types notion of construction. In *To H. B. Curry: Essays on Combinatory Logic, Lambda Calculus and Formalism*. Academic Press, 479–490.
-
-[4] Appel, A. W. 1998. *Modern Compiler Implementation in ML*. Cambridge University Press.
-
-[5] Oliveira, B. C. d. S. and Gibbons, J. 2010. Scala for the curious. In *Companion to the 15th ACM SIGPLAN International Conference on Functional Programming* (ICFP '10). ACM. DOI: https://doi.org/10.1145/1863537.1863547
-
-[6] Odersky, M. and Zenger, M. 2005. Scalable component abstractions. In *Proceedings of the 20th Annual ACM SIGPLAN Conference on Object-Oriented Programming, Systems, Languages, and Applications* (OOPSLA '05). ACM, 41–57. DOI: https://doi.org/10.1145/1094811.1094815
-
-[7] Kennedy, A. and Syme, D. 2001. Design and implementation of generics for the .NET common language runtime. In *Proceedings of the 22nd ACM SIGPLAN Conference on Programming Language Design and Implementation* (PLDI '01). ACM, 1–12. DOI: https://doi.org/10.1145/378795.378797
-
-[8] obst, J. and et al. 2020. JEP 396: Sealed Classes (Final). https://openjdk.org/jeps/396
-
-[9] Marlow, S. 2010. Haskell 2010 Language Report. https://www.haskell.org/definition/haskell2010.pdf
-
-[10] OCaml Manual. 2024. The OCaml Language: Variant Types. https://v2.ocaml.org/manual/typedecl.html
-
-[11] Rust Reference. 2024. Enumerations. https://doc.rust-lang.org/reference/items/enumerations.html
-
-[12] Swift Programming Language. 2024. Enumerations. https://docs.swift.org/swift-book/LanguageGuide/Enumerations.html
-
-[13] Wadler, P. 1987. Views: A way for pattern matching to cohabit with data abstraction. In *Proceedings of the 14th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (POPL '87). ACM, 307–313. DOI: https://doi.org/10.1145/41625.41653
-
-[14] Thompson, S. 2011. *Haskell: The Craft of Functional Programming* (3rd ed.). Addison-Wesley.
-
-[15] Elizarov, R. 2021. Sealed Classes in Kotlin: Past, Present, and Future. In *Proceedings of the Kotlin Conf '21*. https://kotlinconf.com/2021/talks/sealed-classes/
-
----
-
-## 延伸阅读
-
 ### 官方文档
 
 - **Kotlin Sealed Classes**：https://kotlinlang.org/docs/sealed-classes.html
@@ -1388,11 +1348,3 @@ fun handle(result: Result): String = when (result) {
   - HTTP 状态、内容协商中的密封类应用。
 - **kotlinx.serialization**：https://github.com/Kotlin/kotlinx.serialization
   - 密封类与多态序列化的集成。
-
-### 社区资源
-
-- **Kotlin Slack #language 频道**：与 JetBrains 团队讨论语言设计。
-- **Kotlin Issue Tracker**：https://youtrack.jetbrains.com/issues/KT
-  - 报告密封类的 Bug 与功能请求。
-- **Kotlin Discussions**：https://discuss.kotlinlang.org/
-  - 社区讨论 ADT 最佳实践。

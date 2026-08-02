@@ -901,11 +901,3 @@ img {
   }
 }
 ```
-
-## 参考文献
-
-MDN CSS 文档：https://developer.mozilla.org/zh-CN/docs/Web/CSS
-CSS 规范（W3C）：https://www.w3.org/Style/CSS/
-CSS-Tricks：https://css-tricks.com/
-Can I use：https://caniuse.com/
-Tailwind CSS：https://tailwindcss.com/

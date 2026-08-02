@@ -176,7 +176,6 @@ build:
     - <命令>`
 ```
 ```yaml
-## 知识讲解与要点分析（原作业级前置命令）
 test:
   before_script:
     - npm install
@@ -332,7 +331,6 @@ build:
     <变量名>: "<值>"`
 ```
 ```yaml
-## 知识讲解与要点分析（原作业级变量）
 deploy_prod:
   variables:
     ENV: "production"
@@ -560,17 +558,7 @@ deploy:
     - deploy.sh
 ```
 
-## 参考文献
-
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitLab CI 文档：https://docs.gitlab.com/ci/
-Argo CD：https://argo-cd.readthedocs.io/
-DORA 研究：https://dora.dev/
-DevOps 手册（Gene Kim 等）：https://itrevolution.com/devops-handbook/
-
 ## 延伸阅读
-
 Docker 与 Kubernetes 深入，见 031-devops 模块文档。
 CI/CD 管线设计，见 031-devops 模块 CICD 文档。
 云原生架构，见 034-cloud-computing 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 DevOps 课程。

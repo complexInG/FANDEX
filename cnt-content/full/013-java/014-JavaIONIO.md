@@ -1548,8 +1548,6 @@ public NettyReactiveWebServerFactory serverFactory() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：解释 `Buffer.flip()` 与 `Buffer.rewind()` 的区别。
@@ -1673,51 +1671,6 @@ socketChannel.write(buf);
 **解析讲解**：客户端使用 `FileChannel.transferTo` 直接将日志文件通过 socket 发送；服务端使用 `FileChannel.transferFrom` 接收并写入磁盘。
 
 ---
-
-## 10. 参考文献
-
-采用 ACM Reference Format：
-
-[1] Gosling, J., Joy, B., Steele, G., Bracha, G., and Buckley, A. 2018. *The Java Language Specification, Java SE 10 Edition*. Addison-Wesley Professional.
-
-[2] Lindholm, T., Yellin, F., Bracha, G., and Buckley, A. 2018. *The Java Virtual Machine Specification, Java SE 10 Edition*. Addison-Wesley Professional.
-
-[3] Schmidt, D. C., Stal, M., Rohnert, H., and Buschmann, F. 2000. *Pattern-Oriented Software Architecture, Volume 2: Patterns for Concurrent and Networked Objects*. Wiley.
-
-[4] Stevens, W. R., Fenner, B., and Rudoff, A. M. 2003. *UNIX Network Programming, Volume 1: The Sockets Networking API* (3rd ed.). Addison-Wesley.
-
-[5] Becker, J. 2002. JSR 51: New I/O APIs for the Java Platform. Sun Microsystems.
-
-[6] Watson, R. N. M. 2018. *The Design and Implementation of the FreeBSD Operating System* (2nd ed.). Addison-Wesley.
-
-[7] Bovet, D. P., and Cesati, M. 2005. *Understanding the Linux Kernel* (3rd ed.). O'Reilly Media.
-
-[8] Appel, A. W., and MacQueen, D. B. 1991. Standard ML of New Jersey. In *Proceedings of the 1991 International Workshop on ML*.
-
-[9] Paxson, V., and Floyd, S. 1997. Wide area traffic: The failure of Poisson modeling. *IEEE/ACM Transactions on Networking* 3, 3 (June 1995), 226–244.
-
-[10] Welch, I., and McNamara, J. 2018. *Java NIO: High Performance I/O for the Java Platform*. O'Reilly Media.
-
-[11] Eder, M. 2018. *Netty in Action*. Manning Publications.
-
-[12] Korhonen, J., and Wang, Y. 2013. Effect of suboptimal TCP buffer size on throughput. In *Proceedings of the 2013 IEEE International Conference on Communications (ICC)*, 2487–2492.
-
-[13] Axboe, J. 2019. *io_uring: Linux asynchronous I/O interface*. Linux Kernel documentation. https://kernel.dk/io_uring.pdf
-
-[14] Oracle Corporation. 2021. *Java NIO Tutorial*. https://docs.oracle.com/javase/tutorial/essential/io/
-
-[15] Free Software Foundation. 2023. *The GNU C Library Reference Manual*. https://www.gnu.org/software/libc/manual/
-
----
-
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **Java NIO Tutorial**（Oracle）：https://docs.oracle.com/javase/tutorial/essential/io/
-- **JEP 51: New I/O APIs**：https://openjdk.org/jeps/51
-- **JEP 203: NIO.2 File Tree API**：https://openjdk.org/jeps/203
-- **Linux man pages**：`man 2 epoll`, `man 2 select`, `man 2 sendfile`, `man 2 mmap`
 
 ### 11.2 进阶书籍
 
@@ -1879,4 +1832,3 @@ socketChannel.write(buf);
 ---
 
 > **结语**：Java I/O 的演化史，是一部计算机系统演化的缩影——从同步阻塞到多路复用，从内核优化到语言层抽象。理解 BIO、NIO、AIO 的差异，掌握零拷贝与 Reactor 模式，是成为高性能 Java 工程师的必经之路。在虚拟线程时代，BIO 的简洁性与 NIO 的高性能并非二选一，而是各擅胜场——选对工具，方能游刃有余。
-

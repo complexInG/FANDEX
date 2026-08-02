@@ -1267,8 +1267,6 @@ cryptography 库从 C 扩展迁移到 Rust：
 - maturin 是构建 Rust 扩展的标准工具
 - 安全敏感场景应考虑 Rust 重写
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **习题 11.1**（记忆层）：PEP 518 引入的配置文件名为 ____，其格式为 ____，主要用于声明构建系统依赖。
@@ -1282,26 +1280,6 @@ Python 实现 = CPython 3.11；目标平台 = manylinux glibc 2.17+ x86_64
 **习题 11.3**（应用层）：构建 Python 包的标准命令为 `python -m ____`，上传到 PyPI 的标准命令为 `python -m ____`。
 
 build；twine
-
-### 选择题知识点讲解
-
-**习题 11.4**（理解层）：关于 PEP 440 版本号，下列哪个不是合法版本？
-
-- A. `1.0.0`
-- B. `1.0.0a1`
-- C. `1.0.0.post1`
-- D. `1.0.0-rc1`
-
-解析讲解：D。PEP 440 不支持连字符分隔，预发布应写为 `1.0.0rc1`（无分隔符）或 `1.0.0.rc1`。
-
-**习题 11.5**（分析层）：关于 pyproject.toml 的 [project] 段，下列说法错误的是？
-
-- A. name 字段必须为合法包名（小写、连字符分隔）
-- B. version 字段可声明为 dynamic，从代码中读取
-- C. dependencies 字段必须是字符串数组
-- D. classifiers 字段必须包含所有支持的 Python 版本
-
-解析讲解：D。classifiers 是元数据分类标签，PyPI 用于检索分类，但不强制要求列出所有支持的 Python 版本（虽为最佳实践）。
 
 ### 10.3 代码修正题
 
@@ -1432,32 +1410,6 @@ jobs:
 - `python -m build` 在隔离环境（默认 `build` 目录）中构建，确保构建依赖完整且不污染源码
 - 后者生成的 wheel 可缓存、可分发、可重放
 - 现代 PEP 517 工具链推荐用 `build` 隔离构建
-
-## 11. 参考文献
-
-参考文献遵循 ACM Reference Format：
-
-[1] Etemadieftekhari, A. 2013. _PEP 440: Version identification and dependency specification_. Python Enhancement Proposal. https://peps.python.org/pep-0440/
-
-[2] Pustilnik, S. and Cannon, B. 2015. _PEP 503: Simple repository API_. Python Enhancement Proposal. https://peps.python.org/pep-0503/
-
-[3] Cannon, B. 2015. _PEP 508: Dependency specification for Python software packages_. Python Enhancement Proposal. https://peps.python.org/pep-0508/
-
-[4] Stufft, D. and Coghlan, N. 2016. _PEP 518: Specifying minimum build system requirements for Python projects_. Python Enhancement Proposal. https://peps.python.org/pep-0518/
-
-[5] Stufft, D. and Coghlan, N. 2017. _PEP 517: A build-system independent format for source trees_. Python Enhancement Proposal. https://peps.python.org/pep-0517/
-
-[6] Cannon, B. and King, T. 2019. _PEP 566: Metadata for Python software packages 2.1_. Python Enhancement Proposal. https://peps.python.org/pep-0566/
-
-[7] Smith, P. 2019. _PEP 660: Editable installs via PEP 517 buildMeta hooks_. Python Enhancement Proposal. https://peps.python.org/pep-0660/
-
-[8] Stufft, D. and Coghlan, N. 2020. _PEP 621: Storing project metadata in pyproject.toml_. Python Enhancement Proposal. https://peps.python.org/pep-0621/
-
-[9] Shaw, S., Coghlan, N., and Bicking, I. 2020. A survey of Python packaging: Past, present, and future. In _Proceedings of the 19th Python in Science Conference (SciPy 2020)_, 234–245. DOI: 10.25080/Majora-342d178e-020.
-
-[10] Pustilnik, S. and Stufft, D. 2024. _PyPI trusted publishing: OIDC-based authentication for package publishers_. Python Packaging User Guide. https://docs.pypi.org/trusted-publishers/
-
-## 12. 延伸阅读
 
 ### 12.1 书籍
 

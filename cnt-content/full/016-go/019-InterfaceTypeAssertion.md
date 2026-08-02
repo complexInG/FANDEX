@@ -1643,8 +1643,6 @@ type Context interface {
 - **取消传播**:`ctx.WithCancel` 创建可取消的 context。
 - **值传递**:`ctx.WithValue` 携带请求级数据(trace ID、用户 ID)。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**:解释 `eface` 与 `iface` 的区别。
@@ -1789,44 +1787,12 @@ func getSerializer(r *http.Request) Serializer {
   - 缺点:同一容器无法存不同类型(需 `any` 约束回退)。
 - 选型:优先泛型,需要异构集合时用 `any`。
 
-## 参考文献
-
-1. Griesemer, R. and Pike, R. 2009. Go: A New Programming Language. Google. https://go.dev/ (accessed July 2024).
-
-2. Cox-Buday, K. 2017. Concurrency in Go: Tools and Techniques for Developers. O'Reilly Media. ISBN: 978-1491941195.
-
-3. Donovan, A. A. A. and Kernighan, B. W. 2015. The Go Programming Language. Addison-Wesley Professional. ISBN: 978-0134190440. DOI: 10.5555/2887501.
-
-4. Go Team. 2022. Go 1.18 Release Notes: Type Parameters. https://go.dev/doc/go1.18 (accessed July 2024).
-
-5. Driesen, U. Hölzle, U. and Vitek, J. 1995. Method Dispatch in Object-Oriented Languages. In Proceedings of the 9th European Conference on Object-Oriented Programming (ECOOP '95). Springer-Verlag,  47-72. DOI: 10.1007/3-540-49538-X_15.
-
-6. Gamma, E. Helm, R. Johnson, R. and Vlissides, J. 1994. Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley Professional. ISBN: 978-0201633610.
-
-7. Fowler, M. 2002. Patterns of Enterprise Application Architecture. Addison-Wesley Professional. ISBN: 978-0321127426.
-
-8. Bloch, J. 2018. Effective Java (3rd Edition). Addison-Wesley Professional. ISBN: 978-0134685991.
-
-9. Harsanyi, T. 2022. 100 Go Mistakes and How to Avoid Them. Manning Publications. ISBN: 978-1617299599.
-
-10. Pike, R. 2012. Go at Google: Language Design in the Service of Software Engineering. https://go.dev/talks/2012/splash.article (accessed July 2024).
-
-11. Summerfield, M. 2012. Programming in Go: Creating Applications for the 21st Century. Addison-Wesley Professional. ISBN: 978-0321774637.
-
-12. Conover, M. 2023. Learn Go with Tests. https://github.com/quii/learn-go-with-tests (accessed July 2024).
-
 ## 延伸阅读
-
-- **Go 官方教程《A Tour of Go》**:https://go.dev/tour/methods/1 — 接口与方法的基础教程。
-- **Go Blog《Go Data Structures: Interfaces》**:https://research.swtch.com/interfaces — Russ Cox 对接口内部结构的深入剖析。
 - **《The Go Programming Language》**(Donovan & Kernighan):第 7 章详细讲解接口与类型系统。
 - **《100 Go Mistakes and How to Avoid Them》**(Harsanyi):第 4-5 章讨论接口相关的常见错误。
 - **Go 源码 `runtime/iface.go`**:接口运行时实现的源码,理解 itab 缓存机制。
 - **《Effective Java》**(Bloch):第 2 章"对象通用",对比 Java 接口与 Go 接口的设计哲学。
 - **《Design Patterns》**(Gamma et al.):策略模式、状态模式、装饰器模式均依赖接口多态。
-- **Go 1.18 泛型提案**:https://go.dev/blog/generics-proposal — 泛型与接口的互补关系。
-- **Dave Cheney《Practical Go: Real world advice for writing maintainable Go programs》**:https://dave.cheney.net/practical-go — 接口设计的实战建议。
-- **Russ Cox《Contiguous Lists》**:https://research.swtch.com/interface — 接口方法表的实现细节。
 ## 接口定义
 
 **基本写法：基本接口**

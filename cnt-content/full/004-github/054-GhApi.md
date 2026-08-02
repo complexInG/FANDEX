@@ -5,7 +5,7 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: 原理驱动讲解 gh api：先讲清 REST 与 GraphQL API 是什么，再讲 gh api 如何完成认证请求、传参、输出处理、分页与 GraphQL 查询，配以错误对策与实战练习。
+description: 原理驱动讲解 gh api：先讲清 REST 与 GraphQL API 是什么，再讲 gh api 如何完成认证请求、传参、输出处理、分页与 GraphQL 查询，配以错误对策。
 author: fanquanpp
 updated: '2026-08-02'
 related: []
@@ -295,82 +295,13 @@ x-ratelimit-remaining: 4999
 
 ---
 
-## 实战练习
-
-### 练习 1：读取自己的信息（入门）
-
-- **题目**：用 gh api 获取当前登录用户的登录名与公开仓库数量。
-- **提示**：`gh api user` 后观察字段名；用 `--jq` 提取 `login` 和 `public_repos`。
-- **参考答案要点**：
-  ```bash
-  gh api user --jq '.login'
-  gh api user --jq '.public_repos'
-  ```
-
-### 练习 2：创建一个 Issue（入门）
-
-- **题目**：在练习仓库中通过 API 创建一个标题为"API 练习"的 Issue，并用 `--jq` 回显它的编号。
-- **提示**：POST 加 `-f title=...`；`--jq '.number'`。
-- **参考答案要点**：
-  ```bash
-  gh api repos/{owner}/{repo}/issues -f title="API 练习" -f body="通过 gh api 创建" --jq '.number'
-  ```
-
-### 练习 3：批量导出数据（进阶）
-
-- **题目**：用一条命令列出练习仓库所有公开 Issue 的"编号-标题"，并按编号倒序。
-- **提示**：`--paginate` + `--jq` 组合；排序可在 jq 里用 `sort_by(-.number)`。
-- **参考答案要点**：
-  ```bash
-  gh api repos/{owner}/{repo}/issues --paginate \
-    --jq '.[] | "\(.number) \(.title)"'
-  ```
-
-### 练习 4：更新与关闭 Issue（进阶）
-
-- **题目**：把练习 2 创建的 Issue 加上 `bug` 标签并关闭，全程用 gh api 完成。
-- **提示**：加标签 PATCH labels；关闭 PATCH state=closed；数组用 `-F 'labels[]=bug'`。
-- **参考答案要点**：
-  ```bash
-  gh api repos/{owner}/{repo}/issues/<编号> -X PATCH -F 'labels[]=bug' -f state=closed
-  gh api repos/{owner}/{repo}/issues/<编号> --jq '.state, .labels[].name'
-  ```
-
-### 练习 5：GraphQL 精确查询（挑战）
-
-- **题目**：用 GraphQL 查询当前登录用户最新的 5 个仓库名称与星标数。
-- **提示**：`gh api graphql -f query='...'`；节点字段 `name`、`stargazerCount`。
-- **参考答案要点**：
-  ```bash
-  gh api graphql -f query='
-    query {
-      viewer {
-        repositories(first: 5, orderBy: {field: CREATED_AT, direction: DESC}) {
-          nodes { name stargazerCount }
-        }
-      }
-    }
-  '
-  ```
-
----
-
 ## 一句话记忆
 
 **gh api 是带认证的"万能遥控器"：路径是 REST、`graphql` 是 v4，加 `-f` 自动变 POST，`-F` 自动转类型，`--jq` 裁剪输出，`--paginate` 翻页——一切以官方 API 手册为准。**
 
 ---
 
-## 参考链接
-
-- GitHub CLI 官方手册 gh api：https://cli.github.com/manual/gh_api
-- GitHub REST API 参考手册：https://docs.github.com/zh/rest
-- GitHub GraphQL API 参考手册：https://docs.github.com/zh/graphql
-- GitHub API 概述与认证：https://docs.github.com/zh/rest/using-the-rest-api/getting-started-with-the-rest-api
-
 ## 延伸阅读
-
 - REST 与 GraphQL 概念详解，见 004-github 模块《RESTGraphQLAPI》。
 - Webhook 事件机制，见 004-github 模块《Webhooks》。
 - 在 Actions 中用 gh api 实现自动化，见 004-github 模块 Actions 系列文档。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

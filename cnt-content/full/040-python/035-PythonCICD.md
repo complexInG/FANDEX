@@ -1537,8 +1537,6 @@ archs = ["AMD64"]
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：以下 GitHub Actions 配置有何错误？
@@ -1679,42 +1677,6 @@ jobs:
 - 使用 Argo CD 的 `appHistory` 功能列出可回滚版本。
 
 ---
-
-## 10. 参考文献
-
-[1] Fowler, M. and Foemmel, M. 2006. Continuous Integration. ThoughtWorks. Available at: https://martinfowler.com/articles/originalContinuousIntegration.html
-
-[2] Humble, J. and Farley, D. 2010. Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation. Addison-Wesley Professional, Boston, MA, USA. DOI: https://doi.org/10.5555/1868164
-
-[3] Beck, K. 2004. Extreme Programming Explained: Embrace Change (2nd ed.). Addison-Wesley Professional, Boston, MA, USA. DOI: https://doi.org/10.5555/1087400
-
-[4] Ford, N., Parsons, R., and Kua, P. 2017. Building Evolutionary Architectures: Support Constant Change. O'Reilly Media, Sebastopol, CA, USA. DOI: https://doi.org/10.5555/3291296
-
-[5] Klimov, A. and Brinkmann, M. 2023. PEP 660 – Editable installs for pyproject.toml based projects (wheel based). Python Enhancement Proposals. Available at: https://peps.python.org/pep-0660/
-
-[6] Eustace, S. 2024. PEP 621 – Storing project metadata in pyproject.toml. Python Enhancement Proposals. Available at: https://peps.python.org/pep-0621/
-
-[7] Smith, D. 2024. cibuildwheel: Build wheels for all Python versions and platforms. Available at: https://github.com/pypa/cibuildwheel
-
-[8] Scherlis, W. L. and Graham, S. L. 2023. Reproducible builds: Principles and practices. Communications of the ACM 66, 4 (Apr. 2023), 44-53. DOI: https://doi.org/10.1145/3583684
-
-[9] Burns, B., Grant, B., Oppenheimer, D., Brewer, E., and Wilkes, J. 2016. Borg, omega, and Kubernetes. Communications of the ACM 59, 5 (Apr. 2016), 50-57. DOI: https://doi.org/10.1145/2890784
-
-[10] Savor, T., Douglas, M., Gentili, M., Williams, L., Beck, K., and Stumm, M. 2016. Continuous deployment at Facebook and OANDA. In Proceedings of the 38th International Conference on Software Engineering Companion (ICSE '16). ACM, New York, NY, USA, 21-30. DOI: https://doi.org/10.1145/2889160.2889213
-
-[11] Rahman, A., Mahdavi-Hezaveh, R., and Williams, L. 2019. A systematic mapping study of infrastructure as code research. Information and Software Technology 108 (Apr. 2019), 65-77. DOI: https://doi.org/10.1016/j.infsof.2018.12.004
-
-[12] Cito, J., Schermann, G., Moreira, J. E., Leitner, P., Nagel, F., Harman, M., and Gall, H. C. 2017. An empirical study of continuous integration and delivery practices. In Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering (ESEC/FSE 2017). ACM, New York, NY, USA, 755-766. DOI: https://doi.org/10.1145/3106237.3106259
-
-[13] Laukkanen, E., Itkonen, J., and Lassenius, C. 2017. Problems, causes and solutions when adopting continuous delivery—A systematic literature review. Information and Software Technology 82 (Feb. 2017), 55-79. DOI: https://doi.org/10.1016/j.infsof.2016.10.001
-
-[14] Driessen, V. 2010. A successful Git branching model. nvie.com. Available at: https://nvie.com/posts/a-successful-git-branching-model/
-
-[15] PyPA. 2024. Python Packaging User Guide. Python Packaging Authority. Available at: https://packaging.python.org/en/latest/
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

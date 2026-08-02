@@ -1377,8 +1377,6 @@ public class TenantMiddleware(RequestDelegate next) {
 }
 ```
 
-## 十、练习题与参考答案
-
 ### 10.1 基础题
 
 **题目 1**：说出三种生命周期的创建时机与共享范围。
@@ -1503,23 +1501,6 @@ public record PaymentRequest(decimal Amount, string Currency);
 public record PaymentResult(bool Success, string TransactionId);
 ```
 
-### 10.5 思考题
-
-**题目 5**：为什么 MS.DI 不支持属性注入？这种设计的优缺点是什么？
-
-**解析讲解**：
-
-**优点**：
-1. **显式依赖**：构造器参数清晰列出所有依赖，便于阅读；
-2. **不可变**：构造完成后依赖不可变，避免运行时被修改；
-3. **测试友好**：单元测试直接 `new` 注入 mock；
-4. **强制完整性**：构造时所有依赖必须就位，避免 NPE。
-
-**缺点**：
-1. **构造器参数过多**：依赖多时构造器臃肿（但这是设计味道，应重构）；
-2. **循环依赖更难解**：构造器注入无法解循环，属性注入可以（但循环依赖本身是设计问题）；
-3. **框架集成不便**：某些场景（如 ASP.NET Core `[FromServices]`）需要属性注入。
-
 ### 10.6 设计题
 
 **题目 6**：设计一个用装饰器链实现缓存 + 日志 + 重试的服务。
@@ -1588,75 +1569,6 @@ public sealed class RetryingUserServiceDecorator(
 }
 ```
 
-### 综合题知识点讲解
-
-**题目 7**：实现一个用 `IServiceScopeFactory` 处理并发后台任务的调度器，确保每个任务独立 scope、独立 DbContext。
-
-**解析讲解**：
-
-```csharp
-public sealed class BackgroundJobScheduler(
-    IServiceScopeFactory scopeFactory,
-    ILogger<BackgroundJobScheduler> logger) : IHostedService, IDisposable {
-    private readonly SemaphoreSlim _semaphore = new(10); // 限制并发数
-    private readonly CancellationTokenSource _cts = new();
-    private Task? _workerTask;
-
-    public Task StartAsync(CancellationToken ct) {
-        _workerTask = ProcessQueueAsync(_cts.Token);
-        return Task.CompletedTask;
-    }
-
-    public async Task StopAsync(CancellationToken ct) {
-        _cts.Cancel();
-        if (_workerTask is not null) {
-            await Task.WhenAny(_workerTask, Task.Delay(Timeout.Infinite, ct));
-        }
-    }
-
-    private async Task ProcessQueueAsync(CancellationToken ct) {
-        while (!ct.IsCancellationRequested) {
-            try {
-                await ProcessBatchAsync(ct);
-                await Task.Delay(TimeSpan.FromSeconds(10), ct);
-            } catch (OperationCanceledException) {
-                break;
-            } catch (Exception ex) {
-                logger.LogError(ex, "批处理失败");
-            }
-        }
-    }
-
-    private async Task ProcessBatchAsync(CancellationToken ct) {
-        var tasks = Enumerable.Range(0, 5).Select(i => ProcessSingleAsync(i, ct));
-        await Task.WhenAll(tasks);
-    }
-
-    private async Task ProcessSingleAsync(int jobId, CancellationToken ct) {
-        await _semaphore.WaitAsync(ct);
-        try {
-            // 每个任务独立 scope，确保 Scoped 服务隔离
-            using var scope = scopeFactory.CreateScope();
-            var sp = scope.ServiceProvider;
-            var userRepo = sp.GetRequiredService<IUserRepository>();
-            var emailSender = sp.GetRequiredService<IEmailSender>();
-
-            var user = await userRepo.GetByIdAsync($"user-{jobId}", ct);
-            if (user is not null) {
-                await emailSender.SendAsync(user.Email, "通知", $"任务 {jobId} 完成", ct);
-            }
-        } finally {
-            _semaphore.Release();
-        }
-    }
-
-    public void Dispose() {
-        _cts.Dispose();
-        _semaphore.Dispose();
-    }
-}
-```
-
 ### 10.8 调试题
 
 **题目 8**：用户报告系统在运行一段时间后内存持续增长，重启后恢复。如何排查？
@@ -1713,105 +1625,6 @@ public sealed class BackgroundJobScheduler(
 2. 若构造开销 < 1 μs，保持 Transient；
 3. 若构造涉及 IO（如打开文件/连接），改为 Singleton 或 Scoped；
 4. Singleton 必须严格审查线程安全。
-
-### 10.10 实战题
-
-**题目 10**：为一个 SaaS 平台设计多租户 DI 架构，要求：每租户独立数据库连接、独立缓存策略、独立配置。
-
-**解析讲解**：
-
-```csharp
-// 租户上下文（Scoped）
-public sealed class TenantContext {
-    public string TenantId { get; set; } = "";
-    public string ConnectionString { get; set; } = "";
-    public TimeSpan CacheTtl { get; set; } = TimeSpan.FromMinutes(30);
-}
-
-// 租户识别中间件
-public sealed class TenantMiddleware(RequestDelegate next) {
-    public async Task InvokeAsync(HttpContext context, TenantContext tenant, ITenantStore store) {
-        var tenantId = context.Request.Headers["X-Tenant-Id"].ToString();
-        var config = await store.GetConfigAsync(tenantId);
-        tenant.TenantId = tenantId;
-        tenant.ConnectionString = config.ConnectionString;
-        tenant.CacheTtl = config.CacheTtl;
-        await next(context);
-    }
-}
-
-// 多租户 DbContext
-public sealed class TenantDbContextFactory(IServiceProvider sp) : IDbContextFactory<TenantDbContext> {
-    public TenantDbContext CreateDbContext() {
-        var tenant = sp.GetRequiredService<TenantContext>();
-        var options = new DbContextOptionsBuilder<TenantDbContext>()
-            .UseSqlServer(tenant.ConnectionString)
-            .Options;
-        return new TenantDbContext(options);
-    }
-}
-
-// 多租户缓存（基于 TenantContext 调整 TTL）
-public sealed class TenantAwareCache(
-    ICacheService inner,
-    TenantContext tenant) : ICacheService {
-    public Task<T?> GetAsync<T>(string key, CancellationToken ct = default) =>
-        inner.GetAsync<T>($"tenant:{tenant.TenantId}:{key}", ct);
-
-    public Task SetAsync<T>(string key, T value, TimeSpan? expiry = null, CancellationToken ct = default) =>
-        inner.SetAsync($"tenant:{tenant.TenantId}:{key}", value, expiry ?? tenant.CacheTtl, ct);
-
-    public Task RemoveAsync(string key, CancellationToken ct = default) =>
-        inner.RemoveAsync($"tenant:{tenant.TenantId}:{key}", ct);
-}
-
-// 注册
-services.AddScoped<TenantContext>();
-services.AddScoped<ICacheService, TenantAwareCache>();
-services.AddSingleton<IDbContextFactory<TenantDbContext>, TenantDbContextFactory>();
-```
-
-## 十一、参考文献
-
-本节按 ACM Reference Format 列出本文主要参考资料。
-
-[1] Microsoft. 2024. *Dependency injection in .NET*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection
-
-[2] Microsoft. 2024. *Dependency injection guidelines*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-guidelines
-
-[3] Microsoft. 2024. *Dependency injection in ASP.NET Core*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection
-
-[4] Martin Fowler. 2004. *Inversion of Control Containers and the Dependency Injection Pattern*. martinfowler.com. Retrieved July 21, 2026 from https://martinfowler.com/articles/injection.html
-
-[5] Robert C. Martin. 2003. *Agile Software Development, Principles, Patterns, and Practices*. Pearson, Boston, MA. DOI: https://doi.org/10.5555/1200306
-
-[6] Mark Seemann. 2019. *Dependency Injection Principles, Practices, and Patterns* (2nd ed.). Manning Publications, Shelter Island, NY. Retrieved July 21, 2026 from https://www.manning.com/books/dependency-injection-principles-practices-patterns-second-edition
-
-[7] Steven van Deursen and Mark Seemann. 2019. *Dependency Injection Principles, Practices, and Patterns* (2nd ed.). Manning Publications, Shelter Island, NY.
-
-[8] Microsoft. 2024. *Keyed services in .NET*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection#keyed-services
-
-[9] Andrew Lock. 2023. *ASP.NET Core in Action* (3rd ed.). Manning Publications, Shelter Island, NY.
-
-[10] Khalid Abuhakmeh. 2022. *Captive Dependencies in .NET*. Khalid's Blog. Retrieved July 21, 2026 from https://khalidabuhakmeh.com/captive-dependencies-in-dotnet
-
-[11] Jimmy Bogard. 2017. *Avoiding Captive Dependencies in ASP.NET Core*. Los Techies. Retrieved July 21, 2026 from https://www.lostechies.com/jimmybogard/2017/05/05/avoiding-captive-dependencies/
-
-[12] Khellang. 2024. *Scrutor: Assembly scanning and decorating extensions for Microsoft.Extensions.DependencyInjection*. GitHub. Retrieved July 21, 2026 from https://github.com/khellang/Scrutor
-
-[13] Autofac. 2024. *Autofac Documentation*. autofac.org. Retrieved July 21, 2026 from https://autofac.org/
-
-[14] Microsoft. 2024. *IHostedService and BackgroundService in .NET*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/dotnet/core/extensions/workers
-
-[15] Microsoft. 2024. *Make HTTP requests using IHttpClientFactory in ASP.NET Core*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests
-
-[16] Microsoft. 2024. *Entity Framework Core - DbContext Lifetime, Configuration, and Initialization*. Microsoft Learn. Retrieved July 21, 2026 from https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/
-
-[17] Juval Lowy. 2019. *Righting Software: A Method for System and Project Design*. Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/3530655
-
-[18] Microsoft. 2024. *.NET 8 Performance Improvements in Dependency Injection*. .NET Blog. Retrieved July 21, 2026 from https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-8/
-
-## 十二、延伸阅读
 
 ### 12.1 官方文档
 

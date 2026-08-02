@@ -293,59 +293,9 @@ jobs:
 | 泄露后只清理不撤销 | 攻击者仍在用密钥 | 清理代码不影响已泄露的密钥 | 先在服务端撤销重建，再清理代码 |
 | 把密钥放进 .env 却提交了 .env | 密钥随仓库公开 | `.gitignore` 未配置或 .env 已被跟踪 | 用 `git rm --cached .env` 停止跟踪；撤销密钥；配置 .gitignore |
 
-## 8. 实战练习
-
-### 练习 1：理解"为什么删除没用"（入门）
-
-**题目描述**：你不小心把一个 AWS Access Key 提交到了公开仓库，2 小时后发现并删除了文件。请分析：删除文件后密钥是否安全？为什么？
-
-**提示**：回忆第 1.2 节的"永久存档效应"。
-
-**参考答案要点**：不安全。Git 历史保留该 commit、fork 副本仍在、缓存与爬虫已收录。密钥应视为已泄露，必须立即在 AWS 控制台撤销并重建。
-
-### 练习 2：启用密钥扫描与推送保护（入门）
-
-**题目描述**：为你的公开仓库启用 Secret scanning 和 Push protection，并说明两者定位的区别。
-
-**提示**：路径为 Settings → Code security and analysis。
-
-**参考答案要点**：在 Settings → Code security and analysis 中 Enable Secret scanning 与 Push protection。区别：Secret scanning 事后扫描历史发现已泄露密钥；Push protection 在 push 时拦截，防患于未然。
-
-### 练习 3：处理一次 push 拦截（进阶）
-
-**题目描述**：你的 push 被推送保护拦截，提示 `src/config.js` 第 12 行有疑似 AWS Access Key。写出完整处理步骤。
-
-**提示**：从"移除硬编码 → 改用环境变量 → 重新推送"的顺序作答。
-
-**参考答案要点**：1. 打开 src/config.js 第 12 行，确认密钥是真实还是测试数据；2. 真实密钥：改用 `process.env.AWS_ACCESS_KEY`，在部署平台设置环境变量；3. 若历史已有泄露，先在 AWS 撤销重建；4. `git push` 重试；5. 若是测试数据，在拦截页面提交绕过申请并说明原因。
-
-### 练习 4：编写自定义模式（进阶）
-
-**题目描述**：公司内部服务密钥格式为 `FANDEX_API_` 开头 + 32 位十六进制。编写正则自定义模式，并说明验证步骤。
-
-**提示**：利用密钥名上下文提高精度；用 dry run 验证。
-
-**参考答案要点**：
-
-```regex
-FANDEX_API_[0-9a-f]{32}
-```
-
-验证步骤：1. Settings → Custom patterns → New pattern；2. 填写模式名与上述正则；3. 添加测试样例 `FANDEX_API_0123456789abcdef0123456789abcdef` 与反例；4. Save and dry run 查看命中结果；5. 确认无误报后 Publish pattern。
-
-### 练习 5：设计"密钥零硬编码"方案（综合）
-
-**题目描述**：团队规定代码中不允许出现任何真实密钥。请设计一套覆盖"开发、CI、部署"三阶段的密钥管理方案。
-
-**提示**：从开发（本地环境变量）、CI（Secrets）、部署（环境密钥 + 轮换）三方面组织。
-
-**参考答案要点**：1. 开发阶段：本地 `.env`（加入 .gitignore）+ 预提交钩子 detect-secrets 拦截；2. CI 阶段：`gh secret set` 存储仓库/组织级 Secrets，工作流通过 `${{ secrets.XXX }}` 注入，绝不打进镜像；3. 部署阶段：使用环境级 Secrets 隔离生产环境，配合密钥扫描告警建立定期轮换机制。
-
 ## 9. 一句话记忆
 
 > **密钥是服务的通行证，进了公开仓库就等于交了底——Secret Scanning 负责找出已泄露的密钥（监控），Push Protection 负责在 push 前拦截（门窗检查），而真正的救命稻草永远是"撤销重建"（换锁）。**
-
-## 参考链接与延伸阅读
 
 ### 官方文档
 
@@ -355,8 +305,6 @@ FANDEX_API_[0-9a-f]{32}
 - 定义自定义模式：https://docs.github.com/zh/code-security/secret-scanning/customizing-secret-scanning/defining-custom-patterns-for-secret-scanning
 
 ### 延伸阅读
-
 - Gitignore 配置（用 .gitignore 排除敏感文件），见 004-github 模块 008 文档。
 - CodeQL 代码扫描（另一类自动安全防线），见 004-github 模块 019 文档。
 - Dependabot（依赖漏洞自动修复），见 004-github 模块 016 文档。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

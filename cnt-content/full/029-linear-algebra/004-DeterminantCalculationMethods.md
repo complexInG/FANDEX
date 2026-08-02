@@ -4,14 +4,13 @@ title: 行列式计算方法
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 行列式计算的"工具箱"：化三角形法、范德蒙德行列式、递推法、数学归纳法、拆分法（拆行/列与加边法）的原理、适用场景与完整例题，以及方法选择指南。
+description: 行列式计算的"工具箱"：化三角形法、范德蒙德行列式、递推法、数学归纳法、拆分法（拆行/列与加边法）的原理、适用场景，以及方法选择指南。
 author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/行列式基本性质'
   - 'linear-algebra/行列式按行列展开'
   - 'linear-algebra/克莱姆法则'
-  - 'linear-algebra/行列式典型例题'
 prerequisites: []
 ---
 
@@ -176,52 +175,10 @@ $$= \begin{vmatrix} 1 + \sum_{j=1}^{n}\frac{1}{a_j} & 1 & 1 & \cdots & 1 \\ 0 & 
 | 归纳法只验证 $n=1$ 就下结论 | 逻辑错误 | 缺归纳假设的应用步骤 | 必须"假设 $n-1$ 成立 $\Rightarrow$ 推 $n$ 成立" |
 | 看到"1 加对角"结构硬展开 | 方法低效 | 没认出来可用加边/拆行 | 熟记此类结构模板，直接套加边法 |
 
-## 8. 实战练习
-
-**练习 1**：用化三角形法计算 $\begin{vmatrix} 2 & 1 & 1 \\ 1 & 2 & 1 \\ 1 & 1 & 2 \end{vmatrix}$。
-
-提示：各行和相等（都是 4），先把第 2、3 列加到第 1 列。
-
-参考答案要点：$D = 4 \begin{vmatrix} 1 & 1 & 1 \\ 1 & 2 & 1 \\ 1 & 1 & 2 \end{vmatrix} = 4 \times 1 = 4$（后两行减第一行后成上三角）。
-
-**练习 2**：计算 $\begin{vmatrix} 1 & 1 & 1 \\ 2 & 4 & 8 \\ 4 & 16 & 64 \end{vmatrix}$。
-
-提示：转置后是范德蒙德（$x_1=1, x_2=2, x_3=4$），注意行序。
-
-参考答案要点：$D = (2-1)(4-1)(4-2) = 1 \times 3 \times 2 = 6$。
-
-**练习 3**：设 $D_n$ 为三对角行列式（主对角线 $a$，副对角线 $1$），写出递推关系并求 $D_3$。
-
-提示：按第一行展开得 $D_n = aD_{n-1} - D_{n-2}$。
-
-参考答案要点：$D_1 = a$，$D_2 = a^2 - 1$，$D_3 = a(a^2 - 1) - a = a^3 - 2a$。
-
-**练习 4**：计算 $D = \begin{vmatrix} 1 & 2 & 2 \\ 2 & 1 & 2 \\ 2 & 2 & 1 \end{vmatrix}$。
-
-提示：整体减第一行的 2 倍再处理，或直接用"行和相等"套路。
-
-参考答案要点：行和均为 $5$，$D = 5 \times \begin{vmatrix} 1 & 2 & 2 \\ 0 & -3 & -2 \\ 0 & -2 & -3 \end{vmatrix} = 5 \times (9 - 4) = 25$。
-
-**练习 5**：用加边法计算 $\begin{vmatrix} 1+a & 1 \\ 1 & 1+b \end{vmatrix}$ 并验证与直接计算一致。
-
-提示：加一行一列，再消箭头。
-
-参考答案要点：加边后得 $ab\left(1 + \frac{1}{a} + \frac{1}{b}\right) = ab + a + b$，与 $(1+a)(1+b) - 1 = a + b + ab$ 一致。
-
 ## 9. 一句话记忆
 
 行列式计算没有银弹：**数字表用化三角，幂结构认范德蒙德，规律结构走递推，对称结构试加边，证明通项上归纳**——先看"长相"再选工具。
 
-## 10. 参考链接与延伸阅读
-
-### 参考链接
-
-- 同济大学数学科学学院：《工程数学 线性代数（第七版）》，高等教育出版社，第 1 章习题（含化三角、递推等经典题型）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- 清华大学《线性代数通用辅导讲义》（范德蒙德、递推、加边法的系统归纳）：http://www.tup.tsinghua.edu.cn/upload/books/yz/021790-01.PDF
-- NumPy 官方文档 `numpy.linalg.det`（计算机计算行列式的实现参考）：https://numpy.org/doc/stable/reference/generated/numpy.linalg.det.html
-
 ### 延伸阅读
-
 - 各方法的"为什么能用"，源于 002 行列式基本性质。
-- 化三角形法与递推法的更多例题串联，见 006 行列式典型例题。
 - 行列式计算在解方程组中的应用，见 005 克莱姆法则。

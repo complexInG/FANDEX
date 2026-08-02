@@ -832,11 +832,3 @@ function safeMerge(target, source) {
 - [TS 类型系统](typescript/type-system-basics)
 
 ---
-
-## 参考文献
-
-MDN JavaScript 文档：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
-ECMAScript 规范：https://tc39.es/ecma262/
-Node.js 官方文档：https://nodejs.org/docs/latest/api/
-JavaScript 秘密花园：https://bonsaiden.github.io/JavaScript-Garden/
-Can I use：https://caniuse.com/

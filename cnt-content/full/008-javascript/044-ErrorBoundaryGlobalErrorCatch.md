@@ -1472,8 +1472,6 @@ const config = await api.request('/api/config');
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. 写出以下代码的输出：
@@ -1588,14 +1586,6 @@ class ErrorBoundary extends React.Component {
 }
 ```
 
-### 9.4 思考题
-
-7. 为什么 `error` 事件不冒泡？这一设计有什么好处与坏处？
-
-8. 解释 `rejectionhandled` 事件的用途。
-
-9. 比较 Node.js 中 `uncaughtException` 与 `unhandledRejection` 的处理建议差异。
-
 ### 9.5 调试题
 
 10. 找出以下代码的问题并修复：
@@ -1636,36 +1626,6 @@ class App extends React.Component {
 ```
 
 ---
-
-## 10. 参考文献
-
-[1] Ecma International. 2024. ECMAScript 2024 Language Specification (ECMA-262, 15th Edition). Section 20.5 Error Objects. Retrieved from https://tc39.es/ecma262/
-
-[2] WHATWG. 2024. HTML Living Standard — Error event. Retrieved from https://html.spec.whatwg.org/multipage/webappapis.html#errorevent
-
-[3] React Team. 2023. React 16 Error Boundaries. React Documentation. Retrieved from https://react.dev/reference/react/Component#static-getderivedstatefromerror
-
-[4] Vue Team. 2024. Vue 3 Error Handling. Vue Documentation. Retrieved from https://vuejs.org/api/application.html#app-config-errorhandler
-
-[5] Node.js Foundation. 2024. Node.js Process API: uncaughtException. Retrieved from https://nodejs.org/api/process.html#event-uncaughtexception
-
-[6] Nicholas C. Zakas. 2016. Understanding ECMAScript 6. No Starch Press. ISBN 978-1-59327-757-4.
-
-[7] Mathias Bynens. 2019. V8 stack trace API. V8 Blog. Retrieved from https://v8.dev/docs/stack-trace-api
-
-[8] Mozilla Developer Network. 2024. Error boundary. MDN Web Docs. Retrieved from https://developer.mozilla.org/en-US/docs/Glossary/Error_boundary
-
-[9] Sentry. 2024. Sentry JavaScript SDK Documentation. Retrieved from https://docs.sentry.io/platforms/javascript/
-
-[10] Ben Vinegar. 2015. Catching and reporting JavaScript errors from the client. Retrieved from https://blog.bugsnag.com/
-
-[11] Estelle Weyl. 2018. Script error: What it means and how to fix it. Retrieved from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-
-[12] Guy Bedford. 2022. ES2022 Error Cause. TC39 Proposal. Retrieved from https://github.com/tc39/proposal-error-cause
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 规范文档
 

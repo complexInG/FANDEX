@@ -1657,8 +1657,6 @@ pytest_plugins = ["myplugin"]
 
 通过这一机制，pytest 生态催生了 500+ 插件，覆盖覆盖率、并行、异步、Django、Flask、Mock 等场景。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：编写 pytest 测试，验证一个字符串反转函数 `reverse_string(s: str) -> str` 的正确性，包括空字符串、单字符、Unicode、回文等场景。
@@ -1787,70 +1785,6 @@ def test_b(db): ...
 - 工具选择：Pact Python。
 - 流程：A 生成 pact 文件 → B 在 CI 中拉取 pact → B 运行 pact verifier。
 - 这是消费者驱动契约（CDC）测试模式。
-
-## 10. 参考文献
-
-1. Beck, K. 2003. *Test-Driven Development: By Example*. Addison-Wesley Professional. ISBN: 978-0321146533.
-
-2. Meszaros, G. 2007. *xUnit Test Patterns: Refactoring Test Code*. Addison-Wesley. ISBN: 978-0131495050.
-
-3. Cohn, M. 2009. *Succeeding with Agile: Software Development Using Scrum*. Addison-Wesley. ISBN: 978-0321579362. DOI: 10.5555/1593221.
-
-4. Myers, G. J., Sandler, C., and Badgett, T. 2011. *The Art of Software Testing* (3rd ed.). Wiley. ISBN: 978-1118031964.
-
-5. Krekel, H., and Oliveira, B. 2024. pytest documentation. https://docs.pytest.org/. DOI: 10.5281/zenodo.1234567.
-
-6. Siek, J. G., and Taha, W. 2006. Gradual typing for functional languages. In *Proceedings of the Scheme and Functional Programming Workshop*. 81–92. DOI: 10.1145/1234567.1234578.
-
-7. Hughes, J. 2007. QuickCheck testing for fun and profit. In *Proceedings of the 9th International Conference on Practical Aspects of Declarative Languages (PADL'07)*. 1–18. DOI: 10.1007/978-3-540-69611-7_1.
-
-8. North, D. 2006. Introducing BDD. *Better Software Magazine*. https://dannorth.net/introducing-bdd/.
-
-9. Fowler, M. 2013. TestDouble. https://martinfowler.com/bliki/TestDouble.html.
-
-10. Fowler, M. 2018. Contract Testing. https://martinfowler.com/bliki/ContractTest.html.
-
-11. Beck, K. 1994. Simple Smalltalk testing. https://web.archive.org/web/20150326053230/http://www.xprogramming.com/testfram.htm.
-
-12. Brand, S. 2024. coverage.py documentation. https://coverage.readthedocs.io/. DOI: 10.5281/zenodo.9876543.
-
-13. MacIver, D. 2024. hypothesis documentation. https://hypothesis.readthedocs.io/. DOI: 10.5281/zenodo.3456789.
-
-14. Beck, K., and Gamma, E. 1998. Test infected: Programmers love writing tests. *Java Report* 3(7): 37–50.
-
-15. Feathers, M. 2004. *Working Effectively with Legacy Code*. Prentice Hall. ISBN: 978-0131177055.
-
-16. Beck, K. 2002. Test-driven development. *IEEE Software* 19(5): 87–91. DOI: 10.1109/MS.2002.1032855.
-
-17. Beck, K., Beedle, M., van Bennekum, A., Cockburn, A., Cunningham, W., Fowler, M., et al. 2001. *Manifesto for Agile Software Development*. https://agilemanifesto.org/.
-
-18. Saff, D., and Ernst, M. D. 2004. An experimental evaluation of continuous testing during development. In *Proceedings of the 2004 ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA'04)*. 76–85. DOI: 10.1145/1007512.1007525.
-
-19. Pinto, G., and Castor, F. 2017. Trust me, this code is correct: Investigating the use of tests in research software development. In *Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering (ESEC/FSE'17)*. 890–893. DOI: 10.1145/3106237.3117776.
-
-20. Fraser, G., and Arcuri, A. 2011. EvoSuite: Automatic test suite generation for object-oriented software. In *Proceedings of the 19th ACM SIGSOFT Symposium and the 13th European Conference on Foundations of Software Engineering (ESEC/FSE'11)*. 416–419. DOI: 10.1145/2025113.2025179.
-
-21. Claessen, K., and Hughes, J. 2000. QuickCheck: A lightweight tool for random testing of Haskell programs. In *Proceedings of the 5th ACM SIGPLAN International Conference on Functional Programming (ICFP'00)*. 268–279. DOI: 10.1145/351240.351266.
-
-22. Gunawi, H. S., Hao, M., Suminto, R. O., Laksono, A., Satria, A. D., Adityatama, J., and Eliazar, K. J. 2018. Design, implementation, and production-testing of a distributed protocol testbed. *IEEE Transactions on Computers* 67(8): 1163–1176. DOI: 10.1109/TC.2018.2813345.
-
-23. Bacchelli, A., and Bird, C. 2013. Expectations, outcomes, and challenges of modern code review. In *Proceedings of the 35th International Conference on Software Engineering (ICSE'13)*. 712–721. DOI: 10.1109/ICSE.2013.6606617.
-
-24. Beller, M., Gousios, G., Panichella, A., and Zaidman, A. 2017. When, how, and why developers (do not) test in their IDEs. In *Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering (ESEC/FSE'17)*. 565–577. DOI: 10.1145/3106237.3106277.
-
-25. Kochhar, P. S., Thung, F., Lo, D., and Lawall, J. 2018. An empirical study on the adequacy of testing in open source projects. In *Proceedings of the 2018 IEEE International Conference on Software Maintenance and Evolution (ICSME'18)*. 287–298. DOI: 10.1109/ICSME.2018.00038.
-
-26. Spadini, D., Aniche, M., and Bacchelli, A. 2018. Pytest: A Python testing framework. *Software Engineering Research Companion* 12(3): 45–58. DOI: 10.1145/3234582.3234585.
-
-27. Runeson, P. 2006. A survey of unit testing practices. *IEEE Software* 23(4): 22–29. DOI: 10.1109/MS.2006.108.
-
-28. Martin, R. C. 2008. *Clean Code: A Handbook of Agile Software Craftsmanship*. Prentice Hall. ISBN: 978-0132350884.
-
-29. Lanza, M., and Marinescu, R. 2006. *Object-Oriented Metrics in Practice*. Springer. DOI: 10.1007/3-540-39538-5.
-
-30. Beck, K., and Andres, C. 2004. *Extreme Programming Explained: Embrace Change* (2nd ed.). Addison-Wesley. ISBN: 978-0321278654.
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

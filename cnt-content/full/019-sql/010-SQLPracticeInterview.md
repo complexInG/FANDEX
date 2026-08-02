@@ -17,8 +17,6 @@ prerequisites: []
 
 # SQL实战与面试
 
-## 经典面试题
-
 ### 1. Top N 问题
 
 **题目**：查询每个部门薪资排名前 3 的员工。
@@ -580,21 +578,6 @@ END IF;
 | **性能**     | EXPLAIN 解读、索引类型、索引失效场景                   |
 | **实战**     | Top N、连续登录、行列转换、留存分析                    |
 
-### 高频面试题速查
-
-```
-1. SQL 执行顺序？        → FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT
-2. LEFT JOIN vs INNER JOIN？ → 左连接保留左表全部，内连接只返回匹配行
-3. WHERE vs HAVING？     → WHERE 分组前过滤行，HAVING 分组后过滤组
-4. UNION vs UNION ALL？  → UNION 去重排序，UNION ALL 不去重更快
-5. EXISTS vs IN？        → EXISTS 短路求值适合大子查询，IN 适合小子查询
-6. 如何去重？            → DISTINCT / GROUP BY / ROW_NUMBER
-7. 如何取分组 Top N？    → ROW_NUMBER() OVER(PARTITION BY ... ORDER BY ...)
-8. 索引什么时候失效？    → 函数、隐式转换、前缀通配符、不等于、OR
-9. 事务隔离级别？        → 读未提交、读已提交、可重复读、串行化
-10. 什么是 MVCC？        → 多版本并发控制，读写不阻塞
-```
-
 ## 小结
 
 - Top N 问题首选窗口函数 `DENSE_RANK`，连续登录问题用日期减 `ROW_NUMBER`
@@ -604,18 +587,8 @@ END IF;
 - 编码规范提升可读性和可维护性，安全规范防止 SQL 注入
 - 面试准备要兼顾理论深度和实战能力，窗口函数和执行计划是重点
 
-## 参考文献
-
-SQL 标准（ISO/IEC 9075）：https://www.iso.org/standard/76583.html
-PostgreSQL 文档（SQL 章节）：https://www.postgresql.org/docs/current/sql.html
-MySQL 文档：https://dev.mysql.com/doc/
-SQLite 文档：https://www.sqlite.org/docs.html
-Use The Index, Luke：https://use-the-index-luke.com/
-
 ## 延伸阅读
-
 SQL 连接与子查询，见 019-sql 模块文档。
 SQL 自连接与递归，见 019-sql/019-SelfJoin 文档。
 MySQL 深入，见 020-mysql 模块。
 PostgreSQL 深入，见 021-postgresql 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 MySQL 课程。

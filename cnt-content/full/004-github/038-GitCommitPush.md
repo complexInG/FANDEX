@@ -293,99 +293,11 @@ git log --since="2026-01-01" --until="2026-07-31"
 
 ---
 
-## 八、实战练习
-
-### 练习 1：完成一次标准提交（入门）
-
-**题目**：初始化仓库，创建 `app.py`，依次执行 add、commit，用 `git log --oneline` 确认提交存在。
-
-**提示**：按"工作区→暂存区→本地仓库"的顺序走。
-
-**参考答案要点**：
-
-```bash
-git init -b main
-echo "print('hello')" > app.py
-git add app.py
-git commit -m "feat: 打印 hello"
-git log --oneline   # 输出：<hash> (HEAD -> main) feat: 打印 hello
-```
-
-### 练习 2：体验 -am 快捷方式（入门）
-
-**题目**：修改 `app.py`，不执行 add，直接用 `git commit -am` 提交，观察它能否包含新文件的改动。
-
-**提示**：`-a` 只对**已跟踪**文件生效。
-
-**参考答案要点**：
-
-```bash
-echo "print('world')" >> app.py
-git commit -am "feat: 追加 world"   # 成功，因为 app.py 已跟踪
-echo "# readme" > README.md
-git commit -am "docs: 新增 readme"  # 失败：nothing to commit（README 未跟踪）
-git add README.md && git commit -m "docs: 新增 readme"  # 正确做法
-```
-
-### 练习 3：修正漏掉的提交（进阶）
-
-**题目**：提交后发现自己漏了一个文件，用 amend 把它追加进上次提交，并观察提交 ID 的变化。
-
-**提示**：`git add` + `git commit --amend --no-edit`。
-
-**参考答案要点**：
-
-```bash
-git add config.json
-git commit --amend --no-edit      # 不改变提交信息，追加内容
-git log --oneline                 # 对比 amend 前后的提交 ID，会发现变了
-```
-
-### 练习 4：推送并建立追踪（进阶）
-
-**题目**：把本地 main 分支推送到 GitHub 空仓库，并用 `-u` 建立追踪关系；之后直接 `git push` 验证可以简写。
-
-**提示**：先在 GitHub 创建空仓库（不要勾选 README），复制其 HTTPS 地址。
-
-**参考答案要点**：
-
-```bash
-git remote add origin https://github.com/yourname/my-repo.git
-git push -u origin main     # 首次推送
-git push                    # 第二次推送，无需再写参数
-git branch -vv              # 查看追踪关系（显示 [origin/main]）
-```
-
-### 练习 5：模拟推送被拒绝与解决（综合）
-
-**题目**：在本地和远程各造一个"分叉"提交，模拟 `non-fast-forward` 拒绝，并正确解决后推送成功。
-
-**提示**：先 push v1；本地再提交 v2；同时在 GitHub 网页上直接修改文件提交 v3；然后本地 `git pull` + `git push`。
-
-**参考答案要点**：
-
-```bash
-git commit -m "feat: 本地 v2"
-git push                       # 报错 non-fast-forward
-git pull                       # 拉取远程 v3，可能产生冲突（见 041 篇解决）
-# 若有冲突：手动解决 -> git add -> git commit
-git push                       # 成功
-```
-
----
-
 ## 九、一句话记忆
 
 **四站旅程一句话记牢：`git add` 把改动放进暂存区，`git commit` 盖章生成版本快照，`git push -u` 首次推送并建立追踪，此后 `git push` 直达远程——顺序不能乱，反悔用 amend，拒绝先 pull。**
 
 ---
-
-## 参考链接
-
-- Git 官方文档（git commit）：https://git-scm.com/docs/git-commit
-- Git 官方文档（git push）：https://git-scm.com/docs/git-push
-- Pro Git 中文版 2.2 记录每次更新到仓库：https://git-scm.com/book/zh/v2/Git-%E5%9F%BA%E7%A1%80-%E8%AE%B0%E5%BD%95%E6%AF%8F%E6%AC%A1%E6%9B%B4%E6%96%B0%E5%88%B0%E4%BB%93%E5%BA%93
-- Conventional Commits 规范（中文）：https://www.conventionalcommits.org/zh-hans/
 
 ## 延伸阅读
 

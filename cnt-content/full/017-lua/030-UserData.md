@@ -1060,62 +1060,6 @@ end
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：. 下列关于 light userdata 的描述，正确的是：
-
-A. 可以有 `__gc` 元方法
-B. 内存由 Lua GC 管理
-C. 是一个 `void*` 指针值，不参与 GC
-D. 必须通过 `lua_newuserdata` 创建
-
-**解析讲解**：C
-
-**解析讲解**：light userdata 仅存储一个 `void*` 指针值，不参与 GC，也不能有独立的 `__gc`（Lua 5.4 起支持全局 light userdata metatable，但仅作类型化，不触发 `__gc`）。
-
----
-
-**常见疑问 2**：. 在 Lua 5.4 中，`lua_newuserdatauv(L, sz, n)` 的第三个参数 `n` 表示：
-
-A. 用户数据大小
-B. uservalue 数量
-C. 元方法数量
-D. 内存对齐
-
-**解析讲解**：B
-
-**解析讲解**：Lua 5.4 引入多 uservalue 支持，`n` 指定每个 userdata 关联的 uservalue 数量（0 到 `LUA_UTYPE_LIMIT`）。
-
----
-
-**常见疑问 3**：. 关于 `__gc` 元方法，下列说法错误的是：
-
-A. 仅 full userdata 支持
-B. metatable 首次设置时 `__gc` 被标记为可终结
-C. `__gc` 至多被调用一次
-D. 可以在 `__gc` 中调用 `luaL_error` 抛出 Lua 错误
-
-**解析讲解**：D
-
-**解析讲解**：`__gc` 中调用 `luaL_error` 是未定义行为，可能导致 Lua 状态损坏。
-
----
-
-**常见疑问 4**：. `luaL_checkudata(L, idx, tname)` 的类型识别机制基于：
-
-A. userdata 的大小
-B. metatable 的引用比较
-C. userdata 的内存地址
-D. 字符串匹配
-
-**解析讲解**：B
-
-**解析讲解**：`luaL_checkudata` 通过比较 userdata 的 metatable 与 registry 中 `tname` 对应的 metatable 的**引用**来判断类型。
-
----
-
 ### 填空题知识点讲解
 
 **常见疑问 5**：. full userdata 在 Lua 内部由 `______` 结构表示，其类型标签为 `LUA_TUSERDATA`，数值为 `______`。
@@ -1353,60 +1297,6 @@ int luaopen_sb(lua_State *L) {
 
 ---
 
-### 8.4 思考题
-
-**常见疑问 11**：. 为什么 Lua 设计两种 userdata（full 与 light），而不是统一一种？
-
-**解析讲解**：
-
-light userdata 的设计动机包括：
-
-1. **零开销**：light userdata 仅占 8 字节（一个指针），无 metatable、无 GC 开销，适合作为 C 端对象的"标签"。
-2. **跨 lua_State 携带**：同一进程内不同 lua_State 之间可传递 light userdata（如多线程 Lua 实例），而 full userdata 不能跨状态。
-3. **作为弱引用键**：light userdata 常用于 weak table 中作为 C 对象的键，避免持有引用。
-4. **C 库句柄映射**：许多 C 库返回句柄（如 `FILE*`、socket fd），light userdata 可直接包装这些值。
-
-但 light userdata 的局限性（无 `__gc`、无独立 metatable）使其不适合长期持有需要释放的资源。两种 userdata 互补，覆盖不同使用场景。
-
----
-
-**常见疑问 12**：. 在什么情况下，full userdata 的 `__gc` 不会被调用？
-
-**解析讲解**：
-
-1. **程序正常退出**：Lua 状态通过 `lua_close` 关闭时，所有 userdata 的 `__gc` **会被调用**（除非显式禁用）。
-2. **强制退出**：调用 `os.exit(0, true)` 第二参数为 true 时，跳过所有 `__gc`。
-3. **metatable 首次设置后修改 `__gc`**：仅在首次 setmetatable 时存在的 `__gc` 才会被标记，后续添加的 `__gc` 无效。
-4. **crash 或信号终止**：进程被 SIGKILL 等终止时，`__gc` 不会触发。
-5. **Lua 5.1 的循环引用场景**：Lua 5.1 中循环引用的 userdata 可能不被回收（5.2+ 改进了此问题）。
-
----
-
-**常见疑问 13**：. 比较 `lua_newuserdatauv(L, sz, 0)` 和 `lua_newuserdatauv(L, sz, 1)` 的内存差异，并分析在何种场景下应选择 0 个 uservalue。
-
-**解析讲解**：
-
-内存差异：
-
-- `n=0`：分配 `sizeof(Udata)` + `sz` 字节，无 uservalue 槽位。
-- `n=1`：分配 `sizeof(Udata)` + `sizeof(UValue)` + `sz` 字节，多约 16 字节。
-
-选择 `n=0` 的场景：
-
-1. **C 结构体内联存储**：所有数据已在 `sz` 内，无需关联 Lua 对象。
-2. **方法通过 metatable 共享**：所有方法在 metatable 中，无需每个实例存独立方法。
-3. **性能敏感**：减少内存占用，提高缓存命中率。
-
-选择 `n>=1` 的场景：
-
-1. **关联 Lua 端回调**：每个 userdata 持有独立的 Lua 函数。
-2. **关联元数据**：每个实例需要不同的 Lua 端属性。
-3. **替代 `__index` 表查找**：uservalue 比表查找更高效。
-
----
-
-## 9. 参考文献
-
 ### 9.1 核心文献
 
 - [1] R. Ierusalimschy, L. H. de Figueiredo, and W. Celes, *Lua 5.4 Reference Manual*, PUC-Rio, 2020. [Online]. Available: https://www.lua.org/manual/5.4/
@@ -1441,8 +1331,6 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 
 ---
 
-## 10. 延伸阅读
-
 ### 10.1 书籍
 
 - Roberto Ierusalimschy, *Programming in Lua*, 4th Edition（Lua 5.3，但概念适用于 5.4）
@@ -1454,21 +1342,6 @@ R. Ierusalimschy, L. H. de Figueiredo, and W. Celes. 1996. Lua: an extensible ex
 - "The Implementation of Lua 5.0"（JLTB 2005, Roberto Ierusalimschy, Luiz Henrique de Figueiredo, Waldemar Celes）
 - "A Look at the Design of Lua"（Roberto Ierusalimschy）
 - "LuaJIT 2.0: A Just-In-Time Compiler for Lua"（Mike Pall）
-
-### 10.3 在线资源
-
-- Lua 官方站点：https://www.lua.org/
-- Lua Users Wiki：http://lua-users.org/wiki/
-- LuaJIT 项目：http://luajit.org/
-- Lua 文档镜像：https://www.lua.org/manual/5.4/manual.html#4.1
-- Lua 教学教程：https://learnxinyminutes.com/docs/lua/
-
-### 10.4 开源项目参考
-
-- **Lua-cURL**：cURL 的 Lua 绑定，大量使用 userdata 包装 `CURL*`
-- **lua-socket**：网络库，使用 userdata 包装 socket fd
-- **LuaSQLite3**：SQLite 绑定，userdata 包装 `sqlite3*`
-- **lgi**：GNOME GObject Introspection 的 Lua 绑定
 
 ### 10.5 与本文档相关章节
 

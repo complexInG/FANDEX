@@ -1890,8 +1890,6 @@ async def list_items(
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 10.1.1**：使用模块级方式实现一个 `Logger` 单例，支持 `info`、`warning`、`error` 三个方法，输出格式为 `[时间] [级别] 消息`。
@@ -2157,24 +2155,6 @@ registry.register("database", create_database, database_health_check)
 db = registry.get("database")
 ```
 
-### 9.6 思考题
-
-**题目 10.6.1**：在微服务架构中，单例模式是否仍有意义？分布式环境下的"单例"应如何实现？
-
-**提示**：考虑分布式锁（Redis、etcd）、领导选举（Raft、Paxos）、分片与一致性哈希。
-
-**题目 10.6.2**：单例模式与函数式编程的"纯函数"理念是否冲突？如何在函数式风格中使用单例？
-
-**提示**：考虑依赖注入、Reader Monad、副作用隔离。
-
-**题目 10.6.3**：为什么 Python 社区倾向于"模块即单例"而非 GoF 风格单例类？这反映了哪些设计哲学的差异？
-
-**提示**：考虑"显式优于隐式"、鸭子类型、模块系统的设计。
-
----
-
-## 10. 参考文献
-
 ### 10.1 经典文献
 
 - Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley Professional.（GoF 经典，单例模式的原始定义）
@@ -2204,18 +2184,6 @@ db = registry.get("database")
 - Hannemann, J., & Kiczales, G. (2002). Design pattern implementation in Java and AspectJ. *ACM SIGPLAN Notices*, 37(11), 193-205.（单例模式的面向切面实现）
 
 - Beck, K., & Cunningham, W. (1989). Using pattern languages for object-oriented programs. *OOPSLA'89 Workshop on Specification and Design for Object-Oriented Programming*.（设计模式语言）
-
-### 10.5 在线资源
-
-- Python Documentation. *Data model*. https://docs.python.org/3/reference/datamodel.html
-
-- Python Documentation. *types — Dynamic type creation and built-in types*. https://docs.python.org/3/library/types.html
-
-- Real Python. *Python Singleton: How to Use the Singleton Pattern*. https://realpython.com/python-singleton/
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 元类深入
 
@@ -2481,8 +2449,6 @@ class SecretManager(metaclass=SecretManagerMeta):
         # 不在 repr 中暴露敏感数据
         return f"SecretManager(keys={list(self._secrets.keys())})"
 ```
-
-## 附录 H：面试题精选
 
 ### H.1 基础题
 
@@ -2795,4 +2761,3 @@ Python 之禅（PEP 20）："Explicit is better than implicit." 单例模式隐�
 关键在于：**理解单例的成本，在收益超过成本时使用，并提供充分的测试与隔离机制。**
 
 ---
-

@@ -1316,8 +1316,6 @@ jobs:
       - run: npm run build
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. 类型安全 EventEmitter 的泛型约束应为 `Events extends ______`，确保事件名是字符串且负载有显式类型。
@@ -1326,38 +1324,6 @@ jobs:
 4. AbortController 是 Web 平台标准的 ______ 原语，事件系统应原生支持 signal 参数。
 5. TS 5.0 引入的 ______ 操作符可校验事件负载是否满足目标 Schema，同时保留字面量类型。
 6. 监听器函数 `this` 绑定丢失的修复方法有两种：______ 或 ______。
-
-### 选择题知识点讲解
-
-1. 关于 EventEmitter 的 maxListeners，下列说法错误的是？
-   - A. Node.js 默认值为 10
-   - B. 超过会发出 MaxListenersExceededWarning
-   - C. 设为 0 表示无限制
-   - D. 设为 Infinity 会立即触发警告
-
-2. 下列哪种方式最适合「带元数据的事件」类型设计？
-   - A. 把元数据塞进 payload 对象
-   - B. 使用 [eventName, metadata] 元组作为 emit 参数
-   - C. 在 EventEmitter 类上维护 metadata: Map<K, Meta> 字段
-   - D. 把事件类型设计为 `{ type: K; payload: P; meta: M }` 判别联合
-
-3. 关于事件回放（event sourcing），下列描述错误的是？
-   - A. 事件必须不可变
-   - B. 事件必须可序列化
-   - C. 事件顺序不影响最终状态
-   - D. 事件应包含时间戳与版本号
-
-4. 下列哪种场景不适合使用 EventEmitter？
-   - A. 用户界面交互（点击、输入）
-   - B. WebSocket 消息分发
-   - C. CPU 密集计算的结果传递
-   - D. 日志收集与监控
-
-5. 关于 mitt 与 RxJS Subject，下列说法正确的是？
-   - A. 两者完全等价
-   - B. mitt 仅支持 on/emit，Subject 还支持运算符
-   - C. mitt 性能远高于 Subject
-   - D. Subject 不支持多播
 
 ### 13.3 代码修复题
 
@@ -1395,33 +1361,6 @@ async emit<K extends keyof Events>(event: K, payload: Events[K]) {
 1. 请用 300 字以内论述：在微服务架构中，进程内事件总线（EventEmitter）与跨进程消息队列（Kafka、RabbitMQ）的边界应如何划分？类型系统在两者间应扮演什么角色？
 
 2. 假设你正在设计一个支持「事件版本演化」的类型安全事件总线，请列出至少 3 个类型层的硬性约束，并说明每条约束的工程动机。考虑事件 Schema 演化、向后兼容、版本协商等维度。
-
-## 14. 参考文献
-
-1. Pierce, Benjamin C. *Types and Programming Languages*. MIT Press, 2002. ISBN 978-0-262-16209-8.
-
-2. Bierman, Gavin M., Martín Abadi, and Mads Torgersen. "Understanding TypeScript." *ECOOP 2014 — Object-Oriented Programming*, Springer, 2014, pp. 257-281. DOI: 10.1007/978-3-662-44202-9_11.
-
-3. Gamma, Erich, et al. *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley Professional, 1994. ISBN 978-0-201-63361-0.
-
-4. Meijer, Erik. "Your Mouse is a Database." *Communications of the ACM*, vol. 55, no. 5, 2012, pp. 66-73. DOI: 10.1145/2160718.2160735.
-
-5. Okasaki, Chris. *Purely Functional Data Structures*. Cambridge University Press, 1999. ISBN 978-0-521-66350-2.
-
-6. Rosenwasser, Daniel. "Announcing TypeScript 5.0." *Microsoft Developer Blog*, 2023. URL: https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/.
-
-7. Headwire.com Inc. *Event-Driven Architecture: Patterns and Trade-offs*. O'Reilly Media, 2022. ISBN 978-1-0981-0892-3.
-
-## 15. 延伸阅读
-
-- **TypeScript Handbook — Conditional Types**: https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
-- **RxJS 官方文档**: https://rxjs.dev/guide/overview
-- **mitt 源码**: https://github.com/developit/mitt
-- **Node.js EventEmitter 文档**: https://nodejs.org/api/events.html
-- **NestJS Event Emitter**: https://docs.nestjs.com/techniques/events
-- **Redux Toolkit createSlice**: https://redux-toolkit.js.org/api/createSlice
-- **VS Code Extension API — Event**: https://code.visualstudio.com/api/references/vscode-api#Event
-- **Socket.IO TypeScript 类型指南**: https://socket.io/docs/v4/typescript/
 
 ## 16. 附录 A：API 速查表
 

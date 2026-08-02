@@ -266,26 +266,6 @@ async fn main() {
 
 讲解：`spawn` 并发执行 10 个下载任务，总耗时从 3 秒降到 0.3 秒——这就是异步的吞吐威力。`JoinHandle` 按序 await，但任务是并发的。
 
-## 7. 实战练习
-
-1. **并发体验**：写 3 个 `async fn` 各 sleep 1 秒，用 `join!` 并发执行，对比顺序 await 与 join 的总耗时差异。
-
-2. **超时控制**：给一个"模拟慢接口"（sleep 3 秒）加 1 秒超时，验证超时分支触发。
-
-3. **共享计数**：用 `Arc<Mutex<u32>>` 让 10 个 spawn 任务各加 1，验证结果为 10；再把 `tokio::sync::Mutex` 换成 `std::sync::Mutex` 观察编译错误。
-
-4. **select 应用**：实现"同时等待工作完成和 2 秒超时，谁先到执行谁"的 select 示例。
-
-5. **阻塞陷阱**：在 async main 里用 `std::thread::sleep` 阻塞 2 秒，再改用 `tokio::time::sleep`，对比并发任务的表现，理解"阻塞卡死运行时"。
-
-## 8. 参考资源
-
-Rust 异步编程书（Async Book）：https://rust-lang.github.io/async-book/
-
-Tokio 官方教程：https://tokio.rs/tokio/tutorial
-
-Tokio 文档：https://docs.rs/tokio
-
 ## 9. 小结
 
 异步的核心是"Future 惰性 + await 挂起 + 运行时调度"：async 定义任务、await 等待完成、join!/spawn 并发、select! 多路选择、timeout 超时防护。牢记两条红线：异步中不用同步阻塞、跨 await 用 tokio 锁。下一步用 axum、serde、clap 搭建真实项目。

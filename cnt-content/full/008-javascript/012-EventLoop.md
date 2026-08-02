@@ -1522,8 +1522,6 @@ measureTimeout();  // 通常 1-4ms
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. （remember）在浏览器事件循环中，每执行完一个宏任务后会清空 ______ 队列中的所有任务。
@@ -1531,70 +1529,6 @@ measureTimeout();  // 通常 1-4ms
 3. （remember）Node.js 事件循环的六个阶段依次是 timers、______、idle/prepare、______、check、close callbacks。
 4. （understand）`async/await` 中 `await` 后的代码等价于 ______ 的回调，进入微任务队列。
 5. （remember）`requestAnimationFrame` 在 ______ 前执行，`requestIdleCallback` 在 ______ 后执行。
-
-### 选择题知识点讲解
-
-1. （analyze）下列代码的输出顺序是？
-
-```javascript
-console.log('A');
-setTimeout(() => console.log('B'), 0);
-Promise.resolve().then(() => console.log('C'));
-queueMicrotask(() => console.log('D'));
-console.log('E');
-```
-
-- A. A B C D E
-- B. A E C D B
-- C. A E D C B
-- D. A E C B D
-
-解析讲解：B
-
-解析讲解：同步代码先执行（A, E），然后清空微任务队列，按 FIFO 顺序执行 C（Promise.then 先入队）、D（queueMicrotask 后入队），最后执行宏任务 B。
-
-2. （analyze）在 Node.js 中，下列代码的输出顺序是？
-
-```javascript
-setImmediate(() => console.log('immediate'));
-setTimeout(() => console.log('timeout'), 0);
-Promise.resolve().then(() => console.log('promise'));
-process.nextTick(() => console.log('nextTick'));
-```
-
-- A. nextTick, promise, immediate, timeout
-- B. nextTick, promise, timeout, immediate
-- C. promise, nextTick, timeout, immediate
-- D. timeout, immediate, nextTick, promise
-
-解析讲解：A（在大多数情况下，immediate 先于 timeout，但主模块中顺序不确定）
-
-3. （understand）下列关于 `requestAnimationFrame` 的描述，错误的是？
-
-- A. 与屏幕刷新率同步
-- B. 后台标签页会暂停
-- C. 接收时间戳参数
-- D. 适合处理非紧急任务
-
-解析讲解：D（rAF 适合动画等视觉更新，非紧急任务应使用 rIC）
-
-4. （evaluate）以下哪种方式最适合实现高优先级任务的立即执行？
-
-- A. `setTimeout(fn, 0)`
-- B. `Promise.resolve().then(fn)`
-- C. `requestIdleCallback(fn)`
-- D. `requestAnimationFrame(fn)`
-
-解析讲解：B（微任务优先级高于宏任务，会在当前任务后立即执行）
-
-5. （remember）Node.js 中 `process.nextTick` 的优先级与 `Promise.then` 相比？
-
-- A. nextTick 更高
-- B. Promise.then 更高
-- C. 相同
-- D. 不确定
-
-解析讲解：A
 
 ### 11.3 代码修复题
 
@@ -1766,8 +1700,6 @@ processor.process(bigArray, async (item) => {
 
 ---
 
-## 12. 延伸阅读
-
 ### 12.1 规范文档
 
 - WHATWG. *HTML Living Standard - Event loops*. https://html.spec.whatwg.org/multipage/webappapis.html#event-loops
@@ -1806,15 +1738,6 @@ processor.process(bigArray, async (item) => {
 - **whatwg/html**: HTML 规范源码。https://github.com/whatwg/html
 - **v8/v8**: V8 引擎源码。https://github.com/v8/v8
 - **facebook/react**: React Scheduler 实现。https://github.com/facebook/react/tree/main/packages/scheduler
-
-### 12.6 在线资源
-
-- MDN: *Event Loop*. https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop
-- Node.js Guides: *Don't Block the Event Loop*. https://nodejs.org/en/docs/guides/dont-block-the-event-loop/
-- web.dev: *Optimize long tasks*. https://web.dev/optimize-long-tasks/
-- Jake Archibald's blog: *Tasks, microtasks, queues and schedules*. https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/
-
----
 
 ## 13. 附录
 

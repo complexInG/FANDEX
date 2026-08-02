@@ -1151,51 +1151,6 @@ for await (const line of lineStream) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下代码的输出是什么？
-
-```javascript
-const it = [1, 2, 3, 4, 5].values();
-const mapped = it.map(x => x * 2);
-const filtered = mapped.filter(x => x > 4);
-console.log([...filtered]);
-console.log([...it]);
-```
-
-A. `[6, 8, 10]` 和 `[1, 2, 3, 4, 5]`
-B. `[6, 8, 10]` 和 `[]`
-C. `[]` 和 `[]`
-D. `[6, 8, 10]` 和 `[2, 4, 6, 8, 10]`
-
-**答案：B**
-
-迭代器是一次性的。`[...filtered]` 消耗了 `it`（通过 `mapped` 与 `filtered` 链路）。第二次 `console.log([...it])` 时 `it` 已耗尽。
-
-**题目 2**：以下哪个表达式会抛出 `RangeError`？
-
-A. `[1,2,3].values().take(0)`
-B. `[1,2,3].values().take(-1)`
-C. `[1,2,3].values().take(NaN)`
-D. B 和 C
-
-**答案：D**
-
-`take(0)` 返回空迭代器，合法。`take(-1)` 与 `take(NaN)` 抛出 `RangeError`，因 limit 必须是非负整数。
-
-**题目 3**：以下哪个方法属于"惰性"方法（不立即消耗迭代器）？
-
-A. `toArray()`
-B. `reduce()`
-C. `forEach()`
-D. `flatMap()`
-
-**答案：D**
-
-`flatMap` 返回新的 Iterator，是惰性的。`toArray`、`reduce`、`forEach` 都是终结方法，立即消耗迭代器。
-
 ### 填空题知识点讲解
 
 **题目 4**：Iterator 协议要求对象实现 ______ 方法，可迭代协议要求对象实现 ______ 方法。
@@ -1307,48 +1262,6 @@ for await (const batch of chunk(readLines('big.log'), 1000)) {
 }
 ```
 
-### 9.4 思考题
-
-**题目 10**：为什么 Iterator Helpers 没有提供 `sort()` 方法？如何对迭代器排序？
-
-1. **原因**：排序需要看到所有元素才能确定顺序，与惰性求值矛盾。`sort()` 必须缓存全部数据，等价于 `toArray().sort()`。
-2. **方法**：
-   ```javascript
-   const sorted = iter.toArray().sort((a, b) => a - b);
-   ```
-3. **替代方案**：若数据源本身有序（如已索引数据库），用 `drop` + `take` 实现分页，无需排序。
-4. **特殊场景**：若只需前 K 个最大/小元素，用最小堆/最大堆维护，避免全排序。
-
-**题目 11**：Iterator Helpers 与 Generator 函数在功能上重合，何时该用哪个？
-
-1. **用 Iterator Helpers**：
-   - 简单的 map/filter/take 链
-   - 现有迭代器的小幅变换
-   - 代码可读性优先
-   
-2. **用 Generator**：
-   - 复杂的状态机（如 Fibonacci、Lexer）
-   - 需要自定义控制流（如 yield 委托）
-   - 性能敏感（避免 helper 对象创建）
-   
-3. **混合使用**：
-   ```javascript
-   function* fibonacci() {
-     let a = 0, b = 1;
-     while (true) { yield a; [a, b] = [b, a + b]; }
-   }
-   
-   // Generator + Helpers
-   const result = fibonacci()
-     .filter(x => x % 2 === 0)
-     .take(5)
-     .toArray();
-   ```
-
----
-
-## 10. 参考文献
-
 ### 10.1 规范与提案
 
 - TC39 Proposal: Iterator Helpers [Online]. Available: https://github.com/tc39/proposal-iterator-helpers
@@ -1381,8 +1294,6 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **Hutton, G.** *Programming in Haskell* (2nd ed.). Cambridge University Press, 2016. — 第 6 章深入讲解惰性求值与无穷数据结构。
@@ -1396,20 +1307,6 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 - **Wadler, P.** "Deforestation: Transforming Programs to Eliminate Trees." *TCS*, 1990. — 短路求值与中间结构消除的理论基础。
 
 - **Gill, A., Launchbury, J., and Peyton Jones, S.** "A Short Cut to Deforestation." *FPCA '93*. DOI: 10.1145/165180.165214.
-
-### 11.3 在线资源
-
-- **TC39 提案仓库**：https://github.com/tc39/proposal-iterator-helpers — 提案最新进展、规范文本。
-
-- **MDN: Iterator**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator — MDN 官方文档。
-
-- **V8 实现笔记**：https://v8.dev/blog/v8-release-120 — V8 v12.0 实现 Iterator Helpers 的细节。
-
-- **core-js polyfill**：https://github.com/zloirock/core-js#iterator-helpers — 旧环境 polyfill。
-
-- **IxJS**：https://github.com/ReactiveX/IxJS — 微软的 Interactive Extensions，对比学习。
-
-- **RxJS**：https://rxjs.dev/ — 对比理解 Pull vs Push 模式。
 
 ### 11.4 相关 FANDEX 文档
 

@@ -5,7 +5,7 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: 以"手机 App 应用商店"为线索讲解 gh extension 系列命令，涵盖搜索、安装、升级、移除、浏览与创建扩展，配以原理讲解、安全提示、错误对策与实战练习。
+description: 以"手机 App 应用商店"为线索讲解 gh extension 系列命令，涵盖搜索、安装、升级、移除、浏览与创建扩展，配以原理讲解、安全提示、错误对策。
 author: fanquanpp
 updated: '2026-08-02'
 related: []
@@ -251,84 +251,12 @@ gh extension install .
 
 ---
 
-## 实战练习
-
-### 练习 1：搜索与浏览扩展（入门）
-
-- **题目**：搜索关键词 `dashboard` 的扩展，并用浏览器打开结果中一个扩展的仓库主页，简单判断它是否值得安装。
-- **提示**：`search` 看结果；`browse <名字>` 打开仓库。
-- **参考答案要点**：
-  ```bash
-  gh extension search dashboard
-  gh extension browse dlvhdr/gh-dash
-  ```
-
-### 练习 2：安装并使用一个扩展（入门）
-
-- **题目**：安装 `dlvhdr/gh-dash` 扩展，用 `list` 验证安装成功，然后运行 `gh dash` 体验（按 q 退出）。
-- **提示**：安装用 `install`；运行直接敲 `gh dash`。
-- **参考答案要点**：
-  ```bash
-  gh extension install dlvhdr/gh-dash
-  gh extension list
-  gh dash
-  ```
-
-### 练习 3：升级与卸载（进阶）
-
-- **题目**：先升级所有已安装扩展，然后卸载刚才安装的 `gh-dash`，确认列表已移除。
-- **提示**：`upgrade --all`；`remove`。
-- **参考答案要点**：
-  ```bash
-  gh extension upgrade --all
-  gh extension remove gh-dash
-  gh extension list
-  ```
-
-### 练习 4：创建脚本扩展（进阶）
-
-- **题目**：创建名为 `hello-ext` 的脚本扩展，查看生成的文件结构，解释为什么"同名可执行文件"是必需的。
-- **提示**：`create` 生成脚手架；看目录里的 `gh-hello-ext` 文件。
-- **参考答案要点**：
-  ```bash
-  gh extension create hello-ext
-  ls hello-ext
-  # 关键文件：hello-ext/gh-hello-ext（同名可执行脚本）
-  # gh 把 gh hello-ext 的参数转发给 gh-hello-ext 执行
-  ```
-
-### 练习 5：本地开发并发布（挑战）
-
-- **题目**：修改 `hello-ext` 的脚本让它输出 `hello from my extension`，本地安装并运行验证；再把该目录初始化为 git 仓库并推到 GitHub 上成为可被他人安装的扩展。
-- **提示**：改脚本内容；`gh extension install .`；发布时仓库名用 `gh-hello-ext`；`gh extension list` 验证。
-- **参考答案要点**：
-  ```bash
-  cd hello-ext
-  # 修改 gh-hello-ext 内容，加入 echo "hello from my extension"
-  gh extension install .
-  gh hello-ext
-  # 发布（可选做）
-  git init && git add . && git commit -m "my first extension"
-  gh repo create gh-hello-ext --public --source=. --push
-  ```
-
----
-
 ## 一句话记忆
 
 **扩展就是 gh 的"App 商店"：`search/browse` 逛商店，`install` 安装，`list/upgrade/remove` 管理，`create` 自己做 App——安装前务必审查源码，因为 GitHub 不为扩展背书。**
 
 ---
 
-## 参考链接
-
-- GitHub CLI 官方手册 gh extension：https://cli.github.com/manual/gh_extension
-- GitHub CLI 官方手册 gh extension install：https://cli.github.com/manual/gh_extension_install
-- GitHub CLI 官方手册 gh extension create：https://cli.github.com/manual/gh_extension_create
-- GitHub 官方扩展生态：https://github.com/topics/gh-extension
-
 ## 延伸阅读
-
 - GitHub CLI 内置命令（repo/pr/issue），见 004-github 模块《GhCliAuth》《GhPrManage》等文档。
 - Release 发布机制（发布预编译扩展的基础），见《GhRelease》。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

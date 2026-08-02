@@ -1999,8 +1999,6 @@ public class RuleEngineCase {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：下列代码输出是什么？解释原因。
@@ -2317,36 +2315,6 @@ public class RetryUtil {
 ```
 
 要点：泛型 + 函数式接口实现通用性；指数退避公式 $delay = initial \times 2^{attempt-1}$；白名单控制可重试异常；回调支持监控与日志。
-
-## 参考文献
-
-参考文献采用 ACM Reference Format。
-
-1. Böhm, C. and Jacopini, G. 1966. Flow diagrams, Turing machines and languages with only two formation rules. *Communications of the ACM* 9, 5 (May 1966), 366-371. DOI: https://doi.org/10.1145/355592.365646
-
-2. Dijkstra, E. W. 1968. Go to statement considered harmful. *Communications of the ACM* 11, 3 (March 1968), 147-148. DOI: https://doi.org/10.1145/362929.362947
-
-3. McCabe, T. J. 1976. A complexity measure. *IEEE Transactions on Software Engineering* SE-2, 4 (Dec. 1976), 308-320. DOI: https://doi.org/10.1109/TSE.1976.233837
-
-4. Gosling, J., Joy, B., Steele, G., Bracha, G., and Buckley, A. 2023. *The Java Language Specification, Java SE 21 Edition*. Oracle America, Redwood Shores, CA. DOI: https://doi.org/10.1109/JLS.2023.1234567
-
-5. Goetz, B. 2022. *Pattern Matching for switch*. JEP 441. Oracle Corporation. Retrieved from https://openjdk.org/jeps/441
-
-6. Lea, D. 2000. A Java fork/join framework. In *Proceedings of the ACM 2000 Java Grande Conference* (San Francisco, CA, June 2000), 36-43. DOI: https://doi.org/10.1145/337449.337465
-
-7. Arnold, K., Gosling, J., and Holmes, D. 2005. *The Java Programming Language*, 4th ed. Addison-Wesley Professional, Boston, MA.
-
-8. Sutter, H. 2005. The free lunch is over: A fundamental turn toward concurrency in software. *Dr. Dobb's Journal* 30, 3 (March 2005), 202-210.
-
-9. Bloch, J. 2018. *Effective Java*, 3rd ed. Addison-Wesley Professional, Boston, MA.
-
-10. Manson, J., Pugh, W., and Adve, S. V. 2005. The Java memory model. In *Proceedings of the 32nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages* (Long Beach, CA, January 2005), 378-391. DOI: https://doi.org/10.1145/1040305.1040336
-
-11. Press, R. 2020. *Java 14 Switch Expressions: A Practical Guide*. Oracle Technical Report. DOI: https://doi.org/10.1109/JEP.2020.4567890
-
-12. Herlihy, M. and Shavit, N. 2012. *The Art of Multiprocessor Programming*, revised 1st ed. Morgan Kaufmann, Burlington, MA.
-
-## 延伸阅读
 
 ### 控制流理论
 

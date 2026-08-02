@@ -700,18 +700,8 @@ cv.wait(lock, []{ return condition; });
 - 线程池：避免频繁创建销毁线程
 - 避免伪共享：对齐频繁修改的原子变量
 
-## 参考文献
-
-cppreference C++ 文档：https://zh.cppreference.com/w/cpp
-C++ 核心指南：https://isocpp.github.io/CppCoreGuidelines/
-C++ 标准草案（WG21）：https://isocpp.org/std/the-standard
-CMake 官方文档：https://cmake.org/documentation/
-Compiler Explorer：https://godbolt.org/
-
 ## 延伸阅读
-
 C++ 模板深入，见 026-cpp/062-CppTemplate 文档。
 STL 容器与算法，见 026-cpp 模块 STL 文档。
 并发与原子，见 026-cpp 模块并发文档。
 Rust 内存安全对比，见 053-rust 模块（若已加入）。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 C++ 课程。

@@ -305,21 +305,6 @@ flowchart TD
 3. **对照验证**：定期检查"实际架构 vs 文档架构"是否一致
 4. **权衡明确**：每次演进都要说清楚"得到了什么、放弃了什么"
 
-## 8. 实战练习
-
-1. **观察练习**：选一个你熟悉的应用（比如微信、淘宝），尝试画出它的 Level 1（系统上下文图：它和哪些外部系统交互）和 Level 2（它可能有哪些容器）。
-
-2. **决策分析**：回想你最近做的技术选择（框架、工具、数据库），判断它属于"架构决策"还是"设计决策"，并说明理由。如果是架构决策，尝试写一篇迷你 ADR。
-
-3. **反模式识别**：在你接触过的代码/系统里，能找到 6.1-6.5 中哪种反模式的影子？描述症状并给出至少一个改进方向。
-
-## 9. 参考资源
-
-- SEI 软件架构定义：https://www.sei.cmu.edu/architecture/
-- C4 模型官方：https://c4model.com/
-- 4+1 视图模型（Philippe Kruchten）：https://www.cs.ubc.ca/~gregor/teaching/papers/4+1view-architecture.pdf
-- Martin Fowler 架构系列文章：https://martinfowler.com/architecture/
-
 ## 10. 延伸阅读
 
 - 架构的模式化实现，见本模块《分层架构》《微服务架构》《事件驱动架构》

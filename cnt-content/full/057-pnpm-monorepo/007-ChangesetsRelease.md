@@ -207,22 +207,6 @@ jobs:
 
 **误区四：发布后发现问题只能回滚版本。** → 正确做法是发一个**修复版本**（如 1.2.4），而不是撤回已发布的 1.2.3（npm 不允许同版本覆盖）。
 
-## 9. 实战练习
-
-1. **记录变更**：模拟给 `@fandex/utils` 加一个新函数（minor），执行 `pnpm changeset` 创建一个 changeset 文件，检查其结构。
-
-2. **版本计算**：执行 `pnpm changeset version`，观察各包版本号与 CHANGELOG 的变化，验证 `workspace:*` 引用同步更新。
-
-3. **CI 配置**：为你的仓库编写 release.yml（参考第 6 节），配置 GITHUB_TOKEN 与 NPM_TOKEN secrets。
-
-4. **发布演练**：在 npm 私有 registry（如 Verdaccio）上完整演练一次 changesets 发布流程。
-
-## 10. 参考资源
-
-- Changesets 官方文档：https://changesets-docs.vercel.app/
-- Changesets GitHub 仓库：https://github.com/changesets/changesets
-- 语义化版本规范：https://semver.org/lang/zh-CN/
-
 ## 11. 延伸阅读
 
 - 版本转换机制，见本模块《workspace 协议与内部依赖》

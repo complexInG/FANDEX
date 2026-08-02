@@ -414,50 +414,6 @@ flowchart LR
 | 忽略构建产物分析 | 页面 JS 体积悄悄变大 | 交互组件越加越多，未检查水合成本 | 查看 `astro build` 报告，按报告调整 `client:` 指令 |
 | 误以为 Astro 是 SPA | 页面切换整页刷新，体验"传统" | 对 Astro 的工作模式理解偏差 | 可选接入 View Transitions 获得 SPA 般的平滑过渡 |
 
-## 12. 实战练习
-
-### 练习一：用一句话向朋友解释 Astro
-
-- 题目：不写代码，用你自己的话解释"为什么 Astro 站点加载快"。
-- 提示：抓住"静态优先 + 岛屿架构"两个关键词。
-- 参考答案要点：Astro 把大部分页面提前印成纯 HTML（静态优先），只有少数交互区域按需加载 JavaScript（岛屿架构），所以首屏快、SEO 好。
-
-### 练习二：识别岛屿
-
-- 题目：浏览 FANDEX 文档站，找出页面上哪些区域是"岛屿"（加载了 JavaScript），哪些是静态内容。
-- 提示：用浏览器开发者工具的 Network 面板查看脚本请求，或用 Lighthouse 分析。
-- 参考答案要点：搜索框、主题切换是岛屿；文章正文、目录结构是静态内容。
-
-### 练习三：改造一个页面为 Astro 风格
-
-- 题目：把你以前写过的任意一个 HTML 页面，改写为一个 `.astro` 文件，把标题等可变内容提取到 frontmatter 变量中。
-- 提示：`---` 中定义变量，模板中用 `{变量}` 输出。
-- 参考答案要点：页面结构不变，把 `<title>`、`<h1>` 等重复或动态的内容改为变量，并用 `<style>` 做作用域样式。
-
-### 练习四：阅读构建报告
-
-- 题目：对任一 Astro 项目运行 `npm run build`，查看构建报告，统计首页的 JavaScript 体积。
-- 提示：关注报告末尾每页的 JS 大小列表。
-- 参考答案要点：默认模板首页 JS 通常为 0KB；若大于 0，找出是哪个组件通过 `client:*` 加载的，思考是否合理。
-
 ## 13. 一句话记忆
 
 **Astro 是"内容优先"的 Web 框架：默认零 JavaScript 输出静态 HTML，交互组件像大海中的岛屿一样按需加载，让内容站又快又省。**
-
-## 参考链接与延伸阅读
-
-参考链接：
-
-1. Astro 官方文档（中文）：https://docs.astro.build/zh-cn/
-2. Astro 岛屿架构（Islands Architecture）官方概念：https://v7.docs.astro.build/en/concepts/islands/
-3. Astro 主题市场：https://astro.build/themes/
-4. Astro 集成目录：https://astro.build/integrations/
-5. 岛屿架构概念原始文章（Jason Miller）：https://jasonformat.com/islands-architecture/
-
-延伸阅读：
-
-- Vite 构建机制，见 056-vite 模块；
-- Markdown/MDX 写作，见 002-markdown 模块；
-- Tailwind 样式，见 058-tailwind 模块；
-- 项目创建与目录结构，见本模块 002-QuickStartProject；
-- 页面与路由，见本模块 003-PagesRouting。

@@ -319,57 +319,6 @@ jobs:
 | `npm run build` 在 CI 中失败 | 构建命令报错退出 | CI 环境 Node 版本过低（Astro 7 要求 Node 22+） | `actions/setup-node` 指定 `node-version: 22` |
 | 缓存策略不生效 | 页面每次都重新渲染 | 未配置 `cache.provider`，或只配了 `routeRules` 没开 provider | 配置 `cache: { provider: memoryCache() }`（或平台 CDN provider） |
 
-## 9. 实战练习
-
-### 练习 1：读懂一次构建
-
-**题目**：在一个已有项目上运行 `npm run build`，用 `npm run preview` 预览，并在 DevTools Network 面板中找出：首页 HTML、至少一个 CSS、至少一个图片资源。
-
-**提示**：注意 `dist/` 与 `src/` 的结构对应关系；观察 `_astro/` 下的哈希文件名。
-
-**参考答案要点**：构建后 `dist/` 出现完整 HTML 与 `_astro/` 资源；Network 中首屏只有 HTML/CSS/图片（若页面没有交互组件则无 JS），这正是 Astro 静态站的特点。
-
-### 练习 2：给文档站加一个"按需渲染"的登录页
-
-**题目**：文档站默认静态模式，现在要新增 `/login` 页面：每次请求都要校验 Cookie。请完成配置与页面改造。
-
-**提示**：把 `output` 改为 `'server'` 并安装 Node 适配器；在 `login.astro` 中通过 `Astro.cookies` 读取登录态；其余文档页面保持预渲染。
-
-**参考答案要点**：`astro add node`；`output: 'server'` + `adapter: node({ mode: 'standalone' })`；login 页面默认按需渲染；其他页面顶部加 `export const prerender = true` 保持静态，实现"大部分静态 + 少量动态"。
-
-### 练习 3：为列表页配置路由缓存
-
-**题目**：server 模式下 `/blog/**` 列表页内容每小时变一次，要求缓存 1 小时、过期后 24 小时内仍可提供旧内容。
-
-**提示**：`routeRules` 的 `maxAge` 与 `swr`；记得先配置 `cache.provider`。
-
-**参考答案要点**：配置 `cache: { provider: memoryCache() }`，`routeRules` 中 `{ pattern: '/blog/**', maxAge: 3600, swr: 86400 }`；命中缓存的请求不再触发渲染。
-
-### 练习 4：部署到子路径
-
-**题目**：把文档站部署到 `https://example.com/docs/`（GitHub Pages 场景），保证页面与资源全部可访问。
-
-**提示**：`base` 配置与 `site` 配置的区别；构建后用 `preview` 验证。
-
-**参考答案要点**：`astro.config.mjs` 设置 `site: 'https://example.com'`、`base: '/docs/'`；`npm run build` 后所有资源路径带 `/docs/` 前缀；`preview` 下访问 `http://localhost:4321/docs/` 验证无 404。
-
-### 练习 5：搭一条带门禁的部署流水线
-
-**题目**：编写 GitHub Actions 工作流：Node 22 环境、锁文件安装、生产构建、`astro check` 类型检查，任一步失败即失败退出。
-
-**提示**：参考本文 6.4 节；`npx astro check` 放在构建之后作为独立步骤更清晰。
-
-**参考答案要点**：按 6.4 节 yaml 编写；`on: [push]` 触发；`astro check` 失败会让 job 失败，从而阻止后续部署步骤执行——这就是"质量门禁"的落地方式。
-
 ## 10. 一句话记忆
 
 **"构建是印刷、产物要质检、适配器定发行渠道、缓存是快速通道、CI 是物流车队、域名与 HTTPS 是最后挂牌——上线是一趟从 dist/ 到全球 CDN 的完整旅程。"**
-
-## 11. 参考链接与延伸阅读
-
-- Astro 构建与预览指南（官方，中文）：https://docs.astro.build/zh-cn/guides/builds/
-- Astro 按需渲染（SSR）指南（官方，中文）：https://docs.astro.build/zh-cn/guides/on-demand-rendering/
-- Astro 部署指南（官方，中文）：https://docs.astro.build/zh-cn/guides/deploy/
-- Astro 路由缓存指南（官方，英文）：https://docs.astro.build/en/guides/caching/
-- Astro 适配器参考（官方，中文）：https://docs.astro.build/zh-cn/reference/adapter-reference/
-- 延伸阅读：Astro 7.0 发布公告（构建提速基准数据来源）：https://astro.build/blog/astro-7/

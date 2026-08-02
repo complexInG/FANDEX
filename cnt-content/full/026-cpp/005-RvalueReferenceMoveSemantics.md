@@ -2651,8 +2651,6 @@ int main() {
 
 注：C++20 起 `std::move` 与 `std::forward` 标记为 `constexpr`。
 
-## 第 15 章 习题与解答
-
 ### 填空题知识点讲解
 
 **习题 ex-rv-fb-01**（记忆层，难度 2）：在 C++11 的值类别分类中，具有「identity」但不具有「movability」的表达式称为 ____。
@@ -2676,60 +2674,6 @@ int main() {
 **解析讲解**：第一空 `int&`，第二空 `int`。
 
 **解析讲解**：forwarding reference 的特殊推导规则：实参为 lvalue 时 `T` 推导为 `T&`（左值引用），经折叠 `T& && → T&`；实参为 rvalue 时 `T` 推导为 `T`（非引用），经折叠 `T&&`（无折叠）。这是完美转发能保留值类别的根本机制。
-
-### 选择题知识点讲解
-
-**习题 ex-rv-ch-01**（理解层，难度 2）：下列关于 `std::move` 与 `std::forward` 的描述，哪项正确？
-
-A. `std::move` 与 `std::forward` 在运行期执行任何操作，均会移动对象  
-B. `std::move` 是无条件转为右值；`std::forward` 是有条件转为右值，仅在实参为右值时才转  
-C. `std::move` 与 `std::forward` 是同一函数的不同名称  
-D. `std::forward` 可以替代 `std::move` 在任何场景使用
-
-**解析讲解**：B。
-
-**解析讲解**：`std::move` 等价于 `static_cast<T&&>`，无条件将实参转为 xvalue；`std::forward<T>` 仅在 `T` 被推导为非引用类型（即实参原本为 rvalue）时执行 `static_cast<T&&>`，否则保持 lvalue。两者运行期均为零开销，仅做编译期类型转换。
-
----
-
-**习题 ex-rv-ch-02**（分析层，难度 3）：以下代码的输出是什么？
-
-```cpp
-void f(int&)       { std::puts("lvalue"); }
-void f(const int&) { std::puts("const lvalue"); }
-void f(int&&)      { std::puts("rvalue"); }
-
-int main() {
-    int x = 1;
-    f(x);                 // (1)
-    f(std::move(x));      // (2)
-    const int y = 2;
-    f(y);                 // (3)
-    f(std::move(y));      // (4)
-}
-```
-
-A. lvalue / rvalue / const lvalue / rvalue  
-B. lvalue / rvalue / const lvalue / const lvalue  
-C. lvalue / lvalue / const lvalue / const lvalue  
-D. lvalue / rvalue / lvalue / rvalue
-
-**解析讲解**：B。
-
-**解析讲解**：(1) `x` 是 lvalue 绑定 `int&`；(2) `std::move(x)` 是 xvalue 绑定 `int&&`；(3) `y` 是 const lvalue 绑定 `const int&`；(4) `std::move(y)` 即 `static_cast<const int&&>(y)`，仍是 const 限定的 xvalue，无法绑定 `int&&`（去 const 是非法的），重载解析选择 `const int&`。这是 `std::move` 对 const 对象「失效」的经典现象。
-
----
-
-**习题 ex-rv-ch-03**（评估层，难度 4）：关于 C++17 强制的复制省略（mandatory copy elision），下列哪项正确？
-
-A. 仅对返回值优化（RVO）生效，NRVO 仍为可选优化  
-B. 在 prvalue 初始化对象的语境中，编译器必须省略拷贝/移动构造，无临时对象被构造  
-C. 自 C++17 起，所有移动构造函数均不再被调用  
-D. 强制省略仅适用于字面量类型
-
-**解析讲解**：B。
-
-**解析讲解**：C++17 引入的「guaranteed copy elision」仅作用于「prvalue 初始化对象」场景（如 return prvalue、函数实参传递、变量初始化），编译器将 prvalue 视为「初始物化」（materialization）而非临时对象，不构造中间临时对象。NRVO 与 RVO 命名返回仍为可选优化。其他场景（如将已具名对象返回）仍需调用移动/拷贝构造。
 
 ### 15.3 代码修正题
 
@@ -3002,40 +2946,6 @@ constexpr T&& forward(remove_reference_t<T>& x) noexcept {
 
 ---
 
-## 第 16 章 参考文献
-
-本章节遵循 ACM Reference Format，列出本文档撰写所依据的权威来源。
-
-1. ISO/IEC. 2023. _Information technology — Programming languages — C++_. ISO/IEC 14882:2023, Eighth edition. International Organization for Standardization.
-
-2. Stroustrup, B. 2013. _The C++ Programming Language_ (4th ed.). Addison-Wesley Professional.
-
-3. Meyers, S. 2015. _Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14_ (1st ed.). O'Reilly Media.
-
-4. Vandevoorde, D., Josuttis, N. M., and Gregor, D. 2017. _C++ Templates: The Complete Guide_ (2nd ed.). Addison-Wesley Professional.
-
-5. Sutter, H. and Alexandrescu, A. 2004. _C++ Coding Standards: 101 Rules, Guidelines, and Best Practices_. Addison-Wesley Professional.
-
-6. Josuttis, N. M. 2021. _C++ Move Semantics: The Complete Guide_ (1st ed.). DMTK Foundation.
-
-7. Williams, A. 2019. _C++ Concurrency in Action_ (2nd ed.). Manning Publications.
-
-8. Hinnant, H., Stroustrup, B., and Kozicki, B. 2008. _A Brief Introduction to Rvalue References_. ISO C++ Committee document N1690.
-
-9. ISO/IEC WG21. 2002. _N1377: A Proposal to Add Move Semantics Support to the C++ Language_. ISO C++ Committee.
-
-10. ISO/IEC WG21. 2015. _N4277: Forwarding References in C++14_. ISO C++ Committee.
-
-11. cppreference.com. 2024. _Value categories — cppreference.com_. Retrieved December 1, 2024, from https://en.cppreference.com/w/cpp/language/value_category
-
-12. C++ Core Guidelines Contributors. 2024. _C++ Core Guidelines — Move Semantics (C-series) and Forwarding (F-series)_. isocpp. Retrieved December 1, 2024, from https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
-
-**引用规范说明**：本文档中所有标注 `[basic.lval]`、`[expr.type]`、`[forwarding.ref]`、`[temp.deduct.call]`、`[vector.capacity]`、`[unique.ptr.single.ctor]` 的章节号均引用自 ISO/IEC 14882:2023 标准。所有 N 编号文档（N1377、N1690、N4277）为 ISO C++ 委员会提案文档，可在 <https://www.open-std.org/jtc1/sc22/wg21/> 检索。
-
----
-
-## 第 17 章 延伸阅读
-
 ### 17.1 关联模块（FANDEX 内部）
 
 本章节列出 FANDEX 知识库中与「右值引用与移动语义」高度关联的文档，建议按以下顺序学习：
@@ -3061,16 +2971,6 @@ constexpr T&& forward(remove_reference_t<T>& x) noexcept {
 8. **cppreference - "Reference declaration - forwarding references"**：<https://en.cppreference.com/w/cpp/language/reference#Forwarding_references>
 9. **cppreference - "std::move, std::forward"**：<https://en.cppreference.com/w/cpp/utility/move>
 10. **C++ Core Guidelines - C.62: Make copy assignment non-virtual, take the parameter by const&, and return by non-const&**：<https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rh-copy>
-
-### 17.3 推荐练习项目
-
-1. **实现一个支持移动语义的字符串类**：模仿 `std::string` 的移动构造/赋值，添加 `noexcept` 标注与异常安全保证。
-2. **实现一个泛型工厂函数 `make<T>(args...)`**：使用完美转发，支持任意构造函数签名，对比 `std::make_unique`、`std::make_shared` 的实现。
-3. **分析 `std::vector<T>::resize` 在 `T` 的移动构造为非 `noexcept` 时的回退行为**：编写测试代码，使用 `is_nothrow_move_constructible_v<T>` 验证。
-4. **实现一个简单的 `std::function` 替代品**：使用类型擦除 + 完美转发存储任意可调用对象，参考 `std::function` 的 SBOE（Small Buffer Optimization）设计。
-5. **对比 C++20 ranges 与手写循环的代码生成**：使用 Compiler Explorer (godbolt.org) 检查 `ranges::views::transform | ranges::views::filter` 是否触发完美转发优化。
-
----
 
 ## 右值引用
 

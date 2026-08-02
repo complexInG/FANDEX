@@ -307,65 +307,6 @@ export default defineConfig({
 | 6 | 动态拼接路径拿不到图片 | 字符串变量路径无法被静态分析 | 改用 `new URL(name, import.meta.url)` 或 `import.meta.glob` |
 | 7 | 字体加载导致文字闪烁/白屏 | 未设置 `font-display` | `@font-face` 加 `font-display: swap`，并考虑字体子集化 |
 
-## 11. 实战练习
-
-### 练习 1：两路资源对比实验
-
-**题目**：同一张图片，分别放在 `public/` 和 `src/assets/` 各引一次，`pnpm build` 后对比它们在 `dist/` 中的路径与文件名差异。
-
-**提示**：public 的文件原样出现在 `dist/` 根目录；import 的文件在 `dist/assets/` 且带哈希。
-
-**参考答案要点**：
-1. `public/pic.png` 构建后为 `dist/pic.png`（无哈希），页面用 `/pic.png` 引用；
-2. `src/assets/pic.png` import 后为 `dist/assets/pic-xxxxx.png`（带哈希）；
-3. 结论：哈希文件名支持永久缓存，public 文件适合不常变、需固定路径的资源。
-
-### 练习 2：内联阈值观察
-
-**题目**：准备一个 1KB 的小图片和一个 10KB 的大图片，分别 import，构建后检查小图片是否以内联形式出现在 JS 产物中。
-
-**提示**：默认 `assetsInlineLimit` 为 4096 字节；内联的图片会以 `data:image/...;base64,` 形式出现。
-
-**参考答案要点**：
-1. 小于 4KB 的图片被内联为 base64（在 JS 产物中搜索 `data:image` 可确认）；
-2. 大于 4KB 的图片生成独立文件；
-3. 修改 `build.assetsInlineLimit: 8192` 后，10KB 图片也可能被内联，体会阈值的作用。
-
-### 练习 3：部署到子路径
-
-**题目**：把项目构建产物放到一个本地服务器（如 `npx serve dist`）的 `/fandex/` 子路径下，通过配置 `base` 让页面资源全部正常加载。
-
-**提示**：`base: '/fandex/'`；也可用 `pnpm preview --base '/fandex/'` 临时验证（Vite 8 支持 preview 传 base 参数验证产物）。
-
-**参考答案要点**：
-1. 配置 `base: '/fandex/'` 后重新 `pnpm build`；
-2. 检查 `dist/index.html` 中资源路径变为 `/fandex/assets/...`；
-3. 在服务器子路径下访问，页面与资源均正常；不配 base 时则全部 404。
-
-### 练习 4：图标目录动态加载
-
-**题目**：在 `src/icons/` 下放 5 个 SVG 图标，写一个组件：传入图标名，自动加载对应图标并展示。
-
-**提示**：`import.meta.glob('./icons/*.svg', { eager: true })` 拿到全部图标；`?url` 或直接取模块默认导出。
-
-**参考答案要点**：
-1. `const icons = import.meta.glob('./icons/*.svg', { eager: true, query: '?url', import: 'default' })`；
-2. 组件中 `icons[`./icons/${name}.svg`]` 取值作为 `img.src`；
-3. 传入不存在的名字时做兜底（显示默认图标），并体会动态加载的便利与限制。
-
 ## 12. 一句话记忆
 
 **图片字体走 `src/` 的 import（有哈希、可内联、可优化），`favicon`、`robots.txt` 这类"不加工、要原名"的走 `public/`，部署子路径就设 `base`——资源路径问题的答案，永远在这三句话里**。
-
-## 13. 参考链接与延伸阅读
-
-- Vite 静态资源处理（官方）：https://cn.vite.dev/guide/assets
-- Vite 构建选项（assetsInlineLimit、assetsDir 等）：https://cn.vite.dev/config/build-options
-- Vite 共享配置（publicDir、base）：https://cn.vite.dev/config/shared-options
-- Vite 功能指南（import.meta.glob、Web Worker 等）：https://cn.vite.dev/guide/features
-
-延伸阅读：
-
-- 本模块 003 篇《Vite 配置文件详解》：`base` 与 `publicDir` 的配置位置；
-- 本模块 007 篇《构建与代码分割》：资源哈希与缓存策略的深入内容；
-- 本模块 005 篇《Vite CSS 与预处理器》：CSS 中 `url()` 资源与样式的联动处理。

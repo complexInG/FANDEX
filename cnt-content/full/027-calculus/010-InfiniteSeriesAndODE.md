@@ -10,8 +10,6 @@ updated: '2026-08-01'
 related:
   - calculus/曲线积分与曲面积分
   - calculus/公式速查表
-  - calculus/函数与极限典型例题
-  - calculus/导数与微分典型例题
 prerequisites:
   - calculus/函数与极限
 ---
@@ -265,8 +263,6 @@ $$x\frac{dy}{dx} = \frac{dy}{dt}, \quad x^2\frac{d^2y}{dx^2} = \frac{d^2y}{dt^2}
 
 令 $x = e^t$，化为 $\frac{d^2y}{dt^2} + (a-1)\frac{dy}{dt} + by = f(e^t)$，用常系数方法求解。
 
-## 8. 综合例题与 Python 辅助计算
-
 ### 8.1 幂级数求和示例
 
 求 $\sum_{n=1}^{\infty} \frac{n}{2^n}$ 的和。
@@ -368,20 +364,10 @@ print("欧拉方程的解:", sol)
 | 二阶常系数 | 特征方程/待定系数法 | 根的三种情况 |
 | 欧拉方程 | $x = e^t$ 代换 | 化为常系数方程 |
 
-## 参考文献
-
-Khan Academy 微积分：https://zh.khanacademy.org/math/calculus-1
-3Blue1Brown 微积分的本质：https://www.3blue1brown.com/topics/calculus
-MIT 18.01：https://ocw.mit.edu/courses/18-01-single-variable-calculus-fall-2006/
-Desmos：https://www.desmos.com/
-
 ## 延伸阅读
-
 微积分基础，见 027-calculus 模块文档。
 线性代数（梯度与向量），见 029-linear-algebra 模块。
 概率统计（积分应用），见 030-probability-statistics 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供数学课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

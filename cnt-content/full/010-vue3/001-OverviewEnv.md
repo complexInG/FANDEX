@@ -148,12 +148,6 @@ button:hover {
 - **ESLint**：代码质量检查工具
 - **Prettier**：代码格式化工具
 
-## 5. 学习资源 | Learning Resources
-
-- [Vue3 官方文档](https://vuejs.org/docs/) <!-- nofollow -->
-- [Vue3 组合式 API 文档](https://vuejs.org/api/composition-api.html) <!-- nofollow -->
-- [Vite 官方文档](https://vitejs.dev/) <!-- nofollow -->
-
 ## 6. 常见问题 | Common Issues
 
 ### 6.1 无法启动开发服务器
@@ -323,14 +317,6 @@ createApp(App)
   .provide('apiBase', '/api')
   .mount('#app');
 ```
-
-## 参考文献
-
-Vue 官方文档：https://vuejs.org/
-Vue Router：https://router.vuejs.org/zh/
-Pinia：https://pinia.vuejs.org/zh/
-Vue 3 迁移指南：https://v3-migration.vuejs.org/
-VueUse 组合函数库：https://vueuse.org/
 
 ## 深度专题扩展
 

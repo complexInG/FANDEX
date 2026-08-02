@@ -1245,31 +1245,13 @@ export function renderProducts(products) {
 - **保护敏感数据**：避免暴露敏感信息
 - **定期更新依赖**：修复安全漏洞
 
-## 10. 延伸阅读
-
-- [MDN Web 开发文档](https://developer.mozilla.org/en-US/docs/Web) <!-- nofollow -->
-- [JavaScript.info](https://javascript.info/) <!-- nofollow -->
-- [Frontend Masters](https://frontendmasters.com/) <!-- nofollow -->
-- [CSS-Tricks](https://css-tricks.com/) <!-- nofollow -->
-- [Smashing Magazine](https://www.smashingmagazine.com/) <!-- nofollow -->
-
 ## 11. 更新日志
 
 - **2026-04-05**: 初始化项目实战，涵盖简易待办事项应用的设计与核心实现。
 - **2026-05-03**: 扩展内容，添加更完整的项目实战案例、项目结构和组织、前端构建工具、测试、部署、性能优化、安全最佳实践等内容。
 
-## 参考文献
-
-MDN JavaScript 文档：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript
-ECMAScript 规范：https://tc39.es/ecma262/
-Node.js 官方文档：https://nodejs.org/docs/latest/api/
-JavaScript 秘密花园：https://bonsaiden.github.io/JavaScript-Garden/
-Can I use：https://caniuse.com/
-
 ## 延伸阅读
-
 JavaScript 基础语法，见 008-javascript 模块文档。
 TypeScript 类型系统，见 009-typescript 模块。
 浏览器 DOM 与事件，见 006-html5/007-css 模块。
 前端框架 React/Vue，见 011-react/010-vue3 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 JavaScript 课程。

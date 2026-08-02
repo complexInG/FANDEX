@@ -4,7 +4,7 @@ title: 跳跃表
 module: algorithm
 category: Algorithm/SkipList
 difficulty: intermediate
-description: 跳跃表（Skip List）数据结构的形式化定义（多层索引概率结构）、期望 O(log n) 查找/插入/删除的随机化分析、与平衡树的对比、Redis Sorted Set / LevelDB MemTable / Apache Lucene 倒排索引等工程实现，附多语言实现与 CLRS 风格习题。
+description: 跳跃表（Skip List）数据结构的形式化定义（多层索引概率结构）、期望 O(log n) 查找/插入/删除的随机化分析、与平衡树的对比、Redis Sorted Set / LevelDB MemTable / Apache Lucene 倒排索引等工程实现，附多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -1701,40 +1701,6 @@ public class URLCounter {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题 1（easy）**：关于跳跃表的描述，下列哪项是**错误**的？
-
-A. 跳跃表是有序链表加上多层索引的的概率数据结构  
-B. 跳跃表的查找期望复杂度为 $O(\log n)$  
-C. 跳跃表的最坏查找复杂度为 $O(\log n)$  
-D. 跳跃表的空间复杂度为 $O(n)$
-
-**解析讲解**：C  
-**解析讲解**：跳跃表的最坏查找复杂度为 $O(n)$，发生在所有节点层数均为 0 时（概率 $p^n \to 0$）。红黑树才保证最坏 $O(\log n)$。
-
-**题 2（medium）**：在 $p = 1/4$ 的跳跃表中插入 $10^9$ 个节点，建议的 $MAX\_LEVEL$ 是？
-
-A. 16  
-B. 32  
-C. 64  
-D. 128
-
-**解析讲解**：C  
-**解析讲解**：$MAX\_LEVEL \geq \log_{1/p} n = \log_4 10^9 = \log_2 10^9 / 2 \approx 15$。考虑到概率边界和未来扩展，建议 $MAX\_LEVEL = 64$（支持 $4^{64} \approx 10^{38}$ 元素，远超需求）。
-
-**题 3（medium）**：Redis zset 选择跳跃表而非红黑树，下列哪项**不是**原因？
-
-A. 跳跃表实现更简单  
-B. 跳跃表范围查询更高效  
-C. 跳跃表内存开销更小  
-D. 跳跃表调试更方便
-
-**解析讲解**：C  
-**解析讲解**：跳跃表内存开销 $1.33n \sim 2n$，**大于**红黑树的 $n$（3 指针 + 颜色位）。Salvatore Sanfilippo 选择跳跃表的原因是简单、范围查询、调试方便，而非内存。
-
 ### 填空题知识点讲解
 
 **题 4（easy）**：跳跃表的节点层数服从 ______ 分布，期望层数为 ______。
@@ -1842,23 +1808,6 @@ def delete_bug(self, key):
 
 ---
 
-## 14. 参考文献
-
-1. Pugh, William. 1990. Skip lists: A probabilistic alternative to balanced trees. *Communications of the ACM* 33, 6 (June), 668–676. DOI: 10.1145/78973.78979.
-2. Cormen, Thomas H., Leiserson, Charles E., Rivest, Ronald L., and Stein, Clifford. 2022. *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305. Chapter 3 (Characterizing Running Times) & Chapter 31 (Number Theoretic Algorithms).
-3. Sedgewick, Robert and Wayne, Kevin. 2011. *Algorithms* (4th ed.). Addison-Wesley Professional. ISBN 978-0321573513. Section 3.3 (Balanced Search Trees) & Section 3.5 (Symbol Table Applications).
-4. Knuth, Donald E. 1998. *The Art of Computer Programming, Volume 3: Sorting and Searching* (2nd ed.). Addison-Wesley Professional. ISBN 978-0201896855. Section 6.2.4 (Multiway Trees).
-5. Skiena, Steven S. 2020. *The Algorithm Design Manual* (3rd ed.). Springer. ISBN 978-3030542559. Section 3.5 (Binary Search Trees) & Section 12.6 (Randomized Algorithms).
-6. Munro, J. Ian, Papadakis, Thomas, and Sedgewick, Robert. 1992. Deterministic skip lists. In *Proceedings of the Third Annual ACM-SIAM Symposium on Discrete Algorithms (SODA)*, 367–375.
-7. Fraser, Keir and Harris, Tim. 2007. Concurrent programming without locks. *ACM Transactions on Computer Systems* 25, 2 (April), Article 6. DOI: 10.1145/1233307.1233309.
-8. Carlson, Josiah L. 2017. *Redis in Action*. Manning Publications. ISBN 978-1617290855. Chapter 3 (Commands in Redis) & Chapter 5 (Using Redis for Application Support).
-9. Redis Ltd. 2024. Redis Sorted Sets documentation. https://redis.io/docs/data-types/sorted-sets/ (accessed July 18, 2026).
-10. Google Inc. 2024. LevelDB README - MemTable implementation. https://github.com/google/leveldb/blob/main/doc/index.md (accessed July 18, 2026).
-
----
-
-## 15. 延伸阅读
-
 ### 15.1 关联模块
 
 - [平衡树与高级树](algorithm/balanced-tree) — 红黑树、AVL、B 树、Splay 树的对比
@@ -1874,19 +1823,3 @@ def delete_bug(self, key):
 - **Doug Lea - ConcurrentSkipListMap 源码**：[JDK source](http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/687fd7c7986d/src/share/classes/java/util/concurrent/ConcurrentSkipListMap.java) — 工业级无锁跳跃表实现
 - **Redis 源码剖析**：[t_zset.c](https://github.com/redis/redis/blob/unstable/src/t_zset.c) — Redis zset 跳跃表实现
 - **LevelDB 源码剖析**：[db/skiplist.h](https://github.com/google/leveldb/blob/main/db/skiplist.h) — LevelDB MemTable 跳跃表实现
-
-### 15.3 社区资源
-
-- [The Morning Paper - Skip Lists](https://blog.acolyer.org/2015/03/04/skip-lists-a-probabilistic-alternative-to-balanced-trees/) — Adrian Colyer 对 Pugh 论文的现代解读
-- [Skip List Visualization](https://www.cs.usfca.edu/~galles/visualization/SkipList.html) — David Galles 的交互式可视化
-- [Redis 设计与实现 - 跳跃表](http://redisbook.com/preview/datatype/skiplist.html) — 黄健宏的 Redis 源码深度剖析
-
-### 15.4 实战练习
-
-- LeetCode 1206. [Design SkipList](https://leetcode.cn/problems/design-skiplist/) — 实现一个完整的跳跃表
-- LeetCode 1825. [Finding MK Average](https://leetcode.cn/problems/finding-mk-average/) — 跳跃表在滑动窗口统计中的应用
-- Codeforces 875D. [High Cry](https://codeforces.com/problemset/problem/875/D) — 跳跃表与区间查询结合
-
----
-
-> 跨模块引用：跳跃表与红黑树、AVL 的对比参见 [平衡树与高级树](algorithm/balanced-tree)。Redis 中跳跃表的应用详见 [Redis 有序集合](redis/sorted-set)。LevelDB MemTable 实现详见 [LevelDB 源码剖析](leveldb/source)。刷题实践参见 [LeetCode 刷题指南](algorithm/leetcode-guide)。

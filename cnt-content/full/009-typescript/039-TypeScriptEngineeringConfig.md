@@ -1205,47 +1205,6 @@ Vite 官方模板（`npm create vite@latest`）的 TS 配置：
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个 `moduleResolution` 选项最适合 Vite 项目？
-
-- A. `Node10`
-- B. `Node16`
-- C. `Bundler`
-- D. `Classic`
-
-**解析讲解**：C
-
-**解析讲解**：Vite 使用打包器，`Bundler`（TS 5.0+）为打包器场景优化，支持后缀省略、宽松的 ESM/CJS 边界。`Node10` 过时，`Node16` 适用于 Node.js ESM 项目，`Classic` 已废弃。
-
----
-
-**题目 2**：`composite: true` 强制要求哪个选项为 `true`？
-
-- A. `incremental`
-- B. `declaration`
-- C. `skipLibCheck`
-- D. `isolatedModules`
-
-**解析讲解**：B
-
-**解析讲解**：`composite` 用于项目引用，要求生成 `.d.ts` 声明文件供其他项目引用，因此 `declaration` 必须为 `true`。`incremental` 也会自动开启，但 `declaration` 是硬性要求。
-
----
-
-**题目 3**：以下关于 `isolatedDeclarations`（TS 5.5+）的描述，哪个正确？
-
-- A. 替代 `isolatedModules`，仅用于类型检查
-- B. 要求每个文件可独立生成 `.d.ts`，必须显式标注导出类型
-- C. 等价于 `declaration: true`
-- D. 仅影响 `.d.ts` 生成速度，无类型约束
-
-**解析讲解**：B
-
-**解析讲解**：`isolatedDeclarations` 要求每个 `.ts` 文件可独立生成 `.d.ts`，无需查看其他文件。这强制要求显式标注导出函数返回类型、类成员类型等，否则报错。目的是加速 `.d.ts` 生成并保证一致性。
-
 ### 填空题知识点讲解
 
 **题目 4**：项目引用中，构建顺序由 `references` 字段构成的 DAG 的 ______ 决定。
@@ -1393,59 +1352,6 @@ flowchart TD
 }
 ```
 
-### 9.4 思考题
-
-**题目 8**：为什么 `skipLibCheck` 能加速构建？它隐藏了什么风险？请从类型检查算法角度分析。
-
-**解析讲解**：
-
-**加速原理**：TS 类型检查器在 `skipLibCheck: true` 时跳过所有 `.d.ts` 文件的内部一致性检查。`.d.ts` 文件通常体积大（如 `lib.dom.d.ts` 几万行），跳过可节省 30-50% 检查时间。
-
-**形式化**：
-
-$$
-\text{checkTime} = \sum_{f \in \text{src}} \text{check}(f) + \sum_{d \in \text{lib}} \text{check}(d)
-$$
-
-`skipLibCheck: true` 移除第二项。
-
-**风险**：
-1. 第三方 `.d.ts` 可能含错误类型定义，跳过后用户代码引用错误类型不会被检测
-2. 不同 `.d.ts` 间可能冲突（如 React 17 与 18 类型）
-3. `@types` 包可能版本错配
-
-**最佳实践**：CI 中定期 `skipLibCheck: false` 全量检查；本地开发开启以加速。
-
-**题目 9**：在大型 Monorepo 中，应如何设计 tsconfig 层级以平衡类型检查严格度与构建速度？请给出 3 种策略。
-
-**解析讲解**：
-
-**策略 1：分层严格度**
-
-```
-tsconfig.base.json    - strict: true（基础设施层，最严格）
-packages/*/tsconfig.json  - extends base（继承严格）
-apps/*/tsconfig.json      - extends base + noEmit（应用层，仅检查）
-```
-
-**策略 2：按生命周期分层**
-
-```
-tsconfig.strict.json    - strict: true（CI 全量检查）
-tsconfig.dev.json       - strict: false + skipLibCheck: true（本地开发）
-tsconfig.build.json     - declaration: true + composite: true（构建产物）
-```
-
-**策略 3：按依赖图分层**
-
-- 基础层（utils、shared）：`strict: true` + `noUncheckedIndexedAccess: true`
-- 中间层（core、api）：`strict: true`
-- 应用层（apps）：`strict: true` + `noEmit: true`
-
-依赖图下游可信赖上游类型，无需重复严格检查。
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Bierman, G., Abadi, M., & Torgersen, M. (2014). Understanding TypeScript. In *ECOOP 2014 – Object-Oriented Programming* (pp. 257–281). Springer. https://doi.org/10.1007/978-3-662-44202-9_11
@@ -1474,22 +1380,12 @@ tsconfig.build.json     - declaration: true + composite: true（构建产物）
 
 [11] Turborepo. (2024). *TypeScript Monorepo Guide*. https://turbo.build/repo/docs
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Stefanov, S. (2023). *TypeScript Design Patterns*. O'Reilly. — 第 1 章 *Project Setup Best Practices*。
 - Cherny, B. (2024). *Programming TypeScript* (3rd ed.). O'Reilly. — 第 12 章 *TSConfig and Build Tools*。
 - Goldberg, M. (2023). *Full-Stack TypeScript with React and Node.js*. Apress.
 - Abramov, D. (2024). *JavaScript and TypeScript Monorepos*. Manning.
-
-### 11.2 在线资源
-
-- TypeScript Handbook: *TSConfig Reference* — https://www.typescriptlang.org/tsconfig
-- TypeScript Handbook: *Project References* — https://www.typescriptlang.org/docs/handbook/project-references.html
-- Matt Pocock's Blog: *TSConfig Tips* — https://www.totaltypescript.com/articles/tsconfig
-- Vite Documentation: *TypeScript* — https://vitejs.dev/guide/features.html#typescript
-- Turborepo Guide: *TypeScript Project References* — https://turbo.build/repo/docs/handbook/building-applications/typescript
 
 ### 11.3 相关源码
 
@@ -1607,4 +1503,3 @@ tsconfig.build.json     - declaration: true + composite: true（构建产物）
 - **Composite Project**：复合项目，支持被其他项目引用
 
 ---
-

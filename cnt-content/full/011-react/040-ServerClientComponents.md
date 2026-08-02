@@ -1569,65 +1569,6 @@ Shopify Hydrogen 7 基于 Remix + RSC：
 
 ---
 
-## 知识讲解与要点分析（原练习）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个指令用于声明 Client Component？
-
-- A. `'use server'`
-- B. `'use client'`
-- C. `'client-side'`
-- D. `'isomorphic'`
-
-**B. `'use client'`**
-
-`'use client'` 必须放在文件顶部（在 import 之前），标记该文件为 Client Component 模块。`'use server'` 用于标记 Server Actions。
-
-**题目 2**：Client Component 可以通过哪种方式接收 Server Component 作为子节点？
-
-- A. 直接 import
-- B. 通过 children prop
-- C. 通过 context
-- D. 通过 ref
-
-**B. 通过 children prop**
-
-Client Component 不能直接 import Server Component，但可以接收 Server Component 作为 children。这是因为 children 在 Server 端渲染为 RSC Payload 后传递给 Client Component，而非作为模块引用。
-
-**题目 3**：以下哪种数据类型**不能**作为 Server Component 传递给 Client Component 的 props？
-
-- A. `Date`
-- B. `RegExp`
-- C. `function`
-- D. `Map`
-
-**C. `function`**
-
-函数不可序列化，不能作为 props 传递。Date、RegExp、Map 都是 RSC 协议支持的可序列化类型。
-
-**题目 4**：Server Actions 底层通过什么协议与客户端通信？
-
-- A. WebSocket
-- B. HTTP POST
-- C. GraphQL
-- D. gRPC
-
-**B. HTTP POST**
-
-Server Actions 通过 HTTP POST 请求调用，请求体包含 action ID 与参数，响应是 RSC Payload。
-
-**题目 5**：以下哪个 Hook **必须**在 Suspense 边界内使用？
-
-- A. `useRouter`
-- B. `usePathname`
-- C. `useSearchParams`
-- D. `useParams`
-
-**C. `useSearchParams`**
-
-`useSearchParams` 会导致静态渲染退化为动态渲染，必须包裹在 Suspense 中以避免整个页面失去静态优化。
-
 ### 填空题知识点讲解
 
 **题目 1**：RSC 协议的输出格式称为 ________，它是一种流式 JSON 格式。
@@ -1935,62 +1876,6 @@ function RecommendationsSkeleton() {
 }
 ```
 
-### 9.4 思考题
-
-**题目 1**：为什么 RSC 选择"组件级"渲染环境划分，而非"页面级"？这种设计带来了哪些优势与挑战？
-
-**优势**：
-- 灵活性：同一页面可混合 Server 与 Client 组件，按需选择
-- 渐进迁移：老项目可逐步迁移，无需整体重写
-- 性能优化：将不必要下发的 JS 限制在最小范围
-
-**挑战**：
-- 边界划分需要经验：过度使用 `'use client'` 会失去 RSC 优势
-- 数据流复杂：Server 与 Client 之间的 props 传递受序列化约束
-- 调试困难：错误可能跨越服务端与客户端，堆栈追踪不连续
-
-**设计权衡**：React 团队选择组件级是为了最大化灵活性，但代价是增加了心智负担。这与 Astro 的 Islands（页面级）和 Remix 的 loader/action（路由级）形成对比。
-
-**题目 2**：在什么场景下应该选择 RSC，什么场景下应该选择传统 CSR？请给出至少 3 个判断维度。
-
-**选择 RSC 的场景**：
-1. **SEO 要求高**：内容型网站、电商、博客
-2. **首屏性能敏感**：移动端、弱网环境
-3. **数据驱动**：大量数据展示，少量交互
-4. **全栈统一**：希望用一种语言（TypeScript）覆盖前后端
-
-**选择 CSR 的场景**：
-1. **高度交互**：在线编辑器、绘图工具、游戏
-2. **离线优先**：PWA、桌面应用
-3. **客户端计算密集**：视频处理、加密计算
-4. **第三方集成多**：大量依赖 window/document 的库
-
-**判断维度**：
-- SEO 需求
-- 首屏性能 vs 交互性能
-- 数据流向（服务端为主 vs 客户端为主）
-
-**题目 3**：Server Actions 相比传统 REST API 有哪些优势？又会引入哪些新问题？
-
-**优势**：
-1. **类型安全**：端到端 TypeScript 类型推导，无需手动维护 API 类型
-2. **减少样板代码**：无需定义路由、序列化、反序列化
-3. **紧密集成**：与 RSC、缓存、重验证无缝协作
-4. **进度反馈**：`useFormStatus`、`useFormState` 提供原生进度状态
-
-**新问题**：
-1. **API 边界模糊**：业务逻辑与 UI 逻辑耦合，难以独立测试
-2. **跨平台限制**：Server Actions 只能在 RSC 框架内使用，非 React 客户端无法调用
-3. **安全审计困难**：所有 Server Action 都是 POST 端点，需要额外的权限校验机制
-4. **调试复杂**：错误堆栈跨越服务端与客户端，定位困难
-5. **可观测性**：传统 API 监控工具（APM）对 Server Actions 支持有限
-
-**权衡**：Server Actions 适合内部应用与中小型项目，大型公开 API 仍建议使用 REST/GraphQL。
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档与 RFC
 
 1. Meta Platforms Inc. *React Reference: Server Components*. React Documentation, 2024. https://react.dev/reference/rsc/server-components
@@ -2023,8 +1908,6 @@ function RecommendationsSkeleton() {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Abramov, D., and Clark, A. *React 19 实战手册*. 人民邮电出版社, 2025.
@@ -2038,14 +1921,6 @@ function RecommendationsSkeleton() {
 - *Server Components: The Future of React* — Vercel Blog
 - *Partial Prerendering: A New Rendering Model* — Vercel Blog
 - *Why We're Migrating to Server Components* — Shopify Engineering Blog
-
-### 11.3 在线资源
-
-- React 官方文档: https://react.dev
-- Next.js 官方文档: https://nextjs.org/docs
-- Vercel 博客: https://vercel.com/blog
-- React RFC 仓库: https://github.com/reactjs/rfcs
-- Next.js GitHub Discussions: https://github.com/vercel/next.js/discussions
 
 ### 11.4 开源项目
 

@@ -1615,8 +1615,6 @@ Abseil 的设计：API 使用 `StatusOr`（类似 `std::expected`），与异常
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：以下代码违反了哪一层异常安全保证？
@@ -1799,122 +1797,6 @@ void push(int value) {
 
 ---
 
-### 9.3 思考题
-
-**思考题 1**：为什么 Google C++ Style Guide 禁用异常，而 LLVM 与 Boost 大量使用？
-
-**解析讲解**：
-- **Google 禁用异常**的原因：
-  - 历史包袱：早期 GCC 异常实现性能差。
-  - 代码库规模：Google 代码库庞大，迁移成本高。
-  - 二进制体积：异常处理表增加体积。
-  - 团队熟悉度：Python/Java 开发者习惯异常，C++ 异常复杂。
-
-- **LLVM/Boost 使用异常**的原因：
-  - 现代 C++ 设计围绕异常（RAII、容器、算法）。
-  - 异常提供更好的错误信息与调试体验。
-  - 现代 GCC/Clang 异常实现接近零开销。
-
-**结论**：异常是现代 C++ 的核心特性，新项目应使用异常。但禁用异常的代码库（如 Google、Chromium）通过 `StatusOr` 等替代方案也能实现错误处理。
-
----
-
-**思考题 2**：C++23 的 `std::expected` 会取代异常吗？
-
-**解析讲解**：不会完全取代，而是互补：
-- **异常**：用于"不可预期"的错误（如内存耗尽、内部不变量破坏）。
-- **`std::expected`**：用于"可预期"的错误（如解析失败、文件不存在、网络超时）。
-
-两者各有所长：
-- 异常提供零开销抽象（无错误时）与自动资源清理。
-- `std::expected` 提供显式错误处理与编译期检查。
-
-未来趋势：异常用于"基础设施"层，`std::expected` 用于"业务逻辑"层。
-
----
-
-**思考题 3**：如何在禁用异常的环境中实现 RAII？
-
-**解析讲解**：
-- RAII 本身不依赖异常，是资源管理范式。
-- 析构函数仍需 `noexcept`（禁用异常时默认如此）。
-- 错误处理改用返回值或 `std::expected`。
-- 构造函数失败时，使用两阶段构造（construct + init）或工厂函数返回 `std::optional`。
-
-```cpp
-// 禁用异常的 RAII
-class File {
-    int fd_ = -1;
-public:
-    File() noexcept = default;  // 不抛
-    static std::optional<File> open(const char* path) noexcept {
-        File f;
-        f.fd_ = ::open(path, O_RDONLY);
-        if (f.fd_ < 0) return std::nullopt;
-        return f;
-    }
-    ~File() noexcept { if (fd_ >= 0) ::close(fd_); }
-    // 禁用拷贝，启用移动
-    File(File&& other) noexcept : fd_(other.fd_) { other.fd_ = -1; }
-};
-```
-
----
-
-**思考题 4**：异常安全的代码是否一定比非异常安全慢？
-
-**解析讲解**：不一定。
-- **零开销原则**：现代 C++ 异常实现遵循"零开销"原则——无异常抛出时，无运行时开销。
-- **强保证开销**：强保证通常需要额外的拷贝或备份，有性能开销。
-- **基本保证开销**：基本保证（RAII）几乎没有额外开销。
-- **`noexcept` 优化**：标注 `noexcept` 的代码可被优化，比未标注更快。
-
-实测数据：
-- 强异常安全的 `std::vector::push_back`（使用拷贝）比 `noexcept` 移动版本慢约 2-5 倍。
-- 但若移动本就不抛出，标注 `noexcept` 后性能恢复。
-
-**结论**：异常安全的性能开销主要来自强保证所需的额外操作，而非异常机制本身。
-
----
-
-## 10. 参考文献
-
-本章节引用的文献遵循 ACM Reference Format。
-
-[1] Abrahams, D. 1998. Exception-safety in generic components. In Proceedings of the 1998 International Seminar on Generic Programming (GI'98). Springer, Berlin, Germany, 56-68. DOI: https://doi.org/10.1007/978-3-540-39953-8_4
-
-[2] Stroustrup, B. 2000. Exception safety: Concepts and techniques. Advances in Computers 56 (2000), 117-156. DOI: https://doi.org/10.1016/S0065-2458(00)80004-7
-
-[3] Sutter, H. 1999. Exceptional C++: 47 Engineering Puzzles, Programming Problems, and Solutions. Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/320187
-
-[4] Sutter, H. and Alexandrescu, A. 2004. C++ Coding Standards: 101 Rules, Guidelines, and Best Practices. Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/1047474
-
-[5] Meyers, S. 2005. Effective C++: 55 Specific Ways to Improve Your Programs and Designs (3rd ed.). Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/1183631
-
-[6] ISO/IEC. 2011. Programming languages — C++ (ISO/IEC 14882:2011). International Organization for Standardization, Geneva, Switzerland. Retrieved July 21, 2026 from https://www.iso.org/standard/50372.html
-
-[7] ISO/IEC. 2020. Programming languages — C++ (ISO/IEC 14882:2020). International Organization for Standardization, Geneva, Switzerland. Retrieved July 21, 2026 from https://www.iso.org/standard/79358.html
-
-[8] ISO/IEC. 2023. Programming languages — C++ (ISO/IEC 14882:2023). International Organization for Standardization, Geneva, Switzerland. Retrieved July 21, 2026 from https://www.iso.org/standard/83626.html
-
-[9] Henney, K. 2000. A conversation with Bjarne Stroustrup. The C++ Source 1, 1 (2000). Retrieved July 21, 2026 from https://www.artima.com/intv/exceptP.html
-
-[10] Meredith, A. 2011. N3279: Conservative noexcept. ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3279.pdf
-
-[11] Dawes, B., Hinnant, H., and Abrahams, D. 2002. N2855: Move support for the standard library. ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2009/n2855.html
-
-[12] Peticolas, J. 2021. P0323: std::expected. ISO/IEC JTC1/SC22/WG21. Retrieved July 21, 2026 from https://wg21.link/p0323
-
-[13] Stroustrup, B. 1994. The Design and Evolution of C++. Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/525778
-
-[14] Alexandrescu, A. 2001. Modern C++ Design: Generic Programming and Design Patterns Applied. Addison-Wesley Professional, Boston, MA. DOI: https://doi.org/10.5555/55520
-
-[15] GitHub. 2024. Google C++ Style Guide. Google Inc. Retrieved July 21, 2026 from https://google.github.io/styleguide/cppguide.html
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 标准与提案
 
 - **C++ Standard Working Draft (N4950)**：最新工作草案，涵盖 C++23/26 提案。https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf
@@ -1934,14 +1816,6 @@ public:
    - 条款 8-14 涉及 `noexcept` 与移动语义。
 5. **《Modern C++ Design》** — Andrei Alexandrescu
    - Loki 库设计，含异常安全策略类。
-
-### 11.3 在线资源
-
-- **cppreference.com — Exceptions**：https://en.cppreference.com/w/cpp/language/exceptions
-- **cppreference.com — noexcept**：https://en.cppreference.com/w/cpp/language/noexcept_spec
-- **Boost.Exception**：https://www.boost.org/doc/libs/release/libs/exception/
-- **Google C++ Style Guide — Exceptions**：https://google.github.io/styleguide/cppguide.html#Exceptions
-- **LLVM Coding Standards — Exceptions**：https://llvm.org/docs/CodingStandards.html#do-not-use-exceptions
 
 ### 11.4 视频课程
 

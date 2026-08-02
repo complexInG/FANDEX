@@ -285,24 +285,6 @@ $$st(R) \subseteq ts(R)$$（对称和传递闭包只保证包含关系）
 
 **误区四：传递闭包需要无限并。** → 有限集 $n$ 个元素时，$t(R) = \bigcup_{i=1}^{n} R^i$（最多 $n$ 步），用 Warshall 算法 $O(n^3)$ 计算。
 
-## 9. 实战练习
-
-1. **集合运算**：$A = \{1,2,3\}$，$B = \{2,3,4\}$，求 $A \cup B$、$A \cap B$、$A - B$、$A \oplus B$。
-
-2. **关系性质**：$A = \{1,2,3\}$，判断 $R = \{(1,1),(2,2),(3,3),(1,2),(2,3)\}$ 具有哪些性质（自反/对称/反对称/传递）。
-
-3. **等价类**：$A = \{1,2,3,4,5,6\}$，$R$ 为"模 3 同余"关系。写出所有等价类和划分。
-
-4. **Hasse 图**：画出 $A = \{1,2,3,4,6,12\}$ 在整除关系下的 Hasse 图，标出极大元、极小元、最大元、最小元。
-
-5. **传递闭包**：$R = \{(1,2),(2,3),(3,1)\}$ 在 $A=\{1,2,3\}$ 上，求 $t(R)$。
-
-## 10. 参考资源
-
-- MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-- Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-- Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
 ## 11. 延伸阅读
 
 - 关系的逻辑基础，见本模块《谓词逻辑》

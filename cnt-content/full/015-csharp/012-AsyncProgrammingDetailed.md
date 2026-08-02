@@ -1862,49 +1862,6 @@ public async Task<string> GetStringAsync(Uri uri, CancellationToken ct)
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪种异步方法返回类型不推荐在公共 API 中使用？
-
-A. `Task`
-B. `Task<T>`
-C. `ValueTask<T>`
-D. `void`
-
-**解析讲解**：D
-
-**解析讲解**：`async void` 异常无法被调用者捕获，仅适用于事件处理器。`ValueTask<T>` 虽有限制，但可在公共 API 中使用（需文档说明只能 await 一次）。
-
----
-
-**题目 2**：在 ASP.NET Core 控制器中，`ConfigureAwait(false)` 的效果是？
-
-A. 必须使用，否则死锁
-B. 不需要使用，无 SynchronizationContext
-C. 会导致性能下降
-D. 必须使用，否则阻塞请求线程
-
-**解析讲解**：B
-
-**解析讲解**：ASP.NET Core 无 `SynchronizationContext`，`await` 默认在线程池执行，`ConfigureAwait(false)` 无效果。
-
----
-
-**题目 3**：关于 `ValueTask<T>` 多次 await，以下哪个说法正确？
-
-A. 可以多次 await，行为与 `Task<T>` 一致
-B. 仅可 await 一次，多次 await 行为未定义
-C. 可以多次 await，但第二次 await 必然抛异常
-D. 仅可 await 两次
-
-**解析讲解**：B
-
-**解析讲解**：`ValueTask<T>` 是结构体，可能基于池化的 `IValueTaskSource<T>`，多次 await 行为未定义。
-
----
-
 ### 填空题知识点讲解
 
 **题目 4**：.NET 异步编程的三代模型分别是 ____ 、 ____ 、 ____ 。
@@ -2009,51 +1966,6 @@ public class Pipeline<TInput, TOutput>
 
 ---
 
-### 9.4 思考题
-
-**题目 9**：为什么 `async void` 在事件处理器中是合法的？
-
-**答案要点**：
-- 事件处理器签名 `void EventHandler(object, EventArgs)`，无法返回 Task。
-- 事件处理器异常需通过 `Application.UnhandledException` 或 `AppDomain.UnhandledException` 处理。
-- .NET 事件模型设计在 async/await 之前，无法修改。
-
----
-
-**题目 10**：`Task.Delay` 与 `Thread.Sleep` 的本质区别是什么？
-
-**答案要点**：
-- `Task.Delay`：异步等待，不阻塞线程，使用 Timer 实现。
-- `Thread.Sleep`：同步阻塞，占用线程，使用 OS 定时器。
-- 在 UI 线程中 `Thread.Sleep` 会冻结 UI，`Task.Delay` 不会。
-- 在 ASP.NET Core 中 `Thread.Sleep` 浪费线程池线程，`Task.Delay` 不会。
-
----
-
-**题目 11**：在 `Task.WhenAll` 中，一个任务抛异常，其他任务会继续执行吗？
-
-**答案要点**：
-- 会的。`Task.WhenAll` 等待所有任务完成。
-- 抛出的异常聚合为 `AggregateException`。
-- 通过 `await` 只抛第一个异常，需访问 `Task.Exception` 获取所有。
-
-```csharp
-var task1 = Task.Run(() => throw new Exception("E1"));
-var task2 = Task.Run(() => throw new Exception("E2"));
-var allTask = Task.WhenAll(task1, task2);
-
-try { await allTask; }
-catch (Exception ex)
-{
-    // ex 是 E1 或 E2
-    Console.WriteLine(allTask.Exception.InnerExceptions.Count);  // 2
-}
-```
-
----
-
-## 10. 参考文献
-
 ### 10.1 微软官方文档
 
 [1] S. Toub. 2010. *Task-based Asynchronous Pattern (TAP)*. Microsoft. Available: https://learn.microsoft.com/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap
@@ -2112,21 +2024,12 @@ catch (Exception ex)
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **《Concurrency in C# Cookbook》**（Stephen Cleary）：异步编程实战，涵盖 Task、Channel、并发协调。
 - **《C# in Depth》**（Jon Skeet）：C# 语言深度指南，第 15 章详述 async/await。
 - **《Pro Asynchronous Programming in .NET》**（Richard Blewett）：异步编程全面指南。
 - **《CLR via C#》**（Jeffrey Richter）：CLR 经典教材，第 27 章详述异步。
-
-### 11.2 在线资源
-
-- **Stephen Toub 博客**: https://devblogs.microsoft.com/dotnet/author/stoub/
-- **Stephen Cleary 博客**: https://blog.stephencleary.com/
-- **.NET 异步 FAQ**: https://devblogs.microsoft.com/dotnet/async-faq/
-- **Async/Await FAQ**: https://learn.microsoft.com/archive/blogs/ericlippert/async-await-faq
 
 ### 11.3 视频与课程
 

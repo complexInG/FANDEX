@@ -2407,75 +2407,6 @@ watchEffect(() => {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：`defineAsyncComponent` 的 `delay` 参数的作用是什么？
-
-A. 加载超时时间。
-B. 延迟显示 loading 组件，避免闪烁。
-C. 加载失败后的重试间隔。
-D. 组件挂载后的延迟执行时间。
-
-**解析讲解**：B
-
-**解析讲解**：`delay` 是延迟显示 loading 组件的时间（毫秒）。若组件在 `delay` 时间内加载完成，则不显示 loading，避免快速加载时的闪烁。默认值 200ms。
-
----
-
-**题目 2**：以下关于 `Suspense` 的描述，哪一项是**错误**的？
-
-A. `Suspense` 等待所有异步依赖完成后渲染 `#default` 插槽。
-B. `Suspense` 支持嵌套，内层 Suspense 独立管理加载态。
-C. `Suspense` 的 `#fallback` 插槽在异步依赖 pending 时渲染。
-D. `Suspense` 可在任意组件中使用，无需包裹 async setup。
-
-**解析讲解**：D
-
-**解析讲解**：`async setup()` 必须在 `Suspense` 内使用，否则 Vue 会抛出警告。`Suspense` 通过依赖追踪机制协调异步组件与 `async setup()`。
-
----
-
-**题目 3**：`defineAsyncComponent` 的 `onError` 回调的 `retry` 函数作用是什么？
-
-A. 重新执行 loader 函数。
-B. 重置组件状态。
-C. 切换到 error 组件。
-D. 取消当前加载。
-
-**解析讲解**：A
-
-**解析讲解**：`onError(error, retry, fail, attempts)` 中的 `retry` 函数重新执行 loader，用于实现重试机制。`fail` 表示放弃重试，`attempts` 是当前重试次数。
-
----
-
-**题目 4**：在 SSR 中，`async setup()` 的行为是？
-
-A. 服务端跳过，仅在客户端执行。
-B. 服务端同步等待 Promise resolve。
-C. 服务端立即返回 fallback。
-D. 服务端抛出错误。
-
-**解析讲解**：B
-
-**解析讲解**：SSR 中 `async setup()` 的 Promise 会被服务端同步等待，确保渲染的 HTML 包含完整数据。Vue 3.3+ 支持流式渲染，服务端在异步依赖完成时流式输出对应 HTML。
-
----
-
-**题目 5**：`import('./Component.vue')` 在 Vite/Webpack 中会被转换为？
-
-A. 同步 require 调用。
-B. 独立 chunk 文件，运行时动态加载。
-C. 内联到主 bundle。
-D. 编译时静态分析。
-
-**解析讲解**：B
-
-**解析讲解**：Vite/Webpack 将 `import()` 动态导入转换为独立 chunk 文件，运行时通过 `<script>` 标签或 fetch 加载。这是代码分割的核心机制。
-
----
-
 ### 填空题知识点讲解
 
 **题目 1**：`defineAsyncComponent` 的内部状态机包含 `______`、`______`、`______`、`______` 四种状态。
@@ -2724,109 +2655,6 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 ---
 
-### 9.4 思考题
-
-**题目 1**：在大型应用中，如何设计一套完整的代码分割与预加载策略，平衡首屏性能、用户体验与带宽成本？
-
-**解析讲解**：
-
-**策略设计**：
-
-1. **首屏优先**：首屏路由直接 import，不懒加载，确保 LCP。
-2. **路由懒加载**：非首屏路由懒加载，按需请求。
-3. **共享依赖抽离**：Vue 运行时、UI 库等抽离为 vendor chunk。
-4. **预加载策略**：
-   - **Hover 预加载**：鼠标 hover 链接时预加载，命中率高。
-   - **空闲预加载**：`requestIdleCallback` 预加载高优先级路由。
-   - **视口预加载**：滚动到视口内的链接预加载。
-5. **优先级分类**：
-   - **P0**：首屏、登录、首页（直接加载）。
-   - **P1**：常用功能页（hover 预加载）。
-   - **P2**：低频功能页（仅懒加载）。
-6. **监控与优化**：
-   - 使用 Web Vitals 监控 LCP、FCP、TTFB。
-   - 分析 chunk 加载时间，优化慢加载。
-   - 定期审查 chunk 大小，合并过小的 chunk。
-
-**权衡**：
-
-- 首屏体积 vs 加载延迟：首屏直接加载，体积大但延迟低。
-- 预加载 vs 带宽：预加载提升体验，但消耗带宽，需根据用户网络情况调整。
-- chunk 数量 vs HTTP 请求数：过多 chunk 增加请求开销，过少 chunk 失去分割收益。
-
----
-
-**题目 2**：分析 `Suspense` 在大型应用中可能引入的复杂性，并提出缓解策略。
-
-**解析讲解**：
-
-**复杂性来源**：
-
-1. **嵌套 Suspense 的依赖追踪**：深层嵌套时，依赖关系难以追踪，调试困难。
-2. **错误传播**：错误向上传播路径复杂，需在合适层级捕获。
-3. **加载顺序**：多个异步依赖完成顺序不确定，可能导致 UI 跳变。
-4. **SSR 一致性**：服务端与客户端的加载状态需保持一致，避免 hydration mismatch。
-5. **与状态管理的集成**：Suspense 与 Pinia 等状态管理的协作需谨慎设计。
-
-**缓解策略**：
-
-1. **限制嵌套层级**：通常 2 层足够，避免深层嵌套。
-2. **错误边界**：在每层 Suspense 上添加 `onErrorCaptured`，局部处理错误。
-3. **加载占位设计**：使用 Skeleton 保持 UI 结构稳定，避免跳变。
-4. **SSR 数据预取**：在路由守卫或 `asyncData` 中预取数据，避免 hydration 不一致。
-5. **状态管理集成**：将异步数据获取与 Pinia store 结合，Suspense 仅管理组件加载。
-
-**未来演进**：
-
-- Vue 可能引入更细粒度的 Suspense 控制，如部分依赖 resolve 即渲染。
-- 工具链支持可视化 Suspense 依赖树，辅助调试。
-
----
-
-**题目 3**：对比 Vue 的 `async setup()` 与 React 的数据获取模式（React Query、SWR），分析各自优劣。
-
-**解析讲解**：
-
-**Vue `async setup()` 的优势**：
-
-1. **原生集成**：与 Vue 响应式系统深度集成，无需额外库。
-2. **Suspense 协调**：自动与 Suspense 配合，统一管理加载态。
-3. **简洁语法**：`await` 直接获取数据，代码清晰。
-4. **SSR 友好**：服务端同步等待，无需额外配置。
-
-**Vue `async setup()` 的劣势**：
-
-1. **无缓存**：每次组件挂载都重新获取，无客户端缓存。
-2. **无重试**：需手动实现重试机制。
-3. **无失效策略**：数据不会自动失效，需手动刷新。
-4. **无乐观更新**：不支持乐观更新。
-
-**React Query 的优势**：
-
-1. **完整缓存**：自动缓存查询结果，支持 stale-while-revalidate。
-2. **自动重试**：内置重试机制，支持指数退避。
-3. **失效策略**：支持 query invalidation，自动重新获取。
-4. **乐观更新**：支持 mutation 的乐观更新与回滚。
-5. **DevTools**：强大的开发者工具，可视化查询状态。
-
-**React Query 的劣势**：
-
-1. **额外依赖**：需引入第三方库，增加包体积。
-2. **学习成本**：API 较多，学习曲线陡峭。
-3. **Suspense 集成**：需配置 `suspense: true` 选项。
-
-**综合建议**：
-
-- 简单场景：Vue `async setup()` 足够，无需额外库。
-- 复杂场景（缓存、重试、失效）：考虑 VueUse 的 `useFetch`、`useAsyncState` 或 Pinia colada（Vue 官方的数据获取库）。
-- 大型应用：建议使用 Pinia colada 或类似 React Query 的库，获得完整的数据获取能力。
-
----
-
-## 10. 参考文献 | References
-
-本文档参考了以下学术文献、官方文档与技术专著，遵循 ACM Reference Format。
-
 ### 10.1 官方文档
 
 [1] Evan You and the Vue.js Team. 2024. Vue.js 3 Official Documentation: Components in Depth - Async Components. Retrieved July 20, 2026 from https://vuejs.org/guide/components/async.html
@@ -2879,18 +2707,6 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 [21] Vite Team. 2024. Vite Documentation: Dynamic Import. Retrieved July 20, 2026 from https://vitejs.dev/guide/features.html#dynamic-import
 
-### 10.6 在线资源
-
-[22] Vue School. 2024. Vue 3 Async Components. Retrieved July 20, 2026 from https://vueschool.io/courses/vue-3-async-components
-
-[23] Vue Mastery. 2024. Vue 3 Suspense. Retrieved July 20, 2026 from https://www.vuemastery.com/courses/vue-3-suspense/
-
-[24] Web.dev. 2024. Code Splitting Best Practices. Retrieved July 20, 2026 from https://web.dev/reduce-javascript-payloads-with-code-splitting/
-
----
-
-## 11. 延伸阅读 | Further Reading
-
 ### 11.1 书籍
 
 1. **《Vue.js 设计与实现》**——霍春阳
@@ -2916,40 +2732,6 @@ export function createPreloadPlugin(router: Router, options: PreloadOptions) {
 
 3. **React Suspense RFC**：https://github.com/reactjs/rfcs
    - React Suspense 的设计讨论，对比 Vue 与 React 的实现差异。
-
-### 11.3 在线资源
-
-1. **Vue School**：https://vueschool.io/
-   - Vue 官方推荐的在线学习平台，包含异步组件的视频教程。
-
-2. **Vue Mastery**：https://www.vuemastery.com/
-   - Vue 进阶学习平台，深入讲解 Suspense 与 SSR。
-
-3. **VueUse**：https://vueuse.org/
-   - Vue Composition API 工具库，包含 `useAsyncState`、`useFetch` 等异步工具。
-
-4. **Vite 文档**：https://vitejs.dev/
-   - Vite 官方文档，详细说明动态导入与代码分割。
-
-5. **Web.dev**：https://web.dev/
-   - Google 的 Web 性能指南，包含代码分割最佳实践。
-
-### 11.4 开源项目参考
-
-1. **Nuxt 3**：https://github.com/nuxt/nuxt
-   - Vue 3 元框架，自动化路由懒加载与 Suspense 集成。
-
-2. **VitePress**：https://github.com/vuejs/vitepress
-   - Vue 驱动的静态站点生成器，大量使用异步组件。
-
-3. **Element Plus**：https://github.com/element-plus/element-plus
-   - Vue 3 组件库，按需加载实现参考。
-
-4. **Vue Router 4**：https://github.com/vuejs/router
-   - 官方路由库，懒加载与预加载策略。
-
-5. **Pinia Colada**：https://github.com/posva/pinia-colada
-   - Vue 官方的数据获取库，类似 React Query。
 
 ### 11.5 社区与讨论
 

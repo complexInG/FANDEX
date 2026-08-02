@@ -5,7 +5,7 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: 以"从代码到正式发布"的完整旅程为主线，讲解 gh release 系列命令，包括创建、查看、上传下载、编辑与删除发布，配以原理讲解、错误对策与实战练习。
+description: 以"从代码到正式发布"的完整旅程为主线，讲解 gh release 系列命令，包括创建、查看、上传下载、编辑与删除发布，配以原理讲解、错误对策。
 author: fanquanpp
 updated: '2026-08-02'
 related: []
@@ -296,79 +296,13 @@ git fetch --tags origin
 
 ---
 
-## 实战练习
-
-### 练习 1：创建你的第一个发布（入门）
-
-- **题目**：在任意一个你自己的 GitHub 仓库中，创建一个标签为 `v0.1.0`、标题为"初版发布"、说明为"第一个版本"的正式发布。
-- **提示**：用 `--title` 和 `--notes` 两个参数；先确认 `gh auth status` 已登录；当前目录要在仓库内。
-- **参考答案要点**：
-  ```bash
-  gh release create v0.1.0 --title "初版发布" --notes "第一个版本"
-  ```
-  成功后可用 `gh release view v0.1.0 --web` 在浏览器中确认。
-
-### 练习 2：生成自动更新日志（进阶）
-
-- **题目**：再创建一个 `v0.2.0` 发布，要求发布说明自动对比 `v0.1.0` 以来的所有提交自动生成，并同时上传一个 `README.md` 作为附件。
-- **提示**：`--generate-notes` 会自动生成说明；文件作为位置参数直接跟在标签后面。
-- **参考答案要点**：
-  ```bash
-  gh release create v0.2.0 --generate-notes README.md
-  ```
-
-### 练习 3：补传与覆盖附件（进阶）
-
-- **题目**：为 `v0.2.0` 补传一个 `LICENSE` 文件，然后再次上传同名 `LICENSE` 文件（内容已修改），要求第二次能成功覆盖。
-- **提示**：第一次直接 `upload`，第二次需要 `--clobber`。
-- **参考答案要点**：
-  ```bash
-  gh release upload v0.2.0 LICENSE
-  # 修改 LICENSE 内容后
-  gh release upload v0.2.0 LICENSE --clobber
-  ```
-
-### 练习 4：脚本化批量下载（综合）
-
-- **题目**：写一条命令，把 `v0.2.0` 发布的所有 `*.zip` 附件下载到 `./release-files` 目录，并用 `--json` 输出该发布的附件名列表，验证下载结果。
-- **提示**：`download` 用 `--pattern` 和 `--dir`；`view` 用 `--jq` 提取 `assets[].name`。
-- **参考答案要点**：
-  ```bash
-  gh release download v0.2.0 --pattern "*.zip" --dir ./release-files
-  gh release view v0.2.0 --json tagName --jq '.assets[].name'
-  ls ./release-files
-  ```
-
-### 练习 5：发布管理全流程（挑战）
-
-- **题目**：模拟一次"发错版后紧急撤回"：创建 `v9.9.9` 草稿发布（`--draft`），查看它确实存在且是草稿，然后删除它（保留标签），最后确认列表中没有它。
-- **提示**：`--json isDraft` 可验证草稿状态；删除用 `--yes`。
-- **参考答案要点**：
-  ```bash
-  gh release create v9.9.9 --draft --notes "误建的发布"
-  gh release view v9.9.9 --json isDraft,isDraft
-  gh release delete v9.9.9 --yes
-  gh release list
-  ```
-
----
-
 ## 一句话记忆
 
 **Release = 带说明、带附件的"货架商品"，`gh release create` 一键上架，`upload/download` 负责补货取货，`edit/delete` 负责售后。**
 
 ---
 
-## 参考链接
-
-- GitHub CLI 官方手册 gh release create：https://cli.github.com/manual/gh_release_create
-- GitHub CLI 官方手册 gh release view：https://cli.github.com/manual/gh_release_view
-- GitHub 文档：关于 Releases：https://docs.github.com/zh/repositories/releasing-projects-on-github/about-releases
-- GitHub 文档：Git 基础——标签管理：https://docs.github.com/zh/github/creating-cloning-and-archiving-repositories/creating-releases-on-github
-
 ## 延伸阅读
-
 - GitHub Actions CI/CD，见 004-github 模块 Actions 文档（可结合 Actions 自动发布）。
 - Git 标签管理，见 003-git 模块《GitTagManage》。
 - gh 登录与认证，见 004-github 模块《GhCliAuth》。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

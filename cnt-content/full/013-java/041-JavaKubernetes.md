@@ -445,32 +445,11 @@ Java 上 Kubernetes 的三个关键数字：`MaxRAMPercentage=75`（堆占容器
 
 镜像分层与多阶段构建解决体积与安全问题；ConfigMap/Secret 解决配置外置；探针解决流量与自愈；HPA 解决弹性。每一层都对应一个明确的运维问题。
 
-## 10. 参考文献
-
-Kubernetes 官方文档, Pod Lifecycle（探针）, 访问日期 2026-08-01, https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/
-
-Kubernetes 官方文档, Deployment, 访问日期 2026-08-01, https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
-
-OpenJDK 官方文档, Java 容器支持, 访问日期 2026-08-01, https://wiki.openjdk.org/display/HotSpot/Container+Support
-
-Spring Boot 官方文档, Graceful Shutdown, 访问日期 2026-08-01, https://docs.spring.io/spring-boot/reference/web/graceful-shutdown.html
-
-Eclipse Adoptium 文档, Eclipse Temurin Docker 镜像, 访问日期 2026-08-01, https://adoptium.net/docs/
-
-Docker 官方文档, Multi-stage builds, 访问日期 2026-08-01, https://docs.docker.com/build/building/multi-stage/
-
 ## 11. 延伸阅读
-
 Kubernetes 原理与集群架构，见 031-devops 模块与 034-cloud-computing 模块相关文档；
-
 容器网络与 Service 负载均衡，见 032-networking 模块相关文档；
-
 Java 并发与内存模型，见 013-java 模块的 JVM 与并发文档；
-
 Spring Cloud 微服务体系，见 013-java 模块的 Spring 相关文档；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Java 微服务与 Kubernetes 实战课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Java EE 与云原生课程。
-
 ### 概述
 
 Kubernetes 是容器编排的事实标准，Java 应用的云原生部署需要关注资源限制、健康检查、优雅停机和自动伸缩等方面。本文介绍 Java 应用在 Kubernetes 上的部署最佳实践，包括 Deployment 配置、服务发现、配置管理和监控集成。
@@ -827,4 +806,3 @@ spec:
           port: 8080
         initialDelaySeconds: 5
 ```
-

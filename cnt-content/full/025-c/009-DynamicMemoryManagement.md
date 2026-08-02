@@ -1885,8 +1885,6 @@ gcc -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -o prog prog.c
 | heaptrack | 内存 profiling | heaptrack ./prog |
 | mtrace | malloc 跟踪 | MALLOC_TRACE=out mtrace ./prog out |
 
-### 12.5 延伸阅读
-
 #### 12.5.1 标准与文档
 
 - ISO/IEC 9899:2018 第 7.22.3 节 (内存管理函数)
@@ -1906,13 +1904,6 @@ gcc -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -o prog prog.c
 - 《Effective C》Robert Seacord
 - 《Expert C Programming》Peter van der Linden
 - 《C Interfaces and Implementations》David Hanson
-
-#### 12.5.4 在线资源
-
-- cppreference.com: C 内存函数参考
-- glibc malloc source code: sourceware.org/git/?p=glibc.git
-- jemalloc source: github.com/jemalloc/jemalloc
-- "Memory Allocation" by Dan Bornstein: YouTube
 
 ### 12.6 学习路径建议
 
@@ -2075,8 +2066,6 @@ flowchart TD
 | 数据错乱 | 缓冲区溢出 | ASan |
 | 随机错误 | 未初始化内存 | MSan |
 
-### 12.9 自测题
-
 #### 选择题
 
 1. 下列哪个函数会零初始化内存?
@@ -2129,8 +2118,6 @@ int main(void) {
     return 0;
 }
 ```
-
-### 12.10 参考答案
 
 #### 12.10.1 简答题答案
 

@@ -1293,8 +1293,6 @@ struct ProductPage {
 4. **翻译协作平台**：避免直接编辑 JSON 文件，使用专业翻译管理工具
 5. **无障碍 ≠ 屏幕阅读器**：还需考虑色觉障碍、运动障碍、听障等
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**：解释 i18n 与 a11y 缩写的来源。
@@ -1371,30 +1369,6 @@ struct ProductPage {
 - 由题意 base 包含资源 $r$
 - 回退链按序查找，必在 base 命中
 - 故无空查找
-
-## 参考文献
-
-[1] Huawei Technologies Co., Ltd. 2024. HarmonyOS Internationalization and Localization Guide. (Version 5.0). Huawei Developer Documentation. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/i18n-0000001531312360
-
-[2] Phillips, A. and Davis, M. 2009. Tags for Identifying Languages. RFC 5646 (BCP 47). Internet Engineering Task Force. DOI: 10.17487/RFC5646
-
-[3] W3C Web Accessibility Initiative. 2023. Web Content Accessibility Guidelines (WCAG) 2.2. W3C Recommendation, 05 October 2023. https://www.w3.org/TR/WCAG22/
-
-[4] Unicode Consortium. 2024. Common Locale Data Repository (CLDR) Project. Unicode Technical Standard #35. https://cldr.unicode.org/
-
-[5] Apple Inc. 2023. Accessibility Programming Guide for iOS. Apple Developer Documentation. https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/iPhoneAccessibility/
-
-[6] Open Source Android Project. 2024. Making Apps More Accessible. Android Developers Documentation. https://developer.android.com/guide/topics/resources/accessibility
-
-[7] Henninger, S. and Bele, B. 2022. Measuring the Impact of Internationalization on Mobile App Adoption. IEEE Software 39, 4 (July 2022), 78–86. DOI: 10.1109/MS.2022.3171234
-
-[8] Lopes, R. and Carriço, L. 2021. Automated Accessibility Testing of Mobile Applications: A Systematic Literature Review. ACM Transactions on Accessible Computing 14, 3 (September 2021), 1–34. DOI: 10.1145/3464912
-
-[9] Bigham, J. P., Cavender, A. C., Brudvik, J. T., Lazzaro, S., and Ladner, R. E. 2020. Accessibility in Mobile Application Development. Communications of the ACM 63, 5 (May 2020), 58–66. DOI: 10.1145/3370924
-
-[10] Troshani, I. and Rampersad, G. 2023. Mobile Accessibility Compliance: A Cross-Cultural Study. Journal of Web Engineering 22, 3 (2023), 421–442. DOI: 10.13052/jwe1540-9589.2232
-
-## 延伸阅读
 
 ### 官方文档
 

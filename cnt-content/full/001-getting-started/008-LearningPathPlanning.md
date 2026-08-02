@@ -125,19 +125,6 @@ Linux 基础 → Docker → Kubernetes → CI/CD → 监控
 3. **第三阶段**：部署上线 + 域名配置 + HTTPS
 4. **第四阶段**：性能优化 + 安全加固 + 监控告警
 
-## 5. 学习资源与社区
-
-### 5.1 推荐学习资源
-
-| 类型     | 资源                        | 特点           |
-| :------- | :-------------------------- | :------------- |
-| **文档** | MDN Web Docs                | 前端权威参考   |
-| **文档** | Vue/React 官方文档          | 框架最佳实践   |
-| **平台** | freeCodeCamp                | 免费互动式学习 |
-| **平台** | LeetCode                    | 算法与数据结构 |
-| **书籍** | 《JavaScript 高级程序设计》 | JS 深入理解    |
-| **书籍** | 《设计模式》                | 架构思维培养   |
-
 ### 5.2 社区参与
 
 - **GitHub**：参与开源项目，阅读优秀源码
@@ -165,19 +152,9 @@ Linux 基础 → Docker → Kubernetes → CI/CD → 监控
 3. **项目驱动**：以真实项目需求牵引学习方向
 4. **间隔重复**：利用 Anki 等工具定期复习关键概念
 
-## 参考文献
-
-本模块各文档：环境搭建、编程基础、调试思维等。
-MDN 学习区：https://developer.mozilla.org/zh-CN/docs/Learn_web_development
-freeCodeCamp：https://www.freecodecamp.org/chinese/
-黑马程序员官网：https://www.itheima.com/
-
 ## 延伸阅读
-
 从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
 语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供基础课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

@@ -2179,8 +2179,6 @@ app.MapRazorComponents<App>()
 <component type="typeof(Shared.WeatherWidget)" render-mode="Server" />
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（L1-L2：记忆与理解）
 
 **习题 10.1.1**：列举 Blazor 的四种托管模型，并简述各自的运行位置。
@@ -2455,8 +2453,6 @@ public class DocumentCollaborationService
 [17] Microsoft Research. 2022. Roslyn source generators. GitHub repository. https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.md
 
 [18] Kleppmann, M. 2017. Designing Data-Intensive Applications. O'Reilly Media. ISBN: 978-1-4493-7332-0
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档与教程
 

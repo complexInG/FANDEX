@@ -2239,8 +2239,6 @@ public class AccountProjectionHandler
 
 **收益**：完整审计追溯，任意时刻可重建状态；写入性能稳定（仅 INSERT）；读模型可针对查询优化。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：解释以下概念的区别：
@@ -2415,36 +2413,6 @@ await retryPolicy.ExecuteAsync(async () =>
 - 复杂报表：Dapper（直接控制 SQL，可利用数据库特性）
 - 领域模型持久化：EF Core（导航属性、变更追踪、值对象映射）
 - 批量导入：Dapper + 临时表，或 EF Core 的 `ExecuteUpdate` / `ExecuteDelete`（避免变更追踪开销）
-
-## 参考文献
-
-1. Lerman, J. and Miller, R. 2021. *Programming Entity Framework: DbContext* (2nd ed.). O'Reilly Media. DOI: 10.5555/2041731
-
-2. Smith, S. and Latham, J. 2024. *Entity Framework Core in Action* (3rd ed.). Manning Publications. DOI: 10.5555/3456789
-
-3. Microsoft. 2024. *EF Core Documentation*. Microsoft Learn. Available at: https://learn.microsoft.com/ef/core/
-
-4. Codd, E. F. 1970. A relational model of data for large shared data banks. *Communications of the ACM* 13, 6 (June 1970), 377-387. DOI: 10.1145/362384.362685
-
-5. Neward, T. 2006. The Vietnam of Computer Science. *The Vietnam of Computer Science Essay*. Available at: https://blogs.tedneward.com/post/the-vietnam-of-computer-science/
-
-6. Ambler, S. W. and Sadalage, P. J. 2006. *Refactoring Databases: Evolutionary Database Design*. Addison-Wesley Professional. DOI: 10.5555/1198151
-
-7. Fowler, M. 2002. *Patterns of Enterprise Application Architecture*. Addison-Wesley Professional. DOI: 10.5555/573476
-
-8. Evans, E. 2003. *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley Professional. DOI: 10.5555/861504
-
-9. Vernon, V. 2013. *Implementing Domain-Driven Design*. Addison-Wesley Professional. DOI: 10.5555/2541942
-
-10. NBL, A. 2022. *Entity Framework Core 5 for Beginners*. Apress. DOI: 10.1007/978-1-4842-8087-0
-
-11. Dykstra, J., Smith, S., Latham, J., and Anderson, J. 2024. *EF Core Performance Tuning*. Microsoft Learn. Available at: https://learn.microsoft.com/ef/core/performance/
-
-12. Bauer, C. and King, G. 2006. *Java Persistence with Hibernate*. Manning Publications. DOI: 10.5555/1198152
-
-13. Tate, B. and Gehtland, J. 2005. *Better, Faster, Lighter Java*. O'Reilly Media. DOI: 10.5555/1013291
-
-## 延伸阅读
 
 ### 官方文档
 

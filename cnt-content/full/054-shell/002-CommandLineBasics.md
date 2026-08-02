@@ -196,22 +196,6 @@ Ctrl + L                 # 清屏（等价于 clear）
 
 **陷阱四：`find -exec` 忘记 `\;`。** 缺少结束符会立即报语法错误。
 
-## 9. 实战练习
-
-1. **目录操作**：创建目录结构 `backup/2026/08`，在其中创建 3 个测试文件，练习复制、移动、重命名。
-
-2. **find 练习**：用 find 找出你电脑上"最近 7 天修改的 .md 文件"，并统计数量。
-
-3. **通配符练习**：用一条命令把当前目录下所有 `.txt` 文件重命名为 `.bak`（提示：配合 for 循环或 rename）。
-
-4. **安全删除**：写一个"先预览再删除 .tmp 文件"的命令序列，确认无误后执行。
-
-## 10. 参考资源
-
-- GNU Coreutils 手册：https://www.gnu.org/software/coreutils/manual/
-- find 手册：https://man7.org/linux/man-pages/man1/find.1.html
-- Linux 命令行大全（TLCL）：https://tldp.org/LDP/Bash-Beginners-Guide/html/
-
 ## 11. 延伸阅读
 
 - 命令行的更高级用法（管道/重定向），见本模块《Shell 脚本编程基础》

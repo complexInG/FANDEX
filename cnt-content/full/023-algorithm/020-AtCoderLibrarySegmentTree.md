@@ -4,7 +4,7 @@ title: 线段树
 module: algorithm
 category: comp-sci
 difficulty: advanced
-description: 线段树数据结构的形式化定义（区间幺半群上的完全二叉树）、懒标记下传语义、构建 O(n)、查询/更新 O(log n)、空间 O(4n) 的复杂度证明，覆盖递归/迭代实现、动态开点、离散化、持久化、合并线段树、李超树、扫描线等工程变体，附多语言实现、LeetCode/Codeforces 实战与 CLRS 风格习题。
+description: 线段树数据结构的形式化定义（区间幺半群上的完全二叉树）、懒标记下传语义、构建 O(n)、查询/更新 O(log n)、空间 O(4n) 的复杂度证明，覆盖递归/迭代实现、动态开点、离散化、持久化、合并线段树、李超树、扫描线等工程变体，附多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -3141,10 +3141,6 @@ print(idx.count_overlap(2, 4))  # 输出: 4 (差分覆盖统计)
 
 ---
 
-## 第 13 章 习题与解答
-
-本章 10 道习题按 Bloom 认知层级递进组织，覆盖记忆、理解、应用、分析、评估、创造六个等级。本节给出题目正文与详细解答。
-
 ### 填空题知识点讲解
 
 **习题 1（ex-seg-fb-01）**：线段树的所有合法运算必须构成代数结构 ____，它要求运算满足结合律且存在 ____。
@@ -3164,41 +3160,6 @@ print(idx.count_overlap(2, 4))  # 输出: 4 (差分覆盖统计)
 **解析讲解**：$4n$；$4n-1$ 量级；$O(\log n)$。
 
 **解析讲解**：严格证明：当 $n = 2^k + 1$ 时，最深的叶子节点编号达到 $4n-1$ 量级。因此开 $4n$ 是必要且足够的。动态开点每次递归深入 $O(\log n)$ 层，每层至多创建 4 个新节点，故单次操作新增节点数 $O(\log n)$。
-
-### 选择题知识点讲解
-
-**习题 4（ex-seg-ch-01）**：下列关于线段树与树状数组的对比，哪一项是正确的？
-
-A. 二者均可 $O(\log n)$ 支持区间加、区间求和
-B. 树状数组代码更短且常数更小，但无法表达非可逆运算（如 max）
-C. 线段树可支持任意幺半群，树状数组仅支持"可逆群"运算
-D. 二者空间复杂度相同
-
-**解析讲解**：C。
-
-**解析讲解**：C 正确。树状数组的查询依赖"差分"思想：$\text{sum}[l, r] = \text{prefix}(r) - \text{prefix}(l-1)$，因此要求运算 $\oplus$ 存在逆元 $\ominus$，即必须构成群（group）。max、min 等无逆元运算只能用线段树。A 错误：树状数组虽可二阶差分支持区间加和，但代码复杂且不直观；B 错误：Fenwick 在逆元存在时同样可表达；D 错误：Fenwick 空间 $O(n)$，线段树 $O(4n)$。
-
-**习题 5（ex-seg-ch-02）**：在带懒标记的线段树中，节点 $v$ 的区间为 $[l, r]$，懒标记 `lazy[v] = x` 表示：
-
-A. 节点 $v$ 自身的值已加上 $x$，但其子节点尚未应用此更新
-B. 节点 $v$ 的所有子节点都应加上 $x$，但 $v$ 自身的值未更新
-C. 节点 $v$ 的值与子节点值均尚未应用此更新
-D. 节点 $v$ 的值与子节点值均已应用此更新
-
-**解析讲解**：A。
-
-**解析讲解**：A 正确。这是 lazy propagation 的核心约定：`lazy[v] = x` 表示"v 子树的叶子已应用此更新（体现在 `tree[v]` 中），但 v 的直接子节点尚未感知"。访问 v 的子节点前必须 push_down，否则子节点的 `tree` 值会失真。
-
-**习题 6（ex-seg-ch-03）**：下列关于"动态开点线段树"的描述，哪一项是错误的？
-
-A. 当值域为 $10^9$ 但实际插入操作仅 $10^5$ 次时，动态开点可将空间从 $O(4V)$ 降至 $O(Q \log V)$
-B. 动态开点通过指针或对象引用实现，访问节点时按需创建
-C. 动态开点线段树不支持懒标记，因懒标记需要预先分配数组
-D. 动态开点常与离散化结合，但离散化后值域压缩至 $O(Q)$，此时 $4n$ 数组实现可能更优
-
-**解析讲解**：C。
-
-**解析讲解**：C 错误。动态开点完全可以与懒标记结合：每个节点对象既存储 `val` 也存储 `lazy`，push_down 时按需创建子节点并下传标记。A、B、D 均正确。
 
 ### 13.3 代码纠错题（code-fix）
 
@@ -3239,10 +3200,6 @@ D. 动态开点常与离散化结合，但离散化后值域压缩至 $O(Q)$，�
 - 工程层面的 cache 友好性（分块占优）。
 
 ---
-
-## 第 14 章 参考文献
-
-本章以 ACM Reference Format 列出本文档引用的全部文献，对应 frontmatter `references` 字段的结构化数据。
 
 ### 14.1 教材与专著
 
@@ -3290,18 +3247,6 @@ D. 动态开点常与离散化结合，但离散化后值域压缩至 $O(Q)$，�
 14. **Li, C., & Chen, J.** (2002). A new data structure for solving online segment maximum query problems. _Journal of Computer Science and Technology_, 17(3), 313-320. DOI: [10.1007/BF02950634](https://doi.org/10.1007/BF02950634).
     - 李超树（Li Chao Tree）的原始论文，本文档第 8.7 节核心引用。
 
-### 14.3 在线资源
-
-15. **CP-Algorithms Contributors.** (2024). _Segment Tree_. CP-Algorithms. URL: [https://cp-algorithms.com/data_structures/segment_tree.html](https://cp-algorithms.com/data_structures/segment_tree.html).
-    - 算法竞赛社区维护的线段树教程，覆盖递归式、迭代式、懒标记、动态开点等所有变体。
-
-16. **AtCoder Library Contributors.** (2023). _AtCoder Library - Segment Tree_. GitHub. URL: [https://github.com/atcoder/ac-library](https://github.com/atcoder/ac-library).
-    - AtCoder 官方 C++ 模板库，提供工程级 `segtree` 与 `lazysegtree` 实现，体现"代数结构驱动数据结构"的现代设计。
-
-> **引用规范说明**：本文档 frontmatter 的 `references` 字段以结构化数据形式存储上述 16 条文献，正文此处以 ACM Reference Format 渲染，便于人工阅读与学术引用。所有 DOI 与 ISBN 均可点击跳转至官方资源。
-
----
-
 ## 第 15 章 延伸阅读
 
 本章为学习者提供进一步深入线段树与相关领域的导航，按"模块内纵向深化"与"跨模块横向扩展"两个维度组织。
@@ -3342,15 +3287,6 @@ D. 动态开点常与离散化结合，但离散化后值域压缩至 $O(Q)$，�
 - **Stanford CS161 Design and Analysis of Algorithms**（开放课程）— 平摊分析单元
 - **UC Berkeley CS 170 Efficient Algorithms and Intractable Problems**（开放课程）— 高阶数据结构
 - **Codeforces EDU: Segment Tree Course**（[codeforces.com/edu/courses](https://codeforces.com/edu/courses)）— 交互式线段树教程，含 30+ 题目实战
-
-### 15.4 在线练习平台
-
-- **LeetCode**（[leetcode.com](https://leetcode.com)）— 题库覆盖线段树所有经典应用，按 tag "Segment Tree" 与 "Binary Indexed Tree" 可筛选 100+ 题
-- **Codeforces**（[codeforces.com](https://codeforces.com)）— 竞赛级线段树题目，含 Segment Tree Beats、李超树、可持久化等高级技巧
-- **AtCoder Educational DP Contest**（[atcoder.jp/contests/dp](https://atcoder.jp/contests/dp)）— 部分题目需线段树优化 DP
-- **USACO Guide**（[usaco.guide](https://usaco.guide)）— 美国信息学奥赛官方教程，线段树章节含大量图示与代码
-- **洛谷**（[luogu.com.cn](https://luogu.com.cn)）— 国内 OI 社区，线段树专题题单覆盖入门到集训队级别
-- **SPOJ**（[spoj.com](https://spoj.com)）— 经典题库，含 MKTHNUM、GSS 系列等线段树名题
 
 ### 15.5 工程实践延伸
 

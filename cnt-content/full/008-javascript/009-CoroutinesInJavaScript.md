@@ -2281,16 +2281,6 @@ JSON.stringify(g); // "{}"(Generator 对象无可枚举属性)
 4. **第四周**:co 库、自定义执行器、CSP
 5. **第五周**:实际项目(如实现简化版 Redux Saga)
 
-### 22.2 推荐练习
-
-1. 实现 `take`、`drop`、`map`、`filter` 等组合子
-2. 实现斐波那契、素数序列等经典无限流
-3. 用生成器实现状态机(如红绿灯、解析器)
-4. 实现简化的 co 库
-5. 用异步生成器实现分页 API 客户端
-6. 实现背压控制
-7. 实现 CSP 风格的 Channel
-
 ### 22.3 阅读顺序建议
 
 1. MDN:Function*, Iteration protocols
@@ -2302,8 +2292,6 @@ JSON.stringify(g); // "{}"(Generator 对象无可枚举属性)
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 **习题 1**(remember):调用生成器函数返回的对象遵循 ______ 协议,可以被 `for...of` 消费是因为它同时实现了 ______ 协议。
@@ -2311,29 +2299,6 @@ JSON.stringify(g); // "{}"(Generator 对象无可枚举属性)
 **习题 2**(understand):`yield*` 表达式的值是 ______ 的返回值。
 
 **习题 3**(remember):异步生成器的 `next()` 返回一个 ______ 对象,其 `value` 属性是 `{ value, done }` 结构。
-
-### 选择题知识点讲解
-
-**习题 4**(understand):以下代码的输出是?
-```javascript
-function* gen() {
-  yield 1;
-  return 2;
-  yield 3;
-}
-const g = gen();
-console.log([...g]);
-```
-A. `[1, 2, 3]`
-B. `[1, 2]`
-C. `[1]`
-D. `[]`
-
-**习题 5**(apply):使用 `for...of` 遍历生成器时,如何获取 `return` 的值?
-A. 通过 `done` 为 true 时的 `value`
-B. `for...of` 无法获取 `return` 值,需手动 next
-C. 通过 `Symbol.return`
-D. 通过 `break` 后的返回值
 
 ### 23.3 代码修复题
 
@@ -2380,137 +2345,6 @@ async function* readFile(path) {
 **习题 9**(evaluate):评估在 React Native 项目中使用生成器管理副作用(类似 Redux Saga)的优劣,与 hooks + async/await 方案对比。
 
 **习题 10**(create):实现一个 `composeGenerators(...gens)` 函数,将多个生成器组合成一个,前一个生成器的输出作为后一个的输入,类似 Unix 管道。
-
-### 23.5 习题答案
-
-**习题 1**:迭代器协议(Iterator);可迭代协议(Iterable)
-
-**习题 2**:被委托生成器(或可迭代对象)的 `return` 值
-
-**习题 3**:Promise;其 `value` 是 `{ value, done }` 结构
-
-**习题 4**:C。`[...g]` 遍历直到 `done: true`,但 `return` 的值不会被展开运算符收集(只有 yield 的值会被收集)。
-
-**习题 5**:B。`for...of` 在 `done: true` 时结束,不会处理 `value`。要获取 return 值需手动调用 next 或使用 yield* 委托。
-
-**习题 6**:
-```javascript
-function* fib() {
-  let a = 0, b = 1;
-  while (true) {
-    yield a;  // 改 return 为 yield
-    [a, b] = [b, a + b];
-  }
-}
-
-function* take(iter, n) {
-  let i = 0;
-  for (const v of iter) {
-    if (i++ >= n) return;
-    yield v;
-  }
-}
-
-for (const n of take(fib(), 10)) {
-  console.log(n);
-}
-```
-ES2024 写法:`for (const n of fib().take(10)) console.log(n);`
-
-**习题 7**:使用 try/finally:
-```javascript
-async function* readFile(path) {
-  const fd = await fs.open(path, 'r');
-  try {
-    while (true) {
-      const { bytesRead, buffer } = await fd.read();
-      if (bytesRead === 0) return;
-      yield buffer;
-    }
-  } finally {
-    await fd.close();  // 在 return/break/throw 时都会执行
-  }
-}
-```
-
-**习题 8**(参考实现):
-```javascript
-class Scheduler {
-  #queue = [];
-  #current = null;
-
-  add(gen, priority = 0) {
-    this.#queue.push({ gen, priority, alive: true });
-    this.#queue.sort((a, b) => b.priority - a.priority);
-  }
-
-  run() {
-    while (this.#queue.length > 0) {
-      const task = this.#queue.shift();
-      if (!task.alive) continue;
-      this.#current = task;
-      try {
-        const { value, done } = task.gen.next();
-        if (done) continue;
-        // value 可以是控制指令
-        if (value?.type === 'cancel') {
-          task.alive = false;
-          continue;
-        }
-      } catch (e) {
-        console.error('Task error:', e);
-        continue;
-      }
-      this.#queue.push(task);  // 重新排队
-    }
-  }
-
-  cancel(task) {
-    task.alive = false;
-    task.gen.return();
-  }
-}
-```
-
-**习题 9**:略,需结合具体场景分析
-
-**习题 10**:
-```javascript
-function* composeGenerators(...gens) {
-  if (gens.length === 0) return;
-  let current = gens[0]();
-  for (let i = 1; i < gens.length; i++) {
-    const nextGen = gens[i];
-    const iter = current;
-    current = (function* () {
-      yield* nextGen(iter);
-    })();
-  }
-  yield* current;
-}
-
-// 或更优雅的写法
-function* compose(...genFns) {
-  let iter = genFns[0]();
-  for (let i = 1; i < genFns.length; i++) {
-    iter = genFns[i](iter);
-  }
-  yield* iter;
-}
-
-// 使用
-function* source() { yield 1; yield 2; yield 3; }
-function* double(it) { for (const v of it) yield v * 2; }
-function* filter(it) { for (const v of it) if (v > 2) yield v; }
-
-for (const v of compose(source, double, filter)) {
-  console.log(v);  // 4, 6
-}
-```
-
----
-
-## 24. 延伸阅读
 
 ### 24.1 书籍
 
@@ -2650,20 +2484,6 @@ function* pipe(source, ...fns) {
 
 注:数据基于 V8 8.x 在 Node.js 14 上的典型表现,实际结果因环境而异。
 
-## 参考文献
-
-1. ECMA International. (2025). *ECMAScript 2025 Language Specification (ECMA-262, 16th Edition)*. ECMA Standard. https://tc39.es/ecma262/
-2. Atkins, T., & Katz, Y. (2014). *Async Iteration for JavaScript (TC39 Proposal)*. TC39 Proposals. https://github.com/tc39/proposal-async-iteration
-3. Sumii, E., & Shivers, O. (2004). A Universal Unwinding Operator. *Higher-Order and Symbolic Computation*. https://doi.org/10.1023/B:LISP.0000032413.90449.8c
-4. Shan, C. (2007). A Semantic Simulation of Coroutines. *Journal of Functional Programming*. https://doi.org/10.1017/S0956796807006418
-5. Rauschmayer, A. (2014). *Exploring ES6: Generators*. Leanpub. https://exploringjs.com/es6/ch_generators.html
-6. Anton, K., & Ostermann, K. (2014). Coroutines in JavaScript. *Proceedings of GPCE '14*. https://doi.org/10.1145/2658761.2658771
-7. Conway, M. E. (1958). Design of a separable transition-diagram compiler. *Communications of the ACM*. https://doi.org/10.1145/368893.368928
-8. Haynes, C. T. (1984). Continuations and Coroutines. *Proceedings of LFP '84*. https://doi.org/10.1145/800055.802038
-
----
-
-*本文档最后审阅于 2026-07-20,由 FANDEX Content Engineering Team 维护。如有疑问,请参阅 ECMA-262 最新规范或提交 issue。*
 ## 生成器函数声明
 
 **基本写法：生成器函数声明**

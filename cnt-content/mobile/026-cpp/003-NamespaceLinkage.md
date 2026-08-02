@@ -112,56 +112,6 @@ namespace {
 
 ---
 
-## 外部链接
-
-**extern 写法：外部变量声明**
-`extern <type> <var_name>;`
-```cpp
-// 声明在其他文件中定义的外部变量
-extern int global_var;
-```
-
----
-
-**extern 写法：外部变量定义**
-`<type> <var_name> = <value>;`
-```cpp
-// 定义外部变量（其他文件可通过 extern 访问）
-int global_var = 100;
-```
-
----
-
-**extern 写法：外部函数声明**
-`extern <return_type> <func>(<params>);`
-```cpp
-// 声明外部函数
-extern void external_function();
-```
-
----
-
-**extern "C" 写法：C 链接**
-`extern "C" <return_type> <func>(<params>);`
-```cpp
-// 使用 C 链接，避免名称修饰
-extern "C" void c_function(int arg);
-```
-
----
-
-**extern "C" 块写法：C 链接块**
-`extern "C" { ... }`
-```cpp
-// 多个函数使用 C 链接
-extern "C" {
-    void func1();
-    void func2();
-}
-```
-
----
-
 ## inline 命名空间
 
 **基本写法：inline 命名空间**

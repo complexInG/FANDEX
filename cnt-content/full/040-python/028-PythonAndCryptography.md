@@ -2082,130 +2082,6 @@ logging.basicConfig(level=logging.DEBUG)
 # 生产环境务必关闭，避免泄露密钥信息
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 14.1 综合练习：设计一个安全的密钥管理服务
-
-**需求**：
-- 用户上传文件，由服务端加密后存储；
-- 主密钥存放在 KMS，永不导出；
-- 文件加密密钥（DEK）由 KMS 生成，加密后随文件存储；
-- 支持密钥轮转与撤销；
-- 所有操作记录审计日志。
-
-**参考实现**：
-
-```python
-"""
-安全文件存储服务（示意）。
-"""
-import os
-import json
-from datetime import datetime, timezone
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import padding, rsa
-from dataclasses import dataclass, field, asdict
-from typing import Optional
-
-@dataclass
-class EncryptedFile:
-    """加密文件元数据。"""
-    file_id: str
-    encrypted_dek: bytes
-    nonce: bytes
-    ciphertext: bytes
-    kms_key_id: str
-    created_at: str
-    key_version: int
-
-    def to_dict(self) -> dict:
-        return {
-            'file_id': self.file_id,
-            'encrypted_dek': self.encrypted_dek.hex(),
-            'nonce': self.nonce.hex(),
-            'ciphertext': self.ciphertext.hex(),
-            'kms_key_id': self.kms_key_id,
-            'created_at': self.created_at,
-            'key_version': self.key_version,
-        }
-
-class SecureFileService:
-    """端到端安全文件服务（示意实现）。"""
-
-    def __init__(self, kms_client, kek_key_id: str):
-        """
-        Args:
-            kms_client: KMS 客户端（如 AWS KMS）。
-            kek_key_id: KMS 中的 KEK ID。
-        """
-        self.kms = kms_client
-        self.kek_key_id = kek_key_id
-        self.audit_log: list[dict] = []
-
-    def upload(self, plaintext: bytes) -> EncryptedFile:
-        """上传并加密文件。"""
-        # 1. 从 KMS 获取 DEK
-        plaintext_dek, encrypted_dek = self.kms.generate_data_key()
-        # 2. 用 DEK 加密文件
-        nonce = os.urandom(12)
-        aesgcm = AESGCM(plaintext_dek)
-        ciphertext = aesgcm.encrypt(nonce, plaintext, None)
-        # 3. 立即从内存擦除 plaintext DEK
-        del plaintext_dek
-        # 4. 构造元数据
-        f = EncryptedFile(
-            file_id=os.urandom(16).hex(),
-            encrypted_dek=encrypted_dek,
-            nonce=nonce,
-            ciphertext=ciphertext,
-            kms_key_id=self.kek_key_id,
-            created_at=datetime.now(timezone.utc).isoformat(),
-            key_version=1,
-        )
-        self.audit_log.append({
-            'event': 'upload',
-            'file_id': f.file_id,
-            'time': f.created_at,
-        })
-        return f
-
-    def download(self, ef: EncryptedFile) -> bytes:
-        """下载并解密文件。"""
-        plaintext_dek = self.kms.decrypt_data_key(ef.encrypted_dek)
-        aesgcm = AESGCM(plaintext_dek)
-        plaintext = aesgcm.decrypt(ef.nonce, ef.ciphertext, None)
-        del plaintext_dek
-        self.audit_log.append({
-            'event': 'download',
-            'file_id': ef.file_id,
-            'time': datetime.now(timezone.utc).isoformat(),
-        })
-        return plaintext
-```
-
-### 14.2 综合练习：实现零信任 API 网关
-
-**要求**：
-- 每个请求需 mTLS 客户端证书；
-- API Token 使用 HMAC-SHA256 签名（含时间戳防重放）；
-- 5 分钟内的时间窗口有效；
-- 所有操作写入审计日志。
-
-### 14.3 综合练习：实现密钥轮转工具
-
-**要求**：
-- 输入：旧密钥文件、新密钥文件；
-- 输出：轮转日志（含时间戳、版本号）；
-- 失败时自动回滚。
-
-### 14.4 综合练习：实现 TLS 配置生成器
-
-**要求**：
-- 输入：域名、有效期、算法偏好（RSA/ECDSA）；
-- 输出：完整的 Nginx/HAProxy TLS 配置文件；
-- 强制 TLS 1.2+，禁用弱算法。
-
 ## 15. 后量子密码学（PQC）预览
 
 ### 15.1 量子威胁
@@ -2276,8 +2152,6 @@ def hybrid_kem_demo():
 - [ ] 是否符合 HIPAA / GDPR / PCI DSS 等行业法规？
 - [ ] 是否通过 SOC 2 Type II 审计？
 
-## 17. 延伸阅读
-
 ### 17.1 必读书籍
 
 1. **Bruce Schneier**. *Applied Cryptography: Protocols, Algorithms, and Source Code in C*. 20th Anniversary Edition. Wiley, 2015. ISBN 978-1119096726.
@@ -2305,16 +2179,6 @@ def hybrid_kem_demo():
 - **acme**: https://github.com/certbot/acme
 - **openssl**: https://github.com/openssl/openssl
 - **libsodium**: https://github.com/jedisct1/libsodium
-
-### 17.4 在线资源
-
-- **OWASP Cryptographic Storage Cheat Sheet**: https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html
-- **OWASP Password Storage Cheat Sheet**: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
-- **Python Cryptographic Authority**: https://github.com/pyca
-- **NIST Cybersecurity**: https://csrc.nist.gov/
-- **IETF TLS Working Group**: https://datatracker.ietf.org/wg/tls/about/
-- **Cloudflare SSL Lab**: https://www.ssllabs.com/
-- **Mozilla SSL Configuration Generator**: https://ssl-config.mozilla.org/
 
 ### 17.5 视频课程
 

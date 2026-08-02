@@ -1986,67 +1986,6 @@ body::before {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个渐变方向与 `linear-gradient(to top right, red, blue)` 等价？
-
-A. `linear-gradient(45deg, red, blue)`
-B. `linear-gradient(135deg, red, blue)`
-C. `linear-gradient(-45deg, red, blue)`
-D. `linear-gradient(225deg, red, blue)`
-
-**解析讲解**：B
-
-**解析讲解**：`to top right` 表示梯度线指向右上角，方向角为 315°（从上至下为 0°，顺时针）。但 CSS 规范中，`to top right` 的角度计算为 `atan2(width, height)`，对于正方形容器约为 315°。而 `135deg` 是从下到上偏右的方向。
-
-注意：`to <corner>` 的角度取决于容器长宽比，并非固定 45°。对于正方形容器，`to top right` 约等于 `315deg`（或 `-45deg`）。但题目选项中 `135deg` 是从左下到右上的方向，与 `to top right` 一致（梯度线方向相反，但视觉效果相同）。
-
-**题目 2**：`radial-gradient(circle closest-side at 30% 40%, red, blue)` 中，渐变半径取决于？
-
-A. 容器宽度
-B. 容器高度
-C. 中心到最近边的距离
-D. 中心到最近角的距离
-
-**解析讲解**：C
-
-**解析讲解**：`closest-side` 关键字表示渐变半径为中心到最近边的距离。具体计算：`min(x_0, w - x_0, y_0, h - y_0)`。
-
-**题目 3**：以下哪种插值方式能产生最平滑的暗部渐变？
-
-A. `in srgb`
-B. `in hsl`
-C. `in oklab`
-D. `in hwb`
-
-**解析讲解**：C
-
-**解析讲解**：`oklab` 是感知均匀的色彩空间，相同数值差对应相同感知色差，因此在暗部能产生更平滑的渐变，减少色带效应。`srgb` 在暗部易出现色带，`hsl` / `hwb` 主要用于色相过渡。
-
-**题目 4**：`conic-gradient(red 0% 30%, yellow 30% 60%, green 60% 100%)` 实现的是？
-
-A. 三色平滑渐变
-B. 三色硬边界饼图
-C. 三色径向渐变
-D. 三色线性渐变
-
-**解析讲解**：B
-
-**解析讲解**：色标位置相同（如 `30%` 出现在前一个色标的结束和后一个色标的开始）形成硬边界。`conic-gradient` 的硬边界用于饼图、分块进度环等。
-
-**题目 5**：以下哪种方式可以实现「渐变文字」效果？
-
-A. `color: linear-gradient(red, blue)`
-B. `text-fill-color: linear-gradient(red, blue)`
-C. `background-clip: text` + `background: linear-gradient(red, blue)`
-D. `text-gradient: linear-gradient(red, blue)`
-
-**解析讲解**：C
-
-**解析讲解**：CSS 没有直接的「渐变文字」属性，需通过 `background` 设置渐变 + `background-clip: text` 裁剪到文字区域 + `-webkit-text-fill-color: transparent` 透明填充实现。
-
 ### 填空题知识点讲解
 
 **题目 1**：`linear-gradient` 的默认方向是 ________。
@@ -2203,93 +2142,6 @@ document.body.style.background = generateRainbowGradient(6);
 3. 使用 `oklch longer hue` 插值，确保色相完整过渡。
 4. 首尾颜色相同，适用于 `conic-gradient`。
 
-### 9.4 思考题
-
-**题目 1**：为什么 CSS 渐变在 sRGB 空间容易出现色带？OkLab 如何解决？
-
-**解析讲解**：
-
-**sRGB 色带的成因**：
-
-1. **8-bit 量化**：每个通道仅 256 级，长渐变中相邻像素色差小于 1 级时无法区分。
-2. **sRGB 非线性**：sRGB 空间的 gamma 编码使得暗部数值密集、亮部稀疏。线性插值在 sRGB 空间进行时，暗部变化过快，亮部变化过慢，导致感知不均匀。
-3. **感知不均匀**：sRGB 空间中相同数值差不对应相同感知色差，暗部容易出现可见断层。
-
-**OkLab 的解决方案**：
-
-1. **感知均匀**：OkLab 空间设计为感知均匀，相同数值差对应相同感知色差。
-2. **暗部平滑**：OkLab 的明度轴（L）在暗部更细腻，能呈现更平滑的过渡。
-3. **色相稳定**：OkLab 的 a、b 轴（色度）在明度变化时色相偏移更小。
-
-**结论**：使用 `in oklab` 插值能显著减少色带，提升渐变质量。
-
-**题目 2**：在性能敏感场景下，CSS 渐变与 SVG 渐变如何选择？
-
-**解析讲解**：
-
-**CSS 渐变优势**：
-
-1. **GPU 加速**：浏览器对 CSS 渐变有专门优化，通常使用 GPU 合成。
-2. **无需 DOM 节点**：直接作为 `background` 值，不增加 DOM 节点。
-3. **简洁语法**：内联于 CSS，易于维护。
-
-**SVG 渐变优势**：
-
-1. **可重用**：通过 `<defs>` 定义，多次引用。
-2. **动画能力强**：支持 SMIL 与 CSS 动画，可对色标单独动画。
-3. **矢量精度**：在 SVG 图形内部使用时，渐变与图形一体化。
-
-**选择建议**：
-
-- **背景、按钮、卡片**：使用 CSS 渐变，性能优。
-- **复杂矢量图形、图表**：使用 SVG 渐变，与图形一体化。
-- **需色标动画**：使用 SVG 渐变或 CSS Houdini `@property`。
-- **移动端**：优先 CSS 渐变，避免 SVG 解析开销。
-
-**题目 3**：如何设计一套支持主题切换的渐变设计令牌系统？
-
-**解析讲解**：
-
-**设计原则**：
-
-1. **语义化命名**：使用 `--gradient-primary`、`--gradient-success` 等语义名。
-2. **主题分离**：通过 `[data-theme]` 属性切换主题。
-3. **方向参数化**：将方向单独提取为变量。
-4. **色彩空间统一**：全局使用 `oklab` 插值。
-
-**实现示例**：
-
-```css
-:root {
-  /* 默认主题（浅色） */
-  --gradient-primary: linear-gradient(in oklab, #667eea, #764ba2);
-  --gradient-success: linear-gradient(in oklab, #4caf50, #81c784);
-  --gradient-danger: linear-gradient(in oklab, #f44336, #e57373);
-  --gradient-direction: 135deg;
-}
-
-[data-theme="dark"] {
-  --gradient-primary: linear-gradient(in oklab, #4c51bf, #553c9a);
-  --gradient-success: linear-gradient(in oklab, #38a169, #48bb78);
-  --gradient-danger: linear-gradient(in oklab, #e53e3e, #fc8181);
-}
-
-/* 组件使用 */
-.btn-primary {
-  background: var(--gradient-primary);
-}
-```
-
-**优势**：
-
-1. **一致性**：全站渐变统一管理。
-2. **可维护**：修改令牌即可切换主题。
-3. **可扩展**：新增主题只需添加 `[data-theme]` 规则。
-
----
-
-## 10. 参考文献
-
 ### 10.1 W3C 规范
 
 - World Wide Web Consortium. (2019). *CSS Images Module Level 3*. W3C Candidate Recommendation. https://www.w3.org/TR/css-images-3/
@@ -2328,23 +2180,12 @@ document.body.style.background = generateRainbowGradient(6);
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 经典书籍
 
 - **《CSS Secrets》** - Lea Verou 著，深入探讨渐变与色彩的高级技巧。
 - **《Designing Web Interfaces》** - Bill Scott 著，渐变在 UI 设计中的应用。
 - **《Color and Light in Nature and Art》** - Samuel J. Williamson 著，色彩理论。
 - **《Interaction of Color》** - Josef Albers 著，色彩交互经典。
-
-### 11.2 在线资源
-
-- **MDN Web Docs: Using CSS gradients** - https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_images/Using_CSS_gradients
-- **MDN Web Docs: linear-gradient()** - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient
-- **MDN Web Docs: radial-gradient()** - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
-- **MDN Web Docs: conic-gradient()** - https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient
-- **web.dev: Smarter gradients with CSS color spaces and syntax** - https://web.dev/articles/css-color-spaces
-- **CSS Tricks: CSS Gradients** - https://css-tricks.com/css-gradients/
 
 ### 11.3 视频课程
 

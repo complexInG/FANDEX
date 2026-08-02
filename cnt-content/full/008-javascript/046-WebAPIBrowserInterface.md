@@ -1372,8 +1372,6 @@ self.onmessage = async function (event) {
 };
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 10.1 基础题
 
 **题目 1**：用 AbortController 实现一个支持手动取消与超时自动取消的 Fetch 封装。
@@ -1447,30 +1445,6 @@ function observeItems() {
 - 问题 3：innerHTML 有 XSS 风险，应用 textContent 或 DOMPurify
 - 问题 4：fetch 失败未捕获
 - 优化：unobserve 后再请求；用 Promise.all 批量；失败重试
-
-## 11. 参考文献
-
-[1] WHATWG. 2024. Fetch Standard. Retrieved July 21, 2024 from https://fetch.spec.whatwg.org/
-
-[2] W3C. 2023. Web Storage (Second Edition). W3C Recommendation. DOI: 10.17487/RFCwebstorage.
-
-[3] W3C. 2023. Indexed Database API 3.0. W3C Working Draft. Retrieved from https://www.w3.org/TR/IndexedDB-3/
-
-[4] W3C. 2024. Intersection Observer. W3C Editor's Draft. Retrieved from https://w3c.github.io/IntersectionObserver/
-
-[5] WHATWG. 2024. HTML Living Standard - Web Workers. Retrieved from https://html.spec.whatwg.org/multipage/workers.html
-
-[6] W3C. 2023. The BroadcastChannel API. W3C Working Draft. Retrieved from https://www.w3.org/TR/broadcastchannel/
-
-[7] W3C. 2024. Geolocation API. W3C Recommendation. Retrieved from https://www.w3.org/TR/geolocation-API/
-
-[8] W3C Web Performance Working Group. 2024. Clipboard API and events. W3C Working Draft. Retrieved from https://www.w3.org/TR/clipboard-apis/
-
-[9] W3C. 2023. Notifications API Standard. WHATWG Living Standard. Retrieved from https://notifications.spec.whatwg.org/
-
-[10] W3C. 2024. Resize Observer Standard. Retrieved from https://www.w3.org/TR/resize-observer/
-
-## 12. 延伸阅读
 
 ### 12.1 官方文档
 

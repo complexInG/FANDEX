@@ -264,23 +264,6 @@ echo "批量处理完成"
 
 **误区四：删过期文件不留余地。** → 保留份数（KEEP）设大一点，宁多勿少——删除容易恢复难。
 
-## 8. 实战练习
-
-1. **改造部署脚本**：给案例一加上"回滚"功能（部署失败自动回滚到上一个备份）。
-
-2. **扩展日报**：给案例二加上"请求量趋势图"（按小时统计）和"TOP10 来源 IP"。
-
-3. **增量备份**：把案例三改造成"每天全量 + 每小时增量"的备份方案。
-
-4. **综合实战**：写一个"日志轮转"脚本：超过 100MB 的日志自动压缩归档，保留最近 30 份，并加入演练模式。
-
-## 9. 参考资源
-
-- crontab 说明：https://man7.org/linux/man-pages/man5/crontab.5.html
-- tar 手册：https://www.gnu.org/software/tar/manual/
-- ShellCheck 规则库（SC 编号检索）：https://www.shellcheck.net/wiki/Home
-- Google Shell 风格指南：https://google.github.io/styleguide/shellguide.html
-
 ## 10. 延伸阅读
 
 - 三剑客综合运用，见本模块《文本处理三剑客》

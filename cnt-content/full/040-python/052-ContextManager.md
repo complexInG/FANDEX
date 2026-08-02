@@ -1800,8 +1800,6 @@ def list_users(db = Depends(get_db)):
 
 FastAPI 自动检测上下文管理器依赖，在请求开始时 `__enter__`，请求结束时 `__exit__`。这让开发者可以用 `yield` 语法写依赖，而框架处理生命周期。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：实现一个 `FileReader` 上下文管理器类，要求：
@@ -1936,70 +1934,6 @@ async def fetch_all(urls):
         tasks = [fetch_one(session, url) for url in urls]
         return await asyncio.gather(*tasks)
 ```
-
-## 10. 参考文献
-
-1. Coghlan, N., and van Rossum, G. 2005. PEP 343: The "with" statement. https://peps.python.org/pep-0343/.
-
-2. Brandl, G. 2010. PEP 3105: Make print a function. https://peps.python.org/pep-3105/. (相关于 stdout 重定向)
-
-3. Smith, G., and Coghlan, N. 2018. PEP 567: Context Variables. https://peps.python.org/pep-0567/.
-
-4. Selivanov, Y. 2015. PEP 492: Coroutines with async and await syntax. https://peps.python.org/pep-0492/.
-
-5. Hastings, N. 2021. PEP 654: Exception Groups and except*. https://peps.python.org/pep-0654/. DOI: 10.5281/zenodo.1234567.
-
-6. Stroustrup, B. 1985. *The C++ Programming Language* (2nd ed.). Addison-Wesley. ISBN: 978-0201539929. (RAII 概念起源)
-
-7. Beck, K. 2003. *Test-Driven Development: By Example*. Addison-Wesley. ISBN: 978-0321146533.
-
-8. Coghlan, N. 2017. *Python Module of the Week: contextlib*. https://pymotw.com/3/contextlib/.
-
-9. Ramírez, S. 2024. FastAPI documentation: Dependencies with yield. https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/. DOI: 10.5281/zenodo.2345678.
-
-10. SQLAlchemy Project. 2024. SQLAlchemy Session documentation. https://docs.sqlalchemy.org/en/20/orm/session.html. DOI: 10.5281/zenodo.3456789.
-
-11. Django Software Foundation. 2024. Django transactions documentation. https://docs.djangoproject.com/en/5.0/topics/db/transactions/.
-
-12. Karagic, M. 2024. httpx documentation. https://www.python-httpx.org/.
-
-13. Hettinger, R. 2013. Descriptor HowTo Guide. PyCon 2013. (相关于 Python 对象模型)
-
-14. Lattner, C., and Adve, V. 2004. LLVM: A compilation framework for lifelong program analysis & transformation. In *Proceedings of the International Symposium on Code Generation and Optimization (CGO'04)*. 75–86. DOI: 10.1109/CGO.2004.1281665.
-
-15. Brandl, G. 2024. contextlib source code. https://github.com/python/cpython/blob/main/Lib/contextlib.py.
-
-16. Sanner, M. 2024. PEP 688: Making the Global Interpreter Lock Optional. (相关于异步执行模型) https://peps.python.org/pep-0688/.
-
-17. Van Rossum, G., and the Python Community. 2024. Python Language Reference: The with statement. https://docs.python.org/3/reference/compound_stmts.html#the-with-statement.
-
-18. Coghlan, N. 2014. PEP 433: Controlling the file descriptor inheritance. (相关于资源管理) https://peps.python.org/pep-0433/.
-
-19. Hastings, N. 2023. PEP 703: Making the Global Interpreter Lock Optional in CPython. https://peps.python.org/pep-0703/. DOI: 10.5281/zenodo.4567890.
-
-20. Bini, E., and Buttazzo, G. C. 2004. Measuring the worst-case execution time of real-time tasks. *Journal of Systems Architecture* 50(2-3): 109–125. DOI: 10.1016/j.sysarc.2003.08.001.
-
-21. Kleppmann, M. 2017. *Designing Data-Intensive Applications*. O'Reilly Media. ISBN: 978-1449373320. (相关于资源管理与一致性)
-
-22. Tanenbaum, A. S., and Van Steen, M. 2017. *Distributed Systems* (3rd ed.). Pearson Education. ISBN: 978-1543058386. (相关于分布式事务)
-
-23. Kleppmann, M. 2024. Context managers in Python. https://martin.kleppmann.com/2024/context-managers.html.
-
-24. Brandl, G., and Coghlan, N. 2024. Python contextlib documentation. https://docs.python.org/3/library/contextlib.html.
-
-25. Ramírez, S. 2024. Python async context managers. https://fastapi.tiangolo.com/advanced/async-sql-databases/.
-
-26. Beck, K., and Andres, C. 2004. *Extreme Programming Explained* (2nd ed.). Addison-Wesley. ISBN: 978-0321278654.
-
-27. Fowler, M. 2018. *Refactoring: Improving the Design of Existing Code* (2nd ed.). Addison-Wesley. ISBN: 978-0134757599.
-
-28. Martin, R. C. 2008. *Clean Code: A Handbook of Agile Software Craftsmanship*. Prentice Hall. ISBN: 978-0132350884.
-
-29. Python Software Foundation. 2024. Python glossary: Context manager. https://docs.python.org/3/glossary.html#term-context-manager.
-
-30. Slatkin, B. 2019. *Effective Python: 90 Specific Ways to Write Better Python* (2nd ed.). Addison-Wesley. ISBN: 978-0134853987.
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

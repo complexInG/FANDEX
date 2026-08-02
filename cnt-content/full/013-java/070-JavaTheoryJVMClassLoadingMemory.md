@@ -1668,8 +1668,6 @@ public Class<?> getMapper(String sql) {
 
 **效果**：类数量稳定在 2000 左右，Metaspace 占用 100MB，问题根除。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：简述 JVM 运行时数据区的组成，并说明哪些区域是线程私有的，哪些是线程共享的。
@@ -1876,42 +1874,6 @@ public class NetworkClassLoader extends ClassLoader {
 // loader = null; GC 时该 ClassLoader 加载的所有类都会被卸载
 ```
 
-## 10. 参考文献
-
-本文引用的学术文献与权威资料，遵循 ACM Reference Format。
-
-[1] Lindholm, T., Yellin, F., Bracha, G., Buckley, A., and Smith, D. 2023. The Java Virtual Machine Specification, Java SE 22 Edition. Oracle. Retrieved from https://docs.oracle.com/javase/specs/jvms/se22/html/
-
-[2] Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., and Lea, D. 2006. Java Concurrency in Practice. Addison-Wesley Professional. ISBN: 978-0321349606
-
-[3] Click, C. 2005. Azul's Pauseless GC Algorithm. In Proceedings of the JVM Technology Symposium. DOI: 10.1.1.129.8252
-
-[4] Detlefs, D., Flood, C., Heller, S., and Printezis, T. 2004. Garbage-First Garbage Collection. In Proceedings of the 4th International Symposium on Memory Management (ISMM '04). ACM, New York, NY, USA, 26–35. DOI: 10.1145/1029873.1029879
-
-[5] Yang, X., Blackburn, S. M., Frampton, D., Sartor, J. B., and McKinley, K. S. 2012. Why nothing matters: The impact of zeroing. In Proceedings of the ACM International Conference on Object Oriented Programming Systems Languages and Applications (OOPSLA '12). ACM, 307–324. DOI: 10.1145/2384616.2384640
-
-[6] Manson, J., Pugh, W., and Adve, S. V. 2005. The Java memory model. In Proceedings of the 32nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages (POPL '05). ACM, 378–391. DOI: 10.1145/1040305.1040335
-
-[7] Kotlyar, V., Viswanathan, D., and Tip, F. 2000. Identifying objects using escape analysis. IBM Research Report RC 21717. DOI: 10.1.1.41.4682
-
-[8] Paleczny, M., Vick, C., and Click, C. 2001. The Java HotSpot server compiler. In Proceedings of the Java Virtual Machine Research and Technology Symposium (JVM '01). USENIX Association.
-
-[9] Tene, G., Iyengar, M., and Wolf, M. 2011. C4: The Continuously Concurrent Compacting Collector. In Proceedings of the International Symposium on Memory Management (ISMM '11). ACM, 79–88. DOI: 10.1145/1993478.1993491
-
-[10] Fog, A. 2023. Optimizing software in C++: An optimization guide for Windows, Linux and Mac platforms. Copenhagen University College of Engineering. Retrieved from https://www.agner.org/optimize/
-
-[11] Oracle. 2024. JEP 439: Generational ZGC. OpenJDK. Retrieved from https://openjdk.org/jeps/439
-
-[12] Oracle. 2023. JEP 444: Virtual Threads. OpenJDK. Retrieved from https://openjdk.org/jeps/444
-
-[13] Wimmer, C., Haupt, M., Van De Vanter, M. L., Jordan, S., Kilian, L., and Würthinger, T. 2019. GraalVM Native Image: Large-Scale Static Analysis for Java. In Proceedings of the 13th ACM SIGPLAN International Workshop on Virtual Machines and Intermediate Languages (VMIL '19). ACM, 21–30. DOI: 10.1145/3358128.3358136
-
-[14] Flood, C., Wilhelm, R., Dages, M., and Zinser, A. 2023. JEP 439: Generational ZGC. In OpenJDK Documentation. Oracle. DOI: 10.1.1.439.zgc
-
-[15] Bloch, J. 2018. Effective Java (3rd ed.). Addison-Wesley Professional. ISBN: 978-0134685991
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - **Oracle JVM Specification**: https://docs.oracle.com/javase/specs/jvms/se22/html/
@@ -1965,4 +1927,3 @@ public class NetworkClassLoader extends ClassLoader {
 - **JVM TI（JVM Tool Interface）**：编写 Agent 与 Profiler 的底层接口。
 
 ---
-

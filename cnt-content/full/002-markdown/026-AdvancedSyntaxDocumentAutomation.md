@@ -691,23 +691,12 @@ npm run dev
 *
 
 ## 8. 延伸阅读
-
 -
 -
 -
 -
 - 通过本教程，你已经了解了 Markdown 的高级语法和文档自动化工具。在实际项目中，你可以使用这些技术来创建高质量的文档，提高工作效率，构建个人知识库或项目文档。
-
-## 参考文献
-
-CommonMark 规范：https://spec.commonmark.org/
-GFM 规范：https://github.github.com/gfm/
-Markdown 指南：https://www.markdownguide.org/
-Markdownlint：https://github.com/DavidAnson/markdownlint
-
 ## 延伸阅读
-
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
 文档站构建（Astro），见 056-astro 模块（如已加入）。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供文档写作课程。

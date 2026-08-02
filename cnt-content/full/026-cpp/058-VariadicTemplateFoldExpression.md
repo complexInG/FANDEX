@@ -1697,112 +1697,6 @@ class function<R(Args...)> {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：以下哪个折叠表达式对空包是合法的？
-
-- (A) `(args + ...)`
-- (B) `(... && args)`
-- (C) `(args - ...)`
-- (D) `(... | args)`
-
-**解析讲解**：(B)
-
-**解析讲解**：一元折叠对空包只有 `&&`（返回 true）、`||`（返回 false）、`,`（返回 void）三种情况合法，其他运算符空包会编译错误。`(B)` 是 `&&`，空包返回 true。
-
----
-
-**常见疑问 2**：以下代码的输出是什么？
-
-```cpp
-template<typename... Args>
-auto sum(Args... args) {
-    return (0 + ... + args);
-}
-
-int main() {
-    std::cout << sum(1, 2, 3, 4);
-}
-```
-
-- (A) 10
-- (B) 0
-- (C) 1
-- (D) 编译错误
-
-**解析讲解**：(A)
-
-**解析讲解**：二元左折叠 `0 + ... + args` 展开为 `((0 + 1) + 2) + 3) + 4 = 10`。
-
----
-
-**常见疑问 3**：以下代码的编译结果是什么？
-
-```cpp
-template<typename... Args>
-auto f(Args... args) {
-    return (args...);
-}
-
-int main() { f(1, 2, 3); }
-```
-
-- (A) 编译通过，返回 1
-- (B) 编译通过，返回 3
-- (C) 编译错误：折叠语法错误
-- (D) 编译错误：参数包语法错误
-
-**解析讲解**：(C)
-
-**解析讲解**：`(args...)` 是参数包展开，不是折叠表达式。折叠表达式语法为 `(args op ...)` 或 `(... op args)`。正确写法：`(args + ...)` 或 `(... + args)`。
-
----
-
-**常见疑问 4**：以下代码的输出是什么？
-
-```cpp
-template<typename... Args>
-auto diff(Args... args) {
-    return (args - ...);
-}
-
-int main() {
-    std::cout << diff(10, 3, 2);
-}
-```
-
-- (A) 5
-- (B) 9
-- (C) -9
-- (D) 11
-
-**解析讲解**：(A)
-
-**解析讲解**：一元右折叠 `args - ...` 展开为 `10 - (3 - 2) = 10 - 1 = 9`。
-
-等等，让我重新计算：`10 - (3 - 2) = 10 - 1 = 9`，所以答案应该是 (B) 9。
-
-**修正答案**：(B)
-
-**解析讲解**：一元右折叠 `args - ...` 展开为 `e1 op (e2 op (e3 op ...))`，即 `10 - (3 - 2) = 10 - 1 = 9`。
-
----
-
-**常见疑问 5**：以下哪个不是参数包展开的合法位置？
-
-- (A) 函数参数列表
-- (B) 模板参数列表
-- (C) 初始化列表
-- (D) 函数体内部的表达式语句
-
-**解析讲解**：(D)
-
-**解析讲解**：参数包展开在函数体内的表达式语句中是合法的，但需要正确语法。实际上选项 D 也是合法的——折叠表达式就在函数体内。这道题答案应为：以上都是合法位置。
-
-**修正答案**：本题设计有误，所有选项都是合法位置。正确问法应为"以下哪个不是参数包展开的合法位置？"的答案是"无"，但实际答案应选 D（如果理解为"不能直接展开包但需折叠表达式"）。建议读者理解参数包展开的多个位置。
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：可变参数模板引入于 C++____ 标准。
@@ -1931,62 +1825,6 @@ int main() {
 }
 ```
 
-### 9.4 思考题
-
-**常见疑问 14**：为什么折叠表达式不能使用自定义运算符？这一限制的工程权衡是什么？
-
-**解析讲解**：
-
-折叠表达式仅支持标准运算符的设计选择，主要是出于：
-
-1. **语法简洁性**：标准运算符的优先级与结合性已在标准中明确定义，编译器实现简单。若允许自定义运算符，需要解析运算符声明、重载决议等复杂规则。
-2. **可读性**：标准运算符语义明确，代码读者一眼能理解折叠意图。自定义运算符可能引发歧义。
-3. **避免滥用**：自定义运算符的折叠可能引发意外的语义，限制可防止误用。
-
-工程权衡：牺牲了少量灵活性（自定义运算符需通过函数调用实现），换取了语法清晰与编译器实现简化。
-
----
-
-**常见疑问 15**：在什么场景下应优先使用 `std::tuple` + `std::apply` 而非直接变参模板？
-
-**解析讲解**：
-
-**优先使用 tuple + apply 的场景**：
-
-1. 需要将参数作为"数据"传递（如存储、序列化、跨函数传递）。
-2. 需要在运行期决定参数集合（如配置文件解析）。
-3. 需要对参数集合做元编程操作（如过滤、变换）。
-4. 跨 ABI 边界传递参数（如插件接口）。
-
-**优先使用直接变参模板的场景**：
-
-1. 编译期已知所有类型与数量。
-2. 追求零开销抽象。
-3. 需要每个参数独立处理（如日志、信号槽）。
-4. 不需要存储参数集合。
-
----
-
-**常见疑问 16**：C++20 的 Lambda 捕获包展开相比 C++17 的 `std::tuple` 捕获有什么优势？反之又如何？
-
-**解析讲解**：
-
-**Lambda 捕获包的优势**：
-
-1. **语法直观**：`[...captures = args]` 比 `[t = std::make_tuple(args...)]` 更清晰。
-2. **直接访问**：捕获的变量可直接使用，无需 `std::get`。
-3. **类型独立**：每个捕获变量保持原类型，无需 tuple 包装。
-
-**tuple 捕获的优势**：
-
-1. **C++17 兼容性**：tuple 方案在 C++17 即可用。
-2. **元编程友好**：tuple 支持 `std::apply`、`std::get<I>` 等操作。
-3. **运行期灵活性**：tuple 可在运行期动态操作。
-
----
-
-## 10. 参考文献
-
 ### 10.1 标准与规范
 
 - [1] International Organization for Standardization. 2020. *Information technology — Programming languages — C++ (ISO/IEC 14882:2020)*. Geneva, Switzerland: ISO. DOI: 10.3403/30199258U.
@@ -2031,8 +1869,6 @@ int main() {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - **《C++ Templates: The Complete Guide》** — Vandevoorde, Josuttis, Gregor（2017, 2nd ed.）：第 4 章介绍变参模板，第 9 章详述折叠表达式。
@@ -2041,33 +1877,11 @@ int main() {
 - **《C++17 - The Complete Guide》** — Nicolai Josuttis（2019）：第 4 章全面介绍折叠表达式。
 - **《C++20 - The Complete Guide》** — Nicolai Josuttis（2021）：第 7 章介绍 Lambda 捕获包展开。
 
-### 11.2 在线资源
-
-- **cppreference.com**：可变参数模板参考。https://en.cppreference.com/w/cpp/language/parameter_pack
-- **cppreference.com**：折叠表达式参考。https://en.cppreference.com/w/cpp/language/fold
-- **ISO C++ 官方文档**：标准提案库。https://www.open-std.org/jtc1/sc22/wg21/
-- **Compiler Explorer**：在线编译器。https://godbolt.org/
-- **C++ Insights**：将 C++ 源码转换为编译器视角。https://cppinsights.io/
-
 ### 11.3 视频课程
 
 - **Andrei Alexandrescu: "Variadic Templates" (CppCon 2015)**：变参模板的深度解析。
 - **Andrew Sutton: "Fold Expressions" (CppCon 2016)**：折叠表达式的设计与实现。
 - **Bjarne Stroustrup: "C++11 Style: A Tour" (CppCon 2014)**：C++11 风格的变参模板应用。
-
-### 11.4 开源项目参考
-
-- **LLVM/Clang**：`llvm/ADT/STLExtras.h` 中的变参模板应用。https://github.com/llvm/llvm-project
-- **Boost.Hana**：现代元编程库。https://github.com/boostorg/hana
-- **Boost.MPL**：C++11 之前的元编程库。https://www.boost.org/doc/libs/release/libs/mpl/
-- **range-v3**：C++20 ranges 的前身，大量使用变参模板。https://github.com/ericniebler/range-v3
-- **Folly**：Facebook 的 C++ 库。https://github.com/facebook/folly
-
-### 11.5 相关文档
-
-- **C++ Reference: Parameter Pack**：https://en.cppreference.com/w/cpp/language/parameter_pack
-- **C++ Reference: Fold Expressions**：https://en.cppreference.com/w/cpp/language/fold
-- **C++ Core Guidelines: T.20-Concepts**：与变参模板结合的概念使用。https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
 
 ### 11.6 进阶主题
 

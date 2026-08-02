@@ -495,17 +495,7 @@ GROUP BY u.name;
 -- file_fdw: 读取外部文件
 ```
 
-## 参考文献
-
-PostgreSQL 官方文档：https://www.postgresql.org/docs/
-PostgreSQL 中文文档：https://www.postgresql.org/docs/current/index.html
-PGXN 扩展仓库：https://pgxn.org/
-PostGIS：https://postgis.net/
-pgvector：https://github.com/pgvector/pgvector
-
 ## 延伸阅读
-
 PostgreSQL 窗口函数，见 021-postgresql 模块文档。
 PostgreSQL 递归查询，见 021-postgresql 模块相关文档。
 SQL 基础，见 019-sql 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 PostgreSQL 课程。

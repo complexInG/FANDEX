@@ -4,7 +4,7 @@ title: Kruskal 算法
 module: algorithm
 category: Algorithm/MinimumSpanningTree
 difficulty: intermediate
-description: Kruskal 最小生成树算法：Joseph B. Kruskal 1956《On the Shortest Spanning Subtree of a Graph》Proceedings of the American Mathematical Society 7(1):48-50 DOI:10.1090/S0002-9939-1956-0078686-7 提出的贪心加边算法，与 Prim 1957、Jarník 1930、Borůvka 1926 共同构成 MST 算法家族。算法以 $O(E \log E)$ 时间、$O(V)$ 空间求解连通无向加权图的最小生成树，借助并查集（Tarjan 1975 路径压缩+按秩合并）实现高效的环检测。本文涵盖贪心选择性质证明、切割性质与回路性质、与 Prim/Borůvka 算法的对比、最小生成森林/次小生成树/TSP 2-近似应用、NetworkX 与 Boost Graph Library 工业级实现，附 Python/C++/Java 多语言实现与 CLRS 第 23 章风格习题。
+description: Kruskal 最小生成树算法：Joseph B. Kruskal 1956《On the Shortest Spanning Subtree of a Graph》Proceedings of the American Mathematical Society 7(1):48-50 DOI:10.1090/S0002-9939-1956-0078686-7 提出的贪心加边算法，与 Prim 1957、Jarník 1930、Borůvka 1926 共同构成 MST 算法家族。算法以 $O(E \log E)$ 时间、$O(V)$ 空间求解连通无向加权图的最小生成树，借助并查集（Tarjan 1975 路径压缩+按秩合并）实现高效的环检测。本文涵盖贪心选择性质证明、切割性质与回路性质、与 Prim/Borůvka 算法的对比、最小生成森林/次小生成树/TSP 2-近似应用、NetworkX 与 Boost Graph Library 工业级实现，附 Python/C++/Java 多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -1964,40 +1964,6 @@ def second_minimum_spanning_tree(n, edges):
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**习题 10.1**：Kruskal 算法的时间复杂度主要由哪部分决定？
-- A. 并查集初始化 $O(V)$
-- B. 边排序 $O(E \log E)$
-- C. 并查集操作 $O(E \cdot \alpha(V))$
-- D. 提前终止检查 $O(1)$
-
-**习题 10.2**：以下哪个图最适合使用 Kruskal 算法求 MST？
-- A. 稠密图（$E \approx V^2$）
-- B. 稀疏图（$E \approx V$）
-- C. 完全图（$E = V(V-1)/2$）
-- D. 树（$E = V - 1$）
-
-**习题 10.3**：关于切割性质与回路性质，以下哪个表述正确？
-- A. 切割性质说"最大跨越边必在 MST 中"
-- B. 回路性质说"最小回路边必不在 MST 中"
-- C. 切割性质说"最小跨越边必在某个 MST 中"
-- D. 回路性质与切割性质无关
-
-**习题 10.4**：Kruskal 算法在以下哪种情况下不适用？
-- A. 边权为负
-- B. 图不连通
-- C. 边权为浮点数
-- D. 图有自环
-
-**习题 10.5**：并查集路径压缩+按秩合并的均摊复杂度是？
-- A. $O(1)$
-- B. $O(\log n)$
-- C. $O(\alpha(n))$（反 Ackermann 函数）
-- D. $O(n)$
-
 ### 填空题知识点讲解
 
 **习题 10.6**：Kruskal 算法的核心策略是按边权 ____ 排序，依次加入不形成 ____ 的边。
@@ -2054,20 +2020,6 @@ def find_recursive(x):
 **习题 10.18**：讨论 MST 问题在机器学习中的应用，特别是单链聚类（Single-Linkage Clustering）与 Felzenszwalb 图像分割算法的关联。
 
 ---
-
-## 11. 参考答案
-
-### 选择题知识点讲解
-
-**10.1**：B。边排序 $O(E \log E)$ 是主导项。并查集操作 $O(E \cdot \alpha(V)) \approx O(E)$ 在实际中可视为线性，远小于排序。
-
-**10.2**：B。稀疏图（$E \approx V$）时 Kruskal $O(V \log V)$ 远优于 Prim 邻接矩阵 $O(V^2)$。树（D）已是 MST 无需计算。稠密图与完全图应选 Prim。
-
-**10.3**：C。切割性质：最小跨越边必在**某个** MST 中（注意是"某个"非"所有"，因为 MST 可能不唯一）。回路性质：最大回路边必不在**某个** MST 中。
-
-**10.4**：D。自环（self-loop）在 MST 中无意义（自环必形成环，必被跳过），但 Kruskal 仍可正确运行（自动跳过自环）。负权、不连通、浮点权 Kruskal 均可处理。
-
-**10.5**：C。Tarjan 1975 证明路径压缩+按秩合并的均摊复杂度为 $O(\alpha(n))$，其中 $\alpha$ 是反 Ackermann 函数，对所有实际 $n \leq 10^{80}$ 有 $\alpha(n) \leq 4$。
 
 ### 填空题知识点讲解
 
@@ -2212,8 +2164,6 @@ Borůvka 的分布式优势：
 
 ---
 
-## 12. 参考文献
-
 ### 12.1 历史原始论文
 
 1. **Kruskal, Joseph B.** (1956). "On the Shortest Spanning Subtree of a Graph and the Traveling Salesman Problem." *Proceedings of the American Mathematical Society* 7(1): 48-50. DOI: [10.1090/S0002-9939-1956-0078686-7](https://doi.org/10.1090/S0002-9939-1956-0078686-7)
@@ -2266,8 +2216,6 @@ Borůvka 的分布式优势：
 
 ---
 
-## 13. 延伸阅读
-
 ### 13.1 理论延伸
 
 - **Karger-Klein-Tarjan 1995 随机化线性 MST**：通过 Borůvka 阶段 + 随机采样实现期望 $O(E)$，是 MST 算法的理论极限
@@ -2299,16 +2247,6 @@ Borůvka 的分布式优势：
 - [堆与优先队列](algorithm/堆与优先队列.md)：Prim 算法的核心数据结构
 - [算法分析基础与学习路线](algorithm/算法分析基础与学习路线.md)：算法分析基础
 
-### 13.5 在线资源
-
-- **MIT 6.006 Introduction to Algorithms**：https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/ - Lecture 13: Minimum Spanning Trees
-- **Stanford CS161 Design and Analysis of Algorithms**：https://web.stanford.edu/class/cs161/ - MST 章节
-- **CMU 15-451/651 Algorithms**：https://www.cs.cmu.edu/~15451-f22/ - Greedy Algorithms 章节
-- **CP-Algorithms Minimum Spanning Tree**：https://cp-algorithms.com/graph/mstkruskal.html - 竞赛级实现
-- **VisuAlgo MST Visualization**：https://visualgo.net/en/mst - Kruskal 算法可视化
-
----
-
 ## 14. 术语表
 
 | 术语 | 英文 | 含义 |
@@ -2336,4 +2274,3 @@ Borůvka 的分布式优势：
 | 三角不等式 | Triangle Inequality | $d(a, c) \leq d(a, b) + d(b, c)$，度量 TSP 的前提 |
 | 软堆 | Soft Heap | Chazelle 2000 提出的"允许错误"的堆数据结构 |
 | GHS 算法 | Gallager-Humblet-Spira Algorithm | 分布式 MST 算法 |
-

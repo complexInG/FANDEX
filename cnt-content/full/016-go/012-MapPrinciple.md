@@ -1206,73 +1206,6 @@ Consul 的服务注册中心用 `map[string]map[string]*Service` 维护 service 
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 下列哪种类型可以作为 Go map 的 key？
-
-A. `[]int`
-B. `map[string]int`
-C. `[8]byte`
-D. `func()`
-
-**解析讲解**：C
-
-**解析讲解**：A、B、D 都不是 comparable 类型（slice、map、function 不能用 `==` 比较）。数组 `[8]byte` 是 comparable，可作为 key。
-
----
-
-**Q2.** Go 1.22 的 map 实现中，一个 bucket 容纳多少个键值对？
-
-A. 4
-B. 8
-C. 16
-D. 32
-
-**解析讲解**：B
-
-**解析讲解**：`bucketCnt = 8`，定义在 `runtime/map.go`。这是 8 个 slot 的 bucket chaining 设计。
-
----
-
-**Q3.** 触发 map 增量扩容的负载因子阈值是？
-
-A. 0.75
-B. 6.5
-C. 0.875
-D. 1.0
-
-**解析讲解**：B
-
-**解析讲解**：Go runtime 的 `loadFactorNum/loadFactorDen = 13/2 = 6.5`。
-
----
-
-**Q4.** 下列哪种情况会触发"等量扩容"（same size grow）？
-
-A. 元素数量超过 `2^B * 6.5`
-B. overflow bucket 数量过多但元素数未达扩容阈值
-C. 用户调用 `make(map, n)` 指定更大容量
-D. map value 大小超过 128 字节
-
-**解析讲解**：B
-
-**解析讲解**：等量扩容用于整理碎片化的 overflow bucket，bucket 数量不变，只是重新分配元素。
-
----
-
-**Q5.** Go 1.24 引入的 Swiss Table 主要优化点是？
-
-A. 支持 LRU 淘汰
-B. 用开放寻址 + SIMD 替代 bucket chaining
-C. 支持自定义 hash 函数
-D. 支持并发安全写入
-
-**解析讲解**：B
-
-**解析讲解**：Swiss Table 用开放寻址 + group + SIMD metadata 比较，替代了 bucket chaining + overflow 链表。
-
 ### 填空题知识点讲解
 
 **Q1.** `hmap` 结构中，`B` 字段表示 bucket 数量为 $2^B$。若 `B=5`，则 bucket 数量是 ____ 个。
@@ -1457,77 +1390,6 @@ func main() {
 }
 ```
 
-### 9.4 思考题
-
-**Q1.** 为什么 Go runtime 不允许用户自定义 map 的 hash 函数？这种设计的优缺点是什么？
-
-**参考答案要点**：
-
-- **优点**：
-  - 防止用户写出弱 hash 函数导致性能退化或 DoS 攻击
-  - runtime 可以针对不同 key 类型生成特化版本，启用 AES 指令加速
-  - hash seed 在每次程序启动时随机化（`hash0`），防止 hash 碰撞攻击
-- **缺点**：
-  - 无法针对特定 key 分布优化（如 UUID 字符串可以前缀 hash）
-  - 无法实现一致性 hash 等定制算法（需自行包装）
-
----
-
-**Q2.** Swiss Table 在 worst-case 下的时间复杂度仍是 $O(n)$（所有 key 都 hash 到同一个 group）。Go runtime 如何防止恶意构造的 key 触发 worst-case？
-
-**参考答案要点**：
-
-- `hash0` 在程序启动时随机化，攻击者无法预测 hash 输出
-- H2 hash（7 bit）每次程序运行都不同
-- runtime 监控 overflow/group 装载率，若过高自动 rehash 并更换 seed
-- 但仍存在理论 worst-case：若 attacker 能 probe 出 seed（如通过时序攻击），仍可构造碰撞
-
----
-
-**Q3.** 在什么场景下，`sync.Map` 性能劣于 `map + RWMutex`？为什么？
-
-**参考答案要点**：
-
-- **write-heavy 场景**：`sync.Map` 写入时需要更新 `dirty` 并可能触发 `dirty` → `read` 提升（amortized cost 高）
-- **key 集合不断变化**：新 key 频繁出现，`read` 命中率下降，每次读都要降级到 `dirty`
-- **随机访问模式**：cache 局部性差，atomic 操作无法利用 cache line
-
-`sync.Map` 的优势仅在 **read-heavy + key 集合稳定** 时显著（read 路径无锁，命中 `read` 即返回）。
-
----
-
-**Q4.** Go 1.24 的 Swiss Table 删除了渐进式扩容，改为一次性扩容。这是否会引入 STW 风险？
-
-**参考答案要点**：
-
-- **不会引入 STW**：Go runtime 的扩容发生在 `mapassign` 内部，是同步操作，不会 stop-the-world
-- **单次操作延迟增加**：触发扩容的那次 `mapassign` 操作会变慢（约 $O(n)$），但后续操作变快
-- **amortized 成本**：每次插入分摊一点扩容成本，平均仍是 $O(1)$
-- **替代方案**：若要避免单次延迟尖峰，可手动调用 `maps.Clone` 重建 map
-
----
-
-**Q5.** 设计一个支持"批量原子更新"的 map（即要么全部更新成功，要么全部失败）。如何实现？
-
-**参考答案要点**：
-
-- **方案 A：copy-on-write**
-  - 读路径：atomic load 指针，返回当前 map snapshot
-  - 写路径：clone 整个 map，在新 map 上应用所有更新，atomic store 替换指针
-  - 优点：读无锁；缺点：写开销大（O(n) clone）
-- **方案 B：MVCC + 版本号**
-  - map value 附带版本号，写操作生成新版本，读操作按版本号过滤
-  - 优点：读写并发；缺点：内存占用高，需 GC 老版本
-- **方案 C：事务日志**
-  - 写操作记录到 WAL，定期 apply 到主 map
-  - 优点：持久化友好；缺点：实时性差
-
-参考实现：`CockroachDB` 的 `tree.TMap`、`etcd` 的 `mvcc.KV`。
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档与规范
 
 [1] Google LLC. 2024. The Go Programming Language Specification. (February 2024). Retrieved July 20, 2026 from https://go.dev/ref/spec. DOI: 10.25385/golang/spec-1.22.
@@ -1564,8 +1426,6 @@ func main() {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 推荐书籍
 
 - **Don Knuth.** *The Art of Computer Programming, Vol. 3: Sorting and Searching* (2nd ed.). Addison-Wesley, 1998. ISBN 978-0-201-89685-5.
@@ -1584,16 +1444,6 @@ func main() {
   - Cuckoo hashing 是另一种开放寻址策略，Go 1.24 之前曾被讨论但未采纳。
 - **Askitis, N., and Sinha, R.** "HAT-trie: A Cache-conscious Trie for String Keys." *ACM SIGMOD Record* 36, 1 (March 2007), 19–26. DOI: 10.1145/1278303.1278306.
 - **Ross, K. A.** "Efficient Hash Probes on Modern Processors." In *ICDE 2007*, IEEE, 2007, 1299–1303. DOI: 10.1109/ICDE.2007.368966.
-
-### 11.3 在线资源
-
-- **Go Blog: Go maps in action** — https://go.dev/blog/maps
-- **Go Blog: Inside the Map Implementation** — https://go.dev/blog/go-maps-in-action
-- **Dave Cheney: Inside the Map Implementation** — https://dave.cheney.net/2018/05/29/how-the-go-runtime-implements-maps-efficiently-without-generics
-- **Ardan Labs: Map Internals** — https://www.ardanlabs.com/blog/2013/12/macro-view-of-map-internals.html
-- **Swiss Table blog (Abseil)** — https://abseil.io/about/design/swisstables
-- **Go 1.24 release notes** — https://go.dev/doc/go1.24
-- **Sourcegraph: Go map source code search** — https://sourcegraph.com/github.com/golang/go/-/blob/src/runtime/map.go
 
 ### 11.4 进阶主题
 

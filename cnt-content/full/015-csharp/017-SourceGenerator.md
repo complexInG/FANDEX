@@ -1215,8 +1215,6 @@ public partial class {{typeProps.ContainingType}}
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：编写一个源生成器，为标注 `[ToString]` 的类自动生成 `ToString()` 方法，输出所有公共属性的名称与值。
@@ -1325,8 +1323,6 @@ public void Execute(GeneratorExecutionContext context)
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档与规范
 
 [1] Microsoft Corporation. 2024. *Source generators*. C# documentation. Retrieved July 21, 2026 from https://learn.microsoft.com/dotnet/csharp/roslyn-sdk/source-generators-overview
@@ -1373,23 +1369,6 @@ public void Execute(GeneratorExecutionContext context)
 
 ---
 
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **C# 源生成器文档**：https://learn.microsoft.com/dotnet/csharp/roslyn-sdk/source-generators-overview
-- **增量生成器指南**：https://github.com/dotnet/roslyn/blob/main/docs/features/incremental-generators.md
-- **Roslyn 源生成器 Cookbook**：https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md
-- **.NET 运行时源码**：https://github.com/dotnet/runtime
-
-### 11.2 开源项目参考
-
-- **CommunityToolkit.Mvvm**：MVVM 源生成器的工业级实现。
-- **System.Text.Json.SourceGeneration**：官方 JSON 序列化源生成器。
-- **Dapper.SourceGenerators**：ORM 源生成器范例。
-- **Vogen**：值对象源生成器，演示类型安全的强类型 ID。
-- **Mediator.SourceGenerator**：中介者模式源生成器实现。
-
 ### 11.3 进阶书籍
 
 - **《Pro .NET Memory Management》**(Konrad Kokosa)：理解 .NET 内存与源生成器交互。
@@ -1401,13 +1380,6 @@ public void Execute(GeneratorExecutionContext context)
 - **.NET Conf: Source Generators Deep Dive**：年度 .NET 大会的源生成器专题。
 - **Microsoft Learn: Source Generators**：官方入门教程。
 - **YouTube: Andrew Lock's Source Generator Series**：实战系列教程。
-
-### 11.5 社区资源
-
-- **GitHub: dotnet/roslyn discussions**：源生成器讨论区。
-- **Stack Overflow: source-generators tag**：技术问答。
-- **r/csharp (Reddit)**：社区讨论。
-- **.NET Discord Server**：实时交流。
 
 ### 11.6 学习路径建议
 

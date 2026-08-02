@@ -2158,8 +2158,6 @@ const hashes = await Promise.all(
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：实现一个 `pLimit(concurrency)` 函数，要求支持动态查询当前活跃任务数和队列长度。
@@ -2200,20 +2198,6 @@ await Promise.all([log(1), log(2), log(3), log(4)]);
 
 请实现完整的 `safeFetchAll(urls)` 函数。
 
-### 9.3 桑地思考题
-
-**题目 7**：在 32 核服务器上处理 1 亿条记录，每个记录处理需要 100ms CPU + 50ms I/O。如何设计并发方案？需要考虑：
-
-- CPU 密集 vs I/O 密集的不同策略。
-- 内存限制（每条记录占用 1KB）。
-- 错误恢复（处理到 5000 万条时崩溃，如何续传）。
-
-**题目 8**：为什么 JavaScript 的并发控制与 Go 的 channel + goroutine 模型本质不同？请从以下角度分析：
-
-- 调度模型（协作式 vs 抢占式）。
-- 内存模型（共享内存 vs 消息传递）。
-- 错误传播。
-
 ### 9.4 设计题
 
 **题目 9**：设计一个分布式任务调度系统，要求：
@@ -2231,70 +2215,8 @@ await Promise.all([log(1), log(2), log(3), log(4)]);
 - 它的 `clearQueue` 方法的语义是什么？
 - 它为什么用 `AsyncResource`？有什么用？
 
-### 9.5 参考答案
-
-**题目 2 答案**：
-
-```
-start 1
-start 2
-end 1 (或 end 2，取决于 setTimeout 触发顺序)
-end 2
-start 3
-start 4
-end 3
-end 4
-```
-
-**题目 3 答案**：
-
-`Array.prototype.map` 是同步遍历，会立即对每个元素调用回调函数。`async fn` 返回 Promise，但 Promise 创建本身是同步的。因此 `map` 在同步阶段创建了所有 Promise，每个 Promise 内部的异步操作被注册到事件循环。`Promise.all` 接收这些已创建的 Promise 数组，此时所有异步任务都已在事件循环队列中等待执行。
-
----
-
-## 10. 参考文献（ACM 格式）
-
-[1] S. Sorhus, "p-limit: Run multiple promise-returning & async functions with limited concurrency," *GitHub Repository*, 2017. [Online]. Available: https://github.com/sindresorhus/p-limit
-
-[2] ECMA International, *ECMAScript 2023 Language Specification (ECMA-262, 14th edition)*, Standard ECMA-262, 2023.
-
-[3] J. D. Little, "A proof for the queuing formula L = λW," *Operations Research*, vol. 9, no. 3, pp. 383-387, 1961.
-
-[4] G. M. Amdahl, "Validity of the single processor approach to achieving large scale computing capabilities," in *Proc. AFIPS Spring Joint Computer Conference*, 1967, pp. 483-485.
-
-[5] M. Butcher, S. Ratchev, and A. Walenta, "A distributed task queue for cloud-based simulation," *CIRP Annals*, vol. 65, no. 1, pp. 397-400, 2016.
-
-[6] R. Fielding et al., "Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content," RFC 7231, 2014.
-
-[7] M. Belshe, R. Peon, and M. Thomson, "Hypertext Transfer Protocol Version 2 (HTTP/2)," RFC 7540, 2015.
-
-[8] T. J. McCabe, "A complexity measure," *IEEE Transactions on Software Engineering*, no. 4, pp. 308-320, 1976.
-
-[9] M. Welsh, D. Culler, and E. Brewer, "SEDA: An architecture for well-conditioned, scalable internet services," in *Proc. 18th ACM Symposium on Operating Systems Principles (SOSP)*, 2001, pp. 230-243.
-
-[10] N. Bettenburg, S. Just, and A. Schroter, "What makes code hard to test?," in *Proc. 9th IEEE Working Conference on Mining Software Repositories (MSR)*, 2012, pp. 62-71.
-
-[11] D. P. Friedman and M. Felleisen, *The Little Schemer*, 4th ed. Cambridge, MA: MIT Press, 1996.
-
-[12] R. Nystrom, "Game Programming Patterns," Internet, 2014. [Online]. Available: https://gameprogrammingpatterns.com/
-
----
-
 ## 11. 延伸阅读
-
-- [MDN - Using Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)
-- [MDN - async function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
-- [Node.js - Event Loop](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/)
-- [p-limit 源码](https://github.com/sindresorhus/p-limit/blob/main/index.js)
-- [p-queue: 更完整的队列实现](https://github.com/sindresorhus/p-queue)
-- [Sentry - Concurrency in JavaScript](https://blog.sentry.io/2017/05/08/slow-javascript-event-loop/)
-- [Jake Archibald - In The Loop](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
-- [Queueing Theory Basics](https://www.cs.uic.edu/~jbell/CourseNotes/OperatingSystems/5_CPU_Scheduling.html)
-- [Hystrix Wiki - How it Works](https://github.com/Netflix/Hystrix/wiki/How-it-Works)
-- [Go by Example - Rate Limiting](https://gobyexample.com/rate-limiting)
-
 ---
-
 ## 附录 A：p-limit 完整源码解析
 
 p-limit v6 的核心源码（简化）：
@@ -2564,28 +2486,6 @@ class AsyncQueue<T = unknown> {
 
 记录最近 N 秒的请求数，超过阈值则拒绝。比固定窗口更精确，避免边界突发。
 
-## 附录 K：常见面试题
-
-1. **Q: `Promise.all` 会限制并发吗？**
-
-   A: 不会。`map` 同步创建所有 Promise，所有任务同时启动。
-
-2. **Q: 如何实现"最多 3 个并发"？**
-
-   A: 用 p-limit 包裹每个任务：`const limit = pLimit(3); await Promise.all(tasks.map(t => limit(t)));`
-
-3. **Q: p-limit 的实现原理？**
-
-   A: 计数器 + 队列。`activeCount` 跟踪活跃任务，超过限制时入队，任务完成时出队下一个。
-
-4. **Q: 如何取消正在执行的并发任务？**
-
-   A: 用 `AbortController`，将 `signal` 传给 fetch 或自定义任务。
-
-5. **Q: 1 万个任务，并发度 10，每个任务 100ms，总耗时？**
-
-   A: 理论 100 秒（10000/10 * 0.1）。实际略高于此，受调度开销影响。
-
 ## 附录 L：术语表
 
 | 术语 | 英文 | 含义 |
@@ -2778,4 +2678,3 @@ await Promise.all(
 3. 研究无锁数据结构
 
 ---
-

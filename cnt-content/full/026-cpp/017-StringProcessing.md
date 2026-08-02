@@ -66,16 +66,6 @@ int main() {
 | **C++23** | 2023 | `contains`；`std::print`/`std::println`；`std::format_string`；`std::basic_format_string` | P1679, P2093, P2418 |
 | **C++26** | 草案 | `std::text_encoding`；`std::encoding_error`；改进的 Unicode 支持 | P0244, P1885 |
 
-### 1.3 关键提案与文献
-
-- **N2668 (Becker, 2008)**：*A Proposal to Add String Concatenation to the Standard Library*，奠定现代 `std::string` 行为。
-- **P0220 (Maurer, 2016)**：*string_view: a non-owning reference to a string*，引入 `std::string_view`。
-- **P0067 (Malaus, 2016)**：*A Proposal to Add String Conversions to the Standard Library*，引入 `from_chars`/`to_chars`。
-- **P0645 (Zverev, 2019)**：*Text Formatting*，引入 `std::format`。
-- **P0482 (Malaus, 2018)**：*char8_t: A type for UTF-8 Characters*，引入 `char8_t`。
-- **P2093 (Zverev, 2021)**：*Formatted Output*，引入 `std::print`。
-- **P1885 (Malaus, 2022)**：*Text Encoding Identification*，引入 `std::text_encoding`。
-
 ### 1.4 与其他语言字符串的横向对比
 
 | 特性 | C++ `std::string` | Rust `String`/`&str` | Python `str` | Java `String` | Go `string` |
@@ -2229,8 +2219,6 @@ int main() {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 1. **选择题**：下列关于 `std::string_view` 的描述，错误的是？
@@ -2302,8 +2290,6 @@ int main() {
     - 可互转（显式转换）
     - 与标准库兼容
 
-## 10. 参考文献
-
 ### 10.1 标准文档
 
 - **ISO/IEC 14882:2023** — *Information technology — Programming languages — C++*，第 6 章 Strings，第 22 章 String views libraries，第 20.20 章 Format library。
@@ -2337,18 +2323,6 @@ int main() {
 - **Karp, R. M., & Rabin, M. O.** (1987). *Efficient randomized pattern-matching algorithms*. IBM Journal of Research and Development, 31(2).
 - **Davis, T.** (2002). *Unicode and Software Internationalization*. https://unicode.org
 - **Malaus, J.** (2018). *The strange details of std::format*. https://www.zverovich.net/
-
-### 10.5 在线资源
-
-- **cppreference.com** — *Strings library*. https://en.cppreference.com/w/cpp/string
-- **cppreference.com** — *String views library*. https://en.cppreference.com/w/cpp/string_view
-- **cppreference.com** — *Format library*. https://en.cppreference.com/w/cpp/utility/format
-- **Unicode Consortium** — *Unicode Technical Reports*. https://www.unicode.org/reports/
-- **fmt GitHub** — https://github.com/fmtlib/fmt
-- **CTRE GitHub** — https://github.com/hanickadot/compile-time-regular-expressions
-- **ICU Project** — https://icu.unicode.org/
-
-## 11. 延伸阅读
 
 ### 11.1 书籍推荐
 

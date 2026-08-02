@@ -4,7 +4,7 @@ title: 排序算法
 module: algorithm
 category: Algorithm/Sorting
 difficulty: intermediate
-description: 排序（Sorting）算法的形式化定义、比较排序下界 $\Omega(n \log n)$ 的决策树证明、冒泡/选择/插入/希尔/归并/堆排/快排七大经典排序、计数/基数/桶排序三种线性时间非比较排序、内省排序（Musser 1997）与 Timsort（Peters 2002）的工业级混合方案，涵盖 von Neumann 1945 归并、Shell 1959 希尔、Hoare 1961 快排、Williams 1964 堆排、Musser 1997 内省、Peters 2002 Timsort 的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 2/6/8 章风格习题。
+description: 排序（Sorting）算法的形式化定义、比较排序下界 $\Omega(n \log n)$ 的决策树证明、冒泡/选择/插入/希尔/归并/堆排/快排七大经典排序、计数/基数/桶排序三种线性时间非比较排序、内省排序（Musser 1997）与 Timsort（Peters 2002）的工业级混合方案，涵盖 von Neumann 1945 归并、Shell 1959 希尔、Hoare 1961 快排、Williams 1964 堆排、Musser 1997 内省、Peters 2002 Timsort 的历史脉络，附 Python/C++/Java 多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -2228,42 +2228,6 @@ result = sorted(arr)  # arr 不变
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：. 下列排序算法中，**最坏时间复杂度**为 $O(n \log n)$ 的是（ ）。
-A. 快速排序  B. 希尔排序  C. 堆排序  D. 冒泡排序
-
-**解析讲解**：C。堆排序最坏 $O(n \log n)$；快排最坏 $O(n^2)$；希尔排序最坏取决于增量序列，Shell 原始序列 $O(n^{3/2})$ 或最坏 $O(n^2)$；冒泡最坏 $O(n^2)$。
-
-**常见疑问 2**：. 在下列场景中，应优先选择哪种排序算法？
-- 场景：10 万条记录，关键字为 32 位整数，需稳定排序。
-- 选项：A. 快排  B. 堆排  C. 归并  D. 基数
-
-**解析讲解**：D。基数排序稳定且 $O(d \cdot n)$（$d=4$ 字节）$= O(n)$，远快于 $O(n \log n)$ 的比较排序。如需比较排序则选归并（稳定）。
-
-**常见疑问 3**：. Python `list.sort` 自 2.3 起采用的算法是（ ）。
-A. 快排  B. 归并  C. Timsort  D. introsort
-
-**解析讲解**：C。Tim Peters 2002 设计的 Timsort，结合自然 run 检测 + 二分插入 + 归并栈。
-
-**常见疑问 4**：. 下列关于排序稳定性的描述正确的是（ ）。
-A. 快排可以通过修改分区函数变为稳定排序
-B. 堆排本质上不稳定，无法改造为稳定
-C. 归并排序稳定与否取决于合并时左/右半的优先级
-D. 基数排序的稳定性不影响最终结果
-
-**解析讲解**：C。归并时若 $L[i] = R[j]$，先取 $L[i]$ 则稳定，先取 $R[j]$ 则不稳定。A 错误：快排的分区无法保证相等元素相对顺序；B 错误：堆排可以通过在 key 上附加原索引改造为稳定；D 错误：LSD 基数排序必须每轮稳定，否则结果错误。
-
-**常见疑问 5**：. Timsort 的 minrun 取值范围为 [32, 64]，其选择依据是（ ）。
-A. 经验值，无理论依据
-B. 使 $n/\text{minrun}$ 接近 2 的幂，归并栈平衡
-C. 与 CPU L1 cache 大小匹配
-D. 与 Python 对象指针大小相关
-
-**解析讲解**：B。Peters 在 listsort.txt 中说明：取 `n` 的 6 位高位，若低位非零则 +1，使 $n/\text{minrun} \approx 2^k$ 或 $2^k+1$，归并栈平衡。
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：. 比较排序在最坏情况下的时间复杂度下界是 $\Omega(\_\_\_)$，由 **决策树** 模型证明，关键不等式为 $2^h \geq n!$。
@@ -2416,8 +2380,6 @@ def _merge(arr, low, mid, high, temp):
 
 ---
 
-## 16. 参考文献
-
 ### 16.1 经典教材
 
 1. Knuth, Donald E. (1998). *The Art of Computer Programming, Volume 3: Sorting and Searching* (2nd ed.). Addison-Wesley Professional. ISBN 978-0201896855. Section 5.1 (Combinatorial Properties of Permutations), Section 5.2 (Internal Sorting), Section 5.3 (External Sorting), Section 5.4 (Sorting on Large Secondary Storage Devices).
@@ -2450,20 +2412,6 @@ def _merge(arr, low, mid, high, temp):
 22. McIlroy, Peter M.; Bostic, Keith; McIlroy, M. Douglas (1993). "Engineering radix sort". *Computing Systems* 6(1): 5-27. American flag sort 与基数排序的工业级实现。
 23. de Gouw, Stijn; Rot, Jurriaan; de Boer, Frank S.; Bubel, Richard; Hähnle, Reiner (2015). "OpenJDK's Java.utils.Collection.sort() is Broken: The Double Bubble". *International Conference on Computer Aided Verification (CAV)*. Springer LNCS 9206: 243-259. Timsort 形式化验证。
 
-### 16.4 在线资源
-
-24. CPython `listsort.txt` 完整设计文档：https://github.com/python/cpython/blob/main/Objects/listsort.txt
-25. CPython `Objects/listobject.c` 源码：https://github.com/python/cpython/blob/main/Objects/listobject.c
-26. JDK 21 `java.util.DualPivotQuicksort.java` 源码：https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/DualPivotQuicksort.java
-27. libstdc++ `stl_algo.h` 源码：https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/stl_algo.h
-28. Linux kernel `lib/sort.c` 源码：https://github.com/torvalds/linux/blob/master/lib/sort.c
-29. Visualizing Sorting Algorithms（排序可视化）：https://www.toptal.com/developers/sorting-algorithms
-30. USACO 排序算法教程：https://usaco.guide/bronze/sorting-custom
-
----
-
-## 17. 延伸阅读
-
 ### 17.1 理论深入
 
 - **比较排序下界的更严格证明**：CLRS §8.1 给出基于决策树的 $\Omega(n \log n)$ 下界；更深入可阅读 Knuth TAOCP Vol.3 §5.3.1 关于"最小比较次数"的精确研究（已知 $n=12$ 时最小 30 次比较）。
@@ -2480,15 +2428,6 @@ def _merge(arr, low, mid, high, temp):
 - **分布式排序**：Hadoop TeraSort、Spark RangePartitioner、Google MapReduce 论文（Dean-Ghemawat 2004）；
 - **GPU 排序**：CUB 库 `cub::DeviceRadixSort` 基数排序，比 thrust 快 5-10 倍；Merge sort 在 GPU 上不如 radix。
 - **字符串排序**：Sedgewick《Algorithms》§5.1 LSD/MSD 字符串排序；Bentley-Sedgewick 1997 Ternary QuickSort 三叉字符串快排。
-
-### 17.3 工程实现练习
-
-- **习题 A**：实现一个简单的 Timsort，要求检测自然 run（升序或降序）、minrun 计算、二分插入扩展 run、归并栈合并，并通过 LeetCode 912；
-- **习题 B**：实现 introsort，要求三数取中、三路分区、深度限制切堆排、小数组切插入排序，并通过 LeetCode 912；
-- **习题 C**：实现外部归并排序，处理 10GB 文件，内存限制 100MB；
-- **习题 D**：用 Python multiprocessing 实现 parallel merge sort，比较单核与多核加速比；
-- **习题 E**：实现 pdqsort 的核心机制（pattern detection、三路分区切换、主元升级）；
-- **习题 F**：实现 BogoSort（猴子排序）并测试 $n=10$ 时的平均排序时间，理解 $O(n \cdot n!)$ 的可怕。
 
 ### 17.4 教学视频
 

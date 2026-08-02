@@ -347,58 +347,6 @@ npx @tailwindcss/upgrade
 | 重复配置 | 样式重复或冲突 | 同时使用了旧集成包（如 `@astrojs/tailwind`）与 Vite 插件 | 只保留一种接入方式 |
 | 修改后不生效 | 改了配置没反应 | Vite 缓存或监听失效 | 重启开发服务器 |
 
-## 11. 实战练习
-
-### 练习一：从零初始化一个 Vite + React 项目
-
-题目描述：按第 2 节流程，从空目录开始搭建一个能用 Tailwind 的 React 项目，最终页面显示一个红色背景、白色文字、圆角 8px 的按钮。
-
-提示：五步法——创建项目、安装两个包、注册插件、写 `@import "tailwindcss";`、入口引入 CSS。
-
-参考答案要点：`npm create vite@latest my-app -- --template react`；`pnpm add tailwindcss @tailwindcss/vite`；`vite.config.ts` 的 `plugins` 中加入 `tailwindcss()`；`src/index.css` 写入 `@import "tailwindcss";`；`src/main.tsx` 引入 `./index.css`；按钮写 `className="rounded-lg bg-red-500 px-4 py-2 text-white"`。
-
-### 练习二：给纯 HTML 项目接入 CLI
-
-题目描述：有一个只有 `index.html` 的静态页面项目，没有构建工具。请设计完整的接入步骤，包括安装、输入输出文件、监听命令。
-
-提示：使用 `@tailwindcss/cli`；输入文件放 `src/input.css`，输出到 `dist/output.css`。
-
-参考答案要点：`npm init -y` 后 `npm install -D @tailwindcss/cli`；创建 `src/input.css` 写入 `@import "tailwindcss";`；运行 `npx @tailwindcss/cli -i ./src/input.css -o ./dist/output.css --watch`；在 `index.html` 中 `<link rel="stylesheet" href="./dist/output.css">`。
-
-### 练习三：为组件目录补充扫描范围
-
-题目描述：项目里组件放在 `src/components`，但样式文件在 `styles/` 目录下，部分工具类不生效。如何用 `@source` 修复？
-
-提示：`@source` 路径相对于入口 CSS 文件。
-
-参考答案要点：在入口 CSS（假设位于 `styles/`）中追加 `@source "../src/components";`，保存后重启开发服务器。
-
-### 练习四：对照 v3 与 v4 的差异
-
-题目描述：列出你所在项目的 v3 配置（`tailwind.config.js` + 三行 `@tailwind` 指令 + `content` 数组），口头说明迁到 v4 后每一项对应的新写法。
-
-提示：对照第 8 节表格逐项翻译。
-
-参考答案要点：`tailwind.config.js` 的 `theme.extend` → CSS 中 `@theme`；三行指令 → `@import "tailwindcss";`；`content` 数组 → 自动检测 + `@source`；`postcss.config.js` 中 `tailwindcss` 插件 → `@tailwindcss/postcss`。
-
-### 练习五：验证安装的完整流程
-
-题目描述：写出安装完成后"自检清单"的五项验证，并说明每项验证失败时最可能的原因。
-
-提示：从 Preflight 效果、类名生效、变体、错误容忍、构建体积五个角度展开。
-
-参考答案要点：见第 9 节自检清单。失败定位：无 Preflight → 导入语句缺失；类名不生效 → 扫描范围问题；变体不生效 → 拼写或版本问题；构建体积过大 → 类名动态拼接导致全量生成。
-
 ## 12. 一句话记忆
 
 安装 Tailwind 4 只有两步：装包（`tailwindcss` + 对应构建插件）与写一行 `@import "tailwindcss";`——剩下的扫描范围用 `@source` 按需补充，配置从 `tailwind.config.js` 搬进了 CSS。
-
-## 参考链接与延伸阅读
-
-- Tailwind CSS 官方安装文档（Vite 方式）：https://tailwindcss.com/docs/installation/using-vite
-- Tailwind CSS 中文安装文档：https://www.tailwindcss.cn/docs/installation
-- Tailwind CSS 升级指南（v3 到 v4）：https://tailwindcss.com/docs/upgrade-guide
-- Tailwind CSS 主题变量（@theme）文档：https://tailwindcss.com/docs/theme
-- Tailwind CSS v4.3 发布说明：https://tailwindcss.com/blog/tailwindcss-v4-3
-
-延伸阅读建议：安装完成后，下一篇《Tailwind CSS 核心概念与工具类》将按清单逐一讲解颜色、间距、排版等核心工具类族；需要回顾 CSS 选择器与级联知识可回看 css/003-CSS3SelectorSystem。

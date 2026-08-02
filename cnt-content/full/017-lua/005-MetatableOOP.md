@@ -1408,8 +1408,6 @@ end
 - 元表代理使 Redis 命令调用更直观，但性能略低于直接 `redis.call`。
 - 生产环境应优先使用 EVALSHA 缓存脚本，减少网络传输。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题 1**：写出以下代码的输出，并解释原因。
@@ -1664,8 +1662,6 @@ print(u.name, u.age, u.active)  -- Alice  30  true
   3. 减少 `:` 调用：`obj:method()` 每次查找 `obj.method`，可改为 `local m = obj.method; m(obj, ...)`。
   4. LuaJIT：若运行在 LuaJIT 下，trace compiler 可自动优化元表查找。
 
-## 10. 参考文献
-
 ### 10.1 Lua 官方文献
 
 [1] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2023. *Lua 5.4 Reference Manual*. Technical Report, PUC-Rio, Rio de Janeiro, Brazil. Available at: https://www.lua.org/manual/5.4/
@@ -1697,8 +1693,6 @@ print(u.name, u.age, u.active)  -- Alice  30  true
 [11] LÖVE Development Team. 2024. *LÖVE 11.4 Documentation*. Available at: https://love2d.org/wiki/Main_Page
 
 [12] Carlsson, M. et al. 2020. Redis Lua scripts: atomicity, performance, and best practices. *Redis Labs Technical Report*. Available at: https://redis.io/docs/manual/programmability/eval/
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

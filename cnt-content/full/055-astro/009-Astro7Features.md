@@ -235,58 +235,6 @@ astro dev status
 | 找不到 `astro db` 命令 | 命令不存在 | `@astrojs/db` 在 7.0 被移除 | 改用独立数据库客户端或迁移到其他数据方案 |
 | 升级后自定义 Vite 插件报错 | 插件在构建期报错 | 插件依赖 Vite 内部 API，Rolldown 下不兼容 | 对照 Vite 8 迁移指南调整插件，或等待插件作者适配 |
 
-## 7. 实战练习
-
-### 练习 1：读懂版本时间线
-
-**题目**：说出 2.0、5.0、6.0、7.0 各自最核心的一项能力，并判断其中哪几次是"引擎级"改款。
-
-**提示**：引擎级 = 动了构建/运行内核（编译器、打包器、渲染引擎）。
-
-**参考答案要点**：2.0 内容集合（内容层）；5.0 Content Layer + Server Islands（内容架构）；6.0 dev server 重构 + Fonts API（平台层）；7.0 Rust 编译器 + Sätteri + Vite 8（构建内核）。其中 6.0/7.0 属于引擎级大改，5.0 属于架构级调整，2.0-4.0 偏功能与体验。
-
-### 练习 2：验证 Rust 编译器行为
-
-**题目**：写一个未闭合标签的 `.astro` 组件（如 `<div><span>文本`），分别在旧版与新项目（Astro 7）中构建，对比结果。
-
-**提示**：Astro 7 会直接报错；旧版本可能自动补全。
-
-**参考答案要点**：Astro 7 构建报错并提示修复模板，验证"编译器行为更严格"；修正为闭合标签后构建通过。结论：升级时把"构建报错"当作规范模板的信号。
-
-### 练习 3：迁移一个 remark 插件项目
-
-**题目**：你的项目用了 remark 自定义插件给标题加编号，升级 Astro 7 后插件不生效，如何最小代价恢复？
-
-**提示**：两种路径——安装 `@astrojs/markdown-remark` 走 unified 管线；或评估 Sätteri 原生能力是否已覆盖。
-
-**参考答案要点**：安装 `@astrojs/markdown-remark` 并在配置中显式启用 unified 管线，插件即可恢复；若功能是 Sätteri 原生能力（GFM、标题 ID 等），则删掉插件改用内置支持，构建更快。
-
-### 练习 4：用 src/fetch.ts 加一个响应头
-
-**题目**：为全站响应添加 `X-Site-Name: FANDEX` 响应头。
-
-**提示**：`ctx.render(request)` 返回 response 后 `headers.set`，再 return。
-
-**参考答案要点**：新建 `src/fetch.ts`，fetch 内 `const response = await ctx.render(request); response.headers.set('X-Site-Name', 'FANDEX'); return response;`，`npm run dev` 后通过浏览器 DevTools 或 curl 验证响应头。
-
-### 练习 5：为文档站配置路由缓存
-
-**题目**：server 模式的文档站，`/docs/**` 页面内容每小时更新一次，要求缓存 1 小时、过期后 24 小时内提供旧内容，并说明 CDN 缓存提供方如何进一步加速。
-
-**提示**：`routeRules` + `cache.provider`；CDN provider 需与部署平台匹配（Netlify/Vercel/Cloudflare）。
-
-**参考答案要点**：`cache: { provider: memoryCache() }` + `routeRules: [{ pattern: '/docs/**', maxAge: 3600, swr: 86400 }]`；若部署 Cloudflare，改 `adapter: cloudflare({ cdnCache: { provider: 'cloudflare' } })` 把缓存下发到边缘节点，全球就近返回。
-
 ## 8. 一句话记忆
 
 **"Astro 7 是'换发动机'的一次大改款：编译器、Markdown 管线、打包器全部 Rust 原生，语法与写法不变，构建提速 15%-61%，路由缓存转正、AI 开发体验就位——升级只是 `npx @astrojs/upgrade` 一条命令。"**
-
-## 9. 参考链接与延伸阅读
-
-- Astro 7.0 发布公告（官方）：https://astro.build/blog/astro-7/
-- Astro 7 升级指南（官方，英文）：https://docs.astro.build/en/guides/upgrade-to/v7/
-- Astro 6.0 发布公告（官方）：https://astro.build/blog/astro-6/
-- Astro 5.0 发布公告（官方）：https://astro.build/blog/astro-5/
-- Vite 8 发布公告（官方）：https://vite.dev/blog/announcing-vite8
-- Rolldown 项目主页：https://rolldown.rs/
-- Astro 官方文档（中文）：https://docs.astro.build/zh-cn/

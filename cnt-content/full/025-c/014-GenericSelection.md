@@ -1424,8 +1424,6 @@ int main(void) {
 
 **实测结果**：`_Generic` 路径与直接调用 `abs_i` 性能一致（编译期内联展开），`void*` 路径因间接寻址与分支预测失败慢 2.5 倍。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：写出下面代码的输出结果，并解释原因。
@@ -1502,21 +1500,6 @@ _Generic(e, int: "int", unsigned int: "uint", default: "?")
 
 对可移植性的影响：依赖 C23 特性的代码无法在 C11 编译器上编译，需通过 `__STDC_VERSION__` 检测并提供回退实现。
 
-## 参考文献
-
-1. ISO/IEC. (2011). *ISO/IEC 9899:2011 — Programming languages — C*. International Organization for Standardization. https://www.iso.org/standard/57853.html
-2. ISO/IEC. (2023). *ISO/IEC 9899:2023 — Programming languages — C (C23)*. International Organization for Standardization. https://www.iso.org/standard/82075.html
-3. Becker, P. (2011). *Working Draft, N1570 — Programming Languages C*. ISO/IEC JTC1/SC22/WG14. https://www.open-std.org/jtc1/sc22/wg14/docs/docs_1570.pdf
-4. Seacord, R. C. (2014). *Effective C: An Introduction to Professional C Programming*. No Starch Press. ISBN: 978-1718501048.
-5. Meyers, S. (2004). *Effective C++: 55 Specific Ways to Improve Your Programs and Designs* (3rd ed.). Addison-Wesley. (C++ 模板对比章节参考) ISBN: 978-0321334879.
-6. Gustedt, J. (2019). *Modern C*. Manning Publications. https://gustedt.gitlabpages.inria.fr/modern-c/
-7. GCC Team. (2024). *GCC Manual — Generic Selection*. Free Software Foundation. https://gcc.gnu.org/onlinedocs/gcc/Generic-Selection.html
-8. Clang Team. (2024). *Clang Language Extensions — Generic Selection*. LLVM Project. https://clang.llvm.org/docs/LanguageExtensions.html
-9. Stroustrup, B. (2013). *The C++ Programming Language* (4th ed.). Addison-Wesley. (C++ 模板对比章节参考) ISBN: 978-0321563842.
-10. Koenig, A., & Moo, B. E. (2010). *Accelerated C++: Practical Programming by Example*. Addison-Wesley. ISBN: 978-0201703535.
-
-## 延伸阅读
-
 ### 官方文档
 
 - ISO/IEC JTC1/SC22/WG14 官方站点：https://www.open-std.org/jtc1/sc22/wg14/
@@ -1535,12 +1518,6 @@ _Generic(e, int: "int", unsigned int: "uint", default: "?")
 - N1640 — Generic Selection Proposal：http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1640.pdf
 - N2091 — Type-Generic Math：http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2091.htm
 - C23 语言特性进展报告：https://thephd.dev/_ever so_ increasingly modern c
-
-### 开源项目参考
-
-- Redis SDS 实现：https://github.com/redis/redis（sds.h/sds.c）
-- musl libc `<tgmath.h>`：https://git.musl-libc.org/cgit/musl/tree/include/tgmath.h
-- cJSON 类型分发 PR：https://github.com/DaveGamble/cJSON
 
 ### 进阶主题
 

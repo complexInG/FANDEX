@@ -1310,65 +1310,6 @@ Vercel 在 Next.js 13+ 中引入 `error.js` 与 `global-error.js`：
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 下列哪种错误**能**被 React Error Boundary 捕获？
-
-A. 事件处理器中的 `throw new Error()`
-B. `setTimeout` 回调中的错误
-C. 组件 `render` 方法中的错误
-D. `fetch().then()` 中的错误
-
-**答案：C**
-
-Error Boundary 只捕获 Render Phase、生命周期方法、组件构造函数中的错误。事件处理器（onClick）、异步代码（setTimeout/Promise）中的错误需要 try-catch 或全局错误监听器处理。
-
-**Q2.** `getDerivedStateFromError` 与 `componentDidCatch` 的关键差异是？
-
-A. 前者是 instance method，后者是 static method
-B. 前者在 Render Phase 调用，后者在 Commit Phase 调用
-C. 前者允许副作用，后者不允许
-D. 两者无差异
-
-**答案：B**
-
-`getDerivedStateFromError` 是 static method，在 Render Phase 调用，必须为纯函数（返回 state）；`componentDidCatch` 是 instance method，在 Commit Phase 调用，允许副作用（如日志上报）。
-
-**Q3.** Sentry 的 `tracesSampleRate: 0.1` 表示？
-
-A. 10% 的错误被上报
-B. 10% 的性能 transaction 被采集
-C. 10% 的会话被录屏
-D. 10% 的用户被监控
-
-**答案：B**
-
-`tracesSampleRate` 控制性能追踪（performance transaction）的采样率。错误上报是 100%（`beforeSend` 过滤）；会话录屏由 `replaysSessionSampleRate` 控制。
-
-**Q4.** 关于 Source Map，下列说法**正确**的是？
-
-A. 生产环境必须暴露 `sourceMappingURL` 给浏览器
-B. Sentry 可以通过上传 Source Map 反解压缩后的堆栈
-C. Source Map 不影响包体积
-D. Source Map 仅用于调试，与错误监控无关
-
-**答案：B**
-
-生产环境推荐使用 `hidden` Source Map（仅 Sentry 可访问，不通过 `sourceMappingURL` 暴露）。Sentry 接收错误后用上传的 Source Map 反解堆栈，定位到源码。
-
-**Q5.** React 19 中 `useErrorBoundary`（或类似 Hook）相比类组件 Error Boundary 的优势是？
-
-A. 性能更好
-B. 函数式 API，无需类组件
-C. 自动捕获异步错误
-D. 自动上报到 Sentry
-
-**答案：B**
-
-React 19 提供函数式 API（如 `useErrorBoundary`）让函数组件也能声明错误边界，无需类组件。性能、错误范围、上报能力与类组件版本一致。
-
 ### 填空题知识点讲解
 
 **Q1.** React Error Boundary 通过 `______` 与 `______` 两个生命周期方法实现错误捕获与状态更新。
@@ -1546,57 +1487,6 @@ export function useAsyncError() {
 }
 ```
 
-### 9.4 思考题
-
-**Q1.** 为什么 Error Boundary 不能捕获事件处理器中的错误？请从 React 设计哲学与执行时序两个角度论述。
-
-1. **设计哲学**：React 错误边界针对"渲染阶段"的错误（即 React 控制的代码执行）。事件处理器是浏览器调用的，不在 React 调用栈中。
-2. **执行时序**：事件处理器在浏览器事件循环中执行，错误抛出时 React 已经完成渲染。React 无法"撤销"已经提交的渲染来回滚到错误边界。
-3. **权衡**：若 React 拦截所有事件处理器，会带来性能开销与心智模型复杂性。开发者用 try-catch 处理事件错误更直观。
-
-**Q2.** 设计一套企业级错误监控方案，覆盖 100 万 DAU 的 React 应用。需要考虑：成本、性能、可观测性、告警响应。
-
-1. **成本控制**：
-   - 错误采样：100%（必须捕获）
-   - 性能采样：1%（生产）
-   - Replay 采样：错误会话 100%，普通会话 0.1%
-   - Breadcrumb 限制：100 条
-2. **性能**：
-   - SDK 异步加载（不阻塞首屏）
-   - 批量上报（每 5s 或 10 条触发）
-   - Navigator.sendBeacon 避免卸载时丢失
-3. **可观测性**：
-   - 错误率、INP、LCP 作为核心 SLI
-   - SLO：99.9% 请求无错误，P95 INP < 200ms
-   - 仪表盘：实时错误率、Top 10 错误、回归错误
-4. **告警响应**：
-   - 错误率 > 1% 触发 PagerDuty
-   - 新错误触发 Slack 通知
-   - 回归错误触发 Release 团队邮件
-5. **流程**：
-   - On-call 轮值
-   - 错误分类：P0（全站崩溃）、P1（关键路径）、P2（次要功能）
-   - 24h 内响应 P0/P1，72h 内响应 P2
-
-**Q3.** 在 Next.js App Router 中，Server Components 抛出错误时如何传递到客户端？与 CSR 错误处理有何不同？
-
-1. **传递机制**：
-   - Server Components 错误通过 React Streaming 传递
-   - 客户端 `error.tsx` 接收错误并渲染 fallback
-   - 错误包含 `digest` 字段（服务器生成的错误 ID）
-2. **差异**：
-   - SSR 错误无需开发者手动 try-catch
-   - `error.tsx` 必须是 Client Component
-   - 服务器错误堆栈不会传到客户端（安全），仅传 `digest`
-3. **Sentry 集成**：
-   - 服务器端：用 `Sentry.captureException` 上报完整堆栈
-   - 客户端：仅上报 `digest`，关联服务器记录
-   - `global-error.tsx` 处理 root layout 错误
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Salvaneschi, G. and Mezini, M. 2016. Debugging for reactive programming. In *Proceedings of the 38th International Conference on Software Engineering (ICSE '16)*. ACM, 796–807. DOI: https://doi.org/10.1145/2884781.2884816
@@ -1629,8 +1519,6 @@ export function useAsyncError() {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Boris Cherny. *Thinking in React: From First Principles*. Manning, 2024.（第 12 章 错误处理）
@@ -1642,21 +1530,6 @@ export function useAsyncError() {
 - Dan Abramov. *Error Boundaries in React 16*. React Conf, 2017.
 - Sentry Engineering. *Scaling Sentry to 1 Billion Events/Day*. Sentry Blog, 2023.
 - Vercel. *Next.js App Router Error Handling*. Next.js Conf, 2023.
-
-### 11.3 在线资源
-
-- **Sentry Documentation**: https://docs.sentry.io/
-- **React Error Boundaries**: https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
-- **MDN: window.onerror**: https://developer.mozilla.org/en-US/docs/Web/API/Window/error_event
-- **Source Map Specification**: https://sourcemaps.info/spec.html
-- **Sentry CLI**: https://docs.sentry.io/cli/
-
-### 11.4 开源项目参考
-
-- **@sentry/react**: https://github.com/getsentry/sentry-javascript/tree/master/packages/react
-- **react-error-boundary**: https://github.com/bvaughn/react-error-boundary
-- **rollbar.js**: https://github.com/rollbar/rollbar.js
-- **bugsnag-js**: https://github.com/bugsnag/bugsnag-js
 
 ### 11.5 进阶主题
 

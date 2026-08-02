@@ -1238,53 +1238,6 @@ const errors = await validate(dto);
 // [{ property: 'age', constraints: { max: 'age must not be greater than 150' } }]
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下关于 TS 5.0 标准装饰器的描述，哪个是错误的？
-
-- A. 不再需要 `experimentalDecorators` 编译选项
-- B. 使用 `context` 对象传递元数据，而非位置参数
-- C. 完全向后兼容实验性装饰器
-- D. 支持 `addInitializer` 钩子用于初始化逻辑
-
-**解析讲解**：C
-
-**解析讲解**：TS 5.0 标准装饰器与实验性装饰器语法相似但语义不同，不能在同一项目混用。标准装饰器使用 context-based API，实验性装饰器使用 positional parameters，两者元数据机制也不同（`Symbol.metadata` vs `Reflect.metadata`）。
-
----
-
-**题目 2**：以下代码的执行顺序是？
-
-```typescript
-@A
-@B
-class X {}
-```
-
-- A. 求值：A→B；应用：A→B
-- B. 求值：A→B；应用：B→A
-- C. 求值：B→A；应用：A→B
-- D. 求值：B→A；应用：B→A
-
-**解析讲解**：B
-
-**解析讲解**：装饰器**求值**是自顶向下（A→B），即装饰器表达式本身先求值；**应用**是自底向上（B→A），即 `A(B(X))`。最终效果是 `A` 包裹 `B`，`B` 包裹 `X`。
-
----
-
-**题目 3**：TC39 Stage 3 装饰器提案中，`context.metadata` 的类型是什么？
-
-- A. `Map<string, unknown>`
-- B. `WeakMap<object, unknown>`
-- C. 自定义对象
-- D. `Record<string, unknown>`
-
-**解析讲解**：A
-
-**解析讲解**：TC39 提案规定 `context.metadata` 是一个 `Map<string, unknown>`，每个类共享同一个 Map 实例，装饰器通过 `set/get` 操作元数据。TS 5.2+ 通过 `Symbol.metadata` 暴露此 Map。
-
 ### 填空题知识点讲解
 
 **题目 4**：实验性装饰器需要导入的 polyfill 是 ______。
@@ -1342,39 +1295,6 @@ console.log(svc.fib(40));  // 第一次计算
 console.log(svc.fib(40));  // 第二次命中缓存
 ```
 
-### 9.4 思考题
-
-**题目 8**：装饰器与高阶组件（HOC）在 React 中的相似之处与差异？请从类型论角度分析。
-
-**解析讲解**：
-
-**相似之处**：
-1. 都是高阶函数：装饰器 `D(C) = D(C)`，HOC `H(Component) = Component'`
-2. 都遵循组合律：`(D1 ∘ D2)(C) = D1(D2(C))`，与 HOC 嵌套一致
-3. 都不修改原目标，返回新目标
-
-**差异**：
-1. 作用域：装饰器作用于类定义，HOC 作用于组件实例
-2. 类型保持：装饰器要求 `D(C) ≤ C`，HOC 可能改变 props 类型
-3. 元数据：装饰器可注入元数据，HOC 通过 props 传递
-4. 运行时：装饰器在加载时执行一次，HOC 在每次渲染时执行
-
-类型论上，装饰器是 endofunctor（自函子）$F: \text{Class} \to \text{Class}$，保持子类型关系；HOC 是 functor $F: \text{Component<P>} \to \text{Component<P'>}$，可能改变 props 类型。
-
-**题目 9**：为什么 TS 5.0 标准装饰器放弃了实验性装饰器的位置参数风格？请从类型安全与可扩展性角度论证。
-
-**解析讲解**：
-
-**类型安全**：位置参数风格难以类型检查。如方法装饰器有 3 个参数，但属性装饰器只有 2 个，易混淆。context 对象通过 `kind` 字段区分类型，类型系统可精确匹配。
-
-**可扩展性**：context 对象易于扩展新字段（如 `access`、`addInitializer`），不破坏现有装饰器。位置参数增加会破坏所有装饰器签名。
-
-**语义清晰**：context 提供丰富信息（`name`、`static`、`access`、`metadata`），位置参数需通过约定理解。
-
-**形式化**：context 对象是 dependent type（依赖类型）的近似——`kind` 决定其他字段类型，类似 $\Sigma$ 类型（dependent pair）。
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Kiczales, G., Lamping, J., Mendhekar, A., Maeda, C., Lopes, C., Loingtier, J.-M., & Irwin, J. (1997). Aspect-oriented programming. In *Proceedings of the 11th European Conference on Object-Oriented Programming* (pp. 220–242). Springer. https://doi.org/10.1007/BFb0053381
@@ -1401,22 +1321,12 @@ console.log(svc.fib(40));  // 第二次命中缓存
 
 [10] Buckton, R. (2023). *Proposal: Decorator Metadata (Stage 3)*. https://github.com/tc39/proposal-decorator-metadata
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Kiczales, G., et al. (1997). *The AspectJ Programming Guide*. Xerox PARC. — AOP 经典参考。
 - Lopes, C. V. (2007). *Aspect-Oriented Programming with usecases*. Prentice Hall.
 - Bracha, G. (2004). *Executable Grammars in Java*. — 元编程理论。
 - Stefanov, S. (2023). *TypeScript Design Patterns*. O'Reilly. — 第 7 章 *Decorator Pattern with TS 5.0*。
-
-### 11.2 在线资源
-
-- TypeScript Handbook: *Decorators (TS 5.0)* — https://www.typescriptlang.org/docs/handbook/decorators.html
-- TC39 Decorators Proposal — https://github.com/tc39/proposal-decorators
-- NestJS Documentation: *Providers & DI* — https://docs.nestjs.com/providers
-- TypeORM Documentation: *Entities* — https://typeorm.io/entities
-- Angular Guide: *Attribute Directives* — https://angular.io/guide/attribute-directives
 
 ### 11.3 相关源码
 
@@ -1503,4 +1413,3 @@ console.log(svc.fib(40));  // 第二次命中缓存
 | 运行时依赖 | 无（或 reflect-metadata） | Spring 容器 | AspectJ runtime |
 
 ---
-

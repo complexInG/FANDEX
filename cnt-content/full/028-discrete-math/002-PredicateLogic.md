@@ -275,22 +275,6 @@ $$\exists y\,\forall x\,L(x,y)$$："有一个人被所有人爱"（存在一个�
 
 **误区四：$\forall x(A \lor B)$ 可以拆开。** → 全称对"或"、存在对"且"都不能拆分（见 4.2 节）。
 
-## 9. 实战练习
-
-1. **形式化练习**：把以下句子形式化：①所有鸟都会飞 ②有些鸟不会飞 ③没有哺乳动物是鱼 ④每个学生都喜欢某个老师。
-
-2. **量词辨析**：判断真值并说明理由：①$\forall x\,\exists y(x<y)$ ②$\exists y\,\forall x(x<y)$（论域为整数集）。
-
-3. **推理证明**：用谓词逻辑证明："所有鹿都是哺乳动物，所有哺乳动物都是恒温动物，所以所有鹿都是恒温动物。"
-
-4. **前束范式**：求 $\forall x\,P(x) \to \exists y\,Q(y)$ 的前束范式。
-
-## 10. 参考资源
-
-- MIT 6.042J：https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-fall-2010/
-- Khan Academy 离散数学：https://www.khanacademy.org/computing/computer-science
-- Discrete Mathematics and Its Applications（Rosen）：https://www.mheducation.com/
-
 ## 11. 延伸阅读
 
 - 谓词逻辑的基础（联结词与真值表），见本模块《命题逻辑》

@@ -4,7 +4,7 @@ title: 算法分析基础与学习路线
 module: algorithm
 category: Algorithm/Overview
 difficulty: beginner
-description: 算法分析（Algorithm Analysis）的形式化定义、五类渐近记号（Bachmann 1894《Analytische Zahlentheorie》大 O 符号、Landau 1909《Handbuch》推广、Knuth 1976《Big Omicron and Big Omega and Big Theta》SIGACT News 12(3):36-44 系统化）、计算复杂性类（Hartmanis-Stearns 1965《On the Computational Complexity of Algorithms》Trans. AMS 117:285-306、Cobham 1964/Edmonds 1965 P 类、Cook 1971《The Complexity of Theorem-Proving Procedures》STOC、Karp 1972《Reducibility Among Combinatorial Problems》STOC 197-206）、主定理（Bentley-Haken-Saxe 1980 SIGACT News 12(3):36-44）、摊还分析（Sleator-Tarjan 1985《Amortized Efficiency of List Update and Paging Rules》CACM 28(2):202-208）、随机化分析（Rabin 1976）、时空权衡策略与系统化学习路线图，涵盖 Turing 1936《On Computable Numbers》Proc. LMS 42:230-265、Knuth 1968 TAOCP Vol.1、Cormen-Leiserson-Rivest 1990《Introduction to Algorithms》第 1 版的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 1-4 章、Kleinberg-Tardos 第 2-5 章、Sedgewick 第 1 章风格习题。
+description: 算法分析（Algorithm Analysis）的形式化定义、五类渐近记号（Bachmann 1894《Analytische Zahlentheorie》大 O 符号、Landau 1909《Handbuch》推广、Knuth 1976《Big Omicron and Big Omega and Big Theta》SIGACT News 12(3):36-44 系统化）、计算复杂性类（Hartmanis-Stearns 1965《On the Computational Complexity of Algorithms》Trans. AMS 117:285-306、Cobham 1964/Edmonds 1965 P 类、Cook 1971《The Complexity of Theorem-Proving Procedures》STOC、Karp 1972《Reducibility Among Combinatorial Problems》STOC 197-206）、主定理（Bentley-Haken-Saxe 1980 SIGACT News 12(3):36-44）、摊还分析（Sleator-Tarjan 1985《Amortized Efficiency of List Update and Paging Rules》CACM 28(2):202-208）、随机化分析（Rabin 1976）、时空权衡策略与系统化学习路线图，涵盖 Turing 1936《On Computable Numbers》Proc. LMS 42:230-265、Knuth 1968 TAOCP Vol.1、Cormen-Leiserson-Rivest 1990《Introduction to Algorithms》第 1 版的历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 1-4 章、Kleinberg-Tardos 第 2-5 章。
 author: fanquanpp
 tags:
 - algorithm
@@ -1758,55 +1758,6 @@ graph TD
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题 1**（easy）：下列哪个不是 $O(n^2)$ 的？
-
-A. $\sum_{i=1}^{n} i$
-B. $\sum_{i=1}^{n} i^2$
-C. $\sum_{i=1}^{n} 2^i$
-D. $n \log n + n^2 / 2$
-
-C。$\sum_{i=1}^{n} 2^i = 2^{n+1} - 2 = O(2^n)$，是指数级。
-
-**题 2**（medium）：递推 $T(n) = 4T(n/2) + n^2 \log n$ 的解是？
-
-A. $O(n^2)$
-B. $O(n^2 \log n)$
-C. $O(n^2 \log^2 n)$
-D. $O(n^3)$
-
-C。由主定理情形 2（$a = 4, b = 2, \log_b a = 2, f(n) = n^2 \log n = \Theta(n^2 \log^1 n)$，$k = 1$），解为 $\Theta(n^2 \log^{k+1} n) = \Theta(n^2 \log^2 n)$。
-
-**题 3**（medium）：动态数组 push_back 的摊还复杂度是？
-
-A. $O(1)$ 最坏
-B. $O(1)$ 摊还
-C. $O(\log n)$ 摊还
-D. $O(n)$ 摊还
-
-B。单次 push_back 最坏 $O(n)$（扩容时），但 $n$ 次操作总代价 $O(n)$，摊还 $O(1)$。
-
-**题 4**（hard）：递推 $T(n) = 2T(n/2) + n / \log n$ 的解是？
-
-A. $O(n)$
-B. $O(n \log n)$
-C. $O(n \log \log n)$
-D. 主定理不适用
-
-C。主定理不直接适用（$f(n) = n/\log n$ 不满足 $n^{\log_b a} \log^k n$ 中 $k \geq 0$）。用 Akra-Bazzi：$p = 1$，$T(n) = \Theta(n (1 + \int_1^n \frac{u/\log u}{u^2} du)) = \Theta(n (1 + \log \log n)) = \Theta(n \log \log n)$。
-
-**题 5**（hard）：下列陈述哪个正确？
-
-A. P = NP 已被证明
-B. NP 完全问题至少有一个被证明有多项式时间算法
-C. SAT 是 NP 完全的（Cook-Levin 定理）
-D. 所有 NP 问题都是 NP 完全的
-
-C。Cook 1971 STOC 证明 SAT 是 NP 完全的（Cook-Levin 定理）。P vs NP 仍为开放问题。
-
 ### 填空题知识点讲解
 
 **题 1**（easy）：大 O 符号由德国数论学家 Paul ______ 在 1894 年的著作《Analytische Zahlentheorie》中首次引入，后由 Edmund ______ 推广。
@@ -1950,8 +1901,6 @@ P vs NP 实质是"创造（求解）是否比验证（检查）更难"的问题�
 
 ---
 
-## 14. 参考文献
-
 ### 14.1 经典教材
 
 1. **Cormen, T. H., Leiserson, C. E., Rivest, R. L., Stein, C.** 2022. *Introduction to Algorithms* (4th ed.). MIT Press. ISBN 978-0262046305. Chapter 1-4, 17.
@@ -1989,8 +1938,6 @@ P vs NP 实质是"创造（求解）是否比验证（检查）更难"的问题�
 
 ---
 
-## 15. 延伸阅读
-
 ### 15.1 理论深入
 
 - **CLRS** 第 4 章（主定理证明）、第 17 章（摊还分析）、第 34 章（NP 完全性）
@@ -2009,15 +1956,6 @@ P vs NP 实质是"创造（求解）是否比验证（检查）更难"的问题�
 - **机器学习算法分析**：Adam 优化器（Kingma-Ba 2015）的收敛性证明使用势能法、SGD 在强凸条件下的 $O(1/T)$ 收敛、Mini-batch SGD 的方差缩减分析
 - **加密协议复杂度**：RSA 密钥生成依赖 Miller-Rabin 素性测试 $O(k \log^3 n)$、AES 分组加密的 $O(n)$ 固定时间、SHA-256 哈希的 $O(n)$ 流式处理
 - **图数据库与图计算**：Neo4j 的图遍历 $O(V+E)$、GraphX 的 Pregel 模型超步复杂度、Dijkstra 在路网中的 $A^*$ 启发式加速
-
-### 15.3 工程实现练习
-
-1. **复杂度自动分析工具**（中阶）：基于 LLVM IR 静态分析循环嵌套层数与归纳变量，自动推断 $O$ 复杂度。提示：参考 COSTA / ANTLR 的循环边界分析
-2. **主定理判定器**（中阶）：输入 $a, b, f(n)$，输出主定理适用的情形与最终 $\Theta$ 表达式。需处理 $f(n) = n^{\log_b a} \log^k n$ 的 $k$ 参数识别
-3. **可视化递归树工具**（中阶）：对任意 $T(n) = aT(n/b) + f(n)$ 递推，生成递归树 Mermaid 图，标注每层工作量与总工作量
-4. **摊还分析沙盒**（高阶）：实现动态数组、二项堆、Splay 树三种数据结构，实时展示势能函数 $\Phi(D)$ 与摊还代价 $\hat{c}_i$ 的演化
-5. **LeetCode 刷题进度追踪系统**（中阶）：基于 Git 提交记录与题目分类，动态生成学习路径推荐，使用 Floyd-Warshall 计算知识点最短学习距离
-6. **算法学习路径推荐引擎**（高阶）：基于 Bloom 分类法与知识图谱，使用拓扑排序规划学习顺序，使用 Dijkstra 计算最短前置路径
 
 ### 15.4 教学视频与公开课
 

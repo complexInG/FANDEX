@@ -1363,65 +1363,6 @@ struct ForceGraph {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：DevEco Studio 调试 ArkTS 代码使用的底层协议是？
-
-- A. JDWP
-- B. V8 Inspector Protocol
-- C. LLDB Remote
-- D. Chrome DevTools Protocol
-
-**解析讲解**：B
-
-**解析讲解**：DevEco Studio 调试 ArkTS 代码使用 V8 Inspector Protocol，因为 ArkTS 基于 V8 引擎。C++ 层调试使用 LLDB，设备连接使用 HDC（类似 ADB）。
-
-**常见疑问 2**：采样 Profiler 的默认采样频率是多少？
-
-- A. 100 Hz
-- B. 1 kHz
-- C. 10 kHz
-- D. 100 kHz
-
-**解析讲解**：B
-
-**解析讲解**：DevEco Studio 默认采样频率为 1kHz（每毫秒一次），平衡精度与开销。10kHz 开销达 25% CPU，仅用于深度分析。
-
-**常见疑问 3**：以下哪种断点不会阻塞应用执行？
-
-- A. 行断点
-- B. 条件断点
-- C. 日志断点
-- D. 异常断点
-
-**解析讲解**：C
-
-**解析讲解**：日志断点（Log Breakpoint）在触发时仅输出日志，不暂停执行。适合在循环或高频回调中追踪状态。
-
-**常见疑问 4**：HiTrace 跨设备时钟对齐使用什么协议？
-
-- A. NTP
-- B. PTP
-- C. NTP + PTP
-- D. 自定义 ping-pong 测量
-
-**解析讲解**：D
-
-**解析讲解**：DevEco Studio 通过自定义 ping-pong 协议测量两台设备间时钟偏差（offset = t_B1 - t_A1 - RTT/2），自动应用偏移对齐多设备 trace。
-
-**常见疑问 5**：以下哪个 HDC 命令用于查看应用堆栈？
-
-- A. `hdc shell ps`
-- B. `hdc shell jstack`
-- C. `hdc shell kill`
-- D. `hdc shell cat`
-
-**解析讲解**：B
-
-**解析讲解**：`hdc shell jstack <pid>` 用于抓取 Java/ArkTS 堆栈，等同于 Android 的 `kill -3`。`ps` 仅查看进程列表。
-
 ### 填空题知识点讲解
 
 **常见疑问 6**：DevEco Studio 调试 C++ 代码使用 ______ 协议。
@@ -1642,77 +1583,6 @@ class TargetAbility extends UIAbility {
 }
 ```
 
-### 9.4 思考题
-
-**常见疑问 13**：为什么采样 Profiler 在 1kHz 下无法发现 1ms 以下的函数？如何改进？
-
-**原因**：采样间隔 1ms，函数执行时间小于 1ms 时，被采样到的概率极低（< 1%）。
-
-**改进**：
-
-1. 提高采样频率到 10kHz-100kHz（但开销大）。
-2. 使用埋点 Profiler（Instrumentation），但开销 10-100x。
-3. 使用硬件性能计数器（PMU），如 CPU 周期计数器，开销极小。
-4. 多次重复执行热点代码，统计平均时间。
-
-**常见疑问 14**：在分布式调试中，两台设备时钟偏差 100ms。如果不对齐时钟，trace 会呈现什么异常？举例说明。
-
-**异常表现**：
-
-1. **因果倒置**：B 设备的 `onCreate` 看起来早于 A 设备的 `startRemoteAbility` 调用。
-2. **延迟估算错误**：A 调用 B 实际延迟 800ms，但因 B 时钟快 100ms，trace 显示 700ms。
-3. **同步事件错乱**：两个本应同时发生的事件，trace 显示间隔 100ms。
-
-**示例**：
-
-A 在 $t_A = 1000\text{ms}$ 发起调用，B 在 $t_B = 1800\text{ms}$ 收到，实际 RTT = 800ms。若 B 时钟快 100ms（$t_B' = 1900\text{ms}$），trace 显示 RTT = 900ms，误差 12.5%。
-
-**常见疑问 15**：DevEco Studio 的 Inspector 显示 ArkUI 组件树而非 DOM 树，这一设计有哪些优劣？
-
-**优势**：
-
-1. **语义对齐**：ArkUI 组件就是开发心智模型，Inspector 显示与代码一一对应。
-2. **状态可见**：可查看 @State、@Prop、@Link 等响应式变量。
-3. **性能优化提示**：能识别过度重建的组件。
-
-**劣势**：
-
-1. **不通用**：不能复用 Web 生态的 DevTools 工具。
-2. **学习曲线**：Web 开发者需重新学习。
-3. **跨平台调试难**：若同一应用在 Web 端跑，需两套工具。
-
-**常见疑问 16**：如果让你设计一个 CI 集成的自动化 UI 回归测试框架，基于 HDC 与 Inspector，会如何架构？
-
-**架构设计**：
-
-1. **测试用例层**：YAML 描述测试步骤（启动应用、点击、断言）。
-2. **驱动层**：Python 脚本通过 HDC 执行命令（点击坐标、输入文本）。
-3. **检查点层**：调用 Inspector API 获取组件树，断言属性（文本、可见性）。
-4. **截图层**：每步截图，对比基线图（pixel diff）。
-5. **报告层**：生成 HTML 报告，含截图、trace、日志。
-6. **CI 集成**：GitHub Actions 触发，结果上传 Artifacts。
-
-**关键命令**：
-
-```bash
-# 点击坐标
-hdc shell uinput -T -c 500 500
-
-# 输入文本
-hdc shell uinput -T -t "hello"
-
-# 获取组件树
-hdc shell uitest dumpLayout
-
-# 截图
-hdc shell snapshot_display -f /data/local/tmp/shot.png
-hdc file recv /data/local/tmp/shot.png ./shot.png
-```
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文
 
 [1] Gregg, B. (2016). *The flame graph*. Communications of the ACM, 59(6), 48-57. https://doi.org/10.1145/2909376
@@ -1743,8 +1613,6 @@ hdc file recv /data/local/tmp/shot.png ./shot.png
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 1. **《Debugging: The 9 Indispensable Rules for Finding Even the Most Elusive Software and Hardware Problems》** - David J. Agans
@@ -1769,21 +1637,6 @@ hdc file recv /data/local/tmp/shot.png ./shot.png
 3. **"The Why and How of Time Travel Debugging"** - ACM Queue 2022
 4. **"JProfiler: A Sampling-Based Profiler for Java"** - IEEE 2008
 5. **"Memory Leak Detection in JavaScript"** - PLDI 2013
-
-### 11.3 在线资源
-
-1. **DevEco Studio 官方文档**: https://developer.huawei.com/consumer/cn/doc/deveco-studio
-2. **Brendan Gregg 博客（火焰图作者）**: https://www.brendangregg.com/
-3. **V8 DevTools 文档**: https://v8.dev/docs/inspector
-4. **Chrome DevTools Protocol**: https://chromedevtools.github.io/devtools-protocol/
-5. **IntelliJ Platform SDK**: https://plugins.jetbrains.com/docs/intellij/
-6. **OpenHarmony Profiler 源码**: https://gitee.com/openharmony/developtools_profiler
-7. **HiTrace 设计文档**: https://gitee.com/openharmony/hiviewdfx_hitrace
-8. **Dapper 论文**: https://research.google/pubs/pub36356/
-9. **Awesome APM**: https://github.com/awesome-apm
-10. **HarmonyOS 调试视频教程**: https://developer.huawei.com/consumer/cn/training/
-
----
 
 ## 附录 A：术语表
 

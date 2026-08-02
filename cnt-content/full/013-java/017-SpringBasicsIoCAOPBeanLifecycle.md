@@ -2063,8 +2063,6 @@ public class Application {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：Spring IoC 容器的核心作用是什么？`BeanFactory` 与 `ApplicationContext` 有何区别？
@@ -2168,40 +2166,6 @@ public class Application {
    - 检查 `@ConditionalOnProperty` 是否满足（配置项是否存在且值正确）。
    - 检查 `@ConditionalOnMissingBean` 是否被用户自定义 Bean 覆盖。
    - 检查自动配置类是否在 imports 文件中注册。
-
-## 10. 参考文献
-
-[1] Johnson, R. (2004). *Expert One-on-One J2EE Design and Development*. Wrox Press. ISBN: 978-0-7645-4385-2.
-
-[2] Walls, C. (2022). *Spring in Action, Sixth Edition*. Manning Publications. ISBN: 978-1617294946. DOI: 10.5555/3552009.
-
-[3] Spring Framework Reference Documentation (6.1.x). (2024). VMware, Inc. Retrieved from https://docs.spring.io/spring-framework/reference/
-
-[4] Spring Boot Reference Documentation (3.2.x). (2024). VMware, Inc. Retrieved from https://docs.spring.io/spring-boot/docs/current/reference/
-
-[5] Johnson, R., Hoeller, J., Donald, K., Sampaleanu, C., Harrop, R., Risso, T., et al. (2005). *The Spring Framework - A Professional Java/J2EE Framework*. In Proceedings of the 1st International Conference on Software Engineering (ICSE). DOI: 10.1145/1062455.1062601.
-
-[6] Kiczales, G., Lamping, J., Mendhekar, A., Maeda, C., Lopes, C., Loingtier, J. M., & Irwin, J. (1997). *Aspect-Oriented Programming*. In Proceedings of the European Conference on Object-Oriented Programming (ECOOP), LNCS 1241, pp. 220-242. DOI: 10.1007/BFb0053381.
-
-[7] Fowler, M. (2004). *Inversion of Control Containers and the Dependency Injection Pattern*. Martin Fowler's Blog. Retrieved from https://martinfowler.com/articles/injection.html
-
-[8] Conway, N. (2013). *Spring AOP - What, When, Why*. SpringSource Blog. DOI: 10.1007/978-1-4302-6000-5_1.
-
-[9] Woolf, B. (2002). *The State Pattern*. In *Pattern Languages of Program Design 4*, Addison-Wesley. DOI: 10.5555/581476.
-
-[10] Hohpe, G., & Woolf, B. (2003). *Enterprise Integration Patterns: Designing, Building, and Deploying Messaging Solutions*. Addison-Wesley. ISBN: 978-0321200686.
-
-[11] Snyder, B., Bosanac, D., & Davies, R. (2011). *ActiveMQ in Action*. Manning Publications. DOI: 10.1007/978-1-933988-90-5.
-
-[12] Nutter, T., D'Mello, G., McAllister, S., & Kappen, J. (2022). *Pro Spring Boot 3*. Apress. DOI: 10.1007/978-1-4842-8413-5.
-
-[13] Macioszek, M. (2020). *Spring Boot 2.0 Cookbook - Second Edition*. Packt Publishing. ISBN: 978-1789138404.
-
-[14] Cosmina, I., Harrop, R., Schaefer, C., & Hoeller, J. (2022). *Pro Spring 6: An In-Depth Guide to the Spring Framework*. Apress. DOI: 10.1007/978-1-4842-8411-1.
-
-[15] Laddad, R. (2009). *AspectJ in Action: Enterprise AOP with Spring*. Manning Publications. ISBN: 978-1933988054.
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

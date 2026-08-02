@@ -165,45 +165,9 @@ GitHub 官方建议**配置两种以上恢复方式**，避免单一方式失效
 | 贡献统计不显示 | 提交未计入贡献图 | 本地 `user.email` 未在 GitHub 验证 | 在 Settings → Emails 添加并验证该邮箱，再用新配置提交 |
 | 公司 SSO 登录问题 | 组织要求 SAML 单点登录 | 企业强制统一身份认证 | 遵循公司 IT 政策，使用企业提供的登录入口 |
 
-## 6. 实战练习
-
-### 练习 1：注册并完成安全配置（入门）
-- **题目描述**：注册一个 GitHub 账户，验证邮箱，设置强密码，并开启 TOTP 方式 2FA。
-- **提示**：注册入口 https://github.com/signup；2FA 在 Settings → Password and authentication 中开启。
-- **参考答案要点**：验证邮箱后可创建仓库；开启 2FA 时务必下载恢复代码文件；完成后用动态码登录一次验证。
-
-### 练习 2：备份恢复代码（入门）
-- **题目描述**：将恢复代码保存到至少两个安全位置，并验证其可用性。
-- **提示**：恢复代码在 2FA 设置页的 "Recovery codes" 区域可随时查看；每张代码只能使用一次。
-- **参考答案要点**：下载文件 + 存入密码管理器；登录时选择 "2FA recovery code" 输入测试一张（测试后注意该码作废）。
-
-### 练习 3：生成 PAT 并推送代码（进阶）
-- **题目描述**：生成一个有效期 60 天的经典 PAT（勾选 `repo` 权限），用它完成一次 HTTPS 克隆和推送。
-- **提示**：PAT 生成路径 Settings → Developer settings → Personal access tokens → Tokens (classic)。
-- **参考答案要点**：生成后立即复制；`git clone` 提示密码时粘贴 PAT；推送成功后可在 GitHub 上看到提交；练习结束后建议删除该令牌并重新生成。
-
-### 练习 4：配置 SSH 作为 2FA 时代的长期方案（进阶）
-- **题目描述**：生成 Ed25519 SSH 密钥，添加到 GitHub 账户，用 SSH 完成一次克隆，并对比 HTTPS 的体验差异。
-- **提示**：`ssh-keygen -t ed25519 -C "你的邮箱"`；公钥添加到 Settings → SSH and GPG keys（详见 004 篇）。
-- **参考答案要点**：`ssh -T git@github.com` 看到 `Hi 用户名!` 即成功；SSH 克隆无需每次输入 PAT，适合高频开发。
-
-### 练习 5：安全自查（综合）
-- **题目描述**：检查自己账户的 2FA 方式数量、恢复代码是否可访问、PAT 是否过期，并清理不再使用的令牌和 SSH 密钥。
-- **提示**：Settings → Password and authentication 查看 2FA；Developer settings 查看令牌；SSH and GPG keys 查看密钥。
-- **参考答案要点**：至少保留 TOTP + 一种备份（安全密钥或恢复代码）；删除超过 90 天的旧 PAT；每季度复查一次。
-
 ## 7. 一句话记忆
 
 **GitHub 账户安全 = 强密码（第一道锁）+ 2FA 双因素认证（第二道锁）+ 妥善保存的恢复代码（备用钥匙），三者缺一不可。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：创建账户](https://docs.github.com/zh/get-started/start-your-journey/creating-an-account-on-github)
-- [GitHub 文档：配置双因素认证（2FA）](https://docs.github.com/zh/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
-- [GitHub 文档：丢失 2FA 凭证时恢复账户](https://docs.github.com/zh/authentication/securing-your-account-with-two-factor-authentication-2fa/recovering-your-account-if-you-lose-your-2fa-credentials)
-- [GitHub 文档：配置 2FA 恢复方法（恢复代码）](https://docs.github.com/zh/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication-recovery-methods)
-- [GitHub 文档：创建个人访问令牌（PAT）](https://docs.github.com/zh/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-- [GitHub 文档：创建强密码](https://docs.github.com/zh/authentication/keeping-your-account-and-data-secure/creating-a-strong-password)
 
 ### 延伸阅读
 

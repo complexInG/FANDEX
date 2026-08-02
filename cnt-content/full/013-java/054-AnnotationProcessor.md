@@ -1259,55 +1259,6 @@ AutoValue 生成 `AutoValue_User` 子类，实现 `equals`、`hashCode`、`toStr
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**Q1.** 注解处理器在哪一阶段运行？
-
-A. 类加载时  
-B. JVM 启动时  
-C. javac 编译时  
-D. 运行时反射
-
-**C**。JSR 269 规定注解处理器在 `javac` 编译时执行，位于 parse / enter 之后、attribute / flow 之前。Java 6 起 `apt` 工具被废弃，注解处理完全集成进 javac。
-
-**Q2.** 以下哪个方法用于向 javac 报告编译错误？
-
-A. `System.err.println`  
-B. `Logger.error`  
-C. `Messager.printMessage(ERROR, ...)`  
-D. `throw new RuntimeException`
-
-**C**。`Messager.printMessage` 是 JSR 269 规范的方式，关联到具体 Element，IDE 可定位到源码位置。其他方式不会影响 javac 退出码。
-
-**Q3.** 一个 Processor 处理 `@Foo` 注解，`process` 方法返回 `true` 意味着？
-
-A. 编译成功  
-B. 该注解已被认领，其他 Processor 不应处理  
-C. 已经生成所有源码  
-D. 编译失败
-
-**B**。`process` 返回 `true` 表示"已认领这些注解"，其他 Processor 不会再次处理同一批注解。返回 `false` 表示未认领，后续 Processor 仍可处理。
-
-**Q4.** Lombok 与 MapStruct 的根本差异是？
-
-A. Lombok 是标准 JSR 269，MapStruct 不是  
-B. Lombok 修改 AST，MapStruct 只生成新源码  
-C. Lombok 不需要 Maven 插件  
-D. MapStruct 性能更差
-
-**B**。Lombok 通过反射访问 `JavacProcessingEnvironment` 直接修改 AST，违反 JSR 269 "只生成不修改"约束。MapStruct 严格遵循 JSR 269，仅生成新源码。
-
-**Q5.** Gradle 的增量注解处理声明文件位于？
-
-A. `META-INF/MANIFEST.MF`  
-B. `META-INF/gradle/incremental.annotation.processors`  
-C. `META-INF/services/javax.annotation.processing.Processor`  
-D. `gradle.properties`
-
-**B**。Gradle 通过 `META-INF/gradle/incremental.annotation.processors` 文件声明每个 Processor 的增量类型（`isolating` / `aggregating` / `dynamic`）。
-
 ### 填空题知识点讲解
 
 **Q1.** JSR 269 提供的两个核心 API 包是 `javax.annotation.processing` 与 ________。
@@ -1432,68 +1383,6 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 - 编译期类型检查，不匹配的字段给出警告；
 - 参考完整实现：MapStruct 源码 `org.mapstruct.ap.MappingProcessor`。
 
-### 9.4 思考题
-
-**Q1.** 为什么 Lombok 选择突破 JSR 269 修改 AST？这种做法的长期风险是什么？
-
-- **动机**：仅生成新源码无法实现"修改已有类"（如 `@Getter` 必须在原类中添加方法）；
-- **替代方案**：如 AutoValue 生成子类，但需用户改为抽象类，使用上有差异；
-- **长期风险**：
-  - 依赖 javac 内部 API（`com.sun.tools.javac.*`），Java 16+ 强封装后需 `--add-opens`；
-  - IDE 兼容性需维护插件；
-  - 调试栈不完整，无法断点进入生成方法；
-  - Java Records 提供了部分替代，未来可能逐步降低 Lombok 使用；
-  - Java 25 模块导入与 AOT 编译对 AST 修改的兼容性仍有不确定性。
-
-**Q2.** 如何设计一个支持 Gradle 与 Bazel 增量编译的注解处理器？
-
-- **Gradle**：声明 `META-INF/gradle/incremental.annotation.processors`，标记 `isolating`（推荐）或 `aggregating`；
-- **Bazel**：使用 `java_plugin` 与 `java_annotation_processing` 规则，无显式增量支持；
-- **设计原则**：
-  - 一个 Element 的处理结果只影响其对应的输出（`isolating`）；
-  - 避免全局状态（如静态 Map 缓存跨轮次数据）；
-  - 输出文件命名应稳定（不依赖轮次、随机数）；
-  - 使用 `Filer` 创建文件（不要直接写文件系统）。
-
-**Q3.** 注解处理器与 Java Records 的设计哲学差异？为什么 Records 不能完全替代 Lombok？
-
-- **Records 设计哲学**：语言级、不可变、约束式（强制 final 字段、无继承、自动方法）；
-- **Lombok 设计哲学**：库级别、灵活、可定制（@Data 允许可变、@Builder 允许任意类）；
-- **不能完全替代**：
-  - Records 强制不可变，Lombok 可生成可变 POJO；
-  - Records 不能继承类，Lombok 任何类都能用；
-  - Records 字段无自定义逻辑，Lombok 可加 @Setter、@ToString(exclude=...)；
-  - Records 不支持 @Builder（需手工实现 Builder）；
-  - 现有项目迁移成本高。
-
----
-
-## 10. 参考文献（ACM Reference Format）
-
-1. Gosling, J., Joy, B., Steele, G., et al. 2024. *The Java Language Specification, Java SE 21 Edition* (Java SE 21). Oracle America, Inc. https://docs.oracle.com/javase/specs/jls/se21/html/index.html
-
-2. Lindholm, Y., Bracha, G., Smith, V., et al. 2024. *The Java Virtual Machine Specification, Java SE 21 Edition*. Oracle America, Inc. https://docs.oracle.com/javase/specs/jvms/se21/html/index.html
-
-3. Bracha, G. 2004. *Pluggable Annotation Processing API* (JSR 269). Java Community Process. https://jcp.org/en/jsr/detail?id=269
-
-4. Bracha, G. and Bloch, J. 2004. *Annotations* (JSR 175). Java Community Process. https://jcp.org/en/jsr/detail?id=175
-
-5. Forshaw, A. 2024. *JEP 511: Module Import Declarations*. OpenJDK. https://openjdk.org/jeps/511
-
-6. Würthinger, T., Wimmer, C., Wöss, A., et al. 2013. *Self-Attribution: A Self-Profiling Approach to JIT Compilation*. ACM SIGPLAN Notices, 48(10), 75-84. https://doi.org/10.1145/2544173.2509521
-
-7. Sakkinen, M. 2018. *Compile-Time Metaprogramming in Java: A Survey of Annotation Processors*. Software: Practice and Experience, 48(11), 2013-2042. https://doi.org/10.1002/spe.2622
-
-8. Evans, B. 2018. *Java 9 Modularity: Patterns and Practices for Developing Maintainable Applications* (1st ed.). O'Reilly Media.
-
-9. Brown, A. and King, S. 2024. *The Well-Grounded Java Developer* (3rd ed.). Manning Publications.
-
-10. Horsfield, J. and Kennedy, A. 2020. *Kotlin Symbol Processing API*. JetBrains. https://github.com/google/ksp
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 书籍
 
 - Evans, B., Verburg, M. *The Well-Grounded Java Developer* (3rd ed., 2024) - 第 9 章注解处理。
@@ -1505,19 +1394,6 @@ public class VerifyNotNullProcessor extends AbstractProcessor {
 
 - Bracha, G. and von der Ahé, P. 2004. *Pluggable Type Systems*. OOPSLA Workshop on Revival of Dynamic Languages.
 - Kiczales, G., Lamping, J., Mendhekar, A., et al. 1997. *Aspect-Oriented Programming*. ECOOP'97, LNCS 1241, 220-242. https://doi.org/10.1007/BFb0053381
-
-### 11.3 在线资源
-
-- **JSR 269 Specification**: https://jcp.org/en/jsr/detail?id=269
-- **Oracle Java Compiler API**: https://docs.oracle.com/en/java/javase/21/docs/api/javax.annotation.processing/module-summary.html
-- **JavaPoet**: https://github.com/square/javapoet
-- **Google AutoService**: https://github.com/google/auto/tree/main/service
-- **Google AutoValue**: https://github.com/google/auto/tree/main/value
-- **Lombok Project**: https://projectlombok.org/
-- **Dagger**: https://dagger.dev/
-- **MapStruct**: https://mapstruct.org/
-- **KSP (Kotlin Symbol Processing)**: https://kotlinlang.org/docs/ksp-overview.html
-- **Roslyn Source Generators**: https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.md
 
 ### 11.4 开源学习项目
 

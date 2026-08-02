@@ -327,29 +327,10 @@ MySQL 8.0 带来了众多新特性和改进：
 4. **性能调优**：学习使用 EXPLAIN 分析执行计划，优化慢查询
 5. **高可用架构**：了解主从复制、读写分离、分库分表等方案
 
-### 3.3 学习资源
-
-| 资源类型 | 推荐内容                                              |
-| :------- | :---------------------------------------------------- |
-| 官方文档 | [MySQL 官方文档](https://dev.mysql.com/doc/)          |
-| 经典书籍 | 《高性能 MySQL》、《MySQL 技术内幕：InnoDB 存储引擎》 |
-| 在线教程 | MySQL 官方教程、W3Schools MySQL 教程                  |
-| 社区论坛 | Stack Overflow、MySQL Forum                           |
-| 工具文档 | Navicat 文档、Percona Toolkit 文档                    |
-
----
-
 ## 延伸阅读
 
 - [数据分析](data-analysis/overview)
 - [Java](java/overview)
-
-## 参考文献
-
-MySQL 官方文档：https://dev.mysql.com/doc/
-MySQL 8.0 参考手册：https://dev.mysql.com/doc/refman/8.0/en/
-High Performance MySQL（O'Reilly）：https://www.oreilly.com/library/view/high-performance-mysql/
-Percona 博客：https://www.percona.com/blog/
 
 ## 深度专题扩展
 

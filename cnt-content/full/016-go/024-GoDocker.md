@@ -1525,52 +1525,6 @@ spec:
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**1. 以下哪种基础镜像最适合 `CGO_ENABLED=0` 编译的 Go 程序？**
-
-A. `golang:1.22`
-B. `ubuntu:22.04`
-C. `gcr.io/distroless/static-debian12`
-D. `python:3.12-slim`
-
-**2. `docker build` 时，以下哪种操作不会使后续层的缓存失效？**
-
-A. 修改 `COPY` 源文件
-B. 修改前一行的 `RUN` 命令
-C. 修改 `.dockerignore`
-D. 重启 Docker daemon
-
-**3. 以下哪种方式最安全地传递 GitHub Token 给构建过程？**
-
-A. `ARG GITHUB_TOKEN` + `RUN git clone`
-B. `ENV GITHUB_TOKEN=xxx`
-C. `--mount=type=secret,id=token`
-D. 写入 Dockerfile 注释
-
-**4. distroless 镜像相比 alpine 的核心优势是？**
-
-A. 体积更小
-B. 包含 shell 便于调试
-C. 无 shell、无包管理器，攻击面更小
-D. 默认包含更多工具
-
-**5. BuildKit 的 `--mount=type=cache` 的核心作用是？**
-
-A. 持久化容器运行时数据
-B. 跨构建复用目录，加速构建
-C. 共享主机目录到容器
-D. 创建临时目录
-
-**6. Go 程序在容器中 SIGTERM 后默认等待多久会被 SIGKILL？**
-
-A. 5 秒
-B. 10 秒
-C. 30 秒
-D. 60 秒
-
 ### 简答题知识点讲解
 
 1. 解释为何 `scratch` 镜像中 Go 程序调用 `http.Get("https://example.com")` 会失败，并提出两种解决方案。
@@ -1609,20 +1563,6 @@ CMD ["./myapp"]
 
 编写 docker-compose.yml，编排 Go 服务 + MySQL + Redis，包含 healthcheck、资源限制、日志配置。
 
-### 9.4 思考题
-
-1. 在微服务架构中，所有服务统一使用 `distroless/static` 还是按需选择基础镜像？请分析权衡。
-
-2. 容器化 Go 程序的 GOMAXPROCS 应如何设置？是否应等于宿主机 CPU 核数？为什么 cgroup v2 下 Go 1.22+ 自动检测 GOMAXPROCS？
-
-3. 镜像签名（cosign）与镜像扫描（Trivy）分别解决什么安全问题？是否可以互相替代？
-
-4. 在 Serverless 场景下，scratch 镜像与 distroless/static 的差异对冷启动有何影响？为什么 Knative 默认推荐 distroless？
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. Docker Documentation. *Dockerfile reference*. https://docs.docker.com/engine/reference/builder/
@@ -1656,8 +1596,6 @@ CMD ["./myapp"]
 17. Astels, D. (2023). *Go 1.22: Enhanced HTTP Routing*. https://go.dev/blog/routing-enhancements
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 容器运行时
 
@@ -1697,13 +1635,6 @@ CMD ["./myapp"]
 - **go-chi/chi**：轻量 HTTP 路由
 - **spf13/viper**：配置管理
 - **uber-go/zap**：高性能日志
-
-### 11.6 学习资源
-
-- **Docker Official Tutorial**：https://docs.docker.com/get-started/
-- **Play with Docker**：https://training.play-with-docker.com/
-- **Kubernetes Academy**：https://kubernetes.academy/
-- **CNCF Landscape**：https://landscape.cncf.io/
 
 ### 11.7 相关主题
 

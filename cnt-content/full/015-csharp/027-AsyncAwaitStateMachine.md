@@ -1794,57 +1794,6 @@ public async Awaitable FadeAsync(Image image, float duration)
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪个不是 `async` 方法的合法返回类型？
-
-A. `Task<int>`  
-B. `ValueTask<string>`  
-C. `void`  
-D. `IEnumerable<int>`
-
-**答案：D**
-
-`async` 方法返回类型必须是 `Task`、`Task<T>`、`ValueTask`、`ValueTask<T>`、自定义带 `[AsyncMethodBuilder]` 的类型，或 `void`（仅事件处理器）。`IEnumerable<int>` 不是可等待类型，但可以是同步迭代器返回类型。`async IAsyncEnumerable<int>` 是合法的（异步流），但 `async IEnumerable<int>` 不合法。
-
-**题目 2**：`ConfigureAwait(false)` 的作用是？
-
-A. 取消后续 await  
-B. 不捕获 SynchronizationContext  
-C. 立即执行 continuation  
-D. 设置超时
-
-**答案：B**
-
-`ConfigureAwait(false)` 告诉 builder 不要捕获 `SynchronizationContext`，continuation 在底层 Task 完成的线程上继续执行。在 ASP.NET Core 中无影响（无 SynchronizationContext），在 WPF/WinForms 中避免死锁。
-
-**题目 3**：以下代码在 WPF 中执行会发生什么？
-
-```csharp
-private void Button_Click(object sender, RoutedEventArgs e)
-{
-    var result = GetDataAsync().Result;
-    MessageBox.Show(result);
-}
-
-private async Task<string> GetDataAsync()
-{
-    await Task.Delay(100);
-    return "data";
-}
-```
-
-A. 正常显示 "data"  
-B. 编译错误  
-C. 死锁  
-D. 抛出异常
-
-**答案：C**
-
-`GetDataAsync` 内部 `await Task.Delay(100)` 默认捕获 UI SynchronizationContext。但 UI 线程被 `.Result` 阻塞，无法执行 continuation，导致死锁。修复：将 `Button_Click` 改为 `async void` 并 `await`，或在 `GetDataAsync` 中使用 `ConfigureAwait(false)`。
-
 ### 填空题知识点讲解
 
 **题目 4**：编译器为 `async` 方法生成的状态机结构体实现了 _________ 接口。
@@ -2041,55 +1990,6 @@ public class Program
 }
 ```
 
-### 9.4 思考题
-
-**题目 9**：为什么 .NET 设计 `ValueTask<T>` 而不是直接优化 `Task<T>` 减少分配？
-
-核心原因：
-
-1. **API 兼容性**：`Task<T>` 自 .NET 4.0 起就是引用类型，改为值类型会破坏所有现有代码（字段、参数、序列化）。
-2. **语义差异**：`Task<T>` 可多次 await、可缓存、可组合；`ValueTask<T>` 是单消费的，语义更严格。
-3. **性能与灵活性的权衡**：`ValueTask<T>` 优化同步路径，但异步路径仍有 `Task` 分配。`Task<T>` 优化成熟的异步路径（如缓存的 Task）。
-4. **复用场景**：`ValueTask<T>` 可以包装 `IValueTaskSource<T>`（如 `AsyncOperation<T>`），允许对象池复用，比 `Task<T>` 更高效。
-5. **教育意义**：通过 `ValueTask<T>` 的限制（不可多次 await），强制开发者思考是否真的需要异步。
-
-参考：Stephen Toub 的博客 "ValueTask" 和 ECMA-334 第 15.15 节。
-
-**题目 10**：在 .NET 9 中，`Task.WaitAsync` 的重载如何避免 `ConfigureAwait` 的争议？
-
-.NET 6+ 引入 `Task.WaitAsync`：
-
-```csharp
-public Task<T> WaitAsync(TimeSpan timeout);
-public Task<T> WaitAsync(CancellationToken cancellationToken);
-public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
-```
-
-优势：
-
-1. **统一超时与取消**：不需要单独创建 `CancellationTokenSource`。
-2. **避免 ConfigureAwait 争议**：`WaitAsync` 不依赖 `SynchronizationContext`，行为统一。
-3. **异常明确**：超时抛 `TimeoutException`，取消抛 `TaskCanceledException`。
-4. **组合性**：可以链式 `await task.WaitAsync(timeout).ConfigureAwait(false)`。
-
-但 `ConfigureAwait` 仍然是必要的，因为 `WaitAsync` 本身是 `await` 的辅助，不能替代 `ConfigureAwait(false)` 在库代码中的作用。
-
-**题目 11**：为什么 `async` 迭代器（`async IAsyncEnumerable<T>`）的实现比 `async Task` 更复杂？
-
-`async IAsyncEnumerable<T>` 的复杂性源于：
-
-1. **多次挂起点**：每次 `yield return` 都是一个挂起点，状态机需要记住当前位置。
-2. **暂停与恢复**：消费者可以暂停枚举（`await using`），状态机需要支持暂停-恢复语义。
-3. **取消传播**：`WithCancellation` 与 `EnumeratorCancellation` 需要合并多个 CancellationToken。
-4. **资源释放**：`IAsyncDisposable` 需要在 `await foreach` 退出时调用 `DisposeAsync`。
-5. **AsyncIteratorMethodBuilder**：与 `AsyncTaskMethodBuilder` 不同，专门处理 yield 的状态机。
-
-源码：[AsyncIteratorMethodBuilder.cs](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/AsyncIteratorMethodBuilder.cs)
-
----
-
-## 10. 参考文献
-
 ### 10.1 规范与官方文档
 
 [1] Ecma International. 2023. *ECMA-334: The C# Language Specification (6th edition)*. Geneva, Switzerland: Ecma International. https://www.ecma-international.org/wp-content/uploads/ECMA-334_6th_edition_december_2022.pdf
@@ -2140,8 +2040,6 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 进阶书籍
 
 - **Stephen Cleary**. *Concurrency in C# Cookbook (2nd ed.)* — 全面覆盖 Task、async、并行、响应式编程。
@@ -2154,27 +2052,12 @@ public Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken);
 - **Stanford CS110L Safety in Systems Programming** — https://web.stanford.edu/class/cs110l/ — Rust/C++ 异步安全对比。
 - **CMU 15-440 Distributed Systems** — http://www.cs.cmu.edu/~dga/15-440/ — 分布式异步通信。
 
-### 11.3 在线资源
-
-- **.NET Performance YouTube channel**（Maoni Stephens, Stephen Toub）— GC 与异步性能深度讲解。
-- **Stephen Toub 的 GitHub** — https://github.com/stephentoub — 大量异步性能示例。
-- **Async & Await FAQ（Stephen Cleary）** — https://blog.stephencleary.com/2012/02/async-and-await.html — 最权威的 FAQ。
-- **Parallel Programming with .NET（MSDN blog）** — https://devblogs.microsoft.com/dotnet/ — 官方并行编程博客。
-
 ### 11.4 相关源码
 
 - **dotnet/runtime/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/** — Task、TaskScheduler、SynchronizationContext 实现。
 - **dotnet/aspnetcore/src/Servers/Kestrel/** — Kestrel 异步 I/O 实现。
 - **dotnet/efcore/src/EFCore/** — EF Core 异步查询实现。
 - **dotnet/roslyn/src/Compilers/CSharp/Portable/Lowering/AsyncRewriter/** — 编译器状态机重写逻辑。
-
-### 11.5 视频资源
-
-- **Channel 9: async/await in C#** — https://channel9.msdn.com/ — Stephen Toub 系列讲座。
-- **NDC Conference: Asynchronous Programming in C#** — https://www.ndcconferences.com/ — 业界顶级 .NET 会议。
-- **.NET YouTube: Performance Updates** — 每年 Build 大会的异步性能更新。
-
----
 
 ## 附录 A：状态机字段命名约定速查
 

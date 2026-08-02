@@ -595,17 +595,7 @@ tcpdump -i tun0 -n
 tcpdump -i wg0 -n udp port 51820
 ```
 
-## 参考文献
-
-MDN HTTP 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTTP
-RFC 9110（HTTP 语义）：https://www.rfc-editor.org/rfc/rfc9110
-TCP/IP 详解（W. Richard Stevens）：https://www.oreilly.com/library/view/tcpip-illustrated-vol/
-Cloudflare 学习中心：https://www.cloudflare.com/learning/
-DNS 原理（RFC 1035）：https://www.rfc-editor.org/rfc/rfc1035
-
 ## 延伸阅读
-
 网络基础与协议，见 032-networking 模块文档。
 网络安全（TLS/WAF），见 033-cybersecurity 模块。
 负载均衡与网关，见 031-devops 模块相关文档。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供计算机网络课程。

@@ -5,7 +5,7 @@ module: github
 
 category: '004-github'
 difficulty: beginner
-description: 操作向导式讲解 gh alias 与 config：手把手教读者配置命令别名、常用设置、Shell 补全与账户状态检查，配以原理讲解、错误对策与实战练习。
+description: 操作向导式讲解 gh alias 与 config：手把手教读者配置命令别名、常用设置、Shell 补全与账户状态检查，配以原理讲解、错误对策。
 author: fanquanpp
 updated: '2026-08-02'
 related: []
@@ -324,83 +324,13 @@ gh status
 
 ---
 
-## 实战练习
-
-### 练习 1：创建并验证第一个别名（入门）
-
-- **题目**：为 `pr view` 创建别名 `pv`，并用它查看任意一个 PR（可带 `-w` 打开浏览器）。
-- **提示**：`set` 后 `list` 验证；`gh pv 123 -w`。
-- **参考答案要点**：
-  ```bash
-  gh alias set pv "pr view"
-  gh alias list
-  gh pv 123
-  ```
-
-### 练习 2：带参数的别名（入门）
-
-- **题目**：创建别名 `lbl`，展开为 `label list -R "$1" --search "$2"`，用 `gh lbl cli/cli bug` 验证。
-- **提示**：单引号包裹展开内容，避免 `$1` 提前展开。
-- **参考答案要点**：
-  ```bash
-  gh alias set lbl 'label list -R "$1" --search "$2"'
-  gh lbl cli/cli bug
-  ```
-
-### 练习 3：管道别名（进阶）
-
-- **题目**：创建 shell 别名 `myrepos`，展开为"列出我的仓库并按名称过滤"，如 `gh myrepos learn` 只显示名字含 learn 的仓库。
-- **提示**：`gh repo list --json name --jq '.[].name' | grep "$1"`，加 `--shell`。
-- **参考答案要点**：
-  ```bash
-  gh alias set myrepos '!gh repo list --json name --jq ".[].name" | grep "$1"' --shell
-  gh myrepos learn
-  ```
-
-### 练习 4：配置项调整（进阶）
-
-- **题目**：把编辑器设为 VS Code 等待模式、Git 协议设为 ssh，查看这两项配置确认生效。
-- **提示**：`set` 后用 `get` 验证。
-- **参考答案要点**：
-  ```bash
-  gh config set editor "code --wait"
-  gh config set git_protocol ssh
-  gh config get editor
-  gh config get git_protocol
-  ```
-
-### 练习 5：整套环境一键配置（挑战）
-
-- **题目**：写一段命令，完成：设置 3 个常用别名（pv、co、mine）→ 关闭交互提示 → 生成 PowerShell 补全 → 用 `gh status` 验证环境可用。
-- **提示**：别名用 `--clobber` 保证幂等；补全用 powershell 分支。
-- **参考答案要点**：
-  ```bash
-  gh alias set pv "pr view" --clobber
-  gh alias set co "pr checkout" --clobber
-  gh alias set mine "issue list --assignee @me" --clobber
-  gh config set prompt disabled
-  gh completion -s powershell | Out-String | Invoke-Expression
-  gh status
-  ```
-
----
-
 ## 一句话记忆
 
 **别名是"自定义唤醒词"（`alias set` 定义、`$1` 插参、`--shell` 解锁管道），配置是"系统设置"（`config set` 改编辑器/协议/分页器），两者都是"配一次、爽很久"的生产力工具。**
 
 ---
 
-## 参考链接
-
-- GitHub CLI 官方手册 gh alias set：https://cli.github.com/manual/gh_alias_set
-- GitHub CLI 官方手册 gh config：https://cli.github.com/manual/gh_config
-- GitHub CLI 官方手册 gh config set：https://cli.github.com/manual/gh_config_set
-- GitHub CLI 官方手册 gh auth status：https://cli.github.com/manual/gh_auth_status
-
 ## 延伸阅读
-
 - gh 登录与认证详解，见 004-github 模块《GhCliAuth》。
 - SSH 与 HTTPS 协议选择，见 004-github 模块《SSHHTTPS》。
 - 用 gh api 实现更复杂的别名（如脚本化查询），见《GhApi》。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

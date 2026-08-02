@@ -9,7 +9,6 @@ author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/分块矩阵'
-  - 'linear-algebra/矩阵典型例题'
   - 'linear-algebra/解的存在性判定'
   - 'linear-algebra/齐次线性方程组'
 prerequisites: []
@@ -186,42 +185,9 @@ for k = 1 to n-1:
 | 行阶梯形里漏掉零行下沉 | 形式错误 | 未把全零行移到最底部 | 检查：非零行必须在所有零行之上 |
 | 回代时从中间行开始 | 流程错误 | 忘记"从最后一行往上" | 永远从最底部非零行开始逐层上代 |
 
-## 10. 实战练习
-
-**练习 1（基础）**：用高斯消元法解 $\begin{cases} 2x_1 + x_2 = 5 \\ 4x_1 - x_2 = 1 \end{cases}$。
-
-- **提示**：增广矩阵 $\begin{pmatrix} 2 & 1 & 5 \\ 4 & -1 & 1 \end{pmatrix}$，消 $r_2 - 2r_1$。
-- **参考答案要点**：化为 $\begin{pmatrix} 2 & 1 & 5 \\ 0 & -3 & -9 \end{pmatrix}$，回代得 $x_2 = 3$，$x_1 = 1$。
-
-**练习 2（进阶）**：用高斯消元法解 $\begin{cases} x_1 + x_2 + x_3 = 6 \\ 2x_1 + 3x_2 + x_3 = 13 \\ x_1 + x_2 + 2x_3 = 8 \end{cases}$。
-
-- **提示**：依次消 $r_2 - 2r_1$、$r_3 - r_1$，再消 $r_3 - ?r_2$。
-- **参考答案要点**：行阶梯形为 $\begin{pmatrix} 1 & 1 & 1 & 6 \\ 0 & 1 & -1 & 1 \\ 0 & 0 & 1 & 2 \end{pmatrix}$，回代得 $x_3 = 2$，$x_2 = 3$，$x_1 = 1$。
-
-**练习 3（进阶）**：用高斯-约当消元法求 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$ 的逆。
-
-- **提示**：对 $(A \mid I)$ 做行变换，把左边化为 $I$，右边即为 $A^{-1}$。
-- **参考答案要点**：$\begin{pmatrix} 1 & 0 & -2 & 1 \\ 0 & 1 & \frac{3}{2} & -\frac{1}{2} \end{pmatrix}$，故 $A^{-1} = \begin{pmatrix} -2 & 1 \\ \frac{3}{2} & -\frac{1}{2} \end{pmatrix}$。
-
-**练习 4（综合）**：判断方程组 $\begin{cases} x_1 + 2x_2 - x_3 = 1 \\ 2x_1 + 4x_2 - 2x_3 = 3 \end{cases}$ 是否有解。
-
-- **提示**：消元后观察是否出现"$0 = $ 非零数"的矛盾行。
-- **参考答案要点**：$r_2 - 2r_1$ 得 $(0 \; 0 \; 0 \mid 1)$，出现矛盾行，方程组无解。
-
-**练习 5（综合）**：用高斯消元法求 $\begin{cases} x_1 + 2x_2 + 3x_3 = 1 \\ 2x_1 + 4x_2 + 6x_3 = 2 \\ 3x_1 + 6x_2 + 9x_3 = 3 \end{cases}$ 的通解。
-
-- **提示**：消元后注意第三行与第二行的关系；通解含两个自由参数。
-- **参考答案要点**：行阶梯形为 $\begin{pmatrix} 1 & 2 & 3 & 1 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{pmatrix}$，通解 $x = (1 - 2s - 3t, s, t)^T$。
-
 ## 11. 一句话记忆
 
 > **高斯消元法就是"削土豆"：只用三种初等行变换，把增广矩阵一层层削成行阶梯形（消元），再从底向上把答案一层层带回去（回代）；主元尽量选大，削出的自由变量就是无穷多解的参数。**
-
-## 参考文献
-
-- 同济大学数学科学学院. 工程数学 线性代数（第七版）[M]. 北京: 高等教育出版社, 2023. （第 3 章 §1 矩阵的初等变换）https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- MIT 18.06 Linear Algebra（Strang）: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- Numerical Linear Algebra（Trefethen & Bau）: https://www.siam.org/books/ot50/
 
 ## 延伸阅读
 

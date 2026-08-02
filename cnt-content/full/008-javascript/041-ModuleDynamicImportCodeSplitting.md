@@ -1717,8 +1717,6 @@ function App() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码输出是什么？
@@ -1850,130 +1848,6 @@ const mod = await lazyImport('./heavy-module.js', {
 });
 ```
 
-### 9.3 思考题
-
-**题目 5**：为什么 Vite 在开发期能比 Webpack 快这么多？请从 ESM、esbuild、按需编译三方面分析。
-
-1. **浏览器原生 ESM**：Vite 开发服务器不打包代码，直接利用浏览器对 ESM 的原生支持。浏览器按需发起请求，仅需当前页面用到的模块。
-2. **esbuild 预构建**：第三方依赖用 esbuild（Go 实现）预构建为 ESM 格式，比 Webpack（JavaScript）快 10-100 倍。
-3. **按需编译**：只有被请求的模块才会被编译，而非全量构建。修改某个文件时仅重新编译该文件，HMR 速度与项目规模无关。
-
-**题目 6**：在 SSR 场景下，动态导入有什么特殊考虑？如何正确处理水合？
-
-SSR 中的动态导入特殊考虑：
-
-1. **服务端同步**：服务端不能等待异步加载，需使用 `@loadable/server` 或 React 18 的 `lazy` + `Suspense` 配合 `renderToString`（已支持）。
-2. **客户端水合**：服务端渲染的 HTML 包含已加载组件的内容，客户端需在导入相同 chunk 后才能水合。通过 `<link rel="modulepreload">` 预加载这些 chunk。
-3. **chunk 清单同步**：服务端需将已加载的 chunk 清单注入 HTML，客户端据此预加载。
-4. **避免水合不匹配**：服务端与客户端加载的组件版本必须一致，否则 React 会警告 hydration mismatch。
-
-**题目 7**：分析以下 Webpack 配置，指出问题并修复。
-
-```javascript
-module.exports = {
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      minSize: 0,
-      maxSize: 0,
-      cacheGroups: {
-        default: {
-          name: 'common',
-          chunks: 'all',
-          minChunks: 1
-        }
-      }
-    }
-  }
-};
-```
-
-问题：
-
-1. `minSize: 0` 导致即使 1 字节的模块也会被分割，产生大量小 chunk。
-2. `maxSize: 0` 不限制 chunk 大小，可能导致单 chunk 过大。
-3. `minChunks: 1` 意味着任何被引用 1 次的模块都会被分到 `common`，等于没有公共依赖提取。
-4. `cacheGroups.default` 覆盖了默认配置，破坏了 vendor 自动分组。
-
-修复：
-
-```javascript
-module.exports = {
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      minSize: 20 * 1024,      // 20KB
-      maxSize: 200 * 1024,     // 200KB
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-          priority: 10
-        },
-        common: {
-          name: 'common',
-          minChunks: 2,         // 至少被 2 个 chunk 引用
-          chunks: 'all',
-          priority: 5,
-          reuseExistingChunk: true
-        }
-      }
-    }
-  }
-};
-```
-
----
-
-## 10. 参考文献
-
-引用格式遵循 ACM Reference Format。
-
-[1] ECMA International. 2023. *ECMAScript 2023 Language Specification*. Standard ECMA-262, 14th edition. Section 9.5 Dynamic Import. Available at: https://tc39.es/ecma262/
-
-[2] Domenic Denicola. 2020. *Dynamic Import TC39 Proposal*. Stage 4. Available at: https://github.com/tc39/proposal-dynamic-import
-
-[3] Tobias Koppers. 2020. *Webpack 5 Module Federation*. Webpack Documentation. Available at: https://webpack.js.org/concepts/module-federation/
-
-[4] Evan You. 2021. *Vite: Next Generation Frontend Tooling*. Available at: https://vitejs.dev/
-
-[5] Rich Harris. 2018. *Rollup: Module Bundler for ES Modules*. Available at: https://rollupjs.org/
-
-[6] Evan Wallace. 2020. *esbuild: An Extremely Fast JavaScript Bundler*. Available at: https://esbuild.github.io/
-
-[7] Guy Bedford. 2018. *Native ES Modules in Node.js: Status and Future Directions*. Node.js Foundation. Available at: https://nodejs.org/api/esm.html
-
-[8] Addy Osmani. 2019. *The Cost of JavaScript in 2019*. HTTP Archive Blog. Available at: https://httparchive.org/
-
-[9] Houssein Djirdeh and Jason Miller. 2020. *Code Splitting with Dynamic Import*. web.dev. Available at: https://web.dev/reduce-javascript-payloads-with-code-splitting/
-
-[10] Sebastián Ramírez. 2021. *Server-Side Rendering with React Suspense and Lazy*. React Documentation. Available at: https://react.dev/reference/react/lazy
-
-[11] Misko Hevery. 2023. *Signals and Component Lazy Loading in Modern Frameworks*. Qwik Documentation. Available at: https://qwik.builder.io/
-
-[12] Alex Russell. 2022. *The Performance Inequality Gap*. HTTP Archive Web Almanac. Available at: https://almanac.httparchive.org/
-
-[13] Steve Souders. 2018. *Performance Best Practices for Web Loading*. web.dev. Available at: https://web.dev/performance/
-
-[14] Ilya Grigorik. 2013. *High Performance Browser Networking* (1st ed.). O'Reilly Media, Sebastopol, CA, USA. ISBN: 978-1449344764
-
-[15] Boris Cherny. 2023. *React Server Components*. React Documentation. Available at: https://react.dev/reference/rsc
-
-[16] Patrick Dubroy. 2019. *Code Splitting Patterns in Modern Web Apps*. Chrome Dev Summit. Available at: https://developer.chrome.com/devsummit/
-
-[17] Alex Pujol and Victor Porof. 2021. *Firefox DevTools Module Panel*. Mozilla Hacks. Available at: https://developer.mozilla.org/
-
-[18] The WHATWG. 2023. *HTML Living Standard: Scripting Module Loading*. Section 4.12. Available at: https://html.spec.whatwg.org/
-
-[19] Surma. 2020. *ES Modules in Production*. web.dev. Available at: https://web.dev/es-modules-in-production/
-
-[20] Lin Clark. 2017. *ES Modules: A Cartoon Deep-Dive*. Mozilla Hacks. Available at: https://hacks.mozilla.org/2018/03/es-modules-a-cartoon-deep-dive/
-
----
-
-## 11. 延伸阅读
-
 ### 11.1 规范与标准
 
 - **TC39 import() 提案**：https://github.com/tc39/proposal-dynamic-import - 完整的提案文档与讨论历史。
@@ -2001,14 +1875,6 @@ module.exports = {
 - **Bundle Analyzer**：https://github.com/webpack-contrib/webpack-bundle-analyzer - 可视化 bundle 组成。
 - **Lighthouse CI**：https://github.com/GoogleChrome/lighthouse-ci - 自动化性能监控。
 - **Bundlephobia**：https://bundlephobia.com/ - 评估 npm 包体积。
-
-### 11.5 开源项目参考
-
-- **Next.js** 源码：动态路由与代码分割的最佳实践，特别是 `next/dynamic`。
-- **Nuxt.js** 源码：Vue 生态的代码分割方案。
-- **Remix** 源码：基于 React Router 的路由级分割。
-- **Astro** 源码：Islands Architecture 中的组件级分割。
-- **Qwik** 源码：极致的按需加载，每个组件都是独立 chunk。
 
 ### 11.6 进阶研究方向
 

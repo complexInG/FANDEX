@@ -1996,8 +1996,6 @@ public OrderDetail getOrderDetail(Long orderId) {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（记忆与理解）
 
 1. 列举 Java 8、11、17、21 四个 LTS 版本的核心特性。
@@ -2057,18 +2055,6 @@ public OrderDetail getOrderDetail(Long orderId) {
     - 语句节点：声明、赋值、if、while。
     - 求值器：使用模式匹配 switch 实现。
 
-### 9.4 开放思考题
-
-13. Java 演进遵循"保守语法、激进库"原则。这一原则在 AI 时代是否仍然适用？阐述你的观点。
-
-14. 虚拟线程的引入是否意味着 Java 不再需要响应式编程？在哪些场景下响应式仍有优势？
-
-15. Record + 密封类 + 模式匹配的组合，是否使 Java 在函数式编程上接近 Scala？还有哪些差距？
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. Oracle. *Java Language Specification (JLS), Java SE 21 Edition*. https://docs.oracle.com/javase/specs/jls/se21/html/
@@ -2120,8 +2106,6 @@ public OrderDetail getOrderDetail(Long orderId) {
 ```
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 后续版本预览
 

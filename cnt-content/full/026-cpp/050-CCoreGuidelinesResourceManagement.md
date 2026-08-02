@@ -2794,8 +2794,6 @@ public:
 
 folly 的设计哲学是 RAII 不仅用于资源释放，也用于"主动管理资源占用"。
 
-## 第 18 章 习题与解答
-
 ### 填空题知识点讲解
 
 **习题 1**（remember，难度 1）：RAII 缩写展开为 ____（英文全称）。
@@ -2815,52 +2813,6 @@ folly 的设计哲学是 RAII 不仅用于资源释放，也用于"主动管理�
 **解析讲解**：原子
 
 **解析讲解**：shared_ptr 的引用计数采用原子操作（如 `__atomic_fetch_add`），保证多线程下计数正确性。原子操作带来性能开销（约 10-50ns/次），因此 shared_ptr 的拷贝与析构不是零开销。weak_ptr 也参与计数，但使用独立的弱计数。
-
-### 选择题知识点讲解
-
-**习题 4**（understand，难度 3）：关于 RAII 类的拷贝与移动语义，下列哪项描述正确？
-
-- A. 所有 RAII 类都必须删除拷贝构造与拷贝赋值
-- B. RAII 类若持有独占资源应删除拷贝或实现移动；若持有共享资源可实现拷贝（如 shared_ptr）
-- C. RAII 类的移动构造函数必须为 noexcept，否则违反标准
-- D. RAII 类的析构函数可以抛出异常，由调用者捕获
-
-**解析讲解**：B
-
-**解析讲解**：RAII 类的所有权语义决定拷贝/移动策略：独占资源（如 unique_ptr、lock_guard）应删除拷贝、支持移动；共享资源（如 shared_ptr）可拷贝。移动构造建议 noexcept 但非强制（STL 容器在 noexcept 时才使用移动否则回退拷贝）；析构函数抛异常在 C++11 后默认调用 std::terminate，属未定义行为。
-
-**习题 5**（analyze，难度 3）：以下代码的输出是？
-
-```cpp
-#include <iostream>
-#include <memory>
-struct W { W(){std::cout<<"A";} ~W(){std::cout<<"D";} };
-int main() {
-    auto p = std::make_unique<W>();
-    auto q = std::move(p);
-    std::cout << (p == nullptr);
-}
-```
-
-- A. AD0
-- B. A0D
-- C. AD
-- D. 0AD
-
-**解析讲解**：B
-
-**解析讲解**：make_unique 构造 W 输出 A；std::move 后 p 为空、q 持有对象，输出 0；main 返回时 q 析构 W 输出 D。顺序为 A0D。
-
-**习题 6**（analyze，难度 4）：关于异常安全保证，下列描述正确的是？
-
-- A. basic guarantee 要求操作失败时不泄漏任何资源，但允许对象处于任意状态
-- B. strong guarantee 要求操作要么成功，要么回滚到操作前的状态
-- C. nothrow guarantee 由 noexcept 标注保证，编译器自动生成
-- D. 析构函数默认提供 strong guarantee
-
-**解析讲解**：B
-
-**解析讲解**：basic guarantee 要求不泄漏资源且对象处于**有效**（但可能改变）状态，而非"任意状态"；strong guarantee 要求强提交-强回滚（transactional）；nothrow guarantee 由 noexcept 标注但需程序员保证实现不抛；析构函数默认 noexcept 提供基本保证，但不应抛异常。
 
 ### 18.3 代码修正题
 
@@ -3020,30 +2972,6 @@ ScopeGuard 是 RAII 的泛化形式，由 Alexandrescu 在 2000 年发表于 Gen
 
 **结论**：RAII 与 GC 不是对立而是互补：RAII 提供确定性资源管理（适合系统级、资源敏感场景），GC 提供开发效率（适合业务级、对象密集场景）。现代语言趋势是混合策略：Rust 借用检查器 + RAII、Swift ARC + 弱引用、C# using + GC、Go defer + GC。C++ 选择纯 RAII 路线，通过 shared_ptr/weak_ptr 提供"可控的引用计数"，是 GC 的轻量替代。
 
-## 第 19 章 参考文献
-
-本章参考文献遵循 ACM Reference Format，同时在 frontmatter `references` 字段中以结构化形式存储。
-
-1. ISO/IEC. 2023. _ISO/IEC 14882:2023. Information technology — Programming languages — C++_ (8th ed.). Geneva: ISO. §11.9 (Class destructor), §14.4 (Exception handling), §7.6.10 (Memory management).
-
-2. Stroustrup, B. 2013. _The C++ Programming Language_ (4th ed.). Addison-Wesley Professional. ISBN 978-0321563842. Chapter 5 (Pointers, Arrays, References), Chapter 13 (Exception Handling), Chapter 17 (Construction, Cleanup, Copying, and Moving).
-
-3. Stroustrup, B. 1994. _The Design and Evolution of C++_. Addison-Wesley Professional. ISBN 978-0201543308. §15.4 (Resource Management), §16 (Exception Handling).
-
-4. Meyers, S. 2014. _Effective Modern C++: 42 Specific Ways to Improve Your Use of C++11 and C++14_. O'Reilly Media. ISBN 978-1491903995. Items 17-22 (Smart pointers), Items 18 (unique_ptr), Items 19-21 (shared_ptr/weak_ptr).
-
-5. Sutter, H. and Alexandrescu, A. 2004. _C++ Coding Standards: 101 Rules, Guidelines, and Best Practices_. Addison-Wesley Professional. ISBN 978-0321113580. Items 13 (Resource ownership), 49-55 (Resource management).
-
-6. Alexandrescu, A. 2001. _Modern C++ Design: Generic Programming and Design Patterns Applied_. Addison-Wesley Professional. ISBN 978-0201704310. Chapter 3 (ScopeGuard), Chapter 5 (Generalized Functors).
-
-7. Williams, A. 2019. _C++ Concurrency in Action_ (2nd ed.). Manning Publications. ISBN 978-1617294693. Chapter 3 (Sharing data between threads), Chapter 4 (Synchronizing concurrent operations).
-
-8. Sutter, H. 2013. _GotW #89 Solution: Smart Pointers_. https://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/ (accessed July 18, 2026).
-
-9. cppreference.com. 2024. _RAII — cppreference.com_. https://en.cppreference.com/w/cpp/language/raii (accessed July 18, 2026).
-
-10. C++ Core Guidelines. 2024. _C++ Core Guidelines: Resource Management_. isocpp. https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines (accessed July 18, 2026). R.1-R.32 (Resource management rules).
-
 ## 第 20 章 延伸阅读
 
 本章为读者提供 RAII 学习路径的延伸指引，涵盖 FANDEX 内部关联模块、外部进阶资料、社区资源与推荐学习路径。通过本章，读者可建立从基础到高级的完整知识网络，并能快速定位实践场景中的扩展资料。
@@ -3168,12 +3096,6 @@ RAII 类通常需要重载 `operator*`、`operator->`、`operator[]`、`operator
 5. 实现一个通用的 `unique_resource<T, D>` 模板并提交至开源项目
 
 ### 20.5 社区与讨论
-
-#### 20.5.1 官方资源
-
-- **isocpp.org**：C++ 标准委员会官方网站，发布新标准草案、Core Guidelines 更新与会议纪要。
-- **cppreference.com**：C++ 标准库参考，含 RAII 相关类的完整 API、示例与 C++23/26 演进。
-- **open-std.org**：C++ 标准提案库，可检索 RAII、Scope Guard、`std::expected` 等相关提案。
 
 #### 20.5.2 社区论坛
 

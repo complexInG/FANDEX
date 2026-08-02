@@ -1355,8 +1355,6 @@ Catch2 团队通过分层测试解决:
 2. **中间层**:测试 SECTION、GENERATOR 等高级特性
 3. **集成层**:测试与 CMake、CTest 集成
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **1.** 解释 FIRST 原则,并说明为什么"快速 (Fast)"对单元测试至关重要。
@@ -1535,52 +1533,6 @@ SCENARIO("ATM withdrawal", "[atm]") {
 - 挑战:外部输入 (网络、时间) 需 mock
 - 应用:调试罕见数据竞争
 
-## 参考文献
-
-以下参考文献遵循 ACM Reference Format。
-
-1. Beck, K. 2002. *Test Driven Development: By Example*. Addison-Wesley Professional, Boston, MA.
-
-2. Meszaros, G. 2007. *xUnit Test Patterns: Refactoring Test Code*. Addison-Wesley Professional, Boston, MA.
-
-3. Fowler, M. 2006. Mocks aren't stubs. *martinfowler.com*. https://martinfowler.com/articles/mocksArentStubs.html
-
-4. Cohn, M. 2009. *Succeeding with Agile: Software Development Using Scrum*. Addison-Wesley Professional, Boston, MA.
-
-5. Beck, K., and Gamma, E. 1998. Test infected: Programmers love writing tests. *Java Report* 3, 7, 37-50.
-
-6. Nash, P. 2010. Catch: A modern, C++-native, header-only test framework for unit-tests, TDD and BDD. *GitHub repository*. https://github.com/catchorg/Catch2
-
-7. Kirilov, V. 2016. doctest: The fastest feature-rich C++11 single-header testing framework. *GitHub repository*. https://github.com/doctest/doctest
-
-8. Google. 2008. GoogleTest documentation. *GoogleTest*. https://google.github.io/googletest/
-
-9. RTCA. 2011. *DO-178C: Software Considerations in Airborne Systems and Equipment Certification*. RTCA, Washington, DC.
-
-10. Claessen, K., and Hughes, J. 2000. QuickCheck: A lightweight tool for random testing of Haskell programs. In *Proceedings of the 5th ACM SIGPLAN International Conference on Functional Programming (ICFP '00)*. ACM, 268-279. DOI: https://doi.org/10.1145/351240.351266
-
-11. Muslu, K., Sorrentino, F., and Tekinerdogan, B. 2014. From unit tests to property-based testing: A systematic mapping study. In *Proceedings of the 18th International Conference on Evaluation and Assessment in Software Engineering (EASE '14)*. ACM, Article 23, 1-12. DOI: https://doi.org/10.1145/2601248.2601284
-
-12. Fraser, G., and Arcuri, A. 2011. EvoSuite: Automatic test suite generation for object-oriented software. In *Proceedings of the 19th ACM SIGSOFT Symposium and the 13th European Conference on Foundations of Software Engineering (ESEC/FSE '11)*. ACM, 416-419. DOI: https://doi.org/10.1145/2025113.2025179
-
-13. Pacheco, C., Lahiri, S. K., Ernst, M. D., and Ball, T. 2007. Feedback-directed random test generation. In *Proceedings of the 29th International Conference on Software Engineering (ICSE '07)*. IEEE, 75-84. DOI: https://doi.org/10.1109/ICSE.2007.37
-
-14. Christiansen, M., and Wasowski, A. 2015. Testing C++ template concepts with QuickCheck. In *Proceedings of the 2015 ACM SIGPLAN International Conference on Generative Programming: Concepts and Experiences (GPCE '15)*. ACM, 87-96. DOI: https://doi.org/10.1145/2814204.2814221
-
-15. Orso, A., and Rothermel, G. 2004. Software testing: A research bibliography. *ACM SIGSOFT Software Engineering Notes* 29, 5, 1-7. DOI: https://doi.org/10.1145/1022494.1022510
-
-16. Bertolino, A. 2007. Software testing research: Achievements, challenges, dreams. In *Future of Software Engineering (FOSE '07)*. IEEE, 85-103. DOI: https://doi.org/10.1109/FOSE.2007.25
-
-17. Jorgensen, P. C. 2013. *Software Testing: A Craftsman's Approach* (4th ed.). Auerbach Publications, Boca Raton, FL.
-
-18. Koskela, L. 2013. *Effective Unit Testing: A Guide for Java Developers*. Manning Publications, Shelter Island, NY.
-
-19. Adzic, G. 2011. *Specification by Example: How Successful Teams Deliver the Right Software*. Manning Publications, Shelter Island, NY.
-
-20. International Organization for Standardization. 2020. *Information technology — Programming languages — C++* (ISO/IEC 14882:2020), Clause 17: Library introduction. ISO, Geneva, Switzerland.
-
-## 延伸阅读
-
 ### 官方文档
 
 - GoogleTest User's Guide (https://google.github.io/googletest/)
@@ -1601,13 +1553,6 @@ SCENARIO("ATM withdrawal", "[atm]") {
 - Pacheco et al. "Feedback-Directed Random Test Generation" (ICSE 2007) - Randoop 工具
 - Claessen & Hughes "QuickCheck" (ICFP 2000) - 属性测试奠基
 - Fraser & Arcuri "EvoSuite" (ESEC/FSE 2011) - 自动测试生成
-
-### 在线资源
-
-- Martin Fowler's blog: 测试相关文章 (https://martinfowler.com/tags/testing.html)
-- Andy Glew's blog: 硬件测试 (https://animateMotion.blogspot.com)
-- RAII (Reddit r/cpp): C++ 测试讨论 (https://reddit.com/r/cpp)
-- CppCon talks: 测试相关演讲 (https://youtube.com/user/CppCon)
 
 ### 相关课程
 

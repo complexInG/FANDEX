@@ -1217,8 +1217,6 @@ local function make_lock_cache()
 end
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：实现一个函数 `weak_size(t)`，统计弱表中的活跃条目数。
@@ -1385,34 +1383,6 @@ collectgarbage("collect")
 observable:notify("world")  -- 无输出，自动清理
 ```
 
-### 9.3 思考题
-
-**思考题 1**：为什么 Lua 弱表中的字符串键不会被弱化？
-
-**解析讲解**：Lua 字符串实现采用驻留（interning）机制，所有相同内容的字符串字面量共享同一实例。如果允许字符串作为弱键被回收，会导致下次访问时重新分配，违反 interning 不变式。同时，字符串字面量存在于字节码常量池中，本身就是强引用。
-
-**思考题 2**：ephemeron table 解决了什么问题？
-
-**解析讲解**：解决"重链"（resurrection）问题。在 Lua 5.1 中，如果弱键表中值是强引用，且值引用了键，则键永远不会被回收，即使外部无强引用。ephemeron table 改变了语义：键的可达性决定值的可达性，即值"通过键可达"。这样即使值引用键，只要键外部不可达，整个条目都会被回收。
-
-**思考题 3**：在嵌入式环境中使用弱表需要注意什么？
-
-**解析讲解**：
-1. 内存占用：弱表本身仍占用内存，仅在条目失效时回收。
-2. GC 开销：弱表扫描增加 GC 时间，嵌入式设备需谨慎使用。
-3. 不确定性：弱表条目清除时机不确定，关键资源不可依赖弱表。
-4. 替代方案：在严格内存约束下，使用显式释放比弱表更可靠。
-
-**思考题 4**：为什么 JavaScript 的 WeakMap 不允许遍历？
-
-**解析讲解**：
-1. **GC 不确定性**：遍历过程中条目可能被回收，结果不确定。
-2. **隐私性**：WeakMap 常用于存储私有数据，遍历会破坏封装。
-3. **性能**：遍历需要扫描所有条目，与弱引用语义冲突。
-4. **简化语义**：去掉遍历使 GC 实现更简单，无需考虑遍历期间的稳定性。
-
-Lua 允许遍历弱表是设计取舍，给予开发者灵活性但需谨慎使用。
-
 ### 9.4 项目题
 
 **项目题**：实现一个内存泄漏检测库，能够：
@@ -1484,8 +1454,6 @@ res = nil
 detector:assert_clean()  -- 应通过
 ```
 
-## 10. 参考文献
-
 ### 10.1 ACM Reference Format
 
 [1] Roberto Ierusalimschy, Luiz Henrique de Figueiredo, and Waldemar Celes. 2005. The implementation of Lua 5.0. _Journal of Universal Computer Science_ 11, 7 (2005), 1159–1176. DOI: https://doi.org/10.3217/jucs-011-07-1159
@@ -1534,8 +1502,6 @@ detector:assert_clean()  -- 应通过
 
 **关于通用垃圾收集理论**，Jones & Lins 的 *Garbage Collection*（文献 [5]）是经典教材，全面覆盖标记-清除、复制、分代等算法。
 
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - Lua 5.4 Reference Manual: Weak Tables 章节 - https://www.lua.org/manual/5.4/manual.html#2.7
@@ -1563,13 +1529,6 @@ detector:assert_clean()  -- 应通过
 - **OpenResty**: 请求生命周期与弱表 - https://openresty.org/
 - **Lapis**: Web 框架缓存实现 - https://leafo.net/lapis/
 - **Kong**: API 网关插件缓存 - https://konghq.com/
-
-### 11.5 社区资源
-
-- Lua Users Wiki: Weak Tables - http://lua-users.org/wiki/WeakTablesTutorial
-- Lua Mailing List Archives: GC 讨论
-- Stack Overflow: lua+weak-tables
-- Roblox Luau: Memory Management
 
 ### 11.6 配套实验
 
@@ -1692,44 +1651,6 @@ flowchart TD
 | 代际 GC | 否 | 否 | 否 | 否 | 是 | 否 |
 | 字符串键强引用 | 是 | 是 | 是 | 是 | 是 | 是 |
 
-## 附录 E：自测题答案
-
-## 知识讲解与要点分析（原习题 1 答案）
-
-`weak_size` 实现正确。注意遍历期间可能触发 GC，结果可能略有不同。
-
-## 知识讲解与要点分析（原习题 2 答案）
-
-弱值版 map 正确。注意返回的表是弱值表，使用方需谨慎。
-
-## 知识讲解与要点分析（原习题 3 答案）
-
-LRU + 弱表混合缓存的完整实现需要考虑：
-1. 并发安全（Lua 单线程，但协程切换需注意）。
-2. 过期清理定时器。
-3. 大小限制与溢出策略。
-4. 统计信息导出。
-
-## 知识讲解与要点分析（原习题 4 答案）
-
-观察者模式实现正确。注意 `pairs` 遍历期间通知可能触发 GC，导致遍历结果变化。生产环境应复制到强引用表再遍历。
-
----
-
-文档至此完成。读者应能基于本章内容：
-
-1. 理解弱表的形式化语义与 GC 协同机制。
-2. 在工程实践中正确应用弱表实现缓存、订阅、资源池。
-3. 识别并避免常见陷阱与反模式。
-4. 在游戏、嵌入式、Web 等场景中高效应用弱表。
-5. 设计基于弱表的内存治理框架。
-
-下一步推荐学习：
-
-- 元表与元方法（学习 `__gc` 与对象生命周期）
-- 环境与全局变量管理（学习 `_ENV` 与作用域）
-- 用户数据（学习 userdata 与 C 对象生命周期）
-- Lua 性能优化（学习 GC 调优）
 ## 弱表基础
 
 **基本写法：设置弱键表**

@@ -382,34 +382,12 @@ handleChange(mq) // 初始化执行一次
 
 容器查询与媒体查询的分工可以总结为：页面排版问视口，组件排版问容器。两者配合才能覆盖现代响应式设计的全部场景。
 
-## 10. 参考文献
-
-W3C, Media Queries Level 3, 访问日期 2026-08-01, https://www.w3.org/TR/mediaqueries-3/
-
-W3C, Media Queries Level 4, 访问日期 2026-08-01, https://www.w3.org/TR/mediaqueries-4/
-
-MDN Web Docs, Using media queries, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries
-
-MDN Web Docs, prefers-color-scheme, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme
-
-MDN Web Docs, CSS Container Queries, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries
-
-MDN Web Docs, Responsive images, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Media_queries/Responsive_images
-
 ## 11. 延伸阅读
-
 响应式布局常与 Grid/Flex 配合，见 007-css 模块的布局文档；
-
 深色模式与 CSS 变量体系，见本模块变量相关文档；
-
 移动端适配的完整方案，见本模块 021-MobileAdaptation 文档；
-
 JS 中 matchMedia 的更多用法，见 008-javascript 模块相关文档；
-
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 CSS 响应式与移动端课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供前端实战课程。
-
 ---
-
 ### 1. @media 语法
 
 ```css
@@ -1332,4 +1310,3 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
   }
 }
 ```
-

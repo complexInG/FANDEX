@@ -1413,89 +1413,6 @@ Ant Design 的 `<Space>` 组件内部使用 flex + `gap`，规避了 margin 合�
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：以下哪种情况**不会**触发 margin 合并？
-
-A. 两个相邻的 `<p>` 元素
-B. 父元素与首个子元素（父无 border/padding）
-C. 两个 flex 容器内的子元素
-D. 空块元素自身的 margin-top 与 margin-bottom
-
-**答案：C**
-
-**解析讲解**：CSS Flexbox 规范明确规定，flex 容器内的子元素（flex item）之间不发生 margin 合并。这与 BFC 的隔离性一致——flex 容器建立了独立的格式化上下文（FFC）。
-
-- A：相邻兄弟是 margin 合并的最典型场景。
-- B：父子塌陷是 margin 合并的第二种场景。
-- D：空块自身合并是第三种场景。
-
-**题目 2**：以下哪种方式触发 BFC **没有副作用**？
-
-A. `overflow: hidden`
-B. `display: flow-root`
-C. `float: left`
-D. `position: absolute`
-
-**答案：B**
-
-**解析讲解**：`display: flow-root` 是 CSS Box Model Level 3 专门为触发 BFC 而设计的属性，无任何副作用。
-
-- A：会裁剪溢出内容，影响 sticky 定位。
-- C：使元素脱离文档流，影响布局。
-- D：使元素脱离文档流，需要手动定位。
-
-**题目 3**：两个相邻块级元素的 `margin-bottom: 30px` 与 `margin-top: -10px` 合并后的值是？
-
-A. 30px
-B. 20px
-C. -10px
-D. 40px
-
-**答案：B**
-
-**解析讲解**：当参与合并的 margin 一正一负时，规则为「正负相加」：30 + (-10) = 20px。
-
-公式：
-$$M_{\text{collapsed}} = M_{\text{max positive}} + M_{\text{min negative}} = 30 + (-10) = 20$$
-
-**题目 4**：以下哪个 CSS 属性是 CSS Box Model Level 4 引入的实验性属性？
-
-A. `margin-trim`
-B. `margin-block-start`
-C. `gap`
-D. `flow-root`
-
-**答案：A**
-
-**解析讲解**：`margin-trim` 是 CSS Box Model Level 4 引入的实验性属性，允许容器修剪子元素超出容器的 margin。截至 2024 年仅 Safari Preview 部分实现。
-
-- B：`margin-block-start` 是 CSS Logical Properties Level 1 引入的逻辑属性。
-- C：`gap` 是 CSS Grid Level 1 / Flexbox Level 1 引入的间距属性。
-- D：`flow-root` 是 CSS Box Model Level 3 引入的 display 值。
-
-**题目 5**：以下哪个选择器的优先级最高？
-
-A. `#nav .list li:hover`
-B. `:where(#id, .class) p`
-C. `.nav li`
-D. `:is(#id, .class) p`
-
-**答案：D**
-
-**解析讲解**：本题虽是优先级题，但与 margin 实践相关（高优先级选择器难以覆盖 margin 值）。
-
-- A：`(0, 1, 2, 1)` — 1 ID + 2 类 + 1 元素
-- B：`:where()` 始终计为 0，故 `(0, 0, 0, 1)`
-- C：`(0, 0, 1, 1)`
-- D：`:is()` 取参数中最高，故 `(0, 1, 0, 1)`
-
-D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D 的 ID 数 = 1。逐位比较：A 的 ID 位 = 1，D 的 ID 位 = 1；A 的类位 = 2，D 的类位 = 0。故 A > D。
-
-**修正答案**：A
-
 ### 填空题知识点讲解
 
 **题目 1**：CSS 2.1 §___ 中正式定义了 margin collapsing 的 4 条规则。
@@ -1711,114 +1628,6 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 - 右侧 `overflow: hidden` 触发 BFC，BFC 不会与浮动元素重叠，因此自动占据剩余宽度。
 - 通过 `margin-right: 20px` 实现间距（浮动元素之间不合并，间距准确）。
 
-### 9.4 思考题
-
-**题目 1**：为什么 CSS 设计者选择让 margin 合并，而不是简单相加？请从排版美学与规范简洁性两个角度分析。
-
-**排版美学角度**：
-- 段落间距取最大值符合排版直觉：两段文字之间的视觉间距应取决于「需要更大留白的那一段」。
-- 若简单相加，作者需要为每段精确计算 margin 以保持一致的视觉间距，工作量大。
-- 合并机制使得「段落默认间距」可以由浏览器统一控制，作者只需覆盖特殊场景。
-
-**规范简洁性角度**：
-- 合并规则简化了「多个块级元素堆叠」时的间距计算。
-- 避免了「作者设置的 margin + 浏览器默认 margin」叠加导致的不可预测间距。
-- 与 Word、LaTeX 等排版系统的段落间距行为一致。
-
-**反思**：
-- 合并机制在简单文档场景下表现优异，但在复杂组件化场景下成为负担。
-- 现代布局方案（flex/grid + gap）通过完全规避合并，提供了更可预测的间距管理。
-
-**题目 2**：在现代组件化开发中，margin 合并机制是「特性」还是「缺陷」？请论证你的观点。
-
-**观点**：在现代组件化开发中，margin 合并机制更接近「缺陷」而非「特性」。
-
-**论据**：
-1. **可预测性差**：组件的最终渲染间距取决于上下文（父容器是否触发 BFC、相邻元素是否为 flex/grid），违反了组件的「独立性」原则。
-2. **调试困难**：margin 合并的复杂规则使开发者难以快速定位间距问题，增加维护成本。
-3. **与现代设计系统冲突**：设计系统要求间距精确可控，合并机制引入了不可控的变量。
-4. **替代方案成熟**：flex/grid + gap 完全规避合并，语义更清晰，是现代推荐方案。
-
-**反驳观点**：
-- 合并机制在简单文档（如博客文章、新闻页面）中仍有价值。
-- 移除合并机制会破坏向后兼容性。
-
-**结论**：
-- 应保留合并机制以兼容历史代码。
-- 新项目应全面采用 flex/grid + gap 规避合并。
-- 长期来看，CSS 规范应考虑引入「opt-out」机制（如 `margin-collapse: none`）。
-
-**题目 3**：设计一个企业级间距管理系统，要求支持多主题、响应式、可访问性。请给出设计方案。
-
-**设计方案**：
-
-1. **设计令牌层**：
-```css
-:root {
-  /* 基础间距 scale（4px 基准） */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-  --space-7: 3rem;
-  --space-8: 4rem;
-}
-
-[data-theme="compact"] {
-  --space-1: 0.125rem;
-  --space-2: 0.25rem;
-  /* 紧凑主题 */
-}
-
-[data-theme="comfortable"] {
-  --space-1: 0.5rem;
-  --space-2: 0.75rem;
-  /* 宽松主题 */
-}
-```
-
-2. **响应式间距**：
-```css
-.section-spacing {
-  padding: clamp(var(--space-4), 5vw, var(--space-7));
-}
-```
-
-3. **可访问性**：
-```css
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-  }
-}
-
-/* 字体大小适配 */
-@media (prefers-reduced-data: reduce) {
-  /* 减少不必要的大间距 */
-}
-```
-
-4. **组件间距策略**：
-- 组件内部：使用 padding
-- 组件之间：使用 gap（在 flex/grid 容器中）
-- 独立元素：使用 margin（注意父子关系，必要时触发 BFC）
-
-5. **自动化测试**：
-- Playwright 视觉回归测试
-- Storybook + Chromatic
-- ESLint 规则禁止裸 margin
-
-6. **文档化**：
-- Figma 设计令牌同步
-- Storybook 文档
-- 代码注释规范
-
----
-
-## 10. 参考文献
-
 ### 10.1 W3C 规范
 
 [1] World Wide Web Consortium. 2011. *Cascading Style Sheets Level 2 Revision 1 (CSS 2.1) Specification*. W3C Recommendation. Retrieved from https://www.w3.org/TR/CSS21/box.html#collapsing-margins
@@ -1841,16 +1650,6 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 [9] Bos, B., Lie, H. W., Lilley, C., and Jacobs, I. 1999. *Cascading Style Sheets, Level 2: CSS2 Specification*. W3C Recommendation. Retrieved from https://www.w3.org/TR/CSS2/
 
-### 10.3 在线资源
-
-[10] MDN Web Contributors. 2024. *Mastering margin collapsing*. MDN Web Docs. Retrieved from https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing
-
-[11] MDN Web Contributors. 2024. *Block formatting context*. MDN Web Docs. Retrieved from https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_display/Block_formatting_context
-
-[12] Chen, H. 2022. *CSS Box Model Level 4: margin-trim*. CSS-Tricks. Retrieved from https://css-tricks.com/css-box-model-level-4-margin-trim/
-
-[13] Coyier, C. 2023. *The Rules of Margin Collapse*. CSS-Tricks. Retrieved from https://css-tricks.com/the-rules-of-margin-collapse/
-
 ### 10.4 框架文档
 
 [14] Bootstrap Team. 2024. *Bootstrap 5 Spacing*. Retrieved from https://getbootstrap.com/docs/5.3/utilities/spacing/
@@ -1871,8 +1670,6 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 > Etemad, E. 2018. CSS Box Model Module Level 3. W3C Working Draft. Retrieved from https://www.w3.org/TR/css-box-3/
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 书籍
 
@@ -1901,32 +1698,6 @@ D 与 A 比较：A 有 2 个类，D 只有 0 个类，但 A 的 ID 数 = 1，D �
 
 3. **Elika Etemad. 2017. *CSS Box Model: Status and Direction*.**
    - Box Model 模块的演进方向。
-
-### 11.3 在线资源
-
-1. **MDN Web Docs** — https://developer.mozilla.org/
-   - 最权威的 Web 开发文档。
-
-2. **CSS-Tricks** — https://css-tricks.com/
-   - 实战技巧与最佳实践。
-
-3. **web.dev** — https://web.dev/
-   - Google 出品的 Web 开发最佳实践。
-
-4. **W3C CSS Working Group Blog** — https://www.w3.org/blog/CSS/
-   - CSS 规范的最新进展。
-
-5. **Can I Use** — https://caniuse.com/
-   - 浏览器兼容性查询。
-
-6. **CSS Specs on GitHub** — https://github.com/w3c/csswg-drafts
-   - CSS 规范的 GitHub 仓库，可参与讨论。
-
-7. **Smashing Magazine** — https://www.smashingmagazine.com/
-   - Web 设计与开发深度文章。
-
-8. **A List Apart** — https://alistapart.com/
-   - Web 设计与开发的经典文章库。
 
 ### 11.4 视频课程
 

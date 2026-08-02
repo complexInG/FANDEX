@@ -222,52 +222,9 @@ TypeError: Cannot read properties of undefined (reading 'token')
 | 分类混乱 | 帖子发错版块 | 分类设计不合理 | 精简分类数量，每个分类写清用途说明 |
 | 讨论区冷清 | 发帖无人响应 | 社区未运营 | 维护者主动发起话题、欢迎贴置顶、展示问答 |
 
-## 9. 实战练习
-
-### 练习 1：启用并配置欢迎贴（入门）
-
-**题目描述**：在你自己的仓库启用 Discussions，编辑欢迎贴，说明"本社区用途 + 提问前先搜索 + 问答去哪 + 公告去哪"，并把它置顶。
-
-**提示**：启用入口在 Settings → Features；置顶按钮在讨论页右侧。
-
-**参考答案要点**：欢迎贴至少包含三句话："欢迎加入；技术问题请到 Q&A 并附环境信息；Bug 请到 Issues 提交，不要发在这里。"发布后点击 Pin 置顶。
-
-### 练习 2：完成一次问答闭环（入门）
-
-**题目描述**：在 Q&A 分类发布一个真实的技术问题（可以是你学习 Git/GitHub 遇到的），邀请一位同学或网友回答，然后标记最佳答案，最后截图留存。
-
-**提示**：问题要具体；回答后把鼠标移到回答上，点击"标记为答案"。
-
-**参考答案要点**：验证闭环的四个状态：问题已发布 → 收到回答 → 标记答案 → 被采纳回答置顶显示。同时观察"最有帮助贡献者"列表是否出现变化。
-
-### 练习 3：设计分类体系并转移内容（进阶）
-
-**题目描述**：为你的项目设计一套分类（在默认五类基础上增删改），然后把一个已经成熟的讨论转换为 Issue，再模拟把一条无关 Issue 转为讨论。
-
-**提示**：分类管理入口在 Discussions → Manage categories；转换按钮在详情页右侧边栏。
-
-**参考答案要点**：合理设计示例：Q&A（问答）、Ideas（功能建议）、Announcements（公告）、Show and Tell（展示）、Feedback（反馈）——删除用不到的 General；转换后确认两边互相链接、无内容丢失。
-
-### 练习 4：发起一次社区投票（挑战）
-
-**题目描述**：为你的项目发起一次投票，题目"下个版本优先做什么"，给出 3-4 个选项，设置截止日期，并在公告分类发布配套说明。
-
-**提示**：投票选项在新建讨论时的编辑器中添加；投票统计在讨论页实时展示。
-
-**参考答案要点**：投票 + 公告的组合是标准的社区决策流程：公告说明背景和截止时间，投票收集意见，结束后把胜出选项转为 Issue 并公示结果，形成"讨论→决策→任务"闭环。
-
 ## 10. 一句话记忆
 
 **Discussions 是仓库的社区论坛：Issue 管"要完成的任务"，Discussion 管"开放的话题"——问题、想法、公告、展示都放这儿，问答可标记答案，想法成熟后转成 Issue 继续推进，一静一动配合使用。**
-
-## 11. 参考链接与延伸阅读
-
-### 权威资料（GitHub 官方中文文档）
-
-- GitHub Discussions 快速入门：https://docs.github.com/zh/discussions/quickstart
-- 关于 Discussions：https://docs.github.com/zh/discussions/collaborating-with-your-community-using-discussions/about-discussions
-- 与维护者协作（发起讨论、投票、转换 Issue）：https://docs.github.com/zh/discussions/collaborating-with-your-community-using-discussions/collaborating-with-maintainers-using-discussions
-- 在 GitHub 上沟通（Issue/PR/Discussions 选型）：https://docs.github.com/zh/get-started/using-github/communicating-on-github
 
 ### 延伸阅读（站内文档）
 

@@ -3160,8 +3160,6 @@ fun main() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：以下代码的输出是什么？
@@ -3438,8 +3436,6 @@ fun main() {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. JetBrains. "Null Safety." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/null-safety.html.
@@ -3470,16 +3466,6 @@ fun main() {
 
 12. JetBrains. "KEEP-97: Sealed Classes." *Kotlin Evolution and Enhancement Process*, 2017. https://github.com/Kotlin/KEEP/blob/master/proposals/sealed-class-inheritance.md.
 
-### 10.4 跨语言参考
-
-13. Apple. "The Swift Programming Language: Optionals." *Swift Documentation*, 2024. https://docs.swift.org/swift-book/LanguageGuide/TheBasics.html.
-
-14. Microsoft. "Nullable reference types." *C# Programming Guide*, 2024. https://docs.microsoft.com/dotnet/csharp/nullable-references.
-
-15. TypeScript Team. "TypeScript Handbook: Nullable Types." *TypeScript Documentation*, 2024. https://www.typescriptlang.org/docs/handbook/2/everyday-types.html.
-
-16. Rust Team. "The Rust Programming Language: Option." *Rust Documentation*, 2024. https://doc.rust-lang.org/std/option/.
-
 ### 10.5 工程实践
 
 17. JetBrains. "Coding Conventions." *Kotlin Documentation*, 2024. https://kotlinlang.org/docs/coding-conventions.html.
@@ -3509,8 +3495,6 @@ fun main() {
 26. JUnit Team. "JUnit 5 User Guide." *JUnit Documentation*, 2024. https://junit.org/junit5/docs/current/user-guide/.
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 进阶主题
 
@@ -3547,17 +3531,6 @@ fun main() {
 
 - **"The Joy of Kotlin"** - Pierre-Yves Saumont
   - 函数式视角下的空安全与 `Result` 类型
-
-### 11.4 社区资源
-
-- **Kotlin Slack**：https://kotlinlang.slack.com/
-  - `#nullability` 频道讨论空安全问题
-
-- **Kotlin Discussions**：https://discuss.kotlinlang.org/
-  - 空安全相关问题与最佳实践
-
-- **Stack Overflow**：https://stackoverflow.com/questions/tagged/kotlin+nullpointerexception
-  - Kotlin 空安全常见问题
 
 ### 11.5 实践项目
 

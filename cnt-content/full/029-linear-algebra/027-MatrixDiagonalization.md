@@ -4,14 +4,13 @@ title: 矩阵对角化
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 相似矩阵的定义与性质，矩阵可对角化的条件与判别，对角化的完整步骤（P⁻¹AP=Λ）与应用（矩阵幂、矩阵多项式、微分方程组），含 0 基础类比、完整例题、常见错误对策与实战练习。
+description: 相似矩阵的定义与性质，矩阵可对角化的条件与判别，对角化的完整步骤（P⁻¹AP=Λ）与应用（矩阵幂、矩阵多项式、微分方程组），含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/特征值与特征向量计算'
   - 'linear-algebra/特征值性质'
   - 'linear-algebra/实对称矩阵的对角化'
-  - 'linear-algebra/特征值典型例题'
 prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
 ---
@@ -170,8 +169,6 @@ $$e^{At} = Pe^{\Lambda t}P^{-1}$$
 
 $e^{\Lambda t}$ 是对角元取 $e^{\lambda_i t}$ 的对角矩阵——微分方程组因此化为 $n$ 个独立的标量方程。这是控制系统、振动分析、人口动力学的标准解法（029 篇会展开应用）。
 
-## 5. 典型例题
-
 ### 例1（重根但仍可对角化）
 
 设 $A = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 2 \end{pmatrix}$，判断 $A$ 是否可对角化；若可以，给出 $P$ 与 $\Lambda$。
@@ -225,58 +222,6 @@ $$u_n = \frac{1}{3} + \frac{2}{3}(0.25)^n, \quad v_n = \frac{2}{3} - \frac{2}{3}
 | 对角化后直接写 $A^k$ 的对角元为 $\lambda_i^k$ 而忘掉 $P$ | 概念理解错误 | 把"$A$ 相似于 $\Lambda$"当成"$A = \Lambda$" | 牢记 $A^k = P\Lambda^kP^{-1}$，只有 $A$ 本身就是对角矩阵时 $A^k$ 才等于 $\Lambda^k$ |
 | 特征向量选了零向量或选了成比例的向量凑数 | 概念理解错误 | 误把"线性相关组"当"基" | $P$ 的列必须线性无关；重根的基础解系向量之间也要无关 |
 
-## 7. 实战练习
-
-### 练习1（基础：判断可对角化）
-
-判断 $A = \begin{pmatrix} 1 & 1 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 2 \end{pmatrix}$ 是否可对角化。
-
-**提示**：特征值 $1$（二重）与 $2$；对 $\lambda = 1$ 算 $r(A - I)$。
-
-**参考答案要点**：$A - I = \begin{pmatrix} 0 & 1 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 1 \end{pmatrix}$，$r = 2$，几何重数 $= 3 - 2 = 1 < 2$，不可对角化。
-
-### 练习2（进阶：完整对角化）
-
-将 $A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$ 对角化，并利用结果求 $A^5$。
-
-**提示**：特征值 $1, 3$，特征向量 $(1,-1)^T, (1,1)^T$；$A^5 = P\Lambda^5P^{-1}$。
-
-**参考答案要点**：$P = \begin{pmatrix} 1 & 1 \\ -1 & 1 \end{pmatrix}$，$\Lambda = \begin{pmatrix} 1 & 0 \\ 0 & 3 \end{pmatrix}$，$A^5 = \frac{1}{2}\begin{pmatrix} 1 + 3^5 & -1 + 3^5 \\ -1 + 3^5 & 1 + 3^5 \end{pmatrix} = \begin{pmatrix} 122 & 121 \\ 121 & 122 \end{pmatrix}$。
-
-### 练习3（进阶：判别与参数）
-
-设 $A = \begin{pmatrix} a & 0 & 0 \\ 0 & b & 1 \\ 0 & 0 & b \end{pmatrix}$。讨论 $a, b$ 满足什么条件时 $A$ 可对角化。
-
-**提示**：特征值 $a$ 与 $b$（二重，当 $a \neq b$）；对 $\lambda = b$ 检查几何重数。
-
-**参考答案要点**：$a \neq b$ 时 $r(A - bI) = 2$，几何重数 1 < 2，不可对角化；$a = b$ 时 $r(A - bI) = 1$，几何重数 2 = 代数重数 2，但此时特征值只有 $b$（三重），无关特征向量共 2 个 < 3，整体仍不可对角化。故**无论 $a, b$ 取何值 $A$ 都不可对角化**（$a \neq b$ 时缺一个，$a = b$ 时缺一个）。
-
-### 练习4（综合：对角化求幂 + 递推）
-
-设 $A = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$。求 $A^n$ 的通项公式（分 $n$ 为奇偶讨论或直接写出）。
-
-**提示**：$A$ 是交换两坐标的置换矩阵，特征值 $1, -1$；对角化后 $\Lambda^n$ 只需看 $(-1)^n$。
-
-**参考答案要点**：特征值 $1, -1$，特征向量 $(1,1)^T, (1,-1)^T$。$A^n = \frac{1}{2}\begin{pmatrix} 1 + (-1)^n & 1 - (-1)^n \\ 1 - (-1)^n & 1 + (-1)^n \end{pmatrix}$。$n$ 偶数为 $I$，$n$ 奇数为 $A$（验证：$A^2 = I$）。
-
-### 练习5（挑战：微分方程组）
-
-解微分方程组 $\begin{cases} \dot{x}_1 = 2x_1 + x_2 \\ \dot{x}_2 = x_1 + 2x_2 \end{cases}$（提示：利用 $A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$ 的对角化）。
-
-**提示**：$A = P\Lambda P^{-1}$，$\boldsymbol{x}(t) = Pe^{\Lambda t}P^{-1}\boldsymbol{x}(0)$，$e^{\Lambda t} = \begin{pmatrix} e^t & 0 \\ 0 & e^{3t} \end{pmatrix}$。
-
-**参考答案要点**：设初始 $(x_1(0), x_2(0)) = (c_1, c_2)$，解得 $x_1(t) = \frac{c_1+c_2}{2}e^{3t} + \frac{c_1-c_2}{2}e^{t}$，$x_2(t) = \frac{c_1+c_2}{2}e^{3t} - \frac{c_1-c_2}{2}e^{t}$。检验：$t = 0$ 时还原初值；解的两项分别沿特征向量 $(1,1)$ 与 $(1,-1)$ 方向演化。
-
 ## 8. 一句话记忆
 
 **对角化 = 找 $n$ 个线性无关的特征向量当新坐标轴：$P$ 是特征向量拼成的坐标变换，$\Lambda$ 是特征值拼成的伸缩表，$P^{-1}AP = \Lambda$；重根的几何重数必须等于代数重数，否则配不齐。**
-
-## 参考链接与延伸阅读
-
-- 同济大学数学科学学院《工程数学 线性代数（第七版）》，高等教育出版社，第 5 章 §3 相似矩阵（相似与可对角化的权威定义与例题）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- Purdue University《Linear Algebra and its Applications》（Lay 教材讲义，§5.3 对角化）：https://www.math.purdue.edu/~xu1121/Sec5.3
-- MIT 18.06 Linear Algebra（Strang 第 22 讲对角化与矩阵幂）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- 3Blue1Brown 线性代数的本质（特征向量基下的矩阵变换）：https://www.3blue1brown.com/topics/linear-algebra
-- Interactive Linear Algebra（Georgia Tech，§5.3 对角化）：https://textbooks.math.gatech.edu/ila/
-
-延伸阅读：特征值与特征向量计算（前置知识）；特征值性质（相似矩阵的特征值不变性）；实对称矩阵的对角化（可对角化的最强特例，可进一步要求 $P$ 正交）；特征值典型例题（对角化判定与计算的综合训练）。

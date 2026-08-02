@@ -2187,10 +2187,6 @@ class MethodView:
         return dispatch_request
 ```
 
-## 知识讲解与要点分析（原习题）
-
-本节提供基础、进阶、挑战三个层次的习题，每道题附参考答案要点。
-
 ### 9.1 基础题
 
 **题目 1**：编写一个 `PositiveInt` 描述符，要求赋值时必须是正整数，否则抛出 `ValueError`。
@@ -2288,52 +2284,6 @@ class MethodView:
 - `ListField` 支持列表字段，内部遍历校验每个元素。
 - `from_dict` 与 `to_dict` 递归处理嵌套。
 - 使用 `__slots__` 加速字段访问。
-
-## 10. 参考文献
-
-本节列出本篇文档参考的学术论文、官方文档、技术书籍，遵循 ACM Reference Format。
-
-[1] Van Rossum, G. 2001. PEP 252: Making Types Look More Like Classes. Python Enhancement Proposals. https://peps.python.org/pep-0252/
-
-[2] Van Rossum, G. 2001. PEP 253: Subtyping Built-in Types. Python Enhancement Proposals. https://peps.python.org/pep-0253/
-
-[3] Hettinger, R. 2003. Descriptor HowTo Guide. Python Official Documentation. https://docs.python.org/3/howto/descriptor.html
-
-[4] Hettinger, R. 2013. Python's Class Development Toolkit. PyCon 2013. https://www.youtube.com/watch?v=HTLu2D4LjRo
-
-[5] Python Software Foundation. 2024. Python Language Reference: Invoking descriptors. https://docs.python.org/3/reference/datamodel.html#invoking-descriptors
-
-[6] Python Software Foundation. 2024. Python Language Reference: Implementing Descriptors. https://docs.python.org/3/howto/descriptor.html
-
-[7] Brandl, G. 2010. Sphinx Documentation: Descriptor Protocol. https://www.sphinx-doc.org/
-
-[8] Lutz, M. 2013. Learning Python, 5th Edition. O'Reilly Media. ISBN: 978-1449355739
-
-[9] Ramalho, L. 2022. Fluent Python, 2nd Edition. O'Reilly Media. ISBN: 978-1492056355
-
-[10] Beazley, D. and Jones, B. K. 2013. Python Cookbook, 3rd Edition. O'Reilly Media. ISBN: 978-1449340377
-
-[11] Holovaty, A. and Kaplan-Moss, J. 2024. Django Documentation: Models and databases. Django Software Foundation. https://docs.djangoproject.com/en/5.0/topics/db/models/
-
-[12] Bayer, M. 2024. SQLAlchemy Documentation: ORM Attribute Instrumentation. https://docs.sqlalchemy.org/en/20/orm/
-
-[13] Colvin, S. 2024. Pydantic Documentation: Fields. https://docs.pydantic.dev/latest/concepts/fields/
-
-[14] PEP 487: Simpler customisation of class creation. 2017. Python Enhancement Proposals. https://peps.python.org/pep-0487/
-
-[15] PEP 557: Data Classes. 2017. Python Enhancement Proposals. https://peps.python.org/pep-0557/
-
-[16] Hunt, A. and Thomas, D. 1999. The Pragmatic Programmer: Your Journey to Mastery. Addison-Wesley. ISBN: 978-0201616224
-
-[17] Fowler, M. 2002. Patterns of Enterprise Application Architecture. Addison-Wesley. ISBN: 978-0321127426. DOI: https://doi.org/10.5555/579257
-
-[18] Brandl, G. 2010. The Python Tutorial: Classes. https://docs.python.org/3/tutorial/classes.html
-
-[19] Kuchling, A. M. 2024. What's New in Python 3.6: PEP 487 - Simpler customisation of class creation. https://docs.python.org/3/whatsnew/3.6.html
-
-[20] CPython Source Code. 2024. Objects/object.c: _PyObject_GenericGetAttrWithDict. https://github.com/python/cpython/blob/main/Objects/object.c
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

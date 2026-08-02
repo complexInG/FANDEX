@@ -1114,8 +1114,6 @@ class DistributedWhiteboard {
 4. **用户感知**：任何超过 100ms 的操作都要有视觉反馈
 5. **监控必备**：在生产环境监控分布式调用的成功率、延迟分布
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**：简述分布式软总线"发现-连接-传输"三阶段的核心任务。
@@ -1187,30 +1185,6 @@ class DistributedWhiteboard {
 - 证明：设故障设备数为 $f$。要保证多数派可用，需 $n - f > n/2$，即 $f < n/2$，故 $f \leq \lfloor (n-1)/2 \rfloor$
 - 反证：若 $f > \lfloor (n-1)/2 \rfloor$，则可用设备数 $n - f \leq \lceil n/2 \rceil - 1 < n/2$，无法形成多数派，写操作无法完成
 - 结论：在 $n=3$ 时容忍 1 台故障；$n=5$ 时容忍 2 台；$n=7$ 时容忍 3 台
-
-## 参考文献
-
-[1] Huawei Technologies Co., Ltd. 2024. HarmonyOS Distributed Capability Developer Guide. (Version 5.0). Huawei Developer Documentation. https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/distributed-overview-0000001531342360
-
-[2] Huawei Technologies Co., Ltd. 2023. Distributed Soft Bus: A Unified Transport Layer for Multi-Device Ecosystems. In Proceedings of the 24th International Conference on Distributed Computing and Applications (DCABM 2023). IEEE, 45–52. DOI: 10.1109/DCABM.2023.00015
-
-[3] Lamport, L. 1978. Time, clocks, and the ordering of events in a distributed system. Commun. ACM 21, 7 (July 1978), 558–565. DOI: 10.1145/359545.359563
-
-[4] Gilbert, S. and Lynch, N. 2002. Brewer's conjecture and the feasibility of consistent, available, partition-tolerant web services. ACM SIGACT News 33, 2 (June 2002), 51–59. DOI: 10.1145/564585.564601
-
-[5] Shapiro, M., Preguiça, N., Baquero, C., and Zawirski, M. 2011. Conflict-free replicated data types. In Proceedings of the 13th International Symposium on Stabilization, Safety, and Security of Distributed Systems (SSS 2011). Springer, 386–400. DOI: 10.1007/978-3-642-24550-3_29
-
-[6] Herlihy, M. and Wing, J. M. 1990. Linearizability: a correctness condition for concurrent objects. ACM Trans. Program. Lang. Syst. 12, 3 (July 1990), 463–492. DOI: 10.1145/78969.78972
-
-[7] Cardelli, L. and Davies, R. 1999. Service combinators for web computing. Electronic Notes in Theoretical Computer Science 18 (1999), 41–53. DOI: 10.1016/S1571-0661(05)80022-9
-
-[8] Chen, W., Wang, H., and Zhang, L. 2022. A Trust-based Device Authentication Framework for HarmonyOS Distributed Ecosystem. Journal of Computer Research and Development 59, 8 (2022), 1723–1737. DOI: 10.7544/issn1000-1239.2022.20200815
-
-[9] Wang, Y., Liu, X., and Zhao, Q. 2024. End-to-end Latency Optimization for Cross-Device Ability Migration in HarmonyOS. IEEE Transactions on Mobile Computing 23, 4 (April 2024), 3456–3470. DOI: 10.1109/TMC.2023.3301234
-
-[10] Tanenbaum, A. S. and Van Steen, M. 2017. Distributed Systems: Principles and Paradigms (3rd ed.). DistributedSystems.net, CREATESPACE.
-
-## 延伸阅读
 
 ### 官方文档
 

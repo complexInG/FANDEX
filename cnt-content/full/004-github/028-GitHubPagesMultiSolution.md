@@ -590,14 +590,6 @@ flowchart TD
 | GitLab Pages     | 免费、与 GitLab 集成、CI/CD      | 界面不如 GitHub 友好   |
 | Cloudflare Pages | 速度快、CDN 集成、免费           | 功能相对有限           |
 
-## 13. 延伸阅读
-
-- [GitHub Pages 文档](https://docs.github.com/en/pages) <!-- nofollow -->
-- [Jekyll 文档](https://jekyllrb.com/docs/) <!-- nofollow -->
-- [VitePress 文档](https://vitepress.dev/) <!-- nofollow -->
-- [Hugo 文档](https://gohugo.io/documentation/) <!-- nofollow -->
-- [静态站点生成器对比](https://jamstack.org/generators/) <!-- nofollow -->
-
 ## Actions 部署 Pages
 
 **基本用法:部署静态站点**
@@ -700,16 +692,7 @@ npx gh-pages -d dist -b gh-pages -m "deploy [skip ci]"
 
 ---
 
-## 参考文献
-
-GitHub 文档：https://docs.github.com/zh
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitHub REST API：https://docs.github.com/zh/rest
-GitHub GraphQL API：https://docs.github.com/zh/graphql
-
 ## 延伸阅读
-
 GitHub Actions CI/CD，见 004-github 模块 Actions 文档。
 Git 协作基础，见 003-git 模块。
 DevOps 自动化，见 031-devops 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 GitHub 课程。

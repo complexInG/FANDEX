@@ -2480,8 +2480,6 @@ const config = createConfigProxy();
 
 ---
 
-## 知识讲解与要点分析（原练习题）
-
 ### 9.1 基础题
 
 **题 1**：实现一个 `readOnly` 函数，使对象所有属性只读，尝试写入时抛出 `TypeError`。
@@ -2755,72 +2753,6 @@ state.user.name = 'Bob';  // user.name: "Alice" -> "Bob"
 state.user.address.city = 'Shanghai';  // user.address.city: "Beijing" -> "Shanghai"
 ```
 
-### 综合题知识点讲解
-
-**题 11**：实现一个简化版 Immer，要求：
-
-1. `produce(state, recipe)` 接收原始状态与修改函数。
-2. 修改函数接收一个"草稿"（draft），可直接修改。
-3. 返回新状态，未修改的部分与原状态共享引用。
-4. 原状态不被修改。
-
-**解析讲解**：参见 5.12 节完整实现。
-
-**题 12**：设计一个基于 Proxy 的权限控制层，根据用户角色限制 API 访问。
-
-**解析讲解**：
-
-```javascript
-function createAuthorizedAPI(api, userRole, permissions) {
-  return new Proxy(api, {
-    get(target, key, receiver) {
-      const allowedRoles = permissions[key];
-      if (allowedRoles && !allowedRoles.includes(userRole)) {
-        return () => { throw new Error(`Permission denied: ${userRole} cannot access ${String(key)}`); };
-      }
-      const value = Reflect.get(target, key, receiver);
-      if (typeof value === 'function') {
-        return (...args) => {
-          if (allowedRoles && !allowedRoles.includes(userRole)) {
-            throw new Error(`Permission denied`);
-          }
-          return Reflect.apply(value, target, args);
-        };
-      }
-      return value;
-    }
-  });
-}
-
-const api = {
-  getUsers: () => [{ name: 'Alice' }],
-  deleteUser: (id) => { console.log(`Deleted ${id}`); },
-  getProfile: () => ({ name: 'Alice' })
-};
-
-const permissions = {
-  getUsers: ['admin', 'manager'],
-  deleteUser: ['admin'],
-  getProfile: ['admin', 'manager', 'user', 'guest']
-};
-
-const adminApi = createAuthorizedAPI(api, 'admin', permissions);
-const guestApi = createAuthorizedAPI(api, 'guest', permissions);
-
-adminApi.getUsers();  // [{ name: 'Alice' }]
-adminApi.deleteUser(1);  // Deleted 1
-guestApi.getProfile();  // { name: 'Alice' }
-try {
-  guestApi.deleteUser(1);  // Error: Permission denied
-} catch (e) {
-  console.log(e.message);
-}
-```
-
----
-
-## 10. 参考文献
-
 ### 10.1 规范与标准
 
 [1] Ecma International. ECMAScript 2024 Language Specification (ECMA-262, 15th Edition)[S]. Geneva: Ecma International, 2024. https://tc39.es/ecma262/
@@ -2877,8 +2809,6 @@ try {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 理论延伸
 
 - **Metaobject Protocol（MOP）**：阅读 Kiczales 的《The Art of the Metaobject Protocol》理解 CLOS 的元对象协议，对比 JavaScript Proxy 的设计哲学。
@@ -2891,13 +2821,6 @@ try {
 - **Immer 源码**：阅读 `immerjs/immer` 的 `proxy.ts` 与 `finalize.ts`，理解 Copy-on-Write 与 `finalize` 阶段。
 - **MobX 源码**：阅读 `mobxjs/mobx` 的 `observable.ts` 与 `derivation.ts`，理解自动依赖追踪算法。
 - **Solid.js 源码**：阅读 `ryansolid/solid` 的 `reactive.ts`，理解编译期信号与运行时 Proxy 的协作。
-
-### 11.3 在线资源
-
-- **MDN Web Docs**：https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
-- **TC39 Proposal Process**：https://tc39.es/process-document/
-- **V8 Dev Blog**：https://v8.dev/blog
-- **Vue Mastery**：https://www.vuemastery.com/courses/vue3-reactivity/
 
 ### 11.4 课程
 

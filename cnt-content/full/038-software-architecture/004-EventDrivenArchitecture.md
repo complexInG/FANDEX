@@ -351,23 +351,6 @@ public void onOrderCreated(OrderCreatedEvent e) {
 
 **真相**：事件是业务语义的一部分，设计过细的事件（"按钮被点击"）没有业务价值，只会增加噪音。**只发布"有业务意义"的事件**。
 
-## 10. 实战练习
-
-1. **事件设计**：为"用户下单"这个业务，设计一组事件（至少 4 个：创建、支付、发货、完成），每个事件写出完整 JSON 结构（含 eventId、eventType、timestamp、data）。
-
-2. **拓扑选择**：邮件服务和库存服务都要响应"订单已创建"。分别说明：用事件通知还是事件携带状态转移？为什么？
-
-3. **事件溯源练习**：设计一个"购物车"的事件溯源模型：列出至少 3 个事件类型，说明如何从事件重放得到"购物车当前状态"。
-
-4. **幂等设计**：为"收到支付成功事件后发优惠券"设计幂等处理方案，画出流程图。
-
-## 11. 参考资源
-
-- Martin Fowler《事件溯源》：https://martinfowler.com/eaaDev/EventSourcing.html
-- Martin Fowler《CQRS》：https://martinfowler.com/bliki/CQRS.html
-- Greg Young《CQRS 文档》：https://cqrs.files.wordpress.com/2010/11/cqrs_documents.pdf
-- Confluent（Kafka）事件驱动指南：https://developer.confluent.io/learn/event-driven-architecture/
-
 ## 12. 延伸阅读
 
 - 事件驱动在微服务中的应用（Saga 事务），见本模块《微服务架构》

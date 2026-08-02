@@ -4,13 +4,12 @@ title: 施密特正交化
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: Gram-Schmidt 正交化的算法步骤（投影-减去），正交矩阵的定义与性质，正交对角化基础，含 0 基础类比、完整例题、常见错误对策与实战练习。
+description: Gram-Schmidt 正交化的算法步骤（投影-减去），正交矩阵的定义与性质，正交对角化基础，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'linear-algebra/坐标与坐标变换'
   - 'linear-algebra/内积与正交性'
-  - 'linear-algebra/向量空间典型例题'
   - 'linear-algebra/特征值与特征向量计算'
 prerequisites:
   - 'linear-algebra/行列式定义与几何意义'
@@ -175,8 +174,6 @@ $$x = R^{-1}Q^Tb$$
 
 对实对称矩阵：不同特征值对应的特征向量自动正交；同一特征值对应的多个特征向量则需要用施密特正交化"掰正"。这是下一篇 028 的核心流程。
 
-## 5. 典型例题
-
 ### 例1（验证正交矩阵）
 
 验证 $A = \begin{pmatrix} \frac{1}{\sqrt{3}} & \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{6}} \\ \frac{1}{\sqrt{3}} & -\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{6}} \\ \frac{1}{\sqrt{3}} & 0 & -\frac{2}{\sqrt{6}} \end{pmatrix}$ 是正交矩阵。
@@ -232,58 +229,6 @@ $$\boldsymbol{e}_1 = \frac{1}{\sqrt{2}}(1, 0, 1)^T, \quad \boldsymbol{e}_2 = \fr
 | 直接用正交化处理"线性相关"的向量组 | 前提条件忽略 | 没检查线性无关性 | 施密特正交化只对线性无关组有效；相关组中会出现 $\boldsymbol{\beta}_k = 0$ |
 | 把"正交矩阵"与"对称矩阵"混淆 | 概念混淆 | 对矩阵分类不清晰 | 正交矩阵 $A^TA = I$（列标准正交）；对称矩阵 $A^T = A$（沿对角线对称） |
 
-## 7. 实战练习
-
-### 练习1（基础：两个向量正交化）
-
-对 $\boldsymbol{\alpha}_1 = (1, 2)^T$，$\boldsymbol{\alpha}_2 = (1, 0)^T$ 做施密特正交化并单位化。
-
-**提示**：直接套两步公式；注意 $\boldsymbol{\beta}_2 = \boldsymbol{\alpha}_2 - \dfrac{(\boldsymbol{\alpha}_2,\boldsymbol{\beta}_1)}{(\boldsymbol{\beta}_1,\boldsymbol{\beta}_1)}\boldsymbol{\beta}_1$。
-
-**参考答案要点**：$\boldsymbol{\beta}_1 = (1, 2)^T$，$\boldsymbol{\beta}_2 = (1,0)^T - \frac{1}{5}(1,2)^T = (\frac{4}{5}, -\frac{2}{5})^T$。单位化：$\boldsymbol{e}_1 = \frac{1}{\sqrt{5}}(1,2)^T$，$\boldsymbol{e}_2 = \frac{1}{\sqrt{20}}(4,-2)^T = \frac{1}{\sqrt{5}}(2,-1)^T$。验证内积为 0。
-
-### 练习2（进阶：三维标准正交化）
-
-对 $\boldsymbol{\alpha}_1 = (1, 1, 1)^T$，$\boldsymbol{\alpha}_2 = (1, 0, 1)^T$，$\boldsymbol{\alpha}_3 = (0, 1, 1)^T$ 做施密特正交化。
-
-**提示**：三步：先定 $\boldsymbol{\beta}_1$，再减 $\boldsymbol{\beta}_1$ 投影得 $\boldsymbol{\beta}_2$，最后减两个投影得 $\boldsymbol{\beta}_3$；系数逐个计算，不要跳步。
-
-**参考答案要点**：$\boldsymbol{\beta}_1 = (1,1,1)^T$；$\boldsymbol{\beta}_2 = (\frac{1}{3}, -\frac{2}{3}, \frac{1}{3})^T$（投影系数 $\frac{2}{3}$）；$\boldsymbol{\beta}_3 = (-\frac{1}{2}, 0, \frac{1}{2})^T$。单位化得 $\frac{1}{\sqrt{3}}(1,1,1)^T$、$\frac{1}{\sqrt{6}}(1,-2,1)^T$、$\frac{1}{\sqrt{2}}(-1,0,1)^T$。
-
-### 练习3（进阶：QR 分解思维）
-
-设 $A = \begin{pmatrix} 1 & 1 \\ 1 & 0 \\ 0 & 1 \end{pmatrix}$，其列向量为 $\boldsymbol{\alpha}_1 = (1,1,0)^T$，$\boldsymbol{\alpha}_2 = (1,0,1)^T$。求列正交矩阵 $Q$ 与上三角矩阵 $R$ 使 $A = QR$。
-
-**提示**：先对列向量正交化+单位化得 $\boldsymbol{e}_1, \boldsymbol{e}_2$ 拼成 $Q$；再由 $R = Q^TA$ 反推（因为 $Q^TQ = I$）。
-
-**参考答案要点**：$\boldsymbol{e}_1 = \frac{1}{\sqrt{2}}(1,1,0)^T$，$\boldsymbol{e}_2 = \frac{1}{\sqrt{6}}(1,-1,2)^T$（见 2.5 前两步）。$R = Q^TA = \begin{pmatrix} \sqrt{2} & 1/\sqrt{2} \\ 0 & \sqrt{3/2} \end{pmatrix}$。
-
-### 练习4（综合：正交化 + 求坐标）
-
-把练习 2 得到的标准正交组记为 $\boldsymbol{e}_1, \boldsymbol{e}_2, \boldsymbol{e}_3$，求 $\boldsymbol{\beta} = (2, 1, 3)^T$ 在此标准正交基下的坐标。
-
-**提示**：标准正交基下坐标 = 各方向内积 $x_i = (\boldsymbol{\beta}, \boldsymbol{e}_i)$，无需解方程组。
-
-**参考答案要点**：$x_1 = \frac{6}{\sqrt{3}} = 2\sqrt{3}$；$x_2 = \frac{2-0+3}{\sqrt{6}} = \frac{5}{\sqrt{6}}$；$x_3 = \frac{-2+0+3}{\sqrt{2}} = \frac{1}{\sqrt{2}}$。检验：$x_1\boldsymbol{e}_1 + x_2\boldsymbol{e}_2 + x_3\boldsymbol{e}_3 = (2,1,3)^T$。
-
-### 练习5（挑战：验证正交矩阵乘积）
-
-设 $P, Q$ 都是 $n$ 阶正交矩阵。证明 $PQ$ 也是正交矩阵，且 $|PQ| = |P| \cdot |Q|$。
-
-**提示**：直接验证 $(PQ)^T(PQ) = I$；行列式用乘积公式。
-
-**参考答案要点**：$(PQ)^T(PQ) = Q^TP^TPQ = Q^T I Q = Q^TQ = I$。由 $|P|, |Q| = \pm 1$ 且 $|PQ| = |P||Q|$，得 $|PQ| = \pm 1$，符合正交矩阵性质。
-
 ## 8. 一句话记忆
 
 **施密特正交化就是"逐个减去前面方向的投影"：$\boldsymbol{\beta}_k = \boldsymbol{\alpha}_k - \sum_{j<k}\dfrac{(\boldsymbol{\alpha}_k, \boldsymbol{\beta}_j)}{(\boldsymbol{\beta}_j, \boldsymbol{\beta}_j)}\boldsymbol{\beta}_j$，刨掉平行分量留下垂直分量，最后统一单位化。**
-
-## 参考链接与延伸阅读
-
-- 同济大学数学科学学院《工程数学 线性代数（第七版）》，高等教育出版社，第 5 章 §1 向量的内积、长度及正交性（含施密特正交化方法与例题）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- Purdue University《Linear Algebra and its Applications》（Lay 教材讲义，§6.4 施密特正交化过程与 QR 分解，含完整例题）：https://www.math.purdue.edu/~xu1121/Sec6.4
-- LibreTexts Linear Algebra（Gram-Schmidt 过程定理与证明）：https://math.libretexts.org/Courses/Irvine_Valley_College/Math_26%3A_Introduction_to_Linear_Algebra/03%3A_Vector_Geometry/3.07%3A_Orthogonal_Sets
-- MIT 18.06 Linear Algebra（Strang 第 14 讲正交向量与子空间，第 17 讲正交矩阵与施密特正交化）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- Interactive Linear Algebra（Georgia Tech，§6.4 施密特正交化过程）：https://textbooks.math.gatech.edu/ila/
-
-延伸阅读：内积与正交性（投影公式来源，前置知识）；向量空间典型例题（正交化综合练习）；实对称矩阵的对角化（本篇算法在特征值问题中的标准应用）；二次型的标准形（正交变换的后续应用）。

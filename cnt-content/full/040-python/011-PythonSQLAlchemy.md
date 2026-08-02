@@ -1757,8 +1757,6 @@ def trace_after_execute(conn, cursor, statement, parameters, context, executeman
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题（记忆与理解）
 
 **题 1**：SQLAlchemy 的 Core 层与 ORM 层有何区别？为什么 SQLAlchemy 采用双层架构？
@@ -2048,22 +2046,6 @@ def critical_section():
             session.commit()
 ```
 
-### 9.6 思考题
-
-**题 11**：为什么 SQLAlchemy 2.0 废弃了 `Query` 对象？这一变更的利弊是什么？
-
-**题 12**：在数据仓库场景下，SQLAlchemy ORM 是否合适？为什么？应使用 Core 还是 ORM？
-
-**题 13**：比较"应用层连接池"（如 SQLAlchemy 的 pool）与"数据库连接池中间件"（如 PgBouncer）的区别与适用场景。
-
-**题 14**：异步 ORM（`AsyncSession`）相比同步 ORM，除了 I/O 并发优势外，还有哪些隐含的工程约束？
-
-**题 15**：如果一个项目同时使用 SQLAlchemy ORM 与 Pydantic 进行 API 模型定义，如何避免"双重定义"问题？SQLModel 是最佳方案吗？
-
----
-
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 - Bayer, M. (2026). *SQLAlchemy 2.0 Documentation*. SQLAlchemy Project. https://docs.sqlalchemy.org/en/20/
@@ -2093,14 +2075,6 @@ def critical_section():
 
 - Keller, W., & Coldewey, J. (1996). *Accessing Relational Databases: A Study of Three Object-Oriented Models*. Journal of Object-Oriented Programming, 9(5), 14-24.
 
-### 10.5 社区资源
-
-- Bayer, M. (2026). *SQLAlchemy Blog*. https://docs.sqlalchemy.org/en/20/whatsnew/
-
-- Ramírez, S. (2026). *SQLModel Documentation*. https://sqlmodel.tiangolo.com/
-
-- SQLAlchemy GitHub Discussions. https://github.com/sqlalchemy/sqlalchemy/discussions
-
 ### 10.6 引用格式说明
 
 本节参考文献采用 **ACM Reference Format**：
@@ -2116,8 +2090,6 @@ Fowler, M. (2002). Patterns of Enterprise Application Architecture. Addison-Wesl
 ```
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 进阶主题
 
@@ -2421,8 +2393,6 @@ def on_checkin(dbapi_conn, connection_record):
 | subqueryload | 2 | 中等（子查询） | 一对多集合 |
 
 ---
-
-## 附录 G：面试题精选
 
 ### G.1 基础
 

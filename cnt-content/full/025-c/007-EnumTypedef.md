@@ -485,32 +485,12 @@ int main(void) {
 
 typedef 的阅读技巧是“从内向外”：`int (*Handler)(int)` 中 `Handler` 是指针，指向函数，函数返回 int。掌握声明解析后，函数指针、数组指针等复杂类型不再可怕。
 
-## 10. 参考文献
-
-cppreference, C 语言枚举声明（enum）, 访问日期 2026-08-01, https://zh.cppreference.com/w/c/language/enum
-
-cppreference, C 语言 typedef 声明, 访问日期 2026-08-01, https://zh.cppreference.com/w/c/language/typedef
-
-ISO/IEC 9899:2024（C23）标准中 enum 与 typedef 相关条款；
-
-Microsoft Learn, C Enumeration Declarations, 访问日期 2026-08-01, https://learn.microsoft.com/en-us/cpp/c-language/c-enumeration-declarations
-
-GCC 文档, Warning Options（-Wenum-conversion 等）, 访问日期 2026-08-01, https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
-
 ## 11. 延伸阅读
-
 结构体与联合体的完整讲解，见 025-c 模块的 struct/union 文档；
-
 指针与函数指针的深入内容，见 025-c 模块的指针文档；
-
 C23 新特性（constexpr、属性、显式枚举底层类型），见 025-c 模块的 C23 文档；
-
 嵌入式系统中的位操作与寄存器映射，见 035-iot 模块相关文档；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 C 语言课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 C 语言基础课程。
-
 ---
-
 #### typedef 与函数指针
 
 ```c
@@ -1330,4 +1310,3 @@ enum Color c = (enum Color)1;
 enum Color { RED, GREEN, BLUE };
 printf("Size: %zu\n", sizeof(enum Color));
 ```
-

@@ -4,7 +4,7 @@ title: 并查集
 module: algorithm
 category: Algorithm/DisjointSet
 difficulty: intermediate
-description: 并查集（Disjoint Set Union, DSU / Union-Find）数据结构的形式化定义、路径压缩与按秩合并的均摊复杂度分析（反 Ackermann 函数 α(n)）、Kruskal 最小生成树/连通分量/冗余连接等典型应用，附 Python/C++/Java 多语言实现与 CLRS 第 21 章风格习题。
+description: 并查集（Disjoint Set Union, DSU / Union-Find）数据结构的形式化定义、路径压缩与按秩合并的均摊复杂度分析（反 Ackermann 函数 α(n)）、Kruskal 最小生成树/连通分量/冗余连接等典型应用，附 Python/C++/Java 多语言实现。
 author: fanquanpp
 tags:
 - algorithm
@@ -1752,56 +1752,6 @@ def accountsMerge(accounts: list[list[str]]) -> list[list[str]]:
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**（基础，easy）：路径压缩与按秩合并结合的并查集，单次 find 的均摊复杂度为？
-
-- A. $O(1)$
-- B. $O(\log n)$
-- C. $O(\alpha(n))$
-- D. $O(n)$
-
-**C. $O(\alpha(n))$**
-
-Tarjan 1975 证明双优化结合的均摊复杂度为 $\Theta(\alpha(n))$，其中 $\alpha$ 是反 Ackermann 函数。对所有实际 $n$，$\alpha(n) \leq 4$，可视为 $O(1)$，但严格意义下 $\alpha(n) \to \infty$。
-
-**题目 2**（中等，medium）：以下哪种优化组合能保证 find 的**最坏**复杂度为 $O(\log n)$？
-
-- A. 仅路径压缩
-- B. 仅按秩合并
-- C. 路径压缩 + 按秩合并
-- D. 朴素 union
-
-**B. 仅按秩合并**
-
-按秩合并保证树高 $h \leq \log_2 n$，故 find 最坏 $O(\log n)$。路径压缩的**单次最坏**仍为 $O(\log n)$（首次压缩需遍历整条路径），但均摊为 $O(\alpha(n))$。
-
-注意：C 选项的双优化结合，**单次最坏**仍为 $O(\log n)$，均摊才为 $O(\alpha(n))$。题干问"最坏"，故 B 也正确，C 的最坏也是 $O(\log n)$。但 B 是更精确的答案，因为它在**没有路径压缩**的前提下就保证了 $O(\log n)$ 最坏。
-
-**题目 3**（中等，medium）：Ackermann 函数 $A(2, 3)$ 的值为？
-
-- A. 5
-- B. 7
-- C. 9
-- D. 13
-
-**B. 7**
-
-计算：$A(2, 3) = A(1, A(2, 2)) = A(1, 7) = 7 + 2 = 9$... 重新计算：
-
-$A(2, 3) = A(1, A(2, 2))$
-$A(2, 2) = A(1, A(2, 1)) = A(1, A(1, A(2, 0))) = A(1, A(1, A(1, 1)))$
-$A(1, 1) = A(0, A(1, 0)) = A(0, A(0, 1)) = A(0, 2) = 3$
-$A(1, 3) = A(0, A(1, 2)) = A(0, A(0, A(1, 1))) = A(0, A(0, 3)) = A(0, 4) = 5$
-$A(2, 2) = A(1, 5) = 5 + 2 = 7$
-$A(2, 3) = A(1, 7) = 7 + 2 = 9$
-
-正确答案是 **C. 9**。
-
-更一般地：$A(2, n) = 2n + 3$。验证：$A(2, 0) = 3, A(2, 1) = 5, A(2, 2) = 7, A(2, 3) = 9$。
-
 ### 填空题知识点讲解
 
 **题目 4**（基础，easy）：Tarjan 1975 证明的并查集总操作复杂度 $O(m \cdot \alpha(m, n))$ 中，$\alpha$ 是 ________ 函数的反函数。
@@ -2009,23 +1959,6 @@ def offline_dynamic_connectivity(n, operations):
 
 ---
 
-## 13. 参考文献
-
-1. Tarjan, R. E. (1975). "Efficiency of a good but not linear set union algorithm." *Journal of the ACM*, 22(2), 215-225. DOI: 10.1145/321879.321884
-2. Galler, B. A., & Fischer, M. J. (1964). "An improved equivalence algorithm." *Communications of the ACM*, 7(5), 301-303. DOI: 10.1145/364099.364331
-3. Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2022). *Introduction to Algorithms* (4th ed.). MIT Press. Chapter 21: Data Structures for Disjoint Sets. ISBN 978-0262046305
-4. Tarjan, R. E. (1983). *Data Structures and Network Algorithms*. SIAM. CBMS-NSF Regional Conference Series in Applied Mathematics 44. ISBN 978-0898711875
-5. Sedgewick, R., & Wayne, K. (2011). *Algorithms* (4th ed.). Addison-Wesley Professional. Section 1.5: Case Study — Union-Find. ISBN 978-0321573513
-6. Knuth, D. E. (1998). *The Art of Computer Programming, Volume 1: Fundamental Algorithms* (3rd ed.). Addison-Wesley Professional. Section 2.3.3: Equivalence Relations. ISBN 978-0201896831
-7. Hopcroft, J. E., & Ullman, J. D. (1973). "Set merging algorithms." *SIAM Journal on Computing*, 2(4), 294-303. DOI: 10.1137/0202040
-8. Ackermann, W. (1928). "Zum Hilbertschen Aufbau der reellen Zahlen." *Mathematische Annalen*, 99, 118-133. DOI: 10.1007/BF01459088
-9. Kleinberg, J., & Tardos, E. (2006). *Algorithm Design*. Pearson. Chapter 4: Greedy Algorithms. ISBN 978-0321295354
-10. Sanfilippo, S. (2018). Redis cluster hash slot and consistent hashing design notes. Redis Documentation. Accessed 2026-07-20.
-
----
-
-## 14. 延伸阅读
-
 ### 14.1 理论深入
 
 - **Tarjan 1983 著作**：*Data Structures and Network Algorithms* 第 2 章给出 $O(m \cdot \alpha(n))$ 上界的完整证明，包含势能函数与等级分层的详细推导；
@@ -2053,14 +1986,6 @@ def offline_dynamic_connectivity(n, operations):
 - Princeton Algorithms Part I, Week 1: Union-Find（Sedgewick 主讲，经典入门）；
 - Stanford CS161: Design and Analysis of Algorithms（涉及 DSU 复杂度分析）。
 
-### 14.5 在线练习
-
-- **LeetCode** 并查集专题：547 省份数量、684 冗余连接、200 岛屿数量、721 账户合并、685 冗余连接 II、399 除法求值、990 等式方程的可满足性；
-- **POJ** 1182 食物链（带权并查集经典题）、1456 Supermarket（贪心 + DSU）；
-- **Codeforces** Union-Find 专题、1190C Tokitsukaze and Duel（博弈 + DSU）。
-
----
-
 ## 附录 A：复杂度证明速查
 
 ### A.1 仅按秩合并的 $O(\log n)$ 证明
@@ -2087,22 +2012,3 @@ def offline_dynamic_connectivity(n, operations):
 详细证明参见 Tarjan 1983 第 2 章，或 CLRS 第 21 章定理 21.4。
 
 ---
-
-## 附录 B：常见面试题速查
-
-| 题目 | 难度 | 关键点 |
-| ---- | ---- | ------ |
-| LeetCode 547 省份数量 | easy | 直接统计连通分量 |
-| LeetCode 200 岛屿数量 | medium | 二维网格 → 一维编号 |
-| LeetCode 684 冗余连接 | medium | 依次加入边，首次成环即答案 |
-| LeetCode 685 冗余连接 II | hard | 有向图，需分类讨论 |
-| LeetCode 721 账户合并 | medium | email 作为节点，按 email 合并 |
-| LeetCode 399 除法求值 | medium | 带权并查集 |
-| LeetCode 990 等式方程可满足性 | medium | union 相等，校验不等 |
-| POJ 1182 食物链 | hard | 带权并查集，三类关系 |
-| POJ 1456 Supermarket | medium | 贪心 + DSU 占位 |
-| Codeforces 1190C | hard | 博弈 + DSU |
-
----
-
-> **结语**：并查集是算法工程师的核心工具之一，其优雅之处在于"用最简单的指针修改（路径压缩 + 按秩合并）达到近线性均摊复杂度"。掌握 DSU 不仅是面试必备，更是理解"均摊分析"这一算法分析关键方法的入门钥匙。建议读者从 Kruskal MST 实现入手，逐步挑战带权、可撤销、持久化变体，最终理解 Tarjan 1975 的下界证明。

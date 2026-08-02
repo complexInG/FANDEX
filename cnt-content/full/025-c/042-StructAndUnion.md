@@ -1163,11 +1163,3 @@ struct __attribute__((aligned(16))) AlignedStruct {
     int x;
 };
 ```
-
-## 参考文献
-
-cppreference C 文档：https://zh.cppreference.com/w/c
-C 标准草案：https://www.open-std.org/jtc1/sc22/wg14/
-GCC 官方文档：https://gcc.gnu.org/onlinedocs/
-Linux man pages：https://man7.org/linux/man-pages/
-C 语言常见误解：https://www.yodaiken.com/

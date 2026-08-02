@@ -704,17 +704,7 @@ kill -HUP $(pgrep prometheus)
 curl -s http://localhost:9090/api/v1/status/config | jq '.data.yaml | fromyaml | .scrape_configs | length'
 ```
 
-## 参考文献
-
-GitHub Actions 文档：https://docs.github.com/zh/actions
-GitLab CI 文档：https://docs.gitlab.com/ci/
-Argo CD：https://argo-cd.readthedocs.io/
-DORA 研究：https://dora.dev/
-DevOps 手册（Gene Kim 等）：https://itrevolution.com/devops-handbook/
-
 ## 延伸阅读
-
 Docker 与 Kubernetes 深入，见 031-devops 模块文档。
 CI/CD 管线设计，见 031-devops 模块 CICD 文档。
 云原生架构，见 034-cloud-computing 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 DevOps 课程。

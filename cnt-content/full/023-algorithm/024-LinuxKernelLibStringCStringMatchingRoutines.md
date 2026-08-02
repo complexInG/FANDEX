@@ -1685,45 +1685,6 @@ def seed_and_extend(read: str, reference: str) -> list[tuple[int, int, int]]:
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**习题 1**（easy）：KMP 算法的最坏时间复杂度是？
-
-A. $O(n)$
-B. $O(n + m)$
-C. $O(nm)$
-D. $O(n \log m)$
-
-**习题 2**（easy）：模式串 $P = \text{"ABABAC"}$ 的 next 数组（约定 A，`next[0] = -1`）是？
-
-A. `[-1, 0, 0, 1, 2, 3]`
-B. `[-1, 0, 0, 1, 2, 0]`
-C. `[-1, -1, 0, 1, 2, 0]`
-D. `[-1, 0, 0, 0, 1, 2]`
-
-**习题 3**（medium）：关于 KMP 自动机的状态数，下列哪个说法正确？
-
-A. 状态数为 $m$，等于模式长度
-B. 状态数为 $m+1$，是识别模式所有出现的最小 DFA 状态数
-C. 状态数为 $|\Sigma|^m$，等于所有可能字符串数
-D. 状态数为 $2^m$，与字母表大小无关
-
-**习题 4**（medium）：在二字母表 $\Sigma = \{a, b\}$ 上，任何基于"前缀匹配"的字符串匹配算法在最坏情况下至少需要多少次字符比较？
-
-A. $n$
-B. $n + m$
-C. $2n - m$
-D. $2n + m$
-
-**习题 5**（hard）：关于 next 与 nextval 的关系，下列哪个说法错误？
-
-A. nextval 跳过"必然失配"的中间状态
-B. nextval 在不改变渐近复杂度的前提下减少常数因子
-C. nextval[next[j]] 可能等于 nextval[j]
-D. nextval 总是小于等于 next
-
 ### 填空题知识点讲解
 
 **习题 6**（easy）：KMP 算法的核心创新是利用模式串自身结构构建 ________ 数组，避免文本指针回退，实现 $O(n+m)$ 最坏时间复杂度。
@@ -1782,37 +1743,6 @@ def build_next_buggy(pattern):
 
 ---
 
-## 11. 参考答案
-
-### 选择题知识点讲解
-
-**习题 1**：**B**。KMP 预处理 $O(m)$ + 匹配 $O(n)$ = 总 $O(n+m)$，最坏严格线性。
-
-**习题 2**：**B**。计算过程：
-- $\text{next}[0] = -1$（哨兵）
-- $\text{next}[1] = \text{lps}("A") = 0$
-- $\text{next}[2] = \text{lps}("AB") = 0$
-- $\text{next}[3] = \text{lps}("ABA") = 1$（前缀 "A" = 后缀 "A"）
-- $\text{next}[4] = \text{lps}("ABAB") = 2$（前缀 "AB" = 后缀 "AB"）
-- $\text{next}[5] = \text{lps}("ABABA") = 3$（前缀 "ABA" = 后缀 "ABA"）但题目选项 B 是 `[-1, 0, 0, 1, 2, 0]` 对应 $P = \text{"ABABAC"}$，应为：
-  - $\text{next}[5] = \text{lps}("ABABA") = 3$ → 但 $P[5] = $ 'C'，所以 next[5] = lps(P[0..4]) = 3
-
-实际计算：`next = [-1, 0, 0, 1, 2, 3]`，对应选项... 让我重新核对。按约定 A，next[i] = lps(P[0..i-1])：
-- next[0] = -1（哨兵）
-- next[1] = lps("A") = 0
-- next[2] = lps("AB") = 0
-- next[3] = lps("ABA") = 1
-- next[4] = lps("ABAB") = 2
-- next[5] = lps("ABABA") = 3
-
-故 next = [-1, 0, 0, 1, 2, 3]，**答案为 A**。
-
-**习题 3**：**B**。KMP 自动机状态数为 $m+1$（含初始状态 0 与接受状态 $m$），且是最小 DFA。
-
-**习题 4**：**C**。Knuth-Morris-Pratt 1977 证明下界为 $2n - m$ 次比较，Cole 1994 证明此下界紧。
-
-**习题 5**：**D**。nextval 不总是小于等于 next；当 $P[j] \neq P[\text{next}[j]]$ 时，nextval[j] = next[j]，相等。故 D 错误。
-
 ### 填空题知识点讲解
 
 **习题 6**：next（或 PMT，部分匹配表）
@@ -1863,58 +1793,6 @@ def build_next_fixed(pattern):
     return next_arr
 ```
 
-### 11.4 开放论述题参考答案
-
-**习题 13**：
-
-KMP 优于 BM 的场景：
-1. **流式数据**：KMP 文本指针不回退，适合网络流、日志流
-2. **实时性严格**：KMP 最坏 $O(n+m)$ 严格线性，BM 原始版本最坏 $O(nm)$
-3. **短模式**：BM 的跳跃表开销对小模式不划算
-4. **内核代码**：Linux 内核 strstr 在部分配置使用 KMP 变种，因不能容忍最坏情况
-
-BM 优于 KMP 的场景：
-1. **大文本单次匹配**：BM 平均 $O(n/m)$ 次线性，远快于 KMP 的 $O(n)$
-2. **自然语言文本**：BM 的坏字符跳跃对高频字符文本效果显著
-3. **模式较长**：BM 的好后缀跳跃对长模式效果更好
-4. **grep 主路径**：GNU grep 单模式默认使用 BM 变种
-
-**习题 14**：
-
-显式转移表（$O(m|\Sigma|)$ 空间）：
-- 优势：转移 $O(1)$ 严格，无 while 循环；适合 SIMD 向量化；可预取
-- 劣势：空间大，对大字符表（Unicode）不可行；构建时间 $O(m|\Sigma|)$
-
-隐式 next 数组（$O(m)$ 空间）：
-- 优势：空间小；构建 $O(m)$；适合大字符表
-- 劣势：转移均摊 $O(1)$，最坏 $O(m)$；无法 SIMD
-
-选型：
-- 字符表小（ASCII，$\sigma = 256$）且模式短：显式转移表
-- 字符表大（Unicode）或模式长：隐式 next 数组
-- 流式数据 + 实时性要求：显式转移表（避免 while 循环抖动）
-
-**习题 15**：
-
-AC 自动机 failure link 构建过程：
-
-1. **构建 trie**：将所有模式串插入 trie，每个节点对应一个前缀
-2. **BFS 构建 failure link**：
-   - 根节点的所有子节点的 failure link 指向根
-   - 对每个节点 $u$（深度 $d$），设其父节点 $v$ 的 failure link 为 $f(v)$
-   - 沿 $f(v)$ 的子节点中与 $u$ 标签相同的节点为 $f(u)$
-   - 若 $f(v)$ 无此子节点，继续沿 failure link 上溯
-
-匹配时间与 $k$ 无关的原因：
-- AC 自动机是一个 DFA，状态数为 $O(M)$（所有模式总长）
-- 匹配过程每个字符触发 $O(1)$ 次转移（摊还）
-- 匹配报告沿 failure link 链上报，总报告数为 $z$（匹配数）
-- 总时间 $O(n) + O(z) = O(n+z)$，与模式数 $k$ 无关
-
----
-
-## 12. 参考文献
-
 ### 12.1 历史性论文
 
 1. **Knuth, D. E., Morris, J. H., Pratt, V. R.** 1977. Fast pattern matching in strings. *SIAM Journal on Computing* 6, 2 (June), 323-350. DOI: 10.1137/0206024.
@@ -1954,8 +1832,6 @@ AC 自动机 failure link 构建过程：
 
 ---
 
-## 13. 延伸阅读
-
 ### 13.1 理论深入
 
 - **CLRS** 第 32 章（String Matching）系统化讲解 KMP、Rabin-Karp、有限自动机匹配
@@ -1971,15 +1847,6 @@ AC 自动机 failure link 构建过程：
 - **全文检索**：Lucene/Elasticsearch 的 FST（Finite State Transducer）、Suffix Array 在 PostgreSQL `pg_trgm` 扩展中的应用
 - **代码静态分析**：ESLint 的 AST 节点序列匹配、Clang-Tidy 的规则引擎、Semgrep 的模式匹配
 - **数据同步**：rsync 的 rolling hash、Git 的 packfile delta、Dropbox 的块级同步
-
-### 13.3 工程实现练习
-
-1. **KMP 可视化工具**（中阶）：用 Python + matplotlib 实现 KMP 算法的逐步可视化，显示文本指针、模式指针、next 数组的状态变化。提示：参考 VisuAlgo 的字符串匹配可视化
-2. **多模式 AC 自动机**（中阶）：实现完整的 Aho-Corasick 自动机，支持敏感词过滤。要求：构建 $O(M)$、匹配 $O(n+z)$、内存 $O(M)$。测试用例：1000 个敏感词，10MB 文本
-3. **KMP vs BM 基准测试**（中阶）：实现 KMP、BM、BMH、Sunday 四种算法，在随机文本、最坏文本、自然语言文本上对比性能，输出可视化报告
-4. **流式 KMP**（高阶）：实现支持流式输入的 KMP，要求：每字符 $O(1)$ 摊还时间、状态可序列化（支持暂停/恢复）、跨网络包状态保持
-5. **KMP 自动机压缩**（高阶）：实现 KMP 自动机的稀疏转移表压缩，使用 dict 存储非默认转移。要求：内存 $O(m)$ 而非 $O(m|\Sigma|)$，性能损失 $\leq 20\%$
-6. **DNA motif 发现工具**（高阶）：基于 KMP 实现 DNA 序列中保守 motif 的发现工具。要求：支持 IUPAC 简并碱基、支持近似匹配（允许 $k$ 个错配）、输出 motif 在多基因组中的出现位置
 
 ### 13.4 教学视频与公开课
 
@@ -2111,4 +1978,3 @@ flowchart TD
 | 进阶 | 学习 Suffix Tree/Array、AC 自动机、FM-Index | 本文第 13.5 节 + Gusfield 1997 | 20-40 小时 |
 
 ---
-

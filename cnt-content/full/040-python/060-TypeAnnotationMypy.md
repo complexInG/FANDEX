@@ -1652,8 +1652,6 @@ user = User(id=1, name='Alice', email='alice@example.com')
 - Rust 核心执行实际校验，性能极快。
 - 与 mypy 深度集成，静态检查 + 运行时校验双重保障。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：为以下函数添加类型注解。
@@ -1735,70 +1733,6 @@ def calculate_total(prices, discount=0):
 - 优先使用 `Protocol` 替代 `Any`。
 - 字典数据使用 `TypedDict`。
 - `Any` 仅用于过渡期，必须有 `# type: ignore` 与注释。
-
-## 10. 参考文献
-
-[1] Lehtosalo, J. 2014. PEP 484: Type Hints. Python Enhancement Proposals. https://peps.python.org/pep-0484/
-
-[2] Siek, J. G. and Taha, W. 2006. Gradual Typing for Functional Languages. In Proceedings of the Scheme and Functional Programming Workshop (SFPW '06). DOI: https://doi.org/10.1145/1176624.1176626
-
-[3] Siek, J. G. and Taha, W. 2007. Gradual Typing for Objects. In Proceedings of the European Conference on Object-Oriented Programming (ECOOP '07). DOI: https://doi.org/10.1007/978-3-540-73589-2_2
-
-[4] Lehtosalo, J. and Langa, Ł. 2016. PEP 526: Syntax for Variable Annotations. Python Enhancement Proposals. https://peps.python.org/pep-0526/
-
-[5] Bond, I. and Dower, N. 2018. PEP 544: Protocols: Structural subtyping (static duck typing). Python Enhancement Proposals. https://peps.python.org/pep-0544/
-
-[6] Ivanov, N. and Ivanov, S. 2018. PEP 561: Distributing and Packaging Type Information. Python Enhancement Proposals. https://peps.python.org/pep-0561/
-
-[7] Cannon, B. 2017. PEP 563: Postponed Evaluation of Annotations. Python Enhancement Proposals. https://peps.python.org/pep-0563/
-
-[8] Langa, Ł. 2019. PEP 585: Type Hinting Generics In Standard Collections. Python Enhancement Proposals. https://peps.python.org/pep-0585/
-
-[9] Lee, B. 2019. PEP 586: Literal Types. Python Enhancement Proposals. https://peps.python.org/pep-0586/
-
-[10] Lee, B. 2019. PEP 589: TypedDict: Type Hints for Dictionaries with a Fixed Set of Keys. Python Enhancement Proposals. https://peps.python.org/pep-0589/
-
-[11] Lee, B. 2019. PEP 591: Adding a final qualifier to typing. Python Enhancement Proposals. https://peps.python.org/pep-0591/
-
-[12] Langa, Ł. 2020. PEP 604: Allow writing union types as X | Y. Python Enhancement Proposals. https://peps.python.org/pep-0604/
-
-[13] Dower, N. 2020. PEP 612: Parameter Specification Variables. Python Enhancement Proposals. https://peps.python.org/pep-0612/
-
-[14] Bhattacharyya, S. 2021. PEP 646: Variadic Generics. Python Enhancement Proposals. https://peps.python.org/pep-0646/
-
-[15] Oden, J. 2021. PEP 673: Self type. Python Enhancement Proposals. https://peps.python.org/pep-0673/
-
-[16] Srivastav, K. 2022. PEP 675: Arbitrary Literal String Type. Python Enhancement Proposals. https://peps.python.org/pep-0675/
-
-[17] Goel, P. 2022. PEP 681: dataclass_transform. Python Enhancement Proposals. https://peps.python.org/pep-0681/
-
-[18]preloadMortada, M. 2023. PEP 692: Using TypedDict for more precise **kwargs typing. Python Enhancement Proposals. https://peps.python.org/pep-0692/
-
-[19] Traut, E. 2023. PEP 695: Type Parameter Syntax. Python Enhancement Proposals. https://peps.python.org/pep-0695/
-
-[20] overloadDower, N. 2024. PEP 696: Type Defaults for TypeVarLikes. Python Enhancement Proposals. https://peps.python.org/pep-0696/
-
-[21] Traut, E. 2024. PEP 698: Override Decorator for Static Type Checkers. Python Enhancement Proposals. https://peps.python.org/pep-0698/
-
-[22] Calvert, M. 2024. PEP 702: Marking deprecations using the type system. Python Enhancement Proposals. https://peps.python.org/pep-0702/
-
-[23] Pierce, B. C. 2002. Types and Programming Languages. MIT Press. ISBN: 978-0262162098
-
-[24] Ramalho, L. 2022. Fluent Python, 2nd Edition. O'Reilly Media. ISBN: 978-1492056355
-
-[25] mypy documentation. 2024. https://mypy.readthedocs.io/
-
-[26] pyright documentation. 2024. https://github.com/microsoft/pyright
-
-[27] typeshed repository. 2024. https://github.com/python/typeshed
-
-[28] Pydantic documentation. 2024. https://docs.pydantic.dev/
-
-[29] FastAPI documentation. 2024. https://fastapi.tiangolo.com/
-
-[30] SQLAlchemy 2.0 documentation. 2024. https://docs.sqlalchemy.org/en/20/
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

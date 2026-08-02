@@ -1824,59 +1824,6 @@ emitter.emit('connect'); // 输出: 已连接
 emitter.emit('connect'); // 无输出
 ```
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**1. 以下代码的输出是什么？**
-
-```javascript
-const obj = { 2: 'b', 1: 'a', x: 'c' };
-console.log(Object.keys(obj));
-```
-
-- A. `['2', '1', 'x']`
-- B. `['1', '2', 'x']`
-- C. `['x', '1', '2']`
-- D. `['x', '2', '1']`
-
-**解析讲解**：B
-
-**解析讲解**：`Object.keys` 对整数键（如 `'1'`、`'2'`）按升序排列，对字符串键按插入顺序。因此整数键 `'1'`、`'2'` 排在前，字符串键 `'x'` 排在后。
-
----
-
-**2. 以下代码的输出是什么？**
-
-```javascript
-const arr = [1, 2, 3];
-arr[10] = 10;
-console.log(arr.length);
-arr.forEach((v) => console.log(v));
-```
-
-- A. 11；输出 1, 2, 3, undefined × 7, 10
-- B. 4；输出 1, 2, 3, 10
-- C. 11；输出 1, 2, 3, 10
-- D. 4；输出 1, 2, 3
-
-**解析讲解**：C
-
-**解析讲解**：设置 `arr[10]` 后 `length` 自动变为 11；`forEach` 跳过空洞（empty slots），只输出实际赋值的元素 1, 2, 3, 10。
-
----
-
-**3. 以下哪种方法可以正确深拷贝包含 `Date` 对象和循环引用的对象？**
-
-- A. `JSON.parse(JSON.stringify(obj))`
-- B. `Object.assign({}, obj)`
-- C. `{ ...obj }`
-- D. `structuredClone(obj)`
-
-**解析讲解**：D
-
-**解析讲解**：`structuredClone` 是 ES2022 引入的原生深拷贝 API，支持 `Date`、`RegExp`、`Map`、`Set`、循环引用等复杂结构。`JSON` 方法会丢失 `Date`（转为字符串）且对循环引用报错；`Object.assign` 与展开运算符仅浅拷贝。
-
 ### 简答题知识点讲解
 
 **1. 解释 V8 引擎中隐藏类（Hidden Class）与内联缓存（Inline Cache）如何优化对象属性访问。**
@@ -2028,38 +1975,6 @@ obs.notify('world');
 // 输出:
 // 订阅者 2: world
 ```
-
-## 9. 参考文献
-
-[1] Ecma International. 2026. *ECMAScript 2026 Language Specification* (27th ed.). ECMA-262. https://262.ecma-international.org/27.0/
-
-[2] Brendan Eich. 1998. *JavaScript: The First Ten Years*. In *Proceedings of the ACM SIGPLAN Conference on History of Programming Languages* (HOPL IV). ACM, New York, NY, USA, 1-22. DOI: https://doi.org/10.1145/3386326
-
-[3] David Flanagan. 2020. *JavaScript: The Definitive Guide* (7th ed.). O'Reilly Media, Sebastopol, CA, USA.
-
-[4] Axel Rauschmayer. 2024. *Exploring ES2024 and ES2025*. ExploringJS. https://exploringjs.com/
-
-[5] Mathias Bynens and Benedikt Meurer. 2018. *JavaScript engine fundamentals: Shapes and Inline Caches*. V8 Dev Blog. https://v8.dev/blog/fast-properties
-
-[6] Vyacheslav Egorov. 2017. *V8: Full-Codegen, Crankshaft, TurboFan, Ignition*. In *Proceedings of the ACM SIGPLAN International Conference on Systems, Programming, Languages and Applications* (SPLASH). ACM, New York, NY, USA. DOI: https://doi.org/10.1145/3140587
-
-[7] Stefan Brunthaler. 2010. *Inline caching meets quickening*. In *Proceedings of the ACM Symposium on Dynamic Languages* (DLS '10). ACM, New York, NY, USA, 41-52. DOI: https://doi.org/10.1145/1869631.1869637
-
-[8] Ecma International. 2022. *Structured Clone Algorithm*. ECMA-262, Section 2.7. https://tc39.es/ecma262/#sec-structuredclone
-
-[9] Tim Foley and Mathias Bynens. 2019. *ES2019 Feature: Stable Array.prototype.sort*. V8 Dev Blog. https://v8.dev/blog/v8-release-76
-
-[10] Daniel Ehrenberg. 2018. *Proposal: Object shorthand improvements*. TC39 Proposal ECMA-262. https://github.com/tc39/proposal-shorthand-improvements
-
-[11] Jordan Harband. 2021. *Proposal: Object.hasOwn*. TC39 Proposal ECMA-262. https://github.com/tc39/proposal-accessible-object-hasownproperty
-
-[12] Hemanth H.M. and Kevin Gibbons. 2023. *Proposal: Array.prototype.group*. TC39 Proposal ECMA-262. https://github.com/tc39/proposal-array-grouping
-
-[13] Kyle Simpson. 2020. *You Don't Know JS Yet: Objects & Classes* (2nd ed.). Leanpub.
-
-[14] Addy Osmani. 2017. *Learning JavaScript Design Patterns* (2nd ed.). O'Reilly Media, Sebastopol, CA, USA. DOI: https://doi.org/10.1201/9781003338180
-
-## 10. 延伸阅读
 
 ### 10.1 规范与标准
 

@@ -484,36 +484,12 @@ public:
 
 编译期分支的三个层次：`if constexpr` 处理类型分支，折叠表达式处理参数包，模板特化处理形态差异。三者组合覆盖绝大多数泛型编程需求，运行时开销为零。
 
-## 10. 参考文献
-
-cppreference, 函数模板, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/function_template
-
-cppreference, 类模板, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/class_template
-
-cppreference, 模板特化与偏特化, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/template_specialization
-
-cppreference, 折叠表达式, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/fold
-
-cppreference, if constexpr, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/if
-
-cppreference, Concepts（requires）, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/constraints
-
-cppreference, 模板实参推导, 访问日期 2026-08-01, https://zh.cppreference.com/w/cpp/language/template_argument_deduction
-
 ## 11. 延伸阅读
-
 标准库容器与迭代器，见 026-cpp 模块的 STL 相关文档；
-
 移动语义与完美转发，见 026-cpp 模块的右值引用文档；
-
 编译期计算与 constexpr，见 026-cpp 模块的 constexpr 文档；
-
 泛型编程与设计模式，见 038-software-architecture 模块相关文档；
-
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 C++ 进阶课程；黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 C++ 课程。
-
 ---
-
 ### 1. 函数模板
 
 函数模板允许定义可适用于不同类型的函数。
@@ -1095,4 +1071,3 @@ if constexpr (std::is_integral_v<T>) {
     return x;
 }
 ```
-

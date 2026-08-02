@@ -4,11 +4,10 @@ title: 特征值性质
 module: 'linear-algebra'
 category: 'comp-sci'
 difficulty: intermediate
-description: 特征值的基本性质，迹与特征值的关系，行列式与特征值的关系，矩阵运算的特征值，Cayley-Hamilton 定理，含 0 基础类比、完整例题、常见错误对策与实战练习。
+description: 特征值的基本性质，迹与特征值的关系，行列式与特征值的关系，矩阵运算的特征值，Cayley-Hamilton 定理，含 0 基础类比。
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'linear-algebra/向量空间典型例题'
   - 'linear-algebra/特征值与特征向量计算'
   - 'linear-algebra/矩阵对角化'
   - 'linear-algebra/实对称矩阵的对角化'
@@ -142,8 +141,6 @@ $$f(\lambda) = \lambda^n - c_1\lambda^{n-1} + c_2\lambda^{n-2} - \cdots + (-1)^n
 
 一般地，$c_k$ 等于所有 $k$ 阶主子式之和。这条规律在"已知部分特征值推其余"的问题中非常有用。
 
-## 5. 典型例题
-
 ### 例1（特征值综合计算）
 
 设 $A$ 为三阶方阵，特征值为 $1, 2, 3$，求 $|A^* + 3A^{-1} - 2I|$。
@@ -195,58 +192,6 @@ $|A| = \lambda_1\lambda_2\cdots\lambda_n = -1$。又正交矩阵的特征值满�
 | 已知 $A$ 不可逆就断言"特征值全是 0" | 逻辑错误 | 混淆"存在 0 特征值"与"全是 0" | $A$ 不可逆 $\iff$ 至少一个特征值为 0（$|A| = \prod\lambda_i = 0$） |
 | 例 4 类题被冗余条件带偏 | 策略失误 | 没过滤重复信息 | 先问"哪个条件给了新信息"；推论性条件不要重复使用 |
 
-## 7. 实战练习
-
-### 练习1（基础：用性质求行列式）
-
-设 $A$ 为三阶矩阵，特征值为 $2, -1, 3$，求 $|A^2 - 2A + I|$ 与 $\text{tr}(A^2)$。
-
-**提示**：$A^2 - 2A + I$ 的特征值为 $\lambda^2 - 2\lambda + 1 = (\lambda - 1)^2$；$\text{tr}(A^2)$ 是 $A^2$ 的特征值之和。
-
-**参考答案要点**：$(A^2 - 2A + I)$ 的特征值：$(2-1)^2 = 1$，$(-1-1)^2 = 4$，$(3-1)^2 = 4$，行列式 $= 1 \times 4 \times 4 = 16$。$\text{tr}(A^2) = 2^2 + (-1)^2 + 3^2 = 14$。
-
-### 练习2（进阶：反求参数）
-
-设 $A = \begin{pmatrix} 2 & 0 & 0 \\ 0 & 3 & a \\ 0 & 0 & 3 \end{pmatrix}$ 的行列式为 18，且特征值之和为 8，求 $a$。
-
-**提示**：上三角矩阵特征值即主对角线元素 $2, 3, 3$（和恰为 8，自动满足）；$|A| = 2 \times 3 \times 3 = 18$ 与 $a$ 无关——注意此题 $a$ 无法由特征值确定（因为特征值不随 $a$ 变）。
-
-**参考答案要点**：特征值 $2, 3, 3$，$\text{tr} = 8$，$|A| = 18$，两者均与 $a$ 无关，$a$ 任意。此题提醒：迹与行列式只能确定特征值，特征值相同不代表矩阵相同。
-
-### 练习3（进阶：Cayley-Hamilton 应用）
-
-设 $A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$，利用 Cayley-Hamilton 定理求 $A^2$ 与 $A^3$ 用 $A, I$ 表示。
-
-**提示**：先求特征多项式 $f(\lambda) = \lambda^2 - 5\lambda - 2$（$\text{tr} = 5$，$|A| = -2$），由 $f(A) = O$ 得 $A^2 = 5A + 2I$，再左乘 $A$ 递推。
-
-**参考答案要点**：$A^2 = 5A + 2I = \begin{pmatrix} 7 & 10 \\ 15 & 22 \end{pmatrix}$；$A^3 = A(5A + 2I) = 5A^2 + 2A = 27A + 10I = \begin{pmatrix} 37 & 54 \\ 81 & 118 \end{pmatrix}$。
-
-### 练习4（综合：特征值推理）
-
-设 $A$ 为三阶矩阵，$|A| = 4$，特征值为 $1, 2, \lambda_3$，求 $\lambda_3$ 与 $\text{tr}(A)$，并判断 $A$ 的特征值是否互不相同。
-
-**提示**：$|A| = \lambda_1\lambda_2\lambda_3 = 4$，直接解出 $\lambda_3$；注意三阶矩阵恰好有 3 个特征值（计重数），解出的 $\lambda_3$ 可能与已知特征值重复。
-
-**参考答案要点**：$1 \times 2 \times \lambda_3 = 4$ 得 $\lambda_3 = 2$。故特征值为 $1, 2, 2$（$2$ 是二重根），$\text{tr}(A) = 1 + 2 + 2 = 5$。注意：特征值并非互不相同，但 $\text{tr}$ 与 $|A|$ 的计算必须按重数累计。
-
-### 练习5（挑战：正交矩阵特征值结构）
-
-设 $A$ 为 3 阶正交矩阵，$|A| = 1$。证明 $1$ 是 $A$ 的特征值，且其余两个特征值模为 1。
-
-**提示**：由 $|A - I| = 0$ 的"凑 $AA^T$"技巧（见 024 篇例11）；再用 $|\lambda_i| = 1$ 与 $\lambda_1\lambda_2\lambda_3 = 1$ 讨论。
-
-**参考答案要点**：$|A| = 1$ 且 $n = 3$ 为奇数时 $|A - I| = 0$（024 篇已证），故 $1$ 是特征值。其余两个特征值 $\lambda_2, \lambda_3$ 满足 $|\lambda_2| = |\lambda_3| = 1$（正交矩阵）且 $\lambda_2\lambda_3 = 1$。若为实矩阵，则 $\lambda_2, \lambda_3$ 或同为 $1$，或为共轭复数对 $e^{\pm i\theta}$。
-
 ## 8. 一句话记忆
 
 **特征值的"校验码"：$\text{tr}(A)$ 是特征值之和，$|A|$ 是特征值之积；同一矩阵的函数（$kA$、$A^k$、$A^{-1}$、$A^*$、$f(A)$）特征值跟着函数变，但 $A+B$、$AB$ 不可拆；矩阵方程给特征值出"代数方程"，Cayley-Hamilton 让高次幂降维。**
-
-## 参考链接与延伸阅读
-
-- 同济大学数学科学学院《工程数学 线性代数（第七版）》，高等教育出版社，第 5 章 §2-§3 方阵的特征值与特征向量、相似矩阵（性质与例题来源）：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=630508ea938b7cc2960ef14b
-- Purdue University《Linear Algebra and its Applications》（Lay 教材讲义，§5.2 特征多项式与特征值性质）：https://www.math.purdue.edu/~xu1121/Sec5.2
-- MIT 18.06 Linear Algebra（Strang 第 21-22 讲特征值与特征向量、迹与行列式的讨论）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- 3Blue1Brown 线性代数的本质（特征值、特征向量与矩阵幂的几何意义）：https://www.3blue1brown.com/topics/linear-algebra
-- Interactive Linear Algebra（Georgia Tech，§5.2 特征多项式）：https://textbooks.math.gatech.edu/ila/
-
-延伸阅读：特征值与特征向量计算（前置知识）；矩阵对角化（特征值性质的直接应用）；实对称矩阵的对角化（特征值全为实数的证明）；二次型的标准形（特征值判定正定性）。

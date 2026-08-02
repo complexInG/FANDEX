@@ -1422,8 +1422,6 @@ sink.on('error', (err) => {
 - 流量高峰时返回 429，下游重试，保护系统稳定。
 - P99 延迟从 1200ms 降至 80ms（背压下减少队列堆积）。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：以下代码的输出顺序是什么？
@@ -1654,40 +1652,6 @@ class SimplePool {
   - 使用 `taskId` 关联请求与响应，避免事件绑定混乱。
   - 添加超时与取消。
   - 提供 `destroy()` 方法优雅关闭。
-
-## 10. 参考文献
-
-[1] Ryan Dahl. 2009. Node.js: A New Server-Side JavaScript Runtime. In Proceedings of JSConf EU 2009. Berlin, Germany. https://www.youtube.com/watch?v=zn6_F78RJYw
-
-[2] Bert Belder and Ben Noordhuis. 2011. libuv: A Cross-Platform Asynchronous I/O Library. https://libuv.org/
-
-[3] Ryan Dahl. 2018. 10 Things I Regret About Node.js. JSConf EU 2018. Berlin, Germany. https://www.youtube.com/watch?v=M3BM9TB-8yA
-
-[4] Anna Henningsen and James M Snell. 2018. Node.js Worker Threads Implementation. Node.js Foundation. https://nodejs.org/api/worker_threads.html
-
-[5] Ben Titzer and Jaroslav Sevcik. 2024. V8 Garbage Collection Design. Google. https://v8.dev/blog/trash-talk
-
-[6] ECMAScript International. 2026. Streams Standard. WHATWG. https://streams.spec.whatwg.org/
-
-[7] Joyee Cheung and Ruben Bridgewater. 2025. Node.js Performance Improvements in Node.js 22. OpenJS Foundation. https://nodejs.org/en/blog/perf/nodejs-22
-
-[8] Matteo Collina. 2023. The Node.js Event Loop: Not So Simple After All. Node+JS Interactive 2023. https://www.youtube.com/watch?v=P-ciQcx5e5M
-
-[9] Vladimir de Turckheim. 2024. Optimizing Node.js Streams for Production. Fastify Blog. https://fastify.io/blog/2024/streams
-
-[10] Sarah Groff Henningsen and Matteo Collina. 2024. Profiling Node.js Applications in Production. In Proceedings of the 19th International Conference on Web Engineering (ICWE 2024). DOI: https://doi.org/10.1007/978-3-031-60916-3_15
-
-[11] Daniel Khan. 2025. Node.js Application Monitoring: From Theory to Production. O'Reilly Media. ISBN 978-1492097264.
-
-[12] ECMAScript International. 2026. ECMAScript 2026 Language Specification (16th Edition). Standard ECMA-262. https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
-
-[13] Joyee Cheung. 2024. Understanding V8's Garbage Collector in Node.js. Node.js Collection on Medium. https://medium.com/@nodejs/understanding-v8s-gc
-
-[14] Stephen Belanger and Bryan English. 2025. Node.js Diagnostics: A Practical Guide. https://nodejs.org/en/docs/guides/diagnostics
-
-[15] Joyee Cheung, Anna Henningsen, et al. 2025. Node.js 22 Release Notes. OpenJS Foundation. https://nodejs.org/en/blog/announcement/v22-release-announce
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

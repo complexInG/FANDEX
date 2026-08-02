@@ -2071,8 +2071,6 @@ config.db_url = "postgresql://localhost/mydb"
 print(f"数据库（覆盖后）: {config.db_url}")  # postgresql://localhost/mydb
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：编写一个 `EmailField` 描述符，要求：（1）必须为字符串；（2）符合基本邮箱格式（含 `@` 与 `.`）；（3）不满足时抛出 `ValueError`。
@@ -2176,42 +2174,6 @@ class Cache:
 - 增加了线程锁（`RLock`）保证线程安全
 - 异常时不缓存（计算抛异常则不写入 `__dict__`）
 - 优化点：`__set_name__` 缓存属性名；`__get__` 使用 `try/except KeyError` 优化
-
-## 10. 参考文献
-
-[1] Guido van Rossum. 2002. Unifying types and classes in Python 2.2. Python Enhancement Proposal 253. Retrieved July 21, 2026, from https://peps.python.org/pep-0253/
-
-[2] Paul F. Dubois. 2001. PEP 252: Make types look more like classes. Python Enhancement Proposal 252. Retrieved July 21, 2026, from https://peps.python.org/pep-0252/
-
-[3] Martin von Löwis. 2017. PEP 487: Simpler customisation of class creation. Python Enhancement Proposal 487. DOI: 10.5281/zenodo.1154727. Retrieved July 21, 2026, from https://peps.python.org/pep-0487/
-
-[4] Raymond Hettinger. 2002. Python Descriptor HowTo Guide. Python Official Documentation. Retrieved July 21, 2026, from https://docs.python.org/3/howto/descriptor.html
-
-[5] Python Software Foundation. 2024. The Python Language Reference: 3.3.2. Customizing class creation. Retrieved July 21, 2026, from https://docs.python.org/3/reference/datamodel.html#customizing-class-creation
-
-[6] Python Software Foundation. 2024. The Python Language Reference: Invoking descriptors. Retrieved July 21, 2026, from https://docs.python.org/3/reference/datamodel.html#invoking-descriptors
-
-[7] Gregor J. Wardle. 2010. PEP 3115: Metaclass syntax in Python 3000. Python Enhancement Proposal 3115. Retrieved July 21, 2026, from https://peps.python.org/pep-3115/
-
-[8] Eric Snow. 2019. PEP 520: Preserving class attribute definition order. Python Enhancement Proposal 520. Retrieved July 21, 2026, from https://peps.python.org/pep-0520/
-
-[9] Brett Cannon. 2017. PEP 557: Dataclasses. Python Enhancement Proposal 557. DOI: 10.5281/zenodo.1154733. Retrieved July 21, 2026, from https://peps.python.org/pep-0557/
-
-[10] Django Software Foundation. 2024. Django Documentation: Models and databases. Retrieved July 21, 2026, from https://docs.djangoproject.com/en/5.0/topics/db/models/
-
-[11] SQLAlchemy Project. 2024. SQLAlchemy Documentation: Descriptors. Retrieved July 21, 2026, from https://docs.sqlalchemy.org/en/20/orm/descriptors.html
-
-[12] Samuel Colvin. 2024. Pydantic Documentation: Fields. Retrieved July 21, 2026, from https://docs.pydantic.dev/latest/concepts/fields/
-
-[13] Alex Martelli. 2013. Python in a Nutshell (3rd ed.). O'Reilly Media, Sebastopol, CA, USA. DOI: 10.5555/2571665
-
-[14] David Beazley and Brian K. Jones. 2013. Python Cookbook (3rd ed.). O'Reilly Media, Sebastopol, CA, USA. Chapter 8: Classes and Objects. DOI: 10.5555/2502259
-
-[15] Luciano Ramalho. 2022. Fluent Python (2nd ed.). O'Reilly Media, Sebastopol, CA, USA. Chapter 22: Attribute Descriptors. DOI: 10.5555/3564953
-
-[16] Mark Lutz. 2013. Learning Python (5th ed.). O'Reilly Media, Sebastopol, CA, USA. Chapter 38: Managed Attributes.
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

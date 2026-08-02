@@ -900,8 +900,6 @@ const styles = className("text-red-500", "p-4");
 
 Tailwind 真实实现用模板字面量类型生成所有合法类名的联合类型（数十万个），实现 IDE 自动补全与编译期检查。这是条件类型与模板字面量结合的极致工程案例。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**：解释以下条件类型的结果，并说明原因。
@@ -1162,26 +1160,6 @@ type Keys = DeepKeyOf<LargeApplicationConfig>; // 假设有 1000 个嵌套属性
 - 优化 2：限制递归深度，如 `DeepKeyOf<T, Depth extends number = 3>`。
 - 优化 3：拆分为多个小类型，让 IDE 增量编译受益。
 - 优化 4：用 `// @ts-ignore` 在热路径上跳过类型检查，或用泛型参数延迟实例化。
-
-## 参考文献
-
-[1] Microsoft. 2017. TypeScript 2.8 Release Notes: Conditional Types. Microsoft Developer Network. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html
-
-[2] Gabriel Vergnaud, Sebastian Silbermann. 2023. TypeScript Type System: From Foundations to Type-Level Programming. In Proceedings of the ACM SIGPLAN International Conference on Systems, Programming, Languages and Applications (SPLASH '23). ACM, 142–156. DOI: https://doi.org/10.1145/3622647.3625912
-
-[3] Piergiorgio F. Miron, Daniel S. Hono. 2022. Univalent Type Theory in Practical Software Engineering: A Case Study on TypeScript. Journal of Functional Programming 32, 1 (January 2022), 1–34. DOI: https://doi.org/10.1017/S0956796821000283
-
-[4] Aleksandra K. Pawlak, Tomasz S. Węgrzyn. 2021. Type-Level Computation in Modern Web Development. Proceedings of the ACM on Programming Languages 5, OOPSLA, Article 128 (October 2021), 1–30. DOI: https://doi.org/10.1145/3485486
-
-[5] Microsoft. 2024. TypeScript 4.1 Release Notes: Key Remapping in Mapped Types. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-1.html
-
-[6] Sven K. P. Strickrodt, Felicitas M. Hörtz. 2020. Conditional Type Rules for Static Analysis of JavaScript. In Proceedings of the 34th European Conference on Object-Oriented Programming (ECOOP '20). ACM, 21:1–21:28. DOI: https://doi.org/10.4230/LIPIcs.ECOOP.2020.21
-
-[7] Microsoft. 2021. TypeScript 4.5 Release Notes: Tail-Recursion Elimination on Conditional Types. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html
-
-[8] Andreas G. Rossberg, Claudio V. Russo. 2019. Nominal Type Abstraction for Dynamic Languages. ACM Transactions on Programming Languages and Systems 41, 3, Article 18 (June 2019), 1–47. DOI: https://doi.org/10.1145/3325312
-
-## 延伸阅读
 
 ### 官方文档
 

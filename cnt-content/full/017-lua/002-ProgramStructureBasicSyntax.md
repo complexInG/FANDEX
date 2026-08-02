@@ -1388,8 +1388,6 @@ return new_count
 - `tonumber` 与 `or "0"` 配合处理 nil 情况。
 - 严格使用 `local` 声明变量，避免污染脚本环境。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题 1**：写出以下代码的输出。
@@ -1555,8 +1553,6 @@ print(10.0 // 3)
 - `10 // 3` 输出 `3`（整数）。
 - `10.0 // 3` 输出 `3.0`（浮点）：有浮点参与时返回浮点。
 
-## 10. 参考文献
-
 ### 10.1 Lua 官方文献
 
 [1] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2023. *Lua 5.4 Reference Manual*. Technical Report, PUC-Rio, Rio de Janeiro, Brazil. Available at: https://www.lua.org/manual/5.4/
@@ -1586,8 +1582,6 @@ print(10.0 // 3)
 [10] Mateescu, R. 2013. Static analysis of Lua programs. *Electronic Notes in Theoretical Computer Science* 298, 1 (Dec. 2013), 101-115. DOI: https://doi.org/10.1016/j.entcs.2013.09.014
 
 [11] luacheck 文档：https://luacheck.readthedocs.io/
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

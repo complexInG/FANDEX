@@ -48,24 +48,6 @@ prerequisites:
 
 $A\boldsymbol{x} = \boldsymbol{b}$ 中 $A$ 是 $n$ 阶方阵且顺序主子式非零时，LU 分解一次、回代多次，总成本 $O(n^3) + k \cdot O(n^2)$（$k$ 为右端项个数）。对于同一系统多输入的工程问题（电网潮流、结构受力分析），这是性价比之王。
 
-### 2.2 完整例题 1：多右端项批量求解
-
-用 LU 分解同时解 $A\boldsymbol{x} = \boldsymbol{b}_1$ 与 $A\boldsymbol{x} = \boldsymbol{b}_2$，其中
-
-$$A = \begin{pmatrix} 2 & 1 \\ 4 & 3 \end{pmatrix}, \qquad \boldsymbol{b}_1 = \begin{pmatrix} 5 \\ 13 \end{pmatrix}, \qquad \boldsymbol{b}_2 = \begin{pmatrix} 1 \\ 5 \end{pmatrix}$$
-
-**解**：
-
-**第 1 步**：分解一次（与右端项无关）：
-
-$$A = \begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix}\begin{pmatrix} 2 & 1 \\ 0 & 1 \end{pmatrix} = LU$$
-
-**第 2 步**：解 $\boldsymbol{b}_1$。前代 $L\boldsymbol{y} = \boldsymbol{b}_1$：$y_1 = 5$，$y_2 = 13 - 2 \times 5 = 3$；回代 $U\boldsymbol{x} = \boldsymbol{y}$：$x_2 = 3$，$x_1 = \frac{5 - 3}{2} = 1$。得 $\boldsymbol{x}^{(1)} = (1, 3)^T$。
-
-**第 3 步**：解 $\boldsymbol{b}_2$（**分解不重做**）。前代：$y_1 = 1$，$y_2 = 5 - 2 = 3$；回代：$x_2 = 3$，$x_1 = \frac{1 - 3}{2} = -1$。得 $\boldsymbol{x}^{(2)} = (-1, 3)^T$。
-
-**工程要点**：两次求解只做了一次分解——这就是"一次制版、多次印刷"。
-
 ### 2.3 LU 的边界
 
 - 顺序主子式为零 → 用 $PA = LU$（PLU 分解）兜底；
@@ -87,22 +69,6 @@ $$\min_{\boldsymbol{x}}\|A\boldsymbol{x} - \boldsymbol{b}\|_2^2$$
 | QR 分解 | $A = QR$，回代 $R\boldsymbol{x} = Q^T\boldsymbol{b}$ | 数值稳定，无需计算 $A^TA$ | 分解成本略高 |
 
 **结论**：教材和工程实践一致推荐 **QR 方法**。北大《统计计算》讲义明确指出：直接解正规方程在条件数大时误差大，应"直接利用 $A$ 计算而不是对 $A^TA$ 计算"。
-
-### 3.3 完整例题 2：QR 最小二乘拟合直线
-
-用直线 $y = a + bt$ 拟合三个点 $(1, 1), (2, 2), (3, 4)$。
-
-**解**：模型写成 $\begin{pmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{pmatrix}\begin{pmatrix} a \\ b \end{pmatrix} \approx \begin{pmatrix} 1 \\ 2 \\ 4 \end{pmatrix}$，即 $A\boldsymbol{x} \approx \boldsymbol{b}$。
-
-035 篇例题 1 已给出 $A$ 的 QR 分解：$Q = \begin{pmatrix} \frac{1}{\sqrt{3}} & -\frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{3}} & 0 \\ \frac{1}{\sqrt{3}} & \frac{1}{\sqrt{2}} \end{pmatrix}$，$R = \begin{pmatrix} \sqrt{3} & 2\sqrt{3} \\ 0 & \sqrt{2} \end{pmatrix}$。
-
-**第 1 步**：$Q^T\boldsymbol{b} = \left(\frac{7}{\sqrt{3}}, \frac{2}{\sqrt{2}}\right)^T$。
-
-**第 2 步**：回代 $R\boldsymbol{x} = Q^T\boldsymbol{b}$：
-
-$$b = \frac{2/\sqrt{2}}{\sqrt{2}} = 1, \qquad a = \frac{7/\sqrt{3} - 2\sqrt{3}\cdot 1}{\sqrt{3}} = \frac{7}{3} - 2 = \frac{1}{3}$$
-
-**结果**：拟合直线 $y = \frac{1}{3} + t$，残差平方和 $\left\|\begin{pmatrix} 1 \\ 2 \\ 4 \end{pmatrix} - \begin{pmatrix} \frac{4}{3} \\ \frac{7}{3} \\ \frac{10}{3} \end{pmatrix}\right\|^2 = \left(\frac{1}{3}\right)^2 + \left(\frac{1}{3}\right)^2 + \left(\frac{2}{3}\right)^2 = \frac{6}{9} = \frac{2}{3}$。
 
 ## 4. 场景三：PCA 主成分分析——SVD/特征值分解的主场
 
@@ -203,50 +169,9 @@ $256 \times 256$ 图像，取 $k = 50$：
 | 用特征值分解处理非方阵 | 工具越界 | 特征值只定义于方阵 | 非方阵一律用 SVD |
 | 选 $k$ 个主成分不看方差解释比 | 拍脑袋 | 没有量化依据 | 用 $\rho_k \geq 0.85$ 之类的阈值决策 |
 
-## 9. 实战练习
-
-### 练习 1（入门）：选工具
-
-下列场景分别该用哪种分解？（1）解 $3 \times 3$ 线性方程组；（2）拟合 100 个点到一条直线；（3）把 $200 \times 300$ 的图片压缩到 10% 存储。
-
-**提示**：按"解方程组 / 最小二乘 / 压缩"三类回忆。
-
-**参考答案要点**：（1）LU（方阵求解，快）；（2）QR（最小二乘，稳）；（3）截断 SVD（Eckart-Young 最优低秩近似）。
-
-### 练习 2（基础）：PCA 一步
-
-数据中心化后 $X^TX = \begin{pmatrix} 4 & 0 \\ 0 & 1 \end{pmatrix}$，求两个主成分方向与方差解释比 $\rho_1$。
-
-**提示**：$X^TX$ 已是特征分解形式。
-
-**参考答案要点**：特征值 $4, 1$，主成分方向 $\boldsymbol{e}_1 = (1, 0)^T$（方差 4）与 $\boldsymbol{e}_2 = (0, 1)^T$（方差 1）。$\rho_1 = \frac{4}{4+1} = 0.8$。
-
-### 练习 3（进阶）：压缩比计算
-
-$500 \times 400$ 图像取 $k = 60$，求压缩比。
-
-**提示**：$\dfrac{mn}{k(m+n+1)}$。
-
-**参考答案要点**：$\frac{500 \times 400}{60 \times 901} = \frac{200000}{54060} \approx 3.7:1$。
-
-### 练习 4（综合）：最小二乘 vs 正规方程
-
-$A = \begin{pmatrix} 1 & 1 \\ 1 & 1 + 10^{-8} \end{pmatrix}$ 列近似相关（病态），说明为什么 QR 比正规方程可靠。
-
-**提示**：比较 $\kappa(A)$ 与 $\kappa(A^TA) = \kappa(A)^2$。
-
-**参考答案要点**：$\kappa(A)$ 已很大（约 $10^8$），而正规方程求解涉及 $\kappa(A^TA) \approx \kappa(A)^2 = 10^{16}$，接近双精度浮点极限，舍入误差会把解"淹没"；QR 直接作用于 $A$，只承受 $\kappa(A)$ 的放大，结果可靠得多。
-
 ## 10. 一句话记忆
 
 > **矩阵分解是工具箱：解方程找 LU，最小二乘找 QR，分析压缩降维找 SVD/特征分解——没有万能分解，只有"按任务选对分解"；而任何矩阵都能被 SVD 兜底（低秩近似、伪逆），这就是它被称为"瑞士军刀"的原因。**
-
-## 参考文献
-
-1. 北京大学数学科学学院李东风，《统计计算》第 30 讲《正交三角分解》（正规方程数值缺陷与 QR 最小二乘的稳定性分析）：https://math.pku.edu.cn/teachers/lidf/docs/statcomp/html/_statcompbook/matrix-qr.html
-2. MIT 18.065 Matrix Methods in Data Analysis（Gilbert Strang），Lecture 7: Eckart-Young Theorem 与 PCA 联系：https://ickma2311.github.io/Math/MIT18.065/mit18065-lecture7-eckart-young.html
-3. MIT 18.06 Linear Algebra（Gilbert Strang），Spring 2010（LU/QR/SVD 全体系）：https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-4. NumPy 文档（`linalg.svd`、`linalg.qr`、`linalg.lu`）：https://numpy.org/doc/stable/
 
 ## 延伸阅读
 

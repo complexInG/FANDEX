@@ -1252,8 +1252,6 @@ interface LogSink {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：以下代码的输出是什么？
@@ -1382,30 +1380,6 @@ fun <T> mergeWithPriority(
   3. 在 `nativeMain` 中使用 `Dispatchers.Default` 或自定义调度器
   4. 使用 `expect/actual` 抽象平台差异
 
-## 参考文献
-
-[1] Elizarov, R. and Belyaev, M. 2018. Kotlin Coroutines 1.0. JetBrains. https://kotlinlang.org/docs/coroutines-overview.html
-
-[2] Reactive Streams Specification. 2015. Reactive Streams. https://github.com/reactive-streams/reactive-streams-jvm
-
-[3] Goetz, B. and Holmes, D. 2017. Flow (JEP 266). JDK 9. https://openjdk.org/jeps/266
-
-[4] Elizarov, R. 2019. Reactive Streams and Kotlin Flow. Kotlin Blog. https://blog.jetbrains.com/kotlin/2019/04/kotlin-flow/
-
-[5] Tulach, J. 2019. Asynchronous Programming with Kotlin Flow. JetBrains Research. https://doi.org/10.1145/3359582.3359584
-
-[6] Bloch, J. 2018. Effective Java (3rd Edition). Addison-Wesley Professional. ISBN: 978-0134685991
-
-[7] Reaktoro Project. 2020. A Comparison of Reactive Streams Implementations. https://doi.org/10.1109/MS.2020.2992320
-
-[8] Netflix. 2014. RxJava: Reactive Extensions for the JVM. Netflix Tech Blog. https://netflixtechblog.com/rxjava-and-the-needs-of-netflix-8f0a5d5d5f6e
-
-[9] Pivotal. 2019. Project Reactor Documentation. https://projectreactor.io/docs/core/release/reference/
-
-[10] Ierusalimschy, R., de Figueiredo, L. H., and Celes, W. 2018. Passing a language through the eye of a needle. Communications of the ACM 61, 9 (Sep. 2018), 38-45. https://doi.org/10.1145/3230624
-
-## 延伸阅读
-
 ### 官方文档
 
 - **Kotlin Coroutines 官方文档**：https://kotlinlang.org/docs/coroutines-guide.html
@@ -1437,9 +1411,3 @@ fun <T> mergeWithPriority(
   - 对比学习 RxJava 与 Flow 的设计差异
 - **Project Reactor**：https://github.com/reactor/reactor-core
   - Spring 生态的响应式实现
-
-### 社区资源
-
-- **Kotlin Slack**：#coroutines、#flow 频道
-- **Roman Elizarov 博客**：https://elizarov.medium.com/
-- **Kotlin Weekly**：定期推送 Flow 相关文章

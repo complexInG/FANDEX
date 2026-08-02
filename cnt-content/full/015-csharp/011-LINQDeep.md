@@ -1182,62 +1182,6 @@ BenchmarkDotNet 结果（.NET 8，1M 元素）：
 
 LINQ 比手写循环慢约 45%，主要源于委托调用与迭代器状态机的开销。在热路径中，这种差异显著；在大多数业务代码中，可读性收益远超性能损失。
 
-## 十、习题
-
-### 选择题知识点讲解
-
-**题 1**：下列哪个 LINQ 操作符是立即执行的？
-
-- A. `Where`
-- B. `Select`
-- C. `OrderBy`
-- D. `Count`
-
-**答案：D**
-
-`Count` 是立即执行操作符，调用即遍历序列并返回结果。`Where`、`Select`、`OrderBy` 都是延迟执行（`OrderBy` 虽然需要缓冲，但仍延迟到枚举时才排序）。
-
-判断标准：返回 `IEnumerable<T>` 的通常是延迟；返回具体值（int、T、bool）或集合类型（`List<T>`、`Dictionary<K,V>`）的通常是立即。
-
-**题 2**：下列代码会发生几次枚举？
-
-```csharp
-var query = numbers.Where(x => x > 0);
-var count = query.Count();
-var list = query.ToList();
-foreach (var n in query) { }
-```
-
-- A. 1
-- B. 2
-- C. 3
-- D. 4
-
-**答案：C**
-
-`Count()`、`ToList()`、`foreach` 各枚举一次，共 3 次。每次枚举都会重新执行 `Where` 谓词。如果 `numbers` 是 1000 个元素，谓词会被调用 3000 次。
-
-优化：若需多次访问，先 `ToList()` 缓存：
-```csharp
-var list = numbers.Where(x => x > 0).ToList();
-var count = list.Count;
-foreach (var n in list) { }
-```
-
-**题 3**：下列哪个表达式在 EF Core 中**无法**翻译为 SQL？
-
-- A. `Where(o => o.Amount > 100)`
-- B. `Where(o => o.Name.StartsWith("A"))`
-- C. `Where(o => Regex.IsMatch(o.Name, @"\d+"))`
-- D. `Where(o => o.CreatedAt > DateTime.UtcNow.AddDays(-7))`
-
-**答案：C**
-
-`Regex.IsMatch` 无法翻译为 SQL，EF Core 会抛出 `InvalidOperationException`。其他选项：
-- A：直接比较，翻译为 `WHERE Amount > 100`
-- B：`StartsWith` 翻译为 `LIKE 'A%'`
-- D：`DateTime.UtcNow.AddDays(-7)` 会被求值为参数，翻译为 `WHERE CreatedAt > @p0`
-
 ### 填空题知识点讲解
 
 **题 4**：在 LINQ 中，`SelectMany` 的作用是将 `IEnumerable<IEnumerable<T>>` ________ 为 `IEnumerable<T>`。
@@ -1342,66 +1286,6 @@ var top10 = orders
     .ToList();
 ```
 
-### 10.4 思考题
-
-**题 9**：为什么 `IEnumerable<T>` 上的 LINQ 操作符返回 `IEnumerable<T>` 而非 `List<T>`？请从内存、可组合性、抽象层级三个角度分析。
-
-1. **内存**：返回 `List<T>` 意味着每次操作都分配 $O(n)$ 内存；返回 `IEnumerable<T>` 允许流式处理，内存为 $O(1)$（对于流式操作符）。这对大集合或无限序列至关重要。
-2. **可组合性**：返回 `IEnumerable<T>` 允许链式调用继续延迟，组合成复杂管道而不立即执行。如果每步都 Materialize，管道会失去惰性优势。
-3. **抽象层级**：`IEnumerable<T>` 是最低抽象，兼容数组、列表、迭代器、远程数据源等。返回 `List<T>` 会限制使用场景。
-
-代价是多次枚举的潜在开销，需要开发者用 `ToList` 显式控制 Materialize 时机。这是"延迟默认 + 显式缓存"的设计权衡。
-
-**题 10**：假设你要设计一个支持远程查询（如 REST API）的 `IRemoteQueryable<T>`，需要解决哪些问题？请列出至少 3 个挑战与应对策略。
-
-1. **谓词翻译的完整性**：并非所有 C# 表达式都能翻译为 URL 查询参数。需要定义可翻译子集，对不可翻译的表达式抛出异常或回退到客户端评估。策略：使用 `ExpressionVisitor` 检测，对白名单操作符翻译，其余报错。
-
-2. **分页与游标**：远程 API 通常不支持任意 `Skip`，需要映射为 `page`/`size` 或游标。策略：识别 `Skip(...).Take(...)` 模式，翻译为 `?offset=&limit=` 或 `?cursor=`。
-
-3. **认证与请求头**：每次查询需要附加认证信息。策略：在 `IQueryProvider.Execute` 中注入 `HttpClient` 与 `DelegatingHandler`。
-
-4. **错误处理与重试**：网络请求可能失败，需要重试策略。策略：在 provider 层集成 Polly，对瞬时错误重试。
-
-5. **缓存**：相同查询避免重复请求。策略：基于表达式树的哈希实现缓存键，配合 `IMemoryCache`。
-
-6. **异步支持**：远程查询天然异步，需要实现 `IAsyncQueryProvider`。策略：返回 `IAsyncEnumerable<T>`，支持 `await foreach`。
-
-参考实现：OData .NET 库、Stripe.NET 的 `SearchAsync`、GitHub GraphQL SDK。
-
-## 十一、参考文献
-
-[1] Hejlsberg, A., Torgersen, M., Wiltamuth, S., and Golde, P. 2022. *The C# Programming Language* (4th ed.). Addison-Wesley Professional. ISBN: 978-0-321-74176-9.
-
-[2] ECMA International. 2023. *ECMA-334: The C# Language Specification* (6th ed.). ECMA, Geneva. https://www.ecma-international.org/wp-content/uploads/ECMA-334_6th_edition_december_2022.pdf
-
-[3] Microsoft. 2024. *LINQ (Language Integrated Query)*. .NET documentation. https://learn.microsoft.com/dotnet/csharp/linq/
-
-[4] Meijer, E., Beckman, B., and Bierman, G. 2007. LINQ: reconciling object, relations and XML in the .NET framework. In *Proceedings of the 2007 ACM SIGMOD International Conference on Management of Data* (SIGMOD '07). ACM, New York, NY, 706–707. DOI: https://doi.org/10.1145/1247480.1247565
-
-[5] Bierman, G. M., Meijer, E., and Torgersen, M. 2007. Lost in translation: formalizing proposed extensions to C#. In *Proceedings of the 22nd Annual ACM SIGPLAN Conference on Object-Oriented Programming Systems and Applications* (OOPSLA '07). ACM, New York, NY, 479–498. DOI: https://doi.org/10.1145/1297027.1297063
-
-[6] Bierman, G. M., Meijer, E., and Rycroft, C. 2008. The semantics of LINQ. In *Proceedings of the 2008 ACM SIGPLAN Workshop on Partial Evaluation and Program Manipulation* (PEPM '08). ACM, New York, NY, 71–80. DOI: https://doi.org/10.1145/1328408.1328421
-
-[7] Okasaki, C. 1999. *Purely Functional Data Structures*. Cambridge University Press, Cambridge, UK. ISBN: 978-0-521-66350-2. (LINQ 的延迟求值与函数式数据结构同源)
-
-[8] Fowler, M. 2010. *Collection Pipeline*. Martin Fowler's blog. https://martinfowler.com/articles/collection-pipeline/
-
-[9] Lippert, E. 2013. *What is the difference between IEnumerator and IEnumerable?* MSDN Blog. (系列文章深入讨论 LINQ 实现细节)
-
-[10] Albahari, J. and Albahari, B. 2022. *C# 10 in a Nutshell: The Definitive Reference* (4th ed.). O'Reilly Media, Sebastopol, CA. ISBN: 978-1-0981-2195-2.
-
-[11] Skeet, J. 2019. *C# in Depth* (4th ed.). Manning Publications, Shelter Island, NY. ISBN: 978-1-61729-453-2.
-
-[12] Wagner, B. 2024. *Refactoring with C#*. O'Reilly Media. ISBN: 978-1-0981-5107-2.
-
-[13] Microsoft. 2024. *System.Linq source code on GitHub*. .NET Runtime repository. https://github.com/dotnet/runtime/tree/main/src/libraries/System.Linq
-
-[14] Microsoft. 2024. *EF Core query overview*. EF Core documentation. https://learn.microsoft.com/ef/core/querying/
-
-[15] Torgersen, M. 2007. *The Expression Tree v2 Specification*. Microsoft internal document, summarized in C# 4.0 language specification.
-
-## 十二、延伸阅读
-
 ### 12.1 书籍
 
 - Jon Skeet, *C# in Depth*（第 4 版）：第 11-12 章对 LINQ 的演化与实现有最深入的分析。
@@ -1414,15 +1298,6 @@ var top10 = orders
 - Meijer et al., "LINQ: reconciling object, relations and XML in the .NET framework"（SIGMOD 2007）：LINQ 的奠基性论文。
 - Bierman et al., "The semantics of LINQ"（PEPM 2008）：LINQ 的形式语义学分析。
 - Syme, "Initializing mutually referential abstract objects: The value restriction, type classes, and unification"（2006）：F# 与 LINQ 的数学基础关联。
-
-### 12.3 在线资源
-
-- .NET 官方文档：<https://learn.microsoft.com/dotnet/csharp/linq/>
-- .NET Runtime 源码：<https://github.com/dotnet/runtime/tree/main/src/libraries/System.Linq>
-- Eric Lippert 的博客（Fabulous Adventures in Coding）：C# 设计哲学的历史细节。
-- Jon Skeet 的博客：<https://codeblog.jonskeet.uk/category/edulinq/>
-- "Edulinq" 系列：Jon Skeet 重新实现 LINQ 的教学项目，逐操作符剖析实现。
-- Stephen Toub 的性能博客：.NET 8/9 中 LINQ 的 SIMD 优化与分配消除。
 
 ### 12.4 相关课程
 
@@ -1439,16 +1314,7 @@ var top10 = orders
 - **DLR（Dynamic Language Runtime）**：动态类型的 LINQ（`Dynamic LINQ` 库）。
 - **F# 查询表达式**：F# 的 `query { ... }` 计算表达式与 C# LINQ 的对比。
 
-## 参考文献
-
-Microsoft Learn C# 文档：https://learn.microsoft.com/zh-cn/dotnet/csharp/
-.NET 官方文档：https://learn.microsoft.com/zh-cn/dotnet/
-ASP.NET Core 文档：https://learn.microsoft.com/zh-cn/aspnet/core/
-C# 语言规范：https://learn.microsoft.com/zh-cn/dotnet/csharp/language-reference/
-
 ## 延伸阅读
-
 C# 与 .NET 生态，见 015-csharp 模块基础文档。
 异步编程与 Task，见 015-csharp 模块异步文档。
 SQL 与 EF Core，见 019-sql 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 .NET 课程。

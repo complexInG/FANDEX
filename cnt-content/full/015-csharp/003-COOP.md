@@ -1982,8 +1982,6 @@ foreach (var change in account.Changes)
 // 14:30:01 Status: Active -> Suspended
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **习题 1**：设计一个 `Temperature` 类，支持摄氏度与华氏度相互转换，要求：
@@ -2194,40 +2192,6 @@ public decimal Apply(decimal price, Discount d) => d switch
 - **性能**：方式 B 最快（委托直接调用，JIT 可内联）；方式 A 虚方法调用有少量开销；方式 C 模式匹配在 .NET 8+ 优化后接近虚调用
 - **可测试性**：三者均可 mock（方式 A 通过接口、方式 B 通过委托、方式 C 通过传入 record）
 - **推荐**：折扣类型少且稳定选 C；折扣类型多且常扩展选 A；简单算法或函数式风格选 B
-
-## 参考文献
-
-1. Hejlsberg, A., Torgersen, M., Wiltamuth, S., and Golde, P. 2010. *The C# Programming Language* (4th ed.). Addison-Wesley Professional. DOI: 10.5555/1861686
-
-2. C# Language Specification. 2024. *C# 13.0 Specification*. Microsoft Learn. Available at: https://learn.microsoft.com/dotnet/csharp/language-reference/language-specification
-
-3. Gamma, E., Helm, R., Johnson, R., and Vlissides, J. 1994. *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley Professional. DOI: 10.5555/186897
-
-4. Martin, R. C. 2002. *Agile Software Development, Principles, Patterns, and Practices*. Pearson. DOI: 10.5555/573476
-
-5. Martin, R. C. 2017. *Clean Architecture: A Craftsman's Guide to Software Structure and Design*. Prentice Hall. DOI: 10.5555/3203224
-
-6. Evans, E. 2003. *Domain-Driven Design: Tackling Complexity in the Heart of Software*. Addison-Wesley Professional. DOI: 10.5555/861504
-
-7. Liskov, B. H. and Wing, J. M. 1994. A behavioral notion of subtyping. *ACM Transactions on Programming Languages and Systems (TOPLAS)* 16, 6 (Nov. 1994), 1811-1841. DOI: 10.1145/197320.197383
-
-8. Bracha, G. and Cook, W. 1990. Mixin-based inheritance. In *Proceedings of the European Conference on Object-Oriented Programming on Object-Oriented Programming Systems, Languages, and Applications (OOPSLA/ECOOP '90)*. ACM, New York, NY, 303-311. DOI: 10.1145/97945.97982
-
-9. Meyer, B. 1997. *Object-Oriented Software Construction* (2nd ed.). Prentice Hall. DOI: 10.5555/285365
-
-10. Albahari, J. and Albahari, B. 2022. *C# 10 in a Nutshell: The Definitive Reference*. O'Reilly Media. DOI: 10.5555/3582475
-
-11. Skeet, J. 2019. *C# in Depth* (4th ed.). Manning Publications. DOI: 10.5555/3282196
-
-12. Wagner, B. 2022. *Effective C# (Covers C# 6)* (3rd ed.). Addison-Wesley Professional. DOI: 10.5555/2853663
-
-13. Nygaard, K. and Dahl, O.-J. 1981. The development of the SIMULA languages. In *History of Programming Languages*, R. L. Wexelblat (Ed.). Academic Press, New York, NY, 439-493. DOI: 10.1145/800025.1198364
-
-14. Kay, A. C. 1993. The early history of Smalltalk. In *The Second ACM SIGPLAN Conference on History of Programming Languages (HOPL-II)*. ACM, New York, NY, 69-95. DOI: 10.1145/154766.155364
-
-15. Stroustrup, B. 2013. *The C++ Programming Language* (4th ed.). Addison-Wesley Professional. DOI: 10.5555/2544140
-
-## 延伸阅读
 
 ### 官方文档
 

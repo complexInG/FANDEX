@@ -1743,65 +1743,6 @@ class UserService {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1.1**：以下关于 `Dispatchers.Default` 的描述，正确的是？
-
-A. `Dispatchers.Default` 专为 IO 密集型任务设计，线程数上限为 64。
-B. `Dispatchers.Default` 的线程数等于 `Runtime.getRuntime().availableProcessors()`，最小为 2。
-C. `Dispatchers.Default` 与 `Dispatchers.IO` 使用完全独立的线程池。
-D. `Dispatchers.Default` 不能用于 CPU 密集型任务。
-
-**解析讲解**：B
-
-**解析讲解**：`Dispatchers.Default` 专为 CPU 密集型任务设计，线程数等于 CPU 核数（最小为 2）。`Dispatchers.IO` 专为 IO 密集型任务设计，默认线程数上限为 64。两者共享底层线程池（`CoroutineScheduler`），但有不同的任务队列与并行度限制。
-
-**题目 1.2**：关于 `withContext`，以下描述错误的是？
-
-A. `withContext` 切换上下文执行代码块，完成后恢复到原上下文。
-B. `withContext` 是 suspend 函数，只能在协程中调用。
-C. `withContext(Dispatchers.IO)` 会阻塞调用者线程。
-D. `withContext` 支持嵌套调用，内层完成后恢复到外层上下文。
-
-**解析讲解**：C
-
-**解析讲解**：`withContext(Dispatchers.IO)` 不会阻塞调用者线程，而是将代码块调度到 IO 线程池执行。调用者线程在 `withContext` 内部协程挂起期间可以执行其他任务。
-
-**题目 1.3**：关于结构化并发，以下描述正确的是？
-
-A. 父协程取消时，子协程不受影响。
-B. 子协程抛出未捕获异常时，父协程会被取消（除非使用 `SupervisorJob`）。
-C. 父协程在子协程完成后才能完成。
-D. 结构化并发要求所有协程必须使用 `GlobalScope`。
-
-**解析讲解**：B、C
-
-**解析讲解**：结构化并发的核心：父协程取消时所有子协程被取消（A 错误）；子协程异常传播给父协程导致取消（B 正确）；父协程等待所有子协程完成（C 正确）；结构化并发要求使用 `CoroutineScope`，禁止 `GlobalScope`（D 错误）。
-
-**题目 1.4**：关于 `Dispatchers.Unconfined`，以下描述错误的是？
-
-A. `Dispatchers.Unconfined` 的 `isDispatchNeeded` 返回 `false`。
-B. `Dispatchers.Unconfined` 在当前线程直接执行协程，直到第一个挂起点。
-C. `Dispatchers.Unconfined` 是默认调度器。
-D. `Dispatchers.Unconfined` 恢复时在调用 `resume` 的线程执行。
-
-**解析讲解**：C
-
-**解析讲解**：`Dispatchers.Unconfined` 不是默认调度器，默认调度器是 `Dispatchers.Default`。`Unconfined` 是特殊调度器，适用于测试或特殊场景，不应在生产代码中使用。
-
-**题目 1.5**：关于 `CoroutineContext`，以下描述正确的是？
-
-A. `CoroutineContext` 是一个有序集合，元素按添加顺序排列。
-B. `CoroutineContext` 通过 `+` 运算符组合，右侧元素覆盖左侧同键元素。
-C. `CoroutineContext` 的键是字符串。
-D. `CoroutineContext` 不能包含多个相同类型的元素。
-
-**解析讲解**：B、D
-
-**解析讲解**：`CoroutineContext` 是无序键值对集合（A 错误）；通过 `+` 组合，右侧覆盖左侧同键（B 正确）；键是 `CoroutineContext.Key` 类型（C 错误）；每个键只能对应一个元素（D 正确）。
-
 ### 填空题知识点讲解
 
 **题目 2.1**：Kotlin 协程的四大内置调度器分别是 ________、________、________、________。
@@ -1989,143 +1930,6 @@ class PriorityContext(val priority: Int) : AbstractCoroutineContextElement(Prior
 fun CoroutinePriority(priority: Int) = PriorityContext(priority)
 ```
 
-### 9.4 思考题
-
-**题目 4.1**：为什么 Kotlin 协程选择 CPS 转换而非绿色线程（Green Thread）？请从实现复杂度、跨平台、性能三个角度论证。
-
-**解析讲解**：
-
-- **实现复杂度**：CPS 转换在编译期完成，运行时无需特殊 VM 支持。绿色线程需要 JVM 修改，影响整个 JVM 生态（Project Loom 历时 10+ 年才发布）。
-- **跨平台**：CPS 转换是语言级特性，可在 JVM、JS、Native、Wasm 上一致实现。绿色线程依赖运行时，不同平台实现差异大。
-- **性能**：CPS 转换生成的状态机对象在堆上分配，但可通过对象池复用。绿色线程的栈在堆上动态分配，开销相近。
-
-**结论**：CPS 转换更适合 Kotlin 的跨平台目标，绿色线程（Virtual Threads）是 JVM 特有的解决方案。
-
-**题目 4.2**：`Dispatchers.IO` 与 `Dispatchers.Default` 共享线程池的设计有哪些优劣？
-
-**解析讲解**：
-
-**优势**：
-
-1. **资源复用**：减少线程总数，降低内存占用（每线程 1MB 栈）。
-2. **避免线程切换**：IO 任务完成后可直接在 Default 线程上继续执行，无需上下文切换。
-3. **统一调度**：调度器能全局感知任务负载，动态调整并行度。
-
-**劣势**：
-
-1. **资源争用**：IO 任务激增可能挤占 Default 任务的资源。
-2. **隔离性差**：单个故障任务（如死循环）可能影响整个调度器。
-3. **调试复杂**：线程名称不固定，难以追踪特定任务。
-
-**缓解**：使用 `limitedParallelism` 为关键业务分配独立并行度。
-
-**题目 4.3**：结构化并发相对传统线程池管理有哪些优势？
-
-**解析讲解**：
-
-1. **生命周期绑定**：子协程生命周期绑定到父，避免"泄漏协程"。
-2. **取消传播**：父取消时所有子取消，无需手动管理。
-3. **异常传播**：子异常传播到父，便于集中处理。
-4. **资源清理**：协程退出时自动释放资源（通过 `finally` 块）。
-5. **可观测性**：通过 `CoroutineContext` 可追溯协程层次。
-
-**题目 4.4**：`async` 与 `launch` 的核心差异是什么？何时应该使用 `async`？
-
-**解析讲解**：
-
-**核心差异**：
-
-- `launch`：启动一个不返回结果的协程，返回 `Job`。异常通过 `CoroutineExceptionHandler` 处理。
-- `async`：启动一个返回结果的协程，返回 `Deferred<T>`。异常存储在 `Deferred` 中，调用 `await` 时抛出。
-
-**使用 `async` 的场景**：
-
-1. 需要协程返回结果（如网络请求、计算）。
-2. 并行执行多个独立任务并等待结果（`awaitAll`）。
-3. 配合 `supervisorScope` 实现独立失败。
-
-**使用 `launch` 的场景**：
-
-1. 无需返回结果（如更新 UI、发送事件）。
-2. 需要 `CoroutineExceptionHandler` 处理异常。
-3. 顶层协程。
-
-**题目 4.5**：JVM 21 的 Virtual Threads 对 Kotlin 协程有何影响？两者如何共存？
-
-**解析讲解**：
-
-**影响**：
-
-1. **简化阻塞代码**：Virtual Threads 让阻塞式 API 不再占用 OS 线程，可直接使用。
-2. **降低迁移成本**：现有阻塞式 Java 库无需重写为 `suspend`。
-3. **性能提升**：高并发场景下，Virtual Threads 比 OS 线程更轻量。
-
-**共存**：
-
-1. **Kotlin 协程在 Virtual Threads 上运行**：Kotlin 1.9+ 支持，`Dispatchers.IO` 自动使用 Virtual Threads。
-2. **混合使用**：阻塞式代码用 Virtual Threads，异步代码用协程，通过 `withContext` 桥接。
-3. **跨平台一致性**：Kotlin 协程在非 JVM 平台仍使用状态机，Virtual Threads 仅 JVM 优化。
-
-**题目 4.6**：设计一个协程调度器监控工具，能够实时显示所有活跃协程的上下文与状态。
-
-**解析讲解**：
-
-```kotlin
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-
-class CoroutineMonitor {
-    data class CoroutineInfo(
-        val id: Long,
-        val name: String?,
-        val dispatcher: String,
-        val state: String,
-        val parent: Long?
-    )
-
-    private val _coroutines = MutableStateFlow<Map<Long, CoroutineInfo>>(emptyMap())
-    val coroutines = _coroutines
-
-    fun register(context: CoroutineContext, parent: Long? = null): Long {
-        val id = context[Job]?.hashCode()?.toLong() ?: System.nanoTime()
-        val info = CoroutineInfo(
-            id = id,
-            name = context[CoroutineName]?.name,
-            dispatcher = context[CoroutineDispatcher]?.toString() ?: "unknown",
-            state = "active",
-            parent = parent
-        )
-        _coroutines.value = _coroutines.value + (id to info)
-        return id
-    }
-
-    fun update(id: Long, state: String) {
-        _coroutines.value = _coroutines.value.toMutableMap().apply {
-            this[id]?.let { put(id, it.copy(state = state)) }
-        }
-    }
-
-    fun unregister(id: Long) {
-        _coroutines.value = _coroutines.value - id
-    }
-}
-
-// 使用
-val monitor = CoroutineMonitor()
-
-suspend fun <T> monitoredLaunch(
-    scope: CoroutineScope,
-    block: suspend CoroutineScope.() -> T
-): T {
-    val id = monitor.register(coroutineContext)
-    try {
-        return block()
-    } finally {
-        monitor.unregister(id)
-    }
-}
-```
-
 ### 9.5 综合应用题
 
 **题目 5.1**：设计一个支持高并发的文件下载服务，要求：
@@ -2272,8 +2076,6 @@ class GoodRepository {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 [1] JetBrains. Kotlin Coroutines Documentation [EB/OL]. (2024-05-20) [2026-07-20]. https://kotlinlang.org/docs/coroutines-overview.html.
@@ -2312,15 +2114,6 @@ class GoodRepository {
 
 ---
 
-## 11. 延伸阅读
-
-### 11.1 官方资源
-
-- **Kotlin Coroutines Tutorial**：https://kotlinlang.org/docs/coroutines-guide.html
-- **kotlinx.coroutines 源码**：https://github.com/Kotlin/kotlinx.coroutines
-- **Kotlin Conf 录像**：https://www.youtube.com/c/Kotlin
-- **Roman Elizarov 博客**：https://elizarov.medium.com/
-
 ### 11.2 进阶主题
 
 - **Flow 与 SharedFlow**：协程的响应式编程支持。
@@ -2341,12 +2134,6 @@ class GoodRepository {
 - **`Dispatchers.IO` 调优**：调整并行度、任务队列。
 - **状态机优化**：K2 编译器的对象复用。
 - **与 Project Loom 集成**：JVM 21+ 的 Virtual Threads 支持。
-
-### 11.5 社区资源
-
-- **Kotlin Slack 工作区**：https://kotlinlang.slack.com/
-- **kotlinx.coroutines Issues**：https://github.com/Kotlin/kotlinx.coroutines/issues
-- **Stack Overflow**：`kotlin-coroutines` 标签。
 
 ### 11.6 相关书籍
 

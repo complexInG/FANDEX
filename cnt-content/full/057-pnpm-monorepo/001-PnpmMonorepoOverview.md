@@ -287,24 +287,6 @@ pnpm + Monorepo 是现代前端工程化的主流组合，它的价值可以浓�
 
 **学习建议**：不要一次性掌握所有工具。先跑通"workspace + `workspace:*` + 基本命令"的最小闭环，再逐步引入 catalog → turbo → changesets。工程化是渐进式推进的（见 039-engineering-practices《工程实践概述》）。
 
-## 11. 实战练习
-
-1. **从零搭建**：新建一个 Monorepo，包含 `apps/web`（Vite 应用）和 `packages/utils`（工具函数库），配置 workspace，让 web 通过 `workspace:*` 引用 utils 的函数并成功运行。
-
-2. **命令对比**：分别执行 `pnpm -r build`、`pnpm -r --topological build`、`pnpm -F @fandex/web build`，观察输出差异，并解释每种命令适用的场景。
-
-3. **陷阱诊断**：某项目"本地能跑、CI 报 module not found"，用本章第 9 节的知识分析可能的原因，并给出排查步骤（提示：`pnpm why`、检查 package.json、检查 lockfile）。
-
-4. **catalog 实践**：为你的 Monorepo 配置 catalog（react、typescript、vite），把两个包中的依赖改为 `catalog:` 协议，验证升级只需改一处。
-
-## 12. 参考资源
-
-- pnpm 官方文档（中文）：https://pnpm.io/zh/
-- pnpm workspaces：https://pnpm.io/zh/workspaces
-- Turborepo：https://turborepo.com/
-- Changesets：https://changesets-docs.vercel.app/
-- Monorepo 模式（Nx 博客）：https://nx.dev/blog/
-
 ## 13. 延伸阅读
 
 - pnpm 底层机制详解，见本模块《pnpm 核心特性》

@@ -215,45 +215,9 @@ SECURITY.md @security-lead
 | 保护规则不生效 | 管理员仍能绕过 | 未勾选 "Include administrators" | 在规则中勾选"对管理员同样生效" |
 | 找不到所需检查项 | 状态检查下拉列表没有目标项 | 该检查从未运行过 | 先推送代码让检查运行一次，之后即可勾选为 required |
 
-## 7. 实战练习
-
-### 练习 1：体验 GitHub Flow 全流程（入门）
-- **题目描述**：在测试仓库中走一遍 GitHub Flow：main → feature 分支 → 提交推送 → 创建 PR → 合并 → 删除分支。
-- **提示**：按 2.3 小节命令行操作。
-- **参考答案要点**：完整走完"创建分支→开发→PR→合并→清理"循环；观察合并后 main 始终保持可部署状态。
-
-### 练习 2：为 main 配置保护规则（进阶）
-- **题目描述**：为仓库 main 分支添加保护规则：必须 PR 合并、至少 1 人批准、禁止强推，然后尝试直接推送 main 验证被拦截。
-- **提示**：Settings → Branches → Add rule；Branch name pattern 填 `main`。
-- **参考答案要点**：配置后直接 `git push origin main` 会收到权限拒绝提示；改用 PR 流程后正常合并。
-
-### 练习 3：编写 CODEOWNERS（进阶）
-- **题目描述**：创建 `.github/CODEOWNERS`，让 `docs/` 目录变更需要指定人审查，并验证 PR 会自动请求该人审查。
-- **提示**：语法 `路径 @用户名`；`/docs/ @alice`。
-- **参考答案要点**：推送 CODEOWNERS 后，改动 docs/ 的 PR 会自动把指定用户加为审查者。
-
-### 练习 4：对比两种模型（综合）
-- **题目描述**：用文档或图示对比 GitHub Flow 与 Git Flow 在同一项目上的分支演进，说明各自适合什么团队。
-- **提示**：关注长期分支数量、release/hotfix 的处理差异。
-- **参考答案要点**：GitHub Flow 单 main + 短命 feature 分支；Git Flow 有 main/develop/release/hotfix 五类分支；持续部署选前者，版本节奏发布选后者。
-
-### 练习 5：规则集配置（综合）
-- **题目描述**：用 Rulesets 为 `release/*` 分支创建一条规则：要求 2 人批准 + 状态检查通过，并验证对 `release/v1.0.0` 生效。
-- **提示**：Settings → Rules → Rulesets → New ruleset；目标分支模式 `release/*`。
-- **参考答案要点**：规则集匹配模式支持通配符；创建一个 release 分支并推送验证规则生效。
-
 ## 8. 一句话记忆
 
 **分支模型决定"路怎么修"（GitHub Flow 轻、Git Flow 全），分支保护决定"车怎么管"（PR 是收费站，CI 是检查站，强推与直推都被拦下），模型 + 规则共同保证 main 始终安全可用。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：GitHub Flow](https://docs.github.com/zh/get-started/using-github/github-flow)
-- [GitHub 文档：关于受保护分支](https://docs.github.com/zh/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
-- [GitHub 文档：管理分支保护规则](https://docs.github.com/zh/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule)
-- [GitHub 文档：关于规则集（Rulesets）](https://docs.github.com/zh/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
-- [GitHub 文档：关于 CODEOWNERS](https://docs.github.com/zh/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners)
-- [Git Flow 经典文章（Vincent Driessen）](https://nvie.com/posts/a-successful-git-branching-model/)
 
 ### 延伸阅读
 

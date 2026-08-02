@@ -1839,8 +1839,6 @@ fun main() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：以下代码的输出是什么？
@@ -2214,8 +2212,6 @@ fun main() {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 1. JetBrains. "Kotlin Documentation." *Kotlin Official Site*, 2024. https://kotlinlang.org/docs/home.html.
@@ -2270,16 +2266,6 @@ fun main() {
 
 22. Saumont, Pierre-Yves. *The Joy of Kotlin*. Manning Publications, 2019.
 
-### 10.6 跨语言参考
-
-23. Apple. "The Swift Programming Language." *Swift Documentation*, 2024. https://docs.swift.org/swift-book/.
-
-24. Microsoft. "C# Programming Guide." *Microsoft Learn*, 2024. https://learn.microsoft.com/dotnet/csharp/.
-
-25. Go Team. "The Go Programming Language Specification." *Go Documentation*, 2024. https://go.dev/ref/spec.
-
-26. Rust Team. "The Rust Programming Language." *Rust Documentation*, 2024. https://doc.rust-lang.org/book/.
-
 ### 10.7 课程参考
 
 27. MIT OpenCourseWare. "6.005 Software Construction." *MIT OCW*, 2024. https://ocw.mit.edu/courses/6-005-software-construction-spring-2016/.
@@ -2291,8 +2277,6 @@ fun main() {
 30. Coursera. "Kotlin for Java Developers." *JetBrains on Coursera*, 2024. https://www.coursera.org/learn/kotlin-for-java-developers.
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 进阶主题
 
@@ -2349,23 +2333,6 @@ fun main() {
 
 - **Kotlin Notebook**：交互式 Kotlin 笔记本
   - https://kotlinlang.org/docs/kotlin-notebook-overview.html
-
-### 11.4 社区资源
-
-- **Kotlin Slack**：https://kotlinlang.slack.com/
-  - 各专项频道（#android、#server、#coroutines、#multiplatform）
-
-- **Kotlin Discussions**：https://discuss.kotlinlang.org/
-  - 官方论坛，讨论语言演进与最佳实践
-
-- **Reddit Kotlin**：https://www.reddit.com/r/Kotlin/
-  - 社区新闻与讨论
-
-- **Stack Overflow**：https://stackoverflow.com/questions/tagged/kotlin
-  - 问答社区
-
-- **Kotlin Weekly**：https://kotlinweekly.net/
-  - 每周 Kotlin 新闻邮件
 
 ### 11.5 实践项目建议
 

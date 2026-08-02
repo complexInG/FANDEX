@@ -1217,8 +1217,6 @@ jobs:
       - run: npm run build
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 填空题知识点讲解
 
 1. Symbol 是 JavaScript 自 ES6 引入的第 ______ 种基本数据类型，typeof 返回 ______。
@@ -1229,38 +1227,6 @@ jobs:
 6. 品牌类型在运行时 ______（有/无）开销，因为品牌属性在编译期 ______。
 7. JSON.stringify 会 ______（保留/跳过）Symbol 键的属性。
 8. 跨模块共享 Symbol 应使用 ______，而非 ______。
-
-### 选择题知识点讲解
-
-1. 关于 TypeScript unique symbol，下列说法错误的是？
-   - A. 必须用 const 声明才能推断为 unique
-   - B. 两个不同 const 声明的 unique symbol 类型不兼容
-   - C. 可作为泛型约束 `T extends unique symbol`
-   - D. 可通过 `typeof sym` 提取其唯一类型
-
-2. 下列哪种方式无法实现「不透明类型」？
-   - A. `type UserId = string & { readonly __brand: unique symbol }`
-   - B. `type UserId = Branded<string, 'UserId'>` + 模块边界
-   - C. `type UserId = string` + 构造函数校验
-   - D. `class UserId { private constructor(public value: string) {} }`
-
-3. 关于 well-known symbols，下列描述正确的是？
-   - A. Symbol.iterator 是运行时函数，每个对象都自动拥有
-   - B. Symbol.toPrimitive 接收 'string' | 'number' | 'default' hint
-   - C. Symbol.species 用于控制 JSON.stringify 行为
-   - D. Symbol.dispose 是 ES2018 引入的
-
-4. 下列代码中，哪一项的 typeof 推断与其他不同？
-   - A. `let s = Symbol()`
-   - B. `const s = Symbol()`
-   - C. `const s: symbol = Symbol()`
-   - D. `const s = Symbol.for('a')`
-
-5. 关于品牌类型的工程价值，下列说法错误的是？
-   - A. 防止 structurally identical 类型混淆
-   - B. 运行时零开销
-   - C. 完全替代 TypeScript 的 private 修饰符
-   - D. 需配合构造函数做运行时校验
 
 ### 13.3 代码修复题
 
@@ -1298,33 +1264,6 @@ console.log(a === b); // 期望 true
 1. 请用 300 字以内论述：TypeScript 选择结构子类型而非名义子类型的工程动机是什么？品牌类型如何在不修改语言的前提下补足名义类型的缺失？
 
 2. 如果让你为一家金融科技公司设计一个支持「金额不可混淆」的类型系统（如 USD 与 EUR 不可直接相加），请列出至少 4 个类型层的硬性约束，并说明每条约束的工程动机。
-
-## 14. 参考文献
-
-1. Pierce, Benjamin C. *Types and Programming Languages*. MIT Press, 2002. ISBN 978-0-262-16209-8.
-
-2. Bierman, Gavin M., Martín Abadi, and Mads Torgersen. "Understanding TypeScript." *ECOOP 2014 — Object-Oriented Programming*, Springer, 2014, pp. 257-281. DOI: 10.1007/978-3-662-44202-9_11.
-
-3. ECMA International. "ECMAScript 2024 Language Specification, Section 6.1.5: Symbol Type." *ECMA-262, 14th edition*, 2024. URL: https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type.
-
-4. Cardelli, Luca, and Peter Wegner. "On Understanding Types, Data Abstraction, and Polymorphism." *ACM Computing Surveys*, vol. 17, no. 4, 1985, pp. 471-523. DOI: 10.1145/6041.6042.
-
-5. Microsoft. "TypeScript Handbook: Symbols." *Microsoft Developer Network*, 2023. URL: https://www.typescriptlang.org/docs/handbook/symbols.html.
-
-6. Scott, Michael L. *Programming Language Pragmatics*. Morgan Kaufmann, 2015. ISBN 978-0-12-410409-9.
-
-7. Apel, Sven, et al. "On the Role of Symbolic Execution in Type Systems." *Proceedings of the ACM on Programming Languages*, vol. 5, OOPSLA, 2021. DOI: 10.1145/3485523.
-
-## 15. 延伸阅读
-
-- **TypeScript Handbook — Symbols**: https://www.typescriptlang.org/docs/handbook/symbols.html
-- **MDN — Symbol**: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol
-- **ECMAScript Spec — Symbol Type**: https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type
-- **TC39 — Explicit Resource Management**: https://github.com/tc39/proposal-explicit-resource-management
-- **type-fest — Opaque type**: https://github.com/sindresorhus/type-fest/blob/main/source/opaque.d.ts
-- **Effect-TS — Service Tag**: https://effect.website/docs/context-management/services
-- **InversifyJS — Symbols as identifiers**: https://inversify.io/
-- **Cardelli & Wegner 1985 — Type Theory**: https://dl.acm.org/doi/10.1145/6041.6042
 
 ## 16. 附录 A：API 速查表
 

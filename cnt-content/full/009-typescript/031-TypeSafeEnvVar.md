@@ -1686,8 +1686,6 @@ spec:
 - 应用启动时统一加载，类型校验通过后才提供服务。
 - Namespace 隔离：每个 Namespace 有独立的 ConfigMap 与 Secret。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**：编写一个 `.d.ts` 文件，声明以下环境变量：
@@ -2116,36 +2114,6 @@ class EnvManager {
   }
 }
 ```
-
-## 参考文献
-
-参考文献遵循 ACM Reference Format，含 DOI 链接：
-
-1. Wiggins, A. (2011). The Twelve-Factor App. Heroku. https://12factor.net/
-
-2. Microsoft. (2014). TypeScript Language Specification. Microsoft Developer Network. https://github.com/microsoft/TypeScript/blob/main/doc/spec.md
-
-3. Cwalina, K., Abrams, B., and Lander, R. (2014). Framework Design Guidelines: Conventions, Idioms, and Patterns for Reusable .NET Libraries (3rd ed.). Addison-Wesley Professional.
-
-4. Newman, S. (2021). Building Microservices (2nd ed.). O'Reilly Media.
-
-5. Hayhurst, C. and Campbell, B. (2020). Configuration Management at Scale: Patterns and Practices. In Proceedings of the IEEE/ACM 42nd International Conference on Software Engineering Workshops (ICSEW'20), 325-332. DOI: https://doi.org/10.1145/3387940.3391473
-
-6. Vite. (2024). Vite Guide: Env Variables and Modes. https://vitejs.dev/guide/env-and-mode.html
-
-7. Next.js. (2024). Next.js Documentation: Environment Variables. https://nextjs.org/docs/app/building-your-application/configuring/environment-variables
-
-8. Colin, S. (2022). Runtime Type Checking with Zod. In Proceedings of the JavaScript Developer Conference (JSDC'22), 45-52. DOI: https://doi.org/10.1145/3567442.3567450
-
-9. Felter, C. and Ferreira, A. (2019). An Analysis of Configuration Errors in Cloud Applications. In Proceedings of the 28th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE 2019), 398-409. DOI: https://doi.org/10.1145/3338906.3338908
-
-10. Tang, C. and Steinder, M. (2017). A Model for Configuration Management in Cloud Applications. In Proceedings of the 8th ACM/SPEC International Conference on Performance Engineering (ICPE'17), 155-166. DOI: https://doi.org/10.1145/3030207.3030214
-
-11. Yin, C., Wang, Y., and Lv, J. (2021). Secure Handling of Secrets in Frontend Applications. In Proceedings of the ACM Workshop on Software Security and Protection (WOSP'21), 67-75. DOI: https://doi.org/10.1145/3462344.3462351
-
-12. Burns, B., Grant, B., Oppenheimer, D., Brewer, E., and Wilkes, J. (2016). Borg, Omega, and Kubernetes. Communications of the ACM, 59(5), 50-57. DOI: https://doi.org/10.1145/2890784
-
-## 延伸阅读
 
 ### 官方文档
 

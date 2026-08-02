@@ -232,67 +232,9 @@ README.md                                        @myorg/docs-team
 | 规则顺序混乱 | 该加的人没加上 | 具体规则写在兜底规则之前被覆盖 | 把通用规则放前面、具体规则放后面 |
 | 单个用户作为负责人 | 请假/离职后无人审查 | 单点故障 | 用团队（@org/team-name）代替单用户 |
 
-## 7. 实战练习
-
-### 练习 1：理解场景与原理（入门）
-
-**题目描述**：解释为什么"只有仓库管理员审查所有 PR"的模式在大团队中效率低，CODEOWNERS 如何解决。
-
-**提示**：从"专业匹配"与"并行分流"两个角度。
-
-**参考答案要点**：1. 专业匹配：管理员不熟悉每个模块，容易漏掉深层问题；CODEOWNERS 让最懂对应模块的人审查。2. 并行分流：多个 PR 可同时由不同负责人审查，不再排队等管理员一人；3. 责任可审计：文件级归属明确。
-
-### 练习 2：编写基础 CODEOWNERS（入门）
-
-**题目描述**：为你的仓库编写 CODEOWNERS：所有文件默认归 `@yourname/core-team`；`src/auth/` 目录及子内容归 `@yourname/security-team`；所有 `.py` 文件归 `@yourname/backend-team`。
-
-**提示**：注意目录匹配用 `/**`；文件放在 `.github/CODEOWNERS`。
-
-**参考答案要点**：
-
-```gitignore
-# .github/CODEOWNERS
-*                        @yourname/core-team
-/src/auth/**             @yourname/security-team
-*.py                     @yourname/backend-team
-```
-
-### 练习 3：理解匹配优先级（进阶）
-
-**题目描述**：以下规则中，修改 `/src/auth/login.js` 会触发哪些人审查？
-
-```gitignore
-*                        @org/core-team
-/src/**                  @org/backend-team
-/src/auth/*.js           @org/security-team
-/src/auth/login.js       @security-lead
-```
-
-**提示**：所有匹配的规则都添加审查者；具体规则叠加在兜底之上。
-
-**参考答案要点**：4 个都触发：core-team（兜底 `*`）+ backend-team（`/src/**`）+ security-team（`/src/auth/*.js`）+ security-lead（精确文件）。共 4 个所有者被请求审查。
-
-### 练习 4：配置强制审查（进阶）
-
-**题目描述**：为 main 分支配置分支保护：所有 PR 必须经过代码所有者批准才能合并，同时要求 CI 通过。
-
-**提示**：Settings → Branches → Branch protection rules。
-
-**参考答案要点**：1. 进入 Settings → Branches，为 main 添加保护规则；2. 勾选 "Require a pull request before merging"；3. 再勾选 "Require review from Code Owners"；4. 在 "Require status checks" 中添加 CI 检查（如 build/test）；5. 保存后，无所有者批准的 PR 无法合并。
-
-### 练习 5：设计团队级 CODEOWNERS 方案（综合）
-
-**题目描述**：为一个 20 人团队（前端 5 人、后端 6 人、安全 2 人、DevOps 3 人、文档 4 人）的仓库设计 CODEOWNERS 方案：技术栈为 Vue + Python + Docker + GitHub Actions，安全相关代码必须由安全团队负责，并要求给出"防止单点故障"的建议。
-
-**提示**：参考第 5 节完整示例；防单点故障 = 用团队而非个人。
-
-**参考答案要点**：1. 兜底 `*` 归 core-team；2. Vue 相关（`*.vue`、`/src/components/**`）归 frontend-team；3. Python 相关（`*.py`、`/src/api/**`）归 backend-team；4. 安全目录（`/src/auth/**`、`/src/payment/**`、security/**）归 security-team；5. Docker、workflows 归 devops-team；6. 文档归 docs-team；7. 分支保护开启 "Require review from Code Owners"；8. 防单点故障：所有归属使用**团队**而非单用户，团队成员至少 2 人，且定期更新 CODEOWNERS 反映人事变动。
-
 ## 8. 一句话记忆
 
 > **CODEOWNERS 是仓库的"楼栋长制度"——一行规则把文件划给最懂它的人，PR 一开自动指派审查，再配合分支保护的"必须经代码所有者批准"，让专业的人把关专业的代码。**
-
-## 参考链接与延伸阅读
 
 ### 官方文档
 
@@ -301,9 +243,7 @@ README.md                                        @myorg/docs-team
 - Gitignore 语法（CODEOWNERS 的路径模式同源）：https://git-scm.com/docs/gitignore
 
 ### 延伸阅读
-
 - 分支模型与分支保护规则（保护规则完整配置），见 004-github 模块 007 文档。
 - Pull Request 完整协作流程，见 004-github 模块 027 文档。
 - 社区健康文件（CONTRIBUTING、SECURITY 等配套文件），见 004-github 模块 026 文档。
 - GitHub Actions CI/CD（与代码所有者审查配合的合并门槛），见 004-github 模块 029 文档。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

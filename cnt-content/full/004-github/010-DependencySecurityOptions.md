@@ -278,87 +278,9 @@ flowchart LR
 | `dependabot.yml` 配置报错 | `Dependabot couldn't parse the config file` | YAML 缩进错误或键名拼写错误 | 使用官方配置选项参考逐项核对；`version` 必须为 2 |
 | 升级依赖后应用崩溃 | 合并 PR 后线上故障 | 依赖大版本升级存在破坏性变更 | 为 Dependabot PR 配置 CI 测试；用 `ignore` 限制大版本升级 |
 
-## 9. 实战练习
-
-### 练习 1：识别直接依赖与传递依赖（入门）
-
-**题目描述**：你的 package.json 声明了 `express`、`lodash` 两个依赖。运行 `npm install` 后 `npm ls` 显示共安装了 400 个包。其中哪两个是直接依赖，其余是什么？
-
-**提示**：直接依赖是你自己声明的；其余是它们"带进来"的。
-
-**参考答案要点**：`express` 和 `lodash` 是直接依赖；其余 398 个是传递依赖（express 的依赖及其依赖）。这正是为什么依赖图谱比看 package.json 更有价值。
-
-### 练习 2：启用依赖安全全家桶（入门）
-
-**题目描述**：为你的公开仓库启用依赖图谱、Dependabot alerts、Dependabot security updates 三项功能。
-
-**提示**：路径是仓库 Settings → Code security and analysis。
-
-**参考答案要点**：进入仓库 Settings → Code security and analysis，依次点击 Dependency graph、Dependabot alerts、Dependabot security updates 右侧的 Enable。公开仓库下 Dependency graph 与 alerts 通常默认开启。
-
-### 练习 3：配置 Dependency Review 强制门禁（进阶）
-
-**题目描述**：编写一个 workflow 文件，要求：每个 PR 都执行依赖审查；新依赖漏洞严重级别达到 high 时 CI 失败；禁止 AGPL 许可证依赖。
-
-**提示**：参考第 6.2 节的模板，调整 `fail-on-severity` 与 `deny-licenses`。
-
-**参考答案要点**：
-
-```yaml
-name: Dependency Review
-on: [pull_request]
-permissions:
-  contents: read
-jobs:
-  dependency-review:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
-          deny-licenses: AGPL-3.0
-```
-
-### 练习 4：通过 dependabot.yml 精细控制（进阶）
-
-**题目描述**：为 npm 项目编写 dependabot.yml：每周一检查更新；每次最多 5 个 PR；给 PR 打 `dependencies` 标签并指派 `dev-team` 审查；忽略 `webpack` 的 5.x 大版本升级。
-
-**提示**：配置项为 `schedule`、`open-pull-requests-limit`、`labels`、`reviewers`、`ignore`。
-
-**参考答案要点**：
-
-```yaml
-version: 2
-updates:
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-    open-pull-requests-limit: 5
-    reviewers:
-      - 'dev-team'
-    labels:
-      - 'dependencies'
-    ignore:
-      - dependency-name: 'webpack'
-        versions: ['>=5.0.0']
-```
-
-### 练习 5：供应链事故复盘（综合）
-
-**题目描述**：某天你发现线上服务被入侵，排查后确认是 `event-stream` 包（被投毒的 npm 包）的恶意版本通过传递依赖进入了项目。请列出你本应采取的三道防线及各自作用，防止此类事件重演。
-
-**提示**：从"发现、拦截、追踪"三个角度组织答案。
-
-**参考答案要点**：1. 依赖图谱——快速定位哪个直接依赖带入了恶意包，看清供应链全貌；2. Dependabot alerts（含恶意包告警）——在漏洞/恶意包披露时第一时间获知并生成修复 PR；3. Dependency Review——在 PR 引入新依赖时检查其风险，配合提交锁定文件保证版本可追溯。
-
 ## 10. 一句话记忆
 
 > **依赖安全是一套"家庭安防系统"：依赖图谱看清家底、Dependabot alerts 报警、安全更新自动灭火、Dependency Review 在 PR 门口检查危险品——四道防线缺一不可。**
-
-## 参考链接与延伸阅读
 
 ### 官方文档
 
@@ -368,9 +290,7 @@ updates:
 - Dependabot 配置选项参考：https://docs.github.com/zh/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 ### 延伸阅读
-
 - Dependabot 深度专题（配置与自动合并），见 004-github 模块 016 文档。
 - 开源许可证选择（许可证合规是依赖审查的一部分），见 004-github 模块 009 文档。
 - Gitignore 配置（提交锁定文件与忽略敏感文件），见 004-github 模块 008 文档。
 - GitHub Actions CI/CD（Dependency Review 的载体），见 004-github 模块 029 文档。
-- 黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444）提供 GitHub 课程。

@@ -1484,8 +1484,6 @@ fun main() {
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题目 1**：编写一个正则表达式，匹配中国大陆手机号（以 1 开头，第二位为 3-9，共 11 位数字）。
@@ -1631,38 +1629,6 @@ fun parseIni(text: String): Map<String, Map<String, String>> {
 5. 报告生成：汇总失败用例，辅助正则修正。
 
 ---
-
-## 10. 参考文献
-
-参考文献按 ACM Reference Format 给出，包含 DOI 链接（如有）。
-
-[1] Kleene, S. C. 1956. Representation of events in nerve nets and finite automata. In *Automata Studies* (C. E. Shannon and J. McCarthy, Eds.). Princeton University Press, Princeton, NJ, USA, 3–41. DOI: https://doi.org/10.1515/9781400882618-002
-
-[2] Thompson, K. 1968. Programming techniques: Regular expression search algorithm. *Communications of the ACM* 11, 6 (June 1968), 419–422. DOI: https://doi.org/10.1145/363347.363387
-
-[3] Aho, A. V. 1990. Algorithms for finding patterns in strings. In *Handbook of Theoretical Computer Science, Volume A: Algorithms and Complexity* (J. van Leeuwen, Ed.). MIT Press, Cambridge, MA, USA, 255–300.
-
-[4] Hopcroft, J. E., Motwani, R., and Ullman, J. D. 2006. *Introduction to Automata Theory, Languages, and Computation* (3rd ed.). Addison-Wesley, Boston, MA, USA.
-
-[5] Friedl, J. E. F. 2006. *Mastering Regular Expressions* (3rd ed.). O'Reilly Media, Sebastopol, CA, USA.
-
-[6] Oracle Corporation. 2024. *Java SE 21 Pattern Documentation*. Retrieved July 21, 2026 from https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html
-
-[7] JetBrains. 2024. *Kotlin Regex API Reference*. Retrieved July 21, 2026 from https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-regex/
-
-[8] Cox, R. 2007. *Regular Expression Matching Can Be Simple and Fast*. Retrieved July 21, 2026 from https://swtch.com/~rsc/regexp/regexp1.html
-
-[9] Davis, J. C., Coghlan, C. A., Servant, F., and Lee, D. 2018. The impact of regular expression denial of service (ReDoS) in practice. In *Proceedings of the 2018 26th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering (ESEC/FSE 2018)*, 606–616. DOI: https://doi.org/10.1145/3236024.3236027
-
-[10] Weideman, N., von der Merwe, B., van der Merwe, M., and Visser, W. 2019. Matching regular expressions with derivatives. *Science of Computer Programming* 168, 1–14. DOI: https://doi.org/10.1016/j.scico.2018.08.002
-
-[11] Rust Community. 2024. *The Rust regex crate Documentation*. Retrieved July 21, 2026 from https://docs.rs/regex/latest/regex/
-
-[12] Ierusalimschy, R. 2016. Patterns in Lua. In *Programming in Lua* (4th ed.). Lua.org, Rio de Janeiro, Brazil, 191–212.
-
----
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档
 

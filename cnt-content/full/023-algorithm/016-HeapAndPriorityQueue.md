@@ -4,7 +4,7 @@ title: 堆与优先队列
 module: algorithm
 category: Algorithm/Heap
 difficulty: intermediate
-description: 堆（Heap）与优先队列（Priority Queue）的完全二叉树数组表示、最大堆/最小堆的堆序性质、上浮与下沉操作、Floyd 建堆 $O(n)$ 证明、堆排序、Top-K 问题、索引堆、二项堆、Fibonacci 堆、配对堆的对比分析，涵盖 Williams 1964 Algorithm 232 Heapsort、Floyd 1964 Algorithm 245 Treesort、Vuillemin 1978 二项堆、Fredman-Tarjan 1984 Fibonacci 堆等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 6 章、第 19 章风格习题。
+description: 堆（Heap）与优先队列（Priority Queue）的完全二叉树数组表示、最大堆/最小堆的堆序性质、上浮与下沉操作、Floyd 建堆 $O(n)$ 证明、堆排序、Top-K 问题、索引堆、二项堆、Fibonacci 堆、配对堆的对比分析，涵盖 Williams 1964 Algorithm 232 Heapsort、Floyd 1964 Algorithm 245 Treesort、Vuillemin 1978 二项堆、Fredman-Tarjan 1984 Fibonacci 堆等历史脉络，附 Python/C++/Java 多语言实现与 CLRS 第 6 章。
 author: fanquanpp
 tags:
 - algorithm
@@ -2220,43 +2220,6 @@ heapq.heappush(heap, (priority, next(counter), item))
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**常见疑问 1**：Floyd 建堆法在 $n$ 个元素上的时间复杂度是？
-
-- A. $O(n)$
-- B. $O(n \log n)$
-- C. $O(n^2)$
-- D. $O(\log n)$
-
-**解析讲解**：A
-
-**解析讲解**：Floyd 建堆法从最后一个非叶子节点开始依次下沉，总工作量为 $\sum_{k=0}^{h} \frac{n}{2^{k+1}} \cdot k \leq 2n = O(n)$。
-
-**常见疑问 2**：堆排序的最坏时间复杂度是？
-
-- A. $O(n)$
-- B. $O(n \log n)$
-- C. $O(n^2)$
-- D. $O(n \log^2 n)$
-
-**解析讲解**：B
-
-**解析讲解**：堆排序建堆 $O(n)$ + 提取阶段 $n-1$ 次下沉 $O(n \log n)$，总复杂度 $O(n \log n)$，最坏情况与平均情况相同。
-
-**常见疑问 3**：Fibonacci 堆相比二叉堆的优势是？
-
-- A. 删除极值 $O(1)$
-- B. 插入 $O(1)$ 均摊 + decrease-key $O(1)$ 均摊
-- C. 实现更简单
-- D. 缓存更友好
-
-**解析讲解**：B
-
-**解析讲解**：Fibonacci 堆的插入与 decrease-key 均摊 $O(1)$，删除极值仍 $O(\log n)$。实现复杂、缓存不友好，是理论优势但工程常用二叉堆。
-
 ### 填空题知识点讲解
 
 **常见疑问 4**：0-based 索引下，节点 $i = 5$ 的父节点是 ____，左子节点是 ____，右子节点是 ____。
@@ -2349,36 +2312,6 @@ Dijkstra 算法的时间复杂度：
 
 ---
 
-## 14. 参考文献
-
-1. Williams, J. W. J. 1964. "Algorithm 232: Heapsort." *Communications of the ACM* 7(6): 347-348. DOI: 10.1145/512274.512284.
-
-2. Floyd, Robert W. 1964. "Algorithm 245: Treesort 3." *Communications of the ACM* 7(12): 701. DOI: 10.1145/355588.361058.
-
-3. Knuth, Donald E. 1997. *The Art of Computer Programming, Volume 1: Fundamental Algorithms*. 3rd edition. Addison-Wesley Professional. ISBN 978-0201896831. Section 5.2.3 (Sorting by Selection - Heapsort).
-
-4. Cormen, Thomas H., Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein. 2022. *Introduction to Algorithms*. 4th edition. MIT Press. ISBN 978-0262046305. Chapter 6 (Heapsort), Chapter 19 (Fibonacci Heaps).
-
-5. Sedgewick, Robert, and Kevin Wayne. 2011. *Algorithms*. 4th edition. Addison-Wesley Professional. ISBN 978-0321573513. Section 2.4 (Priority Queues).
-
-6. Vuillemin, Jean. 1978. "A data structure for manipulating priority queues." *Communications of the ACM* 21(4): 309-315. DOI: 10.1145/359460.359478.
-
-7. Fredman, Michael L., and Robert Endre Tarjan. 1987. "Fibonacci heaps and their uses in improved network optimization algorithms." *Journal of the ACM* 34(3): 596-615. DOI: 10.1145/28869.28874.
-
-8. Fredman, Michael L., Robert Sedgewick, Daniel D. Sleator, and Robert Endre Tarjan. 1986. "The pairing heap: a new form of self-adjusting heap." *Algorithmica* 1(1): 111-129. DOI: 10.1007/BF01840416.
-
-9. Tarjan, Robert Endre. 1983. *Data Structures and Network Algorithms*. Society for Industrial and Applied Mathematics. ISBN 978-0898711875. Chapter 4 (Fibonacci Heaps).
-
-10. Crane, Clark A. 1972. *Linear lists and priority queues as balanced binary trees*. Stanford University, Department of Computer Science, Technical Report STAN-CS-72-259.
-
-11. Python Software Foundation. 2024. "CPython heapq.py - Heap queue algorithm implementation." Accessed July 20, 2026. https://github.com/python/cpython/blob/main/Lib/heapq.py.
-
-12. Linux kernel community. 2024. "Linux kernel timer list documentation." Accessed July 20, 2026. https://www.kernel.org/doc/html/latest/core-api/timer.html.
-
----
-
-## 15. 延伸阅读
-
 ### 15.1 理论深入
 
 - CLRS 第 4 版第 19 章 Fibonacci 堆完整推导；
@@ -2410,22 +2343,6 @@ Dijkstra 算法的时间复杂度：
 - Princeton Algorithms, Part I, Week 4: Priority Queues（Robert Sedgewick）；
 - UC Berkeley CS 61B: Priority Queues and Heaps。
 
-### 15.5 在线练习
-
-- LeetCode 标签"堆"专题：https://leetcode.cn/tag/heap/
-- LeetCode 215 数组中第 K 大元素；
-- LeetCode 23 合并 K 个升序链表；
-- LeetCode 295 数据流的中位数；
-- LeetCode 347 前 K 个高频元素；
-- LeetCode 703 数据流中第 K 大元素；
-- LeetCode 621 任务调度器；
-- LeetCode 480 滑动窗口中位数；
-- LeetCode 295 数据流中位数；
-- LeetCode 378 有序矩阵中第 K 小元素；
-- LeetCode 373 查找和最小的 K 对数字。
-
----
-
 ## 附录 A：堆与优先队列复杂度速查表
 
 | 操作 | 二叉堆 | d-ary 堆 | 二项堆 | Fibonacci 堆 | 配对堆 | 索引堆 |
@@ -2439,35 +2356,5 @@ Dijkstra 算法的时间复杂度：
 | decrease-key | $O(\log n)$ | $O(\log_d n)$ | $O(\log n)$ | $O(1)$ 均摊 | $o(\log n)$ 猜想 | $O(\log n)$ |
 | 内存/节点 | 1 槽 | 1 槽 | ~5 指针 | ~7 指针 | ~3 指针 | 3 数组 |
 | 缓存友好 | 极好 | 极好 | 差 | 差 | 差 | 极好 |
-
----
-
-## 附录 B：常见面试题速查表
-
-| LeetCode 题号 | 题目 | 算法 | 难度 |
-| ------------- | ---- | ---- | ---- |
-| 215 | 数组中第 K 大元素 | 最小堆 / 快速选择 | 中等 |
-| 23 | 合并 K 个升序链表 | 最小堆 | 困难 |
-| 295 | 数据流的中位数 | 双堆 | 困难 |
-| 347 | 前 K 个高频元素 | 最小堆 + 哈希 | 中等 |
-| 373 | 查找和最小的 K 对数字 | 最小堆 | 中等 |
-| 378 | 有序矩阵中第 K 小元素 | 最小堆 / 二分 | 中等 |
-| 621 | 任务调度器 | 最大堆 + 队列 | 中等 |
-| 703 | 数据流中第 K 大元素 | 最小堆 | 简单 |
-| 480 | 滑动窗口中位数 | 双堆 + 延迟删除 | 困难 |
-| 295 | 数据流中位数 | 双堆 | 困难 |
-| 23 | 合并 K 链表 | 最小堆 | 困难 |
-| 355 | Twitter 设计 | 多路归并 + 堆 | 中等 |
-| 743 | 网络延迟时间 | Dijkstra + 堆 | 中等 |
-| 1584 | 连接所有点的最小费用 | Prim + 堆 | 中等 |
-| 502 | IPO | 最大堆 + 最小堆 | 困难 |
-
----
-
-> **文档版本**：v2.0 金标准版  
-> **最后审阅**：2026-07-20  
-> **审阅者**：FANDEX Content Engineering  
-> **对标基准**：MIT 6.006 / Stanford CS161 / Princeton Algorithms Part I / CLRS 4th ed.  
-> **覆盖质量基准**：学习目标 / 历史动机 / 形式化定义 / 理论推导 / 代码示例 / 对比分析 / 常见陷阱 / 工程实践 / 案例研究 / 习题 / 参考文献 / 延伸阅读（12/12）
 
 ---

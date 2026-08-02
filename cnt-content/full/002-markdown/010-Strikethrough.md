@@ -343,34 +343,8 @@ Python 3.10 起 `match` 语句与 `|` 联合类型同时可用。
 
 关于工程使用：删除线的价值在于保留历史、标记失效、支撑对比。滥用删除线（如用于语气强调）会破坏语义；正确的做法是让每个删除线文本都伴随替代信息或失效原因。
 
-## 10. 参考文献
-
-GitHub, GitHub Flavored Markdown Spec 0.29, Strikethrough (extension), 访问日期 2026-08-01, https://github.github.com/gfm/
-
-MDN Web Docs, <del>: The Deleted Text element, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
-
-MDN Web Docs, <s>: The Strikethrough element, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
-
-CommonMark Spec 0.31.2, 访问日期 2026-08-01, https://spec.commonmark.org/
-
-John Gruber, Daring Fireball: Markdown Syntax Documentation, 2004, 访问日期 2026-08-01, https://daringfireball.net/projects/markdown/syntax
-
 ## 11. 延伸阅读
-
 读者可以在以下资源中继续深入学习：
-
-GFM 官方规范全文：https://github.github.com/gfm/ ，其中第 6.5 节是删除线的权威定义；
-
-CommonMark 官方规范：https://spec.commonmark.org/ ，用于理解删除线为何不是核心语法；
-
-cmark-gfm 源码：https://github.com/github/cmark-gfm ，其中 `src/extensions/strikethrough.c` 是删除线的解析实现，适合想深入解析器原理的读者；
-
-Markdown Guide 站点：https://www.markdownguide.org/basic-syntax/ 提供各语法的基础说明；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）与尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供了 Markdown、Git 与前端开发的系列视频课程，可作为实践补充；
-
-GitHub 官方文档中关于写作与格式化的说明：https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax 。
-
 ### 1. 历史动机与发展脉络
 
 删除线的历史可以追溯到打字机时代。在还没有文档处理软件的年代，修订文本时人们用横线划过需要废弃的文字，同时保留这些文字以便审阅者看到原始内容。这种“保留原文并标记失效”的物理习惯，后来被 WYSIWYG 文字处理器中的删除线（strikethrough）字体样式继承。
@@ -674,36 +648,9 @@ Python 3.10 起 `match` 语句与 `|` 联合类型同时可用。
 
 关于工程使用：删除线的价值在于保留历史、标记失效、支撑对比。滥用删除线（如用于语气强调）会破坏语义；正确的做法是让每个删除线文本都伴随替代信息或失效原因。
 
-### 10. 参考文献
-
-GitHub, GitHub Flavored Markdown Spec 0.29, Strikethrough (extension), 访问日期 2026-08-01, https://github.github.com/gfm/
-
-MDN Web Docs, <del>: The Deleted Text element, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
-
-MDN Web Docs, <s>: The Strikethrough element, 访问日期 2026-08-01, https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
-
-CommonMark Spec 0.31.2, 访问日期 2026-08-01, https://spec.commonmark.org/
-
-John Gruber, Daring Fireball: Markdown Syntax Documentation, 2004, 访问日期 2026-08-01, https://daringfireball.net/projects/markdown/syntax
-
 ### 11. 延伸阅读
-
 读者可以在以下资源中继续深入学习：
-
-GFM 官方规范全文：https://github.github.com/gfm/ ，其中第 6.5 节是删除线的权威定义；
-
-CommonMark 官方规范：https://spec.commonmark.org/ ，用于理解删除线为何不是核心语法；
-
-cmark-gfm 源码：https://github.com/github/cmark-gfm ，其中 `src/extensions/strikethrough.c` 是删除线的解析实现，适合想深入解析器原理的读者；
-
-Markdown Guide 站点：https://www.markdownguide.org/basic-syntax/ 提供各语法的基础说明；
-
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）与尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供了 Markdown、Git 与前端开发的系列视频课程，可作为实践补充；
-
-GitHub 官方文档中关于写作与格式化的说明：https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax 。
-
 ---
-
 #### 1. 删除线语法
 
 ##### 1.1 基本语法
@@ -958,4 +905,3 @@ GitHub 官方文档中关于写作与格式化的说明：https://docs.github.co
 - ~~`oldMethod()`~~ → `newMethod()`
 - ~~`Config.default`~~ → `Config.defaults`
 ```
-

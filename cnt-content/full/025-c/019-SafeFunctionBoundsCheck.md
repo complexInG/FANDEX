@@ -902,8 +902,6 @@ Linux 内核 `keyctl` 系统调用中,引用计数使用 `int` 类型,长时间�
 
 SQLite FTS3 全文搜索模块在处理特殊查询时,内部偏移计算错误,导致堆越界读取。根因是 `int` 与 `size_t` 混用,符号扩展导致巨大偏移。修复:统一使用 `size_t` 并增加边界检查。该漏洞影响所有使用 SQLite 的应用(包括 iOS、Android 系统组件)。
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**:`strcpy`、`strncpy`、`strlcpy`、`strcpy_s` 四者的核心区别是什么?
@@ -993,30 +991,6 @@ int recv_message(int fd, uint8_t **out_payload, uint32_t *out_len) {
 - ASan:编译期插入,运行期开销 2x,可检测栈/堆/全局越界、UAF、double-free,但要求重新编译。
 - Valgrind:二进制插桩,运行期开销 10-30x,可检测内存泄漏、未初始化使用,但不重新编译,且不检测栈越界。
 - CI 选择:开发与测试期用 ASan(快),发布前用 Valgrind 检测泄漏。
-
-## 参考文献
-
-[1] Seacord, R. C. 2013. Secure Coding in C and C++, 2nd edition. Addison-Wesley. ISBN 978-0-321-82213-0.
-
-[2] ISO/IEC. 2011. ISO/IEC 9899:2011 - Programming languages - C. ISO. https://www.iso.org/standard/57853.html
-
-[3] ISO/IEC. 2013. ISO/IEC TS 17961:2013 - Information technology - Programming languages, their environments and system software interfaces - C secure coding rules. ISO. https://www.iso.org/standard/61133.html
-
-[4] CERT. 2014. CERT C Secure Coding Standard, 2nd edition. Addison-Wesley. ISBN 978-0-321-82377-9.
-
-[5] Aleph One. 1996. Smashing the stack for fun and profit. Phrack Magazine 7, 49 (November 1996). http://phrack.org/issues/49/14.html
-
-[6] Cowan, C. et al. 1998. StackGuard: automatic adaptive detection and prevention of buffer-overflow attacks. In Proceedings of the 7th USENIX Security Symposium (SECURITY '98). USENIX Association. https://www.usenix.org/legacy/events/sec98/cowan.html
-
-[7] Shacham, V. et al. 2004. On the effectiveness of address-space randomization. In Proceedings of the 11th ACM Conference on Computer and Communications Security (CCS '04), 62-74. DOI: https://doi.org/10.1145/1030083.1030094
-
-[8] Roemer, R. et al. 2012. Return-oriented programming: systems, languages, and applications. ACM Transactions on Information and System Security 15, 1 (March 2012), 1-34. DOI: https://doi.org/10.1145/2133375.2133377
-
-[9] Serebryany, K. et al. 2012. AddressSanitizer: a fast address sanity checker. In Proceedings of the 2012 USENIX Annual Technical Conference (USENIX ATC '12). USENIX Association. https://www.usenix.org/conference/atc12/technical-sessions/presentation/serebryany
-
-[10] Miller, T. et al. 2014. The Heartbleed bug. CVE-2014-0160. https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-0160
-
-## 延伸阅读
 
 ### 官方文档
 

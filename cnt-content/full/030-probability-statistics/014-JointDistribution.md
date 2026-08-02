@@ -9,7 +9,6 @@ author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'probability-statistics/随机变量函数的分布'
-  - 'probability-statistics/随机变量典型例题'
   - 'probability-statistics/边缘分布'
   - 'probability-statistics/条件分布'
 prerequisites: []
@@ -92,37 +91,6 @@ $$P(X = x_i, Y = y_j) = p_{ij}, \quad i, j = 1, 2, \cdots$$
 
 $$F(x, y) = \sum_{x_i \leq x} \sum_{y_j \leq y} p_{ij}$$
 
-### 3.2 完整例题：不放回抽球
-
-**例题**：袋中 2 红 3 白，不放回取两次，$X$ = 第一次红球数，$Y$ = 第二次红球数，求联合分布律。
-
-**解**：
-
-$$P(X=0, Y=0) = \frac{3}{5} \times \frac{2}{4} = \frac{3}{10}, \quad P(X=0, Y=1) = \frac{3}{5} \times \frac{2}{4} = \frac{3}{10}$$
-
-$$P(X=1, Y=0) = \frac{2}{5} \times \frac{3}{4} = \frac{3}{10}, \quad P(X=1, Y=1) = \frac{2}{5} \times \frac{1}{4} = \frac{1}{10}$$
-
-| $X \backslash Y$ | 0                | 1                |
-| :--------------: | :--------------: | :--------------: |
-|        0         | $\dfrac{3}{10}$  | $\dfrac{3}{10}$  |
-|        1         | $\dfrac{3}{10}$  | $\dfrac{1}{10}$  |
-
-**验证**：四个概率之和 $\dfrac{3+3+3+1}{10} = 1$。
-
-**要点**：不放回抽球要用乘法公式（条件概率）逐格计算；若改为有放回，则 $X, Y$ 独立，$p_{ij} = p_{i\cdot}p_{\cdot j}$（见 015、017 讲）。
-
-### 3.3 完整例题：由联合分布律求事件概率
-
-**例题**：承上题，求 $P(X + Y \leq 1)$ 与 $P(X > Y)$。
-
-**解**：
-
-$$P(X + Y \leq 1) = p_{00} + p_{01} + p_{10} = \frac{3}{10} + \frac{3}{10} + \frac{3}{10} = \frac{9}{10}$$
-
-$$P(X > Y) = p_{10} = \frac{3}{10}$$
-
-**要点**：事件概率 = 满足条件的格点概率之和——联合分布律是"查表"的基础。
-
 ## 4. 二维连续型：联合概率密度
 
 ### 4.1 定义
@@ -139,42 +107,6 @@ $$F(x, y) = \int_{-\infty}^{y} \int_{-\infty}^{x} f(u, v) \, du \, dv$$
 2. **规范性**：$\displaystyle\int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty} f(x, y) \, dx \, dy = 1$；
 3. **区域概率**：$P((X, Y) \in D) = \iint_D f(x, y) \, dx \, dy$（**概率 = 密度曲面下的体积**，这是 009 讲"面积"思想的二维推广）；
 4. **混合偏导**：在 $f$ 的连续点处 $\dfrac{\partial^2 F}{\partial x \partial y} = f(x, y)$。
-
-### 4.3 完整例题：验证规范性与区域概率
-
-**例题**：设 $(X, Y)$ 的联合密度为
-
-$$f(x, y) = \begin{cases} 6xy^2, & 0 < x < 1, 0 < y < 1 \\ 0, & \text{其他} \end{cases}$$
-
-验证规范性并求 $P(X + Y \leq 1)$。
-
-**解**：规范性（可分离变量）：
-
-$$\int_0^1 \int_0^1 6xy^2 \, dx \, dy = 6 \int_0^1 x \, dx \cdot \int_0^1 y^2 \, dy = 6 \times \frac{1}{2} \times \frac{1}{3} = 1 \quad \checkmark$$
-
-区域概率（三角形区域 $x + y \leq 1$）：
-
-$$P(X + Y \leq 1) = \int_0^1 \int_0^{1-x} 6xy^2 \, dy \, dx = \int_0^1 6x \cdot \frac{(1-x)^3}{3} \, dx = 2\int_0^1 x(1-x)^3 \, dx$$
-
-$$= 2 \cdot B(2, 4) = 2 \cdot \frac{\Gamma(2)\Gamma(4)}{\Gamma(6)} = 2 \cdot \frac{1! \cdot 3!}{5!} = 2 \cdot \frac{6}{120} = \frac{1}{10}$$
-
-**要点**：区域概率的积分限由"密度非零区域 ∩ 事件区域"决定——先画图确定积分区域，再定积分限。本题 $\int_0^{1-x}$ 的限来自 $x + y \leq 1$ 即 $y \leq 1 - x$。
-
-**Python 模拟验证**：
-
-```python
-import random
-
-def joint_prob(trials=100000):
-    hit = 0
-    for _ in range(trials):
-        x, y = random.random(), random.random()   # 在单位正方形均匀取点
-        if x + y <= 1:                            # 概率权重 ∝ 6xy^2
-            hit += 6 * x * y * y / 1
-    return hit / trials
-
-print(f"模拟 P(X+Y<=1): {joint_prob():.4f}")   # 理论值 0.1
-```
 
 ## 5. 常见二维分布
 
@@ -217,57 +149,9 @@ $$f(x, y) = \frac{1}{2\pi\sigma_1\sigma_2\sqrt{1-\rho^2}} \exp\left\{-\frac{1}{2
 | 5 | 矩形概率公式 $F$ 的加减号记错 | 公式错误 | 二维累计理解不透 | 记"左下加、右下减、左上减、右上加"，或画矩形验证 |
 | 6 | 联合分布函数判定时只查一维单调性 | 概念错误 | 忽略二维特有的矩形非负条件 | 检查性质 5：所有矩形概率非负（含两个交叉项） |
 
-## 7. 实战练习
-
-### 练习 1（入门）：联合分布律
-
-袋中 1 红 2 白，**有放回**取两次，$X$、$Y$ 分别为两次取到红球数（各取 0/1），求联合分布律。
-
-**提示**：有放回时两次独立，$p_{ij} = P(X=i)P(Y=j)$。
-
-**参考答案要点**：$P(X=0) = P(Y=0) = \dfrac{2}{3}$，$P(X=1) = P(Y=1) = \dfrac{1}{3}$。联合分布律：$p_{00} = \dfrac{4}{9}$，$p_{01} = p_{10} = \dfrac{2}{9}$，$p_{11} = \dfrac{1}{9}$。
-
-### 练习 2（入门）：联合分布函数矩形概率
-
-设 $F(x, y) = \begin{cases} (1 - e^{-x})(1 - e^{-y}), & x > 0, y > 0 \\ 0, & \text{其他} \end{cases}$，求 $P(1 < X \leq 2, 1 < Y \leq 2)$。
-
-**提示**：矩形概率公式，代入 $F$。
-
-**参考答案要点**：$F(2,2) - F(1,2) - F(2,1) + F(1,1) = (1-e^{-2})^2 - 2(1-e^{-1})(1-e^{-2}) + (1-e^{-1})^2 = (e^{-1} - e^{-2})^2 \approx 0.0996$。
-
-### 练习 3（进阶）：二维连续型求常数
-
-设 $f(x, y) = \begin{cases} cxy, & 0 < x < 1, 0 < y < x \\ 0, & \text{其他} \end{cases}$，求 $c$。
-
-**提示**：注意 $y$ 的积分限依赖 $x$（$0 < y < x$）。
-
-**参考答案要点**：$\int_0^1 \int_0^x cxy \, dy \, dx = c \int_0^1 x \cdot \dfrac{x^2}{2} dx = \dfrac{c}{2} \cdot \dfrac{1}{4} = \dfrac{c}{8} = 1 \implies c = 8$。
-
-### 练习 4（进阶）：区域概率
-
-承练习 3（$c = 8$），求 $P(X + Y < 1)$。
-
-**提示**：事件区域为 $\{0 < y < x, \, x + y < 1\}$，即 $0 < y < \min(x, 1-x)$，画图后分两段积分或整体积分。
-
-**参考答案要点**：$\int_0^{1/2}\int_0^x 8xy\,dy\,dx + \int_{1/2}^1 \int_0^{1-x} 8xy\,dy\,dx = \dfrac{1}{8} + \dfrac{7}{24} = \dfrac{5}{12} \approx 0.4167$。
-
-### 练习 5（挑战）：二维正态与相关
-
-设 $(X, Y) \sim N(0, 0, 1, 1, 0.5)$，判断 $X$ 与 $Y$ 是否独立；写出 $X + Y$ 的分布。
-
-**提示**：$\rho = 0.5 \neq 0$；线性组合仍正态，$E(X+Y) = 0$，$D(X+Y) = 1 + 1 + 2\rho = 3$。
-
-**参考答案要点**：$\rho = 0.5 \neq 0$，不独立（正相关）；$X + Y \sim N(0, 3)$。二维正态的线性组合正态性、$\rho$ 与方差的关系是后续协方差（022 讲）的预演。
-
 ## 8. 一句话记忆
 
 > **联合分布是"两个人的合影"：联合分布律（离散查表）或联合密度（连续积分），$F(x,y)$ 是向左下累计的二维累计器；联合信息 > 两个边缘之和，独立时联合才等于边缘相乘。**
-
-## 参考文献
-
-- 盛骤、谢式千、潘承毅：《概率论与数理统计（第四版）》第三章 §1"二维随机变量"，高等教育出版社。教材信息见：https://xuanshu.hep.com.cn/front/book/findBookDetails?bookId=59ccfdd8ba9eb884cf81879c
-- 可汗学院《统计与概率》联合分布专题（中文）：https://zh.khanacademy.org/math/statistics-probability
-- Seeing Theory（交互式概率可视化）：https://seeing-theory.brown.edu/
 
 ## 延伸阅读
 

@@ -226,22 +226,6 @@ class AfricanBird extends Bird {
 
 **误区五：重构一定要用设计模式。** → 重构的核心是"让代码清晰"，不是"套模式"。为重构而引入设计模式（过度设计）违背了 YAGNI 原则。
 
-## 7. 实战练习
-
-1. **坏味道识别**：找一段你写过的代码（或网上开源项目），用第 3 节的清单找出至少 3 种坏味道，说明症状。
-
-2. **提取方法**：把一个 50 行的函数用"提取方法"重构，让每个方法只做一件事，并解释你的拆分依据。
-
-3. **安全重构**：为一段代码写测试 → 小步重构 → 每步运行测试 → 记录重构步骤和测试结果。
-
-4. **多态替代**：找一段 switch/case 代码，用"以多态替代条件表达式"重构，并说明新增一种类型时两种写法的差异。
-
-## 8. 参考资源
-
-- Martin Fowler《重构》（原书）：https://martinfowler.com/books/refactoring.html
-- 重构目录（Refactoring Catalog）：https://refactoring.com/catalog/
-- 代码坏味道清单：https://refactoring.guru/refactoring/smells
-
 ## 9. 延伸阅读
 
 - 重构与设计模式的关系，见本模块《设计模式详解》

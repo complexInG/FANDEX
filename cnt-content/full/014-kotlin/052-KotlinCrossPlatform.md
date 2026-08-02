@@ -2347,65 +2347,6 @@ class HttpClient(
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1.1**：以下关于 KMP 的描述，正确的是？
-
-A. KMP 是一种"全栈共享"的跨平台方案，UI 必须使用 Compose Multiplatform。
-B. KMP 的核心哲学是"共享业务逻辑、保留原生 UI"。
-C. KMP 不支持 iOS 平台，因为 iOS 仅支持 Swift。
-D. KMP 的运行时基于 Java 虚拟机，所有平台都需要 JVM。
-
-**解析讲解**：B
-
-**解析讲解**：KMP 的核心哲学是"共享业务逻辑、保留原生 UI"，UI 层可选 Compose Multiplatform 或原生 UI（SwiftUI、Jetpack Compose）。KMP 支持 iOS、Android、JVM、JS、Wasm、Native 多平台。KMP 不依赖 JVM，Kotlin/Native 直接编译为原生二进制。
-
-**题目 1.2**：关于 `expect`/`actual` 机制，以下描述错误的是？
-
-A. `expect` 声明在 `commonMain` 中是一个契约，不包含实现。
-B. 每个目标平台都必须提供对应的 `actual` 实现。
-C. `actual` 的签名必须与 `expect` 完全一致（参数、返回类型、可见性）。
-D. `expect`/`actual` 在运行时通过反射绑定，存在性能开销。
-
-**解析讲解**：D
-
-**解析讲解**：`expect`/`actual` 在编译期绑定，链接期校验，运行时无反射开销。所有绑定在编译期完成，与普通函数调用性能一致。
-
-**题目 1.3**：关于 Kotlin/Native，以下描述正确的是？
-
-A. Kotlin/Native 必须运行在 JVM 之上。
-B. Kotlin/Native 1.9+ 默认使用新内存管理器，支持对象跨线程自由传递。
-C. Kotlin/Native 不支持调用 C/C++ 库。
-D. Kotlin/Native 的内存管理采用引用计数，与 Swift 完全一致。
-
-**解析讲解**：B
-
-**解析讲解**：Kotlin/Native 直接编译为原生二进制，无需 JVM。Kotlin 1.9+ 默认使用新内存管理器，移除了线程隔离约束。Kotlin/Native 通过 `cinterop` 工具调用 C/C++ 库。新内存管理器使用全局 GC（基于 Immix），不是简单的引用计数。
-
-**题目 1.4**：关于 Kotlin/JS IR 编译器，以下描述错误的是？
-
-A. IR 编译器支持 Tree-shaking，可减小产物体积。
-B. IR 编译器在 Kotlin 1.5+ 成为默认。
-C. IR 编译器生成的 JS 代码与旧编译器完全兼容。
-D. IR 编译器通过 `@JsExport` 显式导出 API。
-
-**解析讲解**：C
-
-**解析讲解**：IR 编译器与旧编译器在产物结构上有显著差异：IR 编译器默认不导出任何符号（需 `@JsExport`），旧编译器默认导出所有 public 符号。两者不兼容，迁移需调整代码。
-
-**题目 1.5**：关于 Compose Multiplatform，以下描述正确的是？
-
-A. Compose Multiplatform 仅支持 Android 平台。
-B. Compose Multiplatform 的 iOS 渲染路径基于 UIKit 互操作。
-C. Compose Multiplatform 在所有平台上使用 Skia 自绘引擎。
-D. Compose Multiplatform 在 iOS 上使用 SwiftUI 渲染。
-
-**解析讲解**：C
-
-**解析讲解**：Compose Multiplatform 在所有平台（Android、iOS、Desktop、Web）上都使用 Skia 自绘引擎（iOS 在 1.5.0+ 可选 Skiko / Metal 后端）。Android 平台使用 Android 的 Canvas，iOS 使用 Skia + Metal，Desktop 使用 Skia + OpenGL。
-
 ### 填空题知识点讲解
 
 **题目 2.1**：KMP 的四大编译目标分别是 ________、________、________、________。
@@ -2691,107 +2632,6 @@ actual fun getPlatformName(): String = "JavaScript"
 actual fun getHourOfDay(): Int = js("new Date().getHours()")
 ```
 
-### 9.4 思考题
-
-**题目 4.1**：为什么 KMP 选择"共享业务逻辑、保留原生 UI"而非"全栈共享"（如 Flutter）？请从架构、性能、生态三个维度论证。
-
-**解析讲解**：
-
-- **架构维度**：保留原生 UI 允许应用深度集成平台特性（如 Android 的 Material You、iOS 的 Live Activities），避免"一刀切"的 UI 抽象。同时，业务逻辑层的跨平台共享已能覆盖 60-80% 的代码，复用率足够高。
-- **性能维度**：原生 UI 直接调用平台 API，无中间抽象层，性能最佳。自绘引擎（如 Flutter 的 Skia）虽能实现 UI 一致性，但牺牲了原生动画、手势、辅助功能等系统集成。
-- **生态维度**：JetBrains 与 Google、Apple 的生态深度合作（Jetpack Compose、SwiftUI）确保 KMP 能持续获得平台一等级支持。Flutter 自建生态，需要"追赶"平台新特性。
-
-**题目 4.2**：`expect`/`actual` 机制与 Java 的 SPI（Service Provider Interface）有何本质区别？请从绑定时机、类型安全、性能三个角度分析。
-
-**解析讲解**：
-
-- **绑定时机**：`expect`/`actual` 在编译期绑定，编译器在生成字节码/二进制时即确定具体实现。SPI 在运行时通过 `ServiceLoader` 动态加载，绑定推迟到运行时。
-- **类型安全**：`expect`/`actual` 是编译期类型安全的，签名不匹配会编译失败。SPI 通过反射加载，类型不匹配在运行时抛出 `ClassCastException`。
-- **性能**：`expect`/`actual` 编译为直接调用，无运行时开销。SPI 每次加载需扫描 `META-INF/services`，存在反射开销。
-
-**题目 4.3**：Kotlin/Native 选择 LLVM 而非自研后端的技术决策有哪些权衡？请列举至少 3 个优势与 2 个劣势。
-
-**解析讲解**：
-
-**优势**：
-
-1. **生态复用**：LLVM 已支持众多平台（x86、ARM、RISC-V、Wasm），Kotlin/Native 直接获得多目标支持。
-2. **优化能力**：LLVM 提供成熟的优化 Pass（内联、循环展开、死代码消除），无需重复造轮子。
-3. **维护成本**：LLVM 由社区维护，Kotlin 团队无需独立维护编译器后端。
-4. **互操作**：与 C/C++ 库的互操作通过 LLVM IR 实现，无缝集成。
-
-**劣势**：
-
-1. **编译速度**：LLVM 优化 Pass 链长，编译速度慢于自研后端（如 Go 编译器）。
-2. **二进制体积**：LLVM 生成的二进制相对臃肿，需要 Link Time Optimization（LTO）压缩。
-3. **依赖管理**：LLVM 版本升级可能引入兼容性问题，Kotlin 需要锁定特定版本。
-
-**题目 4.4**：Kotlin/Wasm 相对 Kotlin/JS 的核心优势是什么？为什么 Wasm 不是 JS 的简单替代？
-
-**解析讲解**：
-
-Kotlin/Wasm 的核心优势：
-
-1. **启动速度**：Wasm 是预编译的字节码，浏览器加载后可直接执行；JS 需要解析、编译、优化，启动较慢。
-2. **类型安全**：Wasm 是强类型字节码，避免了 JS 的动态类型问题。
-3. **可移植性**：Wasm 是 W3C 标准，可在浏览器外的运行时（如 Node.js、Deno、Wasmtime）执行。
-4. **GC 集成**：WasmGC 提案使 Wasm 可与宿主 GC 集成，无需自带 GC。
-
-但 Wasm 不是 JS 的简单替代：
-
-1. **DOM 访问**：Wasm 通过 `import` 调用 JS API，DOM 操作需要 JS 中介，性能不如原生 JS。
-2. **生态成熟度**：JS 生态远超 Wasm，许多 npm 包未提供 Wasm 版本。
-3. **调试体验**：Wasm 调试工具不如 JS 成熟（Source Map 支持有限）。
-4. **包体积**：小型应用 Wasm 启动开销可能超过 JS 解析开销。
-
-**题目 4.5**：在 KMP 项目中，何时应该使用 `expect`/`actual`，何时应该使用接口注入（依赖注入）？请给出决策准则。
-
-**解析讲解**：
-
-**决策准则**：
-
-- **使用 `expect`/`actual` 当**：
-  1. 需要直接调用平台 API（如 `System.currentTimeMillis`、`NSDate`、`document`）。
-  2. 需要平台特定的数据类型（如 JVM 的 `File`、iOS 的 `NSURL`）。
-  3. 实现简单、无状态的工具函数（如 `randomUUID()`）。
-  4. 需要编译期绑定（如核心基础设施代码）。
-
-- **使用接口注入当**：
-  1. 实现较复杂，有多个候选实现（如不同的 HTTP 引擎、不同的存储后端）。
-  2. 需要在测试中替换为 Mock（如 `HttpClient`、`UserRepository`）。
-  3. 业务逻辑层的依赖（如 `UserRepository` 依赖 `HttpClient`）。
-  4. 需要运行时切换实现（如根据配置选择不同实现）。
-
-**总结**：`expect`/`actual` 适合"平台 API 抽象"，接口注入适合"业务实现抽象"。两者常组合使用：`expect`/`actual` 提供平台 API，接口注入组织业务逻辑。
-
-**题目 4.6**：Compose Multiplatform 在 iOS 上的渲染路径是怎样的？为什么选择 Skia 而非 UIKit 互操作？
-
-**解析讲解**：
-
-Compose Multiplatform 在 iOS 上的渲染路径：
-
-```
-Composable
-  → Compose Compiler（生成 KtIR）
-  → Kotlin/Native Backend（生成 LLVM IR）
-  → LLVM（编译为 iOS 二进制）
-  → 运行时调用 Skia（通过 Skiko，Kotlin 的 Skia 绑定）
-  → Metal 后端渲染到 UIView
-```
-
-选择 Skia 而非 UIKit 互操作的原因：
-
-1. **一致性**：Compose 的声明式 UI 与 UIKit 的命令式 UI 范式不匹配，直接桥接会引入复杂度。
-2. **性能**：Skia 直接渲染到 Metal，避免了 UIKit 的中间层，动画性能更佳。
-3. **跨平台一致**：与 Android、Desktop 的渲染路径一致，便于 UI 在多平台表现一致。
-4. **避免 Apple 限制**：UIKit 桥接需要 Objective-C 运行时，与 Compose 的 Kotlin 类型系统存在阻抗。
-
-但 Skia 自绘的代价是：
-
-1. 失去 UIKit 的原生组件（如系统字体、原生输入框、辅助功能）。
-2. 包体积增加（Skiko 约 5-10MB）。
-3. Apple 平台新特性（如 Live Activities、Dynamic Type）支持滞后。
-
 ### 9.5 综合应用题
 
 **题目 5.1**：设计一个跨平台的"待办事项"应用，要求：
@@ -3021,8 +2861,6 @@ class IosStorage(private val path: String) : Storage {
 
 ---
 
-## 10. 参考文献
-
 ### 10.1 官方文档
 
 [1] JetBrains. Kotlin Multiplatform Documentation [EB/OL]. (2024-05-20) [2026-07-20]. https://kotlinlang.org/docs/multiplatform.html.
@@ -3069,8 +2907,6 @@ class IosStorage(private val path: String) : Storage {
 
 ---
 
-## 11. 延伸阅读
-
 ### 11.1 Kotlin 官方资源
 
 - **Kotlin Multiplatform 样板项目**：https://kmp.jetbrains.com/
@@ -3097,13 +2933,6 @@ class IosStorage(private val path: String) : Storage {
 - **Kotlin/Native 性能调优**：https://kotlinlang.org/docs/native-performance.html
 - **Kotlin/JS 产物优化**：https://kotlinlang.org/docs/js-project-setup.html#webpack
 - **Compose Multiplatform 性能**：https://github.com/JetBrains/compose-multiplatform/blob/master/tutorials/Performance
-
-### 11.5 社区资源
-
-- **Kotlin Slack 工作区**：https://kotlinlang.slack.com/
-- **KMP Reddit 社区**：https://www.reddit.com/r/KotlinMultiplatform/
-- **Kotlin Weekly**：https://kotlinweekly.net/
-- **KotlinConf 录像**：https://www.youtube.com/@Kotlin
 
 ### 11.6 相关书籍
 

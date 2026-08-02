@@ -251,44 +251,9 @@ git remote -v
 | 多账户串号 | 提交身份混乱 | 多个密钥/PAT 管理混乱 | 用 SSH config 的 Host 别名区分；为不同账户设置不同 `user.email` |
 | 端口 22 被拦截 | `Connection timed out`（企业网络） | 防火墙阻止 SSH 22 端口 | 改用 HTTPS，或配置 SSH over HTTPS 端口 443（`~/.ssh/config` 中设置 `HostName ssh.github.com` + `Port 443`） |
 
-## 7. 实战练习
-
-### 练习 1：生成并添加 SSH 密钥（入门）
-- **题目描述**：生成一对 Ed25519 密钥，将公钥添加到 GitHub，并测试连接。
-- **提示**：`ssh-keygen -t ed25519 -C "你的邮箱"`；公钥在 Settings → SSH and GPG keys 添加。
-- **参考答案要点**：`ssh -T git@github.com` 输出 `Hi 用户名!` 即成功；注意私钥不要提交到任何仓库。
-
-### 练习 2：生成 PAT 并用 HTTPS 推送（入门）
-- **题目描述**：生成一个 60 天有效期的 Fine-grained token，仅授权一个测试仓库，用它完成一次推送。
-- **提示**：Fine-grained token 在 Developer settings → Personal access tokens 中生成。
-- **参考答案要点**：仓库访问权限选"Only select repositories"；推送时密码框粘贴 PAT；验证成功后删除令牌练习结束。
-
-### 练习 3：切换远程协议（进阶）
-- **题目描述**：把练习 1 中 SSH 克隆的仓库远程地址改为 HTTPS，再改回 SSH，观察 `git remote -v` 变化。
-- **提示**：`git remote set-url origin <新URL>`。
-- **参考答案要点**：改地址不影响本地历史；切换后推送用对应协议的认证方式。
-
-### 练习 4：配置多账户（综合）
-- **题目描述**：用 `~/.ssh/config` 配置个人和工作两个 Host 别名，分别克隆对应仓库并确认身份正确。
-- **提示**：按第 4 节配置；`git config user.email` 查看每个仓库的提交身份。
-- **参考答案要点**：`git clone git@github.com-personal:...` 和 `git clone git@github.com-work:...` 使用各自私钥；提交邮箱分别匹配对应账户。
-
-### 练习 5：故障排查演练（综合）
-- **题目描述**：人为制造一次认证失败（如删掉 ssh-agent 中已加载的私钥），用诊断命令定位并修复。
-- **提示**：`ssh -vT git@github.com` 查看详细连接过程；`ssh-add -l` 检查密钥。
-- **参考答案要点**：`ssh -v` 输出中查看使用哪个密钥文件、是否被拒绝；重新 `ssh-add` 加载私钥后恢复；HTTPS 场景检查 `git config --list | grep credential`。
-
 ## 8. 一句话记忆
 
 **SSH 像配好的钥匙——配一次长期免密；HTTPS 像门禁卡——发卡简单但要保管好 PAT 并定期换卡；高频开发选 SSH，偶尔访问选 HTTPS。**
-
-## 参考链接与延伸阅读
-
-- [GitHub 文档（官方中文）：使用 SSH 连接 GitHub](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh)
-- [GitHub 文档：测试 SSH 连接](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection)
-- [GitHub 文档：排查 Permission denied (publickey)](https://docs.github.com/zh/authentication/troubleshooting-ssh/error-permission-denied-publickey)
-- [GitHub 文档：创建个人访问令牌（PAT）](https://docs.github.com/zh/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-- [GitHub 文档：GitHub 的 SSH 密钥指纹](https://docs.github.com/zh/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints)
 
 ### 延伸阅读
 

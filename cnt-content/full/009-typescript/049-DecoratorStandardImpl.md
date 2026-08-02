@@ -1480,98 +1480,6 @@ const errors = await validate(user);
 
 ---
 
-## 知识讲解与要点分析（原习题）
-
-### 选择题知识点讲解
-
-**题目 1**：Stage 3 装饰器与 Legacy 装饰器的核心区别是？
-
-A. Stage 3 装饰器需要 `experimentalDecorators: true`
-B. Stage 3 装饰器使用上下文对象（context object）作为第二参数
-C. Stage 3 装饰器不支持类装饰器
-D. Stage 3 装饰器仅支持方法装饰器
-
-**答案：B**
-
-Stage 3 装饰器的核心变化是引入上下文对象（context object），包含 `kind`、`name`、`metadata`、`access`、`addInitializer` 等字段，提供精确的类型签名与标准化的元数据协议。
-
-Legacy 装饰器使用描述符（descriptor）作为参数，类型签名宽松。
-
-**题目 2**：以下代码的执行顺序是？
-
-```typescript
-@A
-@B
-@C
-class X {}
-```
-
-A. `A → B → C`（从上到下）
-B. `C → B → A`（从下到上）
-C. `A → C → B`
-D. 不确定
-
-**答案：B**
-
-装饰器的**求值顺序**是从上到下（`A` 先求值为函数），但**应用顺序**是从下到上（`C` 先应用到类）。
-
-等价于 `A(B(C(X)))`。
-
-**题目 3**：Stage 3 属性装饰器应返回什么？
-
-A. 静态值
-B. 初始化函数 `(initialValue) => initialValue`
-C. `void`
-D. `PropertyDescriptor`
-
-**答案：B**
-
-Stage 3 属性装饰器返回一个初始化函数，该函数在实例化时被调用，接收属性初始值，返回最终值。这与 ES2022 类字段语义自然对齐。
-
-如果返回静态值，会被当作初始值；返回 `void` 表示不修改。
-
-**题目 4**：Stage 3 装饰器的元数据存储在哪里？
-
-A. `Reflect.metadata`
-B. `Symbol.metadata`
-C. 全局变量
-D. `context.metadata`（独立于类）
-
-**答案：B**
-
-Stage 3 装饰器通过 `Symbol.metadata` 在类上挂载元数据对象。所有装饰器通过 `context.metadata` 访问同一个对象，实现元数据共享。
-
-`Reflect.metadata` 是 Legacy 装饰器使用的 polyfill，Stage 3 不再需要。
-
-**题目 5**：以下装饰器实现的错误是？
-
-```typescript
-function logged(value: Function, context: ClassMethodDecoratorContext) {
-  return (...args: any[]) => {
-    console.log('Calling');
-    return value.call(this, ...args);  // Error
-  };
-}
-```
-
-A. 箭头函数无法绑定 `this`
-B. `value.call` 不存在
-C. `context` 未使用
-D. 返回类型错误
-
-**答案：A**
-
-箭头函数继承外层 `this`，在类方法装饰器中 `this` 是 `undefined`，调用 `value.call(this, ...)` 会失败。
-
-应使用普通函数并标注 `this: any`：
-
-```typescript
-return function (this: any, ...args: any[]) {
-  console.log('Calling');
-  return value.call(this, ...args);
-};
-```
-
 ### 填空题知识点讲解
 
 **题目 1**：Stage 3 装饰器在 TypeScript ____ 版本正式支持。
@@ -1714,96 +1622,6 @@ console.log((DataService as any)[Symbol.metadata].measurements);
 // { process: 5 }
 ```
 
-### 9.4 思考题
-
-**题目 1**：为什么 TC39 装饰器提案耗时 8 年才进入 Stage 3？请分析主要争议点。
-
-TC39 装饰器提案耗时 8 年的主要争议点：
-
-1. **API 形态**：Stage 1 基于描述符，Stage 2 引入成员装饰器统一形式，Stage 3 改用上下文对象。每次 API 变更都需重新评估所有用例。
-
-2. **元数据协议**：Legacy 装饰器依赖 `reflect-metadata` polyfill，TC39 希望提供原生方案。`Symbol.metadata` 的引入经过多次讨论。
-
-3. **私有字段交互**：ES2022 引入 `#field` 后，装饰器如何访问私有字段成为难题。最终通过 `context.access` 提供安全访问机制。
-
-4. **参数装饰器**：参数装饰器在 Legacy 中支持，但 Stage 3 暂未包含，因为参数装饰器的语义复杂（涉及函数调用栈），需单独提案。
-
-5. **与类字段的兼容性**：ES2022 类字段引入后，属性装饰器需要处理"字段尚未赋值"的情况，最终通过返回初始化函数解决。
-
-6. **运行时性能**：装饰器在类定义时求值，可能影响启动时间。TC39 需平衡表达力与性能。
-
-7. **与现有框架的兼容性**：Angular、NestJS 等框架已基于 Legacy 装饰器构建庞大生态，Stage 3 需提供平滑迁移路径。
-
-**题目 2**：装饰器与高阶函数在概念上有何异同？何时选择装饰器，何时选择高阶函数？
-
-**相同点**：
-
-- 都是元编程技术
-- 都通过包装函数实现横切关注点（cross-cutting concerns）
-- 都支持组合
-
-**不同点**：
-
-| 维度 | 装饰器 | 高阶函数 |
-|------|--------|---------|
-| **应用范围** | 类、方法、属性 | 任意函数 |
-| **语法** | `@decorator` 声明式 | `fn(decorator(fn))` 命令式 |
-| **执行时机** | 类定义时 | 调用时 |
-| **元数据** | 通过 `context.metadata` 共享 | 无标准协议 |
-| **类型安全** | Stage 3 提供精确类型 | 取决于实现 |
-| **可读性** | 声明式更清晰 | 命令式更灵活 |
-
-**选择建议**：
-
-- 选择装饰器：类方法、需要元数据、声明式配置（如 NestJS 控制器、TypeORM 实体）
-- 选择高阶函数：顶层函数、无类上下文、需要运行时动态组合
-
-**题目 3**：Stage 3 装饰器为什么不支持参数装饰器？这对实际开发有何影响？
-
-**不支持的原因**：
-
-1. **语义复杂**：参数装饰器需要介入函数调用栈，修改参数值或校验参数，这涉及 JavaScript 调用约定，与函数式语义不自然对齐。
-
-2. **类型安全挑战**：参数装饰器需要知道参数的位置与类型，这在 TypeScript 类型系统中难以精确表达。
-
-3. **替代方案存在**：参数校验可通过方法装饰器 + `context.metadata` 实现，无需专门的参数装饰器。
-
-4. **TC39 优先级**：Stage 3 提案聚焦于类、方法、属性装饰器，参数装饰器作为独立提案推进。
-
-**对实际开发的影响**：
-
-1. **NestJS 迁移**：NestJS 大量使用参数装饰器（`@Body()`、`@Param()`），迁移至 Stage 3 需重新设计。
-
-2. **校验库**：`class-validator` 使用参数装饰器校验方法参数，需改用方法装饰器 + 元数据。
-
-3. **替代方案**：使用方法装饰器读取元数据，在运行时通过 `arguments` 访问参数。
-
-**题目 4**：装饰器在微前端架构中可能引发哪些问题？如何解决？
-
-**问题**：
-
-1. **元数据冲突**：多个微应用定义同名类，`Symbol.metadata` 可能冲突。
-
-2. **装饰器求值时机**：微应用动态加载时，装饰器在类定义时立即求值，可能影响加载性能。
-
-3. **依赖注入容器共享**：各微应用的 IoC 容器是否共享，如何隔离。
-
-4. **版本兼容**：不同微应用可能使用不同版本的装饰器（Legacy vs Stage 3）。
-
-**解决方案**：
-
-1. **命名空间隔离**：使用 `Symbol` 作为 token，避免字符串冲突。
-
-2. **延迟加载**：装饰器仅注册元数据，实际逻辑延迟到首次调用时执行。
-
-3. **容器隔离**：每个微应用使用独立的 IoC 容器，通过共享 token 实现跨应用通信。
-
-4. **版本统一**：在微前端基座中强制使用统一的装饰器版本，通过适配层兼容旧代码。
-
----
-
-## 10. 参考文献
-
 ### 10.1 学术论文与提案
 
 1. Ehrenberg, D., & Katz, Y. (2022). *Decorators Proposal (Stage 3)*. TC39. https://github.com/tc39/proposal-decorators
@@ -1824,16 +1642,6 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 
 8. Microsoft. (2024). *TypeScript 5.2 Release Notes: Symbol.metadata*. https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/
 
-### 10.3 社区资源
-
-9. Ehrenberg, D. (2022). *Decorators: Moving to Stage 3*. TC39 Presentation. https://docs.google.com/presentation/d/1s4gHH2b5NhFw8ONUWMg0B3faRj9jO9vH8XQ6q8W8g
-
-10. NestJS. (2024). *NestJS Documentation: Providers*. https://docs.nestjs.com/providers
-
-11. TypeORM. (2024). *TypeORM Documentation: Entities*. https://typeorm.io/entities
-
-12. Angular. (2024). *Angular Documentation: Dependency Injection*. https://angular.io/guide/dependency-injection
-
 ### 10.4 教材与课程
 
 13. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley. ISBN: 978-0201633610.
@@ -1845,8 +1653,6 @@ TC39 装饰器提案耗时 8 年的主要争议点：
 16. Stanford University. (2024). *CS110: Principles of Computer Systems*. https://cs110.stanford.edu/
 
 ---
-
-## 11. 延伸阅读
 
 ### 11.1 进阶主题
 

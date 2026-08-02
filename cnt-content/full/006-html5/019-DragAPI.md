@@ -309,20 +309,10 @@ document.addEventListener('mouseup', () => {
 - **可访问性**:拖拽操作对屏幕阅读器不友好,需提供等价的非拖拽操作方式(如按钮)
 - **DataTransfer 生命周期**:`getData` 仅在 `drop` 事件中可读取,`dragstart` 中设置的数据在 `dragover` 中无法读取
 
-## 参考文献
-
-WHATWG HTML Living Standard：https://html.spec.whatwg.org/
-MDN HTML 文档：https://developer.mozilla.org/zh-CN/docs/Web/HTML
-W3C Markup Validation Service：https://validator.w3.org/
-WebAIM 可访问性指南：https://webaim.org/
-
 ## 延伸阅读
-
 HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
 CSS 样式与布局，见 007-css 模块。
 JavaScript DOM 操作，见 008-javascript 模块。
-尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 HTML/CSS 课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

@@ -2837,8 +2837,6 @@ print(cmd)                                        -- *3\r\n$3\r\nSET\r\n$5\r\nmy
 
 **经验总结**：Redis 客户端的实现展示了 Table 在协议解析中的应用。Table 的灵活结构使得复杂嵌套数据（如 RESP 数组）能自然映射，无需定义专门的类。
 
-## 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **习题 1**：判断以下代码的输出，并解释原因。
@@ -3368,34 +3366,6 @@ local function process_users(users)
     return concat(parts)
 end
 ```
-
-## 10. 参考文献
-
-[1] Ierusalimschy R, de Figueiredo L H, Celes W. Lua 5.4 Reference Manual[M]. Geneva: Lua.org, 2020. DOI: 10.5555/3508499
-
-[2] Ierusalimschy R, de Figueiredo L H, Celes W. The Evolution of Lua[C]. In: Proceedings of the Third ACM SIGPLAN Conference on History of Programming Languages (HOPL III). New York: ACM, 2007: 2-1-2-21. DOI: 10.1145/1238844.1238846
-
-[3] Ierusalimschy R, de Figueiredo L H, Celes W. Lua: an Extensible Extension Language[J]. Software: Practice and Experience, 1996, 26(6): 635-652. DOI: 10.1002/(SICI)1097-024X(199606)26:6<635::AID-SPE26>3.0.CO;2-P
-
-[4] Ierusalimschy R. Programming in Lua[M]. 4th ed. Geneva: Lua.org, 2016. ISBN: 978-8590379869
-
-[5] Stern K. Lua Table Internals[EB/OL]. (2018-05-15). https://www.lua.org/gems/table.html
-
-[6] Roberto Ierusalimschy's personal page. https://www.inf.puc-rio.br/~roberto/
-
-[7] Kein-Hong Man. A No-Frills Introduction to Lua 5.1 VM Instructions[EB/OL]. (2006-05-10). https://luaforge.net/docman/view.php/83/98/ANoFrillsIntroToLua51VMInstructions.pdf
-
-[8] Pall M. The LuaJIT Project[J/OL]. https://luajit.org/, 2024.
-
-[9] agentzh. OpenResty Best Practices[EB/OL]. https://github.com/openresty/lua-nginx-module, 2024.
-
-[10] Bates C, Harris J, Wilson G. Programming in Lua[M]. 4th ed. Cambridge: MIT Press, 2016. DOI: 10.5555/3002636
-
-[11] Figueiredo L H, Ierusalimschy R, Celes W. The Design and Implementation of a Language for Extending Applications[C]. In: Proceedings of XXI Semish (Brazilian Software Engineering Symposium). Curitiba: SBC, 1994: 185-196.
-
-[12] Tratt L. Dynamically Typed Languages[J]. Advances in Computers, 2005, 77: 149-184. DOI: 10.1016/S0065-2458(09)01005-4
-
-## 11. 延伸阅读
 
 ### 11.1 官方文档与规范
 

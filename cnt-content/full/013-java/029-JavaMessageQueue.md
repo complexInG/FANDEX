@@ -1039,8 +1039,6 @@ offsets.forEach((tp, offset) -> consumer.seek(tp, offset));
 
 **教训**：必须有容量预案与降级方案。
 
-## 9. 知识讲解与要点分析（原习题）
-
 ### 9.1 基础题
 
 **题 1**：解释 JMS 与 AMQP 的核心区别。
@@ -1099,40 +1097,6 @@ offsets.forEach((tp, offset) -> consumer.seek(tp, offset));
 - 或使用顺序消息中间件（如 RocketMQ 顺序消息）。
 - 权衡顺序性与吞吐量。
 
-## 10. 参考文献
-
-[1] Apache Software Foundation. 2024. *Apache Kafka Documentation*. https://kafka.apache.org/documentation/
-
-[2] Kreps, J., Narkhede, N., and Rao, J. 2011. *Kafka: A Distributed Messaging System for Log Processing*. In *Proceedings of the 6th International Workshop on Networking Meets Databases (NetDB '11)*. ACM. https://kafka.apache.org/
-
-[3] VMware Inc. 2024. *RabbitMQ Documentation*. https://www.rabbitmq.com/documentation.html
-
-[4] Apache Software Foundation. 2024. *Apache RocketMQ Documentation*. https://rocketmq.apache.org/docs/
-
-[5] Apache Software Foundation. 2024. *Apache Pulsar Documentation*. https://pulsar.apache.org/docs/
-
-[6] OASIS. 2011. *Advanced Message Queuing Protocol (AMQP) Version 1.0*. OASIS Standard. https://docs.oasis-open.org/amqp/core/v1.0/amqp-core-complete-v1.0.pdf
-
-[7] JSR 914 Expert Group. 2003. *Java Message Service (JMS) API*. Java Community Process. https://jcp.org/en/jsr/detail?id=914
-
-[8] Kreps, J. 2014. *Questioning the Lambda Architecture*. O'Reilly Media. https://www.oreilly.com/radar/questioning-the-lambda-architecture/
-
-[9] Apache Software Foundation. 2024. *Kafka IPDL and Protocol Specification*. https://kafka.apache.org/protocol.html
-
-[10] Wang, X. et al. 2017. *The Design and Implementation of RocketMQ*. Alibaba Tech Blog. https://rocketmq.apache.org/rocketmq/the-design-of-transactional-message/
-
-[11] Sijie, M. and Jia, Z. 2018. *Apache Pulsar: The Unified Messaging Platform*. ApacheCon. https://pulsar.apache.org/blog/
-
-[12] Kleppmann, M. 2017. *Designing Data-Intensive Applications*. O'Reilly Media.
-
-[13] Apache Software Foundation. 2024. *Kafka Streams Documentation*. https://kafka.apache.org/documentation/streams/
-
-[14] Kreps, J., Narkhede, N. 2014. *Kafka: A Distributed Messaging System for Log Processing (Revisited)*. LinkedIn Engineering. https://engineering.linkedin.com/kafka
-
-[15] Carlin, M. et al. 2020. *Exactly-Once Semantics in Kafka*. Confluent White Paper. https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/
-
-## 11. 延伸阅读
-
 ### 11.1 官方文档
 
 - Apache Kafka Documentation. https://kafka.apache.org/documentation/
@@ -1164,19 +1128,8 @@ offsets.forEach((tp, offset) -> consumer.seek(tp, offset));
 
 **总结**：消息队列是分布式系统的核心中间件，从最早的解耦工具演化为事件流平台、状态转移日志、Event Sourcing 基础设施。理解 MQ 的本质——"持久化的、有序的、可重放的、可扩展的消息流"——是正确选型与设计的前提。生产环境需重点关注可靠性（acks、ISR、min.insync.replicas）、顺序性（分区设计、业务键路由）、可观测性（Lag、延迟、死信）三大维度。
 
-## 参考文献
-
-Oracle Java 官方文档：https://docs.oracle.com/en/java/
-OpenJDK 项目：https://openjdk.org/
-Java 语言规范：https://docs.oracle.com/javase/specs/
-Spring 官方文档：https://spring.io/projects/spring-boot
-Baeldung 教程站：https://www.baeldung.com/
-Maven 官方文档：https://maven.apache.org/guides/
-
 ## 延伸阅读
-
 Java 并发与 JUC，见 013-java 模块并发文档。
 JVM 内存与 GC 调优，见 013-java 模块 JVM 文档。
 Spring Boot 微服务与 Kubernetes，见 013-java/041-JavaKubernetes 文档。
 数据库访问（JDBC/JPA），见 019-sql 模块相关文档。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Java 全栈课程；尚硅谷 Bilibili 空间（https://space.bilibili.com/302417610 ）提供 Java 进阶课程。

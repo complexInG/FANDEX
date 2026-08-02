@@ -1657,8 +1657,6 @@ spec:
 
 **结果**：log4shell 事件中 2 小时内完成全量检测与修复。
 
-## 知识讲解与要点分析（原习题）
-
 ### 选择题
 
 **1. AES-GCM 模式中 nonce 重复会导致什么问题？**
@@ -1906,87 +1904,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
 ```
 
 </details>
-
-## 知识讲解与要点分析（原思考题）
-
-**1. 解释为什么 JWT 不能简单"撤销"，以及如何实现 JWT 吊销机制？**
-
-<details>
-<summary>参考答案</summary>
-
-JWT 是无状态的，签名后服务端不存储，过期前始终有效。这是 JWT 的核心优势（无状态、可水平扩展），也是核心缺陷（无法立即吊销）。
-
-吊销方案：
-
-1. **黑名单**：Redis 存储被吊销的 JWT ID（jti），每次请求校验。失去无状态优势，但实现简单。
-
-2. **短期 Access Token + 长期 Refresh Token**：Access Token 15 分钟过期，吊销只需删除 Refresh Token。最常用方案。
-
-3. **Token 版本号**：用户登出或修改密码时，递增数据库中的 `token_version`，JWT 中携带版本号，每次请求校验。增加数据库查询。
-
-4. **Push-based 吊销**：通过 WebSocket 或 SSE 推送吊销通知到所有服务实例，服务更新本地缓存。
-
-推荐方案 2 + 1 组合：短期 Access Token 减少吊销窗口，Refresh Token 黑名单覆盖强制登出场景。
-
-</details>
-
-**2. 对比基于边界防御（Castle-and-Moat）与零信任架构（Zero Trust），并说明 Java 应用在零信任下的设计调整。**
-
-<details>
-<summary>参考答案</summary>
-
-**Castle-and-Moat**：
-
-- 信任内网，不信任外网。
-- 防火墙、VPN 作为边界。
-- 内网服务无认证。
-- 一旦边界突破，横向移动无阻碍。
-
-**Zero Trust**：
-
-- 永不信任，始终验证。
-- 身份作为新边界。
-- 每次请求都认证与授权。
-- 最小权限原则。
-
-**Java 应用调整**：
-
-1. **每个服务都是 Resource Server**：使用 Spring Security OAuth2 Resource Server，验证每个请求的 JWT。
-2. **服务间 mTLS**：使用 Istio/Linkerd 自动 mTLS，证书由 SPIFFE/SPIRE 管理。
-3. **方法级授权**：`@PreAuthorize` 在每个业务方法上声明权限。
-4. **细粒度访问控制**：RBAC + ABAC，基于用户属性（部门、职位）+ 资源属性（所有者、敏感度）。
-5. **持续认证**：JWT 短期 + Refresh Token + 实时吊销。
-6. **审计日志**：每个请求记录 who、what、when、where、result。
-7. **密钥管理**：Vault + 动态密钥，应用启动时获取，定期轮换。
-8. **网络策略**：K8s NetworkPolicy 限制 Pod 间通信，仅允许必要端口。
-
-</details>
-
-## 参考文献
-
-[1] A. J. Menezes, P. C. van Oorschot, and S. A. Vanstone. 2018. Handbook of Applied Cryptography (5th printing). CRC Press. DOI: 10.1201/9781439821916
-
-[2] J. Katz and Y. Lindell. 2020. Introduction to Modern Cryptography (3rd ed.). CRC Press. DOI: 10.1201/9781351133036
-
-[3] E. Rescorla. 2018. RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3. IETF. DOI: 10.17487/RFC8446
-
-[4] N. Sakimura, J. Bradley, and M. Jones. 2014. RFC 7519: JSON Web Token (JWT). IETF. DOI: 10.17487/RFC7519
-
-[5] D. Hardt. 2012. RFC 6749: The OAuth 2.0 Authorization Framework. IETF. DOI: 10.17487/RFC6749
-
-[6] Spring Team. 2024. Spring Security Reference Documentation 6.3.x. VMware. Retrieved July 21, 2026 from https://docs.spring.io/spring-security/reference/
-
-[7] OWASP Foundation. 2025. OWASP Top 10:2025. Open Web Application Security Project. Retrieved July 21, 2026 from https://owasp.org/Top10/
-
-[8] A. Biryukov, D. Dinu, and D. Khovratovich. 2016. Argon2: New Generation of Memory-Hard Functions for Password Hashing and Other Applications. In Proceedings of the 23rd European Symposium on Research in Computer Security (ESORICS 2016). Springer, 453–473. DOI: 10.1007/978-3-319-45744-4_23
-
-[9] M. Jones and J. Hildebrand. 2015. RFC 7515: JSON Web Signature (JWS). IETF. DOI: 10.17487/RFC7515
-
-[10] D. Bernstein and T. Lange. 2017. Post-Quantum Cryptography. Nature 549, 7671 (Sep. 2017), 188–194. DOI: 10.1038/nature23461
-
-[11] C. M. Lonvick and J. Salzer. 2023. Zero Trust Architecture. NIST Special Publication 800-207. National Institute of Standards and Technology. DOI: 10.6028/NIST.SP.800-207
-
-[12] J. A. Kowalski, S. F. Li, and A. R. Monteiro. 2023. A Survey of Java Deserialization Vulnerabilities and Defenses. ACM Computing Surveys 56, 3 (Nov. 2023), 1–38. DOI: 10.1145/3611094
 
 ## 延伸阅读
 

@@ -223,8 +223,6 @@ $$\text{It is/was} + \text{被强调部分} + \text{that/who} + \text{其余部�
 | 分译法 | 拆成多个短句   | 适合长从句   |
 | 合译法 | 合并为一个句子 | 适合并列短句 |
 
-## 6. 知识讲解与要点分析（原练习）
-
 ### 6.1 日常训练
 
 1. **每日一句**：每天分析一个长难句，写出结构图
@@ -243,20 +241,10 @@ $$\text{It is/was} + \text{被强调部分} + \text{that/who} + \text{其余部�
 翻译：
 ```
 
-## 参考文献
-
-Merriam-Webster：https://www.merriam-webster.com/
-Stack Overflow：https://stackoverflow.com/
-Hacker News：https://news.ycombinator.com/
-BBC Learning English：https://www.bbc.co.uk/learningenglish
-
 ## 延伸阅读
-
 英语学习材料与规划，见 005-english 模块文档。
 技术写作（Markdown），见 002-markdown 模块。
 开源协作中的英语沟通，见 004-github 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供英语课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

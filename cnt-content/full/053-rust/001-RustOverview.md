@@ -200,57 +200,16 @@ Go 语法简单、并发模型友好、编译快；Rust 控制精细、无 GC、
 
 误区五：以为 Rust 只适合系统编程。它同样适合 Web 后端（axum）、CLI 工具、WebAssembly、数据处理——生态已经相当成熟。
 
-## 9. 实战练习
-
-1. **环境搭建**：安装 Rust（rustup），运行 `cargo new hello-world`，用 `cargo run` 输出 "Hello, Rust!"，再用 `cargo fmt` 与 `cargo clippy` 检查代码。
-
-2. **所有权实验**：抄写第 3.1 节的移动示例，注释掉 `println!("{s}")` 观察编译器报错；再写一个 Copy 类型（整数）的对照实验，理解两种语义的差异。
-
-3. **Cargo 依赖**：在项目中添加 serde 依赖，实现一个结构体的 JSON 序列化与反序列化。
-
-4. **错误处理**：写一个读取文件并解析整数的程序，用 `Result` 与 `?` 传播错误，对比 `unwrap()` 与 `?` 的差异。
-
-5. **对比分析**：用第 6 节的对比表格，结合你熟悉的语言（C/C++/Go），分析"一个系统编程场景你更倾向用哪种语言，为什么"。
-
-## 10. 参考资源
-
-Rust 官方文档：https://www.rust-lang.org/zh-CN/learn
-
-《Rust 程序设计语言》中文版：https://kaisery.github.io/trpl-zh-cn/
-
-Rust 标准库文档：https://doc.rust-lang.org/std/
-
-crates.io：https://crates.io/
-
-Rust 异步编程：https://rust-lang.github.io/async-book/
-
-Rust Playground（在线实验）：https://play.rust-lang.org/
-
-黑马程序员 Bilibili 空间：https://space.bilibili.com/37974444
-
-尚硅谷 Bilibili 空间：https://space.bilibili.com/302417610
-
 ## 11. 小结
 
 Rust 是系统编程领域近十年最重要的语言创新：所有权系统把内存安全从"运行时检查"提升到"编译期保证"。学习 Rust 不仅获得一门语言，更能加深对内存、并发与编译原理的理解——这些知识对所有语言都有迁移价值。
 
 **给初学者的建议**：不要被"所有权很可怕"的传闻吓退。先跟着 TRPL 前几章把"移动/借用/生命周期"三个概念过一遍，再动手写小项目——一旦编译器"教"会你它的思考方式，你会感谢它的严格。
 
-## 参考文献
-
-Rust 官方文档：https://www.rust-lang.org/zh-CN/learn
-Rust 程序设计语言（中文书）：https://kaisery.github.io/trpl-zh-cn/
-Rust 标准库文档：https://doc.rust-lang.org/std/
-crates.io：https://crates.io/
-Rust 异步编程：https://rust-lang.github.io/async-book/
-
 ## 延伸阅读
-
 Rust 与 C 对比（内存安全），见 025-c 模块。
 Rust 与 C++ 对比，见 026-cpp 模块。
 系统编程与嵌入式，见 035-iot 模块。
-黑马程序员 Bilibili 空间（https://space.bilibili.com/37974444 ）提供 Rust 课程。
-
 ## 深度专题扩展
 
 以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。

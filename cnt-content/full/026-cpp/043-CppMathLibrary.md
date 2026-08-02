@@ -1255,8 +1255,6 @@ Numerical Algorithms Group(NAG)提供高质量数值库:
   - SIMD 与多线程自动并行
 - **结果**:比原 NumPy + Pandas 方案快 15 倍,延迟从 50ms 降至 3ms
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题 1**: 解释 IEEE 754 双精度浮点数的 64 位结构,并指出机器精度。
@@ -1463,50 +1461,6 @@ void multiplyOptimized(const Matrix& A, const Matrix& B, Matrix& C) {
   }
 }
 ```
-
-## 参考文献
-
-[1] Overton, M. L. 2001. Numerical Computing with IEEE Floating Point Arithmetic. Society for Industrial and Applied Mathematics. ISBN: 978-0898715715. DOI: https://doi.org/10.1137/1.9780898718072
-
-[2] Higham, N. J. 2002. Accuracy and Stability of Numerical Algorithms, 2nd edition. Society for Industrial and Applied Mathematics. ISBN: 978-0898715217. DOI: https://doi.org/10.1137/1.9780898718027
-
-[3] Golub, G. H. and Van Loan, C. F. 2013. Matrix Computations, 4th edition. Johns Hopkins University Press. ISBN: 978-1421407944.
-
-[4] Dongarra, J. J., Croz, J. D., Hammarling, S., and Duff, I. S. 1990. A set of level 3 basic linear algebra subprograms. ACM Transactions on Mathematical Software (TOMS), 16(1), 1-17. DOI: https://doi.org/10.1145/77626.79170
-
-[5] Lawson, C. L., Hanson, R. J., Kincaid, D. R., and Krogh, F. T. 1979. Basic linear algebra subprograms for Fortran usage. ACM Transactions on Mathematical Software (TOMS), 5(3), 308-323. DOI: https://doi.org/10.1145/355841.355847
-
-[6] Anderson, E., Bai, Z., Bischof, C., Blackford, S., Demmel, J., Dongarra, J., Du Croz, J., Greenbaum, A., Hammarling, S., McKenney, A., and Sorensen, D. 1999. LAPACK Users' Guide, 3rd edition. Society for Industrial and Applied Mathematics. ISBN: 978-0898714470. DOI: https://doi.org/10.1137/1.9780898719604
-
-[7] Guennebaud, G., Jacob, B., et al. 2010. Eigen v3. Available: http://eigen.tuxfamily.org
-
-[8] Veldhuizen, T. 1998. Arrays in Blitz++. In Proceedings of the 2nd International Scientific Computing in Object-Oriented Parallel Environments (ISCOPE '98), 223-230. Springer. DOI: https://doi.org/10.1007/3-540-49372-7_24
-
-[9] Matsumoto, M. and Nishimura, T. 1998. Mersenne twister: a 623-dimensionally equidistributed uniform pseudo-random number generator. ACM Transactions on Modeling and Computer Simulation (TOMACS), 8(1), 3-30. DOI: https://doi.org/10.1145/272991.272995
-
-[10] O'Neill, M. E. 2014. PCG: A Family of Simple Fast Space-Efficient Statistically Good Algorithms for Random Number Generation. Harvey Mudd College. Available: https://www.pcg-random.org/pdf/hmc-cs-2014-0905.pdf
-
-[11] Hennessy, J. L. and Patterson, D. A. 2017. Computer Architecture: A Quantitative Approach, 6th edition. Morgan Kaufmann. ISBN: 978-0128119051.
-
-[12] Cooley, J. W. and Tukey, J. W. 1965. An algorithm for the machine calculation of complex Fourier series. Mathematics of Computation, 19(90), 297-301. DOI: https://doi.org/10.1090/S0025-5718-1965-0178586-1
-
-[13] Kahan, W. 1965. Pracniques: further remarks on reducing truncation errors. Communications of the ACM, 8(1), 40. DOI: https://doi.org/10.1145/363707.363723
-
-[14] Neumaier, A. 1974. Rundungsfehleranalyse einiger Verfahren zur Summation endlicher Summen. Zeitschrift für Angewandte Mathematik und Mechanik, 54(1), 39-51. DOI: https://doi.org/10.1002/zamm.19740540106
-
-[15] IEEE Computer Society. 2019. IEEE Standard for Floating-Point Arithmetic. IEEE Std 754-2019. DOI: https://doi.org/10.1109/IEEESTD.2019.8766229
-
-[16] ISO/IEC 14882:2023. Information technology — Programming languages — C++. International Organization for Standardization. Available: https://www.iso.org/standard/83626.html
-
-[17] Demmel, J. and Nguyen, H. D. 2015. Parallel reproducible accumulation. IEEE Transactions on Computers, 64(7), 2060-2073. DOI: https://doi.org/10.1109/TC.2014.2345613
-
-[18] Iglberger, K., Hager, G., Treibig, J., and Rüde, U. 2012. Expression templates revisited: A performance analysis of current methodologies. SIAM Journal on Scientific Computing, 34(2), C42-C69. DOI: https://doi.org/10.1137/110830125
-
-[19] Goto, K. and van de Geijn, R. 2008. Anatomy of high-performance matrix multiplication. ACM Transactions on Mathematical Software (TOMS), 34(3), 1-25. DOI: https://doi.org/10.1145/1356052.1356053
-
-[20] Hennessy, J. L. and Patterson, D. A. 2019. A New Golden Age for Computer Architecture. Communications of the ACM, 62(2), 48-60. DOI: https://doi.org/10.1145/3282307
-
-## 延伸阅读
 
 ### 官方文档
 

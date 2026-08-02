@@ -1704,8 +1704,6 @@ Istio 的 Envoy sidecar 本质是一个网络层中间件：
 
 ---
 
-## 知识讲解与要点分析（原练习）
-
 ### 9.1 基础题
 
 **题 1**：实现一个中间件 `RequestSizeLimit(max int64)`，限制请求体大小，超过则返回 413。
@@ -1818,116 +1816,7 @@ func (c *counter) Get() int64 {
 }
 ```
 
-### 9.3 思考题
-
-**题 5**：在微服务架构中，认证中间件应该在 API 网关层还是业务服务层实现？请从性能、安全、可维护性三个维度分析。
-
-**API 网关层实现**：
-
-- 性能：未认证请求被网关拦截，不占用后端资源。
-- 安全：统一认证逻辑，避免各业务服务实现不一致。
-- 可维护性：认证逻辑单点维护，更新无需重新部署所有业务服务。
-
-**业务服务层实现**：
-
-- 性能：每个业务服务都要重复认证，增加开销。
-- 安全：业务服务直接暴露时（绕过网关）仍有保护。
-- 可维护性：各服务可自定义认证逻辑（如不同服务用不同 secret）。
-
-**推荐方案**：两层都实现，但职责不同：
-
-- 网关层：JWT 解析、黑名单检查、限流。
-- 业务服务层：权限校验（基于网关注入的用户信息）。
-
-这样既保证性能（网关拦截无效请求），又保证安全（业务服务不信任网关，自行校验权限）。
-
-**题 6**：假设你需要实现一个支持灰度发布的中间件，根据请求头 `X-Canary: true` 将流量路由到灰度版本。请设计中间件实现，并说明如何与反向代理集成。
-
-```go
-type CanaryConfig struct {
-    CanaryBackend  string // 灰度版本后端地址，如 "http://canary:8080"
-    StableBackend  string // 稳定版本后端地址，如 "http://stable:8080"
-    CanaryHeader   string // 灰度标识头，如 "X-Canary"
-    CanaryValue    string // 灰度标识值，如 "true"
-    CanaryPercent  int    // 灰度比例（0-100），无头部时按比例随机
-}
-
-func Canary(cfg CanaryConfig) func(http.Handler) http.Handler {
-    proxy := httputil.NewSingleHostReverseProxy
-    canaryProxy := proxy(mustParseURL(cfg.CanaryBackend))
-    stableProxy := proxy(mustParseURL(cfg.StableBackend))
-
-    return func(next http.Handler) http.Handler {
-        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            // 优先使用头部判断
-            if r.Header.Get(cfg.CanaryHeader) == cfg.CanaryValue {
-                canaryProxy.ServeHTTP(w, r)
-                return
-            }
-            // 按比例随机
-            if cfg.CanaryPercent > 0 && rand.Intn(100) < cfg.CanaryPercent {
-                canaryProxy.ServeHTTP(w, r)
-                return
-            }
-            stableProxy.ServeHTTP(w, r)
-        })
-    }
-}
-
-func mustParseURL(raw string) *url.URL {
-    u, err := url.Parse(raw)
-    if err != nil {
-        panic(err)
-    }
-    return u
-}
-```
-
-**集成方式**：
-
-1. 将 Canary 中间件放在最内层，替代业务 Handler。
-2. 通过配置中心（如 Apollo、Nacos）动态调整 `CanaryPercent`。
-3. 监控灰度版本与稳定版本的错误率、延迟，自动调整比例。
-
----
-
-## 10. 参考文献
-
-以下参考文献遵循 ACM Reference Format：
-
-- Google. (2023). *net/http package documentation*. The Go Programming Language. https://pkg.go.dev/net/http
-
-- Eames, A., & Cox, B. (2014). *Decorators and functional composition in Go*. The Go Blog. https://go.dev/blog/
-
-- Corkum, P. (2015). *chi: A lightweight, idiomatic and composable router for building Go HTTP services*. GitHub. https://github.com/go-chi/chi
-
-- Jinzhu, T. (2014). *gin: HTTP web framework written in Go*. GitHub. https://github.com/gin-gonic/gin
-
-- Laboureur, O. (2015). *echo: High performance, minimalist Go web framework*. GitHub. https://github.com/labstack/echo
-
-- Lite, J. (2020). *fiber: Express inspired web framework written in Go*. GitHub. https://github.com/gofiber/fiber
-
-- Sajal, V., & Bhatt, R. (2017). *Designing Microservices with API Gateway Pattern*. In *Proceedings of the 2017 IEEE International Conference on Services Computing (SCC '17)* (pp. 470-477). IEEE.
-
-- OpenTelemetry Authors. (2023). *OpenTelemetry Specification*. CNCF. https://opentelemetry.io/docs/
-
-- Prometheus Authors. (2023). *Prometheus Documentation*. CNCF. https://prometheus.io/docs/
-
-- Burns, B., & Hightower, K. (2022). *Kubernetes Up and Running* (3rd ed.). O'Reilly Media.
-
-- Mulesoft. (2020). *Web Service Middleware: A Survey*. ACM Computing Surveys, 53(2), 1-35. https://doi.org/10.1145/3340338
-
----
-
 ## 11. 扩展阅读
-
-### 11.1 官方资源
-
-- **Go 标准库 net/http**：https://pkg.go.dev/net/http
-- **Go 1.22 Release Notes（ServeMux 增强）**：https://go.dev/doc/go1.22
-- **chi 官方文档**：https://pkg.go.dev/github.com/go-chi/chi
-- **gin 官方文档**：https://gin-gonic.com/docs/
-- **echo 官方文档**：https://echo.labstack.com/docs
 
 ### 11.2 经典论文
 

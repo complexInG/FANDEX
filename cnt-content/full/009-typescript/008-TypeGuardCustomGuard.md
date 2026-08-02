@@ -1163,8 +1163,6 @@ function parseMessage(raw: string): WSMessage {
 }
 ```
 
-## 知识讲解与要点分析（原习题）
-
 ### 基础题
 
 **题目 1**：解释以下代码中 `x` 的类型在每个分支中分别是什么。
@@ -1336,30 +1334,6 @@ function filterUsers(arr: unknown[]): User[] {
   1. 显式类型断言：`arr.filter(isUser) as User[]`
   2. 用 `reduce`：`arr.reduce<User[]>((acc, x) => isUser(x) ? [...acc, x] : acc, [])`
   3. 升级到 TS 5.5+
-
-## 参考文献
-
-[1] Microsoft. 2018. TypeScript 2.0 Release Notes: User-Defined Type Guards. Microsoft Developer Network. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html
-
-[2] Microsoft. 2019. TypeScript 3.7 Release Notes: Assertion Functions. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html
-
-[3] Cormac Flanagan, Shaz Qadeer. 2002. Predicate Refinement for Dynamic Analysis. In Proceedings of the 9th International Static Analysis Symposium (SAS '02). Springer, 205–222. DOI: https://doi.org/10.1007/3-540-45789-5_15
-
-[4] Patrick M. Rondon, Ming Kawaguchi, Ranjit Jhala. 2010. Liquid Types. In Proceedings of the 31st ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI '10). ACM, 388–401. DOI: https://doi.org/10.1145/1806596.1806639
-
-[5] Microsoft. 2018. TypeScript 2.7 Release Notes: in Operator Type Guard. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html
-
-[6] Francesco Logozzo, Manuel Fähndrich. 2008. On the Completeness of Flow-Insensitive Flow Analyses. In Proceedings of the 9th International Conference on Verification, Model Checking, and Abstract Interpretation (VMCAI '08). Springer, 188–203. DOI: https://doi.org/10.1007/978-3-540-78163-9_18
-
-[7] Microsoft. 2021. TypeScript 4.4 Release Notes: Control Flow Analysis of Aliased Conditions. Retrieved July 21, 2026 from https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html
-
-[8] Tony Hoare. 1961. Algorithm 252: The Emptiness Problem. Communications of the ACM 4, 8 (August 1961), 398. DOI: https://doi.org/10.1145/366678.366720 —— 早期类型守卫与断言的理论基础。
-
-[9] Bertrand Meyer. 1992. Applying "Design by Contract". IEEE Computer 25, 10 (October 1992), 40–51. DOI: https://doi.org/10.1109/2.161279 —— 断言函数的设计哲学源头。
-
-[10] Alexander Aiken, Edward L. Wimmers. 1993. Type Inclusion Constraints and Type Inference. In Proceedings of the 7th ACM SIGPLAN International Conference on Functional Programming (ICFP '93). ACM, 31–41. DOI: https://doi.org/10.1145/165180.165191
-
-## 延伸阅读
 
 ### 官方文档
 
