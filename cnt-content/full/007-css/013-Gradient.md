@@ -24,411 +24,14 @@ prerequisites:
 
 ---
 
-## 1. 历史动机与发展脉络
+## 0. 直觉：渐变就是“颜色之间的过渡”
 
-### 1.1 CSS 3（2012）：渐变的诞生
+渐变的本质是让颜色从一个点平滑过渡到另一个点：线性渐变沿一条直线过渡（`linear-gradient`），径向渐变从圆心向外扩散（`radial-gradient`），锥形渐变绕一圈过渡（`conic-gradient`）。
 
-CSS 渐变最初由 Apple 于 2008 年在 WebKit 中以 `-webkit-gradient(linear, ...)` 形式实现，语法较为复杂。2012 年，[CSS Images Module Level 3](https://www.w3.org/TR/css-images-3/) 将其标准化为现代语法：
+先记住一个最小模型：`background: linear-gradient(方向, 起点色, 终点色)`。剩下的参数（角度、色标、重复）都是在这个模型上加细节。
 
-```css
-background: linear-gradient(to right, red, blue);
-background: radial-gradient(circle at center, red, blue);
-```
-
-CSS 3 渐变的核心贡献：
-
-1. **无需图片资源**：渐变作为 CSS 值，无需 HTTP 请求，提升性能。
-2. **可缩放**：矢量特性，任意尺寸下保持清晰。
-3. **可动画**：通过 `background-position` 或 CSS Houdini 实现渐变动画（虽有限制）。
-
-### 1.2 `conic-gradient` 的引入（2017）
-
-`conic-gradient`（锥形渐变）由 Lea Verou 提议，2017 年在 Chrome 69 与 Safari 12.1 中实现。它填补了 CSS 渐变在「角度方向」上的空白：
-
-```css
-background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
-```
-
-锥形渐变的典型应用：饼图、色轮、进度环。
-
-### 1.3 CSS Images Module Level 4（2020-2024）
-
-[CSS Images Module Level 4](https://www.w3.org/TR/css-images-4/) 引入了多项重要改进：
-
-1. **色彩空间插值**：`in oklab`、`in srgb` 等关键字，允许指定插值色彩空间。
-2. **双色标语法**：`red 25% 50%` 表示红色从 25% 持续到 50%（硬边界）。
-3. **`interpolar` 关键字**：精细控制色相插值（`shorter`、`longer`、`increasing`、`decreasing`）。
-
-```css
-/* Level 4 新语法 */
-background: linear-gradient(in oklab, red, blue);
-background: linear-gradient(in oklch longer hue, red, blue);
-background: linear-gradient(red 25%, blue 50% 75%, green);
-```
-
-### 1.4 色彩空间的演进
-
-| 年份 | 事件 | 核心变化 |
-| --- | --- | --- |
-| 2008 | WebKit 首次实现渐变 | `-webkit-gradient(linear, ...)` 语法 |
-| 2012 | CSS Images Level 3 推荐 | `linear-gradient` / `radial-gradient` 标准化 |
-| 2017 | `conic-gradient` 浏览器支持 | 锥形渐变落地 |
-| 2020 | CSS Color Level 4 草案 | 引入 `oklab` / `oklch` 色彩空间 |
-| 2022 | CSS Images Level 4 草案 | `in oklab` 插值语法 |
-| 2023 | `lab()` / `lch()` / `oklab()` 浏览器支持 | 现代色彩空间普及 |
-| 2024 | Display P3 与 Rec2020 支持 | 广色域渐变 |
-
-### 1.5 演进时间线
-
-| 年份 | 规范/事件 | 核心变化 |
-| --- | --- | --- |
-| 2008 | WebKit 渐变实现 | 私有语法 |
-| 2012 | CSS Images Level 3 | `linear-gradient` / `radial-gradient` 标准化 |
-| 2017 | `conic-gradient` | 锥形渐变（Chrome 69+, Safari 12.1+） |
-| 2019 | 双色标语法 | `red 25% 50%` 硬边界 |
-| 2020 | `in oklab` 插值 | Lab/LCH 色彩空间插值 |
-| 2022 | CSS Images Level 4 草案 | 完整的插值控制语法 |
-| 2023 | `color-mix()` 函数 | 渐变色标动态混合 |
-| 2024 | Display P3 渐变 | 广色域支持 |
-
----
-
-## 2. 形式化定义
-
-### 2.1 规范条款
-
-依据 [CSS Images Module Level 3 §4](https://www.w3.org/TR/css-images-3/#gradients)：
-
-> A gradient is an image that smoothly transitions from one color to another. CSS defines three types of gradients: linear, radial, and conic.
-
-以及 [CSS Images Module Level 4 §4.1](https://www.w3.org/TR/css-images-4/#linear-gradients)：
-
-> If the first argument to a linear gradient is the keyword `in`, the next keyword specifies the color space used for interpolation.
-
-### 2.2 核心术语
-
-| 术语 | 英文 | 定义 |
-| --- | --- | --- |
-| 渐变 | Gradient | 平滑过渡的图像 |
-| 梯度线 | Gradient Line | 线性渐变的方向轴 |
-| 渐变射线 | Gradient Ray | 径向渐变的中心射线 |
-| 渐变弧 | Gradient Arc | 锥形渐变的角度弧 |
-| 色标 | Color Stop | 渐变中的颜色锚点 |
-| 色标位置 | Color Stop Position | 色标在渐变中的位置（百分比或长度） |
-| 插值 | Interpolation | 两色标之间的颜色过渡 |
-| 硬边界 | Hard Stop | 两色标位置相同，形成清晰边界 |
-| 色带效应 | Banding | 渐变中的颜色断层 |
-
-### 2.3 `linear-gradient` 语法
-
-```
-linear-gradient() = 
-  linear-gradient(
-    [ [ <angle> | to <side-or-corner> ] || in <color-space> [ longer | shorter | increasing | decreasing ] hue? ]?,
-    <color-stop-list>
-  )
-
-<side-or-corner> = [left | right] || [top | bottom]
-<color-stop-list> = <color-stop>#{2,}
-<color-stop> = <color> <length-percentage>?{1,2}
-```
-
-### 2.4 `radial-gradient` 语法
-
-```
-radial-gradient() = 
-  radial-gradient(
-    [ [ <ending-shape> || <size> ] [ at <position> ]? ]?,
-    <color-stop-list>
-  )
-
-<ending-shape> = circle | ellipse
-<size> = 
-  closest-side | farthest-side | 
-  closest-corner | farthest-corner |
-  <length> | <length-percentage>{2}
-```
-
-### 2.5 `conic-gradient` 语法
-
-```
-conic-gradient() = 
-  conic-gradient(
-    [ [ from <angle> ]? [ at <position> ]? ] || in <color-space>,
-    <color-stop-list>
-  )
-```
-
-### 2.6 形式化定义：梯度线
-
-设 `linear-gradient` 的方向为 $\theta$（从上至下为 $0°$，顺时针增加），容器尺寸为 $w \times h$。梯度线的长度 $L$ 定义为：
-
-$$
-L = |w \sin\theta| + |h \cos\theta|
-$$
-
-梯度线的起点与终点位于容器的对角线上，方向由 $\theta$ 决定。色标 $c_i$ 在位置 $p_i \in [0, 1]$ 处，颜色由线性插值得到：
-
-$$
-\text{Color}(p) = \text{Interpolate}(c_i, c_{i+1}, \frac{p - p_i}{p_{i+1} - p_i})
-$$
-
-其中 $p_i \le p \le p_{i+1}$。
-
-### 2.7 形式化定义：径向渐变
-
-设径向渐变的中心为 $(x_0, y_0)$，形状为 `circle` 或 `ellipse`，尺寸由关键字决定：
-
-- `closest-side`：到最近边的距离。
-- `farthest-side`：到最远边的距离。
-- `closest-corner`：到最近角的距离。
-- `farthest-corner`（默认）：到最远角的距离。
-
-对于 `circle` 形状，渐变半径 $r$ 定义为：
-
-$$
-r_{\text{closest-side}} = \min(x_0, w - x_0, y_0, h - y_0)
-$$
-
-$$
-r_{\text{farthest-corner}} = \max\left(\sqrt{x_0^2 + y_0^2}, \sqrt{(w-x_0)^2 + y_0^2}, \ldots\right)
-$$
-
-### 2.8 形式化定义：锥形渐变
-
-锥形渐变的颜色由角度 $\phi$ 决定（从 12 点方向开始，顺时针）：
-
-$$
-\text{Color}(\phi) = \text{Interpolate}(c_i, c_{i+1}, \frac{\phi - \phi_i}{\phi_{i+1} - \phi_i})
-$$
-
-其中 $\phi \in [0°, 360°]$。若首尾色标颜色不同，渐变在 $360°$ 处形成「接缝」。
-
-### 2.9 颜色插值
-
-CSS Images Level 4 支持的色彩空间：
-
-| 色彩空间 | 语法 | 特性 |
-| --- | --- | --- |
-| `srgb` | `in srgb` | 默认，sRGB 线性插值 |
-| `linearRGB` | `in linearRGB` | 线性 RGB 空间，物理准确 |
-| `lab` | `in lab` | CIE Lab 空间，感知均匀 |
-| `lch` | `in lch` | CIE LCH 空间，色相旋转 |
-| `oklab` | `in oklab` | Oklab 空间（2020），改进 Lab |
-| `oklch` | `in oklch` | OkLCH 空间，现代首选 |
-| `hsl` | `in hsl` | HSL 空间，色相插值 |
-| `hwb` | `in hwb` | HWB 空间 |
-| `xyz` | `in xyz` | CIE XYZ 空间 |
-
-色相插值方式（仅 `lch`、`oklch`、`hsl`、`hwb`）：
-
-- `shorter hue`（默认）：取较短弧。
-- `longer hue`：取较长弧。
-- `increasing hue`：递增方向。
-- `decreasing hue`：递减方向。
-
-### 2.10 色标位置规则
-
-色标位置的规范化规则：
-
-1. 若首色标未指定位置，默认为 `0%`。
-2. 若末色标未指定位置，默认为 `100%`。
-3. 若中间色标位置小于前一个，自动调整为前一个的位置。
-4. 双色标语法 `red 25% 50%` 等价于 `red 25%, red 50%`，形成硬边界。
-
-形式化地，设色标序列为 $\{(c_i, p_i)\}_{i=1}^{n}$，规范化函数：
-
-$$
-p_i' = \max(p_i, p_{i-1}') \quad \text{for } i \ge 2
-$$
-
----
-
-## 3. 理论推导与原理解析
-
-### 3.1 梯度线的几何推导
-
-给定容器尺寸 $w \times h$ 与方向角 $\theta$（从上至下为 $0°$，顺时针），梯度线的方向向量为：
-
-$$
-\vec{d} = (\sin\theta, \cos\theta)
-$$
-
-梯度线垂直于方向向量的「梯度线长度」$L$ 通过容器的对角线投影得到：
-
-$$
-L = |w \sin\theta| + |h \cos\theta|
-$$
-
-**证明**：设梯度线方向为 $\vec{d} = (\sin\theta, \cos\theta)$，其垂直方向为 $\vec{n} = (-\cos\theta, \sin\theta)$。容器的四个角在 $\vec{n}$ 方向上的投影差即为梯度线长度：
-
-$$
-L = \max_{\text{corners}} \vec{c} \cdot \vec{n} - \min_{\text{corners}} \vec{c} \cdot \vec{n}
-$$
-
-展开后得到 $L = |w \sin\theta| + |h \cos\theta|$。
-
-### 3.2 颜色插值的数学模型
-
-给定两色标 $c_1 = (r_1, g_1, b_1)$ 与 $c_2 = (r_2, g_2, b_2)$，插值参数 $t \in [0, 1]$。
-
-**sRGB 线性插值**（默认）：
-
-$$
-c(t) = (1-t) c_1 + t c_2
-$$
-
-**linearRGB 插值**：
-
-先进行 gamma 解码（sRGB → linear），插值后再编码（linear → sRGB）：
-
-$$
-c_{\text{linear}}(t) = (1-t) \cdot \text{srgbToLinear}(c_1) + t \cdot \text{srgbToLinear}(c_2)
-$$
-
-$$
-c(t) = \text{linearToSrgb}(c_{\text{linear}}(t))
-$$
-
-**Oklab 插值**：
-
-转换到 Oklab 空间，插值，再转换回 sRGB：
-
-$$
-c_{\text{oklab}}(t) = (1-t) \cdot \text{srgbToOklab}(c_1) + t \cdot \text{srgbToOklab}(c_2)
-$$
-
-$$
-c(t) = \text{oklabToSrgb}(c_{\text{oklab}}(t))
-$$
-
-Oklab 空间的优势在于**感知均匀性**：相同数值差对应相同感知色差，因此渐变更平滑。
-
-### 3.3 色相插值的歧义
-
-在 HSL / LCH / OkLCH 空间中，色相是角度，两色相之间存在两种插值路径：
-
-- **较短弧**（`shorter`，默认）：取角度差 $< 180°$ 的方向。
-- **较长弧**（`longer`）：取角度差 $> 180°$ 的方向。
-
-设两色相为 $h_1$ 与 $h_2$（角度，$[0°, 360°)$），较短弧的角度差：
-
-$$
-\Delta h_{\text{short}} = \begin{cases}
-h_2 - h_1, & \text{if } |h_2 - h_1| \le 180° \\
-h_2 - h_1 - 360°, & \text{if } h_2 - h_1 > 180° \\
-h_2 - h_1 + 360°, & \text{if } h_2 - h_1 < -180°
-\end{cases}
-$$
-
-例如，从红色（$0°$）到蓝色（$240°$）：
-
-- 较短弧：$240° - 0° = 240° > 180°$，取 $240° - 360° = -120°$，即逆时针 $120°$，经过品红。
-- 较长弧：$240°$，顺时针 $240°$，经过黄、绿、青。
-
-### 3.4 色带效应（Banding）的成因
-
-色带效应是渐变中颜色断层现象，成因包括：
-
-1. **8-bit 量化**：每个通道仅 256 级，长渐变中相邻像素色差小于 1 级时无法区分。
-2. **sRGB 非线性**：sRGB 空间的线性插值在感知上不均匀，暗部细节丢失。
-3. **显示器精度**：8-bit 显示器无法呈现更细的色差。
-
-**缓解方案**：
-
-1. **使用 `oklab` 插值**：感知均匀，减少暗部断层。
-2. **添加微噪声**：通过 SVG 噪声或 `background-image` 叠加细小纹理，打破色带。
-3. **使用更高位深**：10-bit / 12-bit 显示器与 HDR 内容。
-
-```css
-/* 方案 1：oklab 插值 */
-background: linear-gradient(in oklab, #000, #fff);
-
-/* 方案 2：叠加噪声 */
-background: 
-  url('noise.svg'),
-  linear-gradient(to right, #000, #fff);
-```
-
-### 3.5 硬边界的几何特性
-
-硬边界（Hard Stop）是两色标位置相同的情况，形成清晰的颜色分界：
-
-```css
-background: linear-gradient(to right, red 50%, blue 50%);
-```
-
-数学上，硬边界处的颜色不连续：
-
-$$
-\lim_{p \to 50\%^-} \text{Color}(p) = \text{red}, \quad \lim_{p \to 50\%^+} \text{Color}(p) = \text{blue}
-$$
-
-硬边界常用于：
-
-- 条纹纹理（配合 `repeating-linear-gradient`）。
-- 分块布局（如双栏分色）。
-- 进度条（已完成 vs 未完成）。
-
-### 3.6 `repeating-linear-gradient` 的周期性
-
-`repeating-linear-gradient` 将色标位置模 $L$（梯度线长度），形成周期性渐变：
-
-```css
-background: repeating-linear-gradient(
-  45deg,
-  #fff 0px,
-  #fff 10px,
-  #000 10px,
-  #000 20px
-);
-```
-
-数学上，周期 $T = 20\text{px}$，颜色函数：
-
-$$
-\text{Color}(p) = \text{Color}_{\text{base}}(p \mod T)
-$$
-
-其中 $\text{Color}_{\text{base}}$ 是基础渐变（$[0, T]$ 范围内）。
-
-### 3.7 `conic-gradient` 的接缝问题
-
-`conic-gradient` 在 $0°$ 与 $360°$ 处可能形成「接缝」：
-
-```css
-background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
-```
-
-若首尾色标颜色相同（如上例的 `red`），接缝不可见。若不同，则形成硬边界。
-
-**解决方案**：
-
-1. 首尾使用相同颜色。
-2. 使用 `from <angle>` 调整起始角度，将接缝隐藏在不可见区域。
-3. 通过 `mask` 遮挡接缝。
-
-### 3.8 渐变与可访问性
-
-渐变对可访问性的影响：
-
-1. **对比度**：渐变背景上的文字对比度随位置变化，需确保所有位置满足 WCAG AA 标准（4.5:1）。
-2. **色盲友好**：避免仅依赖色相差异传递信息，应配合明度或图案。
-3. **`prefers-contrast`**：用户偏好高对比度时，应简化或移除渐变。
-
-```css
-@media (prefers-contrast: more) {
-  .button {
-    background: solid-color;  /* 移除渐变 */
-  }
-}
-```
-
----
-
-## 4. 代码示例
-
-### 4.1 基础示例：线性渐变
+## 1. 核心必读：代码示例
+### 1.1 基础示例：线性渐变
 
 ```html
 <!DOCTYPE html>
@@ -488,7 +91,13 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.2 重复线性渐变：条纹纹理
+**讲解：**
+
+- `linear-gradient(to right, red, blue)` 从左到右过渡，方向关键词可用角度（`45deg`）替代；
+- 多色标写法 `linear-gradient(red, yellow, blue)` 让颜色分段过渡；
+- “硬边界”用相同位置的色标实现（如 `red 50%, blue 50%`），是条纹与分隔效果的基础。
+
+### 1.2 重复线性渐变：条纹纹理
 
 ```html
 <!DOCTYPE html>
@@ -542,7 +151,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.3 径向渐变：光晕效果
+### 1.3 径向渐变：光晕效果
 
 ```html
 <!DOCTYPE html>
@@ -598,7 +207,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.4 径向渐变尺寸关键字
+### 1.4 径向渐变尺寸关键字
 
 ```html
 <!DOCTYPE html>
@@ -641,7 +250,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.5 锥形渐变：饼图与色轮
+### 1.5 锥形渐变：饼图与色轮
 
 ```html
 <!DOCTYPE html>
@@ -723,7 +332,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.6 渐变文字
+### 1.6 渐变文字
 
 ```html
 <!DOCTYPE html>
@@ -778,7 +387,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.7 渐变边框
+### 1.7 渐变边框
 
 ```html
 <!DOCTYPE html>
@@ -824,7 +433,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.8 Oklab 插值对比
+### 1.8 Oklab 插值对比
 
 ```html
 <!DOCTYPE html>
@@ -898,7 +507,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.9 多层渐变叠加
+### 1.9 多层渐变叠加
 
 ```html
 <!DOCTYPE html>
@@ -949,7 +558,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.10 企业级：可主题化渐变系统
+### 1.10 企业级：可主题化渐变系统
 
 ```html
 <!DOCTYPE html>
@@ -1040,7 +649,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.11 渐变动画
+### 1.11 渐变动画
 
 ```html
 <!DOCTYPE html>
@@ -1121,7 +730,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 </html>
 ```
 
-### 4.12 渐变可视化工具
+### 1.12 渐变可视化工具
 
 ```html
 <!DOCTYPE html>
@@ -1243,9 +852,8 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 
 ---
 
-## 5. 对比分析
-
-### 5.1 CSS 渐变 vs SVG 渐变
+## 2. 对比分析
+### 2.1 CSS 渐变 vs SVG 渐变
 
 | 维度 | CSS 渐变 | SVG 渐变 |
 | --- | --- | --- |
@@ -1257,7 +865,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 | **可访问性** | 同 CSS | 同 SVG，支持 ARIA |
 | **适用场景** | 背景纹理、按钮、卡片 | 复杂矢量图形、图表 |
 
-### 5.2 主流框架的渐变实践
+### 2.2 主流框架的渐变实践
 
 | 框架 | 渐变工具类 | 自定义方式 |
 | --- | --- | --- |
@@ -1267,7 +875,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 | **Ant Design 5** | `linear-gradient` 内联 | 通过 `ConfigProvider` 主题 |
 | **GitHub Primer** | `color-gradient-*` 工具类 | 通过设计令牌 |
 
-### 5.3 Tailwind vs Bootstrap 的渐变哲学
+### 2.3 Tailwind vs Bootstrap 的渐变哲学
 
 **Tailwind CSS**：
 
@@ -1293,7 +901,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 - 优势：简洁，语义清晰。
 - 劣势：自定义渐变需修改 Sass 源码。
 
-### 5.4 色彩空间插值对比
+### 2.4 色彩空间插值对比
 
 | 色彩空间 | 视觉效果 | 适用场景 | 浏览器支持 |
 | --- | --- | --- | --- |
@@ -1306,7 +914,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 | **HSL** | 色相直接插值 | 简单色相过渡 | Chrome 99+, Safari 16.2+ |
 | **HWB** | 色相 + 白黑分量 | 柔和过渡 | 实验性 |
 
-### 5.5 渐变类型对比
+### 2.5 渐变类型对比
 
 | 渐变类型 | 几何模型 | 典型应用 | 浏览器支持 |
 | --- | --- | --- | --- |
@@ -1319,9 +927,8 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 
 ---
 
-## 6. 常见陷阱与最佳实践
-
-### 6.1 陷阱 1：色带效应
+## 3. 常见陷阱与最佳实践
+### 3.1 陷阱 1：色带效应
 
 **问题**：长渐变中出现颜色断层。
 
@@ -1342,7 +949,7 @@ background:
   linear-gradient(to bottom, #000, #333);
 ```
 
-### 6.2 陷阱 2：硬边界滥用
+### 3.2 陷阱 2：硬边界滥用
 
 **问题**：硬边界（Hard Stop）形成生硬分界，视觉突兀。
 
@@ -1353,7 +960,7 @@ background: linear-gradient(to right, red 50%, blue 50%);
 
 **最佳实践**：硬边界仅用于纹理或明确分块，装饰性渐变应平滑过渡。
 
-### 6.3 陷阱 3：`background-clip: text` 兼容性
+### 3.3 陷阱 3：`background-clip: text` 兼容性
 
 **问题**：`background-clip: text` 在旧浏览器不支持。
 
@@ -1379,7 +986,7 @@ background: linear-gradient(to right, red 50%, blue 50%);
 }
 ```
 
-### 6.4 陷阱 4：渐变方向歧义
+### 3.4 陷阱 4：渐变方向歧义
 
 **问题**：`to top right` 与 `45deg` 的渐变方向不同。
 
@@ -1393,7 +1000,7 @@ background: linear-gradient(45deg, red, blue);
 
 **最佳实践**：理解规范定义，`to <corner>` 是「指向角落」，`<angle>` 是「梯度线方向」。
 
-### 6.5 陷阱 5：径向渐变尺寸歧义
+### 3.5 陷阱 5：径向渐变尺寸歧义
 
 **问题**：未指定尺寸关键字时，`farthest-corner` 是默认值，可能不符合预期。
 
@@ -1407,7 +1014,7 @@ background: radial-gradient(circle closest-side at 30% 40%, red, blue);
 
 **最佳实践**：显式指定尺寸关键字，避免歧义。
 
-### 6.6 陷阱 6：`conic-gradient` 接缝
+### 3.6 陷阱 6：`conic-gradient` 接缝
 
 **问题**：`conic-gradient` 首尾色标不同时形成接缝。
 
@@ -1423,7 +1030,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue);
 background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 ```
 
-### 6.7 陷阱 7：渐变动画性能
+### 3.7 陷阱 7：渐变动画性能
 
 **问题**：通过 `background-position` 动画渐变可能触发重绘，性能差。
 
@@ -1456,7 +1063,7 @@ animation: color 3s infinite;
 }
 ```
 
-### 6.8 陷阱 8：可访问性忽视
+### 3.8 陷阱 8：可访问性忽视
 
 **问题**：渐变背景上文字对比度不足。
 
@@ -1482,9 +1089,8 @@ animation: color 3s infinite;
 
 ---
 
-## 7. 工程实践
-
-### 7.1 渐变设计令牌
+## 4. 工程实践
+### 4.1 渐变设计令牌
 
 ```css
 /* design-tokens.css - 渐变设计令牌 */
@@ -1521,7 +1127,7 @@ animation: color 3s infinite;
 }
 ```
 
-### 7.2 PostCSS 渐变增强
+### 4.2 PostCSS 渐变增强
 
 ```javascript
 // postcss.config.js - PostCSS 渐变增强
@@ -1541,7 +1147,7 @@ module.exports = {
 };
 ```
 
-### 7.3 SCSS 渐变 Mixin
+### 4.3 SCSS 渐变 Mixin
 
 ```scss
 // _gradients.scss - SCSS 渐变 Mixin 集合
@@ -1592,7 +1198,7 @@ module.exports = {
 }
 ```
 
-### 7.4 Tailwind 自定义渐变
+### 4.4 Tailwind 自定义渐变
 
 ```javascript
 // tailwind.config.js - 自定义渐变
@@ -1641,7 +1247,7 @@ module.exports = {
 <div class="bg-gradient-mesh">网格渐变</div>
 ```
 
-### 7.5 React 渐变组件
+### 4.5 React 渐变组件
 
 ```tsx
 // GradientBackground.tsx - React 渐变组件
@@ -1700,7 +1306,7 @@ export function GradientBackground({
 </GradientBackground>
 ```
 
-### 7.6 渐变性能优化
+### 4.6 渐变性能优化
 
 ```css
 /* 性能优化技巧 */
@@ -1755,7 +1361,7 @@ body::before {
 }
 ```
 
-### 7.7 渐变调试工具
+### 4.7 渐变调试工具
 
 ```javascript
 // 渐变调试工具：解析并可视化色标
@@ -1787,7 +1393,7 @@ console.log(grad);
 // { type: 'linear', stops: [{color: 'red', position: '0%'}, {color: 'blue', position: '100%'}] }
 ```
 
-### 7.8 Playwright 视觉回归测试
+### 4.8 Playwright 视觉回归测试
 
 ```javascript
 // gradient.spec.js - Playwright 视觉回归测试
@@ -1830,9 +1436,8 @@ test.describe('渐变视觉回归测试', () => {
 
 ---
 
-## 8. 案例研究
-
-### 8.1 Bootstrap 5 的渐变实践
+## 5. 案例研究
+### 5.1 Bootstrap 5 的渐变实践
 
 Bootstrap 5 提供 `bg-gradient` 修饰类，将纯色背景转为渐变：
 
@@ -1864,7 +1469,7 @@ Bootstrap 5 提供 `bg-gradient` 修饰类，将纯色背景转为渐变：
 
 **特点**：渐变效果较微妙（顶部高光），适合按钮与卡片。
 
-### 8.2 Tailwind CSS v3.4 的渐变实践
+### 5.2 Tailwind CSS v3.4 的渐变实践
 
 Tailwind 提供原子化的渐变工具类：
 
@@ -1887,7 +1492,7 @@ Tailwind 提供原子化的渐变工具类：
 
 **特点**：原子类组合，灵活度高，适合快速原型。
 
-### 8.3 Material Design 3 的渐变实践
+### 5.3 Material Design 3 的渐变实践
 
 Material Design 3 强调「色彩角色」，渐变用于状态变化：
 
@@ -1913,7 +1518,7 @@ Material Design 3 强调「色彩角色」，渐变用于状态变化：
 }
 ```
 
-### 8.4 GitHub Primer 的渐变实践
+### 5.4 GitHub Primer 的渐变实践
 
 ```css
 /* Primer 渐变实践 */
@@ -1934,7 +1539,7 @@ Material Design 3 强调「色彩角色」，渐变用于状态变化：
 }
 ```
 
-### 8.5 Stripe 的渐变美学
+### 5.5 Stripe 的渐变美学
 
 Stripe 官网以渐变背景闻名，其核心技术是多层径向渐变叠加：
 
@@ -1949,7 +1554,7 @@ Stripe 官网以渐变背景闻名，其核心技术是多层径向渐变叠加�
 }
 ```
 
-### 8.6 生产事故：渐变导致的 CLS
+### 5.6 生产事故：渐变导致的 CLS
 
 **场景**：某电商首页使用大尺寸渐变背景，导致 Cumulative Layout Shift（CLS）评分恶化。
 
@@ -2214,6 +1819,449 @@ document.body.style.background = generateRainbowGradient(6);
 - **[SVG 2: Gradients and Patterns](https://www.w3.org/TR/SVG2/pservers.html)** - SVG 渐变规范。
 
 ---
+
+## 6. 深入理解（选读）
+
+> 以下内容适合想彻底搞懂机制原理的读者，第一遍学习可跳过。
+
+### 6.1 历史演进
+
+### 6.1.1 CSS 3（2012）：渐变的诞生
+
+CSS 渐变最初由 Apple 于 2008 年在 WebKit 中以 `-webkit-gradient(linear, ...)` 形式实现，语法较为复杂。2012 年，[CSS Images Module Level 3](https://www.w3.org/TR/css-images-3/) 将其标准化为现代语法：
+
+```css
+background: linear-gradient(to right, red, blue);
+background: radial-gradient(circle at center, red, blue);
+```
+
+CSS 3 渐变的核心贡献：
+
+1. **无需图片资源**：渐变作为 CSS 值，无需 HTTP 请求，提升性能。
+2. **可缩放**：矢量特性，任意尺寸下保持清晰。
+3. **可动画**：通过 `background-position` 或 CSS Houdini 实现渐变动画（虽有限制）。
+
+### 6.1.2 `conic-gradient` 的引入（2017）
+
+`conic-gradient`（锥形渐变）由 Lea Verou 提议，2017 年在 Chrome 69 与 Safari 12.1 中实现。它填补了 CSS 渐变在「角度方向」上的空白：
+
+```css
+background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+```
+
+锥形渐变的典型应用：饼图、色轮、进度环。
+
+### 6.1.3 CSS Images Module Level 4（2020-2024）
+
+[CSS Images Module Level 4](https://www.w3.org/TR/css-images-4/) 引入了多项重要改进：
+
+1. **色彩空间插值**：`in oklab`、`in srgb` 等关键字，允许指定插值色彩空间。
+2. **双色标语法**：`red 25% 50%` 表示红色从 25% 持续到 50%（硬边界）。
+3. **`interpolar` 关键字**：精细控制色相插值（`shorter`、`longer`、`increasing`、`decreasing`）。
+
+```css
+/* Level 4 新语法 */
+background: linear-gradient(in oklab, red, blue);
+background: linear-gradient(in oklch longer hue, red, blue);
+background: linear-gradient(red 25%, blue 50% 75%, green);
+```
+
+### 6.1.4 色彩空间的演进
+
+| 年份 | 事件 | 核心变化 |
+| --- | --- | --- |
+| 2008 | WebKit 首次实现渐变 | `-webkit-gradient(linear, ...)` 语法 |
+| 2012 | CSS Images Level 3 推荐 | `linear-gradient` / `radial-gradient` 标准化 |
+| 2017 | `conic-gradient` 浏览器支持 | 锥形渐变落地 |
+| 2020 | CSS Color Level 4 草案 | 引入 `oklab` / `oklch` 色彩空间 |
+| 2022 | CSS Images Level 4 草案 | `in oklab` 插值语法 |
+| 2023 | `lab()` / `lch()` / `oklab()` 浏览器支持 | 现代色彩空间普及 |
+| 2024 | Display P3 与 Rec2020 支持 | 广色域渐变 |
+
+### 6.1.5 演进时间线
+
+| 年份 | 规范/事件 | 核心变化 |
+| --- | --- | --- |
+| 2008 | WebKit 渐变实现 | 私有语法 |
+| 2012 | CSS Images Level 3 | `linear-gradient` / `radial-gradient` 标准化 |
+| 2017 | `conic-gradient` | 锥形渐变（Chrome 69+, Safari 12.1+） |
+| 2019 | 双色标语法 | `red 25% 50%` 硬边界 |
+| 2020 | `in oklab` 插值 | Lab/LCH 色彩空间插值 |
+| 2022 | CSS Images Level 4 草案 | 完整的插值控制语法 |
+| 2023 | `color-mix()` 函数 | 渐变色标动态混合 |
+| 2024 | Display P3 渐变 | 广色域支持 |
+
+---
+
+### 6.2 形式化定义
+
+### 6.2.1 规范条款
+
+依据 [CSS Images Module Level 3 §4](https://www.w3.org/TR/css-images-3/#gradients)：
+
+> A gradient is an image that smoothly transitions from one color to another. CSS defines three types of gradients: linear, radial, and conic.
+
+以及 [CSS Images Module Level 4 §4.1](https://www.w3.org/TR/css-images-4/#linear-gradients)：
+
+> If the first argument to a linear gradient is the keyword `in`, the next keyword specifies the color space used for interpolation.
+
+### 6.2.2 核心术语
+
+| 术语 | 英文 | 定义 |
+| --- | --- | --- |
+| 渐变 | Gradient | 平滑过渡的图像 |
+| 梯度线 | Gradient Line | 线性渐变的方向轴 |
+| 渐变射线 | Gradient Ray | 径向渐变的中心射线 |
+| 渐变弧 | Gradient Arc | 锥形渐变的角度弧 |
+| 色标 | Color Stop | 渐变中的颜色锚点 |
+| 色标位置 | Color Stop Position | 色标在渐变中的位置（百分比或长度） |
+| 插值 | Interpolation | 两色标之间的颜色过渡 |
+| 硬边界 | Hard Stop | 两色标位置相同，形成清晰边界 |
+| 色带效应 | Banding | 渐变中的颜色断层 |
+
+### 6.2.3 `linear-gradient` 语法
+
+```
+linear-gradient() = 
+  linear-gradient(
+    [ [ <angle> | to <side-or-corner> ] || in <color-space> [ longer | shorter | increasing | decreasing ] hue? ]?,
+    <color-stop-list>
+  )
+
+<side-or-corner> = [left | right] || [top | bottom]
+<color-stop-list> = <color-stop>#{2,}
+<color-stop> = <color> <length-percentage>?{1,2}
+```
+
+### 6.2.4 `radial-gradient` 语法
+
+```
+radial-gradient() = 
+  radial-gradient(
+    [ [ <ending-shape> || <size> ] [ at <position> ]? ]?,
+    <color-stop-list>
+  )
+
+<ending-shape> = circle | ellipse
+<size> = 
+  closest-side | farthest-side | 
+  closest-corner | farthest-corner |
+  <length> | <length-percentage>{2}
+```
+
+### 6.2.5 `conic-gradient` 语法
+
+```
+conic-gradient() = 
+  conic-gradient(
+    [ [ from <angle> ]? [ at <position> ]? ] || in <color-space>,
+    <color-stop-list>
+  )
+```
+
+### 6.2.6 形式化定义：梯度线
+
+设 `linear-gradient` 的方向为 $\theta$（从上至下为 $0°$，顺时针增加），容器尺寸为 $w \times h$。梯度线的长度 $L$ 定义为：
+
+$$
+L = |w \sin\theta| + |h \cos\theta|
+$$
+
+梯度线的起点与终点位于容器的对角线上，方向由 $\theta$ 决定。色标 $c_i$ 在位置 $p_i \in [0, 1]$ 处，颜色由线性插值得到：
+
+$$
+\text{Color}(p) = \text{Interpolate}(c_i, c_{i+1}, \frac{p - p_i}{p_{i+1} - p_i})
+$$
+
+其中 $p_i \le p \le p_{i+1}$。
+
+### 6.2.7 形式化定义：径向渐变
+
+设径向渐变的中心为 $(x_0, y_0)$，形状为 `circle` 或 `ellipse`，尺寸由关键字决定：
+
+- `closest-side`：到最近边的距离。
+- `farthest-side`：到最远边的距离。
+- `closest-corner`：到最近角的距离。
+- `farthest-corner`（默认）：到最远角的距离。
+
+对于 `circle` 形状，渐变半径 $r$ 定义为：
+
+$$
+r_{\text{closest-side}} = \min(x_0, w - x_0, y_0, h - y_0)
+$$
+
+$$
+r_{\text{farthest-corner}} = \max\left(\sqrt{x_0^2 + y_0^2}, \sqrt{(w-x_0)^2 + y_0^2}, \ldots\right)
+$$
+
+### 6.2.8 形式化定义：锥形渐变
+
+锥形渐变的颜色由角度 $\phi$ 决定（从 12 点方向开始，顺时针）：
+
+$$
+\text{Color}(\phi) = \text{Interpolate}(c_i, c_{i+1}, \frac{\phi - \phi_i}{\phi_{i+1} - \phi_i})
+$$
+
+其中 $\phi \in [0°, 360°]$。若首尾色标颜色不同，渐变在 $360°$ 处形成「接缝」。
+
+### 6.2.9 颜色插值
+
+CSS Images Level 4 支持的色彩空间：
+
+| 色彩空间 | 语法 | 特性 |
+| --- | --- | --- |
+| `srgb` | `in srgb` | 默认，sRGB 线性插值 |
+| `linearRGB` | `in linearRGB` | 线性 RGB 空间，物理准确 |
+| `lab` | `in lab` | CIE Lab 空间，感知均匀 |
+| `lch` | `in lch` | CIE LCH 空间，色相旋转 |
+| `oklab` | `in oklab` | Oklab 空间（2020），改进 Lab |
+| `oklch` | `in oklch` | OkLCH 空间，现代首选 |
+| `hsl` | `in hsl` | HSL 空间，色相插值 |
+| `hwb` | `in hwb` | HWB 空间 |
+| `xyz` | `in xyz` | CIE XYZ 空间 |
+
+色相插值方式（仅 `lch`、`oklch`、`hsl`、`hwb`）：
+
+- `shorter hue`（默认）：取较短弧。
+- `longer hue`：取较长弧。
+- `increasing hue`：递增方向。
+- `decreasing hue`：递减方向。
+
+### 6.2.10 色标位置规则
+
+色标位置的规范化规则：
+
+1. 若首色标未指定位置，默认为 `0%`。
+2. 若末色标未指定位置，默认为 `100%`。
+3. 若中间色标位置小于前一个，自动调整为前一个的位置。
+4. 双色标语法 `red 25% 50%` 等价于 `red 25%, red 50%`，形成硬边界。
+
+形式化地，设色标序列为 $\{(c_i, p_i)\}_{i=1}^{n}$，规范化函数：
+
+$$
+p_i' = \max(p_i, p_{i-1}') \quad \text{for } i \ge 2
+$$
+
+---
+
+### 6.3 理论推导与原理解析
+
+### 6.3.1 梯度线的几何推导
+
+给定容器尺寸 $w \times h$ 与方向角 $\theta$（从上至下为 $0°$，顺时针），梯度线的方向向量为：
+
+$$
+\vec{d} = (\sin\theta, \cos\theta)
+$$
+
+梯度线垂直于方向向量的「梯度线长度」$L$ 通过容器的对角线投影得到：
+
+$$
+L = |w \sin\theta| + |h \cos\theta|
+$$
+
+**证明**：设梯度线方向为 $\vec{d} = (\sin\theta, \cos\theta)$，其垂直方向为 $\vec{n} = (-\cos\theta, \sin\theta)$。容器的四个角在 $\vec{n}$ 方向上的投影差即为梯度线长度：
+
+$$
+L = \max_{\text{corners}} \vec{c} \cdot \vec{n} - \min_{\text{corners}} \vec{c} \cdot \vec{n}
+$$
+
+展开后得到 $L = |w \sin\theta| + |h \cos\theta|$。
+
+### 6.3.2 颜色插值的数学模型
+
+给定两色标 $c_1 = (r_1, g_1, b_1)$ 与 $c_2 = (r_2, g_2, b_2)$，插值参数 $t \in [0, 1]$。
+
+**sRGB 线性插值**（默认）：
+
+$$
+c(t) = (1-t) c_1 + t c_2
+$$
+
+**linearRGB 插值**：
+
+先进行 gamma 解码（sRGB → linear），插值后再编码（linear → sRGB）：
+
+$$
+c_{\text{linear}}(t) = (1-t) \cdot \text{srgbToLinear}(c_1) + t \cdot \text{srgbToLinear}(c_2)
+$$
+
+$$
+c(t) = \text{linearToSrgb}(c_{\text{linear}}(t))
+$$
+
+**Oklab 插值**：
+
+转换到 Oklab 空间，插值，再转换回 sRGB：
+
+$$
+c_{\text{oklab}}(t) = (1-t) \cdot \text{srgbToOklab}(c_1) + t \cdot \text{srgbToOklab}(c_2)
+$$
+
+$$
+c(t) = \text{oklabToSrgb}(c_{\text{oklab}}(t))
+$$
+
+Oklab 空间的优势在于**感知均匀性**：相同数值差对应相同感知色差，因此渐变更平滑。
+
+### 6.3.3 色相插值的歧义
+
+在 HSL / LCH / OkLCH 空间中，色相是角度，两色相之间存在两种插值路径：
+
+- **较短弧**（`shorter`，默认）：取角度差 $< 180°$ 的方向。
+- **较长弧**（`longer`）：取角度差 $> 180°$ 的方向。
+
+设两色相为 $h_1$ 与 $h_2$（角度，$[0°, 360°)$），较短弧的角度差：
+
+$$
+\Delta h_{\text{short}} = \begin{cases}
+h_2 - h_1, & \text{if } |h_2 - h_1| \le 180° \\
+h_2 - h_1 - 360°, & \text{if } h_2 - h_1 > 180° \\
+h_2 - h_1 + 360°, & \text{if } h_2 - h_1 < -180°
+\end{cases}
+$$
+
+例如，从红色（$0°$）到蓝色（$240°$）：
+
+- 较短弧：$240° - 0° = 240° > 180°$，取 $240° - 360° = -120°$，即逆时针 $120°$，经过品红。
+- 较长弧：$240°$，顺时针 $240°$，经过黄、绿、青。
+
+### 6.3.4 色带效应（Banding）的成因
+
+色带效应是渐变中颜色断层现象，成因包括：
+
+1. **8-bit 量化**：每个通道仅 256 级，长渐变中相邻像素色差小于 1 级时无法区分。
+2. **sRGB 非线性**：sRGB 空间的线性插值在感知上不均匀，暗部细节丢失。
+3. **显示器精度**：8-bit 显示器无法呈现更细的色差。
+
+**缓解方案**：
+
+1. **使用 `oklab` 插值**：感知均匀，减少暗部断层。
+2. **添加微噪声**：通过 SVG 噪声或 `background-image` 叠加细小纹理，打破色带。
+3. **使用更高位深**：10-bit / 12-bit 显示器与 HDR 内容。
+
+```css
+/* 方案 1：oklab 插值 */
+background: linear-gradient(in oklab, #000, #fff);
+
+/* 方案 2：叠加噪声 */
+background: 
+  url('noise.svg'),
+  linear-gradient(to right, #000, #fff);
+```
+
+### 6.3.5 硬边界的几何特性
+
+硬边界（Hard Stop）是两色标位置相同的情况，形成清晰的颜色分界：
+
+```css
+background: linear-gradient(to right, red 50%, blue 50%);
+```
+
+数学上，硬边界处的颜色不连续：
+
+$$
+\lim_{p \to 50\%^-} \text{Color}(p) = \text{red}, \quad \lim_{p \to 50\%^+} \text{Color}(p) = \text{blue}
+$$
+
+硬边界常用于：
+
+- 条纹纹理（配合 `repeating-linear-gradient`）。
+- 分块布局（如双栏分色）。
+- 进度条（已完成 vs 未完成）。
+
+### 6.3.6 `repeating-linear-gradient` 的周期性
+
+`repeating-linear-gradient` 将色标位置模 $L$（梯度线长度），形成周期性渐变：
+
+```css
+background: repeating-linear-gradient(
+  45deg,
+  #fff 0px,
+  #fff 10px,
+  #000 10px,
+  #000 20px
+);
+```
+
+数学上，周期 $T = 20\text{px}$，颜色函数：
+
+$$
+\text{Color}(p) = \text{Color}_{\text{base}}(p \mod T)
+$$
+
+其中 $\text{Color}_{\text{base}}$ 是基础渐变（$[0, T]$ 范围内）。
+
+### 6.3.7 `conic-gradient` 的接缝问题
+
+`conic-gradient` 在 $0°$ 与 $360°$ 处可能形成「接缝」：
+
+```css
+background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+```
+
+若首尾色标颜色相同（如上例的 `red`），接缝不可见。若不同，则形成硬边界。
+
+**解决方案**：
+
+1. 首尾使用相同颜色。
+2. 使用 `from <angle>` 调整起始角度，将接缝隐藏在不可见区域。
+3. 通过 `mask` 遮挡接缝。
+
+### 6.3.8 渐变与可访问性
+
+渐变对可访问性的影响：
+
+1. **对比度**：渐变背景上的文字对比度随位置变化，需确保所有位置满足 WCAG AA 标准（4.5:1）。
+2. **色盲友好**：避免仅依赖色相差异传递信息，应配合明度或图案。
+3. **`prefers-contrast`**：用户偏好高对比度时，应简化或移除渐变。
+
+```css
+@media (prefers-contrast: more) {
+  .button {
+    background: solid-color;  /* 移除渐变 */
+  }
+}
+```
+
+---
+
+## 7. 本章综合挑战（选做）
+
+1. 用 `linear-gradient` 做一张“红黄蓝”三色过渡的背景，再用角度 45deg 重做一次；
+2. 用 `repeating-linear-gradient` 做条纹纹理，并调整色标位置改变条纹宽度；
+3. 用 `radial-gradient` 做光晕效果，用 `conic-gradient` 做简易饼图；
+4. 用 `background-clip: text` 实现渐变文字，注意兼容性处理。
+
+## 8. 核心知识点
+
+> 一句话记住渐变：`linear` 直线过渡、`radial` 向外扩散、`conic` 绕圈过渡；`repeating-*` 可重复，色标定位置，`background-clip: text` 做渐变文字。
+
+- `linear-gradient(方向, 色标...)`：直线渐变，方向可用角度或关键词；
+- `radial-gradient(形状, 色标...)`：从中心向外扩散；
+- `conic-gradient`：绕圆心一圈过渡，适合饼图与色轮；
+- `repeating-linear/radial-gradient`：重复图案（条纹、网格）；
+- 色标位置用百分比或长度控制，相同位置形成硬边界；
+- 渐变是 `background-image` 的取值，可与背景色叠加；
+- 渐变文字：`background-clip: text` + `color: transparent`。
+
+## 9. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 色带效应 | 色标过少出现明显分带 | 增加中间色标或用 oklab 插值 |
+| 硬边界滥用 | 视觉突兀 | 只在条纹/分隔场景使用 |
+| `background-clip: text` 兼容 | 旧浏览器不支持 | 提供纯色兜底 |
+| 方向歧义 | `to right` 与 `45deg` 混用 | 统一使用角度或关键词 |
+| 渐变动画性能 | 大面积渐变重绘开销大 | 缩小渐变区域或用合成层 |
+| 对比度不足 | 渐变文字可读性差 | 保证文字与背景对比度 |
+
+## 10. 扩展学习
+
+- 背景体系：`css/015-BackgroundEnhancement`；
+- 颜色与插值：`css/050-ModernColorSpace`（oklab/oklch）；
+- 动画：`css/017-CSSAnimationTransition` 中渐变动画；
+- 实战：`css/045-CSSProjectExampleResponsiveHomepage` 的渐变应用。
 
 ## 附录 A：术语表
 
