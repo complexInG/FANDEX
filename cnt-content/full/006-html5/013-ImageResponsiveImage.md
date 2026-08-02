@@ -16,304 +16,83 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-## 1. 历史动机与发展脉络
+## 0. 直觉：图片为什么要“看人下菜碟”
 
-### 1.1 早期图像时代（1993—2000）
+手机屏幕小、电脑屏幕大；手机像素密度高、电脑像素密度低。同一张图片，直接放大到手机屏幕上会模糊，直接按原图发给手机又浪费流量。
 
-Tim Berners-Lee 在 1991 年的 WorldWideWeb 浏览器中仅支持文本。1993 年 Marc Andreessen 在 NCSA Mosaic 中引入 `<img>` 标签，引发"图像爆炸"。
+响应式图片就是“看人下菜碟”：让浏览器根据屏幕宽度和像素密度，从多张候选图中挑一张最合适的。这节课你会学到三个核心工具：`srcset`（候选图清单）、`sizes`（图片显示宽度）、`<picture>`（按条件换图）。
 
-```html
-<!-- 1993 年 Mosaic 的原始 <img> 语法 -->
-<img src="photo.gif" alt="A photo">
-```
+## 1. 一句话了解历史
 
-早期图像格式：
+2007 年 iPhone 让“小屏上网”成为主流，2010 年前后“视网膜屏”出现，开发者发现“一张图走天下”行不通：要么模糊、要么浪费流量。于是 WHATWG 在 HTML5 时代制定了 `srcset`/`sizes`/`<picture>` 规范（2014 年前后逐步落地），这就是响应式图片的由来。你不需要记年份，只需要知道：现代浏览器都原生支持这三个工具。
 
-| 格式 | 发布年 | 压缩 | 透明 | 动画 | 颜色深度 |
-| ---- | ------ | ---- | ---- | ---- | -------- |
-| GIF | 1987 | LZW 无损 | 1 bit | 支持 | 8 bit (256 色) |
-| JPEG | 1992 | DCT 有损 | 不支持 | 不支持 | 24 bit |
-| PNG | 1996 | DEFLATE 无损 | 8 bit alpha | 不支持 | 48 bit |
+### 1.1 为什么需要响应式图片
 
-### 1.2 移动互联网的挑战（2007—2013）
+- 节省流量：手机端下载小图，不浪费 4G/5G 流量；
+- 画面清晰：高分屏加载高清图，避免模糊；
+- 提升性能：LCP（最大内容绘制）更快，页面加载体验更好。
 
-iPhone（2007）开启移动互联网时代。2010 年 retina 显示屏（DPR=2）发布，传统单图方案导致：
+## 2. 核心概念速览
 
-1. **高清屏模糊**：1x 图在 2x 屏上像素拉伸。
-2. **流量浪费**：2x 图在 1x 屏下载冗余字节。
-3. **视口适配差**：手机下载桌面大图。
-
-**早期解决方案**：
+### 2.1 srcset：给浏览器一份“候选清单”
 
 ```html
-<!-- 方案 A：JS 检测后切换 -->
-<script>
-  if (window.devicePixelRatio > 1) {
-    document.querySelector('img').src = 'photo@2x.jpg';
-  }
-</script>
-
-<!-- 方案 B：CSS 媒体查询 + background-image -->
-<style>
-  .hero { background-image: url(photo.jpg); }
-  @media (-webkit-min-device-pixel-ratio: 2) {
-    .hero { background-image: url(photo@2x.jpg); }
-  }
-</style>
+<!-- 宽度描述符 w：告诉浏览器每张图的实际宽度 -->
+<img
+  src="small.jpg"
+  srcset="small.jpg 400w, medium.jpg 800w, large.jpg 1200w"
+  sizes="(max-width: 600px) 100vw, 50vw"
+  alt="示例图片"
+/>
 ```
 
-这些方案的缺陷：JS 方案阻塞渲染、CSS 方案无法用于内容图片、HTTP 缓存易失效。
+**讲解：**
 
-### 1.3 HTML5 响应式图片规范（2012—2016）
+- `srcset` 列出候选图及各自宽度（`400w` 表示图片实际宽 400 像素）；
+- `sizes` 告诉浏览器“这张图在页面上会显示多宽”（`100vw` 表示占满视口，`50vw` 表示一半）；
+- 浏览器综合设备像素比（DPR）和 `sizes` 选出最合适的图，开发者只需提供候选清单。
 
-2012 年 W3C HTML Responsive Images Community Group 提出 `srcset` 与 `<picture>` 提案。2014 年 HTML5.1 草案正式纳入：
+### 2.2 picture：按条件“换图”
 
-- **`srcset` 属性**：候选图像列表，浏览器自动选择。
-- **`sizes` 属性**：声明图片渲染宽度，辅助选择。
-- **`<picture>` 元素**：基于媒体查询的显式切换。
-
-2016 年 HTML5.1 成为 W3C 推荐标准，响应式图片 API 全面落地。
-
-### 1.4 现代图像格式时代（2010—2024）
-
-| 格式 | 发布年 | 编码器 | 压缩率（vs JPEG） | 浏览器支持 |
-| ---- | ------ | ------ | ------------------ | ---------- |
-| WebP | 2010 | libwebp (VP8) | -25%~ -35% | 97%+ |
-| HEIC | 2017 | HEVC | -50% | iOS/macOS only |
-| AVIF | 2019 | libavif (AV1) | -50%~-70% | 92%+ |
-| JPEG XL | 2022 | libjxl | -60% | 70%（需 feature flag） |
-
-### 1.5 演进时间线
-
-```mermaid
-timeline
-    title 发展时间线
-    1993: Mosaic 引入 <img>
-    1995: HTML 2.0 (RFC 1866) 规范化 <img>
-    1996: PNG 1.0 发布（W3C 推荐）
-    2007: iPhone 发布，移动互联网时代开启
-    2010: Retina 显示屏；WebP 发布
-    2012: W3C 响应式图片提案（srcset / picture）
-    2014: HTML5 标准化（不含响应式图片）
-    2016: HTML5.1 纳入 srcset / sizes / <picture>
-    2017: Chrome 56 支持 <img loading="lazy">（实验性）
-    2019: AVIF 1.0 发布
-    2020: Chrome 85 <img loading="lazy"> 正式可用
-    2022: JPEG XL 1.0 发布
-    2023: fetchpriority 属性进入 HTML Living Standard
-    2024: AVIF 全球支持率 >92%；JPEG XL 仍在 Chrome flag 阶段
+```html
+<picture>
+  <source media="(min-width: 800px)" srcset="wide.jpg" />
+  <source media="(max-width: 799px)" srcset="narrow.jpg" />
+  <img src="fallback.jpg" alt="示例图片" />
+</picture>
 ```
 
-### 1.6 规范族谱
+**讲解：**
 
-- **HTML 2.0**（RFC 1866, 1995）：`<img>` 基本语法。
-- **HTML 4.01**（W3C, 1999）：增加 `longdesc`、`usemap`、`ismap`。
-- **HTML5**（W3C, 2014）：增加 `crossorigin`、`srcset`（草案）。
-- **HTML 5.1**（W3C, 2016）：正式纳入 `srcset`/`sizes`/`<picture>`。
-- **HTML 5.2 / 5.3**（W3C, 2017—2018）：增加 `loading`、`decoding`、`referrerpolicy`。
-- **WHATWG HTML Living Standard**（持续更新）：§4.8.3 "The img element"、§4.8.4.2 "The picture element" 为权威参考。
+- `srcset` 解决“同一张图选多大”，`<picture>` 解决“不同场景换不同的图”（如横图变竖图）；
+- `<source>` 按顺序匹配，命中第一个条件就停止；
+- 最后的 `<img>` 是兜底：不支持 `<picture>` 或条件都不满足时使用。
 
----
+### 2.3 像素密度描述符
 
-## 2. 形式化定义
-
-### 2.1 WHATWG 规范定义
-
-依据 WHATWG HTML Living Standard §4.8.3，`<img>` 元素的 Web IDL 定义：
-
-```webidl
-[Exposed=Window]
-interface HTMLPictureElement : HTMLElement {};
-
-[Exposed=Window]
-interface HTMLImageElement : HTMLElement {
-  [CEReactions] attribute USVString src;
-  [CEReactions] attribute USVString currentSrc;
-  [CEReactions] attribute DOMString alt;
-  [CEReactions] attribute DOMString srcset;
-  [CEReactions] attribute DOMString sizes;
-  [CEReactions] attribute DOMString? crossOrigin;
-  [CEReactions] attribute DOMString useMap;
-  [CEReactions] attribute boolean isMap;
-  [CEReactions] attribute unsigned long width;
-  [CEReactions] attribute unsigned long height;
-  [CEReactions] attribute DOMString decoding;
-  [CEReactions] attribute DOMString loading;
-  [CEReactions] attribute DOMString fetchPriority;
-  [CEReactions] attribute DOMString referrerPolicy;
-  readonly attribute boolean complete;
-  readonly attribute unsigned long naturalWidth;
-  readonly attribute unsigned long naturalHeight;
-  Promise<undefined> decode();
-};
-
-[Exposed=Window]
-interface HTMLSourceElement : HTMLElement {
-  [CEReactions] attribute USVString src;
-  [CEReactions] attribute DOMString srcset;
-  [CEReactions] attribute DOMString sizes;
-  [CEReactions] attribute DOMString type;
-  [CEReactions] attribute DOMString media;
-  [CEReactions] attribute unsigned long width;
-  [CEReactions] attribute unsigned long height;
-};
+```html
+<img src="1x.png" srcset="1x.png 1x, 2x.png 2x, 3x.png 3x" alt="示例" />
 ```
 
-### 2.2 srcset 文法
+**讲解：**
 
-```
-srcset = candidate ( "," candidate )*
-candidate = URL [ descriptor ]
-descriptor = width-descriptor | pixel-density-descriptor
-width-descriptor = positive-integer "w"
-pixel-density-descriptor = positive-floating-point "x"
-```
+- `1x`/`2x`/`3x` 表示图片对应的设备像素比档位；
+- 普通屏加载 `1x`，视网膜屏加载 `2x`，无需关心屏幕宽度；
+- 与 `w` 描述符二选一使用，不要混用。
 
-**约束**：
+## 3. 原理速览
 
-- 同一 `srcset` 中所有 `candidate` 必须使用**相同类型**的描述符（不能 `w` 与 `x` 混用）。
-- 默认描述符为 `1x`（即未显式指定时）。
+### 3.1 设备像素比（DPR）
 
-### 2.3 sizes 文法
+DPR = 物理像素 / CSS 像素。DPR 为 2 的屏幕，一个 CSS 像素对应 2×2 个物理像素，所以需要 2 倍图才清晰。
 
-```
-sizes = size-source ( "," size-source )*
-size-source = [ media-condition ] length
-length = CSS <length> 值（如 100vw, 50vw, 800px）
-```
+### 3.2 选择算法（一句话版）
 
-### 2.4 图像选择算法形式化
+浏览器读取 `sizes` 得到显示宽度，再乘上 DPR 得到“目标像素数”，从 `srcset` 中挑选不小于目标且最接近的候选图。具体公式属于进阶内容，见第 10 章进阶知识点。
 
-设浏览器视口宽度为 $V$（CSS 像素），设备像素比为 $D$，`sizes` 计算出的渲染宽度为 $R$（CSS 像素）。
+### 3.3 懒加载与解码
 
-**定义 3.4.1（候选集）**：`srcset` 解析后得到候选集 $C = \{(u_i, w_i)\}$（宽度描述符）或 $C = \{(u_i, d_i)\}$（密度描述符）。
-
-**定义 3.4.2（密度描述符选择）**：选择使 $|d_i - D|$ 最小的候选；若并列，选 $d_i \geq D$ 中最小者。
-
-**定义 3.4.3（宽度描述符选择）**：
-
-$$
-\text{targetWidth} = R \times D
-$$
-
-选择使 $|w_i - \text{targetWidth}|$ 最小的候选；若并列，选 $w_i \geq \text{targetWidth}$ 中最小者。
-
-**示例**：$V = 400\text{px}$, $D = 2$, `sizes="(max-width: 600px) 100vw, 50vw"`。则 $R = 400\text{px}$（命中媒体条件），$\text{targetWidth} = 800\text{px}$。若 `srcset="small.jpg 400w, medium.jpg 800w, large.jpg 1200w"`，则选择 `medium.jpg`。
-
-### 2.5 LCP（Largest Contentful Paint）形式化
-
-设图像 $I$ 的下载时间为 $T_{\text{download}}$，解码时间为 $T_{\text{decode}}$，渲染时间为 $T_{\text{render}}$。LCP 时刻：
-
-$$
-\text{LCP}(I) = T_{\text{requestStart}} + T_{\text{download}} + T_{\text{decode}} + T_{\text{render}}
-$$
-
-图像字节数 $B$ 与下载时间近似成正比：
-
-$$
-T_{\text{download}} \approx \frac{B}{\text{bandwidth}}
-$$
-
-故减小 $B$（响应式图片）直接降低 LCP。
-
-### 2.6 布局偏移（CLS）形式化
-
-设图像加载前容器高度为 $h_0$，加载后为 $h_1$。布局偏移量：
-
-$$
-\Delta h = h_1 - h_0
-$$
-
-若 $\Delta h \neq 0$，则贡献 CLS。**修复**：通过 `<img width="W" height="H">` 显式声明比例，浏览器在加载前预留盒子：
-
-$$
-\text{aspect-ratio} = \frac{W}{H}
-$$
-
-CSS 自动按此比例计算高度，避免布局偏移。
-
----
-
-## 3. 理论推导与原理解析
-
-### 3.1 设备像素比（DPR）的物理意义
-
-设物理像素数为 $P_{\text{physical}}$，CSS 像素数为 $P_{\text{css}}$。
-
-$$
-D = \frac{P_{\text{physical}}}{P_{\text{css}}}
-$$
-
-**示例**：iPhone 12 物理分辨率 1170×2532，CSS 视口 390×844，则 $D = 3$。
-
-### 3.2 图像字节量与质量关系
-
-JPEG 质量参数 $q \in [1, 100]$，字节数 $B(q)$ 与峰值信噪比（PSNR）近似：
-
-$$
-B(q) \propto q, \quad \text{PSNR}(q) \propto \log q
-$$
-
-**实证数据**（800×600 风景图）：
-
-| 质量 $q$ | JPEG 字节 | WebP 字节 | AVIF 字节 | PSNR |
-| -------- | --------- | --------- | --------- | ---- |
-| 90 | 156 KB | 110 KB | 78 KB | 42 dB |
-| 80 | 98 KB | 68 KB | 48 KB | 38 dB |
-| 70 | 72 KB | 50 KB | 35 KB | 35 dB |
-| 50 | 48 KB | 33 KB | 22 KB | 31 dB |
-
-### 3.3 响应式图片的带宽节省
-
-设传统方案下载固定 $B_{\text{fixed}} = 1\text{MB}$ 图片。响应式方案按视口选择 $B(v)$：
-
-$$
-B(v) = \alpha \cdot v^2, \quad \alpha = \frac{B_{\text{max}}}{V_{\text{max}}^2}
-$$
-
-设 $V_{\text{max}} = 1920\text{px}$，$B_{\text{max}} = 1\text{MB}$。则 $\alpha \approx 2.7 \times 10^{-4}\text{ KB/px}^2$。
-
-**带宽节省率**（视口 $V = 400\text{px}$）：
-
-$$
-\eta = 1 - \frac{B(400)}{B_{\text{fixed}}} = 1 - \frac{2.7 \times 10^{-4} \times 400^2}{1024} \approx 95.8\%
-$$
-
-### 3.4 DCT 与压缩原理
-
-JPEG 使用 $8 \times 8$ 块的二维 DCT：
-
-$$
-F(u, v) = \frac{1}{4} C(u) C(v) \sum_{x=0}^{7} \sum_{y=0}^{7} f(x, y) \cos\left(\frac{(2x+1)u\pi}{16}\right) \cos\left(\frac{(2y+1)v\pi}{16}\right)
-$$
-
-其中 $C(u) = \frac{1}{\sqrt{2}}$ if $u=0$ else $1$。
-
-低频系数（左上角）集中能量，高频系数（右下角）可被量化丢弃。WebP（VP8）使用 $4 \times 4$ 块 + 帧内预测，AVIF（AV1）使用 $4 \times 4$ 到 $64 \times 64$ 自适应块 + 多参考帧预测，压缩率更高。
-
-### 3.5 懒加载的视口检测算法
-
-浏览器原生懒加载（`loading="lazy"`）使用 IntersectionObserver 替代（用户不可见）。设图片距视口底部距离为 $d$，懒加载触发距离 $d_{\text{threshold}}$（默认 1250px on 4G，3000px on 3G）。
-
-$$
-\text{load} = \begin{cases}
-\text{true} & \text{if } d \leq d_{\text{threshold}} \\
-\text{false} & \text{otherwise}
-\end{cases}
-$$
-
-### 3.6 解码异步化
-
-`decoding="async"` 将解码移出主线程，避免阻塞首次渲染。
-
-$$
-T_{\text{mainThread}} = T_{\text{decode, sync}} \to 0 \quad (\text{async})
-$$
-
-代价：图片显示延迟约 1 帧（16ms）。
-
----
-
+`loading="lazy"` 让图片进入视口附近才加载；`decoding="async"` 让图片解码不阻塞渲染。两者都能改善首屏性能，且都是纯属性配置。
 ## 4. 代码示例
 
 ### 4.1 完整 HTML5 文档结构
@@ -1315,213 +1094,82 @@ export function useResponsiveImage(sources, defaultUrl) {
 ---
 
 > 本文档遵循 MIT/Stanford/CMU 教学水准，结合 WHATWG HTML Living Standard 与 W3C HTML5.3 规范，系统呈现 HTML5 图像与响应式图片 API 的设计原理与工程实践。如需进一步学习，请参阅延伸阅读章节列出的书籍、论文与课程。
-## img 元素
 
-**图像标签**
-`<img src="<URL>" alt="<替代文本>" [width="<宽>"] [height="<高>"] [loading="lazy|eager"] [decoding="async|sync|auto"] [srcset] [sizes] />`
+## 10. 进阶知识点
+
+### 10.1 选择算法的形式化描述
+
+设显示宽度为 `S`（由 `sizes` 计算得出），设备像素比为 `D`，则目标像素数为 `T = S × D`。浏览器从 `srcset` 中挑选“宽度不小于 `T` 且差值最小”的候选图；若所有候选都小于 `T`，则选择最大的一张。
+
+举例：`sizes="50vw"` 且视口宽 1000px、DPR=2 时，`T = 500 × 2 = 1000`，浏览器会选 `1000w` 或最接近且不小于它的图。
+
+### 10.2 图片预加载
+
 ```html
-<!-- 基础图像 -->
-<img src="photo.jpg" alt="美丽的风景" width="800" height="600" />
-
-<!-- 延迟加载 -->
-<img src="photo.jpg" alt="照片" loading="lazy" />
-
-<!-- 异步解码 -->
-<img src="large.jpg" alt="大图" decoding="async" />
-
-<!-- 错误回退 -->
-<img src="photo.jpg" alt="照片" onerror="this.src='fallback.jpg'" />
+<link rel="preload" as="image" href="hero.jpg" />
 ```
 
-| 属性         | 作用                          |
-| ------------ | ----------------------------- |
-| `src`        | 图像 URL                      |
-| `alt`        | 替代文本(必填,无障碍)         |
-| `width`      | 宽度(像素)                   |
-| `height`     | 高度(像素)                   |
-| `loading`    | lazy 懒加载 / eager 立即加载  |
-| `decoding`   | 解码方式 async/sync/auto      |
-| `srcset`     | 多源图像列表                  |
-| `sizes`      | 不同视口下的显示尺寸          |
-| `referrerpolicy` | Referer 策略              |
-| `usemap`     | 关联 image map                |
+**讲解：**
 
----
+- `preload` 让首屏大图提前下载，改善 LCP；
+- `as="image"` 必须与资源类型一致，否则预加载不生效；
+- 只对首屏关键图片使用，非首屏图片交给懒加载。
 
-## 响应式图片 srcset
+### 10.3 image map 图像映射
 
-**宽度描述符**
-`<img srcset="<URL> <宽度>w, <URL> <宽度>w, ..." />`
 ```html
-<!-- 浏览器根据视口自动选择合适尺寸 -->
-<img
-  src="small.jpg"
-  srcset="small.jpg 400w, medium.jpg 800w, large.jpg 1200w"
-  alt="响应式图片"
-/>
-```
-
-**像素密度描述符**
-`<img srcset="<URL> 1x, <URL> 2x, <URL> 3x" />`
-```html
-<!-- Retina 屏适配 -->
-<img
-  src="photo.jpg"
-  srcset="photo.jpg 1x, photo@2x.jpg 2x, photo@3x.jpg 3x"
-  alt="高分辨率图片"
-/>
-```
-
----
-
-## sizes 属性
-
-**显示尺寸声明**
-`<img srcset="..." sizes="<媒体查询> <尺寸>, ... <默认尺寸>" />`
-```html
-<img
-  src="photo.jpg"
-  srcset="small.jpg 400w, medium.jpg 800w, large.jpg 1200w"
-  sizes="(max-width: 600px) 100vw, (max-width: 1200px) 50vw, 33vw"
-  alt="响应式图片"
-/>
-```
-
-**选择宽度计算**
-`选择宽度 = sizes 计算值 × 设备像素比`
-
-```javascript
-// JavaScript 读取当前显示的图片
-const img = document.querySelector('img');
-console.log(img.currentSrc); // 当前加载的 URL
-```
-
----
-
-## picture 元素
-
-**多格式回退**
-`<picture><source srcset="<URL>" type="<MIME>" />...<img src="<URL>" alt="<替代>" /></picture>`
-```html
-<!-- 按格式优先级回退 -->
-<picture>
-  <source srcset="photo.avif" type="image/avif" />
-  <source srcset="photo.webp" type="image/webp" />
-  <img src="photo.jpg" alt="照片" width="800" height="600" />
-</picture>
-```
-
-**按媒体查询切换**
-`<source media="<媒体查询>" srcset="<URL>" />`
-```html
-<!-- 不同视口加载不同图片 -->
-<picture>
-  <source media="(min-width: 1200px)" srcset="wide.jpg" />
-  <source media="(min-width: 768px)" srcset="medium.jpg" />
-  <img src="small.jpg" alt="响应式图片" />
-</picture>
-
-<!-- 同时指定宽度和格式 -->
-<picture>
-  <source
-    media="(min-width: 1200px)"
-    srcset="large.avif 1200w"
-    type="image/avif"
-  />
-  <source
-    media="(min-width: 768px)"
-    srcset="medium.webp 768w"
-    type="image/webp"
-  />
-  <img src="small.jpg" alt="照片" />
-</picture>
-```
-
----
-
-## 图片格式对照
-
-| 格式 | 压缩类型  | 透明度 | 动画 | 压缩率 | 浏览器支持 |
-| ---- | --------- | ------ | ---- | ------ | ---------- |
-| JPEG | 有损      | 不支持 | 不支持 | 中等 | 全部       |
-| PNG  | 无损      | 支持   | 不支持 | 较低 | 全部       |
-| WebP | 有损/无损 | 支持   | 支持 | 高   | 97%+       |
-| AVIF | 有损/无损 | 支持   | 支持 | 最高 | 92%+       |
-| SVG  | 矢量      | 支持   | 支持 | —    | 全部       |
-| GIF  | 无损      | 支持   | 支持 | 低   | 全部       |
-| APNG | 无损      | 支持   | 支持 | 中等 | 95%+       |
-
----
-
-## 图片预加载
-
-**link preload**
-`<link rel="preload" as="image" href="<URL>" [type="<MIME>"] [imagesrcset] [imagesizes] />`
-```html
-<!-- 预加载关键图片 -->
-<link rel="preload" as="image" href="hero.webp" type="image/webp" />
-
-<!-- 预加载响应式图片 -->
-<link
-  rel="preload"
-  as="image"
-  href="small.webp"
-  imagesrcset="small.webp 400w, medium.webp 800w, large.webp 1200w"
-  imagesizes="100vw"
-/>
-```
-
----
-
-## image map 图像映射
-
-**usemap 关联映射**
-`<img src="<URL>" usemap="#<map名称>" alt="<替代>" />` + `<map name="<名称>">...<area>...</map>`
-```html
-<img src="map.png" alt="地图" usemap="#workmap" width="400" height="300" />
-
-<map name="workmap">
-  <area shape="rect" coords="34,44,270,350" alt="区域1" href="area1.html" />
-  <area shape="circle" coords="337,300,44" alt="区域2" href="area2.html" />
-  <area shape="poly" coords="140,21,180,40,150,80" alt="区域3" href="area3.html" />
+<img src="map.png" usemap="#areas" alt="区域示意图" />
+<map name="areas">
+  <area shape="rect" coords="0,0,100,100" href="/a" alt="A 区" />
+  <area shape="circle" coords="150,150,50" href="/b" alt="B 区" />
 </map>
 ```
 
-| shape 值 | coords 含义              |
-| -------- | ------------------------ |
-| `rect`   | x1,y1,x2,y2              |
-| `circle` | center-x,center-y,radius |
-| `poly`   | x1,y1,x2,y2,...,xn,yn    |
-| `default`| 整个区域                 |
+**讲解：**
 
----
+- `usemap` 把图片与 `<map>` 关联，`<area>` 定义可点击热区；
+- `shape` 支持 `rect`/`circle`/`poly`，`coords` 是坐标；
+- 现代交互地图多用 SVG 或组件实现，image map 属于“知道即可”。
 
-## 性能优化技巧
+## 11. 动手试试
 
-**宽高属性防止布局跳动**
-```html
-<!-- 指定 width/height,CSS 用比例缩放 -->
-<img
-  src="photo.jpg"
-  alt="照片"
-  width="800" height="600"
-  style="width: 100%; height: auto;"
-/>
-```
+### 入门版（必做）
 
-**fetchpriority 优先级**
-```html
-<!-- 关键首屏图片 -->
-<img src="hero.jpg" alt="主图" fetchpriority="high" />
+1. 准备三张同内容、不同宽度的图片（400/800/1200 像素），用 `srcset` + `sizes` 接入页面；
+2. 打开浏览器开发者工具，把设备模拟切换到 iPhone 和桌面，观察网络面板中下载了哪张图；
+3. 给首屏大图加 `loading="eager"`（默认），给长列表图片加 `loading="lazy"`。
 
-<!-- 非关键图片 -->
-<img src="icon.png" alt="图标" fetchpriority="low" loading="lazy" />
-```
+### 进阶版（选做）
 
-**figure 与 figcaption**
-```html
-<figure>
-  <img src="chart.png" alt="销售数据图表" />
-  <figcaption>图1:2026年上半年销售数据</figcaption>
-</figure>
-```
+1. 用 `<picture>` 实现“手机显示竖图、桌面显示横图”的艺术指导场景；
+2. 用 `preload` 预加载首屏 Hero 图，对比 Lighthouse 的 LCP 分数；
+3. 用 `2x` 描述符为头像做高清适配。
+
+## 12. 核心知识点
+
+> 一句话记住响应式图片：`srcset` 给候选，`sizes` 说宽度，`picture` 换场景；高清用 `2x`，懒加载用 `lazy`。
+
+- `srcset` + `sizes` 解决“同一张图选多大”；
+- `<picture>` + `<source media>` 解决“不同场景换图”；
+- DPR 为 2 的屏幕需要 2 倍图才清晰；
+- `loading="lazy"` 延迟加载，`decoding="async"` 异步解码；
+- 所有图片必须写 `alt`，装饰图留空。
+
+## 13. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 图片缺 `width`/`height` | 布局抖动（CLS） | 显式给出尺寸或使用宽高比占位 |
+| 全部图片 `lazy` | 首屏图片延迟加载反而拖慢 LCP | 首屏用默认 eager，长列表用 lazy |
+| `srcset` 与 `sizes` 混用描述符 | `w` 与 `x` 混用行为不可预测 | 二选一，统一用 `w` + `sizes` |
+| 装饰图写非空 `alt` | 读屏播报无意义内容 | 装饰图 `alt=""` |
+| 内容图缺 `alt` | 图片搜索与无障碍双损失 | 描述性 `alt` |
+| 过度预加载 | 抢占带宽 | 只 preload 首屏关键图 |
+
+## 14. 扩展学习
+
+- 格式对比：AVIF/WebP/JPEG 的选择见 `html5/019-ImageOptimization`（JavaScript 模块）；
+- 性能指标：`javascript/059-CoreWebVitalsAndPerformanceMetrics` 中 LCP/CLS 的测量；
+- 懒加载原理：`javascript/046-WebAPIBrowserInterface` 中 IntersectionObserver 实现；
+- 工程化：`html5/031-CriticalRenderingPathAndResourceLoading` 资源加载策略；
+- 组件方案：React 的 `next/image` 或 Vue 的 `v-img` 自动生成多档图。
