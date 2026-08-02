@@ -822,9 +822,7 @@ export default {
     },
   },
 };
-```
-
-```json
+json
 // package.json (Node ESM 子路径导入)
 {
   "imports": {
@@ -880,9 +878,7 @@ export default {
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts"]  // 正确：从 src 中排除测试
 }
-```
-
-```json
+json
 {
   "include": ["src/**/*"],
   "exclude": ["tests/**/*"]  // 无意义：tests 不在 include 中

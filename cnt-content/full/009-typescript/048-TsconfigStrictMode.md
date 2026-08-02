@@ -997,9 +997,7 @@ const user = findUser('u-1');
 if (user !== null) {
   console.log(user.name);
 }
-```
-
-```rust
+rust
 // Rust
 fn find_user(id: &str) -> Option<User> { /* ... */ }
 match find_user("u-1") {
@@ -1390,9 +1388,7 @@ module.exports = {
     { "path": "./tsconfig.node.json" }
   ]
 }
-```
-
-```json
+json
 // tsconfig.app.json
 {
   "extends": "./tsconfig.json",
@@ -1404,9 +1400,7 @@ module.exports = {
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
-```
-
-```json
+json
 // tsconfig.node.json
 {
   "extends": "./tsconfig.json",
@@ -1514,9 +1508,7 @@ type UserDebug = Debug<User>;
     "disableSourceOfProjectReferenceRedirect": true
   }
 }
-```
-
-```bash
+bash
 # 使用 --diagnostics 查看编译性能
 npx tsc --noEmit --diagnostics
 

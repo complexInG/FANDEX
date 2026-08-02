@@ -1359,9 +1359,7 @@ module.exports = {
     "emitDecoratorMetadata": true
   }
 }
-```
-
-```typescript
+typescript
 import { Service, Inject } from 'typedi';
 
 @Service()
@@ -1402,9 +1400,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build
-```
-
-```json
+json
 // package.json
 {
   "scripts": {

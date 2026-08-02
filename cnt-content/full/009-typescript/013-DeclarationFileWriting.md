@@ -1709,9 +1709,7 @@ createApp(App).mount('#app');
   "types": "index.d.ts",
   "files": ["index.d.ts"]
 }
-```
-
-```json
+json
 // 用户的 package.json
 {
   "devDependencies": {
@@ -2166,9 +2164,7 @@ export {};
 declare module 'config-loader' {
   export function load(path: string): Record<string, unknown>;
 }
-```
-
-```typescript
+typescript
 // app.ts
 import config from 'config-loader';
 config.load('/path');
@@ -2544,9 +2540,7 @@ npx tsd
   ],
   "files": []
 }
-```
-
-```json
+json
 // packages/core/tsconfig.json
 {
   "compilerOptions": {
@@ -2570,9 +2564,7 @@ monorepo/
         index.ts
       package.json
   tsconfig.base.json
-```
-
-```json
+json
 // packages/shared-types/package.json
 {
   "name": "@my-org/shared-types",
@@ -2580,9 +2572,7 @@ monorepo/
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts"
 }
-```
-
-```json
+json
 // packages/core/package.json
 {
   "dependencies": {
@@ -2845,9 +2835,7 @@ const i18n = createI18n({
 const app = createApp(App);
 app.use(i18n);
 app.mount('#app');
-```
-
-```vue
+vue
 <!-- App.vue -->
 <script setup lang="ts">
 const { t } = useI18n();

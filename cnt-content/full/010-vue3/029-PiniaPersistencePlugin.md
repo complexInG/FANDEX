@@ -19,9 +19,7 @@ prerequisites: []
 
 ```bash
 npm install pinia-plugin-persistedstate
-```
-
-```javascript
+javascript
 import { createPinia } from 'pinia';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 

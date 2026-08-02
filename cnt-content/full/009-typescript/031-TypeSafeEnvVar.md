@@ -1144,9 +1144,7 @@ jobs:
 
       - name: Deploy
         run: npm run deploy
-```
-
-```typescript
+typescript
 // scripts/validate-env.ts - CI 环境变量校验脚本
 import { envSchema } from '../src/config/env.schema';
 
@@ -1235,9 +1233,7 @@ flowchart TD
     T5 --> T6
     T5 --> T7
     T5 --> T8
-```
-
-```typescript
+typescript
 // packages/shared-config/src/env.schema.ts
 import { z } from 'zod';
 
@@ -1359,9 +1355,7 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
-```
-
-```bash
+bash
 #!/bin/sh
 # docker-entrypoint.sh
 # 将运行时环境变量注入到 index.html
@@ -1475,9 +1469,7 @@ export function loadEnv<T extends z.ZodObject<any>>(
   }
   return result.data;
 }
-```
-
-```typescript
+typescript
 // services/user-service/src/env.ts
 import { loadEnv, userServiceSchema } from '@shared/config';
 

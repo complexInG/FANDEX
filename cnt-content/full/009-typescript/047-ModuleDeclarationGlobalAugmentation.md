@@ -354,9 +354,7 @@ declare module 'express' {
     fail(code: string, message: string, status?: number): void;
   }
 }
-```
-
-```typescript
+typescript
 // 使用扩展后的 Express
 import express from 'express';
 const app = express();
@@ -396,9 +394,7 @@ declare module 'vue' {
     vPermission: (el: HTMLElement, binding: { value: string[] }) => void;
   }
 }
-```
-
-```typescript
+typescript
 // main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
@@ -461,9 +457,7 @@ declare global {
     truncate(maxLength: number, suffix?: string): string;
   }
 }
-```
-
-```typescript
+typescript
 // 实现（在 .ts 文件中，而非 .d.ts）
 if (!Array.prototype.last) {
   Array.prototype.last = function <T>(this: T[]): T | undefined {
@@ -654,9 +648,7 @@ Status.LABELS[Status.Pending]; // '待处理'
 async function fetchUser(id) {
   return fetch(`/api/users/${id}`).then(r => r.json());
 }
-```
-
-```typescript
+typescript
 // TypeScript 方案
 interface User {
   id: string;
@@ -689,9 +681,7 @@ impl PrintLen for Vec<i32> {
         println!("len = {}", self.len());
     }
 }
-```
-
-```typescript
+typescript
 // TypeScript：通过 declare module 扩展外部类型
 declare module 'some-lib' {
   interface SomeClass {
@@ -1049,9 +1039,7 @@ expectType<Promise<unknown>>(client.request('/users'));
     "composite": true
   }
 }
-```
-
-```json
+json
 // apps/web/tsconfig.json
 {
   "extends": "../../tsconfig.base.json",
@@ -1099,9 +1087,7 @@ export function createHost<TExtensions extends HostExtensions>() {
     },
   };
 }
-```
-
-```typescript
+typescript
 // plugin-user.ts — 业务插件
 import { createHost } from './host';
 
@@ -1168,9 +1154,7 @@ flowchart TD
     T9 --> T10
     T10 --> T11
     T11 --> T12
-```
-
-```json
+json
 // tsconfig.main.json
 {
   "compilerOptions": {
@@ -1217,9 +1201,7 @@ export default fp(async (fastify) => {
     req.user = await verifyToken(token);
   });
 });
-```
-
-```typescript
+typescript
 // server.ts
 import Fastify from 'fastify';
 import authPlugin from './plugins/auth';
@@ -1248,9 +1230,7 @@ export const useUserStore = defineStore('user', () => {
 });
 
 // Pinia 自动扩展 Vue 的 ComponentCustomProperties，使 store 可在组件中通过 this.userStore 访问
-```
-
-```typescript
+typescript
 // 自定义 Vue 插件类型
 import 'vue';
 

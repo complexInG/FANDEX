@@ -67,9 +67,7 @@ export default defineConfig({
     },
   },
 });
-```
-
-```json
+json
 // package.json 出口配置
 {
   "name": "my-ui",
@@ -99,9 +97,7 @@ export default defineConfig({
   --ui-color-primary: #0e8c9c;
   --ui-radius: 4px;
 }
-```
-
-```vue
+vue
 <!-- Button.vue：scoped 样式 + 变量取值 -->
 <template>
   <button class="ui-button" :class="`ui-button--${variant}`">

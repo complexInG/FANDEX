@@ -424,8 +424,7 @@ import { useTemplateRef } from 'vue';
 
 const inputEl = useTemplateRef<HTMLInputElement>('inputRef');
 onMounted(() => inputEl.value?.focus());
-```
-```vue
+vue
 <template>
   <input ref="inputRef" />
 </template>

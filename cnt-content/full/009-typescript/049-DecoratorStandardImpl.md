@@ -1151,9 +1151,7 @@ console.log(MyClass[Symbol.metadata]);  // undefined
     "useDefineForClassFields": true
   }
 }
-```
-
-```json
+json
 // tsconfig.legacy.json - Legacy 装饰器（兼容旧项目）
 {
   "compilerOptions": {
@@ -1497,9 +1495,7 @@ function logged<T extends { new(...args: any[]): {} }>(value: T, context: ClassD
     }
   };
 }
-```
-
-```typescript
+typescript
 ${String(context.name)}
 ```
 
@@ -1513,9 +1509,7 @@ function defaultValue(defaultVal: any) {
     };
   };
 }
-```
-
-```typescript
+typescript
 defaultVal
 initialValue
 ```

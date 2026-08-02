@@ -2996,9 +2996,7 @@ npm install -D openapi-typescript
 
 # 生成类型
 npx openapi-typescript ./openapi.yaml -o ./src/api/generated.ts
-```
-
-```typescript
+typescript
 // 使用生成的类型
 import type { paths } from './api/generated';
 

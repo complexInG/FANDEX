@@ -172,9 +172,7 @@ import ChildComponent from './ChildComponent.vue';
 import { ref } from 'vue';
 const parentMessage = ref('来自父组件的消息');
 </script>
-```
-
-```vue
+vue
 <!-- 子组件 -->
 <template>
   <div>{{ message }}</div>
@@ -200,9 +198,7 @@ const emit = defineEmits<{
   ;
 }>();
 </script>
-```
-
-```vue
+vue
 <!-- 父组件 -->
 <template>
   <ChildComponent @update="handleUpdate" />

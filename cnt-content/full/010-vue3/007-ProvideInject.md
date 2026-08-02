@@ -603,9 +603,7 @@ provide('toggleTheme', toggleTheme);
   color: #1a1a1a;
 }
 </style>
-```
-
-```vue
+vue
 <!-- ThemedComponent.vue —— 子组件（深层嵌套） -->
 <script setup>
 import { inject } from 'vue';
@@ -655,9 +653,7 @@ export const UserKey: InjectionKey<{
   login: (credentials: Credentials) => Promise<void>;
   logout: () => Promise<void>;
 }> = Symbol('user');
-```
-
-```typescript
+typescript
 // composables/useTheme.ts —— 封装为 Composable，提供友好 API
 import { inject } from 'vue';
 import { ThemeKey } from '../keys/theme';
@@ -669,9 +665,7 @@ export function useTheme() {
   }
   return context;
 }
-```
-
-```vue
+vue
 <!-- App.vue —— 提供 ThemeContext -->
 <script setup lang="ts">
 import { provide, ref, readonly } from 'vue';
@@ -743,9 +737,7 @@ provide('counter', {
     <CounterControls />
   </div>
 </template>
-```
-
-```vue
+vue
 <!-- CounterDisplay.vue —— 仅消费状态 -->
 <script setup>
 import { inject } from 'vue';
@@ -760,9 +752,7 @@ const { state, doubleCount } = inject('counter');
     <p>History: {{ state.history.join(', ') || 'empty' }}</p>
   </div>
 </template>
-```
-
-```vue
+vue
 <!-- CounterControls.vue —— 仅消费方法 -->
 <script setup>
 import { inject } from 'vue';
@@ -812,9 +802,7 @@ export interface FormContext {
 
 export const FormKey: InjectionKey<FormContext> = Symbol('form');
 export const FormItemKey: InjectionKey<FormItemContext> = Symbol('form-item');
-```
-
-```vue
+vue
 <!-- form/Form.vue —— 表单容器组件 -->
 <script setup lang="ts">
 import { provide, reactive, ref, onUnmounted } from 'vue';
@@ -896,9 +884,7 @@ provide(FormKey, {
   gap: 16px;
 }
 </style>
-```
-
-```vue
+vue
 <!-- form/FormItem.vue —— 表单项组件 -->
 <script setup lang="ts">
 import { provide, inject, ref, onMounted, onUnmounted, computed } from 'vue';
@@ -1037,9 +1023,7 @@ export interface I18nContext {
 }
 
 export const I18nKey: InjectionKey<I18nContext> = Symbol('i18n');
-```
-
-```typescript
+typescript
 // i18n/index.ts —— i18n 插件实现
 import { ref, computed, provide, inject } from 'vue';
 import { I18nKey, type I18nContext } from './keys';
@@ -1104,9 +1088,7 @@ export function useI18n(): I18nContext {
   }
   return context;
 }
-```
-
-```typescript
+typescript
 // main.ts —— 应用入口
 import { createApp } from 'vue';
 import App from './App.vue';
@@ -1120,9 +1102,7 @@ const i18n = createI18n({
 const app = createApp(App);
 app.use(i18n);
 app.mount('#app');
-```
-
-```vue
+vue
 <!-- components/LocalizedText.vue —— 使用 i18n -->
 <script setup lang="ts">
 import { useI18n } from '../i18n';
@@ -1168,9 +1148,7 @@ export interface AuthContext {
 }
 
 export const AuthKey: InjectionKey<AuthContext> = Symbol('auth');
-```
-
-```typescript
+typescript
 // auth/index.ts
 import { ref, computed, provide, inject, readonly } from 'vue';
 import { AuthKey, type AuthContext, type User } from './keys';
@@ -2238,9 +2216,7 @@ export function definePlugin<T>(options: PluginOptions<T>) {
     },
   };
 }
-```
-
-```typescript
+typescript
 // plugins/logger.ts —— 示例插件
 import { definePlugin } from './types';
 

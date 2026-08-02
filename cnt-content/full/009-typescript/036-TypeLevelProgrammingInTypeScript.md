@@ -91,9 +91,7 @@ model Post {
   authorId Int
   author   User   @relation(fields: [authorId], references: [id])
 }
-```
-
-```typescript
+typescript
 // 生成后的类型安全客户端
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -910,9 +908,7 @@ SQL 的 ENUM 类型在 TypeScript 中应映射为字面量联合：
 ```sql
 -- SQL
 CREATE TYPE user_role AS ENUM ('admin', 'user', 'guest');
-```
-
-```typescript
+typescript
 // TypeScript
 interface Database {
   users: {

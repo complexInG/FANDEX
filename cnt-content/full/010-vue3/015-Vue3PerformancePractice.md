@@ -1032,9 +1032,7 @@ const cachedViews = computed(() => ['HomeView', 'UserView']);
     </KeepAlive>
   </div>
 </template>
-```
-
-```vue
+vue
 <!-- UserView.vue —— 缓存组件示例 -->
 <script setup lang="ts">
 import { ref, onActivated, onDeactivated, onMounted, onUnmounted } from 'vue';
@@ -1350,9 +1348,7 @@ export default defineConfig({
     }),
   ],
 });
-```
-
-```typescript
+typescript
 // 优化的 Lodash 按需引入
 // 错误：import _ from 'lodash' (引入整个 lodash)
 // 正确：import debounce from 'lodash/debounce' (只引入 debounce)
@@ -1391,9 +1387,7 @@ self.onmessage = (e: MessageEvent<{ data: number[]; operation: string }>) => {
 
   self.postMessage({ result });
 };
-```
-
-```vue
+vue
 <!-- HeavyCompute.vue -->
 <script setup lang="ts">
 import { ref, type Ref } from 'vue';
@@ -2179,9 +2173,7 @@ jobs:
           upload-artifacts: true
           temporary-public-storage: true
           config-path: ./.lighthouserc.json
-```
-
-```json
+json
 // .lighthouserc.json
 {
   "ci": {

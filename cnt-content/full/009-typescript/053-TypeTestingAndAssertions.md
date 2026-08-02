@@ -39,9 +39,7 @@ prerequisites:
 
 ```bash
 pnpm add -D tsd
-```
-
-```json
+json
 // package.json 增加测试脚本
 {
   "scripts": {

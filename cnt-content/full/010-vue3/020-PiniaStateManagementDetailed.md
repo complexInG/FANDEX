@@ -170,9 +170,7 @@ function resetStore() {
   getCountBy: (state) => (multiplier: number) => state.count * multiplier
   }
  }
-```
-
-```vue
+vue
 <template>
   <div>
     <p>Double Count: {{ counterStore.doubleCount }}</p>

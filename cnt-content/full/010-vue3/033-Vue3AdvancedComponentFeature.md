@@ -1039,8 +1039,7 @@ const [model, modifiers] = defineModel<string>({
     return value;
   }
 });
-```
-```vue
+vue
 <MyInput v-model.capitalize="text" />
 <MyInput v-model.trim="text" />
 ```

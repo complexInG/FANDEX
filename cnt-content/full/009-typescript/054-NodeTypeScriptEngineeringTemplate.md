@@ -53,9 +53,7 @@ my-service/
   },
   "include": ["src"]
 }
-```
-
-```json
+json
 // tsconfig.dev.json：开发期只做类型检查，不产出文件
 {
   "extends": "./tsconfig.base.json",
@@ -63,9 +61,7 @@ my-service/
     "noEmit": true
   }
 }
-```
-
-```json
+json
 // tsconfig.build.json：构建期产出 dist
 {
   "extends": "./tsconfig.base.json"
@@ -83,9 +79,7 @@ my-service/
     "typecheck": "tsc -p tsconfig.dev.json"
   }
 }
-```
-
-```typescript
+typescript
 // src/index.ts：最小示例
 import { createServer } from 'node:http';
 

@@ -843,9 +843,7 @@ flowchart TD
     "baseUrl": "./src"
   }
 }
-```
-
-```typescript
+typescript
 // 等同于从 ./src/utils 导入
 import { foo } from 'utils';
 ```
@@ -868,9 +866,7 @@ import { foo } from 'utils';
     }
   }
 }
-```
-
-```typescript
+typescript
 import { foo } from '@utils';             // src/utils/index.ts
 import { Button } from '@components/Button';  // src/components/Button.ts
 import { fetch } from '@lib/api';         // 先查 libs/api，再查 node_modules/api
@@ -1028,9 +1024,7 @@ Node.js 12+ 引入 `exports` 字段，用于：
     "./internal/*": null  // 禁止访问内部模块
   }
 }
-```
-
-```typescript
+typescript
 import { x } from 'my-lib';           // 解析到 ./dist/index.js
 import { y } from 'my-lib/utils';     // 解析到 ./dist/utils.js
 import { z } from 'my-lib/utils/foo'; // 解析到 ./dist/utils/foo.js
@@ -1183,9 +1177,7 @@ const y = require('cjs-lib'); // SyntaxError in ESM
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const y = require('cjs-lib');
-```
-
-```typescript
+typescript
 // 错误 2：CJS 中导入 ESM（Node.js 22+ 仍不支持）
 const esmMod = require('esm-lib'); // Error: require() of ES Module
 
@@ -1232,9 +1224,7 @@ import { someValue, type SomeType } from 'some-lib';
     "verbatimModuleSyntax": true
   }
 }
-```
-
-```typescript
+typescript
 // 必须显式 type
 import { type Type1, value1 } from 'lib';  // 正确
 import { Type1, value1 } from 'lib';        // 错误：Type1 必须标注 type
@@ -1307,9 +1297,7 @@ flowchart TD
     T0 --> T2
     T0 --> T3
     T0 --> T4
-```
-
-```jsonc
+jsonc
 // @types/lodash/package.json
 {
   "name": "@types/lodash",
@@ -1334,9 +1322,7 @@ declare module 'my-lib' {
   export function doSomething(value: string, options?: Options): Promise<string>;
   export default function doSomethingDefault(): void;
 }
-```
-
-```jsonc
+jsonc
 // tsconfig.json
 {
   "compilerOptions": {
@@ -1664,9 +1650,7 @@ flowchart TD
     T3 --> T5
     T3 --> T6
     T3 --> T7
-```
-
-```typescript
+typescript
 // tsup.config.ts
 import { defineConfig } from 'tsup';
 
@@ -1679,9 +1663,7 @@ export default defineConfig({
   clean: true,
   treeshake: true,
 });
-```
-
-```jsonc
+jsonc
 // package.json
 {
   "name": "my-lib",
@@ -1736,9 +1718,7 @@ flowchart TD
     T14 --> T15
     T14 --> T16
     T14 --> T17
-```
-
-```jsonc
+jsonc
 // tsconfig.base.json
 {
   "compilerOptions": {
@@ -1751,9 +1731,7 @@ flowchart TD
     "sourceMap": true
   }
 }
-```
-
-```jsonc
+jsonc
 // packages/shared/tsconfig.json
 {
   "extends": "../../tsconfig.base.json",
@@ -1763,9 +1741,7 @@ flowchart TD
   },
   "include": ["src"]
 }
-```
-
-```jsonc
+jsonc
 // packages/web/tsconfig.json
 {
   "extends": "../../tsconfig.base.json",
@@ -1824,9 +1800,7 @@ flowchart TD
     T0 --> T2
     T6 --> T7
     T6 --> T8
-```
-
-```jsonc
+jsonc
 // tsconfig.json
 {
   "compilerOptions": {
@@ -1870,9 +1844,7 @@ export default defineConfig({
     },
   },
 });
-```
-
-```jsonc
+jsonc
 // tsconfig.json
 {
   "compilerOptions": {
@@ -1906,9 +1878,7 @@ export default defineConfig({
     "start": "node dist/index.js"
   }
 }
-```
-
-```jsonc
+jsonc
 // tsconfig.json
 {
   "compilerOptions": {
@@ -1923,9 +1893,7 @@ export default defineConfig({
   },
   "include": ["src"]
 }
-```
-
-```typescript
+typescript
 // src/index.ts
 import express from 'express';
 import { router } from './routes.js';  // 必须显式 .js
@@ -1950,9 +1918,7 @@ export class MyClass {
 export function helper(x: string): string {
   return x.toUpperCase();
 }
-```
-
-```jsonc
+jsonc
 // package.json
 {
   "name": "@myorg/lib",
@@ -1998,9 +1964,7 @@ declare module 'express' {
     fail(error: string, code?: number): void;
   }
 }
-```
-
-```typescript
+typescript
 // src/middleware/auth.ts
 import { Request, Response, NextFunction } from 'express';
 
@@ -2070,9 +2034,7 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
-```
-
-```typescript
+typescript
 // 使用
 import MyComponent from './MyComponent.vue';
 // MyComponent 类型为 DefineComponent
@@ -2088,9 +2050,7 @@ import MyComponent from './MyComponent.vue';
     "esModuleInterop": true
   }
 }
-```
-
-```typescript
+typescript
 // config.json
 {
   "appName": "MyApp",

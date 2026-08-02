@@ -800,9 +800,7 @@ await fetchData();
     </ul>
   </div>
 </template>
-```
-
-```vue
+vue
 <!-- App.vue —— 使用 Suspense 包裹 async setup 组件 -->
 <script setup>
 import UserProfile from './UserProfile.vue';
@@ -1436,9 +1434,7 @@ server.listen(3000, () => {
 // async setup 必须在 Suspense 内使用
 const data = await fetch('/api/data').then(r => r.json());
 </script>
-```
-
-```vue
+vue
 <!-- App.vue —— 未使用 Suspense -->
 <template>
   <Component /> <!-- 警告：async setup() used without Suspense -->

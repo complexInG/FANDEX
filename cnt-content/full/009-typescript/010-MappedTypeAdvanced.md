@@ -1014,9 +1014,7 @@ function process<T>(obj: T): DeepReadonly<T> { ... }
 // 优化后：缓存类型别名
 type ReadonlyResult<T> = DeepReadonly<T>;
 function process<T>(obj: T): ReadonlyResult<T> { ... }
-```
-
-```typescript
+typescript
 // 限制递归深度
 type DeepReadonly<T, D extends number = 5> = ...;
 ```

@@ -628,9 +628,7 @@ Rust 没有条件类型，但通过 trait bound 与 where 子句实现类似的�
 fn return_value<T: Fn() -> R, R>(f: T) -> R {
     f()
 }
-```
-
-```typescript
+typescript
 // TypeScript：通过条件类型提取返回值
 type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 ```
@@ -648,9 +646,7 @@ Haskell 的类型族（Type Family）是函数式编程语言中条件类型的"
 type family ReturnType f where
   ReturnType (a -> b) = b
   ReturnType _        = TypeError
-```
-
-```typescript
+typescript
 // TypeScript：条件类型
 type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 ```
@@ -671,9 +667,7 @@ function returnType(f) {
   }
   return undefined;
 }
-```
-
-```typescript
+typescript
 // TypeScript：编译时类型推导
 type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 

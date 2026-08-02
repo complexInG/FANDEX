@@ -1276,9 +1276,7 @@ function updateTime() {
   currentTime.value = new Date().toLocaleTimeString();
 }
 </script>
-```
-
-```vue
+vue
 <!-- src/components/RandomNumber.vue -->
 <template>
   <div>
@@ -2190,9 +2188,7 @@ RUN npm run build
 EXPOSE 3000
 
 CMD ["node", "dist/server/entry-server.js"]
-```
-
-```yaml
+yaml
 # docker-compose.yml
 version: '3.8'
 services:
@@ -2228,9 +2224,7 @@ app.get('*', async (req, res) => {
 });
 
 export default app;
-```
-
-```json
+json
 {
   "builds": [
     { "src": "vercel.js", "use": "@vercel/node" }
@@ -2251,9 +2245,7 @@ compatibility_date = "2024-01-01"
 
 [build]
 command = "npm run build"
-```
-
-```javascript
+javascript
 // worker.js
 import { renderToWebStream } from 'vue/server-renderer';
 import { createApp } from './dist/server/entry-server.js';
@@ -2460,9 +2452,7 @@ function addToCart() {
   cart.add(product.value);
 }
 </script>
-```
-
-```typescript
+typescript
 // server/api/products/[id].ts
 import { PrismaClient } from '@prisma/client';
 

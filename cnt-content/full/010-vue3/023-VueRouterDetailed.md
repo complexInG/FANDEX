@@ -102,9 +102,7 @@ const routes = [
     component: () => import('../views/User.vue'),
   },
 ];
-```
-
-```vue
+vue
 <!-- User.vue -->
 <template>
   <div>
@@ -396,9 +394,7 @@ const userRoutes: RouteRecordRaw[] = [
   },
 ];
 export default userRoutes;
-```
-
-```ts
+ts
  // router/index.ts
  import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
  import userRoutes from './modules/user'
@@ -601,8 +597,7 @@ const routes = [
     }
   }
 ];
-```
-```vue
+vue
 <template>
   <router-view />
   <router-view name="sidebar" />

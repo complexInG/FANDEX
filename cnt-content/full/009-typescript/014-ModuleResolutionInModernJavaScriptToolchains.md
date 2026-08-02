@@ -303,9 +303,7 @@ $$
     }
   }
 }
-```
-
-```typescript
+typescript
 // 消费方（ESM 文件）
 import { foo } from 'my-pkg';        // 解析到 ./dist/index.mjs
 import { bar } from 'my-pkg/utils';  // 解析到 ./dist/utils.mjs
@@ -468,9 +466,7 @@ Node.js 的包解析算法（自 12.x 起）可概括为以下步骤：
     "./package.json": "./package.json"
   }
 }
-```
-
-```javascript
+javascript
 // 消费方
 import _ from 'lodash';              // 匹配 '.'
 import debounce from 'lodash/debounce';  // 匹配 './debounce'
@@ -487,9 +483,7 @@ import debounce from 'lodash/debounce';  // 匹配 './debounce'
     "./utils/*": "./src/utils/*.js"
   }
 }
-```
-
-```javascript
+javascript
 import auth from 'my-pkg/features/auth';
 // 解析到 ./src/features/auth.js
 
@@ -510,9 +504,7 @@ import { formatDate } from 'my-pkg/utils/date';
     ".": "./dist/index.js"
   }
 }
-```
-
-```javascript
+javascript
 // 消费方
 import 'my-pkg';                  // 成功
 import 'my-pkg/internal/util';    // 错误：未在 exports 中声明
@@ -537,9 +529,7 @@ import 'my-pkg/dist/internal.js'; // 错误：未在 exports 中声明
     }
   }
 }
-```
-
-```javascript
+javascript
 // 包内部文件（任何深度）
 import config from '#config';
 import { formatDate } from '#utils/date';
@@ -567,9 +557,7 @@ import { logger } from '#internal/logger';
     "./utils": "./dist/utils.js"
   }
 }
-```
-
-```javascript
+javascript
 // 包内部文件 src/deep/nested/module.js
 import { foo } from 'my-pkg';        // 自引用，解析到 ./dist/index.js
 import { bar } from 'my-pkg/utils';  // 自引用，解析到 ./dist/utils.js
@@ -589,9 +577,7 @@ self-referencing 的工程价值：避免深层相对路径（`../../../utils`�
     "baseUrl": "./src"
   }
 }
-```
-
-```typescript
+typescript
 // 等价于从 ./src/components/Button 解析
 import { Button } from 'components/Button';
 ```
@@ -619,9 +605,7 @@ import { Button } from 'components/Button';
     }
   }
 }
-```
-
-```typescript
+typescript
 import { Button } from '@components/Button';
 import { formatDate } from '@utils/date';
 import { User } from '@types/user';
@@ -652,9 +636,7 @@ import { User } from '@types/user';
     "rootDirs": ["src", "generated"]
   }
 }
-```
-
-```typescript
+typescript
 // src/components/Button.ts
 import { genUtil } from './utils/genUtil';
 // TypeScript 会在 src/utils/genUtil 与 generated/utils/genUtil 中查找
@@ -675,9 +657,7 @@ import { genUtil } from './utils/genUtil';
     "moduleSuffixes": ["ios", "android", ""]
   }
 }
-```
-
-```typescript
+typescript
 import { Button } from './Button';
 // 依次尝试：
 // ./Button.ios.ts
@@ -697,9 +677,7 @@ import { Button } from './Button';
     "customConditions": ["production", "browser"]
   }
 }
-```
-
-```json
+json
 // 依赖包的 package.json
 {
   "exports": {
@@ -730,9 +708,7 @@ TypeScript 会优先匹配 `production` 条件，解析到 `./dist/index.prod.js
     "noEmit": true
   }
 }
-```
-
-```typescript
+typescript
 // 启用前：必须写 .js（即使源文件是 .ts）
 import { foo } from './utils.js';
 
@@ -756,9 +732,7 @@ import { foo } from './utils.ts';
     "verbatimModuleSyntax": true
   }
 }
-```
-
-```typescript
+typescript
 // 启用前：TypeScript 自动判断是否擦除
 import { MyType, myFunc } from './types';
 // 编译后可能保留 import 语句，导致运行时副作用

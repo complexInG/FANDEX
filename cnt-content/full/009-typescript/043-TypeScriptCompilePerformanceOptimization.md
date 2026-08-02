@@ -439,9 +439,7 @@ flowchart TD
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
-```
-
-```jsonc
+jsonc
 // packages/ui/tsconfig.json
 {
   "compilerOptions": {

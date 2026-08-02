@@ -1526,9 +1526,7 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-```
-
-```typescript
+typescript
 // src/env.ts
 import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
@@ -1568,9 +1566,7 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
-```
-
-```typescript
+typescript
 // src/env.d.ts
 /// <reference types="vite/client" />
 

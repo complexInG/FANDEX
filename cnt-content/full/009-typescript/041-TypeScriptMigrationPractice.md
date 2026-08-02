@@ -181,9 +181,7 @@ npx tsc --init
 
 # 安装 Node.js 类型声明（若为后端项目）
 npm install @types/node --save-dev
-```
-
-```jsonc
+jsonc
 // tsconfig.json - 渐进式迁移的初始配置
 {
   "compilerOptions": {
@@ -282,9 +280,7 @@ mv src/utils.js src/utils.ts
 
 # 运行类型检查，修复错误
 npx tsc --noEmit
-```
-
-```typescript
+typescript
 // utils.ts - 重命名后添加类型注解
 // 从 JavaScript:
 // function add(a, b) { return a + b; }
@@ -378,9 +374,7 @@ const Button: React.FC<ButtonProps> = ({
 };
 
 export default Button;
-```
-
-```tsx
+tsx
 // Counter.tsx - 带 Hook 的组件迁移
 
 // 从 JavaScript:
@@ -613,9 +607,7 @@ export {};
     "noFallthroughCasesInSwitch": true
   }
 }
-```
-
-```typescript
+typescript
 // 阶段 2 修复示例：noImplicitAny
 
 // 错误（阶段 2 会报错）：
@@ -637,9 +629,7 @@ function processData(data: any): any {
 function processData<T>(data: T[]): T[] {
   return data;
 }
-```
-
-```typescript
+typescript
 // 阶段 3 修复示例：strictNullChecks
 
 // 错误（阶段 3 会报错）：
@@ -684,9 +674,7 @@ npx ts-migrate migrate src/legacy/
 
 # 仅生成类型声明，不修改原文件
 npx ts-migrate declare src/legacy/
-```
-
-```typescript
+typescript
 // ts-migrate 生成的代码（示例）
 // 原始 JavaScript:
 // function calculate(a, b, options) {
@@ -955,9 +943,7 @@ const result = legacyUtils.parse(data);
     "strictNullChecks": false  // 编译器不报错，但运行时仍可能 TypeError
   }
 }
-```
-
-```typescript
+typescript
 // 运行时崩溃
 function getUser(id: number): User | null {
   return database.find(id);  // 可能返回 null
@@ -1192,9 +1178,7 @@ module.exports = {
     "assumeChangesOnlyAffectDirectDependencies": true
   }
 }
-```
-
-```bash
+bash
 # 使用 swc 替代 tsc 进行转译（开发环境）
 npm install -D @swc/core @swc/cli
 
@@ -1357,9 +1341,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     "outDir": "dist"
   }
 }
-```
-
-```jsonc
+jsonc
 // packages/web/tsconfig.json
 {
   "extends": "../../tsconfig.base.json",
@@ -1401,9 +1383,7 @@ npm install -D flow-to-ts
 
 # 批量转换
 npx flow-to-ts src/**/*.js --write
-```
-
-```typescript
+typescript
 // 转换前后对比
 
 // Flow:
@@ -1454,9 +1434,7 @@ export default {
     },
   },
 };
-```
-
-```javascript
+javascript
 // Vue 3 Composition API（仍是 JavaScript）
 import { ref } from 'vue';
 export default {

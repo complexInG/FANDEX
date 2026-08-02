@@ -321,8 +321,7 @@ const vPermission: Directive<HTMLElement, string | string[]> = {
     }
   }
 };
-```
-```vue
+vue
 <button v-permission="'admin'">删除</button>
 <div v-permission="['admin', 'editor']">管理面板</div>
 ```

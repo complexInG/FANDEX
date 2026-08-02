@@ -68,9 +68,7 @@ Vue 3 相比 Vue 2 在性能上有显著提升，其中编译器优化是核心�
     <span>{{ dynamicText }}</span>
   </div>
 </template>
-```
-
-```javascript
+javascript
 // 编译后的渲染函数（简化版）
 // 静态节点被提升到渲染函数外部
 const _hoisted_1 = createVNode('p', null, '静态内容');
@@ -89,9 +87,7 @@ function render() {
 <template>
   <div :class="className">{{ message }}</div>
 </template>
-```
-
-```javascript
+javascript
 // 编译后：标记动态部分
 function render() {
   return createVNode(
@@ -132,9 +128,7 @@ function render() {
     <main>{{ content }}</main>
   </div>
 </template>
-```
-
-```javascript
+javascript
 // 编译后：连续静态节点合并为一个字符串
 const _hoisted_1 = createStaticVNode(
   '<header><h1>标题</h1><nav>' +
@@ -166,9 +160,7 @@ function render() {
     <footer>底部</footer>
   </div>
 </template>
-```
-
-```javascript
+javascript
 // v-if 和 v-for 会创建新的 Block
 // 组件根节点是根 Block，收集所有动态子节点
 
@@ -204,9 +196,7 @@ function render() {
 <template>
   <button @click="count++">点击 {{ count }}</button>
 </template>
-```
-
-```javascript
+javascript
 // 未缓存：每次渲染都创建新的函数
 function render_uncached() {
   return createVNode(
@@ -255,9 +245,7 @@ function render_cached() {
 <!-- 优化后编译结果 -->
 <!-- header 和 footer 被静态提升 -->
 <!-- 只有 main 中的 p 节点参与 diff -->
-```
-
-```javascript
+javascript
 // Vue 2 的渲染函数：全量 diff
 function render_v2() {
   return _c('div', [
@@ -339,9 +327,7 @@ function render_v3() {
     <span :class="{ active: item.selected }"> {{ item.selected ? '已选中' : '未选中' }} </span>
   </div>
 </template>
-```
-
-```javascript
+javascript
 // v-memo 编译结果
 function render() {
   return renderList(_ctx.largeList, (item) => {

@@ -476,9 +476,7 @@ function reset(): void {
   opacity: 0.8;
 }
 </style>
-```
-
-```javascript
+javascript
 // 注册 SFC 为 Custom Element
 import { defineCustomElement } from 'vue';
 import MyWidget from './MyWidget.ce.vue';
@@ -507,9 +505,7 @@ export default defineConfig({
     }),
   ],
 });
-```
-
-```vue
+vue
 <!-- App.vue —— 消费 Web Components -->
 <script setup lang="ts">
 import { ref } from 'vue';
@@ -596,9 +592,7 @@ const ThemedButton = defineCustomElement({
 });
 
 customElements.define('themed-button', ThemedButton);
-```
-
-```html
+html
 <!-- 外部页面：通过 CSS 自定义属性覆盖 Shadow DOM 样式 -->
 <style>
   :root {
@@ -678,9 +672,7 @@ const EventEmitterElement = defineCustomElement({
 });
 
 customElements.define('event-emitter', EventEmitterElement);
-```
-
-```html
+html
 <!-- 消费端：监听 CustomEvent -->
 <script>
   document.querySelector('event-emitter').addEventListener('input', (e) => {
@@ -781,9 +773,7 @@ const CardElement = defineCustomElement({
 });
 
 customElements.define('my-card', CardElement);
-```
-
-```html
+html
 <!-- 使用 slot 投影 -->
 <my-card>
   <span slot="header">Card Title</span>
@@ -876,9 +866,7 @@ const SharedButton = defineCustomElement({
 });
 
 customElements.define('shared-button', SharedButton);
-```
-
-```jsx
+jsx
 // 在 React 中使用
 import React from 'react';
 import 'shared-button';
@@ -896,9 +884,7 @@ function App() {
     </div>
   );
 }
-```
-
-```typescript
+typescript
 // 在 Angular 中使用
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import 'shared-button';
@@ -921,9 +907,7 @@ export class AppComponent {
     console.log('Clicked in Angular');
   }
 }
-```
-
-```vue
+vue
 <!-- 在 Svelte 中使用 -->
 <script>
   import 'shared-button';
@@ -1282,9 +1266,7 @@ my-element .button {
 my-element::part(button) {
   background: red;
 }
-```
-
-```javascript
+javascript
 // 组件需暴露 part
 const MyElement = defineCustomElement({
   template: `
@@ -1340,9 +1322,7 @@ import { ref } from 'vue';
 const myData = ref({ key: 'value' });
 const myItems = ref([1, 2, 3]);
 </script>
-```
-
-```html
+html
 <!-- 原生 HTML 中需 JSON 序列化 -->
 <my-element data='{"key":"value"}'></my-element>
 ```

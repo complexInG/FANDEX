@@ -462,9 +462,7 @@ const order: Order = {
 };
 const total = calculateTotal(order.items);
 console.log(`Order total: $${total}`);
-```
-
-```javascript
+javascript
 // src/utils.js
 // JavaScript 函数
 export function calculateTotal(items) {

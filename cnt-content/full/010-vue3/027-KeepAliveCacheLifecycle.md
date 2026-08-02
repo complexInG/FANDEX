@@ -579,9 +579,7 @@ onUnmounted(() => console.log('unmounted'));
     <router-view />
   </KeepAlive>
 </template>
-```
-
-```vue
+vue
 <!-- ListPage.vue -->
 <script setup>
 import { ref, onActivated, onDeactivated } from 'vue';

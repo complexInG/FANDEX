@@ -1194,9 +1194,7 @@ model Post {
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
 }
-```
-
-```typescript
+typescript
 // 自动生成的类型
 import { PrismaClient } from "@prisma/client";
 

@@ -1576,9 +1576,7 @@ app/
     [category]/
       [id]/
         page.tsx        // /products/:category/:id
-```
-
-```typescript
+typescript
 // app/users/[id]/page.tsx
 interface PageProps {
   params: { id: string };

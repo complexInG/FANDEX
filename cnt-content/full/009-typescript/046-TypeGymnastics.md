@@ -1350,9 +1350,7 @@ type DeepReadonly<T> = T extends Function
   : T extends object
     ? { __________: __________ }
     : T;
-```
-
-```typescript
+typescript
 readonly [K in keyof T]: DeepReadonly<T[K]>
 ```
 
@@ -1362,9 +1360,7 @@ readonly [K in keyof T]: DeepReadonly<T[K]>
 type Reverse<S extends string> = S extends `${infer First}${infer Rest}`
   ? `${__________}`
   : S;
-```
-
-```typescript
+typescript
 Reverse<Rest>}${First}
 ```
 
@@ -1379,9 +1375,7 @@ type Join<T extends readonly string[], Sep extends string> =
       ? __________
       : __________
     : '';
-```
-
-```typescript
+typescript
 First
 `${First}${Sep}${Join<Rest, Sep>}`
 ```
