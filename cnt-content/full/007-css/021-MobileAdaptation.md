@@ -86,3 +86,36 @@ $$
   height: 100dvh;
 } /* 动态视口高度，解决移动端 vh 问题 */
 ```
+
+## 动手试试
+
+1. 给页面加标准 viewport，用手机模拟对比加与不加的差异；
+2. 用 `rem` 重写一个固定像素布局，验证字号随根字号缩放；
+3. 在 375px 与 768px 两个断点下检查布局；
+4. 进阶挑战：用 `clamp()` 做平滑响应式字号。
+
+## 核心知识点
+
+> 一句话记住移动适配：viewport 是开关，rem/百分比是弹性单位，断点跟内容走，图片用响应式方案。
+
+- 标准 viewport：`width=device-width, initial-scale=1.0`；
+- 弹性单位：`rem`/`%`/`vw`/`vh` 优于固定 `px`；
+- 移动优先 + `min-width` 媒体查询；
+- 图片适配：`max-width: 100%`、`srcset`、`object-fit`；
+- 触屏优化：点击目标 ≥ 44px、`touch-action`。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 缺少 viewport | 桌面宽度渲染 | 每页加标准 viewport |
+| 固定 px 布局 | 小屏溢出 | 弹性单位 + 断点 |
+| 图片撑破容器 | 横向滚动 | `max-width: 100%` |
+| 忽略安全区域 | 刘海屏遮挡 | safe-area-inset |
+| 点击目标太小 | 误触 | 增大热区 |
+
+## 扩展学习
+
+- 视口：`html5/029-ViewportConfigMobileFirst`；
+- 媒体查询：`css/019-MediaQuery`；
+- 响应式：`css/030-ResponsiveDesign`。

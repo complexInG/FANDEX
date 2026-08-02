@@ -1845,3 +1845,38 @@ Grid 布局是一种强大的二维布局系统，具有以下优势：
   }
 }
 ```
+
+## 动手试试
+
+1. 用 `grid-template-columns: repeat(3, 1fr)` 做一个三等分布局；
+2. 用 `grid-template-areas` 命名区域，实现“头部/主体/侧栏/页脚”布局；
+3. 用 `grid-column: 1 / -1` 让元素跨整行；
+4. 进阶挑战：用 `auto-fit` + `minmax` 做响应式卡片网格。
+
+## 核心知识点
+
+> 一句话记住 Grid：`display: grid` 建二维网格，`grid-template-columns/rows` 定轨道，`grid-area` 放元素，`auto-fit`+`minmax` 自动响应。
+
+- Grid 是二维布局（行列同时控制），Flexbox 是一维；
+- 轨道：`grid-template-columns: 1fr 1fr`、`repeat(3, 1fr)`、`minmax(200px, 1fr)`；
+- 区域：`grid-template-areas` + `grid-area: 名称`；
+- 显式与隐式网格：超出定义的行列会自动生成；
+- `auto-fit`/`auto-fill` + `minmax` 是响应式网格的标准组合；
+- 网格线与 `grid-column`/`grid-row` 可精确跨轨。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 与 Flexbox 混用困惑 | 一维/二维场景不分 | 单方向用 flex，整体布局用 grid |
+| 忘记 `minmax` | 小屏溢出 | 轨道用 `minmax(0, 1fr)` 防内容撑破 |
+| 区域名拼写错误 | 布局失效 | 区域名须与 `grid-area` 一致 |
+| 隐式网格意外 | 元素跑出预期位置 | 显式声明轨道或用 `grid-auto-rows` |
+| 兼容性 | 旧浏览器不支持 | 提供 flex 兜底 |
+
+## 扩展学习
+
+- 对比 Flexbox：`css/005-CSS3FlexboxFlexLayout`；
+- 响应式：`css/030-ResponsiveDesign`；
+- 实战：`css/045-CSSProjectExampleResponsiveHomepage`；
+- 简版速查：`css/046-Grid`。

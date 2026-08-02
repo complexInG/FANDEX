@@ -1281,3 +1281,38 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
   }
 }
 ```
+
+## 动手试试
+
+1. 写一个两栏布局，在 768px 断点以下变为单栏；
+2. 用 `prefers-color-scheme: dark` 给页面加深色主题；
+3. 用 `(min-width: 600px) and (max-width: 900px)` 测试区间命中；
+4. 进阶挑战：用 `prefers-reduced-motion` 关闭动画。
+
+## 核心知识点
+
+> 一句话记住媒体查询：`@media (条件)` 按视口/系统偏好切换样式；断点用 min-width 移动优先，深色与减少动效都要考虑。
+
+- 语法：`@media (min-width: 768px) { ... }`；
+- 移动优先：基础样式给移动端，`min-width` 向上增强；
+- 常用条件：`min-width`/`max-width`、`prefers-color-scheme`、`prefers-reduced-motion`、`orientation`；
+- 多个条件用 `and`/`or`/`not` 组合；
+- 断点跟着内容走，不跟设备走；
+- 深色模式只需覆盖颜色变量。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 断点拍脑袋 | 内容断裂 | 按内容实际需要设断点 |
+| 桌面优先 | 移动端体验差 | 移动优先 + min-width |
+| 大量重复媒体查询 | 维护困难 | 用 CSS 变量与容器查询配合 |
+| 忘记深色模式 | 夜间刺眼 | 颜色全部走变量并适配 |
+| 忽略 reduced-motion | 动效扰民 | 媒体查询关闭动画 |
+
+## 扩展学习
+
+- 容器查询：`css/020-ContainerQuery`；
+- 响应式设计：`css/030-ResponsiveDesign`；
+- 移动适配：`css/021-MobileAdaptation`；
+- 可访问性：`css/052-AccessibleStyling`。

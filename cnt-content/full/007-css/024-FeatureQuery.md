@@ -98,3 +98,34 @@ if (CSS.supports('(display: grid) and (gap: 1rem)')) {
   }
 }
 ```
+
+## 动手试试
+
+1. 用 `@supports (display: grid)` 为支持 Grid 的浏览器提供布局，其余用 flex 兜底；
+2. 用 `@supports not (...)` 做反向检测；
+3. 在浏览器控制台用 CSS.supports() 检测特性；
+4. 进阶挑战：用 `selector()` 检测选择器支持。
+
+## 核心知识点
+
+> 一句话记住特性查询：`@supports (属性: 值)` 检测浏览器能力，优雅降级与渐进增强的工具。
+
+- 语法：`@supports (display: grid) { ... }`；
+- 组合：`and`/`or`/`not`；
+- JS 侧：`CSS.supports('display', 'grid')`；
+- 用于新特性（Grid、:has、容器查询）的渐进增强；
+- 不支持的浏览器直接忽略规则块。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 过度嵌套 | 可读性差 | 保持一层 |
+| 把支持检测当版本检测 | 能力检测更可靠 | 检测具体属性 |
+| 忘记兜底 | 不支持时无样式 | 先写基础样式再增强 |
+
+## 扩展学习
+
+- 渐进增强：`css/041-CSSNewFeatures`；
+- 容器查询：`css/020-ContainerQuery`；
+- 兼容性：`css/007-PriorityCalculation` 附录。

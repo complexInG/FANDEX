@@ -1359,3 +1359,38 @@ function checkFPS() {
   height: 0;
 }
 ```
+
+## 动手试试
+
+1. 给按钮写 `transition: background-color 0.3s`，hover 变色观察过渡；
+2. 用 `@keyframes` 做一个“淡入 + 上移”的入场动画；
+3. 用 `animation-iteration-count: infinite` 做呼吸灯效果；
+4. 进阶挑战：配合 `prefers-reduced-motion` 在用户减少动效时关闭动画。
+
+## 核心知识点
+
+> 一句话记住动画：`transition` 是“状态变化时的过渡”，`animation` 是“按关键帧自动播放”；动画属性、时长、缓动函数（ease）与循环次数四要素。
+
+- `transition`：属性、时长、缓动、延迟，hover 等状态变化时触发；
+- `@keyframes`：`from`/`to` 或百分比关键帧定义动画过程；
+- `animation` 简写：name duration timing-function delay iteration-count direction fill-mode；
+- 只对可动画属性做过渡（transform/opacity 性能最佳）；
+- 动效遵守 `prefers-reduced-motion`，为减少动效用户关闭动画；
+- `transform` 与 `opacity` 走合成层，避免 layout/paint 抖动。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 动画属性过多 | 性能差 | 只用 transform/opacity |
+| 忘记缓动函数 | 动画生硬 | 用 ease/cubic-bezier |
+| 无限动画扰民 | 影响阅读 | 尊重 reduced-motion，限制循环 |
+| transition 写错属性 | 不触发 | 确认属性可动画 |
+| 动画结束后跳变 | 状态复位 | 用 `animation-fill-mode: forwards` |
+
+## 扩展学习
+
+- 关键帧与缓动：`css/041-CSSNewFeatures`；
+- 3D 变换：`css/047-Transform3D`；
+- 可访问性：`css/052-AccessibleStyling`（减少动效）；
+- 性能：`css/042-CSSPerformanceOptimizationDetailed`。

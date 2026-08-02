@@ -369,3 +369,36 @@ prerequisites:
   isolation: isolate; /* 确认创建层叠上下文 */
 }
 ```
+
+## 动手试试
+
+1. 写两个重叠的定位元素，用 `z-index` 调整层级，观察谁在上层；
+2. 给其中一个元素加 `opacity: 0.99`，观察它是否“困住”了子元素的 z-index；
+3. 用 DevTools 的 Layers 面板查看层叠上下文；
+4. 进阶挑战：用 CSS 变量定义 `--z-dropdown/--z-modal/--z-toast` 层级体系。
+
+## 核心知识点
+
+> 一句话记住层叠上下文：同一上下文内按顺序渲染（背景、负 z、块、浮动、行内、z=0、正 z）；z-index 只在同一上下文内比较，父上下文是子元素的天花板。
+
+- 层叠上下文是独立的“三维空间”，内部顺序不影响外部；
+- 创建条件：定位 + z-index、transform、opacity < 1、filter、will-change 等；
+- 层叠顺序：背景 → 负 z-index → 块级 → 浮动 → 行内 → z-index:0 → 正 z-index；
+- 子元素 z-index 再大也越不过父上下文；
+- 调试用 DevTools Layers 面板；
+- 层级建议用变量统一管理。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| z-index 失效 | 不在同一层叠上下文 | 检查祖先是否创建了新上下文 |
+| opacity/transform 副作用 | 意外创建上下文 | 理解触发条件，必要时调整结构 |
+| 层级魔法数字 | 难以维护 | 用 CSS 变量定义层级体系 |
+| 忽略父上下文 | 子元素层级异常 | 先确认父上下文的 z-index |
+
+## 扩展学习
+
+- 定位：`css/010-PositionDetailed`；
+- 优先级：`css/007-PriorityCalculation`；
+- 合成与性能：`css/042-CSSPerformanceOptimizationDetailed`。

@@ -109,3 +109,35 @@ CSS 滚动捕捉允许创建类似轮播图的滚动效果，滚动停止时自�
   scroll-padding: 80px;
 } /* 容器偏移 */
 ```
+
+## 动手试试
+
+1. 做一个横向滚动的图片轮播，`scroll-snap-type: x mandatory` 实现吸附；
+2. 用 `scroll-snap-align: center` 让每张图居中停靠；
+3. 给容器加 `scroll-padding` 适配固定导航；
+4. 进阶挑战：纵向滚动的“整屏翻页”效果。
+
+## 核心知识点
+
+> 一句话记住滚动捕捉：容器 `scroll-snap-type` 定吸附轴，子项 `scroll-snap-align` 定停靠点，`scroll-padding` 避让固定元素。
+
+- `scroll-snap-type: x mandatory`（强制）或 `proximity`（就近）；
+- `scroll-snap-align: start/center/end`；
+- `scroll-padding` 为吸顶导航留空间；
+- `scroll-margin` 作用于子项；
+- 适合轮播、图库、分页式滚动。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| mandatory 过强 | 内容读不到 | 长内容用 proximity |
+| 子项未撑满 | 吸附不生效 | 子项宽度=容器宽度 |
+| 忽略 scroll-padding | 停靠被遮挡 | 加 scroll-padding |
+| 与触摸滚动冲突 | 手势异常 | 测试各浏览器行为 |
+
+## 扩展学习
+
+- 滚动行为：`scroll-behavior: smooth`；
+- 性能：`css/042-CSSPerformanceOptimizationDetailed`；
+- 移动端：`css/021-MobileAdaptation`。

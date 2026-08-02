@@ -95,3 +95,34 @@ border-end-end-radius: 8px; /* 行内结束 + 块结束 */
   padding-inline-end: 2rem;
 }
 ```
+
+## 动手试试
+
+1. 用 `margin-inline` 代替 `margin-left/right` 改写一段布局；
+2. 用 `padding-block` 控制上下内边距；
+3. 给元素设置 `writing-mode: vertical-rl`，观察逻辑属性如何跟随方向；
+4. 进阶挑战：做一个支持 RTL（阿拉伯语）的页面骨架。
+
+## 核心知识点
+
+> 一句话记住逻辑属性：`block` 是书写方向（上下），`inline` 是行内方向（左右）；逻辑属性让样式自动适配 LTR/RTL 与竖排。
+
+- 物理属性：`margin-left`、`padding-top`、`width`；
+- 逻辑属性：`margin-inline`、`padding-block`、`inline-size`；
+- `block` 轴随书写模式，`inline` 轴随行内方向；
+- 配合 `writing-mode`/`direction` 自动翻转；
+- 国际化页面优先逻辑属性。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 混用物理/逻辑属性 | 方向切换后错位 | 统一使用逻辑属性 |
+| 旧浏览器兼容 | 部分属性不支持 | 提供物理属性兜底 |
+| 误以为逻辑属性是简写 | 它们是方向映射 | 理解 block/inline 轴 |
+
+## 扩展学习
+
+- 排版：`css/051-TypographyAndGridSystem`；
+- 国际化：`html5/010-TextSemantic` 的 bdi 与方向；
+- 新特性：`css/041-CSSNewFeatures`。

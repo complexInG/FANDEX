@@ -1019,3 +1019,37 @@ body {
   width: calc(var(--full-width) / 3);
 }
 ```
+
+## 动手试试
+
+1. 在 `:root` 定义颜色/间距/圆角变量，改造一个卡片组件；
+2. 用媒体查询覆盖变量做深色主题；
+3. 用 JavaScript 修改 `document.documentElement.style.setProperty('--x', v)` 动态换肤；
+4. 进阶挑战：用 `@property` 注册变量并做数值动画。
+
+## 核心知识点
+
+> 一句话记住 CSS 变量：`--name` 定义、`var()` 引用、作用域继承、媒体查询与 JS 可覆盖，是设计令牌的载体。
+
+- 定义：`--primary: #3498db`；引用：`var(--primary)`；
+- `:root` 定义全局变量，选择器内定义局部变量；
+- 变量遵循继承与就近覆盖；
+- 可在媒体查询、伪类中重新赋值；
+- JS 通过 `style.setProperty` 读写；
+- 与预处理器变量不同：CSS 变量是运行时特性；
+- `@property` 可声明变量类型并支持动画。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 变量名无语义 | 维护困难 | `--color-primary`/`--space-md` |
+| 忘记回退值 | 未定义时报错 | `var(--x, 默认值)` |
+| 存复杂对象 | 变量只能存值 | 状态交给 JS |
+| 深色模式不覆盖 | 主题不完整 | 只覆盖颜色变量 |
+
+## 扩展学习
+
+- 主题实践：`css/001-CSS3OverviewBasicSyntax` 的变量章节；
+- 函数：`css/022-Function`；
+- 工程化：`css/039-CSSArchitectureMethodology`。

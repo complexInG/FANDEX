@@ -155,3 +155,36 @@ $primary: #3498db;
 @use 'variables' as *;
 @use 'mixins' as *;
 ```
+
+## 动手试试
+
+1. 用 Sass 变量重构一组重复颜色；
+2. 用嵌套语法整理一个卡片组件的样式；
+3. 用 `@mixin` + `@include` 封装“圆角卡片”；
+4. 进阶挑战：用 `@each` 循环生成间距工具类。
+
+## 核心知识点
+
+> 一句话记住 Sass：变量存值、嵌套分组、mixin 复用、函数计算，编译时生成 CSS；现代 CSS 变量与原生嵌套可部分替代。
+
+- 变量：`$primary: #3498db`（编译时替换）；
+- 嵌套：选择器层级书写，`&` 引用父选择器；
+- `@mixin`/`@include`：样式片段复用；
+- `@extend`：选择器继承（慎用）；
+- 控制指令：`@if`/`@each`/`@for`；
+- 与现代 CSS 的区别：Sass 是编译期，CSS 变量是运行期。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 嵌套过深 | 生成选择器冗长 | 嵌套 ≤ 3 层 |
+| @extend 滥用 | 选择器膨胀 | 优先 mixin |
+| 变量与 CSS 变量混用 | 语义不清 | 明确编译期/运行期 |
+| 依赖构建 | 调试需 sourcemap | 开启 sourcemap |
+
+## 扩展学习
+
+- 对比 Less：`css/029-LessStylus`；
+- 构建：`css/031-PostCSS`、`vite/005-CSSPreprocessors`；
+- 架构：`css/039-CSSArchitectureMethodology`。
