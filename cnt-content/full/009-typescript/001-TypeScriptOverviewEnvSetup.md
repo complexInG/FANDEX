@@ -5,7 +5,7 @@ module: 'typescript'
 category: 前端技术
 difficulty: beginner
 description: TypeScript 发展历程、与 JavaScript 的关系与开发环境搭建。
-author: Anonymous
+author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'typescript/002-BasicTypeSystem'
@@ -161,6 +161,8 @@ flowchart TD
  # 或使用 Vue + TypeScript
  npm create vite@latest my-project -- --template vue-ts
 ```
+
+创建 Vue + TypeScript 项目更推荐官方脚手架 create-vue：`npm create vue@latest`，在交互提示中选择 TypeScript。
 
 ## 3. `tsconfig.json` 核心配置
 

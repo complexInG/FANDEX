@@ -5,7 +5,7 @@ module: 'typescript'
 category: 前端技术
 difficulty: intermediate
 description: 函数类型签名、泛型约束、条件类型与推断。
-author: Anonymous
+author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'typescript/002-BasicTypeSystem'

@@ -39,15 +39,15 @@ Web 应用的体积随功能增长而膨胀，首屏 JS 体积从 2010 年的几
 | 2015 | Webpack 1 引入 `require.ensure` 实现代码分割 |
 | 2017 | Webpack 2 支持 `import()` 动态导入语法 |
 | 2017 | React 16 引入 `React.lazy` 与 `Suspense` |
-| 2018 | Vue 2.5 支持 `defineAsyncComponent`（Options API 形式） |
+| 2018 | Vue 2.5 支持异步组件工厂函数（`(resolve, reject) => ...` 形式） |
 | 2020 | Vue 3 重构 `defineAsyncComponent`，引入 Composition API 风格 |
 | 2020 | Vue 3 引入 `Suspense`（实验性） |
-| 2022 | Vue 3.2 稳定 `Suspense`，支持嵌套与 SSR |
+| 2022 | Vue 3.2 增强 `Suspense`，支持嵌套与 SSR（官方仍标记为实验性） |
 | 2024 | Vite 5 优化动态导入，支持模块预加载 |
 
 ### 1.2 Vue 2 时代的异步组件
 
-Vue 2 提供 `defineAsyncComponent`（早期为 `() => Promise`），支持基础代码分割：
+Vue 2 通过组件工厂函数（`() => Promise`）实现异步组件，支持基础代码分割；`defineAsyncComponent` 是 Vue 3 引入的正式 API：
 
 ```javascript
 // Vue 2 异步组件
@@ -1030,7 +1030,7 @@ function reload() {
 ### 4.8 Vite 批量异步加载
 
 ```javascript
-// utils/loadComponents.js —— Vue 3.4+ + Vite 5
+// utils/loadComponents.js —— Vue 3.4+ + Vite
 import { defineAsyncComponent } from 'vue';
 
 /**
@@ -2834,10 +2834,10 @@ function defineAsyncComponent(options: {
 | 2.3 | 首次引入异步组件（工厂函数） |
 | 2.5 | 支持 `import()` 语法 |
 | 3.0 | 完整重构 defineAsyncComponent，引入 Suspense |
-| 3.2 | Suspense 稳定，支持嵌套 |
+| 3.2 | Suspense 支持嵌套（官方仍标记为实验性） |
 | 3.3 | SSR 流式渲染优化 |
 | 3.4 | 性能优化，内部实现改进 |
-| 3.5 | 稳定性提升，无 API 变化 |
+| 3.5 | 懒水合与 data-allow-mismatch 等 SSR 增强 |
 
 **升级建议**：
 

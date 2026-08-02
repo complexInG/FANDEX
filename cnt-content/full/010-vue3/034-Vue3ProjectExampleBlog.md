@@ -632,11 +632,15 @@ app.mount('#app');
 ### 创建项目
 
 ```bash
-npm create vite@latest blog -- --template vue-ts
+ # 官方脚手架：交互勾选 TypeScript、Vue Router、Pinia
+npm create vue@latest blog
 cd blog
 npm install
-npm install vue-router@4 pinia sass markdown-it highlight.js
+npm install sass markdown-it highlight.js
 ```
+
+也可以使用通用 Vite 模板并手动补齐 Router / Pinia：
+`npm create vite@latest blog -- --template vue-ts`
 
 ### 开发
 

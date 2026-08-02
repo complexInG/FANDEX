@@ -37,7 +37,7 @@ JavaScript 自 1995 年诞生以来就是动态类型语言。这一设计在小
 
 2012 年，Microsoft 发布 TypeScript 0.8，提出"**JavaScript 的超集**"理念——在保留 JavaScript 运行时语义的前提下，引入静态类型系统。这一设计的关键优势是**渐进式类型化**：现有 JavaScript 代码可以零成本迁移，类型注解可逐步添加。
 
-截至 2024 年，TypeScript 已成为前端开发的事实标准：
+如今 TypeScript 已成为前端开发的事实标准，以下数据来自历年社区调查：
 
 - **2020 年 State of JS**：78% 的开发者使用 TypeScript。
 - **2023 年 Stack Overflow Survey**：TypeScript 是最受喜爱的编程语言第三名。

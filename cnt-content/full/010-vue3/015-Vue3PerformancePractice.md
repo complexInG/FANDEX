@@ -78,7 +78,7 @@ Vue 3.0 于 2020 年 9 月正式发布，是一次完整的重写。核心变化
 
 ### 1.4 Vue 3.2+ 时代（2021-2024）：编译时优化深化
 
-Vue 3.2 引入 `<script setup>` 语法糖，进一步简化 Composition API 写法。Vue 3.3 引入 `defineSlots`、`defineModel`（实验性）。Vue 3.4 重写模板解析器，性能提升约 3 倍。Vue 3.5 引入响应式系统重写（Reactive System Destructuring），减少内存占用。
+Vue 3.2 引入 `<script setup>` 语法糖，进一步简化 Composition API 写法。Vue 3.3 引入 `defineSlots`，并首次以实验性形态发布 `defineModel`。Vue 3.4 重写模板解析器（官方博客基准约快 2 倍），`defineModel` 转正稳定，并重构了响应式系统的触发效率。Vue 3.5 再次重构响应式系统（版本计数 + 双向链表追踪），内存占用显著下降（官方博客给出 -56%），并稳定了响应式 props 解构（Reactive Props Destructure）。
 
 **关键版本性能里程碑**：
 
@@ -87,8 +87,8 @@ Vue 3.2 引入 `<script setup>` 语法糖，进一步简化 Composition API 写�
 | Vue 3.0 | 2020-09 | Proxy 响应式、编译优化、Tree Shaking |
 | Vue 3.2 | 2021-08 | `<script setup>`、`v-memo`、SSR 改进 |
 | Vue 3.3 | 2023-05 | `defineSlots`、泛型组件改进 |
-| Vue 3.4 | 2023-12 | 模板解析器重写、解析速度 3x、更精确的 PatchFlag |
-| Vue 3.5 | 2024-09 | 响应式系统重写、内存优化、`useId`、`useTemplateRef` |
+| Vue 3.4 | 2023-12 | 模板解析器重写（约 2 倍）、`defineModel` 稳定、响应式系统重构 |
+| Vue 3.5 | 2024-09 | 响应式系统重写（内存 -56%）、响应式 props 解构稳定、`useId`、`useTemplateRef`、懒水合 |
 
 ### 1.5 Evan You 的设计哲学
 

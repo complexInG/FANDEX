@@ -5,7 +5,7 @@ module: 'typescript'
 category: 前端技术
 difficulty: intermediate
 description: 类定义、访问修饰符、装饰器模式与元数据。
-author: Anonymous
+author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'typescript/004-FunctionGeneric'

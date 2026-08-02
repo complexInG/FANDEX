@@ -1894,7 +1894,7 @@ Node.js 12+ 引入的 exports 字段支持子路径导出与条件导出。TypeS
 
 ### 14.1 DefinitelyTyped 项目
 
-DefinitelyTyped 是 GitHub 上的一个 monorepo，托管社区维护的 .d.ts 文件，通过 `@types/xxx` 包发布到 npm。截至 2024 年，DefinitelyTyped 已托管超过 8000 个包的类型声明。
+DefinitelyTyped 是 GitHub 上的一个 monorepo，托管社区维护的 .d.ts 文件，通过 `@types/xxx` 包发布到 npm。截至 2024 年，DefinitelyTyped 已托管超过 8000 个包的类型声明，且该数字仍在持续增长。
 
 项目地址：https://github.com/DefinitelyTyped/DefinitelyTyped
 

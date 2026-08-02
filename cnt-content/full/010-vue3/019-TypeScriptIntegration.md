@@ -38,9 +38,11 @@ TypeScript 是 JavaScript 的超集，它添加了静态类型系统，提供了
 
 ### 2.1 创建 TypeScript 项目
 
-使用 Vite 创建 Vue3 + TypeScript 项目：
+官方推荐使用 create-vue 创建 Vue3 + TypeScript 项目（交互式勾选 TypeScript 即可）；create-vite 的 vue-ts 模板是轻量替代：
 
 ```bash
+ # 官方脚手架（推荐，交互勾选 TypeScript）
+ npm create vue@latest my-vue3-ts-app
  # 使用 npm
  npm create vite@latest my-vue3-ts-app -- --template vue-ts
  # 使用 yarn

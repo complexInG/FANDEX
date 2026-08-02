@@ -5,7 +5,7 @@ module: 'typescript'
 category: 前端技术
 difficulty: intermediate
 description: 原始类型、联合类型、字面量类型与类型推断。
-author: Anonymous
+author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'typescript/001-TypeScriptOverviewEnvSetup'

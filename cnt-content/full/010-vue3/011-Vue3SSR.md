@@ -2625,7 +2625,7 @@ async function renderWithCache(url) {
 - TTI（Time to Interactive）降低 50%
 - 首屏 JS 体积减少 70%
 
-Vue 3 当前不支持原生渐进式 Hydration，但可通过 Vue Server Components（实验性）实现类似效果。
+Vue 3 目前没有 React 式的完整渐进式 Hydration 架构；3.5+ 的异步组件懒水合（`hydrate` 选项）可覆盖部分按需水合场景，更完整的类岛屿效果需借助实验性的 Vue Server Components。
 
 ### 8.7 案例七：VitePress 文档系统
 

@@ -164,7 +164,7 @@ const inputId = useId();
 
 ---
 
-## Vue 3.5 watch once 选项
+## Vue 3.4 watch once 选项
 
 **基本写法：watch 只触发一次**
 `watch(<源>, <回调>, { once: true })`
@@ -304,9 +304,9 @@ import { renderToStream } from 'vue/server-renderer';
 
 ---
 
-## Vue 3.4 内置组件稳定
+## Vue 3.4 内置组件改进
 
-**基本写法：Teleport Suspense KeepAlive 稳定**
+**基本写法：Teleport 与 KeepAlive 等内置组件 API 稳定；Suspense 仍为实验性**
 `<Teleport to="<选择器>">`
 ```vue
 <!-- 内置组件 API 稳定 -->
@@ -411,7 +411,7 @@ customElements.define('my-element', MyElement);
 `npm install vue@3.5`
 ```bash
 # 升级到 Vue 3.5
-npm install vue@3.5 vue-router@4.4 pinia@2.2
+npm install vue@3.5 vue-router@4 pinia
 ```
 
 ---

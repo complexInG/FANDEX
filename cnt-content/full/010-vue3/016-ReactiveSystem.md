@@ -289,7 +289,7 @@ const searchQuery = useDebouncedRef('');
  const state = reactive({
   count: 0,
   message: 'Hello'
- }
+ })
  // 解构会失去响应性
  const { count, message } = state
  console.log(count) // 0
@@ -305,7 +305,7 @@ const searchQuery = useDebouncedRef('');
  const state = reactive({
   count: 0,
   message: 'Hello'
- }
+ })
  // 使用 toRefs 解构
  const { count, message } = toRefs(state)
  console.log(count.value) // 0
@@ -323,7 +323,7 @@ const searchQuery = useDebouncedRef('');
  const state = reactive({
   count: 0,
   message: 'Hello'
- }
+ })
  // 替换整个对象会失去响应性
  state = {
   count: 1,
@@ -338,7 +338,7 @@ const searchQuery = useDebouncedRef('');
  const state = reactive({
   count: 0,
   message: 'Hello'
- }
+ })
  // 修改对象的属性
  state.count = 1
  state.message = 'Hi'
@@ -346,13 +346,13 @@ const searchQuery = useDebouncedRef('');
 
 ### 4.3 响应式数据的添加
 
-当你向响应式对象添加新属性时，新属性不会自动成为响应式的：
+向响应式对象添加新属性时，新属性会**自动**成为响应式的，这与 Vue 2 中必须使用 `Vue.set` 的行为不同：
 
 ```javascript
  import { reactive } from 'vue'
  const state = reactive({
   count: 0
- }
+ })
  // 添加新属性
  state.message = 'Hello' // 新属性是响应式的
 ```
@@ -361,29 +361,22 @@ const searchQuery = useDebouncedRef('');
 
 ### 4.4 响应式数据的删除
 
-当你从响应式对象中删除属性时，删除操作不会触发更新：
+在 Vue 3 中，从响应式对象删除属性**会**触发更新：Proxy 的 `deleteProperty` 陷阱会拦截 `delete state.message` 并通知依赖。`Vue.delete` 是 Vue 2 时代的 API，在 Vue 3 中已被移除；`Reflect.deleteProperty` 是 JavaScript 的反射 API，Proxy 内部同样会经过它，业务代码直接使用 `delete` 操作符即可，不需要手动调用。
 
 ```javascript
- import { reactive } from 'vue'
- const state = reactive({
+import { reactive, watchEffect } from 'vue'
+const state = reactive({
   count: 0,
-  message: 'Hello'
- }
- // 删除属性
- delete state.message // 不会触发更新
+  message: 'Hello',
+})
+
+// 依赖 message 的 effect
+watchEffect(() => console.log(state.message))
+
+delete state.message // 触发依赖更新，effect 重新执行
 ```
 
-解决方法是使用 `Vue.delete` 或 `Reflect.deleteProperty`：
-
-```javascript
- import { reactive } from 'vue'
- const state = reactive({
-  count: 0,
-  message: 'Hello'
- }
- // 使用 Reflect.deleteProperty
- reflect.deleteProperty(state, 'message') // 会触发更新
-```
+需要留意的边界：`shallowReactive` 与 `markRaw` 创建的对象不会深度代理，内部嵌套属性的修改或删除不会触发更新；此时应整体替换引用，或使用 `triggerRef` 等手动触发手段。
 
 ## 5. 响应式系统的最佳实践 | Reactive System Best Practices
 

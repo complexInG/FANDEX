@@ -5,7 +5,7 @@ module: 'typescript'
 category: 前端技术
 difficulty: intermediate
 description: tsconfig 详解、项目引用、增量编译与 monorepo 配置。
-author: Anonymous
+author: fanquanpp
 updated: '2026-07-20'
 related:
   - 'typescript/031-TypeSafeEnvVar'

@@ -5,7 +5,7 @@ module: 'typescript'
 category: 前端技术
 difficulty: advanced
 description: 映射类型、条件类型、模板字面量类型与类型体操。
-author: Anonymous
+author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'typescript/013-DeclarationFileWriting'

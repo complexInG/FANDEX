@@ -326,7 +326,7 @@ import { foo } from './utils.ts';  // 错误：除非启用 allowImportingTsExte
 
 ### 4.4 nodenext
 
-`nodenext` 与 `node16` 行为一致，但语义上跟随 Node.js 最新版本。目前（TypeScript 5.x）两者等价，未来 Node.js 引入新解析特性时 `nodenext` 会自动启用。
+`nodenext` 与 `node16` 行为一致，但语义上跟随 Node.js 最新版本。目前（TypeScript 5.x 起至 7.x）两者等价，未来 Node.js 引入新解析特性时 `nodenext` 会自动启用。
 
 **使用建议**：若项目运行在最新 Node.js 版本且希望自动跟进解析演化，使用 `nodenext`；若需固定行为，使用 `node16`。
 

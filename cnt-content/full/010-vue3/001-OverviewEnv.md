@@ -27,13 +27,16 @@ Vue3 是 Vue.js 框架的第三个主要版本，于 2020 年 9 月正式发布�
 
 ### 2.1 安装 Node.js
 
-Vue3 项目需要 Node.js 18+ 环境。可以从 [Node.js 官网](https://nodejs.org/) 下载并安装最新版本。
+Vue3 官方脚手架当前要求 Node.js `^22.18.0 || >=24.12.0`，建议安装 Node.js LTS 及以上版本。Node 版本过低是依赖安装或 Vite 启动失败的头号原因。
 
 ### 2.2 创建 Vue3 项目
 
-使用 Vite 创建 Vue3 项目是推荐的方式：
+官方推荐使用 create-vue 脚手架（基于 Vite 构建），它会交互式询问是否加入 TypeScript、Vue Router、Pinia、Vitest 等选项；create-vite 是通用 Vite 模板，也可以作为轻量替代：
 
 ```bash
+ # 官方脚手架（推荐）
+ npm create vue@latest my-vue3-app
+ # 使用 create-vite 模板
  # 使用 npm
  npm create vite@latest my-vue3-app -- --template vue
  # 使用 yarn
