@@ -44,6 +44,12 @@ prerequisites:
 <script async src="/js/analytics.js"></script>
 ```
 
+**讲解：**
+
+- 普通 `<script>` 遇到即下载并立即执行，HTML 解析被暂停；
+- `async` 下载不阻塞，但执行时机不可控，适合相互独立的脚本；
+- `defer` 下载不阻塞，HTML 解析完成后按文档顺序执行，是业务脚本的首选。
+
 ## 资源提示：preload / prefetch / preconnect
 
 ```html
@@ -56,6 +62,12 @@ prerequisites:
 <!-- 提前建立跨域连接：节省 DNS/TCP/TLS 时间 -->
 <link rel="preconnect" href="https://api.example.com">
 ```
+
+**讲解：**
+
+- `preload` 提前下载首屏确定要用的资源，`as` 必须与资源类型一致；
+- `prefetch` 在空闲时下载“未来可能用”的资源，优先级低；
+- `preconnect` 提前完成 DNS/TCP/TLS 握手，节省第三方接口的首字节时间。
 
 | 提示 | 时机 | 注意 |
 | --- | --- | --- |
@@ -80,9 +92,43 @@ prerequisites:
 | prefetch 会加速当前页 | prefetch 针对"未来页面"，对当前页没有帮助 |
 | CSS 只影响样式不影响性能 | CSSOM 阻塞渲染，大 CSS 会直接推迟首屏 |
 
+## 动手试试
+
+1. 打开任意网站，按 F12 进入 Network 面板，勾选“禁用缓存”后刷新；
+2. 观察瀑布图：找出阻塞首屏的脚本（普通 `<script>` 会让后续资源排队）；
+3. 把脚本改成 `defer` 或 `async` 再对比，确认首屏时间变化；
+4. 在 Performance 面板录制刷新过程，找到 HTML 解析、布局、绘制的分段时间；
+5. 进阶挑战：给字体加 `preload` + `font-display: swap`，对比文字渲染时间。
+
+## 核心知识点
+
+> 一句话记住关键渲染路径：HTML 建 DOM，CSS 建 CSSOM，合并成渲染树再布局绘制；脚本用 `defer`，关键资源用 `preload`，未来资源用 `prefetch`。
+
+- 关键渲染路径五步：解析 HTML → 解析 CSS → 生成渲染树 → 布局 → 绘制；
+- 普通脚本阻塞解析，业务脚本一律 `defer`；
+- CSS 是渲染阻塞资源，首屏 CSS 应内联或精简；
+- `preload` 抢首屏、`prefetch` 备未来、`preconnect` 省握手；
+- 优化效果用 Performance 面板与 Lighthouse 验证。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 滥用 preload | 抬高优先级挤占带宽 | 只 preload 首屏确定资源 |
+| 业务脚本用 async | 执行顺序不可控 | 顺序敏感用 defer |
+| 大 CSS 外链 | CSSOM 延迟首屏 | 关键样式内联、非关键异步加载 |
+| 忽略字体加载 | FOIT 不可见文字 | preload + font-display: swap |
+| 图片无尺寸 | 布局抖动（CLS） | 设置宽高或 aspect-ratio |
+
+## 扩展学习
+
+- CSS 侧：`css/035-CriticalRenderPathOptimization` 的渲染路径优化清单；
+- 指标验证：`javascript/059-CoreWebVitalsAndPerformanceMetrics` 中 LCP/CLS/TBT 的测量；
+- 资源加载：`html5/013-ImageResponsiveImage` 中图片的优先级与懒加载；
+- 工程实践：构建工具的资源拆分与预加载清单生成。
+
 ## 小结
 
 把资源分三类：**首屏必须的**（内联/高优先级）、**当前页次要的**（defer/lazy）、
 **未来可能用的**（prefetch/preconnect）。配合
-[CSS 关键渲染路径优化](/FANDEX/css/035-CriticalRenderPathOptimization/) 与
-[Core Web Vitals](/FANDEX/javascript/059-CoreWebVitalsAndPerformanceMetrics/) 形成闭环验证。
+`css/035-CriticalRenderPathOptimization` 与 `javascript/059-CoreWebVitalsAndPerformanceMetrics` 形成闭环验证。
