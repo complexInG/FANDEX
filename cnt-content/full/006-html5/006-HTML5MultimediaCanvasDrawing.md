@@ -16,6 +16,17 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
+## 0. 为什么需要学这些？——生活中的“网页多媒体”
+
+你在网页上看过视频、听过音乐、画过画吗？
+
+- 你在 B 站看视频，用的是 `<video>` 标签；
+- 你在音乐网站听歌，用的是 `<audio>` 标签；
+- 你玩过“你画我猜”之类的在线白板，用的是 `<canvas>` 画布；
+- 网页上的小图标（比如搜索图标），用的是 SVG。
+
+这节课的目标：学会在网页里“放视频、播音乐、画图形”。你会发现，HTML 不只是“写文字和链接”，它还能做很多有趣的事。
+
 ## 1. 音视频支持
 
 HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使网页能够直接播放音视频内容。
@@ -37,6 +48,8 @@ HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使�
 - `<video>` 的 `width`/`height` 预先占位，`controls` 显示原生控制条，`poster` 是加载前的封面图；
 - 多个 `<source>` 让浏览器按顺序尝试不同格式，直到找到可播放的为止；
 - 标签之间的文字是兜底提示：浏览器完全不支持视频时才显示。
+
+为什么写了多个 `<source>`？不同浏览器支持的视频格式不一样，就像有的人喜欢 MP3、有的人喜欢 FLAC——浏览器也有各自的“偏好”。写多个 `<source>` 就是让浏览器自己挑一个它能播的，保证所有用户都能正常播放（MP4 覆盖最广，WebM 体积更小，通常把 MP4 写在最前面）。
 
 #### 1.1.2 常用属性
 
@@ -205,11 +218,51 @@ HTML5 提供了原生的音视频支持，不再需要依赖 Flash 插件，使�
 - 音量滑块的取值范围是 0 到 1，示例把当前值换算成百分比显示；
 - 自动播放通常被浏览器拦截，必须结合用户手势调用 `play()`。
 
-## 2. Canvas 绘图
+## 2. SVG 绘图
+
+SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适合绘制图标、图表等需要缩放不失真的图形。
+
+### 2.1 基本结构
+
+```html
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- 绘制矩形 -->
+  <rect x="50" y="50" width="100" height="50" fill="red" stroke="black" stroke-width="2" />
+  <!-- 绘制圆形 -->
+  <circle cx="200" cy="100" r="40" fill="green" />
+  <!-- 绘制椭圆 -->
+  <ellipse cx="300" cy="100" rx="50" ry="30" fill="blue" />
+  <!-- 绘制线条 -->
+  <line x1="50" y1="150" x2="150" y2="200" stroke="black" stroke-width="2" />
+  <!-- 绘制路径 -->
+  <path d="M200,150 L250,200 L150,200 Z" fill="yellow" stroke="black" stroke-width="2" />
+  <!-- 绘制文本 -->
+  <text x="50" y="250" font-family="Arial" font-size="20" fill="black">Hello SVG</text>
+</svg>
+```
+
+**讲解：**
+
+- SVG 用 XML 标签描述矢量图形，`<rect>`、`<circle>`、`<ellipse>`、`<line>` 对应基本形状；
+- `fill` 设置填充色，`stroke` 与 `stroke-width` 设置描边；
+- `<path>` 的 `d` 属性用命令描述路径：`M` 移动、`L` 连线、`Z` 闭合；
+- SVG 是文档结构的一部分，可被 CSS 与 JavaScript 直接操作，与 Canvas 的“像素绘制”不同。
+
+### 2.2 SVG 与 Canvas 对比
+
+| 特性     | Canvas                         | SVG                     |
+| -------- | ------------------------------ | ----------------------- |
+| 绘图方式 | 基于像素，通过 JavaScript 绘制 | 基于矢量，使用 XML 标记 |
+| 缩放     | 缩放会失真                     | 缩放不失真              |
+| 性能     | 适合绘制大量图形和动画         | 适合绘制少量静态图形    |
+| 事件处理 | 需要手动实现                   | 支持元素级事件          |
+| 适用场景 | 游戏、复杂动画、数据可视化     | 图标、图表、标志        |
+
+## 3. Canvas 绘图
 
 Canvas 是 HTML5 提供的一个用于绘制图形的元素，通过 JavaScript 可以在 Canvas 上绘制各种图形、文本、图像等。
 
-### 2.1 基本结构
+### 3.1 基本结构
 
 ```html
 <canvas id="myCanvas" width="400" height="300" style="border:1px solid #000;"></canvas>
@@ -221,7 +274,19 @@ Canvas 是 HTML5 提供的一个用于绘制图形的元素，通过 JavaScript 
 - `width`/`height` 是画布的像素尺寸，CSS 尺寸只负责显示缩放；
 - 标签内可写兜底文字，供不支持 Canvas 的浏览器显示。
 
-### 2.2 绘图上下文
+> 新手常见坑：`<canvas>` 的 `width`/`height` 是画布像素尺寸，CSS 的 `width`/`height` 是显示尺寸。
+>
+> ```html
+> <!-- 正确：画布 400x300，显示也是 400x300 -->
+> <canvas width="400" height="300"></canvas>
+>
+> <!-- 错误：画布默认 300x150，CSS 强行拉大后会模糊 -->
+> <canvas style="width:400px;height:300px;"></canvas>
+> ```
+>
+> 如果画布内容和显示尺寸不一致，图形会模糊或拉伸。记住：用 `width`/`height` 属性控制画布大小，不要用 CSS 控制。
+
+### 3.2 绘图上下文
 
 要在 Canvas 上绘图，首先需要获取绘图上下文：
 
@@ -236,9 +301,9 @@ const ctx = canvas.getContext('2d');
 - 上下文对象 `ctx` 集中了所有绘图方法（矩形、路径、文本、图像等）；
 - 需要 3D 时改用 `getContext('webgl')` 或 `getContext('webgl2')`。
 
-### 2.3 基本绘图操作
+### 3.3 基本绘图操作
 
-#### 2.3.1 绘制矩形
+#### 3.3.1 绘制矩形
 
 ```javascript
 // 填充矩形
@@ -258,7 +323,7 @@ ctx.clearRect(50, 25, 50, 30);
 - `fillStyle`/`strokeStyle` 设置填充与描边颜色，`lineWidth` 设置线条宽度；
 - 三者组合可实现“绘制-更新-清除”的画板基础逻辑。
 
-#### 2.3.2 绘制路径
+#### 3.3.2 绘制路径
 
 ```javascript
 // 绘制三角形
@@ -280,7 +345,7 @@ ctx.stroke();
 - `fill()` 填充路径内部，`stroke()` 只描边路径本身；
 - 不调用 `beginPath()` 时，新路径会与旧路径叠加，容易画出意外图形。
 
-#### 2.3.3 绘制圆形和弧线
+#### 3.3.3 绘制圆形和弧线
 
 ```javascript
 // 绘制圆形
@@ -302,7 +367,7 @@ ctx.stroke();
 - 弧度从 3 点钟方向开始顺时针增长；
 - 绘制完弧线后必须调用 `fill()` 或 `stroke()`，图形才会真正显示。
 
-#### 2.3.4 绘制文本
+#### 3.3.4 绘制文本
 
 ```javascript
 // 填充文本
@@ -321,7 +386,7 @@ ctx.strokeText('Hello Canvas', 50, 290);
 - `textAlign` 控制文本在指定坐标上的对齐方式（left/center/right）；
 - 文本基线由 `textBaseline` 控制，多行文本需要逐行计算 `y` 坐标。
 
-#### 2.3.5 绘制图像
+#### 3.3.5 绘制图像
 
 ```javascript
 const img = new Image();
@@ -340,9 +405,48 @@ img.onload = function () {
 - `drawImage` 必须在 `onload` 回调中调用，否则图片尚未解码；
 - 9 参数版本 `drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)` 可从原图裁剪区域后绘制到目标位置。
 
-### 2.4 Canvas 变换
+#### 3.3.6 试试看：画一个笑脸
 
-#### 2.4.1 平移
+把前面学的圆、弧线和填充组合起来，画一个完整的“作品”：
+
+```html
+<canvas id="smileCanvas" width="200" height="200"></canvas>
+<script>
+  const canvas = document.getElementById('smileCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // 画脸（圆形）
+  ctx.beginPath();
+  ctx.arc(100, 100, 80, 0, Math.PI * 2);
+  ctx.fillStyle = '#FFD700';
+  ctx.fill();
+  ctx.stroke();
+
+  // 画眼睛（两个小圆）
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(70, 80, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(130, 80, 8, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 画嘴巴（弧线）
+  ctx.beginPath();
+  ctx.arc(100, 100, 40, 0, Math.PI);
+  ctx.stroke();
+</script>
+```
+
+**讲解：**
+
+- 每个图形绘制前都调用 `beginPath()`，避免与上一个图形的路径粘连；
+- 填充用 `fill()`，描边用 `stroke()`，同一个圆可以先填充再描边；
+- 嘴巴只用上半圆（`0` 到 `Math.PI`），所以看起来在“笑”。
+
+### 3.4 Canvas 变换
+
+#### 3.4.1 平移
 
 ```javascript
 ctx.save(); // 保存当前状态
@@ -358,7 +462,7 @@ ctx.restore(); // 恢复之前的状态
 - `save()` 保存当前状态（变换、样式），`restore()` 恢复，避免变换互相污染；
 - 记住“先 `save`，变换，再 `restore`”是 Canvas 变换的标准姿势。
 
-#### 2.4.2 旋转
+#### 3.4.2 旋转
 
 ```javascript
 ctx.save();
@@ -375,7 +479,7 @@ ctx.restore();
 - 通常先 `translate` 到旋转中心，再 `rotate`，最后在局部坐标中绘制；
 - 示例中图形以自身中心（`-50, -25` 偏移）为轴旋转，而不是画布原点。
 
-#### 2.4.3 缩放
+#### 3.4.3 缩放
 
 ```javascript
 ctx.save();
@@ -391,7 +495,7 @@ ctx.restore();
 - 缩放会同步影响线宽与坐标，`save`/`restore` 可以隔离影响范围；
 - 负值缩放可镜像图形，但较少直接使用。
 
-### 2.5 Canvas 动画
+### 3.5 Canvas 动画
 
 通过 `requestAnimationFrame` 可以实现 Canvas 动画：
 
@@ -429,7 +533,7 @@ ctx.restore();
 - 示例中的边界检测让方块碰到左右边缘后反向移动，形成来回弹跳效果；
 - 与 `setInterval` 相比，它跟随屏幕刷新率并自动暂停于后台标签页，节省资源。
 
-### 2.6 Canvas 交互
+### 3.6 Canvas 交互
 
 通过鼠标事件可以实现 Canvas 交互：
 
@@ -475,46 +579,6 @@ ctx.restore();
 - “按下开始画、移动画线、松开停止”是白板类应用的最小交互模型；
 - `mouseout` 时复位绘制状态，避免鼠标移出画布后仍持续画线。
 
-## 3. SVG 绘图
-
-SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适合绘制图标、图表等需要缩放不失真的图形。
-
-### 3.1 基本结构
-
-```html
-<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-  <!-- 绘制矩形 -->
-  <rect x="50" y="50" width="100" height="50" fill="red" stroke="black" stroke-width="2" />
-  <!-- 绘制圆形 -->
-  <circle cx="200" cy="100" r="40" fill="green" />
-  <!-- 绘制椭圆 -->
-  <ellipse cx="300" cy="100" rx="50" ry="30" fill="blue" />
-  <!-- 绘制线条 -->
-  <line x1="50" y1="150" x2="150" y2="200" stroke="black" stroke-width="2" />
-  <!-- 绘制路径 -->
-  <path d="M200,150 L250,200 L150,200 Z" fill="yellow" stroke="black" stroke-width="2" />
-  <!-- 绘制文本 -->
-  <text x="50" y="250" font-family="Arial" font-size="20" fill="black">Hello SVG</text>
-</svg>
-```
-
-**讲解：**
-
-- SVG 用 XML 标签描述矢量图形，`<rect>`、`<circle>`、`<ellipse>`、`<line>` 对应基本形状；
-- `fill` 设置填充色，`stroke` 与 `stroke-width` 设置描边；
-- `<path>` 的 `d` 属性用命令描述路径：`M` 移动、`L` 连线、`Z` 闭合；
-- SVG 是文档结构的一部分，可被 CSS 与 JavaScript 直接操作，与 Canvas 的“像素绘制”不同。
-
-### 3.2 SVG 与 Canvas 对比
-
-| 特性     | Canvas                         | SVG                     |
-| -------- | ------------------------------ | ----------------------- |
-| 绘图方式 | 基于像素，通过 JavaScript 绘制 | 基于矢量，使用 XML 标记 |
-| 缩放     | 缩放会失真                     | 缩放不失真              |
-| 性能     | 适合绘制大量图形和动画         | 适合绘制少量静态图形    |
-| 事件处理 | 需要手动实现                   | 支持元素级事件          |
-| 适用场景 | 游戏、复杂动画、数据可视化     | 图标、图表、标志        |
-
 ## 4. 实际应用示例
 
 ### 4.1 示例 1：视频播放器
@@ -526,61 +590,7 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>视频播放器</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 2rem;
-        background-color: #f4f4f4;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 2rem;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-      .video-container {
-        position: relative;
-        width: 100%;
-        padding-bottom: 56.25%; /* 16:9 比例 */
-        overflow: hidden;
-        margin-bottom: 1rem;
-      }
-      video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .controls {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 1rem;
-      }
-      button {
-        padding: 0.5rem 1rem;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      input[type='range'] {
-        flex: 1;
-      }
-    </style>
+    <!-- 样式将在后续 CSS 课程中学习，本示例只保留结构与交互逻辑 -->
   </head>
   <body>
     <div class="container">
@@ -659,67 +669,7 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canvas 绘图应用</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 2rem;
-        background-color: #f4f4f4;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 2rem;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-      .canvas-container {
-        margin-bottom: 1rem;
-      }
-      canvas {
-        border: 1px solid #000;
-        cursor: crosshair;
-      }
-      .controls {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-      }
-      button {
-        padding: 0.5rem 1rem;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      .color-picker {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      input[type='color'] {
-        width: 50px;
-        height: 30px;
-        border: none;
-        cursor: pointer;
-      }
-      .brush-size {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-    </style>
+    <!-- 样式将在后续 CSS 课程中学习，本示例只保留结构与交互逻辑 -->
   </head>
   <body>
     <div class="container">
@@ -815,47 +765,7 @@ SVG (Scalable Vector Graphics) 是一种基于 XML 的矢量图形格式，适�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SVG 图标</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 2rem;
-        background-color: #f4f4f4;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 2rem;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-      .icons {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 2rem;
-        text-align: center;
-      }
-      .icon {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      svg {
-        width: 64px;
-        height: 64px;
-        margin-bottom: 1rem;
-      }
-      .icon-name {
-        font-size: 0.9rem;
-        color: #666;
-      }
-    </style>
+    <!-- 样式将在后续 CSS 课程中学习，本示例只保留结构与交互逻辑 -->
   </head>
   <body>
     <div class="container">
@@ -1089,11 +999,11 @@ oscillator.stop(audioCtx.currentTime + 2); // 2 秒后停止
 ## 9. 核心知识点
 
 - 音视频：`<video>`/`<audio>` + `<source>` 多格式降级，`controls`/`autoplay`/`muted`/`poster` 属性，`play()`/`pause()`/`currentTime`/`volume` API；
+- SVG：矢量、可缩放，每个图形都是文档元素，用 XML 标签描述，与 Canvas 按场景选型；
 - Canvas：`getContext('2d')` 获取上下文，`fillRect`/路径/`arc`/文本/`drawImage` 完成绘制；
 - Canvas 变换：`translate`/`rotate`/`scale` 配合 `save()`/`restore()` 使用；
 - 动画：`requestAnimationFrame` 循环“清除-更新-重绘”，比 `setInterval` 更省资源；
 - 交互：鼠标事件 + 坐标换算实现画板类应用；
-- SVG：矢量、可缩放、每个图形都是文档元素，与 Canvas 按场景选型。
 
 ## 10. 动手试试
 
