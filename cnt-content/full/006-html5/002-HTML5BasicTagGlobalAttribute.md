@@ -14,6 +14,35 @@ related:
 prerequisites: []
 ---
 
+## 0. 核心认知：HTML 标签就是“搭积木”
+
+在开始背标签之前，先理解一个道理：HTML 标签的本质，是告诉浏览器“这块内容是什么”，而不是“这块内容长什么样”。
+
+| 你要表达的含义 | 用这个标签 | 而不是 |
+| --- | --- | --- |
+| 最重要的标题 | `<h1>` | 用大字加粗的 `<div>` |
+| 一段普通文字 | `<p>` | 用 `<div>` 硬换行 |
+| 一组并列的项目 | `<ul>` + `<li>` | 用 `<div>` + `<br>` 硬排 |
+| 一个可点击的链接 | `<a>` | 用 `<div>` 加点击事件 |
+
+记住：选择标签的唯一标准是“这个内容在语义上是什么”，而不是“我希望它长什么样”。样式是 CSS 的工作，不是 HTML 的工作。
+
+### 0.1 使用频率分级：哪些标签必须背
+
+| 标签 | 频率 | 说明 |
+| --- | --- | --- |
+| `<h1>`-`<h6>` | 必背 | 每页必用，构建标题层级 |
+| `<p>` | 必背 | 每页必用，承载正文段落 |
+| `<ul>`/`<ol>`/`<li>` | 必背 | 导航、列表必用 |
+| `<a>` | 必背 | 链接必用 |
+| `<img>` | 必背 | 图片必用 |
+| `<span>` | 常用 | 行内包裹，配合样式或脚本 |
+| `<strong>`/`<em>` | 了解 | 强调语义，CSS 可辅助表现 |
+| `<mark>`/`<small>`/`<del>`/`<ins>` | 用到再查 | 低频语义标签，不用死记 |
+| `<sub>`/`<sup>` | 知道即可 | 几乎不用，遇到时查文档 |
+
+讲解：标为“必背”的标签要求手写无误；“用到再查”和“知道即可”的标签了解存在即可，遇到时再查文档。
+
 ## 1. 基础文本标签
 
 基础文本标签用于定义和格式化网页中的文本内容，是构建网页结构的基础。
@@ -23,12 +52,12 @@ prerequisites: []
 标题标签用于定义网页中的标题，从 `<h1>` 到 `<h6>`，级别依次递减。
 | 标签 | 描述 | 语义 |
 |------|------|------|
-| `<h1>` | 一级标题 | 最重要的标题，通常用于页面主标题 |
-| `<h2>` | 二级标题 | 次要标题，通常用于章节标题 |
-| `<h3>` | 三级标题 | 子章节标题 |
-| `<h4>` | 四级标题 | 更小的子章节标题 |
-| `<h5>` | 五级标题 | 更次要的标题 |
-| `<h6>` | 六级标题 | 最次要的标题 |
+| `<h1>` | 一级标题（必背） | 最重要的标题，通常用于页面主标题 |
+| `<h2>` | 二级标题（必背） | 次要标题，通常用于章节标题 |
+| `<h3>` | 三级标题（必背） | 子章节标题 |
+| `<h4>` | 四级标题（了解） | 更小的子章节标题 |
+| `<h5>` | 五级标题（了解） | 更次要的标题 |
+| `<h6>` | 六级标题（了解） | 最次要的标题 |
 **示例**：
 
 ```html
@@ -74,14 +103,14 @@ prerequisites: []
 用于对文本进行强调，具有语义含义。
 | 标签 | 描述 | 语义 |
 |------|------|------|
-| `<strong>` | 加粗 | 表示重要内容 |
-| `<em>` | 倾斜 | 表示强调内容 |
-| `<mark>` | 标记 | 表示突出显示的内容 |
-| `<small>` | 小号字体 | 表示辅助性内容 |
-| `<del>` | 删除线 | 表示已删除的内容 |
-| `<ins>` | 下划线 | 表示已插入的内容 |
-| `<sub>` | 下标 | 表示下标文本 |
-| `<sup>` | 上标 | 表示上标文本 |
+| `<strong>` | 加粗（了解） | 表示重要内容 |
+| `<em>` | 倾斜（了解） | 表示强调内容 |
+| `<mark>` | 标记（用到再查） | 表示突出显示的内容 |
+| `<small>` | 小号字体（用到再查） | 表示辅助性内容 |
+| `<del>` | 删除线（用到再查） | 表示已删除的内容 |
+| `<ins>` | 下划线（用到再查） | 表示已插入的内容 |
+| `<sub>` | 下标（知道即可） | 表示下标文本 |
+| `<sup>` | 上标（知道即可） | 表示上标文本 |
 **示例**：
 
 ```html
@@ -225,6 +254,14 @@ prerequisites: []
 - 嵌套列表通过“`<li>` 内再放 `<ul>`/`<ol>`”实现多级层级；
 - 浏览器会自动缩进子列表，形成清晰的目录结构；
 - 注意嵌套深度不要过深，超过三层时应考虑用页面导航替代。
+
+### 2.5 三种列表的选择指南
+
+| 场景 | 用什么 | 为什么 |
+| --- | --- | --- |
+| 导航菜单、购物清单、功能列表 | `<ul>` | 项目之间是并列关系，顺序无关紧要 |
+| 操作步骤、排行榜、流程说明 | `<ol>` | 顺序本身有意义，1 到 2 到 3 不可颠倒 |
+| 术语表、问答对、键值对 | `<dl>` | 每个项目由“术语 + 定义”成对出现 |
 
 ## 3. 超链接与多媒体
 
@@ -441,6 +478,9 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 | `<footer>` | 页面或section的底部 |
 | `<figure>` | 图表、图像等 |
 | `<figcaption>` | 图表的标题 |
+
+注意：`<div>` 是“无语义容器”，仅用于样式分组或脚本挂载；能用上面任一语义标签表达时，就不要用 `div`。
+
 **示例**：
 
 ```html
@@ -495,7 +535,7 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 
 ## 6. 实际应用示例
 
-### 6.1 示例 1：基本网页结构
+### 6.1 示例 1：基本网页结构（纯 HTML 骨架）
 
 ```html
 <!DOCTYPE html>
@@ -504,45 +544,11 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>基本网页结构</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-      }
-      header {
-        background-color: #333;
-        color: white;
-        padding: 1rem;
-      }
-      nav ul {
-        list-style: none;
-        padding: 0;
-      }
-      nav ul li {
-        display: inline;
-        margin-right: 1rem;
-      }
-      nav ul li a {
-        color: white;
-        text-decoration: none;
-      }
-      main {
-        padding: 2rem;
-      }
-      footer {
-        background-color: #333;
-        color: white;
-        text-align: center;
-        padding: 1rem;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-      }
-    </style>
+    <!-- 注意：本示例只有 HTML 骨架，没有 CSS 样式 -->
+    <!-- 样式将在后续 CSS 课程中学习 -->
   </head>
   <body>
+    <!-- ====== 页面头部 ====== -->
     <header>
       <h1>我的网站</h1>
       <nav>
@@ -554,12 +560,15 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
         </ul>
       </nav>
     </header>
+
+    <!-- ====== 页面主体 ====== -->
     <main>
       <section>
         <h2>欢迎访问我的网站</h2>
         <p>这是一个使用 HTML5 基础标签构建的网页。</p>
         <p>HTML5 提供了丰富的标签和属性，用于创建结构清晰、语义化的网页。</p>
       </section>
+
       <section>
         <h2>服务列表</h2>
         <ul>
@@ -569,14 +578,17 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
           <li>移动应用开发</li>
         </ul>
       </section>
+
       <section>
         <h2>联系我们</h2>
-        <p>邮箱: <a href="mailto:info@example.com">info@example.com</a></p>
-        <p>电话: <a href="tel:+1234567890">123-456-7890</a></p>
+        <p>邮箱：<a href="mailto:info@example.com">info@example.com</a></p>
+        <p>电话：<a href="tel:+1234567890">123-456-7890</a></p>
       </section>
     </main>
+
+    <!-- ====== 页面底部 ====== -->
     <footer>
-      <p>2026 我的网站. 保留所有权利.</p>
+      <p>&copy; 2026 我的网站. 保留所有权利.</p>
     </footer>
   </body>
 </html>
@@ -584,11 +596,12 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 
 **讲解：**
 
-- `position: fixed` 的页脚常驻视口底部，但会遮挡内容，需为主内容预留底部内边距；
-- 导航使用 `display: inline` 将列表项排成一行，是无需 Flexbox 的轻量方案；
-- `mailto:` 与 `tel:` 链接让移动端直接唤起邮件与拨号应用。
+- 这个页面在浏览器中会显示为“白底黑字”的朴素风格——这正是 HTML 的本职工作：只负责内容和结构，不负责美化；
+- `header` 包住标题与导航，`main` 包住三个 `section`，`footer` 放版权信息，三段结构一目了然；
+- 导航里的 `<ul>` 和“服务列表”里的 `<ul>` 表达的都是“一组并列项目”，语义正确；
+- `mailto:` 与 `tel:` 链接让用户点击后直接唤起邮件与拨号应用。
 
-### 6.2 示例 2：产品展示页面
+### 6.2 示例 2：产品展示页面（纯 HTML 骨架）
 
 ```html
 <!DOCTYPE html>
@@ -597,99 +610,52 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>产品展示</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-      }
-      h1 {
-        text-align: center;
-      }
-      .product-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-      }
-      .product {
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 1rem;
-        text-align: center;
-      }
-      .product img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 5px;
-      }
-      .product h3 {
-        margin-top: 1rem;
-      }
-      .product p {
-        color: #666;
-      }
-      .price {
-        font-weight: bold;
-        color: #e63946;
-        font-size: 1.2rem;
-      }
-    </style>
+    <!-- 注意：本示例只有 HTML 骨架，没有 CSS 样式 -->
   </head>
   <body>
-    <div class="container">
+    <header>
       <h1>产品展示</h1>
-      <div class="product-grid">
-        <div class="product" data-id="1" data-name="智能手机" data-price="2999">
-          <img src="https://via.placeholder.com/300" alt="智能手机" />
+      <nav>
+        <ul>
+          <li><a href="#">首页</a></li>
+          <li><a href="#">产品</a></li>
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">联系我们</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <h2>热门产品</h2>
+      <section>
+        <article class="product" data-id="1" data-name="智能手机" data-price="2999">
           <h3>智能手机</h3>
-          <p>6.5英寸屏幕，128GB存储，4800万像素摄像头</p>
-          <p class="price">¥2999</p>
-          <a href="#" class="btn">查看详情</a>
-        </div>
-        <div class="product" data-id="2" data-name="笔记本电脑" data-price="5999">
-          <img src="https://via.placeholder.com/300" alt="笔记本电脑" />
+          <p>6.5 英寸屏幕，128GB 存储，4800 万像素摄像头</p>
+          <p>价格：2999 元</p>
+        </article>
+        <article class="product" data-id="2" data-name="笔记本电脑" data-price="5999">
           <h3>笔记本电脑</h3>
-          <p>14英寸屏幕，8GB内存，512GB固态硬盘</p>
-          <p class="price">¥5999</p>
-          <a href="#" class="btn">查看详情</a>
-        </div>
-        <div class="product" data-id="3" data-name="平板电脑" data-price="1999">
-          <img src="https://via.placeholder.com/300" alt="平板电脑" />
+          <p>14 英寸屏幕，8GB 内存，512GB 固态硬盘</p>
+          <p>价格：5999 元</p>
+        </article>
+        <article class="product" data-id="3" data-name="平板电脑" data-price="1999">
           <h3>平板电脑</h3>
-          <p>10.5英寸屏幕，64GB存储，支持手写笔</p>
-          <p class="price">¥1999</p>
-          <a href="#" class="btn">查看详情</a>
-        </div>
-      </div>
-    </div>
-    <script>
-      // 为产品添加点击事件
-      document.querySelectorAll('.product').forEach((product) => {
-        product.addEventListener('click', function () {
-          const id = this.dataset.id;
-          const name = this.dataset.name;
-          const price = this.dataset.price;
-          alert(`产品 ID: ${id}\n名称: ${name}\n价格: ¥${price}`);
-        });
-      });
-    </script>
+          <p>10.5 英寸屏幕，64GB 存储，支持手写笔</p>
+          <p>价格：1999 元</p>
+        </article>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2026 产品展示. 保留所有权利.</p>
+    </footer>
   </body>
 </html>
 ```
 
 **讲解：**
 
-- `display: grid` 配合 `repeat(auto-fit, minmax(300px, 1fr))` 自动生成响应式产品网格；
-- 每个产品卡片通过 `data-id`、`data-name`、`data-price` 携带业务数据；
-- 脚本用 `querySelectorAll` 批量绑定点击事件，再经 `dataset` 读取数据，实现“数据与展示解耦”。
-
+- 每个产品用 `article` 表达“独立可复用”的内容，后续加样式或交互都不影响结构；
+- `data-id`、`data-name`、`data-price` 是自定义数据属性，JavaScript 课程会用它实现“点击查看详情”；
+- 页面没有写任何 CSS，先保证结构正确，网格布局等美化留给 CSS 课程。
 ## 7. 最佳实践
 
 ### 7.1 语义化标签的使用
@@ -784,7 +750,26 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 - `popovertarget` 声明触发按钮，`popovertargetaction` 可选 `toggle`/`show`/`hide`；
 - 弹出层自动置于顶层（top layer），无需手动管理 `z-index`。
 
-## 9. 核心知识点
+## 9. 动手试试：写一个“我的个人简介”页面
+
+> 目标：用今天学的标签，写一个“我的个人简介”页面。
+
+要求：
+
+1. 页面标题为“关于我”；
+2. 有一个一级标题 `<h1>` 显示你的名字；
+3. 用 `<p>` 写一段自我介绍；
+4. 用 `<ul>` 列出你的 3 个爱好；
+5. 用 `<ol>` 列出你今天的 3 件事；
+6. 用 `<a>` 放一个你最喜欢的网站链接（`target="_blank"`）。
+
+挑战（可选）：
+
+- 用 `<figure>` + `<figcaption>` 放一张图片；
+- 用 `<dl>` 列出 3 个你学会的 HTML 标签及其含义；
+- 用 `<details>` + `<summary>` 做一个“展开看更多”区域。
+
+## 10. 核心知识点
 
 - 标题（`h1`-`h6`）、段落（`p`）、强调（`strong`/`em`）等文本标签构成内容语义；
 - 无序列表 `ul`、有序列表 `ol`、定义列表 `dl` 各有适用场景，嵌套可表达层级；
@@ -792,7 +777,7 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 - `id`、`class`、`data-*` 等全局属性服务于样式、脚本与数据绑定；
 - 语义化标签（`header`/`nav`/`main`/`article`/`section`/`aside`/`footer`）构建标准页面骨架。
 
-## 10. 注意事项与改进建议
+## 11. 注意事项与改进建议
 
 | 问题点 | 说明 | 改进方案 |
 | --- | --- | --- |
@@ -804,7 +789,7 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 | 表单控件缺少 `label` | 点击文字无法聚焦，无障碍性差 | 用 `<label for>` 或嵌套方式关联 |
 | 滥用 `details`/`dialog` | 语义不匹配或兼容性考虑不足 | 先确认语义，再检查浏览器支持度后降级 |
 
-## 11. 扩展学习
+## 12. 扩展学习
 
 - 表单方向：深入 `html5/005-HTML5FormValidation` 学习输入类型与验证 API；
 - 语义方向：阅读 `html5/003-SemanticTag` 掌握 `article` 与 `section` 的边界；

@@ -15,6 +15,15 @@ related:
 prerequisites: []
 ---
 
+## 0. 语义化标签的直觉：给网页内容贴“标签牌”
+
+想象一下：如果网页是一个房间，里面的内容就是家具。
+
+- 用 `div` 搭建的页面 = 所有家具都用同样的白布盖着，你走进来只能摸到一堆方方正正的块，不知道哪个是沙发、哪个是桌子；
+- 用语义化标签搭建的页面 = 每件家具都有标签牌（“沙发”“餐桌”“书架”），一摸就知道这是什么。
+
+屏幕阅读器（给视障用户读网页的软件）就是这样工作的。语义化标签，就是给网页内容贴标签牌。
+
 ## 1. 语义化标签概述
 
 ### 1.1 什么是语义化
@@ -71,6 +80,8 @@ prerequisites: []
 - 语义化并不增加功能代码，却让可访问性、SEO 与可维护性同时受益。
 
 ## 2. 页面结构标签
+
+学习路径：先搭“骨架”（`header`、`nav`、`main`、`footer`），再填“内容分区”（`article`、`section`、`aside`），最后修饰“文本细节”（`time`、`figure`、`details` 等）。从大到小，先看到森林，再看到树木。
 
 ### 2.1 header
 
@@ -465,7 +476,7 @@ prerequisites: []
     <!-- 跳过导航（可访问性） -->
     <a href="#main" class="skip-link">跳到主要内容</a>
 
-    <header role="banner">
+    <header>
       <div class="logo">
         <a href="/">我的博客</a>
       </div>
@@ -478,14 +489,15 @@ prerequisites: []
       </nav>
     </header>
 
+    <!-- 这个 div 仅用于布局（flex/grid），没有语义含义 -->
     <div class="layout">
-      <main id="main" role="main">
-        <article itemscope itemtype="https://schema.org/BlogPosting">
+      <main id="main">
+        <article>
           <header>
-            <h1 itemprop="headline">深入理解HTML5语义化标签</h1>
+            <h1>深入理解HTML5语义化标签</h1>
             <p>
-              由 <span itemprop="author">张三</span> 发布于
-              <time itemprop="datePublished" datetime="2026-06-13"> 2026年6月13日 </time>
+              由 <span>张三</span> 发布于
+              <time datetime="2026-06-13"> 2026年6月13日 </time>
             </p>
           </header>
 
@@ -539,7 +551,7 @@ prerequisites: []
       </aside>
     </div>
 
-    <footer role="contentinfo">
+    <footer>
       <p><small>&copy; 2026 我的博客. 保留所有权利.</small></p>
     </footer>
   </body>
@@ -549,9 +561,10 @@ prerequisites: []
 **讲解：**
 
 - 页面从“跳过链接”开始，随后按 `header`、`main`、`aside`、`footer` 展开，形成完整语义骨架；
-- `itemscope`/`itemtype` 与 `itemprop` 组成 BlogPosting 微数据，让文章标题、作者、时间可被结构化解析；
+- `header`/`main`/`footer` 在现代 HTML5 中自带 `banner`/`main`/`contentinfo` 语义角色，无需再写 `role` 属性；
 - `article` 内部自带 `header`/`section`/`footer`，证明这些标签可在任意层级重复使用；
-- 整体结构与 `<div class="layout">` 纯布局容器分离，样式与语义各司其职。
+- `<div class="layout">` 只负责布局（未来用 flex/grid 排版），不承载语义，与内容结构分离；
+- 微数据（`itemscope`/`itemprop`）属于进阶知识，见第 8 章 8.3，本示例不再混入。
 
 ## 6. 常见问题与解决方案
 
@@ -701,7 +714,57 @@ prerequisites: []
 - `aria-expanded` 告知读屏软件展开状态，`aria-controls` 指向被控制的元素；
 - 优先使用原生元素（如 `<details>`、`<dialog>`），ARIA 是补充而非替代。
 
-## 9. 核心知识点
+## 9. 动手试试：改造一个“非语义化”页面
+
+下面是一段用 `div` 搭建的页面结构，请用学过的语义化标签重写它：
+
+```html
+<div class="page">
+  <div class="header">
+    <div class="logo">我的网站</div>
+    <div class="nav">
+      <a href="#">首页</a>
+      <a href="#">关于</a>
+    </div>
+  </div>
+  <div class="main">
+    <div class="article">
+      <div class="title">文章标题</div>
+      <div class="content">文章内容...</div>
+    </div>
+    <div class="sidebar">侧边栏</div>
+  </div>
+  <div class="footer">版权信息</div>
+</div>
+```
+
+### 9.1 参考答案
+
+```html
+<header>
+  <div class="logo">我的网站</div>
+  <nav>
+    <a href="#">首页</a>
+    <a href="#">关于</a>
+  </nav>
+</header>
+<main>
+  <article>
+    <h1>文章标题</h1>
+    <p>文章内容...</p>
+  </article>
+  <aside>侧边栏</aside>
+</main>
+<footer>版权信息</footer>
+```
+
+讲解：
+
+- `header`/`main`/`footer` 替换外层三个 `div`，页面骨架立刻可读；
+- `article` 内的“标题 + 内容”换成 `h1` 与 `p`，标题层级恢复；
+- `nav`、`aside` 分别表达导航与侧边栏，`div` 仅保留 `logo` 这类纯布局容器。
+
+## 10. 核心知识点
 
 - 语义化 = 用有明确含义的标签描述结构：`header`/`nav`/`main`/`article`/`section`/`aside`/`footer`；
 - `main` 每页唯一；`header`/`footer` 可重复出现在页面与区块两级；
@@ -709,7 +772,7 @@ prerequisites: []
 - 文本级语义标签（`time`、`figure`、`details`、`mark`、`abbr`、`cite`）让内容细节也可被理解；
 - 语义化优先、ARIA 补充、微数据增强，三者共同支撑 SEO 与无障碍。
 
-## 10. 注意事项与改进建议
+## 11. 注意事项与改进建议
 
 | 问题点 | 说明 | 改进方案 |
 | --- | --- | --- |
@@ -720,7 +783,7 @@ prerequisites: []
 | 滥用 ARIA | 与原生语义冲突，反而误导读屏 | 优先原生元素，ARIA 只做补充 |
 | `article` 嵌套过深 | 大纲层级膨胀，阅读困难 | 评论等独立内容才使用嵌套 `article` |
 
-## 11. 扩展学习
+## 12. 扩展学习
 
 - 完整实践：阅读 `html5/010-TextSemantic` 与 `html5/011-List` 掌握文本与列表语义；
 - 无障碍深化：结合 `html5/004-Accessibility` 学习 WCAG 与 ARIA 完整规范；
