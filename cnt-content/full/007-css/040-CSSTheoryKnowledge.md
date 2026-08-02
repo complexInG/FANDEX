@@ -16,7 +16,7 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
-
+```text
          |
          v
     Attachment (DOM + CSSOM --> Render Tree)
