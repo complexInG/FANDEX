@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "module": "deno",
+  "summary": "先体验原生 TypeScript 与内置工具链，再理解权限模型，最后用 Hono 与 Deno Deploy 上线服务。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "入门基础",
+      "subtitle": "运行时与标准库",
+      "nodes": [
+        {
+          "id": "deno-001",
+          "title": "概述与快速上手",
+          "desc": "安装、首个脚本与内置工具链",
+          "difficulty": "beginner",
+          "doc": "001-DenoOverview"
+        },
+        {
+          "id": "deno-002",
+          "title": "快速入门",
+          "desc": "npm/JSR 导入、标准库与内置测试",
+          "difficulty": "beginner",
+          "doc": "002-DenoQuickStart"
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "title": "安全模型",
+      "subtitle": "权限最小化",
+      "nodes": [
+        {
+          "id": "deno-003",
+          "title": "权限模型与安全实践",
+          "desc": "--allow 参数、密钥管理与供应链安全",
+          "difficulty": "intermediate",
+          "doc": "003-DenoPermissionsSecurity"
+        }
+      ]
+    },
+    {
+      "id": "web-deploy",
+      "title": "Web 与部署",
+      "subtitle": "Hono、KV 与 Deno Deploy",
+      "nodes": [
+        {
+          "id": "deno-004",
+          "title": "Web 开发与云端部署",
+          "desc": "Hono API、Deno KV 与边缘部署",
+          "difficulty": "intermediate",
+          "doc": "004-DenoWebFrameworkDeploy"
+        }
+      ]
+    }
+  ]
+}

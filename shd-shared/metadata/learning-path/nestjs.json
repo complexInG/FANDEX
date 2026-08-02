@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "module": "nestjs",
+  "summary": "从模块-控制器-服务分层出发，逐步加入校验、数据库与测试，形成企业级接口开发闭环。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "入门基础",
+      "subtitle": "分层结构与第一个接口",
+      "nodes": [
+        {
+          "id": "nest-001",
+          "title": "概述与快速上手",
+          "desc": "CLI 建项目、模块/控制器/服务三件套",
+          "difficulty": "beginner",
+          "doc": "001-NestJSOverview"
+        },
+        {
+          "id": "nest-002",
+          "title": "模块、控制器与服务",
+          "desc": "DTO、依赖注入与 CRUD 完整示例",
+          "difficulty": "beginner",
+          "doc": "002-ModuleControllerService"
+        }
+      ]
+    },
+    {
+      "id": "validation-db",
+      "title": "校验与数据",
+      "subtitle": "管道校验与数据库接入",
+      "nodes": [
+        {
+          "id": "nest-003",
+          "title": "管道校验与异常处理",
+          "desc": "ValidationPipe、class-validator 与过滤器",
+          "difficulty": "intermediate",
+          "doc": "003-ValidationPipes"
+        },
+        {
+          "id": "nest-004",
+          "title": "接入数据库",
+          "desc": "Prisma + PostgreSQL 模型与 CRUD",
+          "difficulty": "intermediate",
+          "doc": "004-DatabaseIntegration"
+        }
+      ]
+    },
+    {
+      "id": "testing",
+      "title": "测试保障",
+      "subtitle": "单元测试与端到端测试",
+      "nodes": [
+        {
+          "id": "nest-005",
+          "title": "单元测试与端到端测试",
+          "desc": "Jest 替身注入与 Supertest 全链路验证",
+          "difficulty": "intermediate",
+          "doc": "005-Testing"
+        }
+      ]
+    }
+  ]
+}

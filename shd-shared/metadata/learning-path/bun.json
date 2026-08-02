@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "module": "bun",
+  "summary": "从全家桶运行时出发，先掌握项目与依赖管理，再使用内置服务器与 SQL 完成可运行应用。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "入门基础",
+      "subtitle": "运行时与工具链",
+      "nodes": [
+        {
+          "id": "bun-001",
+          "title": "概述与快速上手",
+          "desc": "安装、运行脚本与内置命令",
+          "difficulty": "beginner",
+          "doc": "001-BunOverview"
+        },
+        {
+          "id": "bun-002",
+          "title": "快速入门",
+          "desc": "bun init/add/test 与项目脚本",
+          "difficulty": "beginner",
+          "doc": "002-BunQuickStart"
+        }
+      ]
+    },
+    {
+      "id": "server-sql",
+      "title": "服务与数据",
+      "subtitle": "内置服务器与数据库",
+      "nodes": [
+        {
+          "id": "bun-003",
+          "title": "内置服务器与 SQL",
+          "desc": "Bun.serve、bun:sqlite 与内置 Redis",
+          "difficulty": "intermediate",
+          "doc": "003-BunBuiltinServerSQL"
+        }
+      ]
+    }
+  ]
+}

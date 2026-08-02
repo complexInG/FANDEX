@@ -46,6 +46,14 @@
     "software-testing",
     "software-engineering",
     "software-architecture",
-    "engineering-practices"
+    "engineering-practices",
+    "mongodb",
+    "nextjs",
+    "nestjs",
+    "deno",
+    "bun",
+    "svelte",
+    "angular",
+    "message-queue"
   ]
 }

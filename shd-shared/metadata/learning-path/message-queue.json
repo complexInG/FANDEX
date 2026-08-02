@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "module": "message-queue",
+  "summary": "先建立消息队列的心智模型，再分别上手 Kafka 与 RabbitMQ，最后掌握可靠消息的生产模式。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "入门基础",
+      "subtitle": "模型与选型",
+      "nodes": [
+        {
+          "id": "mq-001",
+          "title": "消息队列概述与选型",
+          "desc": "解耦/削峰/异步与中间件对比",
+          "difficulty": "beginner",
+          "doc": "001-MessageQueueOverview"
+        }
+      ]
+    },
+    {
+      "id": "kafka",
+      "title": "Kafka",
+      "subtitle": "事件流平台",
+      "nodes": [
+        {
+          "id": "mq-002",
+          "title": "Kafka 快速上手",
+          "desc": "主题/分区/消费组与命令行收发",
+          "difficulty": "intermediate",
+          "doc": "002-KafkaQuickStart"
+        }
+      ]
+    },
+    {
+      "id": "rabbitmq",
+      "title": "RabbitMQ",
+      "subtitle": "消息代理",
+      "nodes": [
+        {
+          "id": "mq-003",
+          "title": "RabbitMQ 快速上手",
+          "desc": "交换机/队列/绑定与手动确认",
+          "difficulty": "intermediate",
+          "doc": "003-RabbitMQQuickStart"
+        }
+      ]
+    },
+    {
+      "id": "reliability",
+      "title": "可靠模式",
+      "subtitle": "生产实践",
+      "nodes": [
+        {
+          "id": "mq-004",
+          "title": "可靠消息模式与生产实践",
+          "desc": "投递语义、幂等、死信与背压",
+          "difficulty": "advanced",
+          "doc": "004-ReliableMessagingPatterns"
+        }
+      ]
+    }
+  ]
+}

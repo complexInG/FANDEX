@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "module": "nextjs",
+  "summary": "先跑通 App Router 与服务器组件，再掌握数据获取与缓存，最后完成部署与性能优化。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "入门基础",
+      "subtitle": "项目创建与路由约定",
+      "nodes": [
+        {
+          "id": "next-001",
+          "title": "Next.js 16 概述与快速上手",
+          "desc": "create-next-app、服务器组件与客户端组件",
+          "difficulty": "beginner",
+          "doc": "001-NextJS16Overview"
+        },
+        {
+          "id": "next-002",
+          "title": "App Router 路由系统",
+          "desc": "布局、动态路由、loading/error/not-found",
+          "difficulty": "intermediate",
+          "doc": "002-AppRouterRouting"
+        }
+      ]
+    },
+    {
+      "id": "data-deploy",
+      "title": "数据与部署",
+      "subtitle": "缓存策略与生产优化",
+      "nodes": [
+        {
+          "id": "next-003",
+          "title": "数据获取与缓存",
+          "desc": "服务器取数、ISR 与 Server Actions",
+          "difficulty": "intermediate",
+          "doc": "003-DataFetchingCaching"
+        },
+        {
+          "id": "next-004",
+          "title": "部署与性能优化",
+          "desc": "构建产物、环境变量、图片字体与指标",
+          "difficulty": "intermediate",
+          "doc": "004-DeploymentOptimization"
+        }
+      ]
+    }
+  ]
+}

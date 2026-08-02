@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "module": "angular",
+  "summary": "从组件与模板出发，先掌握信号响应式，再学依赖注入与 HTTP，最后用路由和表单完成应用。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "入门基础",
+      "subtitle": "组件与模板",
+      "nodes": [
+        {
+          "id": "angular-001",
+          "title": "Angular 22 概述与快速上手",
+          "desc": "CLI 建项目、组件三件套与独立组件",
+          "difficulty": "beginner",
+          "doc": "001-AngularOverview"
+        },
+        {
+          "id": "angular-002",
+          "title": "组件与模板语法",
+          "desc": "绑定、事件与 @if/@for 控制流",
+          "difficulty": "beginner",
+          "doc": "002-QuickStartComponentTemplate"
+        }
+      ]
+    },
+    {
+      "id": "signals",
+      "title": "响应式",
+      "subtitle": "信号与组件通信",
+      "nodes": [
+        {
+          "id": "angular-003",
+          "title": "信号与组件通信",
+          "desc": "signal/computed/effect 与 input/output",
+          "difficulty": "intermediate",
+          "doc": "003-SignalsInputsOutputs"
+        }
+      ]
+    },
+    {
+      "id": "di-http",
+      "title": "服务与数据",
+      "subtitle": "依赖注入与 HTTP",
+      "nodes": [
+        {
+          "id": "angular-004",
+          "title": "依赖注入与 HTTP 服务",
+          "desc": "inject()、HttpClient 与测试替身",
+          "difficulty": "intermediate",
+          "doc": "004-DependencyInjectionServices"
+        }
+      ]
+    },
+    {
+      "id": "routing-forms",
+      "title": "路由与表单",
+      "subtitle": "应用级能力",
+      "nodes": [
+        {
+          "id": "angular-005",
+          "title": "路由与响应式表单",
+          "desc": "RouterOutlet、守卫与 FormBuilder",
+          "difficulty": "intermediate",
+          "doc": "005-RoutingForms"
+        }
+      ]
+    }
+  ]
+}

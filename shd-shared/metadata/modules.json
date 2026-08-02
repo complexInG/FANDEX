@@ -1026,6 +1026,187 @@
           "type": "docs"
         }
       ]
+    },
+    {
+      "id": "mongodb",
+      "title": "MongoDB",
+      "icon": "Mo",
+      "description": "文档型 NoSQL 数据库",
+      "categories": [
+        "database"
+      ],
+      "folder_order": 59,
+      "officialDocs": [
+        {
+          "label": "官方文档",
+          "url": "https://www.mongodb.com/docs/",
+          "type": "docs"
+        },
+        {
+          "label": "手册参考",
+          "url": "https://www.mongodb.com/docs/manual/reference/",
+          "type": "api"
+        }
+      ]
+    },
+    {
+      "id": "nextjs",
+      "title": "Next.js",
+      "icon": "Nx",
+      "description": "React 全栈元框架",
+      "categories": [
+        "frontend"
+      ],
+      "folder_order": 60,
+      "officialDocs": [
+        {
+          "label": "官方文档",
+          "url": "https://nextjs.org/docs",
+          "type": "docs"
+        },
+        {
+          "label": "官方博客",
+          "url": "https://nextjs.org/blog",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": "nestjs",
+      "title": "NestJS",
+      "icon": "Ne",
+      "description": "Node.js 企业级框架",
+      "categories": [
+        "backend"
+      ],
+      "folder_order": 61,
+      "officialDocs": [
+        {
+          "label": "官方文档",
+          "url": "https://docs.nestjs.com/",
+          "type": "docs"
+        },
+        {
+          "label": "源码仓库",
+          "url": "https://github.com/nestjs/nest",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": "deno",
+      "title": "Deno",
+      "icon": "De",
+      "description": "默认安全的 JS/TS 运行时",
+      "categories": [
+        "backend"
+      ],
+      "folder_order": 62,
+      "officialDocs": [
+        {
+          "label": "官方文档",
+          "url": "https://docs.deno.com/",
+          "type": "docs"
+        },
+        {
+          "label": "JSR 包仓库",
+          "url": "https://jsr.io/",
+          "type": "api"
+        }
+      ]
+    },
+    {
+      "id": "bun",
+      "title": "Bun",
+      "icon": "Bu",
+      "description": "全家桶 JS 运行时与工具链",
+      "categories": [
+        "backend"
+      ],
+      "folder_order": 63,
+      "officialDocs": [
+        {
+          "label": "官方文档",
+          "url": "https://bun.sh/docs",
+          "type": "docs"
+        },
+        {
+          "label": "官方博客",
+          "url": "https://bun.sh/blog",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": "svelte",
+      "title": "Svelte",
+      "icon": "Sv",
+      "description": "编译时响应式前端框架",
+      "categories": [
+        "frontend"
+      ],
+      "folder_order": 64,
+      "officialDocs": [
+        {
+          "label": "官方文档",
+          "url": "https://svelte.dev/docs",
+          "type": "docs"
+        },
+        {
+          "label": "SvelteKit 文档",
+          "url": "https://svelte.dev/docs/sveltekit",
+          "type": "docs"
+        }
+      ]
+    },
+    {
+      "id": "angular",
+      "title": "Angular",
+      "icon": "An",
+      "description": "企业级前端框架",
+      "categories": [
+        "frontend"
+      ],
+      "folder_order": 65,
+      "officialDocs": [
+        {
+          "label": "官方文档",
+          "url": "https://angular.dev/",
+          "type": "docs"
+        },
+        {
+          "label": "API 参考",
+          "url": "https://angular.dev/api",
+          "type": "api"
+        }
+      ]
+    },
+    {
+      "id": "message-queue",
+      "title": "消息队列",
+      "icon": "MQ",
+      "description": "Kafka 与 RabbitMQ 等消息中间件",
+      "categories": [
+        "cloud"
+      ],
+      "folder_order": 66,
+      "officialDocs": [
+        {
+          "label": "Kafka 文档",
+          "url": "https://kafka.apache.org/documentation/",
+          "type": "docs"
+        },
+        {
+          "label": "RabbitMQ 文档",
+          "url": "https://www.rabbitmq.com/docs",
+          "type": "docs"
+        },
+        {
+          "label": "Pulsar 文档",
+          "url": "https://pulsar.apache.org/docs/",
+          "type": "docs"
+        }
+      ]
     }
   ],
   "modulePrerequisites": {
@@ -1100,6 +1281,32 @@
     ],
     "software-testing": [],
     "git": [],
-    "markdown": []
+    "markdown": [],
+    "mongodb": [],
+    "nextjs": [
+      "react",
+      "typescript"
+    ],
+    "nestjs": [
+      "typescript"
+    ],
+    "deno": [
+      "javascript",
+      "typescript"
+    ],
+    "bun": [
+      "javascript",
+      "typescript"
+    ],
+    "svelte": [
+      "javascript",
+      "html5",
+      "css"
+    ],
+    "angular": [
+      "typescript",
+      "javascript"
+    ],
+    "message-queue": []
   }
 }

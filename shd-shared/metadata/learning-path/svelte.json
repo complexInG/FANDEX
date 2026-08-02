@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "module": "svelte",
+  "summary": "从编译时框架的直觉出发，先跑通 SvelteKit 路由，再掌握 runes 响应式与组件通信。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "入门基础",
+      "subtitle": "组件与路由",
+      "nodes": [
+        {
+          "id": "svelte-001",
+          "title": "Svelte 5 概述与快速上手",
+          "desc": "编译时框架、runes 与第一个组件",
+          "difficulty": "beginner",
+          "doc": "001-SvelteOverview"
+        },
+        {
+          "id": "svelte-002",
+          "title": "SvelteKit 快速入门",
+          "desc": "+page/+layout 路由约定与服务器加载",
+          "difficulty": "beginner",
+          "doc": "002-SvelteKitQuickStart"
+        }
+      ]
+    },
+    {
+      "id": "reactivity",
+      "title": "响应式",
+      "subtitle": "runes 与状态管理",
+      "nodes": [
+        {
+          "id": "svelte-003",
+          "title": "响应式：runes 与绑定",
+          "desc": "$state/$derived/$effect 与 bind",
+          "difficulty": "intermediate",
+          "doc": "003-ReactivityRunes"
+        }
+      ]
+    },
+    {
+      "id": "components",
+      "title": "组件进阶",
+      "subtitle": "通信与动画",
+      "nodes": [
+        {
+          "id": "svelte-004",
+          "title": "组件通信与过渡动画",
+          "desc": "$props、回调与 transition/animate",
+          "difficulty": "intermediate",
+          "doc": "004-ComponentsTransitions"
+        }
+      ]
+    }
+  ]
+}

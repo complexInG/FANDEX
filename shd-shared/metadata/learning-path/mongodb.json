@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "module": "mongodb",
+  "summary": "从文档模型出发，先跑通增删改查，再掌握聚合与索引，最后落地数据建模与生产部署。",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "入门基础",
+      "subtitle": "文档模型与第一句增删改查",
+      "nodes": [
+        {
+          "id": "mongo-001",
+          "title": "概述与五分钟快速上手",
+          "desc": "Docker 启动、文档模型、第一条增删改查",
+          "difficulty": "beginner",
+          "doc": "001-MongoDBOverviewQuickStart"
+        },
+        {
+          "id": "mongo-002",
+          "title": "增删改查完整语法",
+          "desc": "insert/find/update/delete 与查询运算符",
+          "difficulty": "beginner",
+          "doc": "002-CRUDOperations"
+        }
+      ]
+    },
+    {
+      "id": "query-index",
+      "title": "查询与性能",
+      "subtitle": "聚合管道与索引优化",
+      "nodes": [
+        {
+          "id": "mongo-003",
+          "title": "聚合管道",
+          "desc": "$match/$group/$lookup 等管道阶段",
+          "difficulty": "intermediate",
+          "doc": "003-AggregationPipeline"
+        },
+        {
+          "id": "mongo-004",
+          "title": "索引与查询性能",
+          "desc": "explain、复合索引与索引取舍",
+          "difficulty": "intermediate",
+          "doc": "004-IndexPerformance"
+        }
+      ]
+    },
+    {
+      "id": "enterprise",
+      "title": "企业落地",
+      "subtitle": "数据建模与高可用",
+      "nodes": [
+        {
+          "id": "mongo-005",
+          "title": "数据建模与企业落地",
+          "desc": "内嵌/引用、建模模式、副本集与事务",
+          "difficulty": "intermediate",
+          "doc": "005-SchemaDesignEnterprise"
+        }
+      ]
+    }
+  ]
+}
