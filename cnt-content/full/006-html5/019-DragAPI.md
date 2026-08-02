@@ -143,6 +143,41 @@ document.addEventListener('mousemove', (e) => {
 
 ### 入门版（必做）
 
+先复制下面这个最小示例到本地 `drag.html`，双击打开即可试验：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>拖拽最小示例</title>
+    <style>
+      #box { width: 120px; height: 60px; background: #1677ff; color: #fff;
+             display: flex; align-items: center; justify-content: center; }
+      #zone { width: 300px; height: 160px; margin-top: 20px;
+              border: 2px dashed #999; display: flex;
+              align-items: center; justify-content: center; }
+    </style>
+  </head>
+  <body>
+    <div id="box" draggable="true">拖拽我</div>
+    <div id="zone">放置区域</div>
+    <script>
+      const box = document.getElementById('box');
+      const zone = document.getElementById('zone');
+      box.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', 'box');
+      });
+      zone.addEventListener('dragover', (e) => e.preventDefault());
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.textContent = '收到：' + e.dataTransfer.getData('text/plain');
+      });
+    </script>
+  </body>
+</html>
+```
+
 1. 实现“把卡片拖到垃圾桶删除”：一个可拖元素 + 一个放置区，drop 后移除元素；
 2. 在 `dragstart` 中写入 `text/plain` 数据，在 `drop` 中读取并显示；
 3. 实现文件拖拽：把图片拖到区域后，用 FileReader 在页面预览。

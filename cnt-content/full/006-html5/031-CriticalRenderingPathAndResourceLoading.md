@@ -94,11 +94,31 @@ prerequisites:
 
 ## 动手试试
 
+先复制下面这个最小示例到本地 `load.html`，用来做加载实验：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>资源加载实验</title>
+    <script src="slow.js"></script>
+  </head>
+  <body>
+    <h1>首屏内容</h1>
+  </body>
+</html>
+```
+
+另建一个 `slow.js`，内容随意（如 `console.log('loaded')`），把上面 `<script>` 依次改成 `<script defer>` 与 `<script async>` 对比。
+
 1. 打开任意网站，按 F12 进入 Network 面板，勾选“禁用缓存”后刷新；
 2. 观察瀑布图：找出阻塞首屏的脚本（普通 `<script>` 会让后续资源排队）；
 3. 把脚本改成 `defer` 或 `async` 再对比，确认首屏时间变化；
 4. 在 Performance 面板录制刷新过程，找到 HTML 解析、布局、绘制的分段时间；
 5. 进阶挑战：给字体加 `preload` + `font-display: swap`，对比文字渲染时间。
+
+> 回到你写的第一个页面（001 的 `index.html`），试着把其中的 `<script>` 标签加上 `defer`，对比加与不加的加载速度差异。
 
 ## 核心知识点
 

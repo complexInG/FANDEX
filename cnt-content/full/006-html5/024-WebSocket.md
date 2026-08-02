@@ -158,6 +158,32 @@ eventSource.close();
 
 ### 入门版（必做）
 
+先复制下面这个最小示例到本地 `ws.html`，双击打开即可连接公开回显服务：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebSocket 最小示例</title>
+  </head>
+  <body>
+    <button id="send">发送 Hello</button>
+    <pre id="log"></pre>
+    <script>
+      const log = document.getElementById('log');
+      const ws = new WebSocket('wss://echo.websocket.org');
+      ws.onopen = () => (log.textContent += '连接已建立\n');
+      ws.onmessage = (e) => (log.textContent += '收到: ' + e.data + '\n');
+      ws.onerror = () => (log.textContent += '连接出错\n');
+      document.getElementById('send').onclick = () => {
+        ws.send('Hello!');
+      };
+    </script>
+  </body>
+</html>
+```
+
 1. 用公开的 WebSocket 回显服务（如 wss://echo.websocket.org）连接，发送消息并接收回显；
 2. 在页面显示连接状态（`readyState`）与收发日志；
 3. 断开网络（开发者工具 Offline），观察 `onclose` 触发。
