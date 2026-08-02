@@ -360,14 +360,6 @@ img {
 | will-change | 提示浏览器元素将变化                                     | 提前创建图层，但不要滥用                  |
 | 回流/重绘   | Layout > Paint > Composite                               | 避免频繁触发 Layout                       |
 
-```
-
-```
-
-```
-
-```
-
 ## 延伸阅读
 CSS 圆角与形状，见 007-css/018-BorderRadius 文档。
 CSS 媒体查询与响应式，见 007-css/019-MediaQuery 文档。
