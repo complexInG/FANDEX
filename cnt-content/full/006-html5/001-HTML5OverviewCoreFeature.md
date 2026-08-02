@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: HTML5 新特性、语义化标签与浏览器兼容性。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'html5/002-HTML5BasicTagGlobalAttribute'
   - 'html5/003-SemanticTag'
@@ -75,6 +75,14 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 </html>
 ```
 
+**讲解：**
+
+- `<!DOCTYPE html>` 是 HTML5 文档类型声明，必须位于首行，用于让浏览器进入标准模式；
+- `<html lang="zh-CN">` 通过 `lang` 声明文档语言，同时服务于 SEO 与无障碍阅读器；
+- `<head>` 中的 `<meta charset>` 必须尽量靠前（前 1024 字节内），否则可能被浏览器误判编码；
+- `<meta name="viewport">` 是移动端布局的开关，缺少它时移动浏览器会按桌面宽度渲染；
+- `<script defer>` 让脚本在 HTML 解析完成后按顺序执行，避免阻塞首屏渲染。
+
 ### 2.2 语义化文档结构
 
 ```html
@@ -128,6 +136,14 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 </html>
 ```
 
+**讲解：**
+
+- `<header>` 与 `<footer>` 表示页面（或区块）的头部和底部，可在一页中出现多次；
+- `<main>` 每页只能有一个，用于包裹主要内容，供屏幕阅读器快速跳转；
+- `<nav>` 标记导航链接集合，方便用户和搜索引擎识别站点导航；
+- `<article>` 表示可独立分发的内容（如新闻、评论），`<section>` 表示主题相关的分组；
+- `<aside>` 承载侧边栏等附属信息，与 `<main>` 形成主次分明的内容层级。
+
 ## 3. 语义化标签 (Semantic Tags)
 
 ### 3.1 核心语义化标签
@@ -169,11 +185,18 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
   <img src="semantic-tags.png" alt="语义化标签示意图">
   <figcaption>HTML5 语义化标签结构示意图</figcaption>
   </figure>
-  <footer>
+ <footer>
   <p>本文由张三编写，版权所有 &copy; 2026</p>
   </footer>
  </article>
 ```
+
+**讲解：**
+
+- `<article>` 内部同样可以使用 `<header>`/`<footer>`，表示文章自身的头部与版权信息；
+- `<time datetime="...">` 为机器提供可解析的时间值，便于搜索与日历类应用；
+- `<figure>` 与 `<figcaption>` 把图片和说明文字绑定为一个整体；
+- `<address>` 用于文章作者或联系信息，浏览器默认以斜体呈现。
 
 #### 3.2.2 导航菜单
 
@@ -195,6 +218,12 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 </nav>
 ```
 
+**讲解：**
+
+- 导航的主体是 `<ul>` + `<li>` 列表结构，语义上与“一组链接”一致；
+- 通过 `<li>` 内再嵌套 `<ul>` 实现二级菜单，无需依赖 `div` 模拟层级；
+- 若菜单项属于同一组，可用 `aria-current="page"` 标注当前页面，提升无障碍性。
+
 #### 3.2.3 侧边栏
 
 ```html
@@ -212,6 +241,12 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
   </form>
 </aside>
 ```
+
+**讲解：**
+
+- `<aside>` 中的内容与主内容相关但可独立存在，适合放置推荐文章、订阅表单；
+- 表单中的 `<label>` 与输入框建立显式关联后，点击文字即可聚焦输入框；
+- 订阅按钮使用 `type="submit"`，明确其提交表单的行为。
 
 ## 4. 优势与最佳实践
 
@@ -280,6 +315,12 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
   }
 </style>
 ```
+
+**讲解：**
+
+- 条件注释 `<!--[if lt IE 9]>` 是旧版 IE 时代为 HTML5 新标签提供支持的兼容方案；
+- 将 `header`、`nav` 等新标签显式设置为 `display: block`，可让不支持它们的旧浏览器按块级元素渲染；
+- 现代浏览器已无需此方案，但了解它有助于理解“渐进增强”的降级思路。
 
 ### 5.2 语义化过度
 
@@ -576,361 +617,117 @@ HTML5 是现代 Web 开发的基础，它的语义化标签和新特性为 Web �
 在实际开发中，我们应该遵循 HTML5 的最佳实践，合理使用语义化标签，保持代码的清晰和简洁。同时，要考虑浏览器兼容性，为不同的浏览器提供适当的降级方案。
 随着 Web 技术的不断发展，HTML5 也在不断演进，我们需要持续学习和关注最新的标准和实践，以创建更好的 Web 应用。
 
----
+## 8. 进阶知识点
 
-## HTML5 文档基本结构
+### 8.1 事件处理属性
 
-**最小 HTML5 文档**
-`<!DOCTYPE html> <html lang="..."> <head>...</head> <body>...</body> </html>`
+事件属性以内联方式把 JavaScript 行为挂到元素上，适合快速原型；正式项目更推荐通过 `addEventListener` 统一绑定。
 
-```html
-<!DOCTYPE html>
-<!-- HTML5 文档类型声明 -->
-<html lang="zh-CN">
-  <!-- lang 属性指定文档语言 -->
-  <head>
-    <meta charset="UTF-8" />
-    <!-- 字符编码声明 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- 移动端视口配置 -->
-    <title>页面标题</title>
-    <!-- 文档标题(必填) -->
-  </head>
-  <body>
-    <!-- 页面内容 -->
-  </body>
-</html>
-```
+| 事件属性 | 触发时机 | 常用元素 |
+| --- | --- | --- |
+| `onclick` | 单击 | 几乎所有元素 |
+| `onchange` | 值改变且失焦 | input、select、textarea |
+| `oninput` | 值实时改变 | input、textarea |
+| `onsubmit` | 表单提交 | `<form>` |
+| `onload` | 资源加载完成 | `<body>`、`<img>`、`<script>` |
+| `onscroll` | 元素滚动 | 可滚动元素 |
+| `onkeydown` | 键盘按下 | 可聚焦元素 |
 
-**head 头部元数据元素**
+**讲解：**
 
-| 元素                    | 作用                           | 示例                                                |
-| ----------------------- | ------------------------------ | --------------------------------------------------- |
-| `<title>`               | 文档标题(必填)               | `<title>页面标题</title>`                           |
-| `<meta charset>`        | 字符编码                       | `<meta charset="UTF-8" />`                          |
-| `<meta name="viewport">`| 移动端视口                     | `<meta name="viewport" content="width=device-width, initial-scale=1.0">` |
-| `<meta name="description">` | 页面描述(SEO)            | `<meta name="description" content="页面描述">`      |
-| `<meta name="keywords">`    | 关键词(SEO,已废弃)       | `<meta name="keywords" content="HTML5, CSS3">`      |
-| `<meta name="author">`      | 作者                       | `<meta name="author" content="张三">`               |
-| `<meta http-equiv="refresh">` | 自动刷新                  | `<meta http-equiv="refresh" content="30">`          |
-| `<link rel="stylesheet">`   | 外部样式表                 | `<link rel="stylesheet" href="style.css">`          |
-| `<link rel="icon">`         | 网站图标                   | `<link rel="icon" href="favicon.ico">`              |
-| `<link rel="canonical">`    | 规范链接(SEO)            | `<link rel="canonical" href="https://...">`         |
-| `<link rel="preconnect">`   | 预连接                    | `<link rel="preconnect" href="https://cdn.example.com">` |
-| `<link rel="preload">`      | 预加载                    | `<link rel="preload" href="font.woff2" as="font">`  |
-| `<script>`                  | 脚本                      | `<script src="app.js" defer></script>`              |
-| `<style>`                   | 内联样式                  | `<style>body{margin:0}</style>`                     |
-| `<base>`                    | 基准 URL                  | `<base href="https://example.com/" target="_blank">`|
+- `oninput` 与 `onchange` 的区别：前者每次输入都会触发，后者在失焦且值变化时才触发；
+- 内联事件处理器存在 CSP（内容安全策略）限制，生产环境应优先使用事件监听器；
+- `onload` 依赖资源下载完成，与之相对 `DOMContentLoaded` 只等待 DOM 解析完成。
 
----
-
-## 语义化文档结构
-
-**完整文档骨架**
+### 8.2 字符编码与 viewport
 
 ```html
-<!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>语义化页面结构</title>
-  </head>
-  <body>
-    <header><!-- 页面头部 --></header>
-    <nav><!-- 导航 --></nav>
-    <main>
-      <article><!-- 独立内容 --></article>
-      <section><!-- 区块 --></section>
-      <aside><!-- 侧边栏 --></aside>
-    </main>
-    <footer><!-- 页脚 --></footer>
-  </body>
-</html>
-```
-
-**语义化结构元素表**
-
-| 元素          | 作用                  | 使用场景                  |
-| ------------- | --------------------- | ------------------------- |
-| `<header>`    | 页面或区块的头部      | 网站标题、Logo、导航栏    |
-| `<nav>`       | 导航链接区域          | 主导航、面包屑导航        |
-| `<main>`      | 主要内容(每页唯一)   | 唯一的主要内容区域        |
-| `<article>`   | 独立完整的内容        | 文章、新闻、评论、产品卡  |
-| `<section>`   | 主题相关的内容区块    | 章节、章节分组            |
-| `<aside>`     | 侧边栏或附属信息      | 相关链接、广告、引用      |
-| `<footer>`    | 页面或区块的底部      | 版权信息、联系方式        |
-| `<figure>`    | 独立的媒体内容        | 图片、图表、代码块        |
-| `<figcaption>`| figure 的标题         | 图片说明、图表标题        |
-| `<details>`   | 可折叠的详细信息      | FAQ、技术详情             |
-| `<summary>`   | details 的标题        | 折叠区域的标题            |
-| `<dialog>`    | 对话框/模态框         | 模态对话框                |
-| `<search>`    | 搜索区域(HTML Living Standard) | 站点搜索表单    |
-
----
-
-## HTML5 全局属性
-
-**核心全局属性表**
-
-| 属性            | 作用                          | 示例                              |
-| --------------- | ----------------------------- | --------------------------------- |
-| `id`            | 元素唯一标识                  | `<div id="header">`               |
-| `class`         | 类名(可多个,空格分隔)      | `<div class="box active">`        |
-| `style`         | 内联样式                      | `<div style="color:red">`         |
-| `title`         | 鼠标悬停提示                  | `<a title="点击查看详情">`        |
-| `lang`          | 元素内容语言                  | `<p lang="en">Hello</p>`          |
-| `dir`           | 文本方向                      | `<p dir="rtl">...</p>` (ltr/rtl/auto) |
-| `tabindex`      | Tab 键焦点顺序                | `<div tabindex="0">`              |
-| `accesskey`     | 快捷键                        | `<button accesskey="s">`          |
-| `hidden`        | 隐藏元素                     | `<div hidden>...</div>`           |
-| `draggable`     | 是否可拖拽                    | `<div draggable="true">`          |
-| `spellcheck`    | 拼写检查                      | `<input spellcheck="true">`       |
-| `translate`     | 是否翻译                     | `<p translate="no">Brand</p>`     |
-| `contenteditable`| 内容可编辑                  | `<div contenteditable="true">`    |
-| `contextmenu`   | 上下文菜单(已废弃)         | -                                 |
-| `tabindex`      | 焦点顺序                     | `<div tabindex="0">`              |
-
-**data-* 自定义数据属性**
-`data-<name>="<value>"`
-
-```html
-<!-- 存储自定义数据(详见"自定义数据属性"章节) -->
-<div data-user-id="123" data-role="admin">用户信息</div>
-```
-
----
-
-## ARIA 无障碍属性
-
-**常用 ARIA 属性(详见"无障碍访问"章节)**
-
-```html
-<!-- 主要 ARIA 属性 -->
-<div
-  role="button"
-  aria-label="关闭"
-  aria-hidden="false"
-  aria-disabled="false"
-  aria-expanded="true"
-  aria-controls="menu"
-  aria-live="polite"
-  aria-current="page"
->
-  ...
-</div>
-```
-
----
-
-## 事件处理属性
-
-**HTML 事件属性表**
-
-| 事件属性          | 触发时机              | 应用元素              |
-| ----------------- | --------------------- | --------------------- |
-| `onclick`         | 点击                  | 几乎所有元素          |
-| `ondblclick`      | 双击                  | 几乎所有元素          |
-| `onmousedown`     | 鼠标按下              | 几乎所有元素          |
-| `onmouseup`       | 鼠标释放              | 几乎所有元素          |
-| `onmouseover`     | 鼠标移入              | 几乎所有元素          |
-| `onmouseout`      | 鼠标移出              | 几乎所有元素          |
-| `onmousemove`     | 鼠标移动              | 几乎所有元素          |
-| `onkeydown`       | 键盘按下              | 表单元素、可聚焦元素  |
-| `onkeyup`         | 键盘释放              | 表单元素、可聚焦元素  |
-| `onkeypress`      | 键盘按住(已废弃)    | 表单元素、可聚焦元素  |
-| `onfocus`         | 获得焦点              | 表单元素、可聚焦元素  |
-| `onblur`          | 失去焦点              | 表单元素、可聚焦元素  |
-| `onchange`        | 值改变并失焦          | input、select、textarea |
-| `oninput`         | 值改变(实时)        | input、textarea       |
-| `onsubmit`        | 表单提交              | `<form>`              |
-| `onreset`         | 表单重置              | `<form>`              |
-| `onload`          | 加载完成              | `<body>`、`<img>`、`<iframe>` |
-| `onunload`        | 卸载(已废弃)        | `<body>`              |
-| `onresize`        | 窗口大小改变          | `<body>`              |
-| `onscroll`        | 滚动                  | 可滚动元素            |
-| `oncontextmenu`   | 右键菜单              | 几乎所有元素          |
-| `ondrag`          | 拖拽中                | 可拖拽元素            |
-| `ondrop`          | 放置                  | 放置目标              |
-| `oncopy`          | 复制                  | 可选中文本元素        |
-| `onpaste`         | 粘贴                  | 表单元素              |
-
----
-
-## 字符编码与 viewport
-
-**字符编码声明**
-`<meta charset="<encoding>">`
-
-```html
-<!-- UTF-8 是 HTML5 推荐编码,必须放在 <head> 的最前面 -->
 <meta charset="UTF-8" />
-
-<!-- 其他常用编码 -->
-<meta charset="UTF-16" />
-<meta charset="ISO-8859-1" />
-```
-
-**viewport 视口配置(移动端必填)**
-`<meta name="viewport" content="<key>=<value>, <key>=<value>, ...">`
-
-```html
-<!-- 标准移动端视口配置 -->
 <meta
   name="viewport"
-  content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
 />
 ```
 
-**viewport 属性表**
+**讲解：**
 
-| 属性                | 作用                          | 示例值              |
-| ------------------- | ----------------------------- | ------------------- |
-| `width`             | 视口宽度                      | `device-width` 或数字 |
-| `height`            | 视口高度                      | `device-height` 或数字 |
-| `initial-scale`     | 初始缩放比例                  | `1.0`               |
-| `minimum-scale`     | 最小缩放比例                  | `1.0`               |
-| `maximum-scale`     | 最大缩放比例                  | `5.0`               |
-| `user-scalable`     | 是否允许用户缩放              | `yes` 或 `no`       |
-| `viewport-fit`      | 视口形状(刘海屏适配)        | `auto` / `contain` / `cover` |
+- `<meta charset>` 应放在 `<head>` 最前面，避免浏览器在编码未声明时按默认编码解析；
+- `width=device-width` 让布局宽度跟随设备宽度，是移动端适配的基础；
+- `viewport-fit=cover` 用于全面屏刘海区域适配，搭配 CSS `env(safe-area-inset-*)` 使用；
+- 不建议同时设置 `maximum-scale` 与 `user-scalable=no`，这会损害可访问性。
 
----
-
-## 资源预加载
-
-**link rel 预加载类型**
-`<link rel="<type>" href="<url>" as="<resource-type>">`
+### 8.3 资源预加载
 
 ```html
-<!-- 预连接(提前建立连接) -->
 <link rel="preconnect" href="https://cdn.example.com" crossorigin />
-
-<!-- DNS 预解析 -->
 <link rel="dns-prefetch" href="//cdn.example.com" />
-
-<!-- 预加载关键资源 -->
-<link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="critical.css" as="style" />
-<link rel="preload" href="hero.jpg" as="image" />
-
-<!-- 预获取(空闲时获取) -->
 <link rel="prefetch" href="next-page.html" />
-
-<!-- 预渲染(已废弃,改用 prefetch) -->
-<link rel="prerender" href="next-page.html" />
 ```
 
-**as 属性值表**
+**讲解：**
 
-| 值              | 资源类型         |
-| --------------- | ---------------- |
-| `audio`         | 音频文件         |
-| `document`      | HTML 文档        |
-| `embed`         | 嵌入资源         |
-| `fetch`         | fetch/XHR 请求   |
-| `font`          | 字体文件         |
-| `image`         | 图片             |
-| `object`        | 插件资源         |
-| `script`        | JavaScript       |
-| `style`         | CSS 样式表       |
-| `track`         | WebVTT 文件      |
-| `video`         | 视频文件         |
-| `worker`        | Web Worker       |
+- `preconnect` 提前建立与第三方源的连接（DNS、TCP、TLS），减少首字节等待；
+- `dns-prefetch` 只做 DNS 解析，成本更低，是 `preconnect` 的轻量降级；
+- `preload` 预加载当前页面立即需要的资源，`as` 属性必须与资源类型一致；
+- `prefetch` 利用空闲带宽预取下一页资源，不应影响当前页面关键资源。
 
----
-
-## script 标签属性
-
-**script 加载策略**
-`<script src="..." defer | async></script>`
+### 8.4 script 加载策略
 
 ```html
-<!-- 普通加载:阻塞 HTML 解析,立即下载执行 -->
-<script src="script.js"></script>
-
-<!-- async:异步下载,下载完立即执行(不保证顺序) -->
-<script src="analytics.js" async></script>
-
-<!-- defer:异步下载,HTML 解析完成后按顺序执行 -->
 <script src="app.js" defer></script>
-
-<!-- 内联模块(默认 defer) -->
-<script type="module">
-  import { greet } from './utils.js';
-  greet();
-</script>
-
-<!-- 指定 MIME 类型 -->
-<script type="text/javascript" src="script.js"></script>
-<script type="module" src="app.js"></script>
-<script type="application/json">{"key":"value"}</script>
+<script src="analytics.js" async></script>
 ```
 
-**async vs defer 对比**
+**讲解：**
 
-| 属性     | 下载     | 执行时机                  | 执行顺序      | 适用场景            |
-| -------- | -------- | ------------------------- | ------------- | ------------------- |
-| 无       | 阻塞     | 下载完立即执行            | 源顺序        | 关键脚本            |
-| `async`  | 不阻塞   | 下载完立即执行            | 不保证顺序    | 独立第三方脚本      |
-| `defer`  | 不阻塞   | HTML 解析完成后执行       | 源顺序        | 依赖 DOM 的脚本     |
+- 普通 `<script>` 会阻塞 HTML 解析：下载和执行期间页面停止解析；
+- `defer` 不阻塞解析，下载完成后在 DOM 解析完毕时按文档顺序执行，适合依赖 DOM 的脚本；
+- `async` 不阻塞解析，但下载完成后立即执行且不保证顺序，适合相互独立的第三方脚本。
 
----
-
-## HTML5 新增特性元素
-
-**HTML Living Standard 2025 新增**
+### 8.5 HTML5 新增交互元素
 
 ```html
-<!-- <dialog> 原生对话框元素 -->
-<dialog id="modal">
-  <form method="dialog">
-    <p>确认操作?</p>
-    <button>取消</button>
-    <button value="confirm">确认</button>
-  </form>
-</dialog>
-
-<!-- popover 属性(原生弹出层) -->
-<button popovertarget="mypopover">打开弹出</button>
-<div id="mypopover" popover>
-  <p>这是一个弹出层</p>
-</div>
-
-<!-- <search> 搜索区域 -->
-<search>
-  <form action="/search">
-    <input type="search" name="q" />
-    <button>搜索</button>
-  </form>
-</search>
-
-<!-- <details> 可折叠区域 -->
-<details>
-  <summary>更多详情</summary>
-  <p>这里是详细内容</p>
-</details>
-
-<!-- loading="lazy" 懒加载 -->
-<img src="image.jpg" loading="lazy" alt="..." />
-
-<!-- <template> 内容模板 -->
-<template id="card-template">
-  <div class="card">
-    <h3></h3>
-    <p></p>
-  </div>
-</template>
+<dialog id="modal"> ... </dialog>
+<button popovertarget="mypopover">打开弹出层</button>
+<div id="mypopover" popover> ... </div>
+<search> <form action="/search"> ... </form> </search>
+<details><summary>更多详情</summary><p>详细内容</p></details>
+<img src="photo.jpg" loading="lazy" alt="照片" />
 ```
 
----
+**讲解：**
 
-## 注意事项
+- `<dialog>` 提供原生模态框，配合 `showModal()` 可自动获得焦点与背景遮罩语义；
+- `popover` 属性让任意元素成为轻量弹出层，`popovertarget` 声明触发按钮；
+- `<search>` 是 HTML Living Standard 新增的搜索区域语义标签；
+- `loading="lazy"` 让图片进入视口附近时才加载，可减少首屏流量。
 
-- **DOCTYPE 必填**:HTML5 文档必须以 `<!DOCTYPE html>` 开头(不区分大小写)
-- **charset 位置**:`<meta charset>` 必须放在 `<head>` 的最前面,前 1024 字节内
-- **viewport 必填**:移动端页面必须配置 viewport,否则会以桌面宽度渲染
-- **lang 属性**:应为 `<html>` 指定 `lang` 属性,有助于 SEO 和无障碍访问
-- **title 必填**:每个页面必须有唯一的 `<title>`,长度建议 30-60 字符
-- **语义化优先**:使用语义化标签(header、nav、main)替代无意义 div
-- **script 位置**:推荐 `<script defer>` 放在 `<head>` 中,而非 `<body>` 末尾
-- **preconnect 跨域**:跨域资源预加载需添加 `crossorigin` 属性
+## 9. 核心知识点
+
+- HTML5 文档以 `<!DOCTYPE html>` 开头，`<head>` 内必须包含 `<meta charset>` 与 `<title>`；
+- 语义化标签（`header`、`nav`、`main`、`article`、`section`、`aside`、`footer`）取代无意义的 `div` 嵌套，同时改善 SEO 与无障碍性；
+- 移动端必须配置 viewport，桌面页面需要响应式设计配合媒体查询；
+- 脚本加载按需选择 `defer` 或 `async`，避免阻塞首屏渲染；
+- 资源预加载（`preconnect`、`preload`、`prefetch`）按资源优先级使用，不可滥用。
+
+## 10. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| DOCTYPE 缺失 | 页面进入怪异模式，盒模型与 CSS 渲染不一致 | 首行固定写 `<!DOCTYPE html>` |
+| charset 位置靠后 | 浏览器可能先按默认编码解析，导致乱码 | 将 `<meta charset>` 放在 `<head>` 最前 |
+| 移动端缺少 viewport | 页面按桌面宽度渲染，文字极小 | 添加 `width=device-width, initial-scale=1.0` |
+| 滥用 `div` 布局 | 结构语义缺失，影响 SEO 与屏幕阅读器 | 优先选择语义化标签，`div` 仅用于纯样式容器 |
+| 图片缺少 `alt` | 图片加载失败或屏幕阅读器无法理解内容 | 内容图片填写描述性 `alt`，装饰图片留空 |
+| 脚本阻塞首屏 | 普通 `<script>` 下载执行期间页面空白 | 依赖 DOM 的脚本用 `defer`，独立脚本用 `async` |
+| 过度预加载 | `preload`/`prefetch` 抢占带宽，拖慢关键资源 | 只预加载高优先级资源，用性能面板验证收益 |
+| `user-scalable=no` | 禁止缩放违反 WCAG 可访问性要求 | 移除该设置或设置合理的缩放范围 |
+
+## 11. 扩展学习
+
+- 深入阅读 `app-web/src/content.config.ts` 之外的官方规范：WHATWG HTML Living Standard；
+- 无障碍方向：学习 ARIA 角色与属性，配合屏幕阅读器（NVDA、VoiceOver）实测；
+- 性能方向：结合 Critical Rendering Path 理解解析、布局与绘制的完整流程；
+- 工程方向：了解 Web Components 与 `<template>` 插槽，掌握组件化封装能力；
+- 关联文档：`html5/004-Accessibility`、`html5/029-ViewportConfigMobileFirst`、`html5/031-CriticalRenderingPathAndResourceLoading`。

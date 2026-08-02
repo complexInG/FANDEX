@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: 文本、列表、表格标签与全局属性详解。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'html5/001-HTML5OverviewCoreFeature'
   - 'html5/003-SemanticTag'
@@ -37,6 +37,12 @@ prerequisites: []
 <h3>子章节标题</h3>
 <h4>子子章节标题</h4>
 ```
+
+**讲解：**
+
+- `<h1>` 到 `<h6>` 表示六级标题，级别逐级降低，构成页面大纲；
+- 每页只保留一个 `<h1>`，后续章节从 `<h2>` 开始依次递进，不要跳级；
+- 标题表达语义层级，字号样式应交给 CSS，而不是用标题硬撑视觉效果。
 
 **最佳实践**：
 
@@ -139,7 +145,7 @@ prerequisites: []
   <li>冷却</li>
  </ol>
  <h3>倒序列表</h3>
- ol reversed>
+ <ol reversed>
   <li>第四步</li>
   <li>第三步</li>
   <li>第二步</li>
@@ -153,6 +159,12 @@ prerequisites: []
  </ol>
 ```
 
+**讲解：**
+
+- `<ol>` 表示有序列表，列表项按编号顺序排列，适合步骤说明；
+- `start` 指定起始编号，`reversed` 让编号倒序，`type` 切换编号样式（1/A/a/I/i）；
+- 编号由浏览器自动生成，无需手工书写数字，便于插入或删除列表项。
+
 ### 2.3 定义列表
 
 定义列表使用 `<dl>` 标签定义，术语使用 `<dt>` 标签定义，描述使用 `<dd>` 标签定义。
@@ -160,15 +172,21 @@ prerequisites: []
 
 ```html
 <h3>术语解释</h3>
-dl>
+<dl>
 <dt>HTML</dt>
 <dd>超文本标记语言，用于创建网页结构</dd>
 <dt>CSS</dt>
 <dd>层叠样式表，用于美化网页</dd>
 <dt>JavaScript</dt>
 <dd>脚本语言，用于实现网页交互</dd>
-dl>
+</dl>
 ```
+
+**讲解：**
+
+- `<dl>` 是定义列表容器，`<dt>` 表示术语，`<dd>` 表示术语的说明；
+- 一个 `<dt>` 可以对应多个 `<dd>`，用于表达“一对多”的释义关系；
+- 定义列表适合术语表、键值对数据，不要用它做纯视觉排版。
 
 ### 2.4 嵌套列表
 
@@ -177,30 +195,36 @@ dl>
 
 ```html
  <h3>课程大纲</h3>
- ul>
+ <ul>
   <li>HTML 基础
-  ul>
+  <ul>
   <li>标签语法</li>
   <li>语义化标签</li>
   <li>表单元素</li>
   </ul>
   </li>
   <li>CSS 基础
-  ul>
+  <ul>
   <li>选择器</li>
   <li>盒模型</li>
   <li>布局技巧</li>
   </ul>
   </li>
   <li>JavaScript 基础
-  ul>
+  <ul>
   <li>变量和数据类型</li>
   <li>控制流</li>
   <li>函数</li>
   </ul>
   </li>
- ul>
+ </ul>
 ```
+
+**讲解：**
+
+- 嵌套列表通过“`<li>` 内再放 `<ul>`/`<ol>`”实现多级层级；
+- 浏览器会自动缩进子列表，形成清晰的目录结构；
+- 注意嵌套深度不要过深，超过三层时应考虑用页面导航替代。
 
 ## 3. 超链接与多媒体
 
@@ -221,16 +245,22 @@ dl>
 
 ```html
  <!-- 链接到外部网站 -->
- a href="https://www.example.com" target="_blank">访问示例网站</a>
+ <a href="https://www.example.com" target="_blank">访问示例网站</a>
  <!-- 链接到同一网站的其他页面 -->
- a href="about.html">关于我们</a>
+ <a href="about.html">关于我们</a>
  <!-- 链接到页面内的锚点 -->
- a href="#section1">跳转到第一部分</a>
+ <a href="#section1">跳转到第一部分</a>
  <!-- 链接到电子邮件 -->
- a href="mailto:info@example.com">发送邮件</a>
+ <a href="mailto:info@example.com">发送邮件</a>
  <!-- 链接到电话 -->
- a href="tel:+1234567890">拨打电话</a>
+ <a href="tel:+1234567890">拨打电话</a>
 ```
+
+**讲解：**
+
+- `href` 决定链接目标：网页、锚点、`mailto:` 邮件或 `tel:` 电话；
+- `target="_blank"` 在新标签页打开，应同时搭配 `rel="noopener"` 防止反向标签页劫持；
+- 锚点链接 `#section1` 跳转到页面内 `id="section1"` 的元素，无需重新加载页面。
 
 ### 3.2 图像
 
@@ -247,12 +277,18 @@ dl>
 
 ```html
 <!-- 基本图像 -->
-img src="images/photo.jpg" alt="美丽的风景" width="400" height="300">
+<img src="images/photo.jpg" alt="美丽的风景" width="400" height="300" />
 <!-- 带有标题的图像 -->
-img src="images/logo.png" alt="网站标志" title="网站标志">
+<img src="images/logo.png" alt="网站标志" title="网站标志" />
 <!-- 延迟加载的图像 -->
-img src="images/large-image.jpg" alt="大型图像" loading="lazy">
+<img src="images/large-image.jpg" alt="大型图像" loading="lazy" />
 ```
+
+**讲解：**
+
+- `src` 指定图片地址，`alt` 提供替代文本，图片加载失败时仍可理解内容；
+- 显式给出 `width`/`height` 可让浏览器提前预留空间，避免布局抖动（CLS）；
+- `loading="lazy"` 让图片进入视口附近再加载，适合长页面中的非首屏图片。
 
 ### 3.3 其他多媒体标签
 
@@ -266,18 +302,31 @@ img src="images/large-image.jpg" alt="大型图像" loading="lazy">
 
 ```html
 <!-- 音频播放器 -->
-audio controls>
+<audio controls>
 <source src="audio/song.mp3" type="audio/mpeg" />
-您的浏览器不支持音频元素。 audio>
+您的浏览器不支持音频元素。
+</audio>
 <!-- 视频播放器 -->
-video controls width="600">
+<video controls width="600">
 <source src="video/movie.mp4" type="video/mp4" />
-您的浏览器不支持视频元素。 video>
+您的浏览器不支持视频元素。
+</video>
 <!-- 嵌入网页 -->
-iframe
-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1422937950146!2d-74.0061380845947!3d40.71277577933185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
-width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"> iframe>
+<iframe
+  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1422937950146!2d-74.0061380845947!3d40.71277577933185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
+  width="600"
+  height="450"
+  style="border: 0"
+  allowfullscreen
+  loading="lazy"
+></iframe>
 ```
+
+**讲解：**
+
+- `<audio>`/`<video>` 内部可放多个 `<source>` 供浏览器按格式依次尝试，fallback 文本用于不支持时的提示；
+- `controls` 属性显示浏览器原生控制条，移除后需自行实现播放控制；
+- `<iframe>` 用于嵌入第三方页面，应设置 `width`/`height` 并谨慎使用 `allowfullscreen`。
 
 ## 4. 全局属性
 
@@ -301,18 +350,24 @@ width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"> if
 
 ```html
  <!-- 使用 id 和 class -->
- div id="header" class="container">
+ <div id="header" class="container">
   <h1>网站标题</h1>
  </div>
  <!-- 使用行内样式 -->
- p style="color: blue; font-weight: bold;">这是蓝色粗体文本</p>
+ <p style="color: blue; font-weight: bold;">这是蓝色粗体文本</p>
  <!-- 使用 title 属性 -->
- a href="#" title="点击这里">链接</a>
+ <a href="#" title="点击这里">链接</a>
  <!-- 使用 hidden 属性 -->
- div hidden>这个元素是隐藏的</div>
+ <div hidden>这个元素是隐藏的</div>
  <!-- 使用 contenteditable 属性 -->
- div contenteditable="">点击此处编辑内容</div>
+ <div contenteditable="">点击此处编辑内容</div>
 ```
+
+**讲解：**
+
+- `id` 在页面内必须唯一，`class` 可复用，二者分别是“身份”与“分类”；
+- `hidden` 是布尔属性，存在即生效，等价于 CSS `display: none` 的语义层实现；
+- `contenteditable` 让普通元素变为可编辑区域，多用于富文本与笔记类应用。
 
 ### 4.2 自定义数据属性
 
@@ -322,7 +377,7 @@ width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"> if
 
 ```html
  <!-- 存储产品信息 -->
- div class="product" data-id="123" data-name="iPhone 13" data-price="799">
+ <div class="product" data-id="123" data-name="iPhone 13" data-price="799">
   <h3>iPhone 13</h3>
   <p>价格: $799</p>
  </div>
@@ -335,6 +390,12 @@ width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"> if
   console.log(`产品 ID: ${productId}, 名称: ${productName}, 价格: $${productPrice}`);
  </script>
 ```
+
+**讲解：**
+
+- `data-*` 以 `data-` 前缀承载自定义数据，不污染标准属性命名空间；
+- JavaScript 通过 `element.dataset` 读取，`data-price` 对应 `dataset.price`；
+- 适合存放与元素绑定的业务数据，复杂状态仍应交给框架或状态管理。
 
 ### 4.3 其他全局属性
 
@@ -350,15 +411,21 @@ width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"> if
 
 ```html
  <!-- 指定语言 -->
- div lang="en">This is English text</div>
- div lang="zh-CN">这是中文文本</div>
+ <div lang="en">This is English text</div>
+ <div lang="zh-CN">这是中文文本</div>
  <!-- 指定文本方向 -->
- div dir="rtl">مرحبا بالعالم</div> <!-- 阿拉伯语，从右到左 -->
+ <div dir="rtl">مرحبا بالعالم</div> <!-- 阿拉伯语，从右到左 -->
  <!-- 指定不可翻译 -->
- div translate="no">品牌名称: Apple</div>
+ <div translate="no">品牌名称: Apple</div>
  <!-- 指定可拖动 -->
- div draggable="">可拖动元素</div>
+ <div draggable="">可拖动元素</div>
 ```
+
+**讲解：**
+
+- `lang` 与 `dir` 影响拼写检查、翻译工具和文本方向，多语言页面必须正确设置；
+- `translate="no"` 告诉翻译工具不要翻译品牌名等专有内容；
+- `draggable` 开启 HTML5 拖拽，配合拖拽事件实现排序、上传等交互。
 
 ## 5. 语义化标签
 
@@ -419,6 +486,12 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
   </body>
 </html>
 ```
+
+**讲解：**
+
+- 页面骨架由 `header`、`nav`、`main`、`aside`、`footer` 组成，层级一目了然；
+- `main` 只出现一次，内部按主题拆分为 `section`，独立内容用 `article`；
+- 该结构对搜索引擎与屏幕阅读器都友好，是“语义化优先”的标准写法。
 
 ## 6. 实际应用示例
 
@@ -508,6 +581,12 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
   </body>
 </html>
 ```
+
+**讲解：**
+
+- `position: fixed` 的页脚常驻视口底部，但会遮挡内容，需为主内容预留底部内边距；
+- 导航使用 `display: inline` 将列表项排成一行，是无需 Flexbox 的轻量方案；
+- `mailto:` 与 `tel:` 链接让移动端直接唤起邮件与拨号应用。
 
 ### 6.2 示例 2：产品展示页面
 
@@ -605,6 +684,12 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 </html>
 ```
 
+**讲解：**
+
+- `display: grid` 配合 `repeat(auto-fit, minmax(300px, 1fr))` 自动生成响应式产品网格；
+- 每个产品卡片通过 `data-id`、`data-name`、`data-price` 携带业务数据；
+- 脚本用 `querySelectorAll` 批量绑定点击事件，再经 `dataset` 读取数据，实现“数据与展示解耦”。
+
 ## 7. 最佳实践
 
 ### 7.1 语义化标签的使用
@@ -634,321 +719,15 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 - **引号**：属性值应该使用双引号包围。
 - **注释**：为复杂的代码添加注释，提高代码的可维护性。
 
----
+## 8. 进阶知识点
 
-## 标题标签
+### 8.1 可折叠内容：details 与 summary
 
-**六级标题**
-`<h1>...</h1>` | `<h2>...</h2>` | `<h3>...</h3>` | `<h4>...</h4>` | `<h5>...</h5>` | `<h6>...</h6>`
-```html
-<!-- 标题层级递减,每页建议仅一个 h1 -->
-<h1>网站主标题</h1>
-<h2>章节标题</h2>
-<h3>子章节标题</h3>
-<h4>子子章节标题</h4>
-```
-
-| 标签   | 语义               |
-| ------ | ------------------ |
-| `<h1>` | 一级标题,页面主标题 |
-| `<h2>` | 二级标题,章节标题   |
-| `<h3>` | 三级标题,子章节     |
-| `<h4>` | 四级标题            |
-| `<h5>` | 五级标题            |
-| `<h6>` | 六级标题            |
-
----
-
-## 段落与行内容器
-
-**段落标签**
-`<p>[内容]</p>`
-```html
-<!-- 段落自动添加上下空白 -->
-<p>这是一个段落。段落是网页中最基本的文本单位。</p>
-<p>这是另一个段落。</p>
-```
-
-**行内文本容器**
-`<span>[内容]</span>`
-```html
-<!-- 用于对局部文本应用样式 -->
-<p>这是一段文本,其中 <span style="color: red;">红色部分</span> 被标记。</p>
-```
-
----
-
-## 文本语义标签
-
-**强调与标记标签**
-
-| 标签        | 描述       | 语义             |
-| ----------- | ---------- | ---------------- |
-| `<strong>`  | 加粗       | 重要内容         |
-| `<em>`      | 倾斜       | 强调内容         |
-| `<mark>`    | 标记       | 突出显示         |
-| `<small>`   | 小号字体   | 辅助性内容       |
-| `<del>`     | 删除线     | 已删除内容       |
-| `<ins>`     | 下划线     | 已插入内容       |
-| `<sub>`     | 下标       | 下标文本         |
-| `<sup>`     | 上标       | 上标文本         |
-| `<abbr>`    | 缩写       | 带标题的缩写     |
-| `<cite>`    | 引用标题   | 作品标题         |
-| `<dfn>`     | 定义术语   | 术语定义         |
-| `<address>` | 联系方式   | 作者/联系方式    |
-| `<time>`    | 时间       | 机器可读时间     |
-
-```html
-<!-- 文本语义综合示例 -->
-<p>这是 <strong>重要内容</strong>,这是 <em>强调内容</em>。</p>
-<p>这是 <mark>突出显示</mark> 的内容。</p>
-<p>这是 <del>已删除</del> 的内容,这是 <ins>已插入</ins> 的内容。</p>
-<p>水的化学式是 H<sub>2</sub>O,2 的平方是 2<sup>2</sup>。</p>
-<p><abbr title="HyperText Markup Language">HTML</abbr> 是 Web 的基础。</p>
-```
-
----
-
-## 换行与分割线
-
-**换行与水平线**
-`<br>` | `<hr>`
-```html
-<!-- br 强制换行,hr 主题分割 -->
-<p>这是第一行<br />这是第二行</p>
-<hr />
-<p>这是分割线下面的内容</p>
-```
-
----
-
-## 列表标签
-
-**无序列表**
-`<ul>...<li>[项]</li>...</ul>`
-```html
-<!-- 默认圆点标记 -->
-<ul>
-  <li>苹果</li>
-  <li>香蕉</li>
-  <li>橙子</li>
-</ul>
-```
-
-**有序列表**
-`<ol [start="<起始>"] [reversed] [type="1|A|a|I|i"]>...<li>[项]</li>...</ol>`
-```html
-<!-- 数字编号列表 -->
-<ol>
-  <li>准备材料</li>
-  <li>混合原料</li>
-  <li>加热</li>
-</ol>
-
-<!-- 倒序列表 -->
-<ol reversed>
-  <li>第四步</li>
-  <li>第三步</li>
-</ol>
-
-<!-- 字母编号列表 -->
-<ol type="A">
-  <li>选项 A</li>
-  <li>选项 B</li>
-</ol>
-```
-
-**定义列表**
-`<dl><dt>[术语]</dt><dd>[描述]</dd>...</dl>`
-```html
-<!-- 术语-描述成对出现 -->
-<dl>
-  <dt>HTML</dt>
-  <dd>超文本标记语言</dd>
-  <dt>CSS</dt>
-  <dd>层叠样式表</dd>
-</dl>
-```
-
-**嵌套列表**
-```html
-<!-- 列表可多层嵌套 -->
-<ul>
-  <li>HTML 基础
-    <ul>
-      <li>标签语法</li>
-      <li>语义化标签</li>
-    </ul>
-  </li>
-  <li>CSS 基础
-    <ul>
-      <li>选择器</li>
-      <li>盒模型</li>
-    </ul>
-  </li>
-</ul>
-```
-
----
-
-## 超链接
-
-**锚点链接**
-`<a href="<URL>" [target="_self|_blank|_parent|_top"] [rel="<关系>"] [title="<提示>"]>[文本]</a>`
-```html
-<!-- 外部链接,新窗口打开 -->
-<a href="https://www.example.com" target="_blank" rel="noopener">访问示例网站</a>
-
-<!-- 内部页面 -->
-<a href="about.html">关于我们</a>
-
-<!-- 页面锚点 -->
-<a href="#section1">跳转到第一部分</a>
-
-<!-- 邮件链接 -->
-<a href="mailto:info@example.com">发送邮件</a>
-
-<!-- 电话链接 -->
-<a href="tel:+1234567890">拨打电话</a>
-```
-
-| target 值  | 行为           |
-| ---------- | -------------- |
-| `_self`    | 当前窗口(默认) |
-| `_blank`   | 新窗口         |
-| `_parent`  | 父框架         |
-| `_top`     | 整个窗口       |
-
----
-
-## 图像标签
-
-**图像**
-`<img src="<URL>" alt="<替代文本>" [width="<宽>"] [height="<高>"] [loading="lazy|eager"] [title="<提示>"] />`
-```html
-<!-- 基本图像 -->
-<img src="images/photo.jpg" alt="美丽的风景" width="400" height="300" />
-
-<!-- 延迟加载 -->
-<img src="images/large-image.jpg" alt="大型图像" loading="lazy" />
-```
-
----
-
-## 全局属性
-
-**基础全局属性**
-
-| 属性              | 描述                       | 示例                       |
-| ----------------- | -------------------------- | -------------------------- |
-| `id`              | 唯一标识符                 | `id="header"`              |
-| `class`           | 样式类名(可多个空格分隔)   | `class="container main"`   |
-| `style`           | 行内样式                   | `style="color: red;"`      |
-| `title`           | 悬停提示文字               | `title="提示"`             |
-| `hidden`          | 隐藏元素                   | `hidden`                   |
-| `contenteditable` | 内容可编辑                 | `contenteditable="true"`   |
-| `spellcheck`      | 拼写检查                   | `spellcheck="true"`        |
-| `tabindex`        | Tab 键顺序                 | `tabindex="1"`             |
-| `accesskey`       | 快捷键                     | `accesskey="k"`            |
-| `dir`             | 文本方向                   | `dir="ltr"` / `dir="rtl"`  |
-| `lang`            | 内容语言                   | `lang="zh-CN"`             |
-| `translate`       | 是否翻译                   | `translate="no"`           |
-| `draggable`       | 是否可拖动                 | `draggable="true"`         |
-
-```html
-<!-- id 与 class -->
-<div id="header" class="container">
-  <h1>网站标题</h1>
-</div>
-
-<!-- 行内样式 -->
-<p style="color: blue; font-weight: bold;">蓝色粗体文本</p>
-
-<!-- hidden 隐藏 -->
-<div hidden>这个元素是隐藏的</div>
-
-<!-- contenteditable 可编辑 -->
-<div contenteditable="true">点击此处编辑内容</div>
-```
-
----
-
-## 自定义数据属性
-
-**data-* 数据存储**
-`data-<名称>="<值>"`
-```html
-<!-- 存储产品信息 -->
-<div class="product" data-id="123" data-name="iPhone 13" data-price="799">
-  <h3>iPhone 13</h3>
-</div>
-
-<!-- JavaScript 读取 -->
-<script>
-  const product = document.querySelector('.product');
-  const productId = product.dataset.id;
-  const productName = product.dataset.name;
-  const productPrice = product.dataset.price;
-  console.log(`产品 ID: ${productId}, 名称: ${productName}, 价格: $${productPrice}`);
-</script>
-```
-
----
-
-## 语义化结构标签
-
-**页面结构标签**
-
-| 标签           | 描述                  |
-| -------------- | --------------------- |
-| `<header>`     | 页面或 section 的头部 |
-| `<nav>`        | 导航链接区域          |
-| `<main>`       | 页面主要内容(唯一)    |
-| `<section>`    | 文档中的主题节        |
-| `<article>`    | 独立、可复用的内容块  |
-| `<aside>`      | 侧边栏或附加内容      |
-| `<footer>`     | 页面或 section 的底部 |
-| `<figure>`     | 图表、图像等独立单元  |
-| `<figcaption>` | figure 的标题         |
-| `<search>`     | 搜索区域(HTML 2023)   |
-| `<dialog>`     | 对话框(HTML 2021)     |
-
-```html
-<!-- 语义化页面结构 -->
-<header>
-  <h1>网站标题</h1>
-  <nav>
-    <ul>
-      <li><a href="#">首页</a></li>
-      <li><a href="#">关于</a></li>
-    </ul>
-  </nav>
-</header>
-<main>
-  <article>
-    <h2>文章标题</h2>
-    <p>文章内容...</p>
-  </article>
-  <aside>
-    <h3>侧边栏</h3>
-  </aside>
-</main>
-<footer>
-  <p>&copy; 2026 网站名称</p>
-</footer>
-```
-
----
-
-## 可折叠内容
-
-**details 与 summary**
-`<details [open]><summary>[标题]</summary>[内容]</details>`
 ```html
 <!-- 默认折叠 -->
 <details>
-  <summary>常见问题:如何重置密码?</summary>
-  <p>请访问登录页面,点击"忘记密码"链接。</p>
+  <summary>常见问题：如何重置密码？</summary>
+  <p>请访问登录页面，点击“忘记密码”链接。</p>
 </details>
 
 <!-- 默认展开 -->
@@ -958,14 +737,15 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 </details>
 ```
 
----
+**讲解：**
 
-## 弹出对话框(HTML 2021+)
+- `<details>` 提供原生折叠容器，`<summary>` 是始终可见的标题行；
+- 添加 `open` 属性可让内容默认展开，移除后默认折叠；
+- 无需 JavaScript 即可实现 FAQ、详情展开等交互，且天然支持键盘操作。
 
-**dialog 元素**
-`<dialog [open]>[内容]</dialog>`
+### 8.2 原生对话框：dialog
+
 ```html
-<!-- 模态对话框 -->
 <dialog id="myDialog">
   <form method="dialog">
     <p>请确认操作</p>
@@ -976,19 +756,20 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 
 <script>
   const dialog = document.getElementById('myDialog');
-  dialog.showModal(); // 显示模态
-  dialog.close();     // 关闭
+  dialog.showModal(); // 以模态方式显示，自动聚焦并屏蔽背景交互
+  dialog.close();     // 关闭对话框
 </script>
 ```
 
----
+**讲解：**
 
-## Popover 弹出层(HTML 2024+)
+- `showModal()` 打开模态框，`show()` 打开非模态框，二者行为不同；
+- `method="dialog"` 让表单提交直接关闭对话框，并通过 `returnValue` 带回按钮值；
+- 模态框自带焦点管理，可搭配 `::backdrop` 伪元素定制遮罩样式。
 
-**popover 属性**
-`<div popover [="auto|manual"]>[内容]</div>`
+### 8.3 轻量弹出层：popover
+
 ```html
-<!-- 声明式弹出层 -->
 <button popovertarget="my-popover">打开弹出层</button>
 
 <div id="my-popover" popover>
@@ -996,3 +777,37 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
   <button popovertarget="my-popover" popovertargetaction="hide">关闭</button>
 </div>
 ```
+
+**讲解：**
+
+- `popover` 属性把元素声明为弹出层，默认隐藏，由触发按钮控制显隐；
+- `popovertarget` 声明触发按钮，`popovertargetaction` 可选 `toggle`/`show`/`hide`；
+- 弹出层自动置于顶层（top layer），无需手动管理 `z-index`。
+
+## 9. 核心知识点
+
+- 标题（`h1`-`h6`）、段落（`p`）、强调（`strong`/`em`）等文本标签构成内容语义；
+- 无序列表 `ul`、有序列表 `ol`、定义列表 `dl` 各有适用场景，嵌套可表达层级；
+- 链接 `a` 支持网页、锚点、`mailto`、`tel` 四种目标；图片必须提供 `alt`；
+- `id`、`class`、`data-*` 等全局属性服务于样式、脚本与数据绑定；
+- 语义化标签（`header`/`nav`/`main`/`article`/`section`/`aside`/`footer`）构建标准页面骨架。
+
+## 10. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 页面出现多个 `h1` | 标题层级混乱，影响大纲与 SEO | 全页只保留一个 `h1`，其余从 `h2` 开始 |
+| `target="_blank"` 缺少 `rel` | 新页面可通过 `window.opener` 操作原页面 | 添加 `rel="noopener noreferrer"` |
+| 图片缺 `alt` 或尺寸 | 加载失败无替代信息，且布局抖动 | 内容图写描述性 `alt`，并给出 `width`/`height` |
+| 用 `div` 模拟列表/标题 | 语义缺失，屏幕阅读器无法识别结构 | 改用 `ul`/`ol`/`dl` 与标题标签 |
+| 行内样式泛滥 | 样式与结构耦合，难以维护 | 抽取到 CSS 类，按类名复用 |
+| 表单控件缺少 `label` | 点击文字无法聚焦，无障碍性差 | 用 `<label for>` 或嵌套方式关联 |
+| 滥用 `details`/`dialog` | 语义不匹配或兼容性考虑不足 | 先确认语义，再检查浏览器支持度后降级 |
+
+## 11. 扩展学习
+
+- 表单方向：深入 `html5/005-HTML5FormValidation` 学习输入类型与验证 API；
+- 语义方向：阅读 `html5/003-SemanticTag` 掌握 `article` 与 `section` 的边界；
+- 数据方向：结合 `html5/027-CustomDataAttribute` 实践 `data-*` 与 `dataset`；
+- 无障碍方向：参考 `html5/004-Accessibility` 补齐 ARIA 与键盘导航；
+- 媒体方向：在 `html5/014-AudioVideo` 中学习 `audio`/`video` 的完整 API。

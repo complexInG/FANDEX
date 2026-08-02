@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: HTML5语义化标签详解：header、nav、main、article、section、aside、footer等，提升可访问性与SEO。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'html5/001-HTML5OverviewCoreFeature'
   - 'html5/002-HTML5BasicTagGlobalAttribute'
@@ -64,6 +64,12 @@ prerequisites: []
 <footer>页脚</footer>
 ```
 
+**讲解：**
+
+- 左半部分用 `div` + `class` 模拟页面结构，类名只能表达样式意图，机器无法识别；
+- 右半部分换成 `header`/`nav`/`main`/`article`/`aside`/`footer`，浏览器、搜索引擎和读屏软件都能直接理解结构；
+- 语义化并不增加功能代码，却让可访问性、SEO 与可维护性同时受益。
+
 ## 2. 页面结构标签
 
 ### 2.1 header
@@ -102,6 +108,12 @@ prerequisites: []
 </article>
 ```
 
+**讲解：**
+
+- `header` 可同时用于页面级和区块级：页面头部放 Logo 与导航，文章头部放标题、时间与作者；
+- `aria-label="主导航"` 为无可见文字的导航提供可访问名称，供读屏软件播报；
+- `role="search"` 在旧浏览器中补充搜索区域的语义，现代 HTML 可直接使用 `<search>` 元素。
+
 ### 2.2 nav
 
 `<nav>` 定义导航链接的区域，一个页面可以有多个导航。
@@ -135,6 +147,12 @@ prerequisites: []
 </nav>
 ```
 
+**讲解：**
+
+- `<nav>` 专用于“主要导航块”，普通链接组（如页脚友链）不必全部包进 `nav`；
+- `aria-current="page"` 标记当前所在页，读屏用户可立即感知位置；
+- 面包屑用 `<ol>` 表达层级顺序，与主导航的 `<ul>` 形成语义区分。
+
 ### 2.3 main
 
 `<main>` 表示页面的主要内容区域，每个页面只能有一个。
@@ -161,6 +179,12 @@ prerequisites: []
   <main id="main-content">...</main>
 </body>
 ```
+
+**讲解：**
+
+- `<main>` 是全页唯一的主内容容器，不要嵌套在 `article`/`section` 内部；
+- 第一个示例说明 `main` 与 `header`/`nav`/`aside`/`footer` 的并列关系；
+- 第二个示例的“跳过导航链接”让键盘用户直接跳到 `#main-content`，是 WCAG 2.4.1 的常见实现。
 
 ### 2.4 footer
 
@@ -191,6 +215,12 @@ prerequisites: []
   <p><small>&copy; 2026 我的公司. 保留所有权利.</small></p>
 </footer>
 ```
+
+**讲解：**
+
+- `footer` 同样可以出现在区块内（如文章底部），与 `header` 首尾呼应；
+- `address` 只用于联系方式，与页面地址说明区分开；
+- 版权行用 `<small>` 弱化视觉权重，符合“附属细则”的语义。
 
 ## 3. 内容分区标签
 
@@ -228,6 +258,12 @@ prerequisites: []
 </article>
 ```
 
+**讲解：**
+
+- `article` 强调“可独立分发”：博客文章、新闻、评论都可以各自成为一个 `article`；
+- 评论作为 `article` 嵌套在文章的 `section` 中，体现“评论本身也是独立内容”；
+- 第二个示例使用 `itemscope`/`itemtype` 微数据标注新闻类型，增强搜索引擎对结构化信息的理解。
+
 ### 3.2 section
 
 `<section>` 表示文档中的一个主题分组，通常包含标题。
@@ -257,6 +293,12 @@ prerequisites: []
 <!-- div: 仅用于样式/脚本目的，无语义 -->
 ```
 
+**讲解：**
+
+- `section` 必须有主题意义且通常带标题，是 `article` 内部的章节容器；
+- 同一 `article` 下用多个 `section` 划分主题，对应文档大纲中的层级；
+- 纯布局容器应退回 `div`，不要为了“语义化”强行套 `section`。
+
 ### 3.3 aside
 
 `<aside>` 表示与主内容间接相关的辅助内容。
@@ -283,6 +325,12 @@ prerequisites: []
 </main>
 ```
 
+**讲解：**
+
+- `aside` 的内容与主内容“间接相关”，可独立存在（推荐文章、广告、相关链接）；
+- 多个 `aside` 通过不同的 `aria-label` 区分用途，避免读屏播报时混淆；
+- `aside` 放在 `main` 内部或外部均可，取决于它服务于整页还是局部内容。
+
 ## 4. 文本级语义标签
 
 ### 4.1 time
@@ -300,6 +348,12 @@ prerequisites: []
 <!-- 可读性更好的日期 -->
 <time datetime="2026-06-13">上周五</time>
 ```
+
+**讲解：**
+
+- `datetime` 提供机器可读的 ISO 8601 时间值，可见文本可以是“上周五”这类自然表达；
+- 时间值带时区（`+08:00`）时适合标注跨时区事件；
+- `PT2H30M` 表示持续时间，用于时长类内容（如视频长度）。
 
 ### 4.2 figure 与 figcaption
 
@@ -324,6 +378,12 @@ prerequisites: []
   <figcaption>—— 亚瑟·克拉克，<cite>未来的轮廓</cite></figcaption>
 </figure>
 ```
+
+**讲解：**
+
+- `figure` 把图表、代码、引用等“独立媒体”与其说明文字绑定；
+- `figcaption` 必须是 `figure` 的第一个或最后一个子元素，作为整体标题；
+- 图片 + `figcaption` 组合可替代无意义的“标题 div”，语义更完整。
 
 ### 4.3 details 与 summary
 
@@ -357,6 +417,12 @@ prerequisites: []
 </div>
 ```
 
+**讲解：**
+
+- `details` 提供原生折叠交互，`summary` 是折叠开关的标题；
+- `open` 属性控制默认展开状态，无需脚本即可切换；
+- 多个 `details` 可组合出手风琴效果，如需“同时只展开一个”则要配合 JavaScript。
+
 ### 4.4 mark、abbr、cite
 
 ```html
@@ -378,6 +444,12 @@ prerequisites: []
   地址：北京市朝阳区xxx
 </address>
 ```
+
+**讲解：**
+
+- `mark` 表示与当前语境相关的标记（如搜索结果高亮），不要用于普通装饰；
+- `abbr` 配合 `title` 给出全称，`dfn` 标记术语的首次定义；
+- `cite` 引用作品标题，`address` 提供文档或文章的联系信息。
 
 ## 5. 完整语义化页面示例
 
@@ -474,6 +546,13 @@ prerequisites: []
 </html>
 ```
 
+**讲解：**
+
+- 页面从“跳过链接”开始，随后按 `header`、`main`、`aside`、`footer` 展开，形成完整语义骨架；
+- `itemscope`/`itemtype` 与 `itemprop` 组成 BlogPosting 微数据，让文章标题、作者、时间可被结构化解析；
+- `article` 内部自带 `header`/`section`/`footer`，证明这些标签可在任意层级重复使用；
+- 整体结构与 `<div class="layout">` 纯布局容器分离，样式与语义各司其职。
+
 ## 6. 常见问题与解决方案
 
 ### 6.1 section vs div 的选择
@@ -494,6 +573,12 @@ prerequisites: []
 </div>
 ```
 
+**讲解：**
+
+- 判断依据是“有没有主题意义”：有主题且能成章节用 `section`，仅排版用 `div`；
+- `section` 默认没有视觉差异，其价值体现在大纲、SEO 与读屏导航；
+- 网格布局中的列容器是典型 `div` 场景，不需要强行语义化。
+
 ### 6.2 article vs section 的选择
 
 - **article**：内容独立、可单独分发（博客文章、新闻、评论）
@@ -511,6 +596,12 @@ prerequisites: []
   <footer>文章底部</footer>
 </article>
 ```
+
+**讲解：**
+
+- 页面可容纳多个 `header`/`footer`，因为每个区块都可以有自己的头部与底部；
+- 唯一性约束只落在 `main` 上：全页仅有一个 `main`；
+- 区块级 `header` 使用 `h2` 等较低级别标题，避免与页面 `h1` 竞争。
 
 ## 7. 总结与最佳实践
 
@@ -532,326 +623,107 @@ prerequisites: []
 5. **使用 ARIA 标签**增强可访问性：`aria-label`、`aria-current`
 6. **添加跳过导航链接**，方便键盘用户
 7. **使用微数据（Microdata）**增强SEO
-## 页面结构标签
 
-**header 头部**
-`<header>...[h1-h6|nav|form]...</header>`
+## 8. 进阶知识点
+
+### 8.1 搜索区域：search
+
 ```html
-<!-- 页面级 header -->
-<header>
-  <h1>网站标题</h1>
-  <nav>
-    <ul>
-      <li><a href="/">首页</a></li>
-      <li><a href="/about">关于</a></li>
-    </ul>
-  </nav>
-</header>
-
-<!-- article 内的 header -->
-<article>
-  <header>
-    <h2>文章标题</h2>
-    <time datetime="2026-06-13">2026年6月13日</time>
-  </header>
-  <p>文章内容...</p>
-</article>
-```
-
-**nav 导航**
-`<nav [aria-label="<名称>"]>...[a|ul]...</nav>`
-```html
-<!-- 主导航 -->
-<nav aria-label="主导航">
-  <ul>
-    <li><a href="/" aria-current="page">首页</a></li>
-    <li><a href="/blog">博客</a></li>
-  </ul>
-</nav>
-
-<!-- 面包屑 -->
-<nav aria-label="面包屑">
-  <ol>
-    <li><a href="/">首页</a></li>
-    <li><a href="/blog">博客</a></li>
-    <li aria-current="page">当前文章</li>
-  </ol>
-</nav>
-
-<!-- 分页 -->
-<nav aria-label="分页">
-  <ul>
-    <li><a href="?page=1">1</a></li>
-    <li><a href="?page=2" aria-current="page">2</a></li>
-  </ul>
-</nav>
-```
-
-**main 主内容**
-`<main [id="<锚点ID>"]>...</main>`
-```html
-<!-- 每页只能有一个 main -->
-<body>
-  <a href="#main-content" class="skip-link">跳到主要内容</a>
-  <header>...</header>
-  <main id="main-content">
-    <h1>页面主标题</h1>
-    <p>主要内容区域...</p>
-  </main>
-  <footer>...</footer>
-</body>
-```
-
-**footer 底部**
-`<footer>...[address|nav|p]...</footer>`
-```html
-<footer>
-  <section>
-    <h3>联系方式</h3>
-    <address>
-      <a href="mailto:info@example.com">info@example.com</a><br />
-      <a href="tel:+8612345678">+86 123-4567-8</a>
-    </address>
-  </section>
-  <p><small>&copy; 2026 我的公司. 保留所有权利.</small></p>
-</footer>
-```
-
----
-
-## 内容分区标签
-
-**article 独立内容**
-`<article>...[header|section|footer]...</article>`
-```html
-<!-- 博客文章 -->
-<article>
-  <header>
-    <h2>深入理解HTML5语义化</h2>
-    <p>由 <a href="/author/zhangsan">张三</a> 发布于
-      <time datetime="2026-06-13">2026年6月13日</time>
-    </p>
-  </header>
-  <p>文章正文内容...</p>
-  <footer>
-    <p>标签:<a href="/tag/html5">HTML5</a></p>
-  </footer>
-</article>
-
-<!-- 嵌套评论 -->
-<article>
-  <header>
-    <p>李四 评论于 <time datetime="2026-06-13T10:30">10:30</time></p>
-  </header>
-  <p>非常好的文章!</p>
-</article>
-```
-
-**section 主题分组**
-`<section>...[h2-h6]...</section>`
-```html
-<article>
-  <h1>Web开发指南</h1>
-  <section>
-    <h2>HTML基础</h2>
-    <p>HTML是Web的骨架...</p>
-  </section>
-  <section>
-    <h2>CSS样式</h2>
-    <p>CSS负责页面的视觉表现...</p>
-  </section>
-</article>
-```
-
-**aside 侧边栏**
-`<aside [aria-label="<名称>"]>...</aside>`
-```html
-<main>
-  <article>
-    <h1>如何学习编程</h1>
-    <p>学习编程的第一步是...</p>
-  </article>
-
-  <aside aria-label="相关文章">
-    <h2>推荐阅读</h2>
-    <ul>
-      <li><a href="/post/2">编程语言选择指南</a></li>
-    </ul>
-  </aside>
-</main>
-```
-
----
-
-## 文本级语义标签
-
-**time 时间**
-`<time datetime="<ISO日期>">[显示文本]</time>`
-```html
-<!-- 日期 -->
-<time datetime="2026-06-13">2026年6月13日</time>
-
-<!-- 日期和时间 -->
-<time datetime="2026-06-13T14:30:00+08:00">下午2:30</time>
-
-<!-- 时间段 -->
-<time datetime="PT2H30M">2小时30分钟</time>
-
-<!-- 可读性更好的日期 -->
-<time datetime="2026-06-13">上周五</time>
-```
-
-**figure 与 figcaption**
-`<figure>...[img|pre|blockquote]...[<figcaption>[说明]</figcaption>]</figure>`
-```html
-<!-- 图片说明 -->
-<figure>
-  <img src="chart.png" alt="2026年销售数据图表" />
-  <figcaption>图1:2026年上半年销售数据趋势</figcaption>
-</figure>
-
-<!-- 代码示例 -->
-<figure>
-  <figcaption>示例:Hello World程序</figcaption>
-  <pre><code>console.log("Hello, World!");</code></pre>
-</figure>
-
-<!-- 引用 -->
-<figure>
-  <blockquote>
-    <p>任何足够先进的技术,都与魔法无异。</p>
-  </blockquote>
-  <figcaption>—— 亚瑟·克拉克,<cite>未来的轮廓</cite></figcaption>
-</figure>
-```
-
-**mark 高亮**
-`<mark>[文本]</mark>`
-```html
-<!-- 搜索结果高亮 -->
-<p>搜索结果中 <mark>HTML5</mark> 语义化标签的使用...</p>
-```
-
-**abbr 缩写**
-`<abbr title="<全称>">[缩写]</abbr>`
-```html
-<abbr title="HyperText Markup Language">HTML</abbr> 是Web的基础。
-```
-
-**cite 引用标题**
-`<cite>[作品名]</cite>`
-```html
-参考书目:<cite>JavaScript高级程序设计</cite>
-```
-
-**dfn 定义术语**
-`<dfn>[术语]</dfn>`
-```html
-<dfn>语义化</dfn>是指使用具有明确含义的标签来描述内容。
-```
-
-**address 联系方式**
-`<address>...</address>`
-```html
-<address>
-  作者:<a href="mailto:author@example.com">张三</a><br />
-  地址:北京市朝阳区xxx
-</address>
-```
-
----
-
-## 可折叠内容
-
-**details 与 summary**
-`<details [open]><summary>[标题]</summary>[内容]</details>`
-```html
-<!-- 默认折叠 -->
-<details>
-  <summary>常见问题:如何重置密码?</summary>
-  <p>请访问登录页面,点击"忘记密码"链接。</p>
-</details>
-
-<!-- 默认展开 -->
-<details open>
-  <summary>使用说明</summary>
-  <p>这是默认展开的说明内容。</p>
-</details>
-```
-
----
-
-## 搜索区域(HTML 2023)
-
-**search 元素**
-`<search>...[form|input]...</search>`
-```html
-<!-- 站点搜索 -->
 <search>
-  <form action="/search" role="search">
-    <label for="q">搜索</label>
-    <input type="search" id="q" name="q" placeholder="搜索内容..." />
+  <form action="/search">
+    <input type="search" name="q" aria-label="站内搜索" />
     <button type="submit">搜索</button>
   </form>
 </search>
 ```
 
----
+**讲解：**
 
-## 对话框(HTML 2021)
+- `<search>` 是 HTML Living Standard 引入的搜索语义容器，替代 `role="search"`；
+- 它只描述“这里是搜索区域”，表单与输入框的职责仍由 `form`/`input` 承担；
+- 站点搜索与站内过滤均可使用，读屏软件会将其识别为 landmark 区域。
 
-**dialog 元素**
-`<dialog [open]>[内容]</dialog>`
+### 8.2 对话框：dialog
+
 ```html
-<dialog id="myDialog">
+<dialog id="confirm">
   <form method="dialog">
-    <p>请确认操作</p>
-    <button>取消</button>
-    <button value="confirm">确认</button>
+    <p>确认删除这条记录吗？</p>
+    <button value="cancel">取消</button>
+    <button value="ok">确认</button>
   </form>
 </dialog>
+<button id="open">打开对话框</button>
 
 <script>
-  const dialog = document.getElementById('myDialog');
-  dialog.showModal();
-  dialog.close('cancel');
+  document.getElementById('open').addEventListener('click', () => {
+    document.getElementById('confirm').showModal();
+  });
 </script>
 ```
 
----
+**讲解：**
 
-## 微数据增强语义
+- `showModal()` 以模态方式打开，背景内容自动不可交互，焦点被限制在对话框内；
+- `method="dialog"` 让按钮直接关闭对话框，并把 `value` 写入 `dialog.returnValue`；
+- 对话框属于顶层渲染层，天然覆盖其他内容，无需维护 `z-index`。
 
-**itemscope 与 itemtype**
-`<article itemscope itemtype="<Schema类型>">...[itemprop]...</article>`
+### 8.3 微数据增强语义
+
 ```html
-<article itemscope itemtype="https://schema.org/NewsArticle">
-  <h2 itemprop="headline">重大新闻标题</h2>
-  <meta itemprop="datePublished" content="2026-06-13" />
-  <p itemprop="articleBody">新闻内容...</p>
+<article itemscope itemtype="https://schema.org/Product">
+  <h2 itemprop="name">无线耳机</h2>
+  <p itemprop="description">支持主动降噪的蓝牙耳机</p>
+  <meta itemprop="price" content="399" />
+  <meta itemprop="priceCurrency" content="CNY" />
 </article>
 ```
 
----
+**讲解：**
 
-## ARIA 增强可访问性
+- `itemscope` 声明一个微数据条目，`itemtype` 指向 schema.org 类型，`itemprop` 标记具体属性；
+- 价格等机器字段用 `<meta>` 承载，可见文本可保持人类友好的写法；
+- 搜索引擎据此生成富媒体摘要（价格、评分等），是 SEO 的结构化数据方案之一。
 
-**常用 ARIA 属性**
-
-| 属性              | 作用                |
-| ----------------- | ------------------- |
-| `aria-label`      | 元素的文本标签      |
-| `aria-labelledby` | 引用其他元素作为标签 |
-| `aria-current`    | 当前项(page/step等) |
-| `aria-expanded`   | 展开/折叠状态       |
-| `aria-hidden`     | 对辅助技术隐藏      |
-| `role`            | 元素的角色          |
+### 8.4 ARIA 增强可访问性
 
 ```html
-<nav aria-label="主导航">
-  <a href="/" aria-current="page">首页</a>
-</nav>
-
 <button aria-expanded="false" aria-controls="menu">菜单</button>
-<ul id="menu" aria-hidden="true">...</ul>
+<ul id="menu" role="menu" hidden>
+  <li role="menuitem">首页</li>
+  <li role="menuitem">关于</li>
+</ul>
 ```
+
+**讲解：**
+
+- ARIA 只在原生语义不足时使用：自定义菜单、手风琴、选项卡等复合组件；
+- `aria-expanded` 告知读屏软件展开状态，`aria-controls` 指向被控制的元素；
+- 优先使用原生元素（如 `<details>`、`<dialog>`），ARIA 是补充而非替代。
+
+## 9. 核心知识点
+
+- 语义化 = 用有明确含义的标签描述结构：`header`/`nav`/`main`/`article`/`section`/`aside`/`footer`；
+- `main` 每页唯一；`header`/`footer` 可重复出现在页面与区块两级；
+- `article` 用于可独立分发的内容，`section` 用于主题分组，`div` 仅做样式容器；
+- 文本级语义标签（`time`、`figure`、`details`、`mark`、`abbr`、`cite`）让内容细节也可被理解；
+- 语义化优先、ARIA 补充、微数据增强，三者共同支撑 SEO 与无障碍。
+
+## 10. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| `div` 汤 | 全站 div + class 模拟结构，语义完全丢失 | 按内容含义换用语义化标签 |
+| `section` 无标题 | 大纲中无法识别该分组的主题 | 为 `section` 补充 `h1`-`h6` 标题 |
+| `main` 出现多次 | 违反唯一性原则，读屏跳转混乱 | 全页只保留一个 `main` |
+| `nav` 包裹所有链接 | landmark 泛滥，导航识别失效 | 仅主要导航与分页使用 `nav` |
+| 滥用 ARIA | 与原生语义冲突，反而误导读屏 | 优先原生元素，ARIA 只做补充 |
+| `article` 嵌套过深 | 大纲层级膨胀，阅读困难 | 评论等独立内容才使用嵌套 `article` |
+
+## 11. 扩展学习
+
+- 完整实践：阅读 `html5/010-TextSemantic` 与 `html5/011-List` 掌握文本与列表语义；
+- 无障碍深化：结合 `html5/004-Accessibility` 学习 WCAG 与 ARIA 完整规范；
+- 结构化数据：在 `html5/026-MicrodataJSONLD` 中对比微数据与 JSON-LD；
+- 交互组件：`html5/017-ProgressMeter`、`html5/018-WebComponentsPWADevelopment` 可延伸自定义组件语义；
+- SEO 方向：参考 `css/043-HTMLSemanticSEO` 了解语义化对搜索排名的影响。
