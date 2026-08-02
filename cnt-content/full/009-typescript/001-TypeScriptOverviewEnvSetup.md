@@ -24,6 +24,12 @@ prerequisites: []
 第 4 阶段（工程实践）：039 工程化 → 048 tsconfig → 050 类型安全 API 项目 → 054 工程模板
 ```
 
+**结构解析：**
+
+1. 四条路径对应四个学习坡度：类型基础 → 类型进阶 → 类型体操 → 工程实践。
+2. 前两个阶段是【核心必读】，零基础者读到 013 声明文件后即可开始做小项目。
+3. 第三阶段的类型体操与第四阶段的理论串讲属于【进阶原理】，有项目经验后再回来读。
+
 分层说明：前两阶段为【核心必读】；高级类型演算、类型体操、符号与唯一类型（015-019、023-026）为【进阶原理】；理论串讲（051）与新编译器（055）【里程碑标注】。
 
 > 一句话记住：类型是 TS 的灵魂——先会标注，再会推导，最后用类型安全工程落地。
@@ -82,6 +88,12 @@ TypeScript 适用于以下场景：
  tsc --version
 ```
 
+**讲解：**
+
+1. `npm install -g` 把 TypeScript 安装到全局，之后任何目录都能直接用 `tsc` 命令。
+2. `tsc --version` 验证安装是否成功，并显示当前版本号。
+3. 全局安装适合学习阶段；真实项目应使用下面的"本地安装"，保证团队版本一致。
+
 #### 2.1.2 项目本地安装
 
 ```bash
@@ -90,6 +102,12 @@ TypeScript 适用于以下场景：
  # 验证安装
  npx tsc --version
 ```
+
+**讲解：**
+
+1. `--save-dev` 表示 TypeScript 是开发依赖：只在开发与构建时使用，不会进入生产代码。
+2. 本地安装后不能直接敲 `tsc`，要写 `npx tsc`——`npx` 会优先使用项目里的 `node_modules/.bin/tsc`。
+3. 团队项目必须用本地安装：每个人执行 `npm install` 后得到完全相同的编译器版本。
 
 ### 2.2 初始化 TypeScript 项目
 
@@ -103,6 +121,12 @@ TypeScript 适用于以下场景：
  npm install --save-dev typescript
  npx tsc --init
 ```
+
+**讲解：**
+
+1. `tsc --init` 生成带注释的 `tsconfig.json`，里面包含 TypeScript 全部配置项的说明。
+2. 第二组命令是标准三步：`npm init -y` 生成 `package.json`，安装 TypeScript，再初始化编译配置。
+3. `tsconfig.json` 是项目的"编译说明书"，后面的 3.x 小节会逐项解释。
 
 #### 2.2.2 基本项目结构
 
@@ -122,6 +146,12 @@ flowchart TD
     T5 --> T6
 ```
 
+**结构解析：**
+
+1. 图中只有两条路径需要记住：源码在 `src/`，编译产物在 `dist/`。
+2. `tsconfig.json` 决定"从 src 编译到 dist"，`package.json` 记录依赖与脚本。
+3. `index.ts` 是入口文件，编译后变成同名的 `index.js`，交给 Node.js 或浏览器运行。
+
 ### 2.3 编译与运行
 
 #### 2.3.1 基本编译
@@ -135,6 +165,12 @@ flowchart TD
  tsc --watch
 ```
 
+**讲解：**
+
+1. `tsc src/index.ts` 只编译指定文件；`tsc`（不带参数）按 `tsconfig.json` 编译整个项目。
+2. `--watch` 是"监听模式"：保存文件后自动重新编译，开发时一直开着即可。
+3. 初学者最常用的组合是：一个终端跑 `tsc --watch`，编辑器里直接看类型报错。
+
 #### 2.3.2 使用 ts-node 直接运行
 
 ```bash
@@ -145,6 +181,12 @@ flowchart TD
  # 监视模式运行
  npx ts-node --watch src/index.ts
 ```
+
+**讲解：**
+
+1. `ts-node` 在内存里把 TypeScript 编译后直接执行，省去"先编译再看 js"的步骤。
+2. `npx ts-node src/index.ts` 与 `node dist/index.js` 效果相同，但能更快进入调试。
+3. 注意：ts-node 只适合开发；生产环境一般用 `tsc` 编译出 JS 后再运行。
 
 #### 2.3.3 使用构建工具
 
@@ -175,6 +217,13 @@ flowchart TD
  }
 ```
 
+**讲解：**
+
+1. 这是 Webpack 的最小 TS 配置：`entry` 是入口文件，`output` 是打包结果。
+2. `module.rules` 里的 `ts-loader` 负责把 `.tsx?` 文件编译成 JS，`exclude: /node_modules/` 跳过第三方库。
+3. `resolve.extensions` 让 import 时可以省略 `.ts/.tsx/.js` 后缀。
+4. 新项目更推荐 Vite（下一段），Webpack 主要用于维护存量项目。
+
 #### Vite
 
 ```bash
@@ -183,6 +232,12 @@ flowchart TD
  # 或使用 Vue + TypeScript
  npm create vite@latest my-project -- --template vue-ts
 ```
+
+**讲解：**
+
+1. `npm create vite@latest` 是官方脚手架：`--template react-ts` 生成 React+TS 模板，`vue-ts` 生成 Vue+TS 模板。
+2. 创建后进入目录执行 `npm install && npm run dev` 即可启动。
+3. Vue 项目也可用官方 `create-vue`，在交互提示中勾选 TypeScript 支持。
 
 创建 Vue + TypeScript 项目更推荐官方脚手架 create-vue：`npm create vue@latest`，在交互提示中选择 TypeScript。
 
@@ -209,12 +264,20 @@ flowchart TD
   "declaration": true,
   "declarationMap": true,
   "removeComments": false,
-  "noEmitOnError":
+  "noEmitOnError": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
  }
 ```
+
+**讲解：**
+
+1. `target` 决定编译成哪个版本的 JavaScript（ES2022 已是很现代的目标）；`module` 决定模块语法（esnext 适合浏览器/打包器）。
+2. `strict: true` 打开全部严格检查，是 TypeScript 类型安全的核心开关，新项目必须开启。
+3. `outDir` 与 `rootDir` 控制"从 src 进、到 dist 出"的目录结构。
+4. `include` 声明参与编译的文件范围，`exclude` 排除 `node_modules` 与产物目录。
+5. `declaration` 在库开发时生成 `.d.ts` 类型声明文件，应用项目一般不需要。
 
 ### 3.2 核心配置选项
 
@@ -287,6 +350,12 @@ flowchart TD
 }
 ```
 
+**讲解：**
+
+1. 浏览器项目与基础配置的差异集中在三处：`moduleResolution: "bundler"`、`lib` 增加 `DOM` 与 `DOM.Iterable`、`jsx: "react-jsx"`。
+2. `lib` 是"环境说明书"：声明代码里可用的全局对象，DOM 类型来自浏览器环境。
+3. `jsx: "react-jsx"` 使用 React 17+ 的自动 JSX 转换，不需要手动 `import React`。
+
 #### 3.5.2 Node.js 项目配置
 
 ```json
@@ -303,12 +372,18 @@ flowchart TD
   "outDir": "./dist",
   "rootDir": "./src",
   "sourceMap": true,
-  "declaration":
+  "declaration": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
  }
 ```
+
+**讲解：**
+
+1. Node.js 项目把 `module` 与 `moduleResolution` 都设为 `nodenext`，与 Node 的 ESM/CJS 规则对齐。
+2. `lib` 不包含 DOM，因为 Node 环境没有浏览器对象；需要安装 `@types/node` 提供 `process`、`fs` 等类型。
+3. `sourceMap: true` 生成源码映射，运行报错时能定位回 `.ts` 原始行号。
 
 ## 4. 工具链与生态系统
 
@@ -373,6 +448,12 @@ flowchart TD
     T10 --> T12
 ```
 
+**结构解析：**
+
+1. 源码目录按"组件/工具/类型/接口"分包，是中型项目的常见组织方式。
+2. `types/` 与 `interfaces/` 集中放类型定义，避免类型散落在业务文件里。
+3. `tests/` 与源码分开，便于测试工具按目录扫描。
+
 ### 5.2 类型定义最佳实践
 
 - **使用接口定义对象结构**：清晰描述对象的形状
@@ -435,18 +516,26 @@ flowchart TD
   name: "John Doe",
   email: "john@example.com",
   age: 30
- }
+ });
  userService.addUser({
   id: 2,
   name: "Jane Smith",
   email: "jane@example.com"
- }
+ });
  const user = userService.getUserById(1);
  if (user) {
   console.log(greet(user));
  }
  console.log(userService.getAllUsers());
 ```
+
+**讲解：**
+
+1. `interface User` 定义对象形状：`age?: number` 表示 age 可省略，这就是"可选属性"。
+2. `function greet(user: User): string` 标注参数类型与返回值类型，传错结构会在编译期报错。
+3. `class UserService` 中 `private users: User[]` 是私有数组字段；`User | undefined` 表示"可能找不到"。
+4. `find` 可能返回 `undefined`，所以用 `if (user)` 判断后再调用——`strictNullChecks` 强制处理这个分支。
+5. 最后 `console.log(greet(user))` 输出带模板字符串的问候语，`getAllUsers()` 打印完整列表。
 
 ### 6.2 编译与运行
 
@@ -458,6 +547,12 @@ flowchart TD
  # 或直接运行
  npx ts-node src/index.ts
 ```
+
+**讲解：**
+
+1. `tsc` 先按配置把 `src/` 编译到 `dist/`，再 `node dist/index.js` 运行编译结果。
+2. 开发调试用 `npx ts-node src/index.ts` 更省事，一条命令完成"编译+运行"。
+3. 生产部署应使用 `tsc` 的编译产物，运行环境不需要安装 TypeScript。
 
 ### 6.3 与 JavaScript 集成
 
@@ -484,7 +579,7 @@ const order: Order = {
 };
 const total = calculateTotal(order.items);
 console.log(`Order total: $${total}`);
-javascript
+// ---------- 下面是普通 JavaScript 文件 utils.js ----------
 // src/utils.js
 // JavaScript 函数
 export function calculateTotal(items) {
@@ -493,6 +588,13 @@ export function calculateTotal(items) {
   }, 0);
 }
 ```
+
+**讲解：**
+
+1. 前半段是 TypeScript 调用 JavaScript：`import { calculateTotal } from './utils.js'` 导入 JS 模块，并给订单数据标注 `Order` 类型。
+2. `items` 的类型是"对象数组"：`{ name: string; price: number; quantity: number }[]`，数组里每个元素结构一致。
+3. 后半段 `utils.js` 是普通 JS：`reduce` 累加 `price * quantity`。TypeScript 项目可以逐步把 JS 文件改成 TS，不用一次性重写。
+4. 这是"渐进式迁移"的样板：JS 函数保持不动，调用方先获得类型。
 
 ## 7. 常见问题与解决方案
 
@@ -586,6 +688,12 @@ function pickFirst<const T>(arr: readonly T[]): T {
 const r = pickFirst(["red", "green"]); // "red" | "green"
 ```
 
+**讲解：**
+
+1. `<const T>` 告诉编译器"不要放宽推断"：`["red", "green"]` 被推断为字面量联合 `"red" | "green"` 而不是 `string`。
+2. `readonly T[]` 表示只读数组参数，函数内不能修改元素。
+3. 返回值 `T` 保留调用时的精确类型，是"配置对象、路由表"等场景的常用技巧。
+
 ---
 
 **基本写法：const 配合元组**
@@ -597,6 +705,12 @@ function define<const T extends readonly string[]>(routes: T): T {
 }
 const c = define(["/home", "/about"]); // readonly ["/home", "/about"]
 ```
+
+**讲解：**
+
+1. `<const T extends readonly string[]>` 约束 T 必须是字符串数组，且保留"元组"形态。
+2. 推断结果是 `readonly ["/home", "/about"]`：长度与每个位置的字符串都精确固定。
+3. 之后遍历 `c` 时，每个元素都是具体的字面量类型，拼路由时不会丢失类型信息。
 
 ---
 
@@ -614,6 +728,12 @@ palette.red;   // string（具体）
 palette.green; // number[]
 ```
 
+**讲解：**
+
+1. `satisfies` 的作用是"校验但不改变推断"：对象必须符合 `Record<string, string | number[]>`，同时每个属性保留自己的具体类型。
+2. `palette.red` 的类型是字面量 `"#f00"`（而不是 string），`palette.green` 是 `number[]`。
+3. 对比直接标注 `: Record<...>`，satisfies 让使用方获得更精确的类型提示。
+
 ---
 
 **基本写法：satisfies 与 as 区别**
@@ -623,6 +743,12 @@ palette.green; // number[]
 const m = { a: 1 } satisfies Record<"a", number>;
 // const m = { a: 1 } satisfies Record<"a", string>; // 报错
 ```
+
+**讲解：**
+
+1. `as` 断言是"我保证它是对的"，类型不匹配时编译器可能放过，运行期才暴露问题。
+2. `satisfies` 是"请检查我"：不符合类型就立刻报错，绝不撒谎。
+3. 规则：能写 satisfies 就别写 as；as 只用于编译器确实无法推断的场景。
 
 ---
 
@@ -641,6 +767,13 @@ function log(target: Function, ctx: ClassMethodDecoratorContext) {
 class S { @log greet() { return "hi"; } }
 ```
 
+**讲解：**
+
+1. 这是标准装饰器（TC39 Stage 3 语义），不需要开启 `experimentalDecorators`。
+2. 装饰器函数接收 `target`（被装饰的方法）与 `ctx`（上下文，含方法名），返回包装函数。
+3. `@log greet()` 表示给 `greet` 方法套上日志：每次调用先打印方法名与参数，再执行原方法。
+4. `return target.apply(this, args)` 保持 `this` 与参数原样传递，这是装饰器的标准收尾。
+
 ---
 
 ## 5.2 using 声明
@@ -655,6 +788,12 @@ function read() {
 }
 ```
 
+**讲解：**
+
+1. `using` 是"同步资源管理"语法：变量离开作用域时自动调用其 `[Symbol.dispose]` 方法。
+2. 示例里 `openFile` 返回带释放逻辑的对象，函数结束时文件自动关闭，无需手写 try/finally。
+3. 对应提案已进入主流运行时，TS 5.2+ 提供类型支持。
+
 ---
 
 **基本写法：异步资源管理**
@@ -666,6 +805,12 @@ async function run() {
   // 自动 await [Symbol.asyncDispose]
 }
 ```
+
+**讲解：**
+
+1. `await using` 是异步版本：离开作用域时自动 `await` 资源的 `[Symbol.asyncDispose]` 方法。
+2. `await using conn = await db.connect()`：右侧先连接数据库，`conn` 在作用域结束时自动断开。
+3. 适合数据库连接、流、锁等"用完必须清理"的资源。
 
 ---
 
@@ -684,6 +829,12 @@ function desc(v: unknown) {
 }
 ```
 
+**讲解：**
+
+1. `switch (true)` 不是比较某个变量，而是让每个 `case` 写"布尔条件"，从上到下找第一个为真的分支。
+2. 每个 case 体内变量 `v` 自动收窄：`typeof v === "string"` 成立后，`v.toUpperCase()` 合法。
+3. 相比 if/else 链，这种写法让"多个互斥条件"的结构更整齐。
+
 ---
 
 ## 5.4 NoInfer 工具类型
@@ -698,6 +849,12 @@ function withDefault<T>(v: T | undefined, fb: NoInfer<T>): T {
 const r = withDefault("hi", "x"); // T = string
 // withDefault("hi", 42); // 报错：number 不能赋给 string
 ```
+
+**讲解：**
+
+1. `NoInfer<T>` 是 TS 5.4 新增工具类型：声明"不要从我这个位置推断 T"。
+2. 示例里 T 只由第一个参数 `v` 推断为 `string`，第二个参数 `fb` 仅做校验。
+3. 若没有 NoInfer，`withDefault("hi", 42)` 可能把 T 推断成 `string | number`，错误被放过。
 
 ---
 
@@ -714,6 +871,12 @@ function fn(v: string | null) {
 }
 ```
 
+**讲解：**
+
+1. TS 5.4 之前，闭包内捕获的变量可能丢失收窄信息（v 被当成 string | null）。
+2. 5.4 起，`if (v === null) return;` 之后的闭包 `() => v.toUpperCase()` 能确认 `v` 是 string。
+3. 这个修复让"先判断、再在回调里使用"的安全模式真正生效。
+
 ---
 
 ## 5.5 推断类型谓词
@@ -725,6 +888,12 @@ function fn(v: string | null) {
 const isString = (x: unknown) => typeof x === "string";
 const arr = [1, "a"].filter(isString); // string[]
 ```
+
+**讲解：**
+
+1. `(x: unknown) => typeof x === "string"` 返回布尔值，TS 5.5 起自动识别为类型谓词 `x is string`。
+2. `filter` 使用该谓词后，结果数组类型从 `(string | number)[]` 收窄为 `string[]`。
+3. 以前必须手写 `: x is string` 标注，现在编译器能自己推断。
 
 ---
 
@@ -739,6 +908,12 @@ type B = { kind: "b"; y: string };
 type U = A | B;
 ```
 
+**讲解：**
+
+1. `A` 与 `B` 是"离散联合"：两个成员没有公共字段（除了没有共同的 kind 判别）。
+2. TS 5.6 对这种联合做更严格的检查：操作时必须先区分是哪种成员。
+3. 实际项目中更常见"可辨识联合"（每个成员带 kind 字段），用 `switch (u.kind)` 收窄。
+
 ---
 
 **基本写法：Iterator Helpers 类型**
@@ -748,6 +923,12 @@ type U = A | B;
 function* gen() { yield 1; yield 2; }
 const r = gen().map(x => x * 2).filter(x => x > 2).toArray(); // [4]
 ```
+
+**讲解：**
+
+1. `function* gen()` 是生成器：逐个 `yield` 出 1 和 2。
+2. Iterator Helpers（ES2025）给迭代器加了 `.map/.filter/.toArray` 等链式方法。
+3. 流程：1→2 变成 2→4，过滤大于 2 留下 4，`toArray()` 输出 `[4]`。
 
 ---
 
@@ -762,6 +943,12 @@ import defer * as lib from "./heavy";
 export function use() { return lib.foo(); }
 ```
 
+**讲解：**
+
+1. `import defer * as lib` 是延迟导入：`./heavy` 模块不会立即执行，首次访问 `lib` 时才求值。
+2. 适合"体积大但未必用得上"的模块（如重型工具库），能缩短启动时间。
+3. 与动态 `import()` 的区别：`import defer` 仍是静态依赖，模块关系可被构建工具静态分析。
+
 ---
 
 **基本写法：node20 模块解析**
@@ -774,6 +961,12 @@ export function use() { return lib.foo(); }
   }
 }
 ```
+
+**讲解：**
+
+1. `"module": "node20"` 与 `"moduleResolution": "node20"` 配对使用，对齐 Node.js 20+ 的模块解析规则。
+2. node20 解析同时支持 ESM 与 CJS 的导入导出规则，`package.json` 的 `type` 字段决定文件按哪种模块处理。
+3. Node 22 LTS 环境与这套配置完全兼容。
 
 ---
 
@@ -791,6 +984,12 @@ function bound(target: Function, ctx: ClassMethodDecoratorContext) {
 }
 ```
 
+**讲解：**
+
+1. `ctx`（ClassMethodDecoratorContext）提供 `name`、`kind`、`addInitializer` 等成员。
+2. `addInitializer` 在实例初始化时执行：示例把方法绑定到实例，实现"自动 bind"。
+3. `(this as Record<string, unknown>)` 是类型断言：给未知结构的 this 添加索引访问能力。
+
 ---
 
 ## satisfies + const 组合
@@ -806,3 +1005,9 @@ const c = config({
 } satisfies Record<string, string>);
 c.home; // "/" 字面量
 ```
+
+**讲解：**
+
+1. `<const T extends Record<string, string>>` 保留传入对象的字面量类型，同时约束所有值必须是 string。
+2. `satisfies` 在参数处校验：`c` 满足 `Record<string, string>`，且每个属性保留 `"/"`、`"/api"` 字面量。
+3. 组合效果：写错配置（如值为数字）会报错，读 `c.home` 时又得到精确类型。
