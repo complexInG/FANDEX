@@ -16,24 +16,11 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-## 0. 直觉：进度条和度量条不是一回事
-
-- `<progress>` 是“任务进度”：下载到 70%，加载完成 100%——它回答“完成了多少”；
-- `<meter>` 是“数值位置”：电量 70%、评分 85 分——它回答“这个值处于什么水平”。
-
-一个看“过程”，一个看“状态”。写代码前先想清楚语义，选错标签会让读屏用户听到错误含义。
-
 ## 1. progress 元素
 
 ```html
 <progress>加载中...</progress> <progress value="70" max="100">70%</progress>
 ```
-
-**讲解：**
-
-- 不写 `value` 时是“不确定进度”，显示为流动动画（如“加载中”）；
-- 写了 `value`/`max` 就变成确定进度，`value / max` 是完成比例；
-- 标签之间的文字是给旧浏览器与读屏用户的回退内容。
 
 | 属性    | 说明   | 默认值 |
 | ------- | ------ | ------ |
@@ -45,12 +32,6 @@ const progress = document.querySelector('progress');
 progress.value = 0.5;
 console.log(progress.position); // 0.5
 ```
-
-**讲解：**
-
-- `value`/`max` 是数字属性，直接赋值即可更新进度条；
-- `position` 是只读属性，返回 `value / max` 的比例；
-- 模拟加载时用 `setInterval` 逐步递增 `value`，完成后 `clearInterval` 停止。
 
 ### 自定义样式
 
@@ -68,24 +49,12 @@ progress::-moz-progress-bar {
 }
 ```
 
-**讲解：**
-
-- WebKit/Blink 浏览器用 `::-webkit-progress-bar` 与 `::-webkit-progress-value` 定制轨道和填充；
-- Firefox 用 `::-moz-progress-bar`；
-- 两条规则都要写，否则 Firefox 或 Chrome 中会有一边不生效。
-
 ## 2. meter 元素
 
 ```html
 <meter value="0.7" min="0" max="1">70%</meter>
 <meter value="85" min="0" max="100" low="60" high="90" optimum="80">85分</meter>
 ```
-
-**讲解：**
-
-- `value` 是当前值，`min`/`max` 定义刻度范围；
-- `low`/`high` 划分低、中、高三个区间，`optimum` 声明“最佳值”在哪；
-- 浏览器根据值与最优值的距离自动显示绿/黄/红，无需写脚本。
 
 | 属性      | 说明           | 默认值 |
 | --------- | -------------- | ------ |
@@ -106,8 +75,6 @@ min          low          high          max
 
 颜色规则基于 optimum 所在区间：optimum 所在区间为绿色，远离为黄色/红色。
 
-**讲解：** 颜色是“自动语义”：`optimum` 所在的区间显示绿色，越远离越偏黄、红。注意 `meter` 只适合“已知范围”的数值（电量、评分），任务进度请用 `progress`。
-
 ```css
 meter::-webkit-meter-optimum-value {
   background: #4caf50;
@@ -119,14 +86,265 @@ meter::-webkit-meter-even-less-good-value {
   background: #f44336;
 }
 ```
+## progress 进度条
 
-**讲解：**
+**progress 元素**
+`<progress [value="<当前值>"] [max="<最大值>"]>[回退内容]</progress>`
+```html
+<!-- 不确定进度(加载中) -->
+<progress>加载中...</progress>
 
-- `::-webkit-meter-optimum-value` 控制绿色段（最优区间）；
-- `::-webkit-meter-suboptimum-value` 控制黄色段，`::-webkit-meter-even-less-good-value` 控制红色段；
-- 自定义样式时不要覆盖掉颜色的“语义”，否则用户会失去直观判断。
+<!-- 确定进度 -->
+<progress value="70" max="100">70%</progress>
 
-## 3. 动手试试
+<!-- 默认 max=1 -->
+<progress value="0.5"></progress>
+```
+
+| 属性    | 说明     | 默认值 |
+| ------- | -------- | ------ |
+| `value` | 当前值   | 0      |
+| `max`   | 最大值   | 1      |
+
+**JavaScript 操作**
+```javascript
+const progress = document.querySelector('progress');
+
+// 设置值
+progress.value = 0.5;
+progress.max = 200;
+
+// 读取属性
+console.log(progress.value);     // 当前值
+console.log(progress.max);       // 最大值
+console.log(progress.position);  // 比例(value/max)
+
+// 模拟加载
+let value = 0;
+const timer = setInterval(() => {
+  value += 0.1;
+  progress.value = value;
+  if (value >= 1) {
+    clearInterval(timer);
+    console.log('加载完成');
+  }
+}, 100);
+```
+
+---
+
+## progress 自定义样式
+
+**CSS 伪元素样式**
+```css
+/* WebKit 内核(Chrome、Safari) */
+progress::-webkit-progress-bar {
+  background: #e0e0e0;
+  border-radius: 10px;
+  height: 20px;
+}
+
+progress::-webkit-progress-value {
+  background: linear-gradient(to right, #4caf50, #8bc34a);
+  border-radius: 10px;
+  transition: width 0.3s;
+}
+
+/* Firefox */
+progress::-moz-progress-bar {
+  background: #4caf50;
+  border-radius: 10px;
+}
+
+/* 进度条本身 */
+progress {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  border: none;
+}
+```
+
+---
+
+## meter 度量条
+
+**meter 元素**
+`<meter value="<当前值>" [min] [max] [low] [high] [optimum]>[回退内容]</meter>`
+```html
+<!-- 简单度量 -->
+<meter value="0.7" min="0" max="1">70%</meter>
+
+<!-- 带区间划分 -->
+<meter value="85" min="0" max="100" low="60" high="90" optimum="80">85 分</meter>
+
+<!-- 磁盘使用量 -->
+<meter value="650" min="0" max="1000" low="500" high="800" optimum="300">
+  650 GB / 1000 GB
+</meter>
+```
+
+| 属性      | 说明           | 默认值 |
+| --------- | -------------- | ------ |
+| `value`   | 当前值(必需)   | 0      |
+| `min`     | 最小值         | 0      |
+| `max`     | 最大值         | 1      |
+| `low`     | 低值区间边界   | min    |
+| `high`    | 高值区间边界   | max    |
+| `optimum` | 最优值         | -      |
+
+**区间划分规则**
+```
+min          low          high          max
+ |-----------|------------|-------------|
+   低值区间     中值区间       高值区间
+```
+
+颜色规则:optimum 所在区间为绿色,远离 optimum 为黄色/红色。
+
+| optimum 位置 | value 在低区间 | value 在中区间 | value 在高区间 |
+| ------------ | -------------- | -------------- | -------------- |
+| 低区间       | 绿色           | 黄色           | 红色           |
+| 中区间       | 黄色           | 绿色           | 黄色           |
+| 高区间       | 红色           | 黄色           | 绿色           |
+
+---
+
+## meter 自定义样式
+
+**CSS 伪元素样式**
+```css
+meter {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+}
+
+/* WebKit 内核 */
+meter::-webkit-meter-bar {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+/* 最优值(绿色) */
+meter::-webkit-meter-optimum-value {
+  background: #4caf50;
+  border-radius: 10px;
+}
+
+/* 次优值(黄色) */
+meter::-webkit-meter-suboptimum-value {
+  background: #ff9800;
+  border-radius: 10px;
+}
+
+/* 较差值(红色) */
+meter::-webkit-meter-even-less-good-value {
+  background: #f44336;
+  border-radius: 10px;
+}
+
+/* Firefox */
+meter::-moz-meter-bar {
+  background: #4caf50;
+}
+```
+
+---
+
+## JavaScript 操作 meter
+
+**属性读写**
+```javascript
+const meter = document.querySelector('meter');
+
+// 读取
+console.log(meter.value);     // 当前值
+console.log(meter.min);       // 最小值
+console.log(meter.max);       // 最大值
+console.log(meter.low);       // 低值边界
+console.log(meter.high);      // 高值边界
+console.log(meter.optimum);   // 最优值
+
+// 设置
+meter.value = 75;
+meter.min = 0;
+meter.max = 100;
+meter.low = 40;
+meter.high = 80;
+meter.optimum = 60;
+```
+
+---
+
+## 应用场景示例
+
+**文件上传进度**
+```html
+<progress id="uploadProgress" value="0" max="100">0%</progress>
+<span id="progressText">0%</span>
+
+<script>
+  const progress = document.getElementById('uploadProgress');
+  const progressText = document.getElementById('progressText');
+
+  function uploadFile(file) {
+    const xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable) {
+        const percent = (e.loaded / e.total) * 100;
+        progress.value = percent;
+        progressText.textContent = Math.round(percent) + '%';
+      }
+    });
+    xhr.open('POST', '/upload');
+    xhr.send(file);
+  }
+</script>
+```
+
+**评分显示**
+```html
+<!-- 评分 -->
+<meter value="4.5" min="0" max="5" low="2" high="4" optimum="5">4.5 / 5</meter>
+
+<!-- 密码强度 -->
+<meter id="passwordStrength" value="0" min="0" max="100" low="40" high="70" optimum="100"></meter>
+
+<script>
+  function checkStrength(password) {
+    let score = 0;
+    if (password.length >= 8) score += 25;
+    if (/[A-Z]/.test(password)) score += 25;
+    if (/[0-9]/.test(password)) score += 25;
+    if (/[^a-zA-Z0-9]/.test(password)) score += 25;
+    document.getElementById('passwordStrength').value = score;
+  }
+</script>
+```
+
+**电池电量**
+```html
+<!-- 电池电量(配合 Battery API) -->
+<meter id="battery" value="0.75" min="0" max="1" low="0.2" high="0.5" optimum="1">
+  75%
+</meter>
+
+<script>
+  navigator.getBattery().then((battery) => {
+    const meter = document.getElementById('battery');
+    function update() {
+      meter.value = battery.level;
+    }
+    update();
+    battery.addEventListener('levelchange', update);
+  });
+</script>
+```
+
+## 动手试试
 
 ### 入门版（必做）
 
@@ -140,7 +358,7 @@ meter::-webkit-meter-even-less-good-value {
 2. 做一个“上传中”的不确定进度条（不写 `value`），完成后切换为确定进度；
 3. 用 `aria-label` 给进度条补充“下载第 2/5 个文件”等动态描述。
 
-## 4. 核心知识点
+## 核心知识点
 
 > 一句话记住 progress/meter：任务进度用 `progress`，数值状态用 `meter`；`value`/`max` 定比例，`low`/`high`/`optimum` 管颜色。
 
@@ -150,7 +368,7 @@ meter::-webkit-meter-even-less-good-value {
 - 自定义样式需同时覆盖 WebKit 与 Firefox 的伪元素；
 - 语义别混用：进度用 `progress`，状态用 `meter`。
 
-## 5. 注意事项与改进建议
+## 注意事项与改进建议
 
 | 问题点 | 说明 | 改进方案 |
 | --- | --- | --- |
@@ -160,7 +378,7 @@ meter::-webkit-meter-even-less-good-value {
 | 覆盖颜色语义 | 用户失去直观判断 | 保留绿/黄/红含义或另加文字说明 |
 | 忘记回退文字 | 旧环境无法理解数值 | 标签内写可读文本 |
 
-## 6. 扩展学习
+## 扩展学习
 
 - 无障碍：`html5/004-Accessibility` 中 ARIA 的 `progressbar`/`meter` 角色；
 - 动画：`css/017-CSSAnimationTransition` 让进度变化更平滑；

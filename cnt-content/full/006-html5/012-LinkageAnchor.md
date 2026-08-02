@@ -17,25 +17,46 @@ prerequisites:
 ---
 
 
-## 1. 一句话了解历史
+## 1. 历史动机与发展脉络
 
-链接是万维网诞生的核心：1989 年 Tim Berners-Lee 提出“信息管理提议”，把“链接”作为 Web 的根本机制，1991 年第一版 HTML 里就有了 `<a>`。之后三十多年的变化对你来说只需记住三点：锚点从 `name` 统一为 `id`；`target="_blank"` 要搭配 `rel="noopener"`；`download` 可以提示浏览器下载文件。
+超链接是万维网诞生的核心概念。1989 年 Tim Berners-Lee 提出“信息管理提议”，把“链接”作为 Web 的根本机制；1991 年 HTML Tags 中 `<A>` 元素即已存在，`HREF` 属性从一开始就承担“超文本引用”职责。HTML 2.0（1995）正式标准化 `<a>`；HTML 4.01（1999）引入 `target`、`rel`、`type` 等属性并支持 `name` 锚点；HTML5（2014）移除了 `name` 锚点（统一用全局 `id`），为 `<a>` 增加 `download` 属性，并明确了 `target="_blank"` 的 `rel="noopener"` 安全要求。
 
-把链接想象成“门牌号”：`href` 是地址，浏览器根据地址找到对应的门（网页、文件、邮箱、电话），点击就是“走过去敲门”。
+浏览器安全模型也在演进：2019 年起 Chrome 88 等浏览器默认对 `target="_blank"` 的链接隐式启用 `noopener` 行为（HTML spec 更新），但为了兼容旧浏览器与明确语义，现代代码仍显式书写 `rel="noopener"`。
 
-## 2. 链接的形式化速览
+```mermaid
+timeline
+    title 超链接演进
+    1989 : Berners-Lee 提出 Web 链接概念
+    1991 : HTML Tags 出现 <A HREF>
+    1995 : HTML 2.0 标准化 a 元素
+    1999 : HTML 4.01 加入 target/rel/type
+    2014 : HTML5 移除 name 锚点，加入 download
+    2021 : 浏览器默认 target=_blank 启用 noopener
+```
 
-`<a>` 有 `href` 时是超链接，没有 `href` 时只是占位锚点。`href` 的常见形态：
+## 2. 形式化定义
 
-| 形态 | 示例 | 说明 |
-| --- | --- | --- |
-| 绝对 URL | `https://example.com/docs` | 包含协议与主机，指向站外 |
-| 站内绝对路径 | `/docs/guide` | 从站点根开始 |
-| 相对路径 | `../images/logo.png` | 基于当前文档目录解析 |
-| 片段 | `#section-2` | 跳到当前页 `id="section-2"` |
-| 专用协议 | `mailto:` / `tel:` | 唤起邮件客户端或拨号 |
+`<a>` 是 HTML 的锚点元素。当存在 `href` 属性时，它创建指向目标资源的超链接；没有 `href` 时是占位锚点（不产生链接行为，但可以作为交互元素的语义容器）。
 
-`target`：`_self`（当前窗口，默认）、`_blank`（新窗口，建议配 `rel="noopener"`）；`rel` 声明关系：`noopener` 切断反向引用、`noreferrer` 隐藏来源、`nofollow` 告诉搜索引擎不追踪。
+`href` 属性值是一系列 URL 形态之一：
+
+绝对 URL：`https://example.com/docs`，包含协议与主机；
+
+相对 URL：`../images/logo.png`、`/docs/guide`，基于当前文档的基地址解析；
+
+片段 URL：`#section-2`，指向当前文档中 `id="section-2"` 的元素；
+
+协议相对 URL：`//cdn.example.com/lib.js`，继承当前页面的协议（https 或 http）；
+
+专用协议：`mailto:user@example.com`、`tel:+8613800138000`、`javascript:`（不推荐）；
+
+`data:` 与 `blob:` 用于内联数据与临时资源。
+
+`target` 属性取值：`_self`（默认，当前浏览上下文）、`_blank`（新浏览上下文）、`_parent`（父上下文）、`_top`（顶层上下文）、任意名称（命名浏览上下文，若不存在则新建）。
+
+`rel` 属性声明链接与目标的关系，空格分隔多个关键字：`noopener`（新窗口不继承 opener 引用）、`noreferrer`（不发送 Referer 且隐式 noopener）、`external`、`nofollow`（SEO 指示）、`nofollow` 等。
+
+`download` 属性：提示浏览器下载目标而不是导航，值可作为建议文件名。受同源策略限制，跨域下载名可能被忽略。
 
 ```mermaid
 flowchart LR
@@ -345,16 +366,13 @@ h1, h2 {
 
 讲解：整个系统由三部分组成：语义 HTML（`ol + a + id`）、滚动修正（`scroll-margin-top`）、交互高亮（IntersectionObserver 或滚动事件）。每部分职责单一，替换任意部分不影响其他部分。
 
-## 9. 核心知识点
+## 9. 知识要点总结与深入讲解
 
-> 一句话记住链接：`href` 写地址，`_blank` 配 `noopener`；站内用根路径，锚点找 `id`；下载加 `download`，文案要自解释。
+链接的核心属性是 `href`，其值决定“去哪里”；`target` 决定“在哪里打开”；`rel` 决定“与新上下文的关系与安全边界”。三者独立配置，但组合使用时有安全约束：`_blank` 应搭配 `noopener`。
 
-- `href` 决定“去哪里”，`target` 决定“在哪里打开”，`rel` 决定“安全边界”；`_blank` 必须搭配 `noopener`；
-- 锚点跳转依赖唯一 `id`，HTML5 已移除 `name` 锚点；
-- 站内链接推荐根相对路径（`/docs/...`），避免目录移动后失效；
-- 导航用 `<a>`，页面内动作用 `<button>`；
-- 链接文案要自解释，避免“点击这里”；键盘焦点样式不可省略；
-- `download` 只对同源或 `blob:`/`data:` URL 可靠生效。
+锚点跳转依赖唯一 `id`。HTML5 已经移除 `name` 锚点，因此新代码只需关心 `id` 唯一性与滚动位置修正。
+
+链接与按钮的选择是交互设计的基础问题：导航用链接，动作用按钮。这个判断影响键盘支持、中键行为、SEO 与辅助技术体验，值得在组件设计层面统一约束。
 
 ### 1. 超链接基础
 
@@ -427,52 +445,225 @@ html {
 <!-- 跳过导航链接 -->
 <a href="#main-content" class="skip-link">跳到主要内容</a>
 ```
+### 超链接基础
 
-## 10. 进阶知识点
+**a 锚点元素**
+`<a href="<URL>" [target="<目标>"] [rel="<关系>"] [download[="<文件名>"]] [type="<MIME>"]>[文本]</a>`
+```html
+<!-- 外部网站 -->
+<a href="https://example.com">访问示例网站</a>
 
-### 10.1 链接状态样式
+<!-- 邮件链接(带主题) -->
+<a href="mailto:contact@example.com?subject=Hello">发送邮件</a>
 
+<!-- 电话链接 -->
+<a href="tel:+861012345678">拨打电话</a>
+
+<!-- 短信链接 -->
+<a href="sms:+861012345678?body=你好">发送短信</a>
+
+<!-- 下载文件 -->
+<a href="document.pdf" download="自定义文件名.pdf">下载文件</a>
+```
+
+| href 协议 | 用途         | 示例                              |
+| --------- | ------------ | --------------------------------- |
+| `http(s)` | 网页         | `https://example.com`             |
+| `mailto`  | 邮件         | `mailto:user@example.com`         |
+| `tel`     | 电话         | `tel:+861012345678`               |
+| `sms`     | 短信         | `sms:+861012345678`               |
+| `#`       | 锚点         | `#section1`                       |
+| `javascript` | 脚本(不推荐) | `javascript:void(0)`           |
+
+---
+
+### target 属性
+
+**链接打开方式**
+
+| 值        | 行为                 |
+| --------- | -------------------- |
+| `_self`   | 当前窗口打开(默认)   |
+| `_blank`  | 新窗口/标签页打开    |
+| `_parent` | 父框架中打开         |
+| `_top`    | 顶层窗口中打开       |
+| `<名称>`  | 指定名称的窗口/框架  |
+
+```html
+<!-- 新窗口打开(安全写法) -->
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">外部链接</a>
+```
+
+> 安全提示:使用 `target="_blank"` 时务必添加 `rel="noopener noreferrer"`,防止新窗口通过 `window.opener` 操纵原窗口。
+
+---
+
+### rel 属性
+
+**链接关系**
+
+| rel 值        | 作用                              |
+| ------------- | --------------------------------- |
+| `noopener`    | 新窗口无法访问 window.opener      |
+| `noreferrer`  | 不发送 Referer 头                 |
+| `nofollow`    | 搜索引擎不传递权重                |
+| `ugc`         | 用户生成内容                      |
+| `sponsored`   | 付费链接                          |
+| `bookmark`    | 永久书签                          |
+| `next`        | 下一页                            |
+| `prev`        | 上一页                            |
+| `canonical`   | 规范化 URL                        |
+| `alternate`   | 替代版本(如 RSS、其他语言)        |
+| `license`     | 版权信息                          |
+| `help`        | 帮助文档                          |
+
+```html
+<!-- 综合示例 -->
+<a rel="noopener noreferrer">无 opener 不发送 Referer</a>
+<a rel="nofollow">不传递权重</a>
+<a rel="ugc">用户生成内容</a>
+<a rel="sponsored">广告链接</a>
+```
+
+---
+
+### 锚点与页面内导航
+
+**页面内跳转**
+`<a href="#<ID>">[文本]</a>` + `<[元素] id="<ID>">`
+```html
+<!-- 跳转到指定 ID -->
+<h2 id="section1">第一节</h2>
+<a href="#section1">跳转到第一节</a>
+
+<!-- 跳回顶部 -->
+<a href="#">回到顶部</a>
+
+<!-- 跨页面锚点 -->
+<a href="page.html#section1">跳到其他页面的第一节</a>
+```
+
+**平滑滚动**
 ```css
-a { color: #1677ff; }
-a:visited { color: #722ed1; }
-a:hover { text-decoration: underline; }
-a:focus-visible {
-  outline: 2px solid #1677ff;
-  outline-offset: 2px;
+html {
+  scroll-behavior: smooth;
+}
+
+/* 锚点偏移(避免被固定头部遮挡) */
+[id] {
+  scroll-margin-top: 80px;
 }
 ```
 
-**讲解：**
+**JavaScript 滚动**
+```javascript
+// 平滑滚动到元素
+document.getElementById('section1').scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
 
-- 四种状态：未访问（默认）、已访问（`visited`）、悬停（`hover`）、键盘聚焦（`focus-visible`）；
-- 出于隐私考虑，浏览器限制 `visited` 可设置的属性（只有颜色等少量属性生效）；
-- 不要移除默认 outline 而不提供替代焦点样式，键盘用户会失去位置感。
+// 滚动到顶部
+window.scrollTo({ top: 0, behavior: 'smooth' });
+```
 
-### 10.2 Ping 追踪
+---
 
+### 路径系统
+
+**绝对路径**
 ```html
-<a href="https://example.com" ping="/track?page=docs">文档</a>
+<!-- 完整 URL -->
+<a href="https://example.com/page.html">完整 URL</a>
+
+<!-- 根目录开始 -->
+<a href="/about/index.html">根目录开始</a>
 ```
 
-**讲解：**
+**相对路径**
+```html
+<!-- 同目录 -->
+<a href="page.html">同目录</a>
 
-- `ping` 属性让浏览器在点击链接时向指定地址发送追踪请求；
-- 用于统计外链点击，但依赖浏览器支持与用户设置；
-- 涉及隐私问题，生产环境通常由服务器日志或统计脚本实现。
+<!-- 子目录 -->
+<a href="sub/page.html">子目录</a>
 
-### 10.3 超链接演进时间线（了解即可）
+<!-- 父目录 -->
+<a href="../page.html">父目录</a>
 
-```mermaid
-timeline
-    title 超链接演进
-    1989 : Berners-Lee 提出 Web 链接概念
-    1991 : HTML Tags 出现 A HREF
-    1999 : HTML 4.01 加入 target/rel
-    2014 : HTML5 移除 name 锚点，加入 download
-    2021 : 浏览器默认 target=_blank 启用 noopener
+<!-- 上两级 -->
+<a href="../../page.html">上两级</a>
 ```
 
-## 11. 动手试试
+| 路径         | 含义               |
+| ------------ | ------------------ |
+| `/path`      | 根目录绝对路径     |
+| `./page`     | 当前目录(可省略)   |
+| `../page`    | 上级目录           |
+| `page.html`  | 相对当前页面       |
+| `//host/path`| 协议相对路径       |
+
+---
+
+### 链接可访问性
+
+**描述性链接文本**
+```html
+<!-- 正确:描述性文本 -->
+<a href="report.pdf">查看2026年度报告</a>
+
+<!-- 错误:无意义文本 -->
+<a href="report.pdf">点击这里</a>
+```
+
+**跳过导航链接**
+```html
+<!-- 键盘用户跳过重复导航 -->
+<body>
+  <a href="#main-content" class="skip-link">跳到主要内容</a>
+  <header>...</header>
+  <main id="main-content">...</main>
+</body>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+  }
+  .skip-link:focus {
+    left: 0;
+    top: 0;
+    background: #fff;
+    padding: 1rem;
+  }
+</style>
+```
+
+---
+
+### 链接状态 CSS
+
+**链接伪类**
+```css
+a:link    { color: blue; }       /* 未访问 */
+a:visited { color: purple; }     /* 已访问 */
+a:hover   { color: red; }        /* 悬停 */
+a:focus   { outline: 2px solid; } /* 聚焦 */
+a:active  { color: orange; }     /* 点击时 */
+```
+
+---
+
+### Ping 追踪
+
+**ping 属性**
+`<a href="<URL>" ping="<追踪URL>">[文本]</a>`
+```html
+<!-- 浏览器会向 ping 指定的 URL 发送 POST 请求 -->
+<a href="https://example.com" ping="https://track.example.com/click">链接</a>
+```
+
+## 动手试试
 
 ### 入门版（必做）
 
@@ -486,7 +677,7 @@ timeline
 2. 做一个“下载”链接并验证 `download` 文件名是否生效；
 3. 用 `aria-label` 区分三个指向不同页面的“了解更多”链接。
 
-## 12. 注意事项与改进建议
+## 注意事项与改进建议
 
 | 问题点 | 说明 | 改进方案 |
 | --- | --- | --- |
@@ -497,7 +688,7 @@ timeline
 | 固定导航遮挡标题 | 锚点跳转后标题被遮住 | 用 `scroll-margin-top` 修正 |
 | 站内用相对路径 | 目录结构变化后链接失效 | 使用根相对路径 `/docs/...` |
 
-## 13. 扩展学习
+## 扩展学习
 
 - 路径与 URL：`javascript/029-JavaScriptModular` 中模块路径解析的类比；
 - 路由：SPA 框架（Vue Router/React Router）与 History API 的关系；

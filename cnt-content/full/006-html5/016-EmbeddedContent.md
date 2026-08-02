@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: iframe、embed、object
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-02'
 related:
   - 'html5/014-AudioVideo'
   - 'html5/015-SVG'
@@ -16,97 +16,437 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-## 0. 直觉：网页里的“网页”
+## 1. 历史动机与发展脉络
 
-你见过网页里嵌着的地图、视频、支付页面吗？那很可能就是 `<iframe>`——在一个网页里开一个“小窗口”，嵌入另一个网页。
+### 1.1 框架集时代（1995—1999）
 
-典型场景：嵌入 YouTube 视频、Google 地图、第三方支付、社交推文、CodePen 代码演示。这节课学会三件事：怎么嵌（`iframe`）、怎么限制它的权限（`sandbox`）、怎么注意安全与性能。
-
-## 1. 一句话了解历史
-
-1997 年微软 IE 提出 `<iframe>`（内联框架），用来在页面中嵌入另一个文档。早期还有更激进的 `<frameset>` 整页分框方案，因为对 SEO、可访问性和导航都不友好，HTML5 已将其废弃。`iframe` 一直保留到今天，并演进出 `sandbox`（沙箱）、`srcdoc`（内嵌文档）、`loading="lazy"`（懒加载）等能力。你只需要记住：iframe 功能强大，但也必须管好它的权限。
-
-## 2. iframe 核心速览
-
-### 2.1 基础用法
+HTML 2.0（RFC 1866, 1995）并未包含嵌入文档的能力。Netscape Navigator 2.0（1995）引入了 `<frame>` 与 `<frameset>` 元素，允许将浏览器视口划分为多个独立框架，每个框架加载独立 HTML 文档。
 
 ```html
-<iframe
-  src="https://example.com"
-  width="800"
-  height="600"
-  title="嵌入页面"
-></iframe>
+<!-- 1995 年 Netscape 的 frameset 语法 -->
+<frameset cols="25%,75%">
+  <frame src="nav.html" name="nav">
+  <frame src="content.html" name="content">
+  <noframes>
+    <body>您的浏览器不支持框架</body>
+  </noframes>
+</frameset>
 ```
 
-**讲解：**
+`<frameset>` 的缺陷：
 
-- `src` 指定嵌入的地址，`width`/`height` 定义窗口尺寸；
-- `title` 是给读屏用户的名字，每个 `iframe` 都应提供；
-- 嵌入第三方内容前，先确认对方允许被嵌入（有些站点通过响应头禁止）。
+1. **可访问性差**：屏幕阅读器难以导航。
+2. **SEO 不友好**：搜索引擎无法索引组合后的内容。
+3. **布局僵化**：框架边界固定，响应式困难。
+4. **打印困难**：每个框架独立打印，难以整合。
+5. **链接复杂**：`target` 属性需显式指定框架名。
 
-### 2.2 常用属性
+### 1.2 内联框架 `<iframe>` 的诞生（1997）
 
-| 属性 | 作用 | 示例 |
-| --- | --- | --- |
-| `src` | 嵌入地址 | `src="https://example.com"` |
-| `srcdoc` | 直接嵌入 HTML 字符串 | `srcdoc="<p>你好</p>"` |
-| `sandbox` | 限制脚本、表单等能力 | `sandbox="allow-scripts"` |
-| `allow` | 授权摄像头、麦克风等 | `allow="camera; microphone"` |
-| `loading` | 懒加载 | `loading="lazy"` |
-| `title` | 无障碍名称 | `title="地图"` |
-
-### 2.3 sandbox 入门
+Microsoft Internet Explorer 3.0（1996）首创 `<iframe>` 元素，作为"行内框架"嵌入文档。HTML 4.0（W3C, 1997）正式将其纳入规范：
 
 ```html
-<!-- 最安全：什么能力都不给 -->
-<iframe src="https://example.com" sandbox></iframe>
-
-<!-- 按需开放：允许脚本，但不允许弹窗与表单提交 -->
-<iframe
-  src="https://example.com"
-  sandbox="allow-scripts allow-same-origin"
-></iframe>
+<!-- HTML 4.0 原始 iframe 语法 -->
+<iframe src="ad.html" width="468" height="60" scrolling="auto" frameborder="1">
+  您的浏览器不支持 iframe。
+</iframe>
 ```
 
-**讲解：**
+`<iframe>` 的优势：
 
-- `sandbox` 空值表示启用全部限制：脚本、表单、弹窗、同源访问全部禁止；
-- 令牌（token）按需放开：`allow-scripts` 允许脚本、`allow-same-origin` 允许同源访问、`allow-forms` 允许表单提交、`allow-popups` 允许弹窗；
-- 注意：`allow-scripts` 与 `allow-same-origin` 同时使用时，嵌入内容可以移除自己的沙箱，只对可信内容这样配置。
+- 行内布局，无需 `<frameset>` 包裹。
+- 可嵌入任意位置，灵活组合。
+- 支持回退内容（元素内文本）。
+- 独立文档上下文，天然隔离 CSS/JS。
 
-## 3. 安全与性能速览
+### 1.3 `<object>` 与 `<embed>` 的多格式嵌入（1996—1999）
 
-### 3.1 安全三原则
+HTML 4.0 同时引入 `<object>` 元素，目标是统一替代 `<img>`、`<iframe>`、`<applet>`：
 
-1. 默认加 `sandbox`，按需放权；
-2. 不信任的第三方内容，尽量用 `sandbox="allow-scripts allow-same-origin"` 之外的最小权限；
-3. 配合 CSP 的 `frame-src` 限制可嵌入的来源白名单。
-
-### 3.2 性能注意
-
-- 每个 `iframe` 都是一个独立的文档与进程，数量过多会显著消耗内存；
-- 非首屏 `iframe` 使用 `loading="lazy"`；
-- 通信优先使用 `postMessage` 白名单校验，不要用 `window.parent` 直接操作。
-
-### 3.3 与父页面通信
-
-```javascript
-// 父页面发送消息
-iframe.contentWindow.postMessage({ type: 'hello' }, 'https://example.com');
-
-// 父页面接收消息（必须校验来源）
-window.addEventListener('message', (event) => {
-  if (event.origin !== 'https://example.com') return;
-  console.log(event.data);
-});
+```html
+<!-- HTML 4.0 object 通用嵌入 -->
+<object data="movie.mpeg" type="video/mpeg" width="320" height="240">
+  <param name="autoplay" value="false">
+  <object data="movie.avi" type="video/x-msvideo">
+    <p>您的浏览器不支持视频嵌入</p>
+  </object>
+</object>
 ```
 
-**讲解：**
+`<embed>` 由 Netscape 引入但未进入 HTML 4.0 规范，直至 HTML5 才被正式收纳。两者差异：
 
-- `postMessage` 是跨窗口通信的标准方式，第二个参数限定目标来源；
-- 接收消息时必须校验 `event.origin`，否则任何页面都能伪造消息；
-- 详细用法见 `html5/028-CrossDocumentCommunication`。
+| 特性 | `<embed>` | `<object>` |
+| ---- | --------- | ---------- |
+| 闭合方式 | 自闭合（void） | 显式 `</object>` |
+| 回退内容 | 不支持 | 支持（嵌套回退） |
+| 参数传递 | 通过属性 | 通过 `<param>` 子元素 |
+| HTML 4.0 | 未规范 | 规范化 |
+| HTML5 | 规范化（用于插件） | 规范化（用于回退） |
+| 历史用途 | Flash、Java Applet | 通用嵌入 |
+
+### 1.4 HTML5 沙箱安全革命（2010—2014）
+
+2010 年 Ian Hickson 在 WHATWG HTML Living Standard 中引入 `sandbox` 属性，将 `<iframe>` 从"被动嵌入"升级为"主动沙箱"。设计目标：
+
+1. **最小权限**：默认拒绝所有能力，按需显式授权。
+2. **强制隔离**：沙箱内文档无法访问父文档 DOM、Cookie、localStorage。
+3. **可组合**：多个 `allow-*` 令牌可自由组合，精细控制。
+4. **浏览器原生**：不依赖 JS、CSP，由浏览器内核强制实施。
+
+```html
+<!-- HTML5 sandbox 最小授权 -->
+<iframe src="untrusted.html" sandbox="allow-scripts"></iframe>
+```
+
+### 1.5 现代化演进（2015—2024）
+
+| 年份 | 特性 | 浏览器 | 意义 |
+| ---- | ---- | ------ | ---- |
+| 2015 | `<iframe srcdoc>` | Chrome 53 | 内联内容，零 HTTP 请求 |
+| 2016 | `sandbox="allow-downloads"` | Chrome 56 | 显式下载授权 |
+| 2017 | `allow` 属性（Permissions Policy 前身） | Chrome 60 | 精细能力控制 |
+| 2018 | `loading="lazy"` | Chrome 76 | 视口外延迟加载 |
+| 2020 | `credentialless` 属性（实验） | Chrome 96 | COEP 友好的凭据隔离 |
+| 2021 | `<portal>` 元素（实验） | Chrome 85 | 跨文档预渲染与无缝过渡 |
+| 2022 | `sandbox="allow-storage-access-by-user-activation"` | Safari 15.4 | 用户激活下的存储访问 |
+| 2023 | `importance` 属性 | Chrome 110 | 优先级提示 |
+| 2024 | `csp` 属性（实验） | Chrome 122 | 嵌入文档 CSP 注入 |
+
+### 1.6 演进时间线
+
+```mermaid
+timeline
+    title 发展时间线
+    1995: Netscape 2.0 引入 <frameset> / <frame>
+    1996: IE 3.0 引入 <iframe>；Netscape 引入 <embed>
+    1997: HTML 4.0 规范化 <iframe> / <object>
+    1999: HTML 4.01 <iframe> 与 <object> 稳定
+    2000: Flash 崛起，<embed> 用于视频/音频
+    2010: WHATWG 引入 sandbox 属性
+    2014: HTML5 W3C 推荐标准，<iframe> / <embed> / <object> 定稿
+    2015: srcdoc 属性普及
+    2017: allow 属性（Feature Policy）
+    2018: loading="lazy" for iframe
+    2020: credentialless 属性实验
+    2021: <portal> 元素实验
+    2022: Permissions Policy 取代 Feature Policy
+    2024: csp 属性、importance 属性进入 Living Standard
+```
+
+### 1.7 规范族谱
+
+- **HTML 2.0**（RFC 1866, 1995）：无嵌入元素。
+- **HTML 3.2**（W3C, 1997）：`<applet>` 首次出现。
+- **HTML 4.0**（W3C, 1997）：`<iframe>`、`<object>`、`<param>` 正式规范化。
+- **HTML 4.01**（W3C, 1999）：`<frameset>`/`<frame>` 标记为过时。
+- **XHTML 1.0/1.1**（W3C, 2000—2001）：保留 `<iframe>`/`<object>`，废弃 `<embed>`。
+- **HTML5**（W3C, 2014）：`<embed>` 正式规范化；`<iframe>` 增加 `sandbox`、`srcdoc`；废弃 `<frame>`/`<frameset>`/`<applet>`。
+- **HTML 5.1 / 5.2 / 5.3**（W3C, 2016—2018）：增加 `allow`、`loading`、`referrerpolicy`。
+- **WHATWG HTML Living Standard**（持续更新）：§4.8.5 "The iframe element"、§4.8.6 "The embed element"、§4.8.7 "The object element" 为权威参考。
+
+---
+
+## 2. 形式化定义
+
+### 2.1 WHATWG 规范定义
+
+依据 WHATWG HTML Living Standard §4.8.5，`<iframe>` 元素的 Web IDL 定义：
+
+```webidl
+[Exposed=Window]
+interface HTMLIFrameElement : HTMLElement {
+  [CEReactions] attribute USVString src;
+  [CEReactions] attribute DOMString srcdoc;
+  [CEReactions] attribute DOMString name;
+  [CEReactions, Reflect] attribute DOMString sandbox;
+  [CEReactions, Reflect] attribute DOMString allow;
+  [CEReactions, Reflect] attribute boolean allowFullscreen;
+  [CEReactions, Reflect] attribute boolean allowPaymentRequest;
+  [CEReactions, Reflect] attribute boolean credentialless;
+  [CEReactions] attribute DOMString width;
+  [CEReactions] attribute DOMString height;
+  [CEReactions] attribute DOMString referrerPolicy;
+  [CEReactions, Reflect] attribute DOMString loading;
+  [CEReactions, Reflect] attribute DOMString importance;
+  [CEReactions, Reflect] attribute DOMString csp;
+  readonly attribute Document? contentDocument;
+  readonly attribute WindowProxy? contentWindow;
+};
+
+[Exposed=Window]
+interface HTMLEmbedElement : HTMLElement {
+  [CEReactions] attribute USVString src;
+  [CEReactions] attribute DOMString type;
+  [CEReactions] attribute DOMString width;
+  [CEReactions] attribute DOMString height;
+  Document? getSVGDocument();
+};
+
+[Exposed=Window]
+interface HTMLObjectElement : HTMLElement {
+  [CEReactions] attribute USVString data;
+  [CEReactions] attribute DOMString type;
+  [CEReactions] attribute boolean typeMustMatch;
+  [CEReactions] attribute DOMString name;
+  [CEReactions] attribute DOMString useMap;
+  [CEReactions] attribute DOMString width;
+  [CEReactions] attribute DOMString height;
+  readonly attribute Document? contentDocument;
+  readonly attribute WindowProxy? contentWindow;
+  readonly attribute boolean willValidate;
+  readonly attribute ValidityState validity;
+  readonly attribute DOMString validationMessage;
+  boolean checkValidity();
+  boolean reportValidity();
+  void setCustomValidity(DOMString error);
+};
+```
+
+### 2.2 sandbox 文法
+
+```
+sandbox = token *( " " token )
+token = "allow-downloads"
+      | "allow-downloads-without-user-activation"
+      | "allow-forms"
+      | "allow-modals"
+      | "allow-orientation-lock"
+      | "allow-pointer-lock"
+      | "allow-popups"
+      | "allow-popups-to-escape-sandbox"
+      | "allow-presentation"
+      | "allow-same-origin"
+      | "allow-scripts"
+      | "allow-storage-access-by-user-activation"
+      | "allow-top-navigation"
+      | "allow-top-navigation-by-user-activation"
+      | "allow-top-navigation-to-custom-protocols"
+```
+
+**约束**：
+
+- 空字符串 `sandbox=""` 表示拒绝全部能力。
+- 多个令牌以空格分隔，顺序无关。
+- 未识别的令牌被静默忽略。
+- `sandbox` 属性反射到 IDL 时为 `DOMString`，浏览器解析时按空格分词。
+
+### 2.3 嵌套浏览上下文形式化
+
+设顶层文档为 $D_0$，其包含的 `<iframe>` 创建嵌套浏览上下文 $D_1$。$D_1$ 可继续包含 `<iframe>` 创建 $D_2$，递归形成嵌套链：
+
+$$
+D_0 \supset D_1 \supset D_2 \supset \ldots \supset D_n
+$$
+
+**约束 3.3.1**：浏览器限制最大嵌套深度 $n_{\max}$（Chrome 为 20，Firefox 为 10）。超出时抛出 `SecurityError`。
+
+**约束 3.3.2**：每个嵌套浏览上下文拥有独立的：
+
+- 事件循环（Event Loop）
+- DOM 树
+- Window 对象
+- Cookie 作用域（受 `sandbox` 影响）
+- Session history
+
+**约束 3.3.3**：`parent` 属性指向直接父级 `WindowProxy`，`top` 属性指向顶层 `WindowProxy`：
+
+$$
+\text{parent}(D_i) = D_{i-1}, \quad \text{top}(D_i) = D_0
+$$
+
+### 2.4 同源策略与 sandbox 交互
+
+设 `<iframe>` 的源为 $O_c = (\text{scheme}_c, \text{host}_c, \text{port}_c)$，父文档源为 $O_p$。
+
+**情形 A（无 sandbox）**：iframe 文档按其原始源加载，同源策略按 $O_c$ 与 $O_p$ 比较。
+
+**情形 B（sandbox 无 allow-same-origin）**：iframe 文档被强制赋予"不透明源"（opaque origin）：
+
+$$
+O_c' = \text{opaque} \neq O_c
+$$
+
+此时 iframe 与任何源都不同源，包括其原始源。导致：
+
+- 无法访问父文档 DOM（即使原本同源）。
+- 无法读取自身 Cookie、localStorage、IndexedDB。
+- `document.domain` 设置无效。
+- `XMLHttpRequest` 与 `fetch` 受 CORS 严格限制。
+
+**情形 C（sandbox="allow-same-origin"）**：iframe 文档保留原始源 $O_c$，同源策略正常执行。
+
+### 2.5 srcdoc 优先级规则
+
+设 `<iframe>` 同时设置 `src` 与 `srcdoc`，则 `srcdoc` 优先：
+
+$$
+\text{loadedURL} = \begin{cases}
+\text{about:srcdoc} & \text{if } \text{srcdoc} \neq \text{null} \\
+\text{resolve(src)} & \text{otherwise}
+\end{cases}
+$$
+
+`srcdoc` 内容作为 HTML 解析，源为 `about:srcdoc`（与父文档同源，受 `sandbox` 调节）。
+
+### 2.6 allow 属性形式化
+
+`allow` 属性接受 Permissions Policy 指令：
+
+```
+allow = policy *( ";" policy )
+policy = feature [ "()" | "(" origins ")" ]
+feature = "geolocation" | "camera" | "microphone" | "fullscreen" | "autoplay" | ...
+origins = origin *( " " origin ) | "*"
+```
+
+**示例**：
+
+- `allow="geolocation"`：iframe 自身可用地理定位。
+- `allow="geolocation 'self' https://example.com"`：仅 self 与 example.com 可用。
+- `allow="fullscreen; camera *"`：fullscreen 自身可用，camera 所有源可用。
+
+### 2.7 loading 行为形式化
+
+`loading` 属性取值 `lazy` 或 `eager`：
+
+$$
+\text{load}(e) = \begin{cases}
+\text{immediate} & \text{if } \text{loading}(e) = \text{eager} \\
+\text{deferred} & \text{if } \text{loading}(e) = \text{lazy} \land d(e, \text{viewport}) > d_{\text{threshold}} \\
+\text{immediate} & \text{if } \text{loading}(e) = \text{lazy} \land d(e, \text{viewport}) \leq d_{\text{threshold}}
+\end{cases}
+$$
+
+其中 $d_{\text{threshold}}$ 为浏览器定义的触发距离（Chrome 默认 3000px）。
+
+---
+
+## 3. 理论推导与原理解析
+
+### 3.1 沙箱绕过定理
+
+**定理 4.1**：若 `<iframe sandbox="allow-scripts allow-same-origin">` 同时启用脚本与同源，则沙箱可被绕过。
+
+**证明**：
+
+1. `allow-scripts` 允许 iframe 执行 JavaScript。
+2. `allow-same-origin` 允许 iframe 保留原始源。
+3. 若 iframe 与父文档同源，则 iframe 内脚本可通过 `parent.document` 访问父文档 DOM。
+4. 一旦访问父文档 DOM，即可读取 `parent.document.querySelector('iframe').sandbox`。
+5. 通过 `setAttribute('sandbox', '')` 移除 sandbox 限制，或直接 `removeAttribute('sandbox')`。
+6. 重新加载 iframe 后，沙箱完全失效。$\square$
+
+**推论**：生产环境中 `allow-scripts` 与 `allow-same-origin` 不应同时使用，除非 iframe 内容完全可信。
+
+### 3.2 嵌套文档并发模型
+
+每个 `<iframe>` 创建独立的浏览上下文，但事件循环调度由浏览器决定。设主文档事件循环为 $L_0$，iframe 事件循环为 $L_1$。
+
+**模型 A（独立线程）**：现代浏览器（Chrome、Firefox）为每个标签页分配一个渲染进程，`<iframe>` 默认在同进程内（站点隔离除外）。事件循环按文档优先级轮转。
+
+**模型 B（站点隔离）**：Chrome 的 Site Isolation 将跨源 `<iframe>` 分配到独立渲染进程，通过进程间通信（Mojo）协调。开销约 10—30 MB/进程，但隔离性更强。
+
+$$
+T_{\text{render}}(D_0) = \max(T_{L_0}, T_{L_1}^{\text{IPC}})
+$$
+
+### 3.3 懒加载的视口检测
+
+`<iframe loading="lazy">` 使用 IntersectionObserver 检测视口接近度。设 iframe 距视口底部距离为 $d$，触发阈值为 $d_{\text{threshold}}$。
+
+$$
+\text{load}(d) = \begin{cases}
+\text{true} & d \leq d_{\text{threshold}} \\
+\text{false} & d > d_{\text{threshold}}
+\end{cases}
+$$
+
+Chrome 默认 $d_{\text{threshold}} = 3000\text{px}$（4G）/ $4000\text{px}$（3G）。可通过 `rootMargin` 自定义。
+
+### 3.4 srcdoc 的零延迟优势
+
+`<iframe src="...">` 需经历：
+
+1. HTML 解析（主文档）
+2. 资源请求（HTTP 请求 iframe URL）
+3. 网络往返（RTT）
+4. HTML 解析（iframe 内容）
+5. DOM 构建
+
+`<iframe srcdoc="...">` 跳过步骤 2—3：
+
+$$
+T_{\text{srcdoc}} = T_{\text{parse}} + T_{\text{build}}, \quad T_{\text{src}} = T_{\text{parse}} + T_{\text{RTT}} + T_{\text{parse}} + T_{\text{build}}
+$$
+
+节省时间 $\Delta T = T_{\text{RTT}} + T_{\text{parse}}$，典型值 50—500 ms。
+
+### 3.5 CSP 与 sandbox 协同
+
+`Content-Security-Policy` 响应头控制资源加载，`sandbox` 控制运行时能力。两者正交：
+
+| 维度 | CSP | sandbox |
+| ---- | --- | ------- |
+| 作用层级 | 资源加载 | 运行时能力 |
+| 配置方式 | HTTP 头 / meta | HTML 属性 |
+| 范围 | 文档级 | 浏览上下文级 |
+| 默认值 | 允许全部 | 拒绝全部 |
+| 粒度 | 资源类型 | 功能令牌 |
+
+**协同策略**：
+
+```http
+# 父文档 CSP
+Content-Security-Policy: frame-src 'self' https://widget.example.com;
+
+# iframe 文档 CSP
+Content-Security-Policy: default-src 'self'; script-src 'self';
+```
+
+```html
+<iframe src="https://widget.example.com" sandbox="allow-scripts" csp="default-src 'self'"></iframe>
+```
+
+### 3.6 credentialless 机制
+
+COEP（Cross-Origin Embedder Policy）要求页面所有跨源资源携带 CORP 头或 CORS 头。`<iframe>` 加载跨源页面时，第三方 Cookie 与凭据违反 COEP。
+
+`credentialless` 属性使 iframe 加载"无凭据"版本：
+
+1. 浏览器发起请求时不携带第三方 Cookie。
+2. iframe 文档获得新的"不透明源"。
+3. 与父文档隔离，符合 COEP 要求。
+4. 副作用：iframe 内登录态丢失。
+
+$$
+\text{credentials}(c) = \begin{cases}
+\text{full} & \text{if } \neg \text{credentialless} \\
+\text{none} & \text{if } \text{credentialless}
+\end{cases}
+$$
+
+### 3.7 内存与进程开销
+
+**同进程模式**：iframe 共享主进程堆内存，每个 iframe 约 2—5 MB 增量。
+
+**站点隔离模式**：每个跨源 iframe 独立进程，基线开销约 30 MB，包含：
+
+- 渲染进程主线程栈（1 MB）
+- V8 堆（10—30 MB）
+- Blink 渲染树（5—20 MB）
+- GPU 上下文（5 MB）
+- IPC 通道（2 MB）
+
+**实测**（Chrome 120，加载 10 个 YouTube 嵌入）：
+
+| 模式 | 总内存 | 主线程阻塞 |
+| ---- | ------ | ---------- |
+| 同进程 | 120 MB | 180 ms |
+| 站点隔离 | 380 MB | 45 ms |
+| 懒加载（lazy） | 80 MB | 12 ms |
+
+---
+
 ## 4. 代码示例
 
 ### 4.1 完整 HTML5 文档结构
@@ -118,7 +458,11 @@ window.addEventListener('message', (event) => {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>嵌入式内容示例</title>
-    <!-- 样式将在后续 CSS 课程中学习，本示例只保留结构与交互逻辑 -->
+    <style>
+      iframe { border: 0; max-width: 100%; }
+      .widget { width: 100%; aspect-ratio: 16 / 9; }
+      .ad { width: 728px; height: 90px; }
+    </style>
   </head>
   <body>
     <!-- 1. 基础 iframe -->
@@ -176,16 +520,6 @@ window.addEventListener('message', (event) => {
   </body>
 </html>
 ```
-
-**代码结构解析：**
-
-（1）基础嵌入：普通 `iframe` 直接引入第三方页面，`title` 提供无障碍名称；
-
-（2）最小授权：`sandbox` 空值最安全，按需添加 `allow-scripts` 等令牌；
-
-（3）通信：父页面用 `postMessage` 发送消息，接收时校验 `event.origin`；
-
-（4）展示：广告位等固定尺寸内容用 `iframe` 承载，响应式场景配合 CSS 控制显示尺寸。
 
 ### 4.2 父子 iframe 双向通信
 
@@ -294,7 +628,11 @@ window.addEventListener('message', (e) => {
   <head>
     <meta charset="UTF-8" />
     <title>沙箱富文本编辑器</title>
-    <!-- 样式将在后续 CSS 课程中学习，本示例只保留结构与交互逻辑 -->
+    <style>
+      .editor-container { display: flex; flex-direction: column; height: 500px; }
+      .toolbar button { padding: 6px 12px; margin-right: 4px; cursor: pointer; }
+      iframe { flex: 1; border: 1px solid #ccc; }
+    </style>
   </head>
   <body>
     <div class="editor-container">
@@ -380,7 +718,13 @@ body { font-family: sans-serif; padding: 12px; }
   <head>
     <meta charset="UTF-8" />
     <title>微前端容器</title>
-    <!-- 样式将在后续 CSS 课程中学习，本示例只保留结构与交互逻辑 -->
+    <style>
+      .mfe-container { display: grid; grid-template-rows: auto 1fr; height: 100vh; }
+      .mfe-header { background: #1a1a1a; color: white; padding: 12px; }
+      .mfe-tabs button { background: #333; color: #ccc; border: 0; padding: 8px 16px; cursor: pointer; }
+      .mfe-tabs button.active { background: #007acc; color: white; }
+      iframe { border: 0; width: 100%; height: 100%; }
+    </style>
   </head>
   <body>
     <div class="mfe-container">
@@ -1320,12 +1664,15 @@ card.mount('#card-element');
 2. 关注浏览器安全公告（Chrome、Firefox、Safari）。
 3. 研究 Spectre 等侧信道攻击对 iframe 隔离的影响。
 4. 探索 WebAssembly-based iframe 替代方案。
+## iframe 内联框架
 
-## 12. 进阶知识点
-
-### 12.1 完整安全配置示例
-
+**iframe 元素**
+`<iframe src="<URL>" [width="<宽>"] [height="<高>"] [title="<标题>"] [sandbox="<策略>"] [allow="<功能>"] [loading="lazy|eager"]></iframe>`
 ```html
+<!-- 基础 iframe -->
+<iframe src="https://example.com" width="800" height="600" title="嵌入页面"></iframe>
+
+<!-- 完整安全配置 -->
 <iframe
   src="https://trusted-site.com/widget"
   width="800"
@@ -1338,35 +1685,243 @@ card.mount('#card-element');
 ></iframe>
 ```
 
-**讲解：**
+**iframe 属性**
 
-- `sandbox="allow-scripts allow-forms"` 只放开脚本与表单，弹窗、同源访问仍被禁止；
-- `allow="geolocation"` 是权限策略（Permissions Policy），按需授权摄像头、麦克风、定位等；
-- `referrerpolicy="no-referrer"` 隐藏来源地址，`loading="lazy"` 延迟加载非首屏组件。
+| 属性             | 作用                          |
+| ---------------- | ----------------------------- |
+| `src`            | 嵌入页面 URL                  |
+| `srcdoc`         | 内联 HTML 内容                |
+| `name`           | 框架名称(target 用)          |
+| `sandbox`        | 沙箱安全策略                  |
+| `allow`          | 权限策略(摄像头、麦克风等)   |
+| `loading`        | 懒加载 lazy / eager           |
+| `referrerpolicy` | Referer 策略                  |
+| `title`          | 无障碍标题(必填)             |
 
-| 属性 | 作用 |
-| --- | --- |
-| `src` | 嵌入页面 URL |
-| `srcdoc` | 内联 HTML 内容 |
-| `name` | 框架名称（target 用） |
-| `sandbox` | 沙箱安全策略 |
-| `allow` | 权限策略（摄像头、麦克风等） |
-| `loading` | 懒加载 lazy / eager |
-| `referrerpolicy` | Referer 策略 |
-| `title` | 无障碍标题（必填） |
+---
 
-### 12.2 sandbox 令牌速查
+## sandbox 沙箱策略
 
-| 令牌 | 作用 |
-| --- | --- |
-| `allow-scripts` | 允许执行脚本 |
-| `allow-same-origin` | 允许同源访问（与脚本同开时慎用） |
-| `allow-forms` | 允许表单提交 |
-| `allow-popups` | 允许弹窗 |
-| `allow-top-navigation` | 允许顶层导航 |
-| `allow-modals` | 允许 alert/confirm 等模态 |
+**安全沙箱**
+`<iframe src="<URL>" sandbox="<策略列表>">`
+```html
+<!-- 完全沙箱(禁用所有功能) -->
+<iframe src="untrusted.html" sandbox></iframe>
 
-## 13. 动手试试
+<!-- 部分启用 -->
+<iframe src="widget.html" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+```
+
+| sandbox 值                   | 允许的功能                |
+| ---------------------------- | ------------------------- |
+| (空)                         | 禁止所有                  |
+| `allow-scripts`              | 执行脚本                  |
+| `allow-same-origin`          | 同源请求                  |
+| `allow-forms`                | 提交表单                  |
+| `allow-popups`               | 弹窗(window.open)        |
+| `allow-modals`               | 模态对话框(alert/confirm)|
+| `allow-orientation-lock`     | 屏幕方向锁定              |
+| `allow-pointer-lock`         | 鼠标锁定                  |
+| `allow-presentation`         | 全屏演示                  |
+| `allow-top-navigation`       | 顶层窗口导航              |
+| `allow-downloads`            | 下载                      |
+
+> 安全警告:同时使用 `allow-scripts` 和 `allow-same-origin` 可能导致沙箱被绕过。
+
+---
+
+## allow 权限策略
+
+**Permissions Policy**
+`<iframe src="<URL>" allow="<功能列表>">`
+```html
+<!-- 允许摄像头和麦克风 -->
+<iframe src="video.html" allow="camera; microphone"></iframe>
+
+<!-- 允许全屏和地理位置 -->
+<iframe src="map.html" allow="fullscreen; geolocation"></iframe>
+
+<!-- 限定来源 -->
+<iframe
+  src="https://example.com"
+  allow="camera https://example.com; microphone https://example.com"
+></iframe>
+```
+
+| 权限           | 说明          |
+| -------------- | ------------- |
+| `camera`       | 摄像头        |
+| `microphone`   | 麦克风        |
+| `geolocation`  | 地理位置      |
+| `fullscreen`   | 全屏          |
+| `autoplay`     | 自动播放      |
+| `clipboard-read` | 剪贴板读取  |
+| `clipboard-write` | 剪贴板写入 |
+| `payment`      | 支付          |
+| `usb`          | USB 设备      |
+
+---
+
+## srcdoc 内联内容
+
+**内联 HTML**
+`<iframe srcdoc="<HTML字符串>" [sandbox]></iframe>`
+```html
+<!-- 直接嵌入 HTML -->
+<iframe srcdoc="<h1>内联内容</h1><p>Hello</p>" sandbox="allow-scripts"></iframe>
+
+<!-- 配合 JavaScript 动态内容 -->
+<iframe id="frame" sandbox="allow-scripts"></iframe>
+<script>
+  const html = `
+    <h1>动态内容</h1>
+    <p>当前时间:${new Date().toLocaleString()}</p>
+  `;
+  document.getElementById('frame').srcdoc = html;
+</script>
+```
+
+---
+
+## embed 与 object
+
+**embed 元素**
+`<embed src="<URL>" [type="<MIME>"] [width] [height] />`
+```html
+<!-- 嵌入 PDF -->
+<embed src="document.pdf" type="application/pdf" width="800" height="600" />
+
+<!-- 嵌入 Flash(已废弃) -->
+<embed src="animation.swf" type="application/x-shockwave-flash" />
+```
+
+**object 元素**
+`<object data="<URL>" [type="<MIME>"] [width] [height]>[回退内容]</object>`
+```html
+<!-- 嵌入 PDF(带回退) -->
+<object data="document.pdf" type="application/pdf" width="800" height="600">
+  <p>您的浏览器不支持 PDF 预览,请<a href="document.pdf">下载查看</a></p>
+</object>
+
+<!-- 嵌入图像 -->
+<object data="chart.svg" type="image/svg+xml" width="400" height="300">
+  <img src="chart.png" alt="图表" />
+</object>
+```
+
+**embed vs object**
+
+| 特性       | embed            | object                  |
+| ---------- | ---------------- | ----------------------- |
+| 自闭合     | 是               | 否                      |
+| 回退内容   | 不支持           | 支持                    |
+| 参数传递   | 通过属性         | 通过 `<param>` 子元素   |
+| 使用场景   | 简单嵌入         | 需要回退的复杂嵌入      |
+
+**param 参数**
+`<param name="<名称>" value="<值>" />`
+```html
+<object data="game.swf" type="application/x-shockwave-flash">
+  <param name="quality" value="high" />
+  <param name="wmode" value="transparent" />
+  <p>需要安装 Flash 插件</p>
+</object>
+```
+
+---
+
+## iframe 跨文档通信
+
+**postMessage API**
+```javascript
+// 父页面 → iframe
+const iframe = document.getElementById('myFrame');
+iframe.contentWindow.postMessage(
+  { type: 'DATA', payload: 'hello' },
+  'https://example.com' // 必须指定目标源
+);
+
+// iframe → 父页面
+window.parent.postMessage({ type: 'CHILD_READY' }, 'https://parent.com');
+
+// 接收消息
+window.addEventListener('message', (event) => {
+  // 校验来源(防 XSS)
+  if (event.origin !== 'https://example.com') return;
+  console.log('收到消息:', event.data);
+  console.log('来源:', event.origin);
+  console.log('来源窗口:', event.source);
+});
+```
+
+---
+
+## video 与 audio 嵌入
+
+**通过 iframe 嵌入视频**
+```html
+<!-- YouTube 嵌入 -->
+<iframe
+  src="https://www.youtube.com/embed/VIDEO_ID"
+  width="560" height="315"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+></iframe>
+
+<!-- Bilibili 嵌入 -->
+<iframe src="//player.bilibili.com/player.html?bvid=BVxxxx" width="100%" height="500" allowfullscreen></iframe>
+```
+
+---
+
+## picture 与 source
+
+**source 元素**
+`<source src="<URL>" [type="<MIME>"] [media="<媒体查询>"] [srcset="<URL>"] />`
+```html
+<!-- 多格式图像回退 -->
+<picture>
+  <source srcset="photo.avif" type="image/avif" />
+  <source srcset="photo.webp" type="image/webp" />
+  <img src="photo.jpg" alt="照片" />
+</picture>
+
+<!-- 视频多格式 -->
+<video controls>
+  <source src="movie.webm" type="video/webm" />
+  <source src="movie.mp4" type="video/mp4" />
+  您的浏览器不支持视频。
+</video>
+```
+
+---
+
+## 嵌入地图
+
+**iframe 嵌入地图**
+```html
+<!-- 高德地图 -->
+<iframe
+  src="https://uri.amap.com/marker?position=经度,纬度&name=位置名称"
+  width="600" height="450"
+  style="border:0;"
+  loading="lazy"
+  title="地图"
+></iframe>
+
+<!-- Google Maps -->
+<iframe
+  src="https://www.google.com/maps/embed?pb=..."
+  width="600" height="450"
+  style="border:0;"
+  allowfullscreen=""
+  loading="lazy"
+  referrerpolicy="no-referrer-when-downgrade"
+></iframe>
+```
+
+## 动手试试
 
 ### 入门版（必做）
 
@@ -1380,7 +1935,7 @@ card.mount('#card-element');
 2. 父子页面用 `postMessage` 实现“点击按钮同步计数”，并校验来源；
 3. 给第三方嵌入配置 `loading="lazy"`，用网络面板确认滚动前不加载。
 
-## 14. 核心知识点
+## 核心知识点
 
 > 一句话记住 iframe：`src` 嵌网页，`title` 不能少；`sandbox` 默认禁，令牌按需开；`postMessage` 通信，来源必须验。
 
@@ -1391,7 +1946,7 @@ card.mount('#card-element');
 - 每个 iframe 独立消耗资源，非首屏用 `loading="lazy"`；
 - 嵌入第三方内容前确认对方允许，并用 CSP `frame-src` 限制来源。
 
-## 15. 注意事项与改进建议
+## 注意事项与改进建议
 
 | 问题点 | 说明 | 改进方案 |
 | --- | --- | --- |
@@ -1402,7 +1957,7 @@ card.mount('#card-element');
 | iframe 数量过多 | 内存与进程开销大 | 尽量少用，非首屏懒加载 |
 | 用 `<embed>` 嵌 HTML | 语义与安全控制缺失 | HTML 嵌入用 iframe |
 
-## 16. 扩展学习
+## 扩展学习
 
 - 通信进阶：`html5/028-CrossDocumentCommunication` 全面掌握 `postMessage`；
 - 安全：CSP 的 `frame-src` 与 `object-src` 指令（见 `css/` 或安全模块）；

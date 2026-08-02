@@ -15,12 +15,6 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-## 0. 直觉：拖拽就在你身边
-
-把文件拖进网页上传、把卡片拖到另一个列表排序、把图片拖到画布里——这些交互都基于 HTML5 拖拽 API。
-
-拖拽需要双方配合：被拖的元素（drag source）提供数据，放置区域（drop target）接收数据。记住一个关键点：放置区必须监听 `dragover` 并调用 `preventDefault()`，否则浏览器默认不允许放置，`drop` 事件永远不会触发。
-
 ## 1. 拖拽 API 概述
 
 HTML5 原生拖拽 API 允许用户通过拖拽操作在页面内或页面间移动元素和数据。
@@ -64,12 +58,6 @@ dropzone.addEventListener('drop', (e) => {
 });
 ```
 
-**讲解：**
-
-- 被拖元素加 `draggable="true"`，在 `dragstart` 中用 `setData` 写入要传递的数据；
-- 放置区在 `dragover` 中必须 `preventDefault()`，这是能触发 `drop` 的前提；
-- `drop` 中读取数据并移动元素，实现“拖到哪、放到哪”。
-
 ## 3. DataTransfer 对象
 
 ```javascript
@@ -84,12 +72,6 @@ img.src = 'drag-icon.png';
 e.dataTransfer.setDragImage(img, 0, 0);
 ```
 
-**讲解：**
-
-- `setData(type, data)` 写入数据，`getData(type)` 读取，类型常用 `text/plain` 与 `application/json`；
-- `effectAllowed` 声明源端允许的操作，`dropEffect` 声明目标端实际执行的操作（move/copy/link）；
-- `setDragImage` 自定义拖拽时跟随鼠标的缩略图。
-
 ## 4. 文件拖拽
 
 ```javascript
@@ -101,18 +83,197 @@ dropzone.addEventListener('drop', (e) => {
   }
 });
 ```
+## draggable 属性
 
-**讲解：**
+**启用元素拖拽**
+`<element draggable="true | false">`
 
-- 拖入系统文件时，`e.dataTransfer.files` 是文件列表，与 `<input type="file">` 的 `files` 一致；
-- 每个 `file` 有 `name`、`size`、`type`，可配合 FileReader 预览图片；
-- 常用组合是“拖拽上传”：drop 后把文件放进 `FormData` 再 `fetch` 提交。
+```html
+<!-- 将元素标记为可拖拽 -->
+<div id="draggable" draggable="true">拖拽我</div>
+<div id="dropzone">放置区域</div>
 
-## 5. 进阶知识点
+<!-- 图片和带 href 的链接默认可拖拽,无需设置 -->
+<img src="logo.png" alt="Logo" />
+<a href="/page">链接</a>
+```
 
-### 5.1 限制拖拽方向（鼠标实现）
+---
+
+## 拖拽事件
+
+**事件触发顺序表**
+
+| 事件        | 触发对象   | 触发时机             | 用途                    |
+| ----------- | ---------- | -------------------- | ----------------------- |
+| `dragstart` | 拖拽元素   | 开始拖拽             | 设置拖拽数据            |
+| `drag`      | 拖拽元素   | 拖拽过程中持续触发   | 更新状态                |
+| `dragend`   | 拖拽元素   | 拖拽结束             | 清理状态                |
+| `dragenter` | 放置目标   | 拖拽进入目标         | 高亮放置区域            |
+| `dragover`  | 放置目标   | 拖拽在目标上方移动   | **必须 preventDefault** |
+| `dragleave` | 放置目标   | 拖拽离开目标         | 取消高亮                |
+| `drop`      | 放置目标   | 在目标上释放         | 处理放置逻辑            |
+
+---
+
+## 基本拖拽实现
+
+**HTML 结构**
+`<div draggable="true">源</div> <div>目标</div>`
+
+```html
+<!-- 拖拽源与放置目标 -->
+<div id="draggable" draggable="true">拖拽我</div>
+<div id="dropzone">放置区域</div>
+```
+
+**JavaScript 事件绑定**
+`element.addEventListener('dragstart' | 'dragover' | 'drop', handler)`
 
 ```javascript
+const draggable = document.getElementById('draggable');
+const dropzone = document.getElementById('dropzone');
+
+// 拖拽开始:设置数据与效果
+draggable.addEventListener('dragstart', (e) => {
+  e.dataTransfer.setData('text/plain', e.target.id); // 设置拖拽数据
+  e.dataTransfer.effectAllowed = 'move';             // 允许的效果:copy | move | link
+});
+
+// 拖拽悬停:必须阻止默认行为,否则无法触发 drop
+dropzone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move'; // 设置放置效果
+});
+
+// 拖拽进入:高亮目标
+dropzone.addEventListener('dragenter', (e) => {
+  e.preventDefault();
+  dropzone.classList.add('drag-over');
+});
+
+// 拖拽离开:取消高亮
+dropzone.addEventListener('dragleave', () => {
+  dropzone.classList.remove('drag-over');
+});
+
+// 放置:处理数据
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  const id = e.dataTransfer.getData('text/plain'); // 获取拖拽数据
+  const draggedEl = document.getElementById(id);
+  dropzone.appendChild(draggedEl);
+});
+```
+
+---
+
+## DataTransfer 对象
+
+**DataTransfer 方法表**
+
+| 方法                              | 说明                          |
+| --------------------------------- | ----------------------------- |
+| `setData(format, data)`           | 设置指定格式的数据            |
+| `getData(format)`                 | 读取指定格式的数据            |
+| `clearData([format])`             | 清除数据                      |
+| `setDragImage(img, x, y)`         | 设置自定义拖拽图像            |
+| `types`                           | 只读属性,数据格式数组        |
+| `files`                           | 只读属性,FileList 对象       |
+| `items`                           | 只读属性,DataTransferItemList |
+
+**常用数据格式**
+`e.dataTransfer.setData('text/plain' | 'text/uri-list' | 'text/html', data)`
+
+```javascript
+// 设置多种格式的数据
+e.dataTransfer.setData('text/plain', '纯文本数据');
+e.dataTransfer.setData('text/uri-list', 'https://example.com');
+e.dataTransfer.setData('text/html', '<strong>HTML 数据</strong>');
+e.dataTransfer.setData('application/json', JSON.stringify({ id: 1, name: '张三' }));
+
+// 读取数据(在 drop 事件中)
+const text = e.dataTransfer.getData('text/plain');
+const json = JSON.parse(e.dataTransfer.getData('application/json'));
+```
+
+**拖拽效果设置**
+`e.dataTransfer.effectAllowed = 'copy | move | link | copyMove | all | none'`
+
+```javascript
+// 设置允许的效果
+e.dataTransfer.effectAllowed = 'copy';   // 仅复制
+e.dataTransfer.effectAllowed = 'move';   // 仅移动
+e.dataTransfer.effectAllowed = 'link';   // 仅链接
+e.dataTransfer.effectAllowed = 'copyMove'; // 复制或移动
+
+// 设置放置效果(在 dragover 事件中)
+e.dataTransfer.dropEffect = 'copy'; // copy | move | link | none
+```
+
+**自定义拖拽图像**
+`e.dataTransfer.setDragImage(<element>, <offsetX>, <offsetY>)`
+
+```javascript
+// 使用自定义图像作为拖拽预览
+draggable.addEventListener('dragstart', (e) => {
+  const img = new Image();
+  img.src = 'drag-icon.png';
+  e.dataTransfer.setDragImage(img, 10, 10); // 偏移量(像素)
+});
+```
+
+---
+
+## 文件拖拽
+
+**获取拖入的文件**
+`e.dataTransfer.files` 或 `e.dataTransfer.items`
+
+```javascript
+// 处理拖拽上传的文件
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const files = e.dataTransfer.files; // FileList 对象
+  for (const file of files) {
+    console.log(`文件名: ${file.name}`);
+    console.log(`大小: ${file.size} bytes`);
+    console.log(`类型: ${file.type}`);
+    console.log(`最后修改: ${new Date(file.lastModified).toLocaleString()}`);
+  }
+});
+```
+
+**异步读取文件内容**
+`file.text() | file.arrayBuffer() | reader.readAsDataURL(file)`
+
+```javascript
+// 读取文本文件
+const text = await file.text();
+
+// 读取为 ArrayBuffer
+const buffer = await file.arrayBuffer();
+
+// 使用 FileReader 读取为 Data URL(图片预览)
+const reader = new FileReader();
+reader.onload = (e) => {
+  const img = document.createElement('img');
+  img.src = e.target.result;
+  document.body.appendChild(img);
+};
+reader.readAsDataURL(file);
+```
+
+---
+
+## 拖拽方向控制
+
+**仅允许垂直/水平拖拽**
+`if (Math.abs(dx) > Math.abs(dy)) { ... }`
+
+```javascript
+// 限制为水平拖拽
 let isDragging = false;
 let startX, startY;
 
@@ -126,20 +287,29 @@ document.addEventListener('mousemove', (e) => {
   if (!isDragging) return;
   const dx = e.clientX - startX;
   const dy = e.clientY - startY;
-  // 只允许水平方向拖拽
+  // 仅水平方向有效
   if (Math.abs(dx) > Math.abs(dy)) {
     element.style.left = `${dx}px`;
   }
 });
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+});
 ```
 
-**讲解：**
+---
 
-- 比较横向位移与纵向位移的绝对值，可以判断用户意图是“水平拖”还是“垂直拖”；
-- 这种“按下-移动-释放”模式是原生 DnD 之外的另一套实现，适合滑块、调整大小等场景；
-- 记住在 `mouseup` 时把 `isDragging` 复位。
+## 注意事项
 
-## 6. 动手试试
+- **dragover 必须 preventDefault**:否则 `drop` 事件不会触发
+- **数据类型一致性**:`setData` 和 `getData` 的 format 参数必须完全一致
+- **安全性**:拖拽内容来源不可信时,需进行数据校验,防止 XSS
+- **触摸设备**:原生 HTML5 拖拽 API 在移动端支持有限,需使用 polyfill 或自定义实现
+- **可访问性**:拖拽操作对屏幕阅读器不友好,需提供等价的非拖拽操作方式(如按钮)
+- **DataTransfer 生命周期**:`getData` 仅在 `drop` 事件中可读取,`dragstart` 中设置的数据在 `dragover` 中无法读取
+
+## 动手试试
 
 ### 入门版（必做）
 
@@ -188,7 +358,7 @@ document.addEventListener('mousemove', (e) => {
 2. 用 `setDragImage` 自定义拖拽缩略图；
 3. 给放置区加高亮与禁用状态，拖拽进入时变色、离开时恢复。
 
-## 7. 核心知识点
+## 核心知识点
 
 > 一句话记住拖拽：源端 `dragstart` 写数据，目标端 `dragover` 放行、`drop` 收数据；文件拖拽看 `dataTransfer.files`。
 
@@ -198,7 +368,7 @@ document.addEventListener('mousemove', (e) => {
 - 文件拖拽：`e.dataTransfer.files` + FileReader/FormData 实现拖拽上传；
 - 生命周期：`dragstart` → `drag` → `dragend`，配合 `dragenter`/`dragleave` 做视觉反馈。
 
-## 8. 注意事项与改进建议
+## 注意事项与改进建议
 
 | 问题点 | 说明 | 改进方案 |
 | --- | --- | --- |
@@ -209,7 +379,7 @@ document.addEventListener('mousemove', (e) => {
 | 未处理 `dragend` 清理 | 状态残留 | 结束后复位视觉状态 |
 | 触屏设备不生效 | 原生 DnD 不支持触摸 | 触屏用 Pointer Events 或第三方库 |
 
-## 9. 扩展学习
+## 扩展学习
 
 - 文件读取：`html5/008-HTML5OfflineStorageWebAPI` 中 File API；
 - 触屏拖拽：`html5/020-Geolocation` 之外的 Pointer Events 教程；

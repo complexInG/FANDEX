@@ -16,15 +16,6 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-## 0. 直觉：这节课讲“两块积木”
-
-Web Components 和 PWA 是两件独立的事，只是经常一起出现在“现代 Web 应用”里：
-
-- Web Components：做“自定义标签”。你写一个 `<my-card>`，任何页面都能像用 `<div>` 一样用它，样式和结构自带，不依赖框架；
-- PWA（渐进式 Web 应用）：让网页“像 App”。安装到桌面、断网可用、推送通知。
-
-先学组件，再学离线能力。如果你只想快速上手，把 Custom Elements、Shadow DOM、Manifest、Service Worker 四个概念记住就够了。
-
 ## 1. Web Components 概述
 
 Web Components 是一组 Web 平台 API，允许开发者创建可重用的自定义元素，这些元素可以在任何 HTML 页面中使用，无论使用什么框架。
@@ -67,20 +58,11 @@ class MyElement extends HTMLElement {
 customElements.define('my-element', MyElement);
 ```
 
-**讲解：**
-
-- 自定义元素必须继承 `HTMLElement`，并在 `constructor` 中调用 `super()`；
-- `connectedCallback` 在元素挂载到 DOM 时执行，适合初始化内容；
-- `observedAttributes` 列出要监听的属性，变化时触发 `attributeChangedCallback`；
-- 注册名必须包含连字符（`my-element`），避免与原生标签冲突。
-
 ### 2.2 使用自定义元素
 
 ```html
 <my-element title="Hello"></my-element>
 ```
-
-**讲解：** 注册后就能像原生标签一样书写和使用；属性（如 `title`）可通过 `attributeChangedCallback` 响应变化。
 
 ## 3. Shadow DOM
 
@@ -110,12 +92,6 @@ class MyElement extends HTMLElement {
 }
 customElements.define('my-shadow-element', MyElement);
 ```
-
-**讲解：**
-
-- `attachShadow({ mode: 'open' })` 创建影子根，元素内部结构挂载在影子根下；
-- Shadow DOM 的样式与外部隔离：内部 `p { color: blue }` 不会影响页面其它段落；
-- `mode: 'open'` 允许外部通过 `element.shadowRoot` 访问，`closed` 则禁止。
 
 ## 4. HTML Templates
 
@@ -257,7 +233,7 @@ if ('serviceWorker' in navigator) {
   })
   .then(() => self.skipWaiting())
   );
- });
+ }
  // 激活 Service Worker
  self.addEventListener('activate', event => {
   event.waitUntil(
@@ -271,7 +247,7 @@ if ('serviceWorker' in navigator) {
   })
   .then(() => self.clients.claim())
   );
- });
+ }
  // 拦截网络请求
  self.addEventListener('fetch', event => {
   event.respondWith(
@@ -296,15 +272,8 @@ if ('serviceWorker' in navigator) {
   });
   })
   );
- });
+ }
 ```
-
-**讲解：**
-
-- `install` 阶段预缓存核心资源，`skipWaiting()` 让新版本立即接管；
-- `activate` 阶段删除旧版本缓存，`clients.claim()` 让页面立即受控；
-- `fetch` 拦截实现 Cache First：命中缓存直接返回，未命中则请求网络并写入缓存；
-- Service Worker 只在 HTTPS/localhost 下生效，更新后需刷新两次才能看到效果。
 
 ## 9. 离线功能
 
@@ -494,30 +463,547 @@ flowchart TD
 **问题**：推送通知权限被拒绝
 **解决方案**：在合适的时机请求权限，提供清晰的使用说明
 
-## 17. 进阶知识点
+## Custom Elements 自定义元素
 
-### 17.1 CSS Scoping 与样式穿透
+**定义自定义元素**
+`customElements.define(<名称>, <类>, [options])`
+```javascript
+class MyElement extends HTMLElement {
+  constructor() {
+    super();
+    // 元素初始化
+  }
 
-```css
-/* :host 选中组件宿主元素（即 <my-card> 本身） */
-:host {
-  display: block;
-  --primary-color: #1976d2; /* CSS 变量可以穿透 Shadow DOM */
+  // 当元素被添加到 DOM 时调用
+  connectedCallback() {
+    this.innerHTML = `<p>Hello, Web Components!</p>`;
+  }
+
+  // 当元素从 DOM 中移除时调用
+  disconnectedCallback() {
+    // 清理资源
+  }
+
+  // 当属性变化时调用
+  attributeChangedCallback(name, oldValue, newValue) {
+    // 处理属性变化
+  }
+
+  // 定义需要观察的属性
+  static get observedAttributes() {
+    return ['title'];
+  }
+
+  // 元素被移动到新文档时调用
+  adoptedCallback() {}
 }
 
-/* shadow 内部使用外部传入的变量 */
+// 注册自定义元素(名称必须包含连字符)
+customElements.define('my-element', MyElement);
+```
+
+**使用自定义元素**
+```html
+<my-element title="Hello"></my-element>
+```
+
+**生命周期回调**
+
+| 回调方法                                             | 触发时机             |
+| :--------------------------------------------------- | :------------------- |
+| `constructor()`                                      | 元素创建时           |
+| `connectedCallback()`                                | 元素添加到 DOM 时    |
+| `disconnectedCallback()`                             | 元素从 DOM 中移除时  |
+| `attributeChangedCallback(name, oldValue, newValue)` | 属性变化时           |
+| `adoptedCallback()`                                  | 元素被移动到新文档时 |
+
+**CustomizedElement 内置扩展**
+```javascript
+class FancyButton extends HTMLButtonElement {
+  constructor() {
+    super();
+    this.addEventListener('click', () => console.log('点击'));
+  }
+}
+
+// 扩展内置元素
+customElements.define('fancy-button', FancyButton, { extends: 'button' });
+```
+
+```html
+<!-- 使用 is 属性 -->
+<button is="fancy-button">点击</button>
+```
+
+**元素查询与升级**
+```javascript
+// 获取自定义元素引用
+const el = customElements.get('my-element');
+
+// 强制升级未定义的元素
+await customElements.whenDefined('my-element');
+console.log('my-element 已定义');
+```
+
+---
+
+## Shadow DOM 影子 DOM
+
+**attachShadow 创建 Shadow DOM**
+`element.attachShadow({ mode: 'open' | 'closed' })`
+```javascript
+class MyElement extends HTMLElement {
+  constructor() {
+    super();
+    // 创建 Shadow DOM
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    // 创建样式
+    const style = document.createElement('style');
+    style.textContent = `
+      p {
+        color: blue;
+        font-size: 18px;
+      }
+    `;
+
+    // 创建内容
+    const p = document.createElement('p');
+    p.textContent = 'Hello from Shadow DOM!';
+
+    shadow.appendChild(style);
+    shadow.appendChild(p);
+  }
+}
+customElements.define('my-shadow-element', MyElement);
+```
+
+| mode 值   | 说明                                  |
+| --------- | ------------------------------------- |
+| `'open'`  | 外部可通过 `element.shadowRoot` 访问   |
+| `'closed'`| 拒绝外部访问 `element.shadowRoot` 为 null |
+
+**Shadow DOM 模板化**
+```javascript
+class MyTemplateElement extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+    const template = document.getElementById('my-template');
+    const content = template.content.cloneNode(true);
+
+    content.querySelector('h3').textContent = this.getAttribute('title') || '默认标题';
+    content.querySelector('p').textContent = this.getAttribute('message') || '默认内容';
+    shadow.appendChild(content);
+  }
+}
+customElements.define('my-template-element', MyTemplateElement);
+```
+
+**shadowRoot 操作**
+```javascript
+// 获取 shadowRoot(open 模式)
+const shadow = element.shadowRoot;
+
+// 在 shadow 中查询元素
+const innerEl = shadow.querySelector('.inner');
+
+// 在 shadow 中添加元素
+shadow.appendChild(document.createElement('div'));
+```
+
+**Declarative Shadow DOM(声明式 Shadow DOM)**
+```html
+<host-element>
+  <template shadowrootmode="open">
+    <style>p { color: red; }</style>
+    <p>声明式 Shadow DOM 内容</p>
+  </template>
+</host-element>
+```
+
+---
+
+## HTML Templates 模板
+
+**template 元素**
+```html
+<template id="my-template">
+  <style>
+    .container {
+      padding: 20px;
+      background: #f0f0f0;
+      border-radius: 8px;
+    }
+    h3 {
+      color: #333;
+    }
+  </style>
+  <div class="container">
+    <h3></h3>
+    <p></p>
+  </div>
+</template>
+```
+
+**使用模板**
+```javascript
+class MyTemplateElement extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    // 获取模板
+    const template = document.getElementById('my-template');
+    // 克隆模板内容
+    const content = template.content.cloneNode(true);
+
+    // 填充内容
+    content.querySelector('h3').textContent = this.getAttribute('title') || 'Default';
+    content.querySelector('p').textContent = this.getAttribute('message') || 'Message';
+
+    shadow.appendChild(content);
+  }
+}
+customElements.define('my-template-element', MyTemplateElement);
+```
+
+**slot 插槽**
+```html
+<!-- 组件定义 -->
+<template id="card-template">
+  <div class="card">
+    <slot name="header">默认头部</slot>
+    <hr />
+    <slot>默认内容</slot>
+  </div>
+</template>
+```
+
+```html
+<!-- 使用插槽 -->
+<my-card>
+  <span slot="header">自定义头部</span>
+  <p>自定义内容</p>
+</my-card>
+```
+
+**slotchange 事件**
+```javascript
+const slot = shadow.querySelector('slot');
+slot.addEventListener('slotchange', (e) => {
+  const assigned = e.target.assignedNodes();
+  console.log('插槽内容变化', assigned);
+});
+```
+
+---
+
+## CSS Scoping 样式隔离
+
+**CSS 自定义属性穿透**
+```css
+/* 外部定义变量 */
+:host {
+  --primary-color: #1976d2;
+}
+
+/* shadow 内部使用 */
 .button {
   background: var(--primary-color);
 }
 ```
 
-**讲解：**
+**host 选择器**
+```css
+/* 选中宿主元素 */
+:host {
+  display: block;
+}
 
-- `:host` 选择器用于给组件根元素自身设置样式；
-- 普通 CSS 选择器无法进入 Shadow DOM，但 CSS 自定义属性（变量）可以“穿透”；
-- 组件外部通过 `:host` 或 CSS 变量定制主题，内部样式保持封装。
+/* 选中具有特定类的宿主 */
+:host(.active) {
+  opacity: 1;
+}
 
-## 18. 动手试试
+/* 选中特定宿主标签 */
+:host(my-button) {
+  border-radius: 4px;
+}
+```
+
+**:host-context 上下文选择器**
+```css
+/* 当祖先元素具有 .dark-theme 时 */
+:host-context(.dark-theme) {
+  background: #333;
+  color: #fff;
+}
+```
+
+**::part() 伪元素**
+```javascript
+// 组件内
+shadow.innerHTML = `
+  <div part="container">
+    <span part="label">标签</span>
+  </div>
+`;
+```
+
+```css
+/* 外部样式表选中 part */
+my-element::part(container) {
+  background: red;
+}
+my-element::part(label) {
+  color: white;
+}
+```
+
+---
+
+## PWA Web App Manifest
+
+**manifest.json 完整字段**
+```json
+{
+  "name": "My PWA",
+  "short_name": "PWA",
+  "description": "A progressive web app",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#ffffff",
+  "theme_color": "#4A90E2",
+  "orientation": "any",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "新消息",
+      "short_name": "消息",
+      "url": "/messages/new",
+      "icons": [{ "src": "/icons/msg.png", "sizes": "96x96" }]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/open-file",
+      "accept": { "image/*": [".png", ".jpg"] }
+    }
+  ]
+}
+```
+
+**HTML 中引用 manifest**
+```html
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#4A90E2" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="My PWA" />
+<link rel="apple-touch-icon" href="/icons/apple-180.png" />
+```
+
+**display 显示模式**
+
+| display 值      | 说明                              |
+| --------------- | --------------------------------- |
+| `fullscreen`    | 全屏(无 UI)                       |
+| `standalone`    | 独立应用(无浏览器 UI)             |
+| `minimal-ui`    | 最小 UI(部分浏览器控件)           |
+| `browser`       | 标准浏览器(默认)                  |
+
+---
+
+## PWA 安装
+
+**beforeinstallprompt 事件**
+```javascript
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallButton();
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log(outcome); // 'accepted' | 'dismissed'
+  deferredPrompt = null;
+});
+
+window.addEventListener('appinstalled', () => {
+  console.log('应用已安装');
+});
+```
+
+**Window Controls Overlay**
+```javascript
+// 检测支持
+const supported = 'windowControlsOverlay' in navigator;
+
+// 监听变化
+navigator.windowControlsOverlay.addEventListener('geometrychange', (e) => {
+  console.log('标题栏区域变化', e.titlebarAreaRect);
+});
+```
+
+---
+
+## Fetch 拦截(SW)
+
+**fetch 事件处理**
+`self.addEventListener('fetch', (event) => { event.respondWith(<Response>) })`
+```javascript
+// service-worker.js
+const CACHE_NAME = 'my-pwa-cache-v1';
+const ASSETS = ['/', '/index.html', '/styles.css', '/app.js'];
+
+// 安装:预缓存
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
+  );
+});
+
+// 激活:清理旧缓存
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((names) =>
+      Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)))
+    ).then(() => self.clients.claim())
+  );
+});
+
+// 拦截请求
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((response) => {
+        if (response && response.status === 200 && response.type === 'basic') {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      });
+    })
+  );
+});
+```
+
+**缓存策略对比**
+
+| 策略                       | 说明                   | 适用场景     |
+| -------------------------- | ---------------------- | ------------ |
+| **Cache First**            | 优先缓存,无则请求网络  | 静态资源     |
+| **Network First**          | 优先网络,失败用缓存    | API 请求     |
+| **Stale While Revalidate** | 缓存即时响应,后台更新  | 非关键 API   |
+| **Network Only**           | 仅网络                 | 实时数据     |
+| **Cache Only**             | 仅缓存                 | 离线资源     |
+
+---
+
+## 通知与推送
+
+**请求通知权限**
+```javascript
+if ('Notification' in window) {
+  Notification.requestPermission().then((permission) => {
+    if (permission === 'granted') {
+      console.log('通知权限已授予');
+    }
+  });
+}
+```
+
+**显示通知**
+```javascript
+function sendNotification() {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.showNotification('Hello PWA!', {
+        body: 'This is a push notification',
+        icon: '/icons/icon-192.png',
+        badge: '/icons/badge.png',
+        vibrate: [100, 50, 100],
+        data: { url: '/notifications' },
+        actions: [
+          { action: 'open', title: '打开' },
+          { action: 'close', title: '关闭' },
+        ],
+      });
+    });
+  }
+}
+```
+
+---
+
+## 后台同步
+
+**注册后台同步**
+```javascript
+if ('serviceWorker' in navigator && 'SyncManager' in window) {
+  navigator.serviceWorker.ready
+    .then((registration) => registration.sync.register('sync-data'))
+    .then(() => console.log('已注册后台同步'))
+    .catch((error) => console.error('注册失败:', error));
+}
+```
+
+**Service Worker 处理同步**
+```javascript
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-data') {
+    event.waitUntil(syncData());
+  }
+});
+
+async function syncData() {
+  try {
+    const response = await fetch('/api/sync', {
+      method: 'POST',
+      body: JSON.stringify({ data: 'sync data' }),
+    });
+    console.log('同步完成:', await response.json());
+  } catch (error) {
+    console.error('同步失败:', error);
+    throw error;
+  }
+}
+```
+
+## 动手试试
 
 ### 入门版（必做）
 
@@ -531,7 +1017,7 @@ flowchart TD
 2. 注册 Service Worker，断网刷新页面仍然可用；
 3. 用 `setCustomValidity` 或组件生命周期实现一个带校验的 `<my-input>`。
 
-## 19. 核心知识点
+## 核心知识点
 
 > 一句话记住 Web Components 与 PWA：组件三件套（Custom Elements、Shadow DOM、Template），离线三件套（Manifest、Service Worker、缓存）；组件管复用，PWA 管体验。
 
@@ -542,7 +1028,7 @@ flowchart TD
 - Service Worker：注册 → install 预缓存 → fetch 拦截，实现离线；
 - 推送与后台同步属于进阶能力，需要服务器配合。
 
-## 20. 注意事项与改进建议
+## 注意事项与改进建议
 
 | 问题点 | 说明 | 改进方案 |
 | --- | --- | --- |
@@ -553,7 +1039,7 @@ flowchart TD
 | SW 只在 HTTPS 生效 | 本地 http 测试失败 | 使用 localhost 或本地服务器工具 |
 | 组件与框架混用不熟 | 生命周期与框架渲染冲突 | 先掌握原生生命周期，再对照框架集成 |
 
-## 21. 扩展学习
+## 扩展学习
 
 - 组件细节：`html5/016-EmbeddedContent` 对比 iframe 与 Web Components 的隔离方式；
 - PWA 深化：`html5/022-ServiceWorkerPWA` 完整生命周期与缓存策略；
