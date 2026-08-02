@@ -1,5 +1,5 @@
 ---
-order: 20
+order: 60
 title: MySQL 环境搭建
 module: 'mysql'
 category: 数据库

@@ -1,5 +1,5 @@
 ---
-order: 230
+order: 270
 title: GROUP-BY与ORDER-BY优化
 module: 'mysql'
 category: 数据库

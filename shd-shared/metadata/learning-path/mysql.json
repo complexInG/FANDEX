@@ -9,6 +9,34 @@
       "subtitle": "存储引擎与 SQL 基础",
       "nodes": [
         {
+          "id": "mysql-g001",
+          "title": "???????",
+          "desc": "??/??/?????????",
+          "difficulty": "beginner",
+          "doc": "000-HowToUseThisCourse"
+        },
+        {
+          "id": "mysql-g002",
+          "title": "?????",
+          "desc": "??????????",
+          "difficulty": "beginner",
+          "doc": "000-Roadmap"
+        },
+        {
+          "id": "mysql-g003",
+          "title": "???",
+          "desc": "?????????",
+          "difficulty": "beginner",
+          "doc": "000-Glossary"
+        },
+        {
+          "id": "mysql-g004",
+          "title": "SQL ????",
+          "desc": "???? 10 ???????",
+          "difficulty": "beginner",
+          "doc": "000-SQL-Playground"
+        },
+        {
           "id": "mysql-001",
           "title": "MySQL 概述与数据库设计",
           "doc": "001-MySQLOverviewDatabaseDesign"

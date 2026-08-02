@@ -1,5 +1,5 @@
 ---
-order: 450
+order: 490
 title: 分库分表中间件
 module: 'mysql'
 category: 数据库

@@ -1,5 +1,5 @@
 ---
-order: 580
+order: 620
 title: 函数索引
 module: 'mysql'
 category: 数据库

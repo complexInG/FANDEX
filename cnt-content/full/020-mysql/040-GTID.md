@@ -1,5 +1,5 @@
 ---
-order: 400
+order: 440
 title: GTID
 module: 'mysql'
 category: 数据库

@@ -1,5 +1,5 @@
 ---
-order: 130
+order: 170
 title: 前缀索引
 module: 'mysql'
 category: 数据库

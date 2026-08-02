@@ -1,5 +1,5 @@
 ---
-order: 30
+order: 70
 title: MySQL 数据类型与约束
 module: 'mysql'
 category: 数据库

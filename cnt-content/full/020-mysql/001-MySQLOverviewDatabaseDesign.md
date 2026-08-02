@@ -1,18 +1,48 @@
 ---
-order: 10
+order: 50
 title: MySQL 概述与数据库设计
 module: 'mysql'
 category: 数据库
 difficulty: beginner
 description: MySQL 发展历程、体系结构与数据库设计范式。
-author: Anonymous
-updated: '2026-08-01'
+author: fanquanpp
+updated: '2026-08-03'
 related:
   - 'mysql/085-View'
   - 'mysql/002-MySQLEnvSetup'
   - 'mysql/003-MySQLDataTypeConstraint'
 prerequisites: []
 ---
+
+## 0. 五分钟写出第一句 SQL（先读这里）
+
+> 阅读指南：本节是必读第一课。后面的“标准演进”“方言对比”“选型决策”等内容属于【进阶查阅】，零基础可以先跳过，需要时再回来看。
+
+先理解一句话：**SQL 就是跟数据库说话的语言**，MySQL 是听懂这句话的数据库软件之一。
+
+打开 `000-SQL-Playground` 的沙箱（或本地 `mysql -u root -p`），建一张最简单的表并查询：
+
+```sql
+CREATE TABLE users (
+  id INT PRIMARY KEY,
+  name VARCHAR(50),
+  age INT
+);
+
+INSERT INTO users (id, name, age) VALUES (1, 'Alice', 20), (2, 'Bob', 18);
+
+SELECT name, age FROM users WHERE age > 18 ORDER BY age DESC LIMIT 5;
+```
+
+**讲解：**
+
+- `CREATE TABLE` 建表，`INT`/`VARCHAR(50)` 是列的类型（整数/最长 50 字符的文本）；
+- `PRIMARY KEY` 是主键：每行的“身份证号”，不能重复；
+- `INSERT` 插入数据，括号里是列名，`VALUES` 后是每行的值；
+- `SELECT` 查询：`WHERE` 过滤行、`ORDER BY` 排序、`LIMIT` 限制条数；
+- 上面这条查询的意思是：查名字和年龄，只要年龄大于 18 的，按年龄从大到小排，最多返回 5 行。
+
+**看到结果就过关**：如果你能跑通上面三句 SQL 并看到两行数据，第一课完成。看不懂的术语查 `000-Glossary`，练习不够去 `000-SQL-Playground` 刷 10 道题。
 
 ## 1. 数据库概述 (Overview)
 

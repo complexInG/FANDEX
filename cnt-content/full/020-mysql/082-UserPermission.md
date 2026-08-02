@@ -1,5 +1,5 @@
 ---
-order: 820
+order: 860
 title: MySQL 用户与权限管理
 module: 'mysql'
 category: 数据库

@@ -1,5 +1,5 @@
 ---
-order: 100
+order: 140
 title: 联合索引与最左前缀原则
 module: 'mysql'
 category: 数据库

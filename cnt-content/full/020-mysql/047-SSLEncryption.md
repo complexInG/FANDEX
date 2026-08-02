@@ -1,5 +1,5 @@
 ---
-order: 470
+order: 510
 title: SSL-TLS加密
 module: 'mysql'
 category: 数据库

@@ -1,5 +1,5 @@
 ---
-order: 750
+order: 790
 title: SQL 注入防御策略
 module: 'mysql'
 category: 数据库

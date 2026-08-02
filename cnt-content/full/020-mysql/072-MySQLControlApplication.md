@@ -1,5 +1,5 @@
 ---
-order: 720
+order: 760
 title: MySQL 控制器与应用
 module: 'mysql'
 category: 数据库

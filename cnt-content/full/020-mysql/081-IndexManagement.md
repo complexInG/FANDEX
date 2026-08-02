@@ -1,5 +1,5 @@
 ---
-order: 810
+order: 850
 title: MySQL 索引管理
 module: 'mysql'
 category: 数据库

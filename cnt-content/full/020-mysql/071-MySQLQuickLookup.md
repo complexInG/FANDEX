@@ -1,5 +1,5 @@
 ---
-order: 710
+order: 750
 title: MySQL 快速查阅
 module: 'mysql'
 category: 数据库

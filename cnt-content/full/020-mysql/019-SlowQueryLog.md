@@ -1,5 +1,5 @@
 ---
-order: 190
+order: 230
 title: 慢查询日志
 module: 'mysql'
 category: 数据库

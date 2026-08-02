@@ -1,5 +1,5 @@
 ---
-order: 700
+order: 740
 title: MySQL 配置与运维
 module: 'mysql'
 category: 数据库

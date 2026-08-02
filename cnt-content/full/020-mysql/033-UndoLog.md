@@ -1,5 +1,5 @@
 ---
-order: 330
+order: 370
 title: 撤销日志
 module: 'mysql'
 category: 数据库

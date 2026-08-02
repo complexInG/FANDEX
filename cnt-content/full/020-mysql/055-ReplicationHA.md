@@ -1,5 +1,5 @@
 ---
-order: 550
+order: 590
 title: 复制与高可用
 module: 'mysql'
 category: 数据库

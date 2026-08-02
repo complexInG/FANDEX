@@ -1,5 +1,5 @@
 ---
-order: 490
+order: 530
 title: InnoDB体系架构
 module: 'mysql'
 category: 数据库

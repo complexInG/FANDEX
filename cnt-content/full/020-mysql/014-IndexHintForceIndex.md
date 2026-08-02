@@ -1,5 +1,5 @@
 ---
-order: 140
+order: 180
 title: 索引提示与强制索引
 module: 'mysql'
 category: 数据库

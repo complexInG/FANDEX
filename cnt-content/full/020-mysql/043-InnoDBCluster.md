@@ -1,5 +1,5 @@
 ---
-order: 430
+order: 470
 title: InnoDB-Cluster
 module: 'mysql'
 category: 数据库

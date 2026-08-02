@@ -1,5 +1,5 @@
 ---
-order: 200
+order: 240
 title: 优化器追踪
 module: 'mysql'
 category: 数据库

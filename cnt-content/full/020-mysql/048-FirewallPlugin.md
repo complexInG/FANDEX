@@ -1,5 +1,5 @@
 ---
-order: 480
+order: 520
 title: 防火墙插件
 module: 'mysql'
 category: 数据库

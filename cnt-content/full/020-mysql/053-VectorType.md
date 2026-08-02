@@ -1,5 +1,5 @@
 ---
-order: 530
+order: 570
 title: VECTOR向量类型
 module: 'mysql'
 category: 数据库

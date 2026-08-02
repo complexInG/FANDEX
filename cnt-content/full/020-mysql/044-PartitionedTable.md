@@ -1,5 +1,5 @@
 ---
-order: 440
+order: 480
 title: 分区表
 module: 'mysql'
 category: 数据库

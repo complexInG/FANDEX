@@ -1,5 +1,5 @@
 ---
-order: 620
+order: 660
 title: 触发器与事件
 module: 'mysql'
 category: 数据库

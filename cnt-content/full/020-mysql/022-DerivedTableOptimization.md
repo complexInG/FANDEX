@@ -1,5 +1,5 @@
 ---
-order: 220
+order: 260
 title: 派生表优化
 module: 'mysql'
 category: 数据库

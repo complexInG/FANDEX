@@ -1,5 +1,5 @@
 ---
-order: 260
+order: 300
 title: MVCC原理
 module: 'mysql'
 category: 数据库

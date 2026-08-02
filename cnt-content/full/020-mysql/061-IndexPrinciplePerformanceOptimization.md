@@ -1,5 +1,5 @@
 ---
-order: 610
+order: 650
 title: 索引原理与性能优化
 module: 'mysql'
 category: 数据库

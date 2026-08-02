@@ -1,5 +1,5 @@
 ---
-order: 850
+order: 890
 title: 视图 语法速查手册
 module: 'mysql'
 category: 数据库

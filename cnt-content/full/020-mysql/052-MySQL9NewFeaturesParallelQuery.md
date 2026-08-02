@@ -1,5 +1,5 @@
 ---
-order: 520
+order: 560
 title: MySQL9新特性与并行查询
 module: 'mysql'
 category: 数据库

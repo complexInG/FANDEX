@@ -1,5 +1,5 @@
 ---
-order: 70
+order: 110
 title: Memory存储引擎
 module: 'mysql'
 category: 数据库

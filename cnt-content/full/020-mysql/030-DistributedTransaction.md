@@ -1,5 +1,5 @@
 ---
-order: 300
+order: 340
 title: 分布式事务
 module: 'mysql'
 category: 数据库

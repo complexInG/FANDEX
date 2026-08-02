@@ -1,5 +1,5 @@
 ---
-order: 660
+order: 700
 title: 主从复制延迟原因与解决
 module: 'mysql'
 category: 数据库

@@ -1,5 +1,5 @@
 ---
-order: 350
+order: 390
 title: 逻辑备份
 module: 'mysql'
 category: 数据库

@@ -1,5 +1,5 @@
 ---
-order: 560
+order: 600
 title: 不可见索引
 module: 'mysql'
 category: 数据库

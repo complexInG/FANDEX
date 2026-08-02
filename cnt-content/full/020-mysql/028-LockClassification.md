@@ -1,5 +1,5 @@
 ---
-order: 280
+order: 320
 title: 锁分类
 module: 'mysql'
 category: 数据库

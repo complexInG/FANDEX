@@ -1,5 +1,5 @@
 ---
-order: 630
+order: 670
 title: Redo与Undo与Binlog写入时机
 module: 'mysql'
 category: 数据库
@@ -86,6 +86,8 @@ SET GLOBAL innodb_flush_log_at_trx_commit = 1;
 2. **MVCC 版本链**：通过 `DB_ROLL_PTR` 串联历史版本
 
 ### 3.2 写入时机
+
+```
 
 ```
 1. 事务执行 UPDATE/DELETE → 先将旧值写入 Undo Log

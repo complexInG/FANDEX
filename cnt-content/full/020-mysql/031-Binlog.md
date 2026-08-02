@@ -1,5 +1,5 @@
 ---
-order: 310
+order: 350
 title: 二进制日志
 module: 'mysql'
 category: 数据库

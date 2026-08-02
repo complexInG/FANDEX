@@ -1,5 +1,5 @@
 ---
-order: 150
+order: 190
 title: 索引统计信息与直方图
 module: 'mysql'
 category: 数据库

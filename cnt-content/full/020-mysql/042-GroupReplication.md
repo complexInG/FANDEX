@@ -1,5 +1,5 @@
 ---
-order: 420
+order: 460
 title: 组复制
 module: 'mysql'
 category: 数据库

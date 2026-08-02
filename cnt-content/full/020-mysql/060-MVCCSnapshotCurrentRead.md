@@ -1,5 +1,5 @@
 ---
-order: 600
+order: 640
 title: MVCC快照读与当前读
 module: 'mysql'
 category: 数据库

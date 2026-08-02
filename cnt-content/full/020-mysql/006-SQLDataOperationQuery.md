@@ -1,5 +1,5 @@
 ---
-order: 60
+order: 100
 title: SQL 数据操作与查询
 module: 'mysql'
 category: 数据库
