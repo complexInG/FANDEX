@@ -27,6 +27,13 @@ prerequisites: []
 第 7 阶段（项目回炉）：050 综合项目 → 再回头读 001/006/012 的原理章节
 ```
 
+**讲解：**
+
+1. 这是本模块的学习路径图：四阶段从语法基础走到综合项目。
+2. 前两个阶段是零基础必读，第三阶段的异步与原型链是进阶重点。
+3. 不要在第一章就钻 V8 引擎细节，先把代码跑起来。
+
+
 **分层标记说明**（每篇开头的导读会用到）：
 
 - 【核心必读】：第一遍逐字精读并动手；
@@ -202,6 +209,13 @@ flowchart LR
     GC[Garbage Collector Orinoco<br/>分代回收：Young / Old / Large Object]
 ```
 
+**讲解：**
+
+1. 图中展示 V8 引擎把源码变为机器码的流水线：解析 → 字节码 → 优化编译。
+2. 零基础只需要记住结论：现代引擎会“边跑边优化”热点代码。
+3. 引擎细节属于进阶原理，初学可跳过。
+
+
 形式化为五元组：
 
 $$
@@ -337,6 +351,13 @@ const fs = require('fs');
 module.exports = { greet: () => 'hello' };
 ```
 
+**讲解：**
+
+1. `require` 是 CommonJS 的导入方式：执行到这一行时才加载模块。
+2. 它是同步的：模块没加载完，后面的代码不会执行。
+3. Node.js 历史遗留写法，新代码优先用 import。
+
+
 **AMD（2009）**：
 
 ```javascript
@@ -345,6 +366,13 @@ define(['dep1', 'dep2'], function (dep1, dep2) {
   return { greet: () => 'hello' };
 });
 ```
+
+**讲解：**
+
+1. `define` 是 AMD（如 RequireJS）的模块写法：依赖数组 + 回调。
+2. 它解决了浏览器里“脚本加载顺序”的问题，属于前端模块化早期方案。
+3. 现在已被 ES Module 取代，只在老项目里见到。
+
 
 **UMD（2011）**：兼容 CommonJS 与 AMD 的通用模式。
 
@@ -355,6 +383,13 @@ define(['dep1', 'dep2'], function (dep1, dep2) {
 import fs from 'fs';
 export const greet = () => 'hello';
 ```
+
+**讲解：**
+
+1. `import` 是 ES Module 标准写法，现代 JavaScript 的唯一推荐。
+2. 它是静态的：import 必须写在顶层，构建工具在编译期就能分析依赖。
+3. 浏览器与 Node.js 都支持，前端后端写法统一。
+
 
 ES Modules 的核心优势：
 
@@ -380,6 +415,13 @@ console.log('2: script end');
 // (渲染)
 // 5: setTimeout
 ```
+
+**讲解：**
+
+1. 这段代码演示事件循环：同步代码先执行，Promise 回调进入微任务队列。
+2. 打印顺序：script start → 同步后续 → 微任务 → 宏任务。
+3. 先记住“同步优先、微任务先于宏任务”这条总规律。
+
 
 执行顺序推导：
 
@@ -434,6 +476,13 @@ function Lookup(name, scope):
     throw ReferenceError
 ```
 
+**讲解：**
+
+1. 这是作用域查找的伪代码：从当前作用域逐层向外找变量。
+2. `while scope ≠ null` 表示沿着作用域链向上，直到全局或找不到报错。
+3. 理解这条链，闭包与变量提升就成功了一半。
+
+
 时间复杂度 $O(d)$，其中 $d$ 是作用域深度。深层嵌套作用域会带来查找开销，因此现代引擎使用**变量隐藏（Variable Hiding）**优化：编译时确定变量位置，直接访问而不需要链式查找。
 
 ---
@@ -465,6 +514,13 @@ function Lookup(name, scope):
 </html>
 ```
 
+**讲解：**
+
+1. 这是经典的内联 JavaScript 写法：`<script>` 放在 body 末尾。
+2. 放在末尾是因为脚本执行会阻塞解析，晚放让页面先渲染。
+3. 现代写法用 `<script type="module">` 或 defer，见后文。
+
+
 ### 4.2 浏览器环境：外部 ESM 模块
 
 ```html
@@ -485,12 +541,26 @@ function Lookup(name, scope):
 </html>
 ```
 
+**讲解：**
+
+1. 与上一块对比：加了 `defer` 属性，脚本延后到文档解析完成后执行。
+2. defer 保证执行顺序按书写顺序，且不阻塞渲染。
+3. 外部脚本建议统一加 defer。
+
+
 ```javascript
 // utils.js
 export function greet(name) {
   return `Hello, ${name}!`;
 }
 ```
+
+**讲解：**
+
+1. `export` 把函数导出，其他文件用 `import { greet }` 引入。
+2. 这是 ES Module 的标准组织方式。
+3. 一个模块只做一件事，通过导出对外提供能力。
+
 
 ### 4.3 Node.js 环境：基础脚本
 
@@ -526,11 +596,25 @@ console.log('CPU 核心数:', os.cpus().length);
 console.log('空闲内存:', os.freemem() / 1024 / 1024 / 1024, 'GB');
 ```
 
+**讲解：**
+
+1. Node.js 环境提供 `process`、`require`、`__dirname` 等全局对象。
+2. `console.log(process.version)` 打印 Node 版本号。
+3. 浏览器没有这些对象，跨环境代码要检测环境。
+
+
 运行脚本：
 
 ```bash
 node hello.js
 ```
+
+**讲解：**
+
+1. `node hello.js` 在终端运行脚本，输出 hello 文本。
+2. 这是验证 Node 安装与运行脚本的最基本命令。
+3. 报错时先检查文件名路径与拼写。
+
 
 ### 4.4 Node.js 环境：ESM 模块
 
@@ -549,6 +633,13 @@ import { greet } from './utils.js';
 console.log(greet('ESM'));
 console.log('CPU:', os.cpus().length);
 ```
+
+**讲解：**
+
+1. package.json 是 Node 项目的清单：记录名字、版本、脚本与依赖。
+2. `npm init -y` 可快速生成。
+3. 项目根目录必须有它，npm/pnpm 才能管理依赖。
+
 
 ### 4.5 Node.js 环境：HTTP 服务器
 
@@ -573,6 +664,13 @@ server.listen(3000, () => {
 });
 ```
 
+**讲解：**
+
+1. `node:http` 是 Node 内置模块：`createServer` 创建 HTTP 服务。
+2. `res.end('你好')` 向浏览器返回文本响应。
+3. `listen(3000)` 监听端口，浏览器访问 localhost:3000 查看。
+
+
 ### 4.6 Deno 环境
 
 ```typescript
@@ -593,6 +691,13 @@ const handler = (req: Request): Response => {
 console.log('Deno 服务器运行在 http://localhost:8000');
 await serve(handler, { port: 8000 });
 ```
+
+**讲解：**
+
+1. Deno 直接运行 TypeScript，不需要先编译。
+2. 默认无权限：读写文件、访问网络需要显式 `--allow-*` 授权。
+3. 这是 Deno 与 Node 的核心差异。
+
 
 ### 4.7 Bun 环境
 
@@ -617,6 +722,13 @@ const text = await file.text();
 console.log('package.json 内容:', text);
 ```
 
+**讲解：**
+
+1. Bun 同样原生运行 TypeScript 与 JSX。
+2. 它还内置包管理、测试与打包，一个命令全家桶。
+3. 用 `bun bun.ts` 直接运行。
+
+
 ### 4.8 Web Worker
 
 ```javascript
@@ -634,6 +746,13 @@ worker.onerror = (error) => {
 };
 ```
 
+**讲解：**
+
+1. `new Worker('./worker.js')` 创建 Worker 子线程。
+2. 主线程通过 `postMessage` 发消息，`onmessage` 收结果。
+3. 适合图片处理、大数据计算等重任务，避免卡住页面。
+
+
 ```javascript
 // worker.js - Worker 线程
 // Worker 中没有 DOM，但有 fetch、IndexedDB、WebSocket
@@ -645,6 +764,13 @@ self.onmessage = (event) => {
   }
 };
 ```
+
+**讲解：**
+
+1. Worker 线程没有 DOM，但能用 fetch、IndexedDB、WebSocket。
+2. Worker 与主线程通过消息通信，不能直接共享变量。
+3. 计算结果用 `postMessage` 回传。
+
 
 ### 4.9 环境检测
 
@@ -689,6 +815,13 @@ const globalObj =
           : null;
 ```
 
+**讲解：**
+
+1. `typeof window !== 'undefined'` 判断是否浏览器环境。
+2. `typeof process !== 'undefined'` 判断是否 Node.js。
+3. 同构代码（前后端共用）用这种检测分发不同实现。
+
+
 ### 4.10 跨环境读写文件
 
 ```javascript
@@ -716,6 +849,13 @@ async function readJson(path) {
   throw new Error('Unsupported runtime');
 }
 ```
+
+**讲解：**
+
+1. 浏览器里用 `fetch` 读 JSON：`await fetch(path)` 然后 `res.json()`。
+2. Node 里用 `fs/promises` 的 `readFile` 读取。
+3. 同一函数内按环境分支，保证两处都能跑。
+
 
 ### 4.11 包管理器对比
 
@@ -750,6 +890,13 @@ bun run dev
 bun update
 ```
 
+**讲解：**
+
+1. `npm init -y` 快速生成 package.json。
+2. `npm install 包名` 安装依赖并写入 dependencies。
+3. npm 随 Node 一起安装，是最基础的包管理器。
+
+
 ### 4.12 使用 nvm 管理多版本 Node.js
 
 ```bash
@@ -777,6 +924,13 @@ nvm ls
 echo "22" > .nvmrc
 nvm use  # 自动读取 .nvmrc
 ```
+
+**讲解：**
+
+1. nvm 用于管理多个 Node 版本：`nvm install 22` 安装，`nvm use 22` 切换。
+2. 多项目需要不同 Node 版本时必备。
+3. Windows 用户可用 nvm-windows 或官方安装包。
+
 
 ---
 
@@ -867,6 +1021,13 @@ function goodExample() {
 }
 ```
 
+**讲解：**
+
+1. 不给 `let/const/var` 直接赋值会创建隐式全局变量。
+2. 函数内部的 `x = 1` 会污染全局，极难排查。
+3. 严格模式（'use strict'）下这种写法直接报错，建议默认开启。
+
+
 **根因**：非严格模式下，未声明变量自动挂到全局对象。**防御**：始终使用 `'use strict'` 或 ESM（默认严格模式）。
 
 ### 6.2 `var` 的变量提升与函数作用域
@@ -893,6 +1054,13 @@ for (let i = 0; i < 3; i++) {
 }
 // 输出: 0, 1, 2
 ```
+
+**讲解：**
+
+1. `var` 声明会提升：console.log 时 x 已存在但未赋值，所以是 undefined。
+2. `let/const` 也有提升但处于“暂时性死区”，提前访问会报错。
+3. 结论：新代码一律用 let/const，避免这类困惑。
+
 
 ### 6.3 `this` 绑定丢失
 
@@ -934,6 +1102,13 @@ const obj3 = {
 };
 ```
 
+**讲解：**
+
+1. 普通函数里的 this 由调用方式决定，回调里 this 会丢失为 undefined/全局。
+2. 解决方案：箭头函数（继承外层 this）或 `fn.bind(obj)`。
+3. 这是 JavaScript 高频面试与高频 bug 的同一道题。
+
+
 ### 6.4 `==` 与 `===` 的陷阱
 
 ```javascript
@@ -956,6 +1131,13 @@ if (value == null) {
   // 等价于 value === null || value === undefined
 }
 ```
+
+**讲解：**
+
+1. `==` 会先做类型转换再比较，`0 == false` 为 true，违背直觉。
+2. `===` 要求类型与值都相等，`0 === false` 为 false。
+3. 规则：永远用 `===` 与 `!==`，除非你明确需要隐式转换。
+
 
 ### 6.5 异步陷阱：回调地狱
 
@@ -992,6 +1174,13 @@ async function main() {
 }
 ```
 
+**讲解：**
+
+1. 多层嵌套回调形成“回调地狱”：缩进越来越深，错误处理混乱。
+2. 解决方案是 Promise 链与 async/await。
+3. 看到三层以上嵌套，就该重构了。
+
+
 ### 6.6 模块系统混淆
 
 ```javascript
@@ -1012,6 +1201,13 @@ pkg.greet();
 import { greet } from './foo.cjs'; // Node.js 22+ 支持（实验性）
 ```
 
+**讲解：**
+
+1. package.json 的 `type: module` 决定 .js 文件按 ESM 解析。
+2. ESM 文件里不能用 `require`，CommonJS 文件里不能用顶层 `import`。
+3. 混用时报错先检查 type 字段与文件后缀（.cjs/.mjs）。
+
+
 ### 6.7 跨环境 API 差异
 
 ```javascript
@@ -1028,6 +1224,13 @@ setTimeout((a, b) => console.log(a, b), 100, 'x', 'y'); // 输出 'x y'
 console.log(globalThis); // 浏览器: window / Node.js: global / Deno: Window
 ```
 
+**讲解：**
+
+1. `setTimeout(callback, delay, ...args)` 第三个参数起是传给回调的参数。
+2. 常见错误是把参数放在 delay 前面或忘记传。
+3. 参数顺序：回调、延迟毫秒、剩余参数。
+
+
 ### 6.8 浮点数精度问题
 
 ```javascript
@@ -1042,6 +1245,13 @@ Number.MAX_SAFE_INTEGER; // 9007199254740991
 // 解决方案：BigInt（ES2020）
 9007199254740992n + 1n === 9007199254740993n; // true
 ```
+
+**讲解：**
+
+1. 二进制无法精确表示 0.1，所以 `0.1 + 0.2` 有浮点误差。
+2. 金额计算用整数分（或 decimal 库），不要直接比较浮点。
+3. 比较时用 `Math.abs(a - b) < 1e-9` 或 `Number.EPSILON`。
+
 
 ### 6.9 闭包内存泄漏
 
@@ -1068,6 +1278,13 @@ function createSafe() {
 }
 ```
 
+**讲解：**
+
+1. 闭包会一直持有外部变量，若持有大对象且长期不释放，造成内存泄漏。
+2. 对策：用后置 null、减少长生命周期闭包。
+3. 排查用 Chrome DevTools 的 Memory 面板。
+
+
 ### 6.10 Promise 未捕获异常
 
 ```javascript
@@ -1089,6 +1306,13 @@ Promise.resolve()
   })
   .catch((err) => console.error(err));
 ```
+
+**讲解：**
+
+1. Promise 链末尾不加 `.catch`，异常会成为“未处理拒绝”。
+2. 现代 Node 会打印警告甚至退出进程。
+3. 每条 Promise 链都要有兜底 catch。
+
 
 ### 6.11 `this` 在事件回调中丢失
 
@@ -1126,6 +1350,13 @@ class Counter {
 document.getElementById('btn').addEventListener('click', this.increment.bind(this));
 ```
 
+**讲解：**
+
+1. 类方法作为事件回调时，this 不再指向实例。
+2. 解法：箭头函数属性或构造器里 `this.handler = this.handler.bind(this)`。
+3. 与前面“回调 this 丢失”是同一问题的类场景。
+
+
 ### 6.12 顶层 await 在 CommonJS 中报错
 
 ```javascript
@@ -1145,6 +1376,13 @@ document.getElementById('btn').addEventListener('click', this.increment.bind(thi
   await fetch(...);
 })();
 ```
+
+**讲解：**
+
+1. CommonJS 文件顶层不能使用 `await`，这是模块系统差异。
+2. 想用顶层 await，文件必须按 ESM 解析（.mjs 或 type: module）。
+3. 报错时先确认模块系统再找语法问题。
+
 
 ---
 
@@ -1211,6 +1449,13 @@ trim_trailing_whitespace = false
 EOF
 ```
 
+**讲解：**
+
+1. 创建并进入项目目录，开始初始化。
+2. 之后执行 `npm init -y` 生成 package.json。
+3. 目录名建议小写短横线风格。
+
+
 ### 7.2 ESLint 配置
 
 ```javascript
@@ -1236,6 +1481,13 @@ export default [
 ];
 ```
 
+**讲解：**
+
+1. ESLint 9+ 使用 Flat Config：数组导出配置，取代旧版 .eslintrc。
+2. `js.configs.recommended` 是推荐规则集。
+3. 配置里可覆盖 rules 调整具体规则。
+
+
 ### 7.3 Prettier 配置
 
 ```javascript
@@ -1250,6 +1502,13 @@ export default {
   endOfLine: 'lf',
 };
 ```
+
+**讲解：**
+
+1. Prettier 统一代码格式：单引号、分号、缩进等偏好。
+2. 与 ESLint 分工：Prettier 管格式，ESLint 管质量。
+3. 团队统一配置后，格式争议消失。
+
 
 ### 7.4 package.json 脚本配置
 
@@ -1278,6 +1537,13 @@ export default {
   }
 }
 ```
+
+**讲解：**
+
+1. 这是完整 package.json 示例：name、version、scripts、dependencies。
+2. `"dev": "node --watch index.js"` 用 Node 内置监听模式开发。
+3. 依赖锁文件（package-lock.json）提交 git 保证可复现。
+
 
 ### 7.5 调试技巧
 
@@ -1317,6 +1583,13 @@ performance.measure('duration', 'start', 'end');
 const measures = performance.getEntriesByName('duration');
 console.log(`耗时: ${measures[0].duration}ms`);
 ```
+
+**讲解：**
+
+1. `console.log` 普通日志、`warn` 警告、`error` 错误、`table` 表格化。
+2. `console.time/timeEnd` 测量耗时。
+3. 生产环境记得控制日志量，避免性能问题。
+
 
 ### 7.6 性能优化技巧
 
@@ -1388,6 +1661,13 @@ worker.onmessage = (e) => {
 };
 ```
 
+**讲解：**
+
+1. 反模式：循环里逐次修改 DOM，触发大量重排。
+2. 正解：先在内存里拼好片段（DocumentFragment），一次性插入。
+3. DOM 操作是性能瓶颈大户，批量操作是首要原则。
+
+
 ### 7.7 安全最佳实践
 
 ```javascript
@@ -1444,6 +1724,13 @@ const obj = JSON.parse(userInput);
 // 替代方案：Function 构造器（仍然需谨慎）
 const fn = new Function('x', `return ${expression};`);
 ```
+
+**讲解：**
+
+1. 反模式：用字符串拼接用户输入进 innerHTML，会被注入脚本。
+2. 正解：`textContent` 只当文本，或对输入做转义。
+3. 所有用户输入默认不可信。
+
 
 ### 7.8 错误处理与日志
 
@@ -1507,6 +1794,13 @@ function errorHandler(err, req, res, next) {
 }
 ```
 
+**讲解：**
+
+1. `window` 的 error 事件捕获未处理的运行时错误。
+2. `unhandledrejection` 事件捕获未处理的 Promise 拒绝。
+3. 两者配合上报前端错误，是监控体系的地基。
+
+
 ### 7.9 使用 TypeScript 增强类型安全
 
 ```typescript
@@ -1551,6 +1845,13 @@ async function fetchJson<T>(url: string): Promise<T> {
 const user = await fetchJson<User>('/api/users/1');
 ```
 
+**讲解：**
+
+1. TypeScript 在编译期检查类型，编译后输出纯 JavaScript。
+2. 类型注解在运行时不存在，不影响性能。
+3. 大项目建议直接上 TypeScript。
+
+
 ---
 
 ## 8. 案例研究
@@ -1580,6 +1881,13 @@ flowchart TD
     T0 --> T2
 ```
 
+**讲解：**
+
+1. 这是同构应用（前后端共享代码）的目录结构。
+2. `shared/` 放两端共用的组件与逻辑。
+3. 服务端渲染 + 客户端水合共用同一套组件代码。
+
+
 **共享组件**：
 
 ```javascript
@@ -1593,6 +1901,13 @@ export function UserCard({ user }) {
   `;
 }
 ```
+
+**讲解：**
+
+1. UserCard 是共享组件：服务端与客户端都用它渲染。
+2. 纯函数式组件保证两端输出一致。
+3. 一致性是水合（hydration）成功的条件。
+
 
 **服务器端渲染**：
 
@@ -1627,6 +1942,13 @@ const server = http.createServer((req, res) => {
 server.listen(3000);
 ```
 
+**讲解：**
+
+1. 服务端把 UserCard 渲染成 HTML 字符串返回。
+2. `renderToString` 产出带内容的页面，利于 SEO 与首屏。
+3. 服务端渲染是同构应用的关键环节。
+
+
 **客户端水合**：
 
 ```javascript
@@ -1635,6 +1957,13 @@ const initialData = window.__INITIAL_DATA__;
 // 使用 initialData 初始化客户端应用
 console.log('水合数据:', initialData);
 ```
+
+**讲解：**
+
+1. 服务端把初始数据塞进 `window.__INITIAL_DATA__`。
+2. 客户端水合时读取该数据，避免重复请求。
+3. 这是前后端传数据的经典模式。
+
 
 **关键技术点**：
 
@@ -1707,6 +2036,13 @@ async function copyDir(src, dest) {
 program.parse();
 ```
 
+**讲解：**
+
+1. `#!/usr/bin/env node` 是 shebang：告诉系统用 node 执行该文件。
+2. `process.argv.slice(2)` 读取命令行参数。
+3. package.json 的 bin 字段把命令注册到全局。
+
+
 **package.json**：
 
 ```json
@@ -1723,6 +2059,13 @@ program.parse();
   "files": ["bin/", "templates/"]
 }
 ```
+
+**讲解：**
+
+1. CLI 工具包的 package.json 关键字段：`bin` 把命令名映射到入口文件。
+2. `npm link` 可在本地全局使用该命令。
+3. 发布到 npm 后用户 `npx mycli` 直接运行。
+
 
 ### 8.3 案例：Electron 桌面应用
 
@@ -1772,6 +2115,13 @@ app.on('window-all-closed', () => {
 });
 ```
 
+**讲解：**
+
+1. Electron 主进程负责创建窗口与系统集成。
+2. `new BrowserWindow` 创建桌面窗口并加载页面。
+3. 渲染进程就是普通网页，两者通过 IPC 通信。
+
+
 ```javascript
 // preload.js - 安全桥接主进程与渲染进程
 const { contextBridge, ipcRenderer } = require('electron');
@@ -1781,6 +2131,13 @@ contextBridge.exposeInMainWorld('api', {
   writeFile: (path, content) => ipcRenderer.invoke('write-file', path, content),
 });
 ```
+
+**讲解：**
+
+1. `contextBridge` 把受限的 API 暴露给渲染进程。
+2. `ipcRenderer.invoke` 从渲染进程调用主进程能力。
+3. 比直接开 Node 集成更安全，是 Electron 官方推荐。
+
 
 ### 8.4 案例：React Native 移动应用
 
@@ -1832,6 +2189,13 @@ const styles = StyleSheet.create({
 });
 ```
 
+**讲解：**
+
+1. React Native 用 React 组件写移动端应用。
+2. `useState` 管理状态，`useEffect` 处理副作用。
+3. 一套 JS 知识覆盖 Web 与移动端。
+
+
 ### 8.5 案例：Cloudflare Workers 边缘计算
 
 ```javascript
@@ -1866,6 +2230,13 @@ export default {
 };
 ```
 
+**讲解：**
+
+1. Cloudflare Workers 把 JS 部署到全球边缘节点。
+2. `export default { fetch }` 处理 HTTP 请求。
+3. 边缘执行让首字节延迟降到几十毫秒。
+
+
 **wrangler.toml**：
 
 ```toml
@@ -1877,6 +2248,13 @@ compatibility_date = "2024-01-01"
 binding = "MY_KV"
 id = "your-kv-namespace-id"
 ```
+
+**讲解：**
+
+1. 这是 wrangler.toml 配置：`name` 是 Worker 名称，`main` 是入口文件。
+2. `wrangler deploy` 一键发布。
+3. 边缘函数是 Serverless 的现代形态。
+
 
 ### 8.6 案例：WebSocket 实时通信
 
@@ -1916,6 +2294,13 @@ wss.on('connection', (ws, req) => {
 console.log('WebSocket 服务器运行在 ws://localhost:8080');
 ```
 
+**讲解：**
+
+1. `ws` 库创建 WebSocket 服务端，`connection` 事件处理新连接。
+2. `ws.send` 向客户端推送消息。
+3. WebSocket 适合聊天、实时推送等双向通信。
+
+
 ```javascript
 // client.js - 浏览器端
 const ws = new WebSocket('ws://localhost:8080');
@@ -1938,6 +2323,13 @@ ws.onclose = () => {
   console.log('连接已关闭');
 };
 ```
+
+**讲解：**
+
+1. 浏览器端 `new WebSocket(url)` 建立连接。
+2. `onmessage` 接收服务端推送，`send` 发送消息。
+3. 连接断开会触发 onclose，需要重连策略。
+
 
 ---
 
@@ -1965,6 +2357,13 @@ Promise.resolve().then(() => console.log('3: promise'));
 console.log('4: end');
 ```
 
+**讲解：**
+
+1. 这是事件循环执行顺序的推演示例：宏任务与微任务交替。
+2. 每轮先取一个宏任务，然后清空所有微任务。
+3. 亲手推演一遍输出顺序，比背结论有效。
+
+
 **习题 6**：在 Node.js 中读取并解析一个 JSON 文件，使用 ESM 语法。考虑文件不存在与 JSON 格式错误的异常。
 
 ### 9.3 分析题
@@ -1976,6 +2375,13 @@ console.log(this);
 console.log(globalThis);
 setTimeout(() => console.log('done'), 0);
 ```
+
+**讲解：**
+
+1. 浏览器顶层 this 是 window，Node 顶层 this 是 module.exports。
+2. `globalThis` 是跨环境统一的全局对象。
+3. 需要访问全局时优先用 globalThis。
+
 
 **习题 8**：对比 CommonJS 与 ESM 在循环引用处理上的差异，并说明为什么 ESM 的"实时绑定"更安全。
 
@@ -2097,6 +2503,13 @@ setTimeout(() => console.log('done'), 0);
 4. 如果宏任务队列非空，回到步骤 1
 ```
 
+**讲解：**
+
+1. 事件循环主流程：宏任务 → 微任务 → 渲染。
+2. 微任务（Promise、queueMicrotask）在每次宏任务后清空。
+3. 记住：微任务永远先于下一个宏任务。
+
+
 ### Node.js 事件循环（libuv）
 
 ```
@@ -2109,6 +2522,13 @@ setTimeout(() => console.log('done'), 0);
 
 每个阶段之间清空微任务队列（Next Ticks + Microtasks）
 ```
+
+**讲解：**
+
+1. Node 的事件循环分阶段：timers → poll → check 等。
+2. `process.nextTick` 与微任务在阶段切换间执行。
+3. 浏览器与 Node 模型大同小异，先掌握浏览器版。
+
 
 ### Deno 事件循环
 
@@ -2129,6 +2549,13 @@ require('./utils')    → ./utils.js / ./utils/index.js
 require('./utils.js') → 显式扩展名
 ```
 
+**讲解：**
+
+1. CommonJS 解析顺序：内置模块 → node_modules → 路径。
+2. `require('fs')` 命中内置模块，`require('express')` 找 node_modules。
+3. 路径查找规则是 Node 模块系统的经典考点。
+
+
 ### Node.js ESM 解析
 
 ```
@@ -2137,6 +2564,13 @@ import 'express'      → node_modules/express/package.json 的 exports
 import './utils.js'   → 必须显式扩展名
 import './utils'      → 报错（ESM 要求扩展名）
 ```
+
+**讲解：**
+
+1. ESM 解析也支持内置模块，官方推荐写 `node:fs` 前缀。
+2. 包名解析看 package.json 的 exports 字段。
+3. exports 比 main 更精确，是现代包的标准出口。
+
 
 ### 浏览器 ESM 解析
 
@@ -2152,6 +2586,13 @@ import './utils'      → 报错（ESM 要求扩展名）
   import Vue from 'https://esm.sh/vue@3';
 </script>
 ```
+
+**讲解：**
+
+1. 浏览器 ESM 要求 import 路径带完整扩展名（如 ./app.js）。
+2. `type="module"` 让脚本按模块解析，自动延迟执行。
+3. 与 Node 的规则略有差异，跨环境项目用构建工具统一。
+
 
 ### Import Maps（浏览器）
 
@@ -2170,6 +2611,13 @@ import './utils'      → 报错（ESM 要求扩展名）
   import debounce from 'lodash/debounce.js';
 </script>
 ```
+
+**讲解：**
+
+1. importmap 在浏览器里做“包名映射”：把裸模块名映射到 URL。
+2. 让浏览器原生支持 `import 'lodash'` 这类写法。
+3. 适合无构建工具的小型项目，大项目仍推荐打包器。
+
 
 ## 附录 E：常见环境变量
 
