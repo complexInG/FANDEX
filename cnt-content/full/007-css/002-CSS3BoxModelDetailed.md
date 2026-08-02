@@ -638,6 +638,29 @@ console.log('实际宽度:', actualWidth);
 
 **讲解：** `content` 配合伪元素生成装饰内容，不污染 HTML；`attr()` 可读取元素属性插入文本。
 
+### 8.3 内容溢出（overflow）
+
+```css
+.clip {
+  overflow: hidden;        /* 溢出内容裁剪隐藏 */
+}
+.scroll-box {
+  overflow: auto;          /* 需要时出现滚动条 */
+}
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;     /* 不换行 */
+  text-overflow: ellipsis; /* 超出显示省略号 */
+}
+```
+
+**讲解：**
+
+- `overflow` 控制内容超出盒子时的表现：`visible`（默认）、`hidden`（裁剪）、`scroll`（常显滚动条）、`auto`（需要时滚动）；
+- 单行省略号三件套：`overflow: hidden` + `white-space: nowrap` + `text-overflow: ellipsis`；
+- `overflow-x`/`overflow-y` 可分别控制两个方向；
+- 设置 `overflow` 为 `hidden`/`auto`/`scroll` 会创建 BFC，可用于清除浮动，但注意裁剪风险。
+
 ## 9. 动手试试
 
 ### 入门版（必做）

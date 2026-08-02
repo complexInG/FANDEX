@@ -87,6 +87,29 @@ prerequisites:
 }
 ```
 
+## 文本装饰与对齐
+
+排版系统除了字号与行高，还包含文本的对齐与装饰属性：
+
+```css
+.quote {
+  text-align: center;        /* left/center/right/justify */
+  text-transform: uppercase; /* 大小写转换 */
+  text-decoration: underline;
+  letter-spacing: 0.05em;    /* 字间距 */
+  word-spacing: 0.1em;       /* 词间距 */
+  text-indent: 2em;          /* 首行缩进 */
+}
+```
+
+**讲解：**
+
+- `text-align` 控制行内内容对齐；`justify` 两端对齐需注意中文断行；
+- `text-decoration` 可组合 `underline`/`line-through`/`overline`，`text-decoration-color` 单独调色；
+- `text-transform` 只改变显示（`uppercase`/`lowercase`/`capitalize`），不改变源码文本；
+- `letter-spacing`/`word-spacing` 微调字距与词距，标题常用小幅字距；
+- 垂直方向用 `vertical-align` 控制行内元素基线对齐（`middle`/`baseline`/`super` 等）。
+
 ## 常见误区
 
 | 误区 | 真相 |
@@ -95,9 +118,10 @@ prerequisites:
 | 行高越宽松越好 | 正文 1.5-1.7 合适，标题用紧凑行高，避免留白失衡 |
 | 间距随手填 | 间距来自同一数值体系，视觉才统一 |
 | 只用 px 固定字号 | 用 rem 基准 + clamp() 兼顾可访问性与响应式 |
+| 文本装饰乱用 | 下划线只用于链接，正文装饰用 color/weight 表达 | 用语义类与设计令牌统一 |
 
 ## 小结
 
 排版系统的本质是"约束"：字号、行高、间距都从有限的数值集合里取值。
 先用 CSS 变量把阶梯定义出来，再让所有组件消费变量，页面自然会整齐。
-下一步可结合 [CSS 变量与自定义属性](/FANDEX/css/023-CSSVariableCustomAttribute/) 做主题化扩展。
+下一步可结合 `css/023-CSSVariableCustomAttribute` 做主题化扩展。

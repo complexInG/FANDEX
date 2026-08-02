@@ -266,6 +266,27 @@
           "desc": "counter-reset/increment 与自动编号",
           "difficulty": "intermediate",
           "doc": "055-CSSCounters"
+        },
+        {
+          "id": "css-035",
+          "title": "字体加载",
+          "desc": "@font-face、font-display 与字体性能",
+          "difficulty": "intermediate",
+          "doc": "056-CSSFontLoading"
+        },
+        {
+          "id": "css-036",
+          "title": "CSS 滤镜",
+          "desc": "filter 十个函数与组合应用",
+          "difficulty": "intermediate",
+          "doc": "057-CSSFilters"
+        },
+        {
+          "id": "css-037",
+          "title": "对象适配",
+          "desc": "object-fit 与 object-position",
+          "difficulty": "beginner",
+          "doc": "058-CSSObjectFit"
         }
       ]
     }
