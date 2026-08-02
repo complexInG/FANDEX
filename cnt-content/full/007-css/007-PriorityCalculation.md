@@ -32,490 +32,8 @@ prerequisites:
 
 具体程度按“ID > 类 > 标签”排序：`#main` 比 `.card` 具体，`.card` 比 `div` 具体。`!important` 是“掀桌子”的例外，`@layer` 和 `:where()` 则是现代 CSS 用来“重新排座次”的工具。
 
-## 1. 历史动机与发展脉络
-
-### 1.1 CSS 1（1996）：优先级的雏形
-
-CSS 1 由 Håkon Wium Lie 与 Bert Bos 于 1996 年提出，首次引入「层叠」（Cascade）概念。当时规范对优先级的定义较为粗糙：
-
-> The weight of a rule's selector is determined by counting the number of ID attributes (a), the number of CLASS attributes (b), and the number of element names (c) in the selector.
-
-CSS 1 仅使用三元组 (a, b, c)，且未明确「内联样式」与 `!important` 的位置。浏览器实现差异较大，开发者常需依赖 `!important` 解决冲突。
-
-### 1.2 CSS 2（1998）：引入 `!important` 与来源排序
-
-CSS 2 正式引入 `!important` 声明，并明确三类样式来源：
-
-1. **Author**：作者样式表（页面开发者编写）。
-2. **User**：用户样式表（浏览器用户自定义）。
-3. **User Agent**：浏览器默认样式表。
-
-层叠顺序规定：`Author Normal < User Normal < User Agent Normal < User !important < Author !important`。
-
-这一阶段优先级演化为 (a, b, c, d) 四元组，其中 `a` 表示内联样式（0 或 1）。
-
-### 1.3 CSS 2.1（2011）：规范的成熟
-
-CSS 2.1 §6.4.3 给出经典的优先级计算规则：
-
-> A selector's specificity is calculated as follows:
-> - count 1 if the declaration is from a 'style' attribute rather than a rule with a selector, 0 otherwise (= a)
-> - count the number of ID attributes in the selector (= b)
-> - count the number of other attributes and pseudo-classes in the selector (= c)
-> - count the number of element names and pseudo-elements in the selector (= d)
-
-四元组 (a, b, c, d) 沿用至今，并明确「通配符 `*`、组合符 `> + ~` 不计入优先级」。
-
-### 1.4 CSS Selectors Level 3（2011）：伪类细化
-
-[Selectors Level 3](https://www.w3.org/TR/selectors-3/) 引入大量新伪类（`:nth-child()`、`:not()`、`:checked` 等），并明确：
-
-- `:not()` 本身不计入优先级，但其参数中的选择器计入。
-- 伪元素（`::before`、`::after` 等）以 (0, 0, 0, 1) 计入。
-- 伪类（`:hover`、`:focus` 等）以 (0, 0, 1, 0) 计入。
-
-### 1.5 CSS Cascading Level 4（2016-2021）：层叠算法的规范化
-
-[CSS Cascading and Inheritance Level 4](https://www.w3.org/TR/css-cascade-4/) 将层叠算法规范化为 8 阶段排序：
-
-1. **Origin & Importance**：来源与重要性。
-2. **Context**：Shadow DOM 等上下文隔离。
-3. **Element-attached**：元素附加样式（如 `style` 属性）。
-4. **Layer**：`@layer` 声明的层级。
-5. **Specificity**：优先级四元组。
-6. **Order of Appearance**：出现顺序。
-7. **Animation**：动画声明。
-8. **Transition**：过渡声明（最高）。
-
-### 1.6 `@layer` 的引入（2022）
-
-[CSS Cascading and Inheritance Level 5](https://www.w3.org/TR/css-cascade-5/) 引入 `@layer` 规则，允许开发者显式声明样式层级：
-
-```css
-@layer reset, framework, components, utilities;
-
-@layer reset {
-  /* 重置样式 */
-}
-
-@layer framework {
-  /* 框架样式 */
-}
-```
-
-层内样式的优先级低于未分层样式（unlayered styles），且层的顺序由首次声明决定。`@layer` 是 CSS 自 2011 年以来对优先级管理的最大变革。
-
-### 1.7 `:where()` 与 `:is()` 的标准化（2021-2022）
-
-[:is()](https://www.w3.org/TR/selectors-4/#matches-pseudo) 与 [:where()](https://www.w3.org/TR/selectors-4/#zero-matches) 在 Selectors Level 4 中标准化：
-
-- `:is(A, B, C)`：匹配参数中任意选择器，优先级取参数中最具体者。
-- `:where(A, B, C)`：同 `:is()`，但优先级恒为 (0, 0, 0, 0)。
-
-`:where()` 的零优先级特性使其成为「重置第三方库样式」的理想工具。
-
-### 1.8 `:has()` 的到来（2023）
-
-[:has()](https://www.w3.org/TR/selectors-4/#relational) 称为「父选择器」，允许根据子元素状态选择父元素：
-
-```css
-.card:has(img) {
-  padding: 0; /* 仅当 card 内有 img 时生效 */
-}
-```
-
-`:has()` 的优先级由其参数中最具体的选择器决定，与 `:is()` 一致。
-
-### 1.9 演进时间线
-
-| 年份 | 规范/事件 | 核心变化 |
-| --- | --- | --- |
-| 1996 | CSS 1 | 三元组 (a, b, c) 优先级 |
-| 1998 | CSS 2 | 引入 `!important` 与三类来源 |
-| 2011 | CSS 2.1 | 四元组 (a, b, c, d) 成熟 |
-| 2011 | Selectors Level 3 | `:not()` 与伪元素优先级明确 |
-| 2016 | Cascade Level 4 | 8 阶段层叠算法规范化 |
-| 2021 | Selectors Level 4 | `:is()` / `:where()` 标准化 |
-| 2022 | Cascade Level 5 | `@layer` 引入 |
-| 2023 | `:has()` 浏览器支持 | 父选择器落地（Chrome 105+, Safari 15.4+） |
-| 2024 | Cascade Level 6 草案 | 探讨 `@layer` 嵌套与范围查询 |
-
----
-
-## 2. 形式化定义
-
-### 2.1 规范条款
-
-依据 [CSS Cascading and Inheritance Level 4 §6.3](https://www.w3.org/TR/css-cascade-4/#cascade-specific)：
-
-> If the cascade results in a value, use it. Otherwise, the property is inherited or its initial value is used.
-
-以及 [CSS 2.1 §6.4.3](https://www.w3.org/TR/CSS21/cascade.html#specificity) 对优先级的定义：
-
-> A selector's specificity is calculated as follows: count the number of ID attributes (a), other attributes and pseudo-classes (b), and element names and pseudo-elements (c) in the selector.
-
-### 2.2 核心术语
-
-| 术语 | 英文 | 定义 |
-| --- | --- | --- |
-| 优先级 | Specificity | 选择器的权重值，用于决定同来源同层级时的胜出声明 |
-| 层叠 | Cascade | 浏览器决定最终生效样式的完整算法 |
-| 来源 | Origin | 样式表的类别：User Agent / User / Author |
-| 层 | Layer | 通过 `@layer` 声明的命名样式组 |
-| 内联样式 | Inline style | 通过 `style` 属性直接附加在元素上的样式 |
-| 重要性 | Importance | `!important` 声明，反转来源优先级 |
-| 出现顺序 | Order of Appearance | 同优先级时，后出现的声明胜出 |
-
-### 2.3 优先级四元组
-
-CSS 优先级用四元组 $(A, B, C, D)$ 表示，其中：
-
-- $A$：内联样式（`style` 属性），取值 0 或 1。
-- $B$：ID 选择器（`#id`）的数量。
-- $C$：类选择器（`.class`）、属性选择器（`[attr]`）、伪类（`:hover`）的数量。
-- $D$：元素选择器（`div`）、伪元素（`::before`）的数量。
-
-> **注**：部分文献采用 (a, b, c, d) 顺序，本节统一使用 $(A, B, C, D)$ 以避免与 CSS 1 的三元组混淆。
-
-### 2.4 形式化计算函数
-
-设选择器 $S$ 由若干简单选择器 $s_1, s_2, \ldots, s_n$ 组合而成，定义优先级函数 $\text{Spec}(S)$：
-
-$$
-\text{Spec}(S) = \left( \text{Inline}(S), \sum_{i=1}^{n} \text{ID}(s_i), \sum_{i=1}^{n} \text{Class}(s_i), \sum_{i=1}^{n} \text{Element}(s_i) \right)
-$$
-
-其中：
-
-$$
-\text{ID}(s_i) =
-\begin{cases}
-1, & \text{if } s_i \text{ 是 ID 选择器} \\
-0, & \text{otherwise}
-\end{cases}
-$$
-
-$$
-\text{Class}(s_i) =
-\begin{cases}
-1, & \text{if } s_i \in \{\text{类选择器}, \text{属性选择器}, \text{伪类（除 }:where()\text{）}\} \\
-0, & \text{otherwise}
-\end{cases}
-$$
-
-$$
-\text{Element}(s_i) =
-\begin{cases}
-1, & \text{if } s_i \in \{\text{元素选择器}, \text{伪元素}\} \\
-0, & \text{otherwise}
-\end{cases}
-$$
-
-### 2.5 比较运算
-
-两个优先级四元组 $(A_1, B_1, C_1, D_1)$ 与 $(A_2, B_2, C_2, D_2)$ 的比较遵循字典序：
-
-$$
-\text{Compare}(S_1, S_2) =
-\begin{cases}
-S_1 > S_2, & \text{if } A_1 > A_2 \\
-S_1 > S_2, & \text{if } A_1 = A_2 \wedge B_1 > B_2 \\
-S_1 > S_2, & \text{if } A_1 = A_2 \wedge B_1 = B_2 \wedge C_1 > C_2 \\
-S_1 > S_2, & \text{if } A_1 = A_2 \wedge B_1 = B_2 \wedge C_1 = C_2 \wedge D_1 > D_2 \\
-S_1 = S_2, & \text{if all equal}
-\end{cases}
-$$
-
-注意：四元组的进位关系是「无限基数」而非十进制。即 $(0, 1, 0, 0) > (0, 0, N, 0)$ 对任意有限 $N$ 成立。
-
-### 2.6 层叠算法的形式化
-
-[CSS Cascading and Inheritance Level 4 §6.1](https://www.w3.org/TR/css-cascade-4/#cascading) 定义层叠排序函数 $\text{Sort}(d_1, d_2)$，对两个声明 $d_1, d_2$ 比较：
-
-$$
-\text{Sort}(d_1, d_2) =
-\begin{cases}
-d_1, & \text{if } \text{Origin}(d_1) \succ \text{Origin}(d_2) \\
-d_1, & \text{if } \text{Origin equal} \wedge \text{Context}(d_1) \succ \text{Context}(d_2) \\
-d_1, & \text{if } \text{Context equal} \wedge \text{ElementAttached}(d_1) \succ \text{ElementAttached}(d_2) \\
-d_1, & \text{if } \text{ElementAttached equal} \wedge \text{Layer}(d_1) \succ \text{Layer}(d_2) \\
-d_1, & \text{if } \text{Layer equal} \wedge \text{Spec}(d_1) > \text{Spec}(d_2) \\
-d_1, & \text{if } \text{Spec equal} \wedge \text{Order}(d_1) > \text{Order}(d_2) \\
-d_1, & \text{if } \text{Order equal} \wedge \text{Animation}(d_1) \succ \text{Animation}(d_2) \\
-d_1, & \text{if } \text{Animation equal} \wedge \text{Transition}(d_1) \succ \text{Transition}(d_2) \\
-d_2, & \text{otherwise}
-\end{cases}
-$$
-
-其中 $\succ$ 表示「优先于」。
-
-### 2.7 来源与重要性排序
-
-| 来源 | 正常 | `!important` |
-| --- | --- | --- |
-| User Agent（浏览器默认） | 1（最低） | 6 |
-| User（用户样式） | 2 | 7 |
-| Author（作者样式） | 3 | 8 |
-| Author（未分层，unlayered） | 4 | 9 |
-| Author（分层，layered） | 5 | 10（最高） |
-
-> **注**：CSS Cascade Level 5 引入 `@layer` 后，分层样式总是低于未分层样式（无论优先级多高）。
-
-### 2.8 `:where()` 与 `:is()` 的优先级规则
-
-设 `:is(S_1, S_2, \ldots, S_n)` 的优先级为：
-
-$$
-\text{Spec}(:\text{is}(S_1, S_2, \ldots, S_n)) = \max_{i=1}^{n} \text{Spec}(S_i)
-$$
-
-而 `:where()` 恒为零：
-
-$$
-\text{Spec}(:\text{where}(S_1, S_2, \ldots, S_n)) = (0, 0, 0, 0)
-$$
-
-`:has(S)` 与 `:not(S)` 的优先级为参数中最具体者：
-
-$$
-\text{Spec}(:\text{has}(S)) = \text{Spec}(:\text{is}(S))
-$$
-
----
-
-## 3. 理论推导与原理解析
-
-### 3.1 优先级的「基数」本质
-
-CSS 优先级四元组的比较并非十进制数比较，而是基于「基数」的字典序比较。形式化地：
-
-$$
-(A, B, C, D) \text{ 的比较基于 } A \cdot \aleph_0^3 + B \cdot \aleph_0^2 + C \cdot \aleph_0 + D
-$$
-
-其中 $\aleph_0$ 是可数无穷基数。这意味着：
-
-- $(0, 1, 0, 0) > (0, 0, N, 0)$ 对任意有限 $N$。
-- $(1, 0, 0, 0) > (0, N, M, K)$ 对任意有限 $N, M, K$。
-
-这一设计反映了 CSS 的语义优先级：ID 选择器表达「唯一标识」，应绝对优先于「类别标识」；内联样式表达「元素级定制」，应绝对优先于「规则级声明」。
-
-### 3.2 层叠算法的决策树
-
-层叠算法可视为一棵决策树，每个节点对应一个比较维度。浏览器从根节点开始，依次比较：
-
-```mermaid
-flowchart TD
-    T0["1. Origin & Importance"]
-    T1["不同 → 较高者胜"]
-    T2["相同 → 进入 2"]
-    T3["2. Context (Shadow DOM)"]
-    T4["不同 → 较外层胜"]
-    T5["相同 → 进入 3"]
-    T6["3. Element-attached (style 属性)"]
-    T7["不同 → 有 style 者胜"]
-    T8["相同 → 进入 4"]
-    T9["4. Layer"]
-    T10["不同 → 未分层胜；分层中后声明胜"]
-    T11["相同 → 进入 5"]
-    T12["5. Specificity"]
-    T13["不同 → 较高者胜"]
-    T14["相同 → 进入 6"]
-    T15["6. Order of Appearance"]
-    T16["不同 → 后出现者胜"]
-    T17["相同 → 进入 7"]
-    T18["7. Animation"]
-    T19["... (略)"]
-    T20["8. Transition (最高)"]
-    T0 --> T1
-    T0 --> T2
-    T2 --> T3
-    T3 --> T4
-    T3 --> T5
-    T5 --> T6
-    T6 --> T7
-    T6 --> T8
-    T8 --> T9
-    T9 --> T10
-    T9 --> T11
-    T11 --> T12
-    T12 --> T13
-    T12 --> T14
-    T14 --> T15
-    T15 --> T16
-    T15 --> T17
-    T17 --> T18
-    T18 --> T19
-    T19 --> T20
-```
-
-### 3.3 `!important` 的反转机制
-
-`!important` 的核心机制是「反转来源优先级」：
-
-- 正常声明：Author > User > User Agent
-- `!important` 声明：User Agent > User > Author
-
-但 [CSS Cascade Level 4](https://www.w3.org/TR/css-cascade-4/#importance) 调整了用户 `!important` 与作者 `!important` 的关系：作者 `!important` 高于用户 `!important`（这逆转了 CSS 2.1 的顺序，以避免用户样式破坏作者样式）。
-
-形式化地，定义来源优先级函数 $\text{OriginRank}(d)$：
-
-$$
-\text{OriginRank}(d) =
-\begin{cases}
-1, & \text{UA Normal} \\
-2, & \text{User Normal} \\
-3, & \text{Author Normal (layered)} \\
-4, & \text{Author Normal (unlayered)} \\
-5, & \text{Author !important (unlayered)} \\
-6, & \text{Author !important (layered)} \\
-7, & \text{User !important} \\
-8, & \text{UA !important} \\
-9, & \text{Transition}
-\end{cases}
-$$
-
-### 3.4 `@layer` 的语义
-
-`@layer` 引入显式的层级概念，其语义为：
-
-1. **声明顺序**：`@layer A, B, C;` 声明三个层，优先级 A < B < C。
-2. **未分层优先**：未分层的样式（unlayered）总是优先于分层样式。
-3. **嵌套层**：`@layer A.B { ... }` 等价于在 A 层内声明 B 子层，B 的优先级高于 A 内的其他内容但低于 A 的兄弟层。
-
-```css
-@layer A, B;
-@layer A {
-  .x { color: red; } /* 优先级低 */
-}
-@layer B {
-  .x { color: blue; } /* 优先级高 */
-}
-.x { color: green; } /* 未分层，最高 */
-```
-
-形式化地，设层 $L$ 的优先级为 $\text{LayerRank}(L)$：
-
-$$
-\text{LayerRank}(L) =
-\begin{cases}
-0, & L \text{ 是未分层样式} \\
-n, & L \text{ 是第 } n \text{ 个声明的层（从 1 开始）}
-\end{cases}
-$$
-
-未分层样式的 $\text{LayerRank}$ 总是大于任何分层样式。
-
-### 3.5 `:where()` 的零优先级设计
-
-`:where()` 恒返回 (0, 0, 0, 0) 的设计目的是提供「无副作用的样式重置」。考虑以下场景：
-
-```css
-/* 第三方库样式 */
-.card { padding: 16px; }
-
-/* 业务代码：重置 padding */
-:where(.card) { padding: 0; }
-/* 优先级 (0, 0, 1, 0) vs (0, 0, 0, 0) */
-/* 第三方库胜出！ */
-```
-
-如需重置，应使用：
-
-```css
-:where(.card) { padding: 0; }  /* (0,0,0,0) */
-.card { padding: 16px; }       /* (0,0,1,0) - 第三方胜出 */
-
-/* 改用更高优先级 */
-.card.card { padding: 0; }     /* (0,0,2,0) - 业务胜出 */
-```
-
-`:where()` 的真正价值在于「组合选择器时降低副作用」：
-
-```css
-/* 不使用 :where() - 复杂选择器污染优先级 */
-.card .title { font-size: 1rem; }  /* (0,0,2,0) */
-
-/* 使用 :where() - 优先级保持为 0 */
-:where(.card .title) { font-size: 1rem; }  /* (0,0,0,0) */
-```
-
-### 3.6 内联样式与 `!important` 的关系
-
-内联样式（`style` 属性）的优先级为 $(1, 0, 0, 0)$，但 `!important` 仍可覆盖：
-
-```html
-<div style="color: red;">红色</div>
-```
-
-```css
-div { color: blue !important; }  /* 覆盖内联样式 */
-```
-
-形式化地：
-
-$$
-\text{Effective}(\text{inline normal}) < \text{Effective}(\text{rule !important})
-$$
-
-但内联 `!important` 仍高于规则 `!important`：
-
-```html
-<div style="color: red !important;">红色</div>
-```
-
-```css
-div { color: blue !important; }  /* 不覆盖内联 !important */
-```
-
-### 3.7 计算示例
-
-给定选择器 `#nav .list li:hover`，计算其优先级：
-
-1. `#nav`：ID 选择器 → $B = 1$
-2. `.list`：类选择器 → $C = 1$
-3. `li`：元素选择器 → $D = 1$
-4. `:hover`：伪类 → $C = 2$
-
-合计：$(0, 1, 2, 1)$。
-
-给定选择器 `:is(#header, .nav) a`：
-
-1. `:is(#header, .nav)`：取参数中最高，即 `#header` 的 $(0, 1, 0, 0)$
-2. `a`：元素选择器 → $D = 1$
-
-合计：$(0, 1, 0, 1)$。
-
-给定选择器 `:where(#header, .nav) a`：
-
-1. `:where(...)`：恒为 $(0, 0, 0, 0)$
-2. `a`：元素选择器 → $D = 1$
-
-合计：$(0, 0, 0, 1)$。
-
-### 3.8 优先级与可访问性
-
-优先级直接影响可访问性（Accessibility）：
-
-1. **用户样式表**：浏览器允许用户定义自定义样式（如放大字号、高对比度）。这些样式通过 `!important` 提升优先级，确保覆盖作者样式。
-2. **`prefers-color-scheme`**：用户偏好（如深色模式）通过媒体查询应用，但优先级仍遵循层叠规则。
-3. **`forced-colors`**：Windows 高对比度模式会强制覆盖颜色，作者样式应通过 `forced-color-adjust: none` 选择退出。
-
-```css
-@media (forced-colors: active) {
-  .button {
-    forced-color-adjust: none;
-    background: Canvas;
-    color: CanvasText;
-  }
-}
-```
-
----
-
-## 4. 代码示例
-
-### 4.1 基础示例：四元组计算
+## 1. 核心必读：代码示例
+### 1.1 基础示例：四元组计算
 
 ```html
 <!DOCTYPE html>
@@ -575,7 +93,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 
 **讲解：** 四元组 `(内联, ID, 类, 元素)` 从左到右比较，第一个不同的数字决定胜负：`#main .text p` 是 (0,1,1,1)，胜过 (0,0,1,0)；内联样式是 (1,0,0,0)，除 `!important` 外最高。
 
-### 4.2 `!important` 与来源排序
+### 1.2 `!important` 与来源排序
 
 ```html
 <!DOCTYPE html>
@@ -608,7 +126,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 4.3 `:where()` 与 `:is()` 对比
+### 1.3 `:where()` 与 `:is()` 对比
 
 ```html
 <!DOCTYPE html>
@@ -643,7 +161,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 
 **讲解：** `:is()` 的优先级取参数列表中的最高者（示例中与 `.card .title` 相同，后写胜出）；`:where()` 优先级恒为 0，适合“可被业务规则随时覆盖”的默认样式。
 
-### 4.4 `@layer` 分层管理
+### 1.4 `@layer` 分层管理
 
 ```html
 <!DOCTYPE html>
@@ -697,7 +215,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 4.5 `:has()` 父选择器
+### 1.5 `:has()` 父选择器
 
 ```html
 <!DOCTYPE html>
@@ -757,7 +275,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 4.6 `:not()` 的优先级
+### 1.6 `:not()` 的优先级
 
 ```html
 <!DOCTYPE html>
@@ -795,7 +313,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 4.7 企业级：设计系统分层架构
+### 1.7 企业级：设计系统分层架构
 
 ```html
 <!DOCTYPE html>
@@ -896,7 +414,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 4.8 优先级可视化工具
+### 1.8 优先级可视化工具
 
 ```html
 <!DOCTYPE html>
@@ -994,7 +512,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 </html>
 ```
 
-### 4.9 Stylelint 强制优先级规则
+### 1.9 Stylelint 强制优先级规则
 
 ```javascript
 // .stylelintrc.js - 企业级 Stylelint 配置
@@ -1022,7 +540,7 @@ module.exports = {
 };
 ```
 
-### 4.10 React + CSS Modules 优先级管理
+### 1.10 React + CSS Modules 优先级管理
 
 ```jsx
 // Button.tsx - React 组件，使用 CSS Modules 隔离优先级
@@ -1114,9 +632,8 @@ export function Button({
 
 ---
 
-## 5. 对比分析
-
-### 5.1 主流 CSS 方法论的优先级策略
+## 2. 对比分析
+### 2.1 主流 CSS 方法论的优先级策略
 
 | 方法论 | 核心思想 | 优先级控制 | 优势 | 劣势 |
 | --- | --- | --- | --- | --- |
@@ -1128,7 +645,7 @@ export function Button({
 | **CSS Modules** | 编译时生成唯一类名 | 自动隔离 | 零运行时 | 仅限组件级 |
 | **@layer** | 显式层级声明 | 层级控制 | 灵活、强大 | 兼容性、心智模型 |
 
-### 5.2 主流框架的优先级实践
+### 2.2 主流框架的优先级实践
 
 | 框架 | 策略 | 典型选择器 | 优先级 |
 | --- | --- | --- | --- |
@@ -1138,7 +655,7 @@ export function Button({
 | **Ant Design 5** | CSS-in-JS（CSSinJS） | 动态生成类名 | (0,0,1,0) |
 | **GitHub Primer** | 工具类 + 组件类 | `.btn` `.btn-primary` | (0,0,1,0) - (0,0,2,0) |
 
-### 5.3 Tailwind vs Bootstrap 的优先级哲学
+### 2.3 Tailwind vs Bootstrap 的优先级哲学
 
 **Tailwind CSS**（Atomic CSS 哲学）：
 
@@ -1164,7 +681,7 @@ export function Button({
 - 优势：HTML 简洁，语义清晰。
 - 劣势：覆盖时需提升优先级（如 `.my-btn.btn-primary`）。
 
-### 5.4 `@layer` vs BEM vs CSS Modules
+### 2.4 `@layer` vs BEM vs CSS Modules
 
 | 维度 | `@layer` | BEM | CSS Modules |
 | --- | --- | --- | --- |
@@ -1175,7 +692,7 @@ export function Button({
 | **团队协作** | 需明确层级约定 | 需命名规范 | 自动隔离 |
 | **适用场景** | 大型项目、多团队 | 中小型项目 | 组件化项目 |
 
-### 5.5 预处理器对优先级的影响
+### 2.5 预处理器对优先级的影响
 
 | 预处理器 | 嵌套规则 | 编译后优先级 | 备注 |
 | --- | --- | --- | --- |
@@ -1186,7 +703,7 @@ export function Button({
 
 > **最佳实践**：预处理器嵌套不超过 3 层，避免生成 (0,0,N,0) 的高优先级选择器。
 
-### 5.6 现代选择器优先级对比
+### 2.6 现代选择器优先级对比
 
 | 选择器 | 语法 | 优先级 | 浏览器支持 |
 | --- | --- | --- | --- |
@@ -1203,9 +720,8 @@ export function Button({
 
 ---
 
-## 6. 常见陷阱与最佳实践
-
-### 6.1 陷阱 1：ID 选择器的优先级陷阱
+## 3. 常见陷阱与最佳实践
+### 3.1 陷阱 1：ID 选择器的优先级陷阱
 
 **问题**：使用 ID 选择器后，覆盖样式变得困难。
 
@@ -1237,7 +753,7 @@ export function Button({
 }
 ```
 
-### 6.2 陷阱 2：`!important` 滥用
+### 3.2 陷阱 2：`!important` 滥用
 
 **问题**：`!important` 滥用导致样式难以维护，形成「优先级军备竞赛」。
 
@@ -1252,7 +768,7 @@ export function Button({
 
 **最佳实践**：仅在第三方库覆盖或可访问性场景使用 `!important`，业务代码应通过结构化选择器解决。
 
-### 6.3 陷阱 3：深层嵌套导致优先级过高
+### 3.3 陷阱 3：深层嵌套导致优先级过高
 
 **问题**：SCSS / Less 嵌套过深，生成高优先级选择器。
 
@@ -1278,7 +794,7 @@ export function Button({
 }
 ```
 
-### 6.4 陷阱 4：通配符与组合符误用
+### 3.4 陷阱 4：通配符与组合符误用
 
 **问题**：误以为 `*` 和 `>` `+` `~` 计入优先级。
 
@@ -1291,7 +807,7 @@ export function Button({
 
 **最佳实践**：理解规范条款，避免误判。
 
-### 6.5 陷阱 5：`:where()` 的零优先级误用
+### 3.5 陷阱 5：`:where()` 的零优先级误用
 
 **问题**：误以为 `:where()` 能提升优先级。
 
@@ -1308,7 +824,7 @@ export function Button({
 
 **最佳实践**：`:where()` 用于「降低副作用」，如重置样式或第三方库包装。
 
-### 6.6 陷阱 6：`@layer` 内的优先级误判
+### 3.6 陷阱 6：`@layer` 内的优先级误判
 
 **问题**：误以为层内高优先级能跨越层边界。
 
@@ -1327,7 +843,7 @@ export function Button({
 
 **最佳实践**：理解 `@layer` 的层间不可越级特性。
 
-### 6.7 陷阱 7：内联样式与 JavaScript 设置的优先级
+### 3.7 陷阱 7：内联样式与 JavaScript 设置的优先级
 
 **问题**：通过 `element.style` 设置的样式优先级为 (1,0,0,0)，难以覆盖。
 
@@ -1353,7 +869,7 @@ element.classList.add('active');
 .element.active { color: blue; }  /* (0,0,2,0) */
 ```
 
-### 6.8 陷阱 8：用户样式表的优先级
+### 3.8 陷阱 8：用户样式表的优先级
 
 **问题**：忽略用户样式表（如无障碍设置）的优先级。
 
@@ -1368,9 +884,8 @@ element.classList.add('active');
 
 ---
 
-## 7. 工程实践
-
-### 7.1 优先级管理架构
+## 4. 工程实践
+### 4.1 优先级管理架构
 
 ```mermaid
 flowchart TD
@@ -1383,7 +898,7 @@ flowchart TD
     L7 --> UL[Unlayered: 业务代码<br/>最高优先级]
 ```
 
-### 7.2 Stylelint 配置实践
+### 4.2 Stylelint 配置实践
 
 ```javascript
 // .stylelintrc.js - 企业级 Stylelint 配置
@@ -1421,7 +936,7 @@ module.exports = {
 };
 ```
 
-### 7.3 PostCSS 自动降级
+### 4.3 PostCSS 自动降级
 
 ```javascript
 // postcss.config.js - PostCSS 配置
@@ -1441,7 +956,7 @@ module.exports = {
 };
 ```
 
-### 7.4 设计令牌（Design Tokens）
+### 4.4 设计令牌（Design Tokens）
 
 ```css
 /* tokens.css - 设计令牌层 */
@@ -1477,7 +992,7 @@ module.exports = {
 }
 ```
 
-### 7.5 组件库优先级管理
+### 4.5 组件库优先级管理
 
 ```css
 /* components.css - 组件库层 */
@@ -1510,7 +1025,7 @@ module.exports = {
 }
 ```
 
-### 7.6 工具类优先级管理
+### 4.6 工具类优先级管理
 
 ```css
 /* utilities.css - 工具类层 */
@@ -1536,7 +1051,7 @@ module.exports = {
 
 > **注**：工具类中的 `!important` 是有意为之，确保工具类覆盖组件类。
 
-### 7.7 调试优先级
+### 4.7 调试优先级
 
 ```javascript
 // 优先级调试工具
@@ -1576,7 +1091,7 @@ const element = document.querySelector('.btn');
 console.log(debugSpecificity(element));
 ```
 
-### 7.8 Playwright 视觉回归测试
+### 4.8 Playwright 视觉回归测试
 
 ```javascript
 // priority.spec.js - Playwright 视觉回归测试
@@ -1609,7 +1124,7 @@ test.describe('优先级回归测试', () => {
 });
 ```
 
-### 7.9 浏览器兼容性处理
+### 4.9 浏览器兼容性处理
 
 ```css
 /* 兼容性处理：@layer 降级方案 */
@@ -1639,9 +1154,8 @@ test.describe('优先级回归测试', () => {
 
 ---
 
-## 8. 案例研究
-
-### 8.1 Bootstrap 5 的优先级策略
+## 5. 案例研究
+### 5.1 Bootstrap 5 的优先级策略
 
 Bootstrap 5 采用「组件类 + 修饰类」的策略：
 
@@ -1679,7 +1193,7 @@ Bootstrap 5 采用「组件类 + 修饰类」的策略：
 
 **优先级分析**：三个类组合，优先级 (0,0,3,0)，但通过类组合而非嵌套，可维护性较好。
 
-### 8.2 Tailwind CSS v3.4 的优先级策略
+### 5.2 Tailwind CSS v3.4 的优先级策略
 
 Tailwind 采用「原子工具类」策略：
 
@@ -1702,7 +1216,7 @@ Tailwind 采用「原子工具类」策略：
 
 **优先级分析**：每个类独立 (0,0,1,0)，覆盖时需通过 `!` 前缀（如 `!bg-red-500`）或自定义类。
 
-### 8.3 Material Design 3 的优先级策略
+### 5.3 Material Design 3 的优先级策略
 
 Material Design 3（MDC Web）采用「主题类 + 属性」策略：
 
@@ -1728,7 +1242,7 @@ Material Design 3（MDC Web）采用「主题类 + 属性」策略：
 }
 ```
 
-### 8.4 GitHub Primer 的优先级策略
+### 5.4 GitHub Primer 的优先级策略
 
 GitHub Primer 采用「工具类 + 组件类」混合策略：
 
@@ -1752,7 +1266,7 @@ GitHub Primer 采用「工具类 + 组件类」混合策略：
 .text-center { text-align: center !important; }
 ```
 
-### 8.5 Ant Design 5 的优先级策略
+### 5.5 Ant Design 5 的优先级策略
 
 Ant Design 5 采用 CSS-in-JS（cssinjs）方案：
 
@@ -1782,7 +1296,7 @@ import { Button } from 'antd';
 }
 ```
 
-### 8.6 生产事故：优先级军备竞赛
+### 5.6 生产事故：优先级军备竞赛
 
 **场景**：某电商平台首页按钮颜色异常，多个团队反复使用 `!important` 覆盖。
 
@@ -2093,6 +1607,525 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 
 ---
 
+## 6. 深入理解（选读）
+
+> 以下内容适合想彻底搞懂机制原理的读者，第一遍学习可跳过。
+
+### 6.1 历史演进
+
+### 6.1.1 CSS 1（1996）：优先级的雏形
+
+CSS 1 由 Håkon Wium Lie 与 Bert Bos 于 1996 年提出，首次引入「层叠」（Cascade）概念。当时规范对优先级的定义较为粗糙：
+
+> The weight of a rule's selector is determined by counting the number of ID attributes (a), the number of CLASS attributes (b), and the number of element names (c) in the selector.
+
+CSS 1 仅使用三元组 (a, b, c)，且未明确「内联样式」与 `!important` 的位置。浏览器实现差异较大，开发者常需依赖 `!important` 解决冲突。
+
+### 6.1.2 CSS 2（1998）：引入 `!important` 与来源排序
+
+CSS 2 正式引入 `!important` 声明，并明确三类样式来源：
+
+1. **Author**：作者样式表（页面开发者编写）。
+2. **User**：用户样式表（浏览器用户自定义）。
+3. **User Agent**：浏览器默认样式表。
+
+层叠顺序规定：`Author Normal < User Normal < User Agent Normal < User !important < Author !important`。
+
+这一阶段优先级演化为 (a, b, c, d) 四元组，其中 `a` 表示内联样式（0 或 1）。
+
+### 6.1.3 CSS 2.1（2011）：规范的成熟
+
+CSS 2.1 §6.4.3 给出经典的优先级计算规则：
+
+> A selector's specificity is calculated as follows:
+> - count 1 if the declaration is from a 'style' attribute rather than a rule with a selector, 0 otherwise (= a)
+> - count the number of ID attributes in the selector (= b)
+> - count the number of other attributes and pseudo-classes in the selector (= c)
+> - count the number of element names and pseudo-elements in the selector (= d)
+
+四元组 (a, b, c, d) 沿用至今，并明确「通配符 `*`、组合符 `> + ~` 不计入优先级」。
+
+### 6.1.4 CSS Selectors Level 3（2011）：伪类细化
+
+[Selectors Level 3](https://www.w3.org/TR/selectors-3/) 引入大量新伪类（`:nth-child()`、`:not()`、`:checked` 等），并明确：
+
+- `:not()` 本身不计入优先级，但其参数中的选择器计入。
+- 伪元素（`::before`、`::after` 等）以 (0, 0, 0, 1) 计入。
+- 伪类（`:hover`、`:focus` 等）以 (0, 0, 1, 0) 计入。
+
+### 6.1.5 CSS Cascading Level 4（2016-2021）：层叠算法的规范化
+
+[CSS Cascading and Inheritance Level 4](https://www.w3.org/TR/css-cascade-4/) 将层叠算法规范化为 8 阶段排序：
+
+1. **Origin & Importance**：来源与重要性。
+2. **Context**：Shadow DOM 等上下文隔离。
+3. **Element-attached**：元素附加样式（如 `style` 属性）。
+4. **Layer**：`@layer` 声明的层级。
+5. **Specificity**：优先级四元组。
+6. **Order of Appearance**：出现顺序。
+7. **Animation**：动画声明。
+8. **Transition**：过渡声明（最高）。
+
+### 6.1.6 `@layer` 的引入（2022）
+
+[CSS Cascading and Inheritance Level 5](https://www.w3.org/TR/css-cascade-5/) 引入 `@layer` 规则，允许开发者显式声明样式层级：
+
+```css
+@layer reset, framework, components, utilities;
+
+@layer reset {
+  /* 重置样式 */
+}
+
+@layer framework {
+  /* 框架样式 */
+}
+```
+
+层内样式的优先级低于未分层样式（unlayered styles），且层的顺序由首次声明决定。`@layer` 是 CSS 自 2011 年以来对优先级管理的最大变革。
+
+### 6.1.7 `:where()` 与 `:is()` 的标准化（2021-2022）
+
+[:is()](https://www.w3.org/TR/selectors-4/#matches-pseudo) 与 [:where()](https://www.w3.org/TR/selectors-4/#zero-matches) 在 Selectors Level 4 中标准化：
+
+- `:is(A, B, C)`：匹配参数中任意选择器，优先级取参数中最具体者。
+- `:where(A, B, C)`：同 `:is()`，但优先级恒为 (0, 0, 0, 0)。
+
+`:where()` 的零优先级特性使其成为「重置第三方库样式」的理想工具。
+
+### 6.1.8 `:has()` 的到来（2023）
+
+[:has()](https://www.w3.org/TR/selectors-4/#relational) 称为「父选择器」，允许根据子元素状态选择父元素：
+
+```css
+.card:has(img) {
+  padding: 0; /* 仅当 card 内有 img 时生效 */
+}
+```
+
+`:has()` 的优先级由其参数中最具体的选择器决定，与 `:is()` 一致。
+
+### 6.1.9 演进时间线
+
+| 年份 | 规范/事件 | 核心变化 |
+| --- | --- | --- |
+| 1996 | CSS 1 | 三元组 (a, b, c) 优先级 |
+| 1998 | CSS 2 | 引入 `!important` 与三类来源 |
+| 2011 | CSS 2.1 | 四元组 (a, b, c, d) 成熟 |
+| 2011 | Selectors Level 3 | `:not()` 与伪元素优先级明确 |
+| 2016 | Cascade Level 4 | 8 阶段层叠算法规范化 |
+| 2021 | Selectors Level 4 | `:is()` / `:where()` 标准化 |
+| 2022 | Cascade Level 5 | `@layer` 引入 |
+| 2023 | `:has()` 浏览器支持 | 父选择器落地（Chrome 105+, Safari 15.4+） |
+| 2024 | Cascade Level 6 草案 | 探讨 `@layer` 嵌套与范围查询 |
+
+---
+
+### 6.2 形式化定义
+
+### 6.2.1 规范条款
+
+依据 [CSS Cascading and Inheritance Level 4 §6.3](https://www.w3.org/TR/css-cascade-4/#cascade-specific)：
+
+> If the cascade results in a value, use it. Otherwise, the property is inherited or its initial value is used.
+
+以及 [CSS 2.1 §6.4.3](https://www.w3.org/TR/CSS21/cascade.html#specificity) 对优先级的定义：
+
+> A selector's specificity is calculated as follows: count the number of ID attributes (a), other attributes and pseudo-classes (b), and element names and pseudo-elements (c) in the selector.
+
+### 6.2.2 核心术语
+
+| 术语 | 英文 | 定义 |
+| --- | --- | --- |
+| 优先级 | Specificity | 选择器的权重值，用于决定同来源同层级时的胜出声明 |
+| 层叠 | Cascade | 浏览器决定最终生效样式的完整算法 |
+| 来源 | Origin | 样式表的类别：User Agent / User / Author |
+| 层 | Layer | 通过 `@layer` 声明的命名样式组 |
+| 内联样式 | Inline style | 通过 `style` 属性直接附加在元素上的样式 |
+| 重要性 | Importance | `!important` 声明，反转来源优先级 |
+| 出现顺序 | Order of Appearance | 同优先级时，后出现的声明胜出 |
+
+### 6.2.3 优先级四元组
+
+CSS 优先级用四元组 $(A, B, C, D)$ 表示，其中：
+
+- $A$：内联样式（`style` 属性），取值 0 或 1。
+- $B$：ID 选择器（`#id`）的数量。
+- $C$：类选择器（`.class`）、属性选择器（`[attr]`）、伪类（`:hover`）的数量。
+- $D$：元素选择器（`div`）、伪元素（`::before`）的数量。
+
+> **注**：部分文献采用 (a, b, c, d) 顺序，本节统一使用 $(A, B, C, D)$ 以避免与 CSS 1 的三元组混淆。
+
+### 6.2.4 形式化计算函数
+
+设选择器 $S$ 由若干简单选择器 $s_1, s_2, \ldots, s_n$ 组合而成，定义优先级函数 $\text{Spec}(S)$：
+
+$$
+\text{Spec}(S) = \left( \text{Inline}(S), \sum_{i=1}^{n} \text{ID}(s_i), \sum_{i=1}^{n} \text{Class}(s_i), \sum_{i=1}^{n} \text{Element}(s_i) \right)
+$$
+
+其中：
+
+$$
+\text{ID}(s_i) =
+\begin{cases}
+1, & \text{if } s_i \text{ 是 ID 选择器} \\
+0, & \text{otherwise}
+\end{cases}
+$$
+
+$$
+\text{Class}(s_i) =
+\begin{cases}
+1, & \text{if } s_i \in \{\text{类选择器}, \text{属性选择器}, \text{伪类（除 }:where()\text{）}\} \\
+0, & \text{otherwise}
+\end{cases}
+$$
+
+$$
+\text{Element}(s_i) =
+\begin{cases}
+1, & \text{if } s_i \in \{\text{元素选择器}, \text{伪元素}\} \\
+0, & \text{otherwise}
+\end{cases}
+$$
+
+### 6.2.5 比较运算
+
+两个优先级四元组 $(A_1, B_1, C_1, D_1)$ 与 $(A_2, B_2, C_2, D_2)$ 的比较遵循字典序：
+
+$$
+\text{Compare}(S_1, S_2) =
+\begin{cases}
+S_1 > S_2, & \text{if } A_1 > A_2 \\
+S_1 > S_2, & \text{if } A_1 = A_2 \wedge B_1 > B_2 \\
+S_1 > S_2, & \text{if } A_1 = A_2 \wedge B_1 = B_2 \wedge C_1 > C_2 \\
+S_1 > S_2, & \text{if } A_1 = A_2 \wedge B_1 = B_2 \wedge C_1 = C_2 \wedge D_1 > D_2 \\
+S_1 = S_2, & \text{if all equal}
+\end{cases}
+$$
+
+注意：四元组的进位关系是「无限基数」而非十进制。即 $(0, 1, 0, 0) > (0, 0, N, 0)$ 对任意有限 $N$ 成立。
+
+### 6.2.6 层叠算法的形式化
+
+[CSS Cascading and Inheritance Level 4 §6.1](https://www.w3.org/TR/css-cascade-4/#cascading) 定义层叠排序函数 $\text{Sort}(d_1, d_2)$，对两个声明 $d_1, d_2$ 比较：
+
+$$
+\text{Sort}(d_1, d_2) =
+\begin{cases}
+d_1, & \text{if } \text{Origin}(d_1) \succ \text{Origin}(d_2) \\
+d_1, & \text{if } \text{Origin equal} \wedge \text{Context}(d_1) \succ \text{Context}(d_2) \\
+d_1, & \text{if } \text{Context equal} \wedge \text{ElementAttached}(d_1) \succ \text{ElementAttached}(d_2) \\
+d_1, & \text{if } \text{ElementAttached equal} \wedge \text{Layer}(d_1) \succ \text{Layer}(d_2) \\
+d_1, & \text{if } \text{Layer equal} \wedge \text{Spec}(d_1) > \text{Spec}(d_2) \\
+d_1, & \text{if } \text{Spec equal} \wedge \text{Order}(d_1) > \text{Order}(d_2) \\
+d_1, & \text{if } \text{Order equal} \wedge \text{Animation}(d_1) \succ \text{Animation}(d_2) \\
+d_1, & \text{if } \text{Animation equal} \wedge \text{Transition}(d_1) \succ \text{Transition}(d_2) \\
+d_2, & \text{otherwise}
+\end{cases}
+$$
+
+其中 $\succ$ 表示「优先于」。
+
+### 6.2.7 来源与重要性排序
+
+| 来源 | 正常 | `!important` |
+| --- | --- | --- |
+| User Agent（浏览器默认） | 1（最低） | 6 |
+| User（用户样式） | 2 | 7 |
+| Author（作者样式） | 3 | 8 |
+| Author（未分层，unlayered） | 4 | 9 |
+| Author（分层，layered） | 5 | 10（最高） |
+
+> **注**：CSS Cascade Level 5 引入 `@layer` 后，分层样式总是低于未分层样式（无论优先级多高）。
+
+### 6.2.8 `:where()` 与 `:is()` 的优先级规则
+
+设 `:is(S_1, S_2, \ldots, S_n)` 的优先级为：
+
+$$
+\text{Spec}(:\text{is}(S_1, S_2, \ldots, S_n)) = \max_{i=1}^{n} \text{Spec}(S_i)
+$$
+
+而 `:where()` 恒为零：
+
+$$
+\text{Spec}(:\text{where}(S_1, S_2, \ldots, S_n)) = (0, 0, 0, 0)
+$$
+
+`:has(S)` 与 `:not(S)` 的优先级为参数中最具体者：
+
+$$
+\text{Spec}(:\text{has}(S)) = \text{Spec}(:\text{is}(S))
+$$
+
+---
+
+### 6.3 理论推导与原理解析
+
+### 6.3.1 优先级的「基数」本质
+
+CSS 优先级四元组的比较并非十进制数比较，而是基于「基数」的字典序比较。形式化地：
+
+$$
+(A, B, C, D) \text{ 的比较基于 } A \cdot \aleph_0^3 + B \cdot \aleph_0^2 + C \cdot \aleph_0 + D
+$$
+
+其中 $\aleph_0$ 是可数无穷基数。这意味着：
+
+- $(0, 1, 0, 0) > (0, 0, N, 0)$ 对任意有限 $N$。
+- $(1, 0, 0, 0) > (0, N, M, K)$ 对任意有限 $N, M, K$。
+
+这一设计反映了 CSS 的语义优先级：ID 选择器表达「唯一标识」，应绝对优先于「类别标识」；内联样式表达「元素级定制」，应绝对优先于「规则级声明」。
+
+### 6.3.2 层叠算法的决策树
+
+层叠算法可视为一棵决策树，每个节点对应一个比较维度。浏览器从根节点开始，依次比较：
+
+```mermaid
+flowchart TD
+    T0["1. Origin & Importance"]
+    T1["不同 → 较高者胜"]
+    T2["相同 → 进入 2"]
+    T3["2. Context (Shadow DOM)"]
+    T4["不同 → 较外层胜"]
+    T5["相同 → 进入 3"]
+    T6["3. Element-attached (style 属性)"]
+    T7["不同 → 有 style 者胜"]
+    T8["相同 → 进入 4"]
+    T9["4. Layer"]
+    T10["不同 → 未分层胜；分层中后声明胜"]
+    T11["相同 → 进入 5"]
+    T12["5. Specificity"]
+    T13["不同 → 较高者胜"]
+    T14["相同 → 进入 6"]
+    T15["6. Order of Appearance"]
+    T16["不同 → 后出现者胜"]
+    T17["相同 → 进入 7"]
+    T18["7. Animation"]
+    T19["... (略)"]
+    T20["8. Transition (最高)"]
+    T0 --> T1
+    T0 --> T2
+    T2 --> T3
+    T3 --> T4
+    T3 --> T5
+    T5 --> T6
+    T6 --> T7
+    T6 --> T8
+    T8 --> T9
+    T9 --> T10
+    T9 --> T11
+    T11 --> T12
+    T12 --> T13
+    T12 --> T14
+    T14 --> T15
+    T15 --> T16
+    T15 --> T17
+    T17 --> T18
+    T18 --> T19
+    T19 --> T20
+```
+
+### 6.3.3 `!important` 的反转机制
+
+`!important` 的核心机制是「反转来源优先级」：
+
+- 正常声明：Author > User > User Agent
+- `!important` 声明：User Agent > User > Author
+
+但 [CSS Cascade Level 4](https://www.w3.org/TR/css-cascade-4/#importance) 调整了用户 `!important` 与作者 `!important` 的关系：作者 `!important` 高于用户 `!important`（这逆转了 CSS 2.1 的顺序，以避免用户样式破坏作者样式）。
+
+形式化地，定义来源优先级函数 $\text{OriginRank}(d)$：
+
+$$
+\text{OriginRank}(d) =
+\begin{cases}
+1, & \text{UA Normal} \\
+2, & \text{User Normal} \\
+3, & \text{Author Normal (layered)} \\
+4, & \text{Author Normal (unlayered)} \\
+5, & \text{Author !important (unlayered)} \\
+6, & \text{Author !important (layered)} \\
+7, & \text{User !important} \\
+8, & \text{UA !important} \\
+9, & \text{Transition}
+\end{cases}
+$$
+
+### 6.3.4 `@layer` 的语义
+
+`@layer` 引入显式的层级概念，其语义为：
+
+1. **声明顺序**：`@layer A, B, C;` 声明三个层，优先级 A < B < C。
+2. **未分层优先**：未分层的样式（unlayered）总是优先于分层样式。
+3. **嵌套层**：`@layer A.B { ... }` 等价于在 A 层内声明 B 子层，B 的优先级高于 A 内的其他内容但低于 A 的兄弟层。
+
+```css
+@layer A, B;
+@layer A {
+  .x { color: red; } /* 优先级低 */
+}
+@layer B {
+  .x { color: blue; } /* 优先级高 */
+}
+.x { color: green; } /* 未分层，最高 */
+```
+
+形式化地，设层 $L$ 的优先级为 $\text{LayerRank}(L)$：
+
+$$
+\text{LayerRank}(L) =
+\begin{cases}
+0, & L \text{ 是未分层样式} \\
+n, & L \text{ 是第 } n \text{ 个声明的层（从 1 开始）}
+\end{cases}
+$$
+
+未分层样式的 $\text{LayerRank}$ 总是大于任何分层样式。
+
+### 6.3.5 `:where()` 的零优先级设计
+
+`:where()` 恒返回 (0, 0, 0, 0) 的设计目的是提供「无副作用的样式重置」。考虑以下场景：
+
+```css
+/* 第三方库样式 */
+.card { padding: 16px; }
+
+/* 业务代码：重置 padding */
+:where(.card) { padding: 0; }
+/* 优先级 (0, 0, 1, 0) vs (0, 0, 0, 0) */
+/* 第三方库胜出！ */
+```
+
+如需重置，应使用：
+
+```css
+:where(.card) { padding: 0; }  /* (0,0,0,0) */
+.card { padding: 16px; }       /* (0,0,1,0) - 第三方胜出 */
+
+/* 改用更高优先级 */
+.card.card { padding: 0; }     /* (0,0,2,0) - 业务胜出 */
+```
+
+`:where()` 的真正价值在于「组合选择器时降低副作用」：
+
+```css
+/* 不使用 :where() - 复杂选择器污染优先级 */
+.card .title { font-size: 1rem; }  /* (0,0,2,0) */
+
+/* 使用 :where() - 优先级保持为 0 */
+:where(.card .title) { font-size: 1rem; }  /* (0,0,0,0) */
+```
+
+### 6.3.6 内联样式与 `!important` 的关系
+
+内联样式（`style` 属性）的优先级为 $(1, 0, 0, 0)$，但 `!important` 仍可覆盖：
+
+```html
+<div style="color: red;">红色</div>
+```
+
+```css
+div { color: blue !important; }  /* 覆盖内联样式 */
+```
+
+形式化地：
+
+$$
+\text{Effective}(\text{inline normal}) < \text{Effective}(\text{rule !important})
+$$
+
+但内联 `!important` 仍高于规则 `!important`：
+
+```html
+<div style="color: red !important;">红色</div>
+```
+
+```css
+div { color: blue !important; }  /* 不覆盖内联 !important */
+```
+
+### 6.3.7 计算示例
+
+给定选择器 `#nav .list li:hover`，计算其优先级：
+
+1. `#nav`：ID 选择器 → $B = 1$
+2. `.list`：类选择器 → $C = 1$
+3. `li`：元素选择器 → $D = 1$
+4. `:hover`：伪类 → $C = 2$
+
+合计：$(0, 1, 2, 1)$。
+
+给定选择器 `:is(#header, .nav) a`：
+
+1. `:is(#header, .nav)`：取参数中最高，即 `#header` 的 $(0, 1, 0, 0)$
+2. `a`：元素选择器 → $D = 1$
+
+合计：$(0, 1, 0, 1)$。
+
+给定选择器 `:where(#header, .nav) a`：
+
+1. `:where(...)`：恒为 $(0, 0, 0, 0)$
+2. `a`：元素选择器 → $D = 1$
+
+合计：$(0, 0, 0, 1)$。
+
+### 6.3.8 优先级与可访问性
+
+优先级直接影响可访问性（Accessibility）：
+
+1. **用户样式表**：浏览器允许用户定义自定义样式（如放大字号、高对比度）。这些样式通过 `!important` 提升优先级，确保覆盖作者样式。
+2. **`prefers-color-scheme`**：用户偏好（如深色模式）通过媒体查询应用，但优先级仍遵循层叠规则。
+3. **`forced-colors`**：Windows 高对比度模式会强制覆盖颜色，作者样式应通过 `forced-color-adjust: none` 选择退出。
+
+```css
+@media (forced-colors: active) {
+  .button {
+    forced-color-adjust: none;
+    background: Canvas;
+    color: CanvasText;
+  }
+}
+```
+
+---
+
+## 7. 本章综合挑战（选做）
+1. 写出 `#main .card:hover a` 的四元组并手工计算；
+2. 用 `:where()` 写一套“可被覆盖的默认样式”，再验证业务类能否覆盖；
+3. 用 `@layer` 把 reset、框架、组件、工具类分成四层，确认优先级顺序；
+4. 用 DevTools 的 Computed 面板找出一条被覆盖的声明，解释覆盖原因。
+
+## 8. 核心知识点
+> 一句话记住优先级：四元组从左比（内联、ID、类、元素），第一个不同即定胜负；`!important` 反转，`@layer` 排座次，`:where()` 归零。
+
+- 优先级四元组：(内联, ID, 类, 元素)，逐位比较；
+- 相同优先级按“出现顺序”，后写覆盖先写；
+- `!important` 反转来源排序，但应尽量避免；
+- `:is()` 取参数中最高优先级，`:where()` 恒为 0；
+- `@layer` 让“层顺序”优先于选择器权重；
+- 内联样式高于一切选择器（除 `!important`）；
+- 调试用 DevTools Computed 面板 + 手工计算交叉验证。
+
+## 9. 注意事项与改进建议
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 用 `!important` 救火 | 优先级体系崩塌 | 查权重与层顺序，从源头修正 |
+| 深层选择器 | 权重失控、难覆盖 | 用类名扁平化（BEM） |
+| 不了解 `@layer` 顺序 | 工具类覆盖失败 | 声明层顺序：reset < framework < utilities |
+| 滥用 `:is()` | 权重意外抬高 | 需要归零覆盖时用 `:where()` |
+| 内联样式 + JS 混用 | 调试困难 | 用 CSS 变量与类切换状态 |
+| 忽略用户样式表 | 可访问性设置被覆盖 | 避免 `!important`，尊重用户样式 |
+
+## 10. 扩展学习
+- 层叠进阶：`css/025-CascadeLayer`；
+- 选择器：`css/003-CSS3SelectorSystem`、`css/006-PseudoClassPseudoElement`；
+- 作用域：`css/048-ScopeAtRule`；
+- 工程实践：BEM（`css/032-BEMNamingMethodology`）与 CSS Modules（`css/034-CSSModules`）；
+- 框架对照：Tailwind 的工具类优先级设计（`tailwind/` 模块）。
+
 ## 附录 A：术语表
 
 | 术语 | 英文 | 定义 |
@@ -2134,41 +2167,3 @@ console.log(calculateSpecificity(':is(.a, #b)'));
 - [ ] 验证用户样式表（如可访问性设置）的影响
 - [ ] 使用 Stylelint 检查优先级上限
 - [ ] 编写 Playwright 视觉回归测试
-
-## 9. 本章综合挑战（选做）
-
-1. 写出 `#main .card:hover a` 的四元组并手工计算；
-2. 用 `:where()` 写一套“可被覆盖的默认样式”，再验证业务类能否覆盖；
-3. 用 `@layer` 把 reset、框架、组件、工具类分成四层，确认优先级顺序；
-4. 用 DevTools 的 Computed 面板找出一条被覆盖的声明，解释覆盖原因。
-
-## 10. 核心知识点
-
-> 一句话记住优先级：四元组从左比（内联、ID、类、元素），第一个不同即定胜负；`!important` 反转，`@layer` 排座次，`:where()` 归零。
-
-- 优先级四元组：(内联, ID, 类, 元素)，逐位比较；
-- 相同优先级按“出现顺序”，后写覆盖先写；
-- `!important` 反转来源排序，但应尽量避免；
-- `:is()` 取参数中最高优先级，`:where()` 恒为 0；
-- `@layer` 让“层顺序”优先于选择器权重；
-- 内联样式高于一切选择器（除 `!important`）；
-- 调试用 DevTools Computed 面板 + 手工计算交叉验证。
-
-## 11. 注意事项与改进建议
-
-| 问题点 | 说明 | 改进方案 |
-| --- | --- | --- |
-| 用 `!important` 救火 | 优先级体系崩塌 | 查权重与层顺序，从源头修正 |
-| 深层选择器 | 权重失控、难覆盖 | 用类名扁平化（BEM） |
-| 不了解 `@layer` 顺序 | 工具类覆盖失败 | 声明层顺序：reset < framework < utilities |
-| 滥用 `:is()` | 权重意外抬高 | 需要归零覆盖时用 `:where()` |
-| 内联样式 + JS 混用 | 调试困难 | 用 CSS 变量与类切换状态 |
-| 忽略用户样式表 | 可访问性设置被覆盖 | 避免 `!important`，尊重用户样式 |
-
-## 12. 扩展学习
-
-- 层叠进阶：`css/025-CascadeLayer`；
-- 选择器：`css/003-CSS3SelectorSystem`、`css/006-PseudoClassPseudoElement`；
-- 作用域：`css/048-ScopeAtRule`；
-- 工程实践：BEM（`css/032-BEMNamingMethodology`）与 CSS Modules（`css/034-CSSModules`）；
-- 框架对照：Tailwind 的工具类优先级设计（`tailwind/` 模块）。
