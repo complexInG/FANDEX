@@ -1,4 +1,6 @@
 ---
+> 前置依赖：先接触过 SPA 路由概念（Vue Router 或 React Router）再读本篇。
+
 order: 230
 title: History-API
 module: 'html5'

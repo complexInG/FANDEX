@@ -1,4 +1,6 @@
 ---
+> 前置依赖：Canvas 部分需要 JavaScript 基础。速通路径：先做第 0 节与 3.3.6“画一个笑脸”；3.4 变换与 3.6 交互为进阶内容，可先跳过。
+
 order: 60
 title: HTML5 多媒体与 Canvas 绘图
 module: 'html5'
@@ -987,6 +989,8 @@ oscillator.stop(audioCtx.currentTime + 2); // 2 秒后停止
 - `AudioContext` 必须由用户手势触发创建或恢复，浏览器不允许页面自动发声。
 
 ### 8.4 Canvas 与 SVG 选型对比
+
+> 注：本表与 2.2 节“SVG 与 Canvas 对比”重复，初学者只看 2.2 节即可；此处保留供复习速查。
 
 | 特性 | Canvas | SVG |
 | --- | --- | --- |

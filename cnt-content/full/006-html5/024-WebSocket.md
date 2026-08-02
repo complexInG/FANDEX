@@ -1,4 +1,6 @@
 ---
+> 前置依赖：需要 JavaScript 异步基础（javascript/030-AsyncProgramming）。
+
 order: 240
 title: WebSocket
 module: 'html5'

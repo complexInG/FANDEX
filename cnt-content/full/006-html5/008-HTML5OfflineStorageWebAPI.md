@@ -1,4 +1,6 @@
 ---
+> 0基础速通：必学第 1 章 Web Storage 与第 5 章 Fetch；其余（Geolocation、Worker、Service Worker、Notification 等）按需选学。Service Worker 完整版见 022。
+
 order: 80
 title: HTML5 离线存储与 Web API
 module: 'html5'

@@ -1,4 +1,6 @@
 ---
+> 前置依赖：先读 016 的 postMessage 基础章节。
+
 order: 280
 title: 跨文档通信
 module: 'html5'
