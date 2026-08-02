@@ -1,4 +1,6 @@
 ---
+> 阅读建议：先完成 `getting-started/031-VSCodeInstall` 装好编辑器，再读本篇；插件可以边用边装，不需要一次装全。
+
 order: 50
 title: 插件生态
 module: 'getting-started'
@@ -6,7 +8,7 @@ category: 工具链
 difficulty: beginner
 description: 编辑器与IDE插件体系、包管理机制、插件开发基础与生态维护。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'getting-started/009-EnvVarPath'
   - 'getting-started/010-IDEEditorSelection'

@@ -1,4 +1,6 @@
 ---
+> 阅读建议：0 基础学习者推荐直接选 VS Code，本片其余部分（Vim、JetBrains 对比）可先跳过，等遇到编辑器瓶颈再回来看。
+
 order: 40
 title: IDE 与编辑器选型
 module: 'getting-started'
@@ -6,7 +8,7 @@ category: 工具链
 difficulty: beginner
 description: 主流IDE与编辑器对比选型：VS Code、IntelliJ、Vim及云IDE方案。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'getting-started/009-EnvVarPath'
   - 'getting-started/011-PluginEcosystem'

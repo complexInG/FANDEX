@@ -1,4 +1,6 @@
 ---
+> 阅读建议：脚手架与项目结构是重点；Monorepo 属于进阶内容，0 基础学习者可先跳过。
+
 order: 80
 title: 项目初始化
 module: 'getting-started'
@@ -6,7 +8,7 @@ category: 工具链
 difficulty: beginner
 description: 项目初始化流程、脚手架工具、模板选择与项目结构规范。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'getting-started/013-PackageManager'
   - 'getting-started/014-VCSSelection'

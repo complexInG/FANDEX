@@ -14,6 +14,19 @@ prerequisites:
   - 'getting-started/002-DevEnvSetup'
 ---
 
+## 0. 快速开始：一键脚本与完整教程
+
+想跳过繁琐步骤？本模块提供一键脚本，以管理员身份打开 PowerShell 执行：
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+.\cnt-content\full\001-getting-started\scripts\setup-windows.ps1
+```
+
+脚本会自动安装 VS Code、Git、Node.js LTS、Python，并配置 npm/pip 国内镜像。装完后用 `getting-started/034-EnvVerificationChecklist` 验证，卡住查 `getting-started/035-TroubleshootingGuide`。
+
+想理解每一步在做什么，或需要 WSL2、Docker 等进阶配置，继续阅读本篇完整教程。
+
 ## 1. WSL2 安装与配置
 
 WSL2（Windows Subsystem for Linux 2）在 Windows 上提供完整的 Linux 内核，是 Windows 开发者的必备工具。

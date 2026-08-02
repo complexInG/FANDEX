@@ -1,4 +1,6 @@
 ---
+> 阅读建议：四种包管理器不需要同时学。前端读者重点看 npm/pnpm，Python 读者看 pip，系统包管理器（apt/brew）随用随查。
+
 order: 60
 title: 包管理器
 module: 'getting-started'
@@ -6,7 +8,7 @@ category: 工具链
 difficulty: beginner
 description: 主流包管理器对比：npm、pip、apt、brew的工作原理与使用方法。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'getting-started/011-PluginEcosystem'
   - 'getting-started/012-CommandLineBasics'

@@ -1,4 +1,6 @@
 ---
+> 阅读建议：现代项目几乎都用 Git，SVN 等历史工具部分仅作背景了解，可跳过。
+
 order: 70
 title: 版本控制系统选型
 module: 'getting-started'
@@ -6,7 +8,7 @@ category: 工具链
 difficulty: beginner
 description: 版本控制系统对比选型：Git与SVN的核心差异、适用场景与迁移策略。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'getting-started/012-CommandLineBasics'
   - 'getting-started/013-PackageManager'

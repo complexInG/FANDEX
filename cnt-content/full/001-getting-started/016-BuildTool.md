@@ -1,4 +1,6 @@
 ---
+> 阅读建议：按你的项目类型选读——前端看 Vite 部分，C/C++ 看 Make/CMake 部分，其余先跳过。
+
 order: 90
 title: 构建工具
 module: 'getting-started'
@@ -6,7 +8,7 @@ category: 工具链
 difficulty: beginner
 description: 构建工具对比：Make、CMake、Vite的工作原理、配置方法与适用场景。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'getting-started/014-VCSSelection'
   - 'getting-started/015-ProjectInit'

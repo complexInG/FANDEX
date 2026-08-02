@@ -1,4 +1,6 @@
 ---
+> 阅读建议：调试思想建议在“写过一些代码、遇到过 bug”之后阅读，入门阶段可以先跳过本篇。
+
 order: 100
 title: 调试思想
 module: 'getting-started'
@@ -6,7 +8,7 @@ category: 工具链
 difficulty: beginner
 description: 系统化调试方法论：断点调试、日志策略、二分排查与常见调试工具。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'getting-started/016-BuildTool'
   - 'cs-fundamentals/013-ProgrammingParadigmBasics'
