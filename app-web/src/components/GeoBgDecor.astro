@@ -15,9 +15,9 @@
  * - docs：文档详情页，网格底纹 + 几何线条 + 动态元素（克制 7 项）
  * - list：模块/标签列表页，网格底纹 + 平行斜线 + 十字坐标点 + 动态元素
  * - learning-path：学习路线页，网格底纹 + 竖条点阵装饰（点状装饰统一为竖条）
- * - minimal：轻量变体，仅网格底纹 + 小点阵（搜索/404 等辅助页）
+ * - minimal：轻量变体，网格底纹 + 竖条刻度线（搜索/404 等辅助页）
  * - loading：加载态变体，网格底纹 + 小点阵（参考 KeMuONEXueKao 的 loading 变体）
- * - error：错误态变体，网格底纹 + 大点阵（参考 KeMuONEXueKao 的 error 变体）
+ * - error：错误态变体，网格底纹 + 竖条刻度线（参考 KeMuONEXueKao 的 error 变体）
  * - info：信息页变体，类似 docs 但更克制，用于 about/disclaimer/privacy 等信息页
  *
  * 注意：原有的"颜色光晕类"装饰（geo-glow-primary-tl/accent-br/info-bl）已移除，
@@ -90,12 +90,12 @@ const GEO_DECOR_CONFIG: Record<GeoBgVariant, GeoDecorItem[]> = {
     'geo-float-block',
     'geo-bars-float',
   ],
-  /** 轻量变体：仅网格底纹 + 小点阵（搜索/404 等辅助页） */
-  minimal: ['geo-bg-grid', 'geo-dots-sm'],
+  /** 轻量变体：网格底纹 + 竖条刻度线（搜索/404 等辅助页，无点状元素） */
+  minimal: ['geo-bg-grid', 'geo-bars-marks'],
   /** 加载态：网格底纹 + 小点阵（参考 KeMuONEXueKao 的 loading 变体，保持克制不分散注意力） */
   loading: ['geo-bg-grid', 'geo-dots-sm'],
-  /** 错误态：网格底纹 + 大点阵（参考 KeMuONEXueKao 的 error 变体，疏点阵传达空旷感） */
-  error: ['geo-bg-grid', 'geo-dots-lg'],
+  /** 错误态：网格底纹 + 竖条刻度线（参考 KeMuONEXueKao 的 error 变体） */
+  error: ['geo-bg-grid', 'geo-bars-marks'],
   /** 信息页变体：类似 docs 但更克制，用于 about/disclaimer/privacy 等信息页
    *  相比 docs 移除 bezier-flow 动态弧线，保留几何线条，营造沉稳的阅读氛围 */
   info: [
