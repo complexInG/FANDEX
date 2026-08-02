@@ -25,6 +25,12 @@ prerequisites:
 
 ---
 
+## 0. 直觉：垂直间距为什么“少了一半”
+
+你写了 `margin-bottom: 30px` 和 `margin-top: 20px`，心里预期间距 50px，结果只有 30px——这不是 bug，是 CSS 的“合并”规则：垂直方向的相邻外边距取最大值，不相加。
+
+父元素和第一个子元素之间也会合并，空元素自己的上下外边距也会合并。只有水平方向不会。理解这条规则，布局间距才不会“莫名其妙地变小”。
+
 ## 1. 历史动机与发展脉络
 
 ### 1.1 CSS 1（1996）：margin 的诞生
@@ -285,6 +291,8 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </html>
 ```
 
+**讲解：** 相邻兄弟的垂直外边距取最大值（20px 与 30px 合并为 30px），不会相加。给元素加 `padding` 或 `border` 可阻止合并（本例用 padding 展示真实间距）。
+
 ### 4.2 父子塌陷：未解决 vs 已解决
 
 ```html
@@ -372,6 +380,8 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 </body>
 </html>
 ```
+
+**讲解：** 子元素的 `margin-top` 会穿透到父元素外；三种解法分别用 `display: flow-root`（推荐）、`padding-top: 1px`、透明 `border-top` 阻断合并。注意 `overflow: hidden` 虽然也能阻断，但可能裁剪溢出内容。
 
 ### 4.3 空块元素自身合并
 
@@ -1779,3 +1789,39 @@ Ant Design 的 `<Space>` 组件内部使用 flex + `gap`，规避了 margin 合�
 ---
 
 > 本文最后更新于 2026-06-14，内容基于 W3C CSS Box Model Module Level 3（2018）与 Level 4（2024 Editor's Draft）。如规范更新，请以 W3C 最新发布为准。
+
+## 9. 本章综合挑战（选做）
+
+1. 写出“兄弟合并、父子穿透、空块自合并”三种场景的最小复现页面；
+2. 用 `display: flow-root` 修复父子塌陷，并对比 `overflow: hidden` 的差异；
+3. 用负 margin 实现两栏布局，验证负值参与合并的规则；
+4. 在 flex 容器内重复同样的间距，确认 flex/grid 中不会合并。
+
+## 10. 核心知识点
+
+> 一句话记住 margin 合并：垂直外边距取最大值不累加；父子会穿透、空块会自合并；BFC、padding、border 都能阻断；水平方向永远不合并。
+
+- 相邻兄弟：`margin-bottom` 与 `margin-top` 取较大值；
+- 父子穿透：子元素 `margin-top` 移到父元素外；
+- 空块自合并：自身上下 margin 取最大值；
+- 阻断方案：`display: flow-root`（推荐）、`overflow: hidden`、`padding`/`border`；
+- flex/grid 容器内不合并（格式化上下文不同）；
+- 负 margin 参与合并时按代数规则取“最负”的值；
+- 工程上优先用 padding 管理内部间距，用 gap 管理弹性布局间距。
+
+## 11. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 预期间距 50px 实际 30px | 垂直 margin 合并 | 用 padding 或 gap 控制间距 |
+| 子元素 margin 穿透 | 父容器位置异常 | 父元素 `display: flow-root` |
+| `overflow: hidden` 清塌陷 | 意外裁剪内容 | 优先 `flow-root` |
+| 依赖负 margin 布局 | 可读性差 | 用 flex/grid 或定位 |
+| 间距用 margin 而非 gap | 最后一个元素多出边距 | 容器用 `gap` |
+
+## 12. 扩展学习
+
+- 盒模型基础：`css/002-CSS3BoxModelDetailed`；
+- BFC 与布局：`css/004-TraditionalLayoutTech`；
+- 弹性布局：`css/005-CSS3FlexboxFlexLayout`（gap 与不合并行为）；
+- 工程化间距：Tailwind 的 `space-y-*` 与 margin 处理策略。
