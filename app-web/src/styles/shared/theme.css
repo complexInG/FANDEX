@@ -57,21 +57,6 @@
                 stroke var(--motion-duration-fast) var(--motion-easing-out);
   }
 
-  /* View Transitions 期间禁用大面积元素过渡
-   * -------------------------------------------------------------------------
-   * html.theme-vt 类由 ThemeToggle.tsx 在 VT 开始前添加、结束后移除
-   * 此期间禁用 .geo-bg-decor / .app-nav / .fndx-sidebar 及其子元素的过渡，
-   * 避免与 View Transitions 的快照动画叠加导致双重过渡和重绘性能问题
-   * VT 结束后移除该类，元素恢复正常交互过渡（hover 等） */
-  html.theme-vt .geo-bg-decor,
-  html.theme-vt .geo-bg-decor *,
-  html.theme-vt .app-nav,
-  html.theme-vt .app-nav *,
-  html.theme-vt .fndx-sidebar,
-  html.theme-vt .fndx-sidebar * {
-    transition: none !important;
-  }
-
   /* === 主题切换瞬间禁用过渡（防止首次加载闪烁） === */
   /* 在 <html> 添加 data-theme-loading 属性可临时禁用所有过渡 */
   [data-theme-loading] * {

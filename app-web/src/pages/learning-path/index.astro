@@ -16,6 +16,8 @@ import {
   getLearningPathModules,
   getLearningPathTechVM,
 } from '@/lib/learning-path'
+// 复用首页 Hero / 统计 / 功能入口 / 分类组件样式，保证美术与语法速览页完全一致
+import '@/styles/pages/index.css'
 import '@/styles/pages/learning-path.css'
 
 const base = import.meta.env.BASE_URL
@@ -48,8 +50,6 @@ const total = techCards.reduce(
   { nodes: 0, docs: 0, gaps: 0 },
 )
 
-// 路线节点图标（几何 stroke 风格）
-const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M6 8v4a4 4 0 0 0 4 4h4"/></svg>`
 ---
 
 <HomeLayout title="学习路线">
@@ -61,54 +61,79 @@ const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
     type="website"
   />
 
-  <div class="lp-page">
-    <GeoBgDecor variant="list" />
+  <div class="home-page">
+    <!-- 几何背景装饰：home 变体，与首页/语法速览视觉统一 -->
+    <GeoBgDecor variant="home" />
 
-    <!-- Hero：功能标题 + 描述 + 统计 -->
-    <section class="lp-hero fndx-scroll-reveal">
-      <div class="lp-hero__icon" aria-hidden="true" set:html={icon} />
-      <h1 class="lp-hero__title">学习路线</h1>
-      <p class="lp-hero__desc">
+    <!-- Hero 区域：复用首页美术（渐变残影标题 + 统计 + SVG 描边入口） -->
+    <section class="hero">
+      <h1 class="hero-title" data-text="学习路线">
+        <span class="hero-title-fan">学习</span><span class="hero-title-dex">路线</span>
+      </h1>
+      <p class="hero-desc">
         以思维导图呈现每门技术的知识链：先学什么、后学什么一目了然，
-        点击知识点直达专项文档。虚线节点表示文档待补充，正在持续完善。
+        点击知识点直达专项文档。
       </p>
-      <div class="lp-hero__stats">
-        <span class="lp-hero__stat">
-          <strong>{techCards.length}</strong>
-          <em>门技术</em>
-        </span>
-        <span class="lp-hero__divider" aria-hidden="true"></span>
-        <span class="lp-hero__stat">
-          <strong>{total.nodes}</strong>
-          <em>个知识点</em>
-        </span>
-        <span class="lp-hero__divider" aria-hidden="true"></span>
-        <span class="lp-hero__stat">
-          <strong>{total.docs}</strong>
-          <em>篇已发布</em>
-        </span>
-        <span class="lp-hero__divider" aria-hidden="true"></span>
-        <span class="lp-hero__stat">
-          <strong>{total.gaps}</strong>
-          <em>篇待补充</em>
-        </span>
+
+      <!-- 统计 + 功能入口同一行容器（与首页/语法速览结构一致） -->
+      <div class="hero-stats-row">
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">{techCards.length}</span>
+            <span class="stat-label">门技术</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{total.nodes}</span>
+            <span class="stat-label">知识点</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{total.docs}</span>
+            <span class="stat-label">篇已发布</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{total.gaps}</span>
+            <span class="stat-label">篇待补充</span>
+          </div>
+        </div>
+
+        <!-- 功能入口：首页同款纯文字按钮 + SVG 波浪描边动画 -->
+        <nav class="hero-entries" aria-label="功能入口">
+          <a href={base} class="entry-btn" data-tooltip="返回首页" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">首页</span>
+          </a>
+          <a href={`${base}playground/`} class="entry-btn" data-tooltip="在线编程沙箱" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">在线编程</span>
+          </a>
+          <a href={`${base}syntax/`} class="entry-btn" data-tooltip="语法快速查阅" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">语法速览</span>
+          </a>
+        </nav>
       </div>
     </section>
 
     <!-- 分类技术卡片 -->
     {grouped.map((group) => (
-      <section class="lp-category fndx-scroll-reveal" data-category={group.id}>
-        <h2 class="lp-category__title">
-          <span
-            class="lp-category__mark"
-            style={`--cat-color:${group.color}`}
-            aria-hidden="true"
-          ></span>
-          {group.label}
-          <span class="lp-category__count">{group.cards.length} 门</span>
+      <section class="lp-category" data-category={group.id}>
+        <!-- 分类标题栏：复用首页 category-header 组件类（色条 + 标签 + 计数） -->
+        <h2 class="category-header lp-category__title" style={`--marker-color:${group.color}`}>
+          <span class="category-marker" aria-hidden="true"></span>
+          <span class="category-tag">{group.label}</span>
+          <span class="category-count">{group.cards.length} 门</span>
         </h2>
         <div class="lp-tech-grid">
-          {group.cards.map((card) => {
+          {group.cards.map((card, cardIndex) => {
             const percent = card.vm.stats.nodes > 0
               ? Math.round((card.vm.stats.docs / card.vm.stats.nodes) * 100)
               : 0
@@ -116,7 +141,7 @@ const icon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
               <a
                 class="lp-tech-card"
                 href={`${base}learning-path/${card.module}/`}
-                style={`--card-color:${group.color}`}
+                style={`--card-color:${group.color};animation-delay:${cardIndex * 40}ms`}
               >
                 <div class="lp-tech-card__head">
                   <span class="lp-tech-card__icon" aria-hidden="true">

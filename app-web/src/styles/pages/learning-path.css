@@ -2,107 +2,28 @@
  * 学习路径页面样式（总览页 + 单技术地图页）
  * -----------------------------------------------------------------------------
  * 设计说明：
- * - 复用 94vw 页面容器与几何科技风 Hero，与语法速览/首页保持一致
+ * - 页面容器与 Hero 完全复用首页美术（index.css），与语法速览页保持一致
  * - 技术卡片按分类分组，覆盖进度条使用自绘 SVG
+ * - 技术切换 chip 栏与语法速览语言切换栏同款（吸顶 + 毛玻璃 + 主题色点）
  * - 归入 @layer pages
  */
 @layer pages {
-  .lp-page {
-    position: relative;
-    width: 94vw;
-    max-width: 100%;
-    min-height: calc(100vh - var(--nav-height));
-    min-height: calc(100dvh - var(--nav-height));
-    margin: 0 auto;
-    padding: 0 var(--spacing-xl) var(--spacing-3xl);
-  }
-
-  /* 内容层置于几何装饰层之上 */
-  .lp-page > :not(.geo-bg-decor) {
+  /* 思维导图内容层：置于几何装饰层之上 */
+  .home-page .lp-map {
     position: relative;
     z-index: 1;
   }
 
   /* ============================================================
-   * Hero：标题 + 描述 + 统计
+   * 官方文档入口（技术页 Hero 下方）
    * ============================================================ */
-  .lp-hero {
+  .lp-docs {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-2xl) var(--spacing-md) var(--spacing-lg);
-  }
-
-  .lp-hero__icon {
-    display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
-    width: 56px;
-    height: 56px;
-    border: 1px solid color-mix(in oklch, var(--color-accent-base) 40%, transparent);
-    border-radius: var(--fandex-radius-md, 4px);
-    background: color-mix(in oklch, var(--color-accent-base) 6%, transparent);
-    color: var(--color-accent-base);
-  }
-
-  .lp-hero__icon :global(svg) {
-    width: 26px;
-    height: 26px;
-  }
-
-  .lp-hero__title {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: var(--color-text);
-  }
-
-  .lp-hero__desc {
-    margin: 0;
-    max-width: 480px;
-    font-size: 0.86rem;
-    line-height: 1.7;
-    color: var(--color-text-secondary);
-  }
-
-  .lp-hero__stats {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-sm);
-    padding: var(--spacing-xs) var(--spacing-md);
-    border: 1px solid var(--color-border-light);
-    border-radius: 2px;
-    background: var(--color-bg-card);
-  }
-
-  .lp-hero__stat {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 5px;
-    font-family: var(--font-display);
-  }
-
-  .lp-hero__stat strong {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--color-accent-base);
-  }
-
-  .lp-hero__stat em {
-    font-style: normal;
-    font-size: 0.72em;
-    color: var(--color-text-tertiary);
-  }
-
-  .lp-hero__divider {
-    width: 1px;
-    height: 14px;
-    background: var(--color-border-light);
+    gap: var(--spacing-xs);
+    margin-top: calc(var(--spacing-sm) * -1);
+    margin-bottom: var(--spacing-md);
   }
 
   /* ============================================================
@@ -112,30 +33,10 @@
     margin-bottom: var(--spacing-xl);
   }
 
+  /* 分类标题：复用首页 category-header 组件类，仅调整纵向间距 */
   .lp-category__title {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
     margin: 0 0 var(--spacing-md);
-    font-family: var(--font-display);
-    font-size: 0.92rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--color-text-secondary);
-  }
-
-  /* 分类色条：几何风格色块 */
-  .lp-category__mark {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background: var(--cat-color);
-  }
-
-  .lp-category__count {
-    font-size: 0.68rem;
-    font-weight: 400;
-    color: var(--color-text-tertiary);
+    justify-content: flex-start;
   }
 
   .lp-tech-grid {
@@ -152,48 +53,133 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-md);
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
     border: 1px solid var(--color-border-light);
-    border-radius: 2px;
+    border-radius: var(--fandex-radius-md, 4px);
     background: var(--color-bg-card);
+    box-shadow: var(--shadow-xs);
     color: var(--color-text);
     text-decoration: none;
+    min-width: 0;
+    overflow: hidden;
+    isolation: isolate;
     transition:
+      transform var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
       border-color var(--motion-duration-instant) var(--motion-easing-out),
-      transform var(--motion-duration-instant) var(--motion-easing-out);
+      box-shadow var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  /* 顶部装饰线：悬停时从左展开（与首页模块卡片一致） */
+  .lp-tech-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--card-color);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--motion-duration-normal) var(--motion-easing-out);
+    z-index: 1;
   }
 
   .lp-tech-card:hover {
-    border-color: color-mix(in oklch, var(--card-color) 55%, transparent);
-    transform: translateY(-2px);
+    background: var(--color-bg-hover);
+    border-color: color-mix(in srgb, var(--card-color) 50%, transparent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .lp-tech-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .lp-tech-card:active {
+    transform: translateY(-2px) scale(0.99);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .lp-tech-card:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* 卡片入场动画：与语法速览卡片一致的上滑淡入 */
+  .lp-tech-grid .lp-tech-card {
+    animation: fndx-slide-up var(--motion-duration-normal) var(--motion-easing-out) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lp-tech-grid .lp-tech-card {
+      animation: none;
+    }
   }
 
   .lp-tech-card__head {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
+    min-width: 0;
   }
 
   .lp-tech-card__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 22px;
+    height: 22px;
     flex-shrink: 0;
-    border-radius: 2px;
-    background: color-mix(in oklch, var(--card-color) 12%, transparent);
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--card-color) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--card-color) 38%, transparent);
     color: var(--card-color);
-    font-family: var(--font-display);
-    font-size: 0.8rem;
-    font-weight: 700;
+    font-family: var(--font-family-mono);
+    font-weight: 600;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    line-height: 1;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-fg-inverse) 6%, transparent);
+    position: relative;
+    transition:
+      background-color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  /* 几何装饰：左上角小直角标记 */
+  .lp-tech-card__icon::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 4px;
+    height: 4px;
+    border-top: 1px solid var(--card-color);
+    border-left: 1px solid var(--card-color);
+    border-top-left-radius: 3px;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .lp-tech-card:hover .lp-tech-card__icon {
+    background: color-mix(in srgb, var(--card-color) 16%, transparent);
+    border-color: color-mix(in srgb, var(--card-color) 60%, transparent);
   }
 
   .lp-tech-card__title {
     font-family: var(--font-display);
-    font-size: 0.96rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--color-text);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    transition: color var(--motion-duration-instant) var(--motion-easing-out);
+    flex: 1;
+    min-width: 0;
   }
 
   .lp-tech-card__arrow {
@@ -208,15 +194,21 @@
     color: var(--card-color);
   }
 
+  .lp-tech-card:hover .lp-tech-card__title {
+    color: var(--card-color);
+  }
+
   .lp-tech-card__desc {
     margin: 0;
-    font-size: 0.76rem;
-    line-height: 1.65;
+    font-size: 0.72rem;
     color: var(--color-text-secondary);
+    line-height: 1.5;
+    min-height: 3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
   .lp-tech-card__stats {
@@ -259,69 +251,72 @@
   }
 
   /* ============================================================
-   * 单技术地图页 Hero
+   * 技术切换 chip 栏（与语法速览语言切换栏同款）
+   * ------------------------------------------------------------
+   * sticky 吸顶 + 毛玻璃背景，chip 激活态使用技术主题色
    * ============================================================ */
-  .lp-tech-hero {
-    --lp-color: var(--color-accent-base);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-xl) var(--spacing-md) var(--spacing-md);
-  }
-
-  .lp-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    align-self: flex-start;
-    font-size: 0.76rem;
-    color: var(--color-text-tertiary);
-    text-decoration: none;
-    transition: color var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  .lp-back:hover {
-    color: var(--lp-color);
-  }
-
-  .lp-tech-hero__head {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
-  }
-
-  .lp-tech-hero__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 46px;
-    height: 46px;
-    flex-shrink: 0;
-    border: 1px solid color-mix(in oklch, var(--lp-color) 45%, transparent);
-    border-radius: 2px;
-    background: color-mix(in oklch, var(--lp-color) 8%, transparent);
-    color: var(--lp-color);
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 700;
-  }
-
-  .lp-tech-hero h1 {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 1.45rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: var(--color-text);
-  }
-
-  /* 官方文档链接 chip：与模块列表页一致 */
-  .lp-tech-hero__chips {
+  .lp-tech-chips {
+    position: sticky;
+    top: 0;
+    z-index: 30;
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-xs);
-    margin-left: auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin: 0 calc(var(--spacing-md) * -1);
+    background: color-mix(in oklch, var(--color-bg-primary) 88%, transparent);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .lp-tech-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--fandex-radius-sm, 2px);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-display);
+    font-size: 0.74em;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition:
+      color var(--motion-duration-instant) var(--motion-easing-out),
+      border-color var(--motion-duration-instant) var(--motion-easing-out),
+      background-color var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .lp-tech-chip:hover {
+    color: var(--color-text);
+    border-color: color-mix(in oklch, var(--chip-color, var(--color-accent-base)) 45%, transparent);
+  }
+
+  .lp-tech-chip.is-active {
+    color: var(--color-text);
+    border-color: color-mix(in oklch, var(--chip-color, var(--color-accent-base)) 60%, transparent);
+    background-color: color-mix(in oklch, var(--chip-color, var(--color-accent-base)) 9%, transparent);
+  }
+
+  .lp-tech-chip__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--chip-color, var(--color-accent-base));
+    opacity: 0.5;
+    transition: opacity var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  .lp-tech-chip.is-active .lp-tech-chip__dot {
+    opacity: 1;
+  }
+
+  /* 知识点计数：弱化信息，避免视觉噪音（与语法速览语言计数一致） */
+  .lp-tech-chip__count {
+    font-size: 0.88em;
+    color: var(--color-text-tertiary);
   }
 
   .lp-chip {
@@ -347,74 +342,17 @@
     background-color: color-mix(in oklch, var(--lp-color) 6%, transparent);
   }
 
-  .lp-tech-hero__desc {
-    margin: 0;
-    max-width: 620px;
-    font-size: 0.84rem;
-    line-height: 1.7;
-    color: var(--color-text-secondary);
-  }
-
-  /* ============================================================
-   * 其他路线导航
-   * ============================================================ */
-  .lp-related {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
-    margin-top: var(--spacing-lg);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid var(--color-border-light);
-  }
-
-  .lp-related__label {
-    margin-right: var(--spacing-xs);
-    font-family: var(--font-display);
-    font-size: 0.72rem;
-    color: var(--color-text-tertiary);
-  }
-
-  .lp-related__link {
-    padding: 3px 10px;
-    border: 1px solid var(--color-border-light);
-    border-radius: 2px;
-    font-family: var(--font-display);
-    font-size: 0.7rem;
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    transition:
-      color var(--motion-duration-instant) var(--motion-easing-out),
-      border-color var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  .lp-related__link:hover {
-    color: var(--color-accent-base);
-    border-color: color-mix(in oklch, var(--color-accent-base) 50%, transparent);
-  }
-
   /* ============================================================
    * 移动端适配
    * ============================================================ */
   @media (max-width: 768px) {
-    .lp-page {
-      padding: 0 var(--spacing-sm) var(--spacing-2xl);
-    }
-
-    .lp-hero {
-      padding-top: var(--spacing-xl);
-    }
-
-    .lp-hero__title {
-      font-size: 1.4rem;
-    }
-
     .lp-tech-grid {
       grid-template-columns: 1fr;
     }
 
-    .lp-tech-hero__chips {
-      margin-left: 0;
+    .lp-tech-chips {
+      margin: 0 calc(var(--spacing-sm) * -1);
+      padding: var(--spacing-sm);
     }
   }
 }

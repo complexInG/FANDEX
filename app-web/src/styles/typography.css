@@ -305,23 +305,6 @@ hr {
   height: 0;
 }
 
-/* 分割线变体：装饰性虚线 */
-hr.dashed {
-  border-top-style: dashed;
-}
-
-/* 分割线变体：渐变（淡入淡出） */
-hr.gradient {
-  border: none;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--fandex-color-border-default),
-    transparent
-  );
-}
-
 /* ========== 图片样式 ========== */
 img {
   max-width: 100%;
@@ -508,7 +491,7 @@ dfn {
  *
  * 功能概述：
  * 定义 .prose 容器下所有 Markdown 渲染内容的排版规则，包括标题层级、
- * 段落、链接、列表、引用、表格、代码、Mermaid 图表、提示块（Admonition）
+ * 段落、链接、列表、引用、表格、代码、提示块（Admonition）
  * 等元素的样式。支持亮色/暗色主题和移动端响应式适配。
  */
 
@@ -860,56 +843,6 @@ dfn {
   border-radius: 0;
   font-size: 0.875em;
   line-height: 1.6;
-}
-
-/* ========== 来源标注（上标链接） ========== */
-.prose sup.source {
-  font-size: 0.7em;
-  vertical-align: super;
-  margin-left: 2px;
-}
-
-.prose sup.source a {
-  color: var(--color-text-tertiary);
-  text-decoration: none;
-  font-family: var(--font-display);
-}
-
-.prose sup.source a:hover {
-  color: var(--color-primary);
-}
-
-/* ========== Mermaid 图表输出 ========== */
-.prose .mermaid-output {
-  margin: 1em 0;
-  padding: var(--spacing-md);
-  border: 1px solid var(--color-border-light);
-  background: var(--color-bg-card);
-  border-radius: 4px;
-  overflow-x: auto;
-  text-align: center; /* 图表居中显示 */
-}
-
-.prose .mermaid-output svg {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Mermaid 渲染错误提示（使用语义令牌，主题自适应） */
-.prose .mermaid-error {
-  margin: 1em 0;
-  padding: var(--spacing-md);
-  border: 1px dashed var(--color-danger);
-  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
-  color: var(--color-danger);
-  font-family: var(--font-display);
-  font-size: 0.85em;
-  text-align: center;
-}
-
-/* Mermaid 错误暗色适配：提高混合比例 */
-[data-theme='dark'] .prose .mermaid-error {
-  background: color-mix(in srgb, var(--color-danger) 16%, var(--color-bg-card));
 }
 
 /* ========== 提示块（Admonition） ========== */

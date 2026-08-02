@@ -261,34 +261,6 @@
     );
   }
 
-  /* 快捷链接 — ark 描边按钮 */
-  .stat-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--color-accent-base);
-    text-decoration: none;
-    font-weight: 600;
-    padding: 5px 12px;
-    border: 1px solid color-mix(in srgb, var(--color-accent-base) 30%, transparent);
-    border-radius: var(--fandex-radius-sm, 2px);
-    background: color-mix(in srgb, var(--color-accent-base) 4%, transparent);
-    transition:
-      background-color var(--motion-duration-instant) var(--motion-easing-out),
-      border-color var(--motion-duration-instant) var(--motion-easing-out),
-      color var(--motion-duration-instant) var(--motion-easing-out),
-      transform var(--motion-duration-instant) var(--motion-easing-out);
-  }
-
-  .stat-link:hover {
-    border-color: var(--color-accent-base);
-    background: color-mix(in srgb, var(--color-accent-base) 12%, transparent);
-  }
-
-  .stat-link:active {
-    transform: translateY(0);
-  }
-
   /* 功能入口区：纯文字按钮 + SVG 路径签名动画
    * ----------------------------------------------------------------
    * 设计重构（与 hero-stats 同行，紧凑布局）：
@@ -609,11 +581,6 @@
     flex: 0 0 200px;
   }
 
-  /* 注：旧 .home-footer / .footer-* 系列样式已废弃，
-   * 页脚由 @fandex/styles 的 .fndx-footer 命名规范统一控制。
-   * 见 components/Footer.astro 与 shd-shared/styles/layout-components.css
-   */
-
   /* ============================================================
    * 5. 响应式适配
    * ============================================================ */
@@ -656,11 +623,6 @@
     .hero-entries {
       gap: var(--spacing-xs);
       margin-top: var(--spacing-md);
-    }
-
-    .entry-card {
-      padding: 8px 14px;
-      font-size: 0.75rem;
     }
 
     /* 滑动器卡片宽度收窄 */

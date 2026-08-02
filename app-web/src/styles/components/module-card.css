@@ -176,25 +176,9 @@
     white-space: nowrap;
     letter-spacing: 0.01em;
     transition: color var(--motion-duration-instant) var(--motion-easing-out);
-    /* 文本溢出时自动左右滚动（由 JS 添加 .is-overflow 类触发） */
     position: relative;
     flex: 1;
     min-width: 0;
-  }
-
-  /* 溢出文本 marquee 动画（ping-pong 模式，悬停暂停） */
-  .card-title.is-overflow {
-    text-overflow: clip;
-    animation: card-title-marquee 6s ease-in-out infinite alternate;
-  }
-
-  .card-title.is-overflow:hover {
-    animation-play-state: paused;
-  }
-
-  @keyframes card-title-marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(var(--marquee-offset, -20px)); }
   }
 
   /* 悬停时标题变为模块分类色（非 web 主题青色） */

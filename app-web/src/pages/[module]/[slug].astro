@@ -154,16 +154,10 @@ const hasMath = containsMath(doc.body || '');
       })()
     }
     <!-- 文章主体 -->
-    <article
-      class="prose"
-      data-pagefind-body
-      data-pagefind-filter={`difficulty:${doc.data.difficulty || 'intermediate'}, module:${module}${doc.data.category ? ', category:' + doc.data.category : ''}`}
-    >
-      <!-- 标题行：标题 + 功能扩展占位
-           预留 data-slot="progress-future" 占位，供后续重新设计功能接入 -->
+    <article class="prose">
+      <!-- 标题行 -->
       <div class="doc-title-row fndx-scroll-reveal">
         <h1 class="doc-title">{doc.data.title}</h1>
-        <div class="doc-actions-slot" data-slot="progress-future" aria-hidden="true"></div>
       </div>
       <!-- 文档元信息：阅读时间、难度、更新日期 -->
       <header class="doc-header fndx-scroll-reveal-fade">

@@ -105,14 +105,11 @@
     a:hover,
     button:hover,
     .nav-btn:hover,
-    .nav-link:hover,
     .module-card:hover,
-    .tag-item:hover,
     .nav-logo:hover,
     .nav-back-to-top:hover,
     .quiz-submit-btn:hover,
-    .quiz-option:not(:disabled):hover,
-    .doc-tag:hover {
+    .quiz-option:not(:disabled):hover {
       color: inherit;
       border-color: inherit;
       background: inherit;

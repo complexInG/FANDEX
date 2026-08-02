@@ -42,25 +42,6 @@
   position: relative;
 }
 
-/* 代码块顶部标题栏：显示语言 + 复制按钮 */
-.code-block-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5em 1em;
-  background: var(--color-text); /* 深色背景 */
-  color: var(--color-text-inverse); /* 浅色文字 */
-  font-family: var(--font-display);
-  font-size: 0.75em;
-}
-
-/* 语言标签：大写 + 字间距 */
-.code-block-lang {
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-}
-
 /* ========== 复制按钮 ==========
  * 基础样式由 .fndx-icon-btn--labeled 统一提供（透明背景 + 无边框 + 统一悬停）
  * 此处仅保留 .copied 状态与浮动定位变体 */
@@ -76,8 +57,8 @@
 }
 
 /* ========== 代码块内浮动复制按钮 ========== */
-/* 当复制按钮不在标题栏内时，定位到代码块右上角 */
-.code-block:not(.code-block-header *) .copy-btn {
+/* 复制按钮浮动定位到代码块右上角 */
+.code-block .copy-btn {
   position: absolute;
   top: 8px;
   right: 8px;

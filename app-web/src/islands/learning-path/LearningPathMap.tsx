@@ -79,29 +79,10 @@ export default function LearningPathMap({ tech, base }: Props) {
     if (id) canvasRef.current?.focusNode(id);
   }, [hoverId, selectedId]);
 
-  const stats = tech.stats;
   return (
     <div className="lp-map" style={{ '--lp-color': tech.color } as CSSProperties}>
-      {/* 顶部统计 + 控制条 */}
+      {/* 顶部控制条（统计信息已上移至页面 Hero，与语法速览页布局一致） */}
       <div className="lp-map__toolbar">
-        <div className="lp-map__stats" aria-label="路线覆盖统计">
-          <span className="lp-map__stat">
-            <strong>{stats.stages}</strong>
-            <em>阶段</em>
-          </span>
-          <span className="lp-map__stat">
-            <strong>{stats.nodes}</strong>
-            <em>知识点</em>
-          </span>
-          <span className="lp-map__stat lp-map__stat--ok">
-            <strong>{stats.docs}</strong>
-            <em>已发布</em>
-          </span>
-          <span className="lp-map__stat lp-map__stat--gap">
-            <strong>{stats.gaps}</strong>
-            <em>待补充</em>
-          </span>
-        </div>
         <MapControls
           scale={scale}
           onZoomOut={() => canvasRef.current?.zoomBy(1 / 1.25)}

@@ -10,7 +10,7 @@
  * 检查维度：
  * 1. 文件审计：.nojekyll、robots.txt、大文件检测
  * 2. Web 架构：index.html、404.html、base href、绝对根链接、视口、暗色模式、预连接、懒加载
- * 3. 内容处理：页面数量、Pagefind 搜索索引
+ * 3. 内容处理：页面数量
  * 4. 阅读体验：Shiki 代码高亮、JSON-LD 结构化数据
  * 5. CI/CD：sitemap-index.xml
  * 6. 质量控制：100vh 使用检查、console.log 残留检查
@@ -121,22 +121,6 @@ async function checkPageCount() {
   await walkDir(DIST, '.html', (f) => htmlFiles.push(f));
   if (htmlFiles.length >= 200) pass(`Page count: ${htmlFiles.length}`);
   else warn(`Page count low: ${htmlFiles.length} (expected 200+)`);
-}
-
-/**
- * 检查 Pagefind 搜索索引是否存在
- * 确保站内搜索功能可用
- */
-async function checkPagefindIndex() {
-  const pagefindDir = join(DIST, 'pagefind');
-  if (await fileExists(pagefindDir)) {
-    const files = await readdir(pagefindDir);
-    const hasIndex = files.some((f) => f.startsWith('pagefind.') && f.endsWith('.js'));
-    if (hasIndex) pass('Pagefind search index exists');
-    else warn('Pagefind directory exists but no index JS found');
-  } else {
-    warn('Pagefind index not found - search will not work');
-  }
 }
 
 /**
@@ -456,7 +440,6 @@ await checkLazyLoading();
 
 console.log('\n[Dimension 3: Content Processing]');
 await checkPageCount();
-await checkPagefindIndex();
 
 console.log('\n[Dimension 4: Reading Experience]');
 await checkShikiHighlighting();

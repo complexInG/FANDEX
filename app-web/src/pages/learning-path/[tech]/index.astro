@@ -15,6 +15,8 @@ import {
   getLearningPathTechVM,
   hasLearningPathMap,
 } from '@/lib/learning-path'
+// 复用首页 Hero / 统计 / 功能入口样式，保证美术与语法速览页完全一致
+import '@/styles/pages/index.css'
 import '@/styles/pages/learning-path.css'
 import '@/styles/components/learning-path-map.css'
 
@@ -36,8 +38,13 @@ if (!techVM) {
   return Astro.redirect(`${base}404`)
 }
 
-// 其他技术路线（底部快捷切换）
-const related = getLearningPathModules().filter((id) => id !== techVM.module)
+// 技术切换 chip 数据（吸顶栏，含当前技术；计数为知识点数）
+const chipModules = getLearningPathModules()
+  .map((id) => {
+    const item = getLearningPathTechVM(id, base)
+    return item ? { id, title: item.title, color: item.color, count: item.stats.nodes } : null
+  })
+  .filter((item): item is NonNullable<typeof item> => item !== null)
 ---
 
 <HomeLayout title={`${techVM.title}学习路线`}>
@@ -49,59 +56,112 @@ const related = getLearningPathModules().filter((id) => id !== techVM.module)
     type="website"
   />
 
-  <div class="lp-page" style={`--lp-color:${techVM.color}`}>
-    <GeoBgDecor variant="list" />
+  <div class="home-page" style={`--lp-color:${techVM.color}`}>
+    <!-- 几何背景装饰：home 变体，与首页/语法速览视觉统一 -->
+    <GeoBgDecor variant="home" />
 
-    <!-- Hero：返回链接 + 技术标识 + 官方文档入口 -->
-    <section class="lp-tech-hero fndx-scroll-reveal">
-      <a class="lp-back" href={`${base}learning-path/`}>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="19" y1="12" x2="5" y2="12" />
-          <polyline points="12 19 5 12 12 5" />
-        </svg>
-        返回学习路线总览
-      </a>
-      <div class="lp-tech-hero__head">
-        <span class="lp-tech-hero__icon" aria-hidden="true">{techVM.icon}</span>
-        <h1>{techVM.title} 学习路线</h1>
-        {techVM.officialDocs.length > 0 && (
-          <div class="lp-tech-hero__chips">
-            {techVM.officialDocs.map((doc) => (
-              <a
-                class="lp-chip"
-                href={doc.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {doc.label}
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </a>
-            ))}
+    <!-- Hero 区域：复用首页美术（渐变残影标题 + 统计 + SVG 描边入口） -->
+    <section class="hero">
+      <h1 class="hero-title" data-text={`${techVM.title} 学习路线`}>
+        <span class="hero-title-fan">{techVM.title}</span>
+        <span class="hero-title-dex">学习路线</span>
+      </h1>
+      <p class="hero-desc">{techVM.summary}</p>
+
+      <!-- 统计 + 功能入口同一行容器（与首页/语法速览结构一致） -->
+      <div class="hero-stats-row">
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">{techVM.stats.stages}</span>
+            <span class="stat-label">阶段</span>
           </div>
-        )}
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{techVM.stats.nodes}</span>
+            <span class="stat-label">知识点</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{techVM.stats.docs}</span>
+            <span class="stat-label">篇已发布</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">{techVM.stats.gaps}</span>
+            <span class="stat-label">篇待补充</span>
+          </div>
+        </div>
+
+        <!-- 功能入口：首页同款纯文字按钮 + SVG 波浪描边动画 -->
+        <nav class="hero-entries" aria-label="功能入口">
+          <a href={base} class="entry-btn" data-tooltip="返回首页" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">首页</span>
+          </a>
+          <a href={`${base}playground/`} class="entry-btn" data-tooltip="在线编程沙箱" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">在线编程</span>
+          </a>
+          <a href={`${base}syntax/`} class="entry-btn" data-tooltip="语法快速查阅" data-tooltip-pos="bottom">
+            <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
+            </svg>
+            <span class="entry-name">语法速览</span>
+          </a>
+        </nav>
       </div>
-      <p class="lp-tech-hero__desc">{techVM.summary}</p>
     </section>
+
+    <!-- 官方文档入口：Hero 下方居中排列 -->
+    {techVM.officialDocs.length > 0 && (
+      <div class="lp-docs">
+        {techVM.officialDocs.map((doc) => (
+          <a
+            class="lp-chip"
+            href={doc.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {doc.label}
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <!-- 技术切换 chip 栏：与语法速览语言切换栏同款，吸顶可快速切换 -->
+    <nav class="lp-tech-chips" aria-label="切换学习路线">
+      <a
+        class="lp-tech-chip"
+        href={`${base}learning-path/`}
+        style={`--chip-color:${techVM.color}`}
+      >
+        <i class="lp-tech-chip__dot" aria-hidden="true"></i>
+        总览
+      </a>
+      {chipModules.map((item) => (
+        <a
+          class={`lp-tech-chip${item.id === techVM.module ? ' is-active' : ''}`}
+          href={`${base}learning-path/${item.id}/`}
+          style={`--chip-color:${item.color}`}
+          aria-current={item.id === techVM.module ? 'page' : undefined}
+        >
+          <i class="lp-tech-chip__dot" aria-hidden="true"></i>
+          <span>{item.title}</span>
+          <span class="lp-tech-chip__count">{item.count}</span>
+        </a>
+      ))}
+    </nav>
 
     <!-- 思维导图交互区：自绘 SVG，支持拖拽、缩放、折叠与节点跳转 -->
     <LearningPathMap client:load tech={techVM} base={base} />
-
-    <!-- 其他技术路线 -->
-    <nav class="lp-related" aria-label="其他学习路线">
-      <span class="lp-related__label">其他路线</span>
-      {related.map((id) => {
-        const item = getLearningPathTechVM(id, base)
-        if (!item) return null
-        return (
-          <a class="lp-related__link" href={`${base}learning-path/${id}/`}>
-            {item.title}
-          </a>
-        )
-      })}
-    </nav>
   </div>
 </HomeLayout>
