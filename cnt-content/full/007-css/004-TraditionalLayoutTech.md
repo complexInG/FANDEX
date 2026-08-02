@@ -16,6 +16,12 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
+## 0. 直觉：没有 Flexbox/Grid 的年代怎么排版
+
+在 Flexbox 与 Grid 出现之前，网页排版靠两件“老工具”：浮动（`float`）和定位（`position`）。浮动让元素“靠边站”并让文字环绕，定位让元素“钉”在页面的某个位置。
+
+现代项目已经很少用浮动做整体布局，但很多老代码、打印样式和特殊排版仍在用。理解它们，才能读懂历史代码，也更懂 Flexbox/Grid 解决了什么问题。
+
 
 ## 1. 浮动布局 (Float)
 
@@ -68,6 +74,8 @@ prerequisites:
 
 > **效果图描述**：父容器边框塌缩为一条线（高度为0），两个色块溢出，后续文字紧贴边框线。
 
+**讲解：** 浮动子元素不参与父元素的高度计算，父容器高度塌成 0，后续内容上移。解决办法见 1.3 的四种 clearfix 方案。
+
 ### 1.3 清除浮动（Clearfix）方案汇总
 
 #### 方案一：额外标签法（不推荐）
@@ -109,6 +117,8 @@ prerequisites:
 
 `*zoom: 1` 是 IE6/7 的 hack，触发 hasLayout 以兼容老浏览器。
 
+**讲解：** 伪元素法在容器末尾插入一个 `clear: both` 的隐藏块，是传统方案中的推荐写法；`*zoom` 仅为旧 IE 兼容，现代代码可删除。
+
 #### 方案四：现代 BFC 方案
 
 ```css
@@ -118,6 +128,8 @@ prerequisites:
 ```
 
 `display: flow-root` 专门为创建 BFC 设计，无副作用。浏览器支持：Chrome 58+、Firefox 53+、Safari 13+。
+
+**讲解：** `display: flow-root` 专门用于创建 BFC，无副作用、语义清晰，是清除浮动的现代标准写法。
 
 ### 1.4 `clear` 属性详解
 
@@ -278,6 +290,8 @@ CSS `position` 属性控制元素的定位方式，配合 `top`/`right`/`bottom`
 - 必须指定 `top`/`bottom`/`left`/`right` 中的至少一个
 - 父容器的高度是 sticky 的"活动范围"，超出父容器后 sticky 失效
 - 父容器不能设置 `overflow: hidden`/`auto`/`scroll`，否则 sticky 失效
+
+**讲解：** `sticky` 在滚动范围内保持原位，到达阈值（`top: 0`）后“粘住”不动，常用于吸顶导航与章节标题；它需要父容器有足够滚动空间才能生效。
 
 ### 2.6 `z-index` 与层叠上下文
 
@@ -699,12 +713,12 @@ BFC（Block Formatting Context）是 CSS 中一个独立的渲染区域，内部
 
 | 方案                   | 需知尺寸 | 兼容性     | 代码量 | 适用场景     |
 | :--------------------- | :------- | :--------- | :----- | :----------- |
-| absolute + transform   | [错误]   | IE10+      | 少     | 通用         |
-| absolute + 负 margin   | [完成]   | IE6+       | 中     | 已知尺寸     |
-| absolute + margin:auto | [完成]   | IE8+       | 少     | 已知尺寸     |
-| table-cell             | [错误]   | IE8+       | 多     | 兼容旧浏览器 |
-| Flexbox                | [错误]   | IE10+      | 少     | 现代项目首选 |
-| Grid                   | [错误]   | 现代浏览器 | 最少   | 最新项目     |
+| absolute + transform   | 否       | IE10+      | 少     | 通用         |
+| absolute + 负 margin   | 是       | IE6+       | 中     | 已知尺寸     |
+| absolute + margin:auto | 是       | IE8+       | 少     | 已知尺寸     |
+| table-cell             | 否       | IE8+       | 多     | 兼容旧浏览器 |
+| Flexbox                | 否       | IE10+      | 少     | 现代项目首选 |
+| Grid                   | 否       | 现代浏览器 | 最少   | 最新项目     |
 
 ---
 
@@ -718,3 +732,47 @@ BFC（Block Formatting Context）是 CSS 中一个独立的渲染区域，内部
 - **BFC**：隔离布局容器，解决塌陷/margin 折叠/自适应两栏
 - **经典布局**：圣杯/双飞翼是浮动布局的巅峰应用
 - **居中**：从传统 hack 到 Flex/Grid，方案越来越简洁
+
+## 7. 动手试试
+
+### 入门版（必做）
+
+1. 写两个浮动色块和一个段落，观察文字环绕；再给父容器加 `display: flow-root`，观察高度塌陷被修复；
+2. 用 `position: absolute` 做一个“右上角关闭按钮”，父元素记得加 `position: relative`；
+3. 用 `position: sticky` 做一个吸顶的章节标题，滚动页面观察效果。
+
+### 进阶版（选做）
+
+1. 复刻一个简化版圣杯布局（左、中、右三栏），再用 Flexbox 重写对比；
+2. 用 `absolute + transform` 实现水平垂直居中；
+3. 用 BFC 实现“左边固定、右边自适应”的两栏布局。
+
+## 8. 核心知识点
+
+> 一句话记住传统布局：`float` 让元素靠边站（记得清浮动），`position` 决定定位参照系；`relative` 是基准，`absolute` 脱离流，`sticky` 会吸顶。
+
+- `float`：文字环绕、横向排列，副作用是高度塌陷；
+- 清浮动四法：额外标签、`overflow: hidden`、伪元素 clearfix、`display: flow-root`；
+- `static`/`relative`/`absolute`/`fixed`/`sticky` 五种定位，参照系各不相同；
+- `absolute` 相对最近的非 static 祖先，`fixed` 相对视口，`sticky` 相对滚动容器；
+- BFC 可清除浮动、防止外边距合并、实现自适应两栏；
+- 居中优先 Flexbox/Grid，旧项目才用 absolute/table-cell。
+
+## 9. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 浮动后忘记清 | 父容器高度塌陷 | 用 `display: flow-root` 或 clearfix |
+| `absolute` 找不到基准 | 相对整个页面跳动 | 给父元素加 `position: relative` |
+| 父容器 `overflow: hidden` | sticky 失效 | 用 `overflow: clip` 或调整结构 |
+| 用 float 做整体布局 | 维护困难 | 新项目用 Flexbox/Grid |
+| 负 margin 居中 | 尺寸变化就失效 | 用 transform 或 Flexbox |
+| 忽略 `z-index` 上下文 | 层级不符合预期 | 理解层叠上下文（见 css/012） |
+
+## 10. 扩展学习
+
+- 定位详解：`css/010-PositionDetailed`、`css/012-StackingContext`；
+- 浮动专题：`css/011-FloatClear`；
+- 现代布局：`css/005-CSS3FlexboxFlexLayout`、`css/016-CSS3GridGridLayout`；
+- 边距折叠：`css/009-MarginCollapse`；
+- 响应式：`css/030-ResponsiveDesign`。
