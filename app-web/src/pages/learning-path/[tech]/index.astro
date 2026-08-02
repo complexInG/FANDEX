@@ -62,7 +62,7 @@ const chipModules = getLearningPathModules()
 
     <!-- Hero 区域：复用首页美术（渐变标题 + 统计 + SVG 描边入口） -->
     <section class="hero">
-      <h1 class="hero-title">
+      <h1 class="hero-title" data-text={`${techVM.title} 学习路线`}>
         <span class="hero-title-fan">{techVM.title}</span>
         <span class="hero-title-dex">学习路线</span>
       </h1>

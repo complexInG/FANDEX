@@ -79,13 +79,18 @@
     background-repeat: no-repeat;
   }
 
-  /* 站点标题：FAN/DEX 分离 + 渐变背景动效
+  /* 站点标题：FAN/DEX 分离 + 渐变背景动效 + 残影伪元素
    * ----------------------------------------------------------------
    * 设计灵感（参考 para-mask + para-ghost 模式，自主重构）：
    * - FAN 与 DEX 拆分为两个 span，独立控制渐变背景与色相
    * - 渐变背景 + background-clip: text 实现文字渐变填充
    * - bgPan keyframes 驱动背景位置缓慢移动，待机呼吸感
    * - hover 时加速背景滚动 + 微缩放，强化交互反馈
+   * - ::after 残影伪元素使用 attr(data-text) 复制文字
+   *   通过 -webkit-text-stroke 形成轮廓残影，z-index:-1 位于本体之下
+   * - white-space:nowrap + text-align:center 防止长标题（如 Vue 3 学习路线）
+   *   在残影中换行导致错位，保证与本体始终对齐
+   * - ghostIdle keyframes 让残影微小浮动，hover 时逆方向位移形成视差
    * 性能：仅动画 transform 与 background-position，GPU 加速，60fps */
   .hero-title {
     font-family: var(--font-display);
@@ -128,9 +133,49 @@
     100% { background-position: 100% 100%; }
   }
 
-  /* 尊重用户减少动效偏好：禁用背景动画 */
+  /* 残影伪元素：attr(data-text) 复制标题文本
+   * - 位于本体下方（z-index:-1），透明填充 + 描边轮廓，形成视觉层次
+   * - 不换行 + 水平居中，长标题也能与本体严格对齐
+   * - ghostIdle 动画微小浮动，hover 时残影逆方向位移，形成视差效果 */
+  .hero-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklch, var(--color-accent-base) 40%, transparent);
+    z-index: -1;
+    opacity: 0.5;
+    /* 残影待机动画：微小位移浮动 */
+    animation: heroGhostIdle 4s ease-in-out infinite alternate;
+    transition:
+      transform 0.6s cubic-bezier(0.2, 1, 0.3, 1),
+      opacity 0.4s ease,
+      -webkit-text-stroke 0.4s ease;
+    pointer-events: none;
+    /* 让残影稍微偏移到左上方，形成视觉错位 */
+    transform: translate(-3px, -3px);
+  }
+
+  .hero-title:hover::after {
+    animation: none;
+    transform: translate(-10px, -10px) scale(1.03);
+    opacity: 0.9;
+    -webkit-text-stroke: 1.5px color-mix(in oklch, var(--color-accent-base) 70%, transparent);
+  }
+
+  @keyframes heroGhostIdle {
+    0% { transform: translate(-2px, -2px); }
+    100% { transform: translate(-4px, -4px); }
+  }
+
+  /* 尊重用户减少动效偏好：禁用背景动画与残影浮动 */
   @media (prefers-reduced-motion: reduce) {
-    .hero-title {
+    .hero-title,
+    .hero-title::after {
       animation: none;
       transition: none;
     }
