@@ -1,4 +1,6 @@
 ---
+> 阅读建议：适合有项目经验后再读，0 基础可先跳过。
+
 order: 390
 title: CSS架构方法论
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: CSS架构方法论详解：BEM、OOCSS、SMACSS的核心理念、对比分析与实战应用。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/037-CSSCanvasDrawing'
   - 'css/038-CSSInJS'

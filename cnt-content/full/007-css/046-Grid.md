@@ -1,4 +1,6 @@
 ---
+> 阅读建议：先读 016 完整版，本篇作为速查复习使用。
+
 order: 460
 title: CSS Grid 布局速查
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: beginner
 description: CSS Grid 布局速查 的完整教学讲解。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related: []
 prerequisites: []
 ---

@@ -1,4 +1,6 @@
 ---
+> 0基础速通：读第 0 节直觉与第 1 节核心必读即可；第 6 章深入理解（选读），附录 D 属性速查随用随查。
+
 order: 150
 title: 背景增强
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 深入解析 CSS Backgrounds Module Level 3/4 多背景、background-size、background-clip、background-origin、background-attachment 的规范、绘制算法与工程实践
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-02'
 related:
   - 'css/013-Gradient'
   - 'css/014-Shadow'

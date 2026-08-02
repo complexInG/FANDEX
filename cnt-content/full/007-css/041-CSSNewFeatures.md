@@ -1,4 +1,6 @@
 ---
+> 阅读建议：每项新特性先读对应完整文档（020/025/036 等）再回看本篇。
+
 order: 410
 title: CSS新特性
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: CSS现代新特性详解：@container容器查询、@layer层叠层、逻辑属性、:has()选择器。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/039-CSSArchitectureMethodology'
   - 'css/040-CSSTheoryKnowledge'

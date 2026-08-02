@@ -1,4 +1,6 @@
 ---
+> 阅读建议：有项目经验后再读，先掌握 CSS 基础（001-023）。
+
 order: 280
 title: Sass
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: Sass（变量、嵌套、混合、继承、运算、模块化）
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/026-LogicalProperty'
   - 'css/027-ScrollSnap'

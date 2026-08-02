@@ -1,4 +1,6 @@
 ---
+> 0基础速通：读第 0 节直觉、第 1 节核心必读（代码示例）与第 7 节综合挑战即可；第 6 章深入理解（选读）供进阶。
+
 order: 90
 title: margin合并与塌陷
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 深入解析 CSS margin 合并、塌陷机制及 BFC 块格式化上下文的工程实践
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-02'
 related:
   - 'css/007-PriorityCalculation'
   - 'css/008-StyleSheetImportMethod'

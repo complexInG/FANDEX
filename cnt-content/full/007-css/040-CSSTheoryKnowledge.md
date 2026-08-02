@@ -1,4 +1,6 @@
 ---
+> 0基础速通：先掌握 002/007/012 再读本篇；本篇是理论串讲，可分段查阅，不要一次读完。
+
 order: 400
 title: CSS 理论知识点
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 层叠规则、包含块、格式化上下文与渲染原理。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/038-CSSInJS'
   - 'css/039-CSSArchitectureMethodology'

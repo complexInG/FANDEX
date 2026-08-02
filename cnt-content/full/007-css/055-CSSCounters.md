@@ -112,6 +112,19 @@ content: counters(item, "-");           /* 1-1, 1-2 */
 3. 把 `<ol>` 改成 `① ② ③` 样式（用计数器 + `::before`）；
 4. 进阶挑战：用 `counters()` 实现多级目录编号。
 
+提示：第 3 步除了 `counter(item)`，编号格式还可以用 `cjk-ideographic`（一、二、三）。骨架参考：
+
+```css
+ol {
+  counter-reset: item;
+  list-style: none;
+}
+ol li::before {
+  counter-increment: item;
+  content: counter(item) ". "; /* 先跑通数字版，再换其它格式 */
+}
+```
+
 ## 3. 核心知识点
 
 > 一句话记住计数器：`counter-reset` 归零，`counter-increment` 加一，`counter()` 显示；嵌套用 `counters()`，格式参数同列表样式。

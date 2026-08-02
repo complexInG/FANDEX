@@ -1,4 +1,6 @@
 ---
+> 前置依赖：先读 010 定位详解，理解 z-index 基本用法。
+
 order: 120
 title: 层叠上下文
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: z-index
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/010-PositionDetailed'
   - 'css/011-FloatClear'

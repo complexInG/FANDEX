@@ -1,4 +1,6 @@
 ---
+> 前置依赖：先读 002 盒模型与 011 浮动。圣杯/双飞翼布局为进阶内容，0 基础可先跳过。
+
 order: 40
 title: 传统布局技术
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 浮动、定位、BFC 与经典布局方案。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/002-CSS3BoxModelDetailed'
   - 'css/003-CSS3SelectorSystem'

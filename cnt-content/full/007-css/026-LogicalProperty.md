@@ -1,4 +1,6 @@
 ---
+> 前置依赖：先理解 002 盒模型的物理属性。
+
 order: 260
 title: 逻辑属性
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: margin-inline、margin-block
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/024-FeatureQuery'
   - 'css/025-CascadeLayer'

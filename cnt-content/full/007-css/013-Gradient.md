@@ -1,4 +1,6 @@
 ---
+> 0基础速通：读第 0 节直觉与第 1 节核心必读（代码示例）即可；第 6 章深入理解（选读）供进阶。
+
 order: 130
 title: 渐变
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 深入解析 CSS 渐变（linear-gradient、radial-gradient、conic-gradient）的规范、几何算法、颜色插值与工程实践
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-02'
 related:
   - 'css/011-FloatClear'
   - 'css/012-StackingContext'

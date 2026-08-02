@@ -1,4 +1,6 @@
 ---
+> 阅读建议：有性能优化需求后再读，先掌握 035 与 040。
+
 order: 420
 title: CSS性能优化详解
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: CSS性能优化深度指南：关键CSS内联、异步加载、选择器优化、渲染性能提升。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/040-CSSTheoryKnowledge'
   - 'css/041-CSSNewFeatures'

@@ -1,4 +1,6 @@
 ---
+> 0基础速通：读第 0 节直觉、第 1 节核心必读（代码示例）与第 7 节综合挑战即可；第 2-5 章按需查阅，第 6 章深入理解（选读）供进阶。
+
 order: 70
 title: 优先级计算
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 深入解析 CSS 优先级（Specificity）与层叠算法（Cascade Algorithm）的规范、计算、工程实践与跨框架对比
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-02'
 related:
   - 'css/005-CSS3FlexboxFlexLayout'
   - 'css/006-PseudoClassPseudoElement'

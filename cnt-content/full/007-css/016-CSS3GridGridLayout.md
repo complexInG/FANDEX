@@ -1,4 +1,6 @@
 ---
+> 前置依赖：基础选择器与盒模型。本篇为完整版，可配合 046-Grid 速查复习。
+
 order: 160
 title: CSS3 Grid 网格布局
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: 网格容器与项目属性、区域命名与响应式网格。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/014-Shadow'
   - 'css/015-BackgroundEnhancement'

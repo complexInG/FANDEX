@@ -1,4 +1,6 @@
 ---
+> 前置依赖：先读 007 优先级计算，理解层叠顺序。
+
 order: 250
 title: 层叠层
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: '@layer'
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/023-CSSVariableCustomAttribute'
   - 'css/024-FeatureQuery'

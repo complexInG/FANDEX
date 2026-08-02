@@ -1,4 +1,6 @@
 ---
+> 前置依赖：先掌握 019 媒体查询。0基础速通：读第 0 节直觉与第 1 节核心必读即可；第 6 章深入理解（选读）供进阶。
+
 order: 200
 title: 容器查询
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: 深入解析 CSS Container Queries 容器查询的规范、算法、工程实践与跨浏览器兼容性
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-02'
 related:
   - 'css/018-BorderRadius'
   - 'css/019-MediaQuery'

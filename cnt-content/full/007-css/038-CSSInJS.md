@@ -1,4 +1,6 @@
 ---
+> 前置依赖：需先有 React/Vue 组件开发经验。
+
 order: 380
 title: CSS-in-JS 与高级布局技巧
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: advanced
 description: CSS-in-JS方案与Grid高级布局
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/036-CSSNativeNesting'
   - 'css/037-CSSCanvasDrawing'

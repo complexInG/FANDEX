@@ -1,4 +1,6 @@
 ---
+> 阅读建议：有项目经验后再读，先掌握 CSS 基础（001-023）。
+
 order: 290
 title: Less与Stylus
 module: 'css'
@@ -6,7 +8,7 @@ category: 前端技术
 difficulty: intermediate
 description: Less与Stylus
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-02'
 related:
   - 'css/027-ScrollSnap'
   - 'css/028-Sass'

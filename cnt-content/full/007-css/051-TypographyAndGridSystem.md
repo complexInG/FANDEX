@@ -110,6 +110,13 @@ prerequisites:
 - `letter-spacing`/`word-spacing` 微调字距与词距，标题常用小幅字距；
 - 垂直方向用 `vertical-align` 控制行内元素基线对齐（`middle`/`baseline`/`super` 等）。
 
+**中文排版补充：**
+
+- 中文正文推荐 `text-align: justify` 两端对齐，并配合 `text-justify: inter-ideograph` 处理标点；
+- 中文标点（逗号、句号）不应出现在行首，浏览器自动处理；需要更精细控制时设置 `hanging-punctuation`（支持有限）；
+- 中文正文字号建议 ≥ 16px，行高 1.6-1.8，比英文略宽；
+- 全角与半角：中文内容用全角标点，代码与英文单词保持半角。
+
 ## 常见误区
 
 | 误区 | 真相 |
