@@ -6,7 +6,7 @@ category: 后端技术
 difficulty: beginner
 description: Python 变量与常量深度剖析：从名字绑定、LEGB 作用域到引用语义、不可变性与企业级配置管理实践。
 author: fanquanpp
-updated: '2026-07-21'
+updated: '2026-08-03'
 related:
   - 'python/067-BasicDataType'
   - 'python/060-TypeAnnotationMypy'
@@ -460,6 +460,18 @@ print(s3 is s4)  # 不保证（含空格的字符串可能不驻留）
 print(s3 == s4)  # True
 ```
 
+**拆解化讲解：**
+
+（1）变量是标签不是盒子：`b = a` 让两个名字指向同一个对象，`id()` 相同；`is` 判断“是不是同一个对象”，`==` 判断“值是否相等”；
+
+（2）不可变对象“修改”即重新绑定：`x = 20` 创建新对象并让 `x` 指向它，`y` 仍指向原对象，所以 `y` 不变；
+
+（3）可变对象原地修改：`lst1.append(4)` 直接修改列表对象本身，`lst2` 与 `lst1` 指向同一对象，因此“连带变化”；
+
+（4）函数传参是引用传递：原地修改影响外部，重新绑定（`lst = [...]`）不影响外部；
+
+（5）整数缓存与字符串驻留：小整数（-5~256）与部分字符串会被缓存复用，`is` 可能为 True，但业务代码判断值一律用 `==`。
+
 ### 4.2 LEGB 作用域演示
 
 ```python
@@ -559,6 +571,18 @@ print(add5.__closure__)  # (<cell at 0x...: int object at 0x...>,)
 print(add5.__closure__[0].cell_contents)  # 5
 ```
 
+**拆解化讲解：**
+
+（1）LEGB 查找顺序：Local（局部）→ Enclosing（外层函数）→ Global（模块级）→ Built-in（内置），名字解析按此顺序；
+
+（2）只读访问自动向上查找：内层函数找不到局部变量时，会逐层向外找；
+
+（3）遮蔽（shadowing）：函数内 `x = "local"` 创建局部变量，遮蔽全局 `x`，函数外不受影响；
+
+（4）`global` 声明修改全局变量，`nonlocal` 修改外层函数变量；
+
+（5）闭包单元：`__closure__` 保存被捕获的外层变量（cell），`cell_contents` 可读取其当前值——这也是“闭包延迟绑定”的底层来源。
+
 ### 4.3 global 与 nonlocal 的陷阱
 
 ```python
@@ -631,6 +655,14 @@ def make_func(i):
 funcs = [make_func(i) for i in range(3)]
 print([f() for f in funcs])  # [0, 1, 2]
 ```
+
+**拆解化讲解：**
+
+（1）陷阱：循环中直接定义闭包 `lambda: i`，所有闭包共享同一个 `i`，最终都读到循环结束后的值（延迟绑定）；
+
+（2）修复：用默认参数 `lambda i=i: i` 或工厂函数 `make_func(i)` 把当前值“快照”进闭包；
+
+（3）本例 `make_func(i)` 每个函数捕获自己的参数副本，所以输出 `[0, 1, 2]`。
 
 ### 4.4 多重赋值与解包
 
@@ -743,6 +775,16 @@ print(handle_command("add 3 5"))  # 8
 print(handle_command("ls -l -a"))  # Listing with args: ['-l', '-a']
 ```
 
+**拆解化讲解：**
+
+（1）多重赋值 `a, b = b, a` 右侧先求值再整体解包，实现优雅交换；
+
+（2）`*rest` 收集多余元素：`first, *middle, last = items` 把中间项装进列表；
+
+（3）函数调用解包：`f(*args)` 展开位置参数，`f(**kwargs)` 展开关键字参数；
+
+（4）模式匹配（match/case）与解包思想一致：按结构拆开再分别处理。
+
 ### 4.5 可变与不可变类型
 
 ```python
@@ -830,6 +872,14 @@ b = a
 a += 5  # 重新绑定
 print(a is b)  # False
 ```
+
+**拆解化讲解：**
+
+（1）不可变类型（int/str/tuple）：`a += 5` 产生新对象并重新绑定 `a`，`b` 仍指向原对象；
+
+（2）可变类型（list/dict/set）：`lst.append(x)` 原地修改，所有引用同步可见；
+
+（3）判断依据：`is` 看对象身份，`==` 看值；可变性决定“修改会不会影响其它引用”。
 
 ### 4.6 浅拷贝与深拷贝
 
@@ -934,6 +984,16 @@ root_copy = copy.deepcopy(root)
 print(root_copy.children[0].parent is root_copy)  # True（新对象的循环引用）
 print(root_copy.children[0] is root.children[0])  # False（新对象）
 ```
+
+**拆解化讲解：**
+
+（1）浅拷贝（`copy.copy`）只复制顶层对象，嵌套的可变对象仍共享引用；
+
+（2）深拷贝（`copy.deepcopy`）递归复制所有层级，嵌套对象全部是新对象；
+
+（3）深拷贝能正确处理循环引用（`root_copy.children[0].parent is root_copy` 为 True）；
+
+（4）选择原则：只读结构用浅拷贝省内存，需要独立修改用深拷贝。
 
 ### 4.7 常量实现方案
 
@@ -1108,6 +1168,16 @@ except AttributeError as e:
     print(f"Error: {e}")
 ```
 
+**拆解化讲解：**
+
+（1）Python 没有真正的常量：`Final` 只是类型注解提示，命名约定 `UPPER_CASE` 靠自觉；
+
+（2）`@dataclass(frozen=True)` 冻结实例：字段不可再赋值，修改会抛 `FrozenInstanceError`；
+
+（3）自定义类通过覆写 `__setattr__` 抛 `AttributeError`，实现运行时保护；
+
+（4）工程建议：配置类用 `frozen=True` 数据类 + 类型注解，兼顾安全与可读。
+
 ### 4.8 类型注解与变量
 
 ```python
@@ -1257,6 +1327,16 @@ def get_user(user_id: UserId) -> UserName:
 user_id = UserId(123)
 name = get_user(user_id)
 ```
+
+**拆解化讲解：**
+
+（1）注解（`id: int` 等）只做静态提示，运行时不影响行为，交给 mypy 等类型检查器把关；
+
+（2）`Protocol` 是“结构子类型”：只要类具备 `close()` 方法，即使不继承也能通过 `SupportsClose` 检查（鸭子类型的形式化）；
+
+（3）可变默认参数陷阱：`tags: list[str] = None` 是错误写法，正确做法是 `field(default_factory=list)`，让每个实例拥有独立列表；
+
+（4）`Literal` 限制参数只能取列出的字面量，`NewType` 创建“名义新类型”，防止把用户 ID 与普通整数混用。
 
 ---
 
