@@ -6,13 +6,61 @@ category: 数据库
 difficulty: beginner
 description: SELECT 语句、WHERE 条件、排序、分页、去重、别名、表达式与聚合函数
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'sql/001-OverviewStandard'
   - 'sql/003-MultiTableQuery'
   - 'sql/004-DML'
 prerequisites: []
 ---
+
+## 0. 五分钟上手：五条最常用的查询（先读这里）
+
+假设有一张 `users` 表，前五次查询覆盖日常 90% 的需求：
+
+**① 查询指定的几列**
+
+```sql
+SELECT name, age FROM users;
+```
+
+**讲解：** `SELECT` 后列出要看的列，用逗号分隔；只查需要的列能减少数据传输量。`SELECT *` 查全部列，方便但数据量大时慎用。
+
+**② 只查满足条件的行**
+
+```sql
+SELECT * FROM users WHERE age > 18;
+```
+
+**讲解：** `WHERE` 是行级过滤器，只有满足条件的行才会返回；比较符包括 `>`、`<`、`>=`、`<=`、`=`、`<>`。
+
+**③ 排序**
+
+```sql
+SELECT * FROM users ORDER BY age DESC;
+```
+
+**讲解：** `ORDER BY` 按指定列排序，`DESC` 表示从大到小（降序），`ASC` 表示从小到大（升序，默认）。多列排序用逗号分隔，如 `ORDER BY age DESC, name ASC`。
+
+**④ 限制条数**
+
+```sql
+SELECT * FROM users LIMIT 5;
+```
+
+**讲解：** `LIMIT 5` 只返回前 5 行，常用于分页与预览；配合 `ORDER BY` 才能得到“前几名”的稳定结果。
+
+**⑤ 统计数量**
+
+```sql
+SELECT COUNT(*) FROM users;
+```
+
+**讲解：** `COUNT(*)` 统计总行数，返回一个数字；`COUNT(列名)` 只统计该列非 `NULL` 的行。
+
+**动手试试：** 在练习环境（如 SQLite）建一张 `users(id, name, age)` 表并插入几行数据，依次执行上面五条查询；再试着组合：`SELECT name FROM users WHERE age > 18 ORDER BY age DESC LIMIT 3`——你能说出它的含义吗？（答案：查询年龄大于 18 的用户名，按年龄从大到小排，只取前 3 个。）
+
+下面各节会逐一展开 `WHERE`、`ORDER BY`、`LIMIT` 与聚合函数的细节。
 
 ## WHERE 条件
 
