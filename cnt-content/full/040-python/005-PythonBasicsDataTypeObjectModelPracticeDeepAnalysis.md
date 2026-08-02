@@ -2348,4 +2348,5 @@ class PacketHeader(NamedTuple):
     def from_bytes(cls, data: bytes) -> 'PacketHeader':
         """从字节解析头部"""
         if len(data) < cls.size():
-            raise ValueError(f"数据过短: {len(data)} < {cls.size
+            raise ValueError(f"数据过短: {len(data)} < {cls.size()}")
+```
