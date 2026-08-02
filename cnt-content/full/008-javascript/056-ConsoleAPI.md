@@ -193,3 +193,36 @@ if (process.env.NODE_ENV === "production") {
   console.log = console.info = () => {};
 }
 ```
+
+## 核心知识点
+
+> 一句话记住 Console：`log/info/warn/error` 分级输出，`table` 打印表格，`time/timeEnd` 计时，`group` 分组，`assert` 断言。
+
+- 分级：`console.log/info/warn/error`；
+- 格式化：`%s`/`%d`/`%o` 占位符；
+- `console.table()`：数组/对象表格化；
+- `console.time()`/`timeEnd()`：耗时统计；
+- `console.group()`/`groupEnd()`：折叠分组；
+- `console.assert()`：条件断言；
+- DevTools 中的调试主力。
+
+## 动手试试
+
+1. 用 `console.table` 展示一组用户数据；
+2. 用 `time/timeEnd` 测量一次循环耗时；
+3. 用 `group` 分组输出日志；
+4. 进阶挑战：写一个 `debug` 开关控制日志级别。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 生产环境留日志 | 性能与隐私 | 用日志库或按环境裁剪 |
+| console.log 调试对象 | 打印的是引用 | 用 `console.dir` 或断点 |
+| 滥用 console | 代码噪音 | 提交前清理 |
+
+## 扩展学习
+
+- 调试：`javascript/047-DebugPerformanceOptimization`；
+- 错误处理：`javascript/044-ErrorBoundaryGlobalErrorCatch`；
+- 性能：`javascript/059-CoreWebVitalsAndPerformanceMetrics`。

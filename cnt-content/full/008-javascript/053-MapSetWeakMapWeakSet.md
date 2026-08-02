@@ -216,3 +216,35 @@ m.set(key, 1); // 对象作键
 // 大数据量查找 Map 接近 O(1)
 // 需要键为非字符串时必须用 Map
 ```
+
+## 核心知识点
+
+> 一句话记住集合：Map 任意键的字典、Set 唯一值集合；WeakMap/WeakSet 键弱引用、可被回收，适合对象关联数据。
+
+- Map：任意类型键、保留插入顺序、`get/set/has/delete/size`；
+- Set：值唯一、自动去重、`add/has/delete`；
+- Map ↔ 对象互转：`Object.entries` / `Object.fromEntries`；
+- WeakMap：键必须是对象、不可遍历、无引用时回收；
+- WeakSet：值必须是对象、不可遍历；
+- 遍历：`forEach`/`keys()`/`values()`/`entries()`。
+
+## 动手试试
+
+1. 用 Map 实现“用户 ID → 用户对象”的缓存；
+2. 用 Set 对数组去重；
+3. 用 WeakMap 给 DOM 节点关联元数据；
+4. 进阶挑战：用 Map 实现 LRU 缓存。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 用对象当 Map | 键只能是字符串 | 使用 Map |
+| WeakMap 期望遍历 | 不可遍历 | 改用 Map（注意强引用） |
+| Set 存对象去重 | 引用去重非值去重 | 按需序列化键 |
+
+## 扩展学习
+
+- 对象：`javascript/011-ObjectReference`；
+- 内存：`javascript/057-MemoryManagementAndGarbageCollection`；
+- 数组：`javascript/026-ObjectArray`。

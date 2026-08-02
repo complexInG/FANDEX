@@ -199,3 +199,35 @@ dec.decode(bytes); // "中文"
 const le = new Uint8Array(new Uint32Array([1]).buffer)[0] === 1;
 console.log(le ? "little-endian" : "big-endian");
 ```
+
+## 核心知识点
+
+> 一句话记住二进制：ArrayBuffer 是原始字节块，TypedArray 是带类型的视图，DataView 是灵活读写；二进制数据用 `Uint8Array` 最常用。
+
+- `ArrayBuffer`：固定长度的二进制缓冲区；
+- TypedArray：`Uint8Array`/`Int32Array`/`Float64Array` 等类型化视图；
+- `DataView`：按任意偏移与字节序读写；
+- `Blob`/`File`：二进制对象，用于文件与上传；
+- 与字符串互转：`TextEncoder`/`TextDecoder`；
+- 场景：文件解析、图像处理、网络协议。
+
+## 动手试试
+
+1. 创建 16 字节的 ArrayBuffer，用 `Uint8Array` 写入并读取；
+2. 用 `TextEncoder` 把字符串转成字节，再转回；
+3. 读取一个文件的 `arrayBuffer()`；
+4. 进阶挑战：解析一个简单的二进制文件头。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 越界访问 | 读取到 undefined 或抛错 | 检查长度与偏移 |
+| 字节序混淆 | 多字节数值错乱 | DataView 显式指定 littleEndian |
+| 大缓冲区拷贝 | 性能差 | 使用 transfer 转移所有权 |
+
+## 扩展学习
+
+- 存储：`javascript/021-IndexedDBADatabaseInYourBrowser`；
+- 性能：`javascript/047-DebugPerformanceOptimization`；
+- 文件：`html5/008-HTML5OfflineStorageWebAPI`。

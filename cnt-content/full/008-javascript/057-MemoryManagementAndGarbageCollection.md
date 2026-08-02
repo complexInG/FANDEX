@@ -106,3 +106,34 @@ function process(el) {
 回答清楚这三个问题，大部分泄漏问题都能自己定位。
 下一步建议阅读 [闭包的内存泄露与优化](/FANDEX/javascript/031-ClosureMemoryLeakOptimization/) 与
 [内存泄漏排查](/FANDEX/javascript/045-MemoryLeakTroubleshoot/) 实战篇。
+
+## 核心知识点
+
+> 一句话记住内存：栈存基本值与引用，堆存对象；垃圾回收靠可达性，闭包与全局变量是常见泄漏源。
+
+- 栈/堆：基本类型在栈，对象在堆；
+- 引用计数与标记清除：GC 按可达性回收；
+- 泄漏常见源：全局变量、未清理的定时器/监听器、闭包持有大对象；
+- `WeakMap`/`WeakRef`：弱引用不阻止回收；
+- 性能工具：DevTools Memory 面板与 Performance 录制。
+
+## 动手试试
+
+1. 用 Memory 面板录制一次页面操作，观察堆快照；
+2. 找出一个“未清理定时器”的泄漏并修复；
+3. 用 WeakMap 改写对象关联数据；
+4. 进阶挑战：用 Performance 录制分析 GC 停顿。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 全局变量膨胀 | 无法回收 | 模块作用域 + 显式清理 |
+| 忘记移除监听 | 事件泄漏 | 对称 removeEventListener |
+| 闭包误留大对象 | 内存占用 | 释放引用 |
+
+## 扩展学习
+
+- 闭包：`javascript/016-FunctionScopeClosure`；
+- 泄漏排查：`javascript/045-MemoryLeakTroubleshoot`；
+- 集合弱引用：`javascript/053-MapSetWeakMapWeakSet`。

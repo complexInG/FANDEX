@@ -328,3 +328,35 @@ dv.getFloat16(0); // 1.5
 // 返回最接近的半精度浮点数
 Math.f16round(1.337); // 按 float16 精度舍入
 ```
+
+## 核心知识点
+
+> 一句话记住新特性：数组新增非破坏方法（toSorted/toReversed/with/findLast），`Object.groupBy` 分组，Promise 新增 `withResolvers`，正则支持 `v` 标志。
+
+- `toSorted()`/`toReversed()`/`toSpliced()`/`with()`：不修改原数组，返回副本；
+- `findLast()`/`findLastIndex()`：从末尾查找；
+- `Object.groupBy()`：按键分组为普通对象；`Map.groupBy()` 返回 Map；
+- `Promise.withResolvers()`：一次拿到 resolve/reject；
+- `RegExp v` 标志：增强字符类与集合运算；
+- `ArrayBuffer` 新方法：`resize()`/`transfer()`。
+
+## 动手试试
+
+1. 用 `toSorted` 排序一组数据，确认原数组不变；
+2. 用 `Object.groupBy` 把商品按分类分组；
+3. 用 `Promise.withResolvers` 改写一个手动 resolve 的场景；
+4. 进阶挑战：用 `with()` 实现不可变更新（配合 React 状态）。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 环境不支持 | 新特性需要新版运行时 | 确认目标环境或引入 polyfill |
+| 把新方法当旧方法 | 破坏性/非破坏性混淆 | 阅读返回值与副作用 |
+| groupBy 键为对象 | 普通对象键会转字符串 | 用 Map.groupBy |
+
+## 扩展学习
+
+- 数组方法：`javascript/039-ArrayHigherOrderMethod`；
+- Promise：`javascript/034-PromiseStaticMethod`；
+- 正则：`javascript/043-Regex`。

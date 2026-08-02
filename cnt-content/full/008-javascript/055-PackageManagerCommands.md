@@ -235,3 +235,35 @@ npm deprecate <包>@<版本> "废弃说明"
 pnpm config get store-dir
 pnpm install   # 自动链接 store
 ```
+
+## 核心知识点
+
+> 一句话记住包管理：`npm install` 装依赖，`-D` 开发依赖，`npx` 直接跑工具，`package.json` 是项目清单，锁文件保证版本一致。
+
+- `npm install <pkg>` 安装；`-D` 开发依赖；`-g` 全局；
+- `npx <cmd>` 执行本地工具（vite、tsc）；
+- `package.json`：`scripts`/`dependencies`/`devDependencies`；
+- `package-lock.json` 锁定版本；
+- 常用脚本：`npm run dev/build/test`；
+- pnpm 更省磁盘、更严格。
+
+## 动手试试
+
+1. 初始化项目并安装一个依赖，观察 package.json 变化；
+2. 用 `npx` 运行一次性的工具；
+3. 查看 `npm ls` 的依赖树；
+4. 进阶挑战：对比 npm 与 pnpm 的安装结果。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 不提交锁文件 | 版本漂移 | 提交 package-lock.json |
+| 全局装工具 | 版本冲突 | 用 npx 或项目依赖 |
+| 依赖过时 | 安全漏洞 | 定期 `npm audit` |
+
+## 扩展学习
+
+- Monorepo：`pnpm-monorepo/` 模块；
+- 模块：`javascript/029-JavaScriptModular`；
+- 构建：`javascript/058-ModuleBundlingAndTreeShaking`。

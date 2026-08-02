@@ -86,3 +86,35 @@ new PerformanceObserver((list) => {
 
 先立指标，再谈优化。接入 web-vitals 采集真实数据，配合 Lighthouse 做开发期回归，
 优化动作按"LCP → INP → CLS"优先级推进，最后用线上数据验证效果。
+
+## 核心知识点
+
+> 一句话记住 Web Vitals：LCP 看加载、CLS 看稳定、INP 看交互；用 PerformanceObserver 与 Lighthouse 测量，指标驱动优化。
+
+- LCP：最大内容绘制，衡量首屏加载；
+- CLS：布局偏移，衡量页面稳定性；
+- INP：交互延迟，衡量响应性；
+- 测量：Lighthouse、PerformanceObserver、web-vitals 库；
+- 优化：预加载关键资源、图片尺寸占位、减少主线程阻塞；
+- Core Web Vitals 是搜索排名与用户体验的重要信号。
+
+## 动手试试
+
+1. 用 Lighthouse 给一个页面打分，记录三项指标；
+2. 用 `web-vitals` 库在页面里收集指标；
+3. 修复一个 CLS 问题（如给图片加尺寸）；
+4. 进阶挑战：对比优化前后的 LCP。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 只看实验室数据 | 真实用户差异大 | 结合 RUM 现场数据 |
+| 优化一项损另一项 | 指标相互影响 | 整体权衡 |
+| 忽略低端设备 | 指标失真 | 按设备分段分析 |
+
+## 扩展学习
+
+- 性能：`javascript/047-DebugPerformanceOptimization`；
+- 渲染路径：`html5/031-CriticalRenderingPathAndResourceLoading`；
+- 资源：`html5/013-ImageResponsiveImage`。

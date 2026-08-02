@@ -97,3 +97,35 @@ export function init() { console.log('module loaded'); }
 打包是"模块图 → chunk"的流水线，Tree Shaking 是其中一道静态分析优化。
 写库时保持模块纯函数化并正确声明 `sideEffects`，写应用时用 ESM 按需引入，
 再配合 [模块动态导入与代码分割](/FANDEX/javascript/041-ModuleDynamicImportCodeSplitting/) 控制加载节奏。
+
+## 核心知识点
+
+> 一句话记住打包：入口 → 依赖图 → 代码分割 → Tree Shaking；`import` 静态分析让无用代码被移除，动态 `import()` 做按需加载。
+
+- 打包器：Webpack/Vite/Rollup/esbuild；
+- 入口与输出：entry → bundle；
+- 代码分割：多入口、动态 import、公共块提取；
+- Tree Shaking：删除未使用的导出（依赖 ESM 静态结构）；
+- sideEffects 标记：告诉打包器模块是否安全裁剪；
+- 产物优化：压缩、哈希、按路由分包。
+
+## 动手试试
+
+1. 观察 Vite 构建输出，找到按路由拆分的 chunk；
+2. 把一个 `import { a } from 'lib'` 改为只导入需要的，对比产物大小；
+3. 用动态 `import()` 懒加载一个模块；
+4. 进阶挑战：用 `rollup-plugin-visualizer` 分析产物。
+
+## 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| Tree Shaking 失效 | 副作用或 CJS | 使用 ESM + sideEffects 配置 |
+| 单包过大 | 首屏慢 | 代码分割 + 懒加载 |
+| 循环依赖 | 运行时报错 | 重构依赖方向 |
+
+## 扩展学习
+
+- 模块：`javascript/029-JavaScriptModular`；
+- 动态导入：`javascript/041-ModuleDynamicImportCodeSplitting`；
+- 构建：`vite/` 模块。
