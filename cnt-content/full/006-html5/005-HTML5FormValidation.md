@@ -15,6 +15,21 @@ related:
 prerequisites: []
 ---
 
+## 0. 表单是什么？——生活中的“登记表”
+
+你在生活中一定填过纸质登记表：姓名、电话、性别、备注……然后交给前台。
+
+网页表单就是电子版的登记表。用户在网页上填写信息，点击“提交”，数据就发送到了服务器。
+
+| 纸质登记表 | 网页表单 |
+| --- | --- |
+| 姓名填空 | `<input type="text">` |
+| 性别勾选（男/女） | `<input type="radio">` |
+| 备注栏（多行） | `<textarea>` |
+| 提交按钮 | `<button type="submit">` |
+
+这节课的目标：学会用 HTML 搭建一个能填、能提交、能自动检查错漏的网页表单。
+
 ## 1. 表单基础
 
 表单是网页中用于收集用户输入的重要组件，HTML5 提供了丰富的表单元素和验证功能。
@@ -46,13 +61,23 @@ HTML5 引入了多种新的输入类型，用于更精确地收集用户输入�
 
 ### 2.1 常用输入类型
 
+输入类型不需要全部背下来，先掌握“必背”的 5 种，其余用到再查。
+
+第一级：必背（每页必用）
+
 | 输入类型         | 描述                                 | 示例                                                   |
 | ---------------- | ------------------------------------ | ------------------------------------------------------ |
 | `text`           | 文本输入框                           | `<input type="text" name="username">`                  |
 | `password`       | 密码输入框                           | `<input type="password" name="password">`              |
 | `email`          | 邮箱输入框，自动验证邮箱格式         | `<input type="email" name="email">`                    |
-| `url`            | URL输入框，自动验证URL格式           | `<input type="url" name="website">`                    |
 | `number`         | 数字输入框，支持数值验证             | `<input type="number" name="age" min="1" max="120">`   |
+| `submit`         | 提交按钮                             | `<button type="submit">提交</button>`                  |
+
+第二级：知道即可（用到再查）
+
+| 输入类型         | 描述                                 | 示例                                                   |
+| ---------------- | ------------------------------------ | ------------------------------------------------------ |
+| `url`            | URL 输入框，自动验证 URL 格式        | `<input type="url" name="website">`                    |
 | `range`          | 滑动条，用于选择范围内的值           | `<input type="range" name="volume" min="0" max="100">` |
 | `date`           | 日期选择器，选择年、月、日           | `<input type="date" name="birthday">`                  |
 | `month`          | 月份选择器，选择年、月               | `<input type="month" name="expiry">`                   |
@@ -63,6 +88,10 @@ HTML5 引入了多种新的输入类型，用于更精确地收集用户输入�
 | `search`         | 搜索输入框，通常带有清除按钮         | `<input type="search" name="query">`                   |
 | `tel`            | 电话输入框，在移动设备上显示数字键盘 | `<input type="tel" name="phone">`                      |
 | `file`           | 文件上传输入框                       | `<input type="file" name="avatar">`                    |
+| `checkbox`       | 复选框，可多选                       | `<input type="checkbox" name="hobby" value="music">`   |
+| `radio`          | 单选按钮，一组只能选一个             | `<input type="radio" name="gender" value="male">`      |
+
+讲解：第一级的 5 种类型覆盖绝大多数表单；第二级了解存在即可，遇到对应需求时再查文档。
 
 ### 2.2 输入类型示例
 
@@ -283,44 +312,22 @@ HTML5 提供了强大的原生客户端验证功能，无需 JavaScript 即可�
 ### 5.2 验证示例
 
 ```html
-<form>
-  <div>
-    <label for="username">用户名:</label>
-    <input type="text" id="username" name="username" required minlength="6" maxlength="20" />
-  </div>
-  <div>
-    <label for="email">邮箱:</label>
-    <input type="email" id="email" name="email" required />
-  </div>
-  <div>
-    <label for="password">密码:</label>
-    <input
-      type="password"
-      id="password"
-      name="password"
-      required
-      minlength="8"
-      pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
-    />
-    <small>密码必须包含至少一个大写字母、一个小写字母和一个数字</small>
-  </div>
-  <div>
-    <label for="age">年龄:</label>
-    <input type="number" id="age" name="age" required min="18" max="120" />
-  </div>
-  <div>
-    <label for="website">网站:</label>
-    <input type="url" id="website" name="website" />
-  </div>
-  <button type="submit">提交</button>
-</form>
+<!-- 第 1 步：最简单的验证——只要 6 位数字 -->
+<input type="text" pattern="[0-9]{6}" placeholder="请输入6位数字" />
+
+<!-- 第 2 步：稍微复杂一点——字母开头，后面跟 5 位数字 -->
+<input type="text" pattern="[A-Za-z][0-9]{5}" placeholder="1个字母+5个数字" />
+
+<!-- 第 3 步：真实场景——必填、长度、格式交给原生属性组合 -->
+<input type="email" required placeholder="邮箱会由浏览器自动校验格式" />
+<input type="text" required minlength="6" maxlength="20" placeholder="用户名 6-20 位" />
 ```
 
 **讲解：**
 
-- `required`/`minlength`/`maxlength`/`pattern` 都是声明式校验，浏览器原生执行；
-- `pattern` 使用正则表达式，如 `^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$` 同时要求大小写字母与数字；
-- 声明式校验在提交时自动拦截，无需手写 `if` 判断。
+- `pattern` 的值是“正则表达式”，可以理解成“输入格式的说明书”：`[0-9]{6}` 表示“6 个数字”，`[A-Za-z]` 表示“1 个字母”；
+- 复杂密码规则（同时要求大小写字母和数字）留到进阶章节用 JavaScript 实现，入门阶段先用简单正则；
+- `required`/`minlength`/`maxlength` 都是声明式校验，浏览器原生执行，提交时自动拦截，无需手写 `if` 判断。
 
 ### 5.3 自定义验证消息
 
@@ -426,7 +433,53 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
 
 ## 6. 实际应用示例
 
-### 6.1 示例 1：用户注册表单
+### 6.1 示例 1：注册表单（纯 HTML + 原生验证）
+
+先看“不写任何 JavaScript”的版本，验证完全由浏览器原生完成：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>用户注册</title>
+    <!-- 本示例不写 JavaScript，也不写 CSS，验证全部由浏览器原生完成 -->
+  </head>
+  <body>
+    <h1>用户注册</h1>
+    <form action="/register" method="post">
+      <div>
+        <label for="username">用户名:</label>
+        <input type="text" id="username" name="username" required minlength="4" maxlength="16" />
+      </div>
+      <div>
+        <label for="email">邮箱:</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div>
+        <label for="password">密码:</label>
+        <input type="password" id="password" name="password" required minlength="8" />
+      </div>
+      <div>
+        <label for="age">年龄:</label>
+        <input type="number" id="age" name="age" required min="18" max="120" />
+      </div>
+      <button type="submit">提交注册</button>
+    </form>
+  </body>
+</html>
+```
+
+**讲解：**
+
+- 这个表单一行 JavaScript 都没有，验证完全靠 `required`、`minlength`、`type="email"`、`min`/`max` 等原生属性；
+- 空值、短用户名、错误邮箱、越界年龄都会在点击提交时被浏览器自动拦截并给出提示；
+- 表单提交后会跳转到 `action` 指定的地址（这里仅作演示），真正的数据发送在 JavaScript 课程中学习。
+
+### 6.2 示例 2：注册表单 JS 增强版（进阶，了解即可）
+
+> 以下代码在纯 HTML 基础上加入了 JavaScript 增强验证（实时提示、两次密码一致等），属于进阶内容，入门阶段了解即可。
 
 ```html
 <!DOCTYPE html>
@@ -608,7 +661,9 @@ HTML5 提供了表单验证 API，用于在 JavaScript 中进行更复杂的验�
 
 （4）实时反馈：`input` 事件在用户输入时即时校验并更新错误文本，让用户“边输入边纠错”。
 
-### 6.2 示例 2：联系表单
+### 6.3 示例 3：联系表单（进阶，了解即可）
+
+> 联系表单同样使用 JavaScript 模拟异步提交，属于进阶内容，入门阶段只需看懂结构与 `FormData` 的用法。
 
 ```html
 <!DOCTYPE html>
@@ -864,6 +919,8 @@ fetch('/api/submit', {
 
 ## 9. 核心知识点
 
+> 一句话记住表单：表单要提交，`action` 和 `method`；`name` 是参数名，`label` 要关联 `id`；必填写 `required`，长度用 `minlength`/`maxlength`；`type` 选 `email` 能校验，`pattern` 写格式。
+
 - 表单三要素：`form`（容器）、控件（`input`/`select`/`textarea` 等）、`button`（触发提交）；
 - `name` 属性决定提交参数名，`label` 通过 `for` 关联 `id` 提供可访问名称；
 - HTML5 内置校验：`required`、`min/max`、`minlength/maxlength`、`pattern`、`type` 格式校验；
@@ -873,14 +930,23 @@ fetch('/api/submit', {
 
 ## 10. 动手试试
 
-写一个“登录表单”：
+### 入门版（必做）
 
-1. 用户名（必填，长度 4-16 位）；
-2. 密码（必填，至少 8 位，包含字母和数字）；
-3. 记住我（复选框）；
+写一个“注册表单”，只使用 HTML5 原生属性：
+
+1. 用户名（必填，长度 4-16 位，用 `minlength`/`maxlength`）；
+2. 密码（必填，至少 8 位）；
+3. 邮箱（必填，`type="email"`）；
 4. 提交按钮；
-5. 用 `pattern` 或 `minlength` 完成校验，并在浏览器里测试空值、短密码等场景；
-6. 进阶挑战：用 `setCustomValidity` 让两次输入的密码一致才能提交。
+5. 打开浏览器，测试空值、短密码、错误邮箱格式——观察浏览器的自动报错。
+
+### 进阶版（选做）
+
+在入门版基础上，用 JavaScript 增加“两次密码一致”的校验（参考第 8.1 节）：
+
+1. 增加“确认密码”输入框；
+2. 用 `input` 事件实时对比两个输入框的值；
+3. 不一致时调用 `setCustomValidity('两次输入的密码不一致')`，提交自动被拦截。
 
 ## 11. 注意事项与改进建议
 
