@@ -4,14 +4,66 @@ title: HTML5 概述与核心特性
 module: 'html5'
 category: 前端技术
 difficulty: beginner
-description: HTML5 新特性、语义化标签与浏览器兼容性。
-author: Anonymous
+description: 零基础第一课：5 分钟写出第一个网页，理解 HTML5 结构、语义化标签与核心特性。
+author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'html5/002-HTML5BasicTagGlobalAttribute'
   - 'html5/003-SemanticTag'
 prerequisites: []
 ---
+
+## 0. 开胃菜：5 分钟写出你的第一个网页
+
+> **学习目标**：不管懂不懂代码，先让浏览器显示“你好，世界！”。
+
+学完这一课，我能做到：
+
+- [ ] 说出 HTML 是网页的骨架
+- [ ] 手写出最基本的 HTML 结构（`DOCTYPE`、`html`、`head`、`body`）
+- [ ] 用 `header`、`main`、`footer` 搭建一个简单的博客布局
+
+### 0.1 准备工作（2 分钟）
+
+1. 在电脑桌面上新建一个文本文档（记事本），重命名为 `index.html`（如果看不到后缀，需先打开“显示文件扩展名”）；
+2. 右键这个文件，选择“打开方式”里的“记事本”（先不要双击，现在双击会打开浏览器）。
+
+### 0.2 敲下第一行代码（2 分钟）
+
+把下面这几行字原封不动敲进记事本（建议手敲而不是复制粘贴，感受标签的写法）：
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>我的第一个网页</title>
+  </head>
+  <body>
+    <h1>你好，世界！</h1>
+    <p>我学会写网页了！</p>
+  </body>
+</html>
+```
+
+**讲解：**
+
+- `<!DOCTYPE html>` 告诉浏览器“这是 HTML5 文档”，必须写在第一行；
+- `<html>` 是整张网页的大盒子，`<head>` 放看不见的配置（标题、编码），`<body>` 放看得见的内容；
+- `<h1>` 是网页主标题，`<p>` 是段落；它们都成对出现，`</h1>` 表示结束；
+- 标签名两边的 `<` 和 `>` 是“标记”的边界，浏览器靠它们识别结构。
+
+### 0.3 查看成果（1 分钟）
+
+1. 保存文件（Ctrl+S），关闭记事本；
+2. 双击 `index.html` 文件，浏览器里出现了大大的标题和一段文字；
+3. 想修改内容？回到记事本改文字，保存后刷新浏览器即可。
+
+> 你刚才已经完成了一个完整网页的制作。接下来，我们就来拆解这几行代码到底是什么意思。
+
+### 0.4 动手试试
+
+- 把 `<h1>` 里的文字改成你的名字，保存并刷新，看看发生了什么；
+- 再复制一行 `<p>...</p>`，在浏览器里观察新段落的位置。
 
 ## 1. HTML5 概述 (Overview)
 
@@ -43,6 +95,11 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 | **WebSocket**       | 实时双向通信                                              | 低延迟，适合实时应用如聊天、游戏           |
 | **Canvas API**      | 2D 图形绘制                                               | 适合游戏、图表、图像处理                   |
 | **Geolocation API** | 地理位置服务                                              | 基于位置的应用，如地图、本地服务           |
+
+### 1.3 动手试试
+
+- 打开你第 0 课写的 `index.html`，在 `<body>` 里再加一个 `<h2>` 标题，观察页面层级变化；
+- 把核心特性表格里你感兴趣的 3 项圈出来，后续课程会逐一展开。
 
 ## 2. 文档结构 (Document Structure)
 
@@ -143,6 +200,11 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 - `<nav>` 标记导航链接集合，方便用户和搜索引擎识别站点导航；
 - `<article>` 表示可独立分发的内容（如新闻、评论），`<section>` 表示主题相关的分组；
 - `<aside>` 承载侧边栏等附属信息，与 `<main>` 形成主次分明的内容层级。
+
+### 2.3 动手试试
+
+- 把第 0 课网页的 `<body>` 改成“`header` + `main` + `footer`”三段结构；
+- 删除 `<meta charset>` 后再刷新，观察浏览器如何猜测编码（看完记得加回来）。
 
 ## 3. 语义化标签 (Semantic Tags)
 
@@ -248,6 +310,11 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 - 表单中的 `<label>` 与输入框建立显式关联后，点击文字即可聚焦输入框；
 - 订阅按钮使用 `type="submit"`，明确其提交表单的行为。
 
+### 3.3 动手试试
+
+- 用 `<article>` 包住你的一篇日记，用 `<time>` 标注日期，再用 `<figure>` 配一张说明图；
+- 打开浏览器开发者工具，检查文章结构是否出现在可访问性树中。
+
 ## 4. 优势与最佳实践
 
 ### 4.1 优势
@@ -284,43 +351,20 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 4. **自闭合标签**: 对于没有内容的标签，使用自闭合形式
 5. **注释清晰**: 添加适当的注释，提高代码可读性
 
+### 4.3 动手试试
+
+- 把你写的页面交给同学或朋友，让对方不看代码说出页面分成了哪几块；
+- 如果对方能说清楚，说明你的语义化结构已经合格。
+
 ## 5. 常见问题与解决方案
 
 ### 5.1 浏览器兼容性
 
-**问题**: 旧浏览器不支持 HTML5 语义化标签
-**解决方案**:
+在 2026 年，主流浏览器（Chrome、Edge、Firefox、Safari）均已完美支持 HTML5 语义化标签，你完全不需要担心兼容问题。
 
-1. 使用 HTML5 Shiv: 为旧 IE 浏览器添加语义化标签支持
-2. 添加 CSS 样式: 为语义化标签添加 `display: block` 样式
-3. 使用 polyfill: 为不支持的特性提供替代实现
+> 历史小贴士：10 多年前（IE6 至 IE8 时代），确实需要引入 `html5shiv.js` 补丁才能让新标签正常渲染。如今这些代码已退出历史舞台，了解一下即可，不必深究，详见第 8 章的历史遗留条目。
 
-```html
-<!-- HTML5 Shiv 用于 IE8 及以下版本 -->
-<!--[if lt IE 9]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-<![endif]-->
-<style>
-  /* 为语义化标签添加块级显示 */
-  header,
-  nav,
-  main,
-  article,
-  section,
-  aside,
-  footer,
-  figure,
-  figcaption {
-    display: block;
-  }
-</style>
-```
-
-**讲解：**
-
-- 条件注释 `<!--[if lt IE 9]>` 是旧版 IE 时代为 HTML5 新标签提供支持的兼容方案；
-- 将 `header`、`nav` 等新标签显式设置为 `display: block`，可让不支持它们的旧浏览器按块级元素渲染；
-- 现代浏览器已无需此方案，但了解它有助于理解“渐进增强”的降级思路。
+### 5.2 语义化过度
 
 ### 5.2 语义化过度
 
@@ -341,9 +385,14 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 3. 确保表单元素有正确的标签关联
 4. 测试屏幕阅读器的解析效果
 
+### 5.4 动手试试
+
+- 用浏览器打开你自己的 `index.html`，按 F12 打开控制台，确认没有红色报错；
+- 把页面缩放到 50% 和 200%，观察内容是否仍然完整。
+
 ## 6. 实际应用示例
 
-### 6.1 博客页面结构
+### 6.1 博客页面结构（纯 HTML 骨架）
 
 ```html
 <!DOCTYPE html>
@@ -351,69 +400,11 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>我的博客</title>
-    <style>
-      /* 简单的样式 */
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-      }
-      header,
-      nav,
-      main,
-      article,
-      section,
-      aside,
-      footer {
-        display: block;
-      }
-      header {
-        background: #333;
-        color: white;
-        padding: 1rem;
-      }
-      nav ul {
-        list-style: none;
-        padding: 0;
-      }
-      nav ul li {
-        display: inline;
-        margin-right: 1rem;
-      }
-      nav ul li a {
-        color: white;
-        text-decoration: none;
-      }
-      main {
-        display: flex;
-        padding: 1rem;
-      }
-      section {
-        flex: 3;
-        margin-right: 1rem;
-      }
-      aside {
-        flex: 1;
-        background: #f4f4f4;
-        padding: 1rem;
-      }
-      article {
-        background: #f9f9f9;
-        padding: 1rem;
-        margin-bottom: 1rem;
-      }
-      footer {
-        background: #333;
-        color: white;
-        text-align: center;
-        padding: 1rem;
-        margin-top: 1rem;
-      }
-    </style>
+    <title>我的第一篇博客</title>
+    <!-- 后续课程我们会用 CSS 美化它 -->
   </head>
   <body>
+    <!-- 网站的头部（导航栏） -->
     <header>
       <h1>我的博客</h1>
       <nav>
@@ -421,60 +412,39 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
           <li><a href="#">首页</a></li>
           <li><a href="#">文章</a></li>
           <li><a href="#">关于我</a></li>
-          <li><a href="#">联系我</a></li>
         </ul>
       </nav>
     </header>
+
+    <!-- 网站的主体内容（最重要的部分） -->
     <main>
+      <!-- 文章列表 -->
       <section>
         <article>
-          <header>
-            <h2>HTML5 语义化标签的使用</h2>
-            <p>发布于 <time datetime="2026-04-05">2026年4月5日</time></p>
-          </header>
-          <p>
-            HTML5 引入了许多语义化标签，如 header、nav、main、article
-            等。这些标签使得网页结构更加清晰，有利于搜索引擎优化和无障碍访问。
-          </p>
-          <figure>
-            <img src="semantic-structure.png" alt="HTML5 语义化结构" />
-            <figcaption>HTML5 语义化结构示意图</figcaption>
-          </figure>
-          <p>
-            使用语义化标签时，需要注意合理嵌套，保持清晰的层次结构。同时，要考虑浏览器兼容性，为旧浏览器提供适当的降级方案。
-          </p>
+          <h2>HTML5 真好玩</h2>
+          <p>发布时间：<time datetime="2026-08-02">2026年8月2日</time></p>
+          <p>今天我学会了 HTML5 的骨架结构，原来网页是用标签搭起来的积木！</p>
         </article>
         <article>
-          <header>
-            <h2>CSS3 新特性介绍</h2>
-            <p>发布于 <time datetime="2026-04-01">2026年4月1日</time></p>
-          </header>
-          <p>
-            CSS3
-            带来了许多新特性，如圆角、阴影、渐变、动画等。这些特性使得网页设计更加丰富多样，同时减少了对图片的依赖。
-          </p>
-          <p>
-            在使用 CSS3
-            特性时，需要注意浏览器兼容性，为不同的浏览器添加适当的前缀，或者使用工具自动处理前缀问题。
-          </p>
+          <h2>明天开始学 CSS</h2>
+          <p>发布时间：<time datetime="2026-08-01">2026年8月1日</time></p>
+          <p>HTML 搭好了骨架，下一步就是给它穿上漂亮的衣服（CSS）了。</p>
         </article>
       </section>
+
+      <!-- 侧边栏（补充信息） -->
       <aside>
-        <h3>关于博主</h3>
-        <p>我是一名 Web 开发工程师，专注于前端技术的学习和分享。</p>
-        <h3>热门文章</h3>
+        <h3>博主介绍</h3>
+        <p>我是刚入门前端的小白，正在努力学习中！</p>
+        <h3>友情链接</h3>
         <ul>
-          <li><a href="#">JavaScript 异步编程</a></li>
-          <li><a href="#">响应式设计最佳实践</a></li>
-          <li><a href="#">Web 性能优化技巧</a></li>
+          <li><a href="#">MDN 教程</a></li>
+          <li><a href="#">W3School</a></li>
         </ul>
-        <h3>订阅我们</h3>
-        <form>
-          <input type="email" placeholder="输入您的邮箱" />
-          <button type="submit">订阅</button>
-        </form>
       </aside>
     </main>
+
+    <!-- 网站的底部（版权信息） -->
     <footer>
       <p>&copy; 2026 我的博客. 保留所有权利.</p>
     </footer>
@@ -482,7 +452,14 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 </html>
 ```
 
-### 6.2 产品展示页面
+**讲解：**
+
+- 这个页面没有写任何 CSS，浏览器会用默认样式显示，结构依然清晰；
+- `header`/`main`/`footer` 把页面分成头部、主体、底部三段，一眼就能看懂；
+- `main` 内部用 `section` 放文章列表、`aside` 放侧边栏，左右分区的美化交给后续 CSS 课程；
+- 每篇文章是独立的 `article`，用 `time` 标注发布时间，语义化骨架已经完整。
+
+### 6.2 产品展示页面（纯 HTML 骨架）
 
 ```html
 <!DOCTYPE html>
@@ -491,59 +468,7 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>产品展示</title>
-    <style>
-      /* 简单的样式 */
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-      }
-      header {
-        background: #f8f8f8;
-        padding: 1rem;
-        border-bottom: 1px solid #ddd;
-      }
-      nav ul {
-        list-style: none;
-        padding: 0;
-      }
-      nav ul li {
-        display: inline;
-        margin-right: 1rem;
-      }
-      nav ul li a {
-        text-decoration: none;
-        color: #333;
-      }
-      main {
-        padding: 2rem;
-      }
-      section {
-        margin-bottom: 2rem;
-      }
-      .product-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1rem;
-      }
-      article {
-        border: 1px solid #ddd;
-        padding: 1rem;
-        border-radius: 4px;
-      }
-      article img {
-        max-width: 100%;
-        height: auto;
-      }
-      footer {
-        background: #333;
-        color: white;
-        text-align: center;
-        padding: 1rem;
-        margin-top: 2rem;
-      }
-    </style>
+    <!-- 后续课程我们会用 CSS 美化它 -->
   </head>
   <body>
     <header>
@@ -558,50 +483,23 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
       </nav>
     </header>
     <main>
+      <h2>热门产品</h2>
       <section>
-        <h2>热门产品</h2>
-        <div class="product-grid">
-          <article>
-            <img src="product1.jpg" alt="产品1" />
-            <h3>产品1</h3>
-            <p>这是一款高性能的产品，具有多种功能和优势。</p>
-            <p><strong>价格: ¥199</strong></p>
-            <button>加入购物车</button>
-          </article>
-          <article>
-            <img src="product2.jpg" alt="产品2" />
-            <h3>产品2</h3>
-            <p>这是一款设计精美的产品，适合各种场景使用。</p>
-            <p><strong>价格: ¥299</strong></p>
-            <button>加入购物车</button>
-          </article>
-          <article>
-            <img src="product3.jpg" alt="产品3" />
-            <h3>产品3</h3>
-            <p>这是一款性价比高的产品，受到广大用户的喜爱。</p>
-            <p><strong>价格: ¥149</strong></p>
-            <button>加入购物车</button>
-          </article>
-        </div>
-      </section>
-      <section>
-        <h2>新品上市</h2>
-        <div class="product-grid">
-          <article>
-            <img src="product4.jpg" alt="产品4" />
-            <h3>产品4</h3>
-            <p>这是我们最新推出的产品，具有创新的设计和功能。</p>
-            <p><strong>价格: ¥399</strong></p>
-            <button>加入购物车</button>
-          </article>
-          <article>
-            <img src="product5.jpg" alt="产品5" />
-            <h3>产品5</h3>
-            <p>这是一款专为专业用户设计的产品，性能卓越。</p>
-            <p><strong>价格: ¥499</strong></p>
-            <button>加入购物车</button>
-          </article>
-        </div>
+        <article class="product" data-id="1" data-name="智能手机" data-price="2999">
+          <h3>智能手机</h3>
+          <p>6.5 英寸屏幕，128GB 存储，4800 万像素摄像头</p>
+          <p>价格：2999 元</p>
+        </article>
+        <article class="product" data-id="2" data-name="笔记本电脑" data-price="5999">
+          <h3>笔记本电脑</h3>
+          <p>14 英寸屏幕，8GB 内存，512GB 固态硬盘</p>
+          <p>价格：5999 元</p>
+        </article>
+        <article class="product" data-id="3" data-name="平板电脑" data-price="1999">
+          <h3>平板电脑</h3>
+          <p>10.5 英寸屏幕，64GB 存储，支持手写笔</p>
+          <p>价格：1999 元</p>
+        </article>
       </section>
     </main>
     <footer>
@@ -611,11 +509,26 @@ HTML5 是超文本标记语言 (HyperText Markup Language) 的第五次重大修
 </html>
 ```
 
+**讲解：**
+
+- 每个产品是一个 `article`，内容独立、可复用，后续加样式或交互都不影响结构；
+- `data-id`、`data-name`、`data-price` 是自定义数据属性，JavaScript 课程会用它做“点击查看详情”；
+- 页面同样不包含 CSS，先保证结构正确，再谈美化。
+
+### 6.3 动手试试
+
+- 把 6.1 博客页面里的一篇 `article` 改成你自己的“学习日记”，保存后刷新浏览器；
+- 给 6.2 的产品卡片补一个 `data-sold="true"` 属性，观察代码结构如何承载业务信息。
 ## 7. 总结
 
 HTML5 是现代 Web 开发的基础，它的语义化标签和新特性为 Web 应用提供了强大的支持。通过使用语义化标签，我们可以创建结构清晰、易于理解和维护的网页，同时提高 SEO 和无障碍性。
 在实际开发中，我们应该遵循 HTML5 的最佳实践，合理使用语义化标签，保持代码的清晰和简洁。同时，要考虑浏览器兼容性，为不同的浏览器提供适当的降级方案。
 随着 Web 技术的不断发展，HTML5 也在不断演进，我们需要持续学习和关注最新的标准和实践，以创建更好的 Web 应用。
+
+### 7.1 动手试试
+
+- 对照第 6 章的两个示例，重新手写一份“个人主页”骨架，只允许使用学过的标签；
+- 完成后大声说出每个标签为什么放在那里，讲得通就算过关。
 
 ## 8. 进阶知识点
 
@@ -702,6 +615,21 @@ HTML5 是现代 Web 开发的基础，它的语义化标签和新特性为 Web �
 - `popover` 属性让任意元素成为轻量弹出层，`popovertarget` 声明触发按钮；
 - `<search>` 是 HTML Living Standard 新增的搜索区域语义标签；
 - `loading="lazy"` 让图片进入视口附近时才加载，可减少首屏流量。
+
+### 8.6 历史遗留：html5shiv
+
+```html
+<!-- 仅 IE6-IE8 时代需要，2026 年无需使用 -->
+<!--[if lt IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+<![endif]-->
+```
+
+**讲解：**
+
+- 这段代码属于“考古知识”：IE8 及以下无法识别 `header`、`nav` 等新标签，需要补丁把它们变成可样式化元素；
+- 2026 年所有主流浏览器均原生支持 HTML5，看到类似代码直接删除即可；
+- 它体现的“渐进增强”思想仍然有价值，但不再需要为旧 IE 编写兼容代码。
 
 ## 9. 核心知识点
 
