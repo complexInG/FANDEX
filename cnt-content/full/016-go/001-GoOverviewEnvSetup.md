@@ -6,13 +6,21 @@ category: 后端技术
 difficulty: beginner
 description: Go 语言概述、设计哲学、发展历史、Go 1.22+ 新特性、环境搭建、模块系统与 Hello World。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'go/002-GoBasicSyntax'
   - 'go/003-GoFunctionMethod'
   - 'algorithm/001-MIT6006IntroductionToAlgorithms'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你选择 Go 版本。
+
+- Go：1.26.x 为当前稳定系列（最新补丁 1.26.4）；Go 每年发布两个大版本，官方仅支持最近两个大版本，存量 1.24/1.25 应尽快升级。
+- 工具链：`go` 命令内置模块、测试、竞态检测与性能分析；新项目默认使用 go.mod，并可通过 toolchain 指令固定编译版本。
+- 生产环境：容器镜像普遍使用官方 golang 镜像多阶段构建，最终产物为静态二进制。
+
 
 
 ## 1. Go 语言概述

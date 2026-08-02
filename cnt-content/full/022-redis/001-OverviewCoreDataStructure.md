@@ -6,12 +6,20 @@ category: 数据库
 difficulty: beginner
 description: Redis 8.0概述、字符串SDS、哈希、列表quicklist、集合、有序集合跳表、位图、HyperLogLog、GEO、Stream、Vector Set。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'redis/002-PersistenceModule'
   - 'redis/003-ClusterHA'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你选择 Redis 版本并了解许可变化。
+
+- Redis：8.10（2026-07-28 GA）为当前稳定版；8.2+ 为推荐升级目标（8.0 已于 2026-02 停止支持）。
+- 许可提醒：Redis 8.0 起使用 SSPL/RSALv2 双许可，商业部署前请评估许可条款；开源替代品 Valkey 也值得了解。
+- 配套：Redis Stack（JSON/搜索/时间序列模块）、Redis Insight 图形化客户端、redis-cli 命令行。
+
 
 ## 1. Redis 8.0 概述
 

@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: CSS 发展历程、语法结构与层叠规则。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'css/002-CSS3BoxModelDetailed'
   - 'css/003-CSS3SelectorSystem'
@@ -62,6 +62,14 @@ h1 {
 ```
 
 路径说明：先会写规则（001），再理解盒子（002）与选择器（003），掌握两套布局（005/016），学会响应式（019/030），最后做综合项目（045）。其余文档（变量、动画、预处理器、架构等）按需查阅，每篇开头的“速通路径/前置依赖”会告诉你何时读。
+
+
+
+> 本节为增量补充，帮助零基础者理解"CSS 没有 4.0/5.0 版本号"的原因。
+
+- CSS 不再整体发布版本，而是按模块演进，W3C 每年发布一次 CSS Snapshot 汇总当前基线。
+- 2026 年现代 CSS 基线已包含：Flexbox、Grid、容器查询、:has()、层叠层 @layer、颜色函数（oklch/color-mix）、原生嵌套、逻辑属性、滚动捕捉等。
+- 判断某个新特性能否在目标浏览器使用：优先查 MDN 的 Baseline 标记或 caniuse，而不是看"CSS 版本"。
 
 ## 1. CSS 是什么（极简版）
 

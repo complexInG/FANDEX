@@ -44,6 +44,14 @@ SELECT name, age FROM users WHERE age > 18 ORDER BY age DESC LIMIT 5;
 
 **看到结果就过关**：如果你能跑通上面三句 SQL 并看到两行数据，第一课完成。看不懂的术语查 `000-Glossary`，练习不够去 `000-SQL-Playground` 刷 10 道题。
 
+
+
+> 本节为增量补充，帮助你选择 MySQL 版本。
+
+- MySQL：9.7 LTS（2026-04-21 发布，最新补丁 9.7.2）与 8.4 LTS（8.4.11）为企业推荐版本；26.7.0 为 Innovation 版（快速迭代、支持期短）。
+- 生产环境优先选 LTS：新项目可从 8.4 起步，需要最新特性时评估 9.7 LTS。
+- 配套工具：MySQL Shell、MySQL Workbench、官方 Connector 驱动，以及容器部署（mysql:9.7 镜像）。
+
 ## 1. 数据库概述 (Overview)
 
 MySQL 是全球最受欢迎的**开源关系型数据库管理系统 (RDBMS)**，由 Oracle 公司维护和开发。它是 Web 应用开发中最常用的数据库之一，广泛应用于各种规模的应用系统。

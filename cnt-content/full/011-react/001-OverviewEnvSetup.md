@@ -6,12 +6,20 @@ category: 前端技术
 difficulty: beginner
 description: React 概述、发展历史、React 19 新特性、环境搭建与 JSX 语法基础。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'react/002-ComponentProps'
   - 'react/003-StateEvent'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你选择 React 与元框架版本。
+
+- React：19.2.x 为当前稳定版（最新 19.2.8，2026-07）；Server Components、Actions 等已是 React 19 后的主推形态。
+- 元框架：Next.js 16.2.x 为 Active LTS（16.0 于 2025-10 发布，16.2.11 为 2026-07 安全版本）。新项目建议直接使用 Next.js 16 + App Router。
+- 学习建议：先掌握纯 React（组件、Hook、状态），再进入 Next.js 的服务器组件与数据获取。
+
 
 ## 1. React 概述
 

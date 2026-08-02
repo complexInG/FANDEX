@@ -6,12 +6,20 @@ category: 后端技术
 difficulty: beginner
 description: Python 发展历程、版本特性与开发环境搭建。
 author: Anonymous
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'python/002-ProgramStructureBasicSyntax'
   - 'python/003-VariableConstant'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你选择 Python 版本与包管理方式。
+
+- Python：3.14.x 为当前稳定主线（最新补丁 3.14.6，2026-06-10）；3.13 处于维护期；3.15 开发中。企业新项目推荐 3.12+，避免使用已停止支持的旧版本。
+- 包管理：入门用官方 `pip + venv`；新项目可选用 `uv`（官方文档推荐的高性能安装器）与 `pyproject.toml` 标准。
+- 类型标注：typing 能力持续增强，建议从第一天就写类型注解，配合 mypy/pyright 做静态检查。
+
 
 ## 1. Python 概述 (Overview)
 

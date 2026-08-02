@@ -6,12 +6,20 @@ category: 数据库
 difficulty: beginner
 description: SQL 概述、标准演进、方言差异与数据库选型
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'sql/002-DataQueryBasics'
   - 'sql/003-MultiTableQuery'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你理解 SQL 标准与各数据库"方言"的关系。
+
+- 最新 ISO 标准为 SQL:2023（第 7 版），新增 JSON、属性图查询、更丰富的聚合与标识符规则等。
+- MySQL、PostgreSQL、SQLite 等各自实现标准子集并扩展方言；学习时以标准语法为骨架，部署时以具体数据库文档为准。
+- 本模块的 001-010 属于必读核心，11 之后按需查阅。
+
 
 ## 什么是 SQL
 

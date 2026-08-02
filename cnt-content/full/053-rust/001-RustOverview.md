@@ -6,13 +6,21 @@ category: 后端技术
 difficulty: beginner
 description: Rust 编程语言概述：设计目标、所有权与借用、Cargo 生态、学习路线与工程实践
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'c/007-EnumTypedef'
   - 'cpp/062-CppTemplate'
   - 'go/006-GoConcurrentProgramming'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你选择 Rust 版本。
+
+- Rust：1.97（2026-07-09）为当前稳定版；官方每 6 周发布一次小版本，建议始终跟随最新稳定版。
+- Edition 2024 自 1.85 起稳定，新项目在 Cargo.toml 中声明 edition = "2024"。
+- 生态：Cargo 是统一构建/依赖/测试/文档入口；Web 后端常用 axum + tokio，跨平台桌面常用 Tauri。
+
 
 
 ## 1. 从"给汽车装安全气囊"说起

@@ -6,7 +6,7 @@ category: 后端技术
 difficulty: beginner
 description: Kotlin 语言概述、发展历史、设计哲学、与 Java 的关系、多平台支持、环境搭建与第一批可运行程序。对标 MIT 6.005、Stanford CS193P、CMU 15-214 教学水准。
 author: fanquanpp
-updated: '2026-07-21'
+updated: '2026-08-03'
 related:
   - 'kotlin/002-KotlinBasicSyntax'
   - 'kotlin/003-KotlinFunctionAndLambda'
@@ -15,6 +15,14 @@ related:
   - 'java/001-JavaOverviewDevEnv'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你选择 Kotlin 版本。
+
+- Kotlin：2.4.10（2026-07-14）为当前稳定版；K2 编译器自 2.0 起为默认。新项目直接使用 2.x 最新稳定版。
+- 平台：JVM 服务端、Android、Kotlin Multiplatform（KMP）与 Compose Multiplatform 均在同一工具链下推进。
+- 配套：IntelliJ IDEA / Android Studio 会随版本自动下载匹配的 Kotlin 插件，一般不需要手动管理。
+
 
 ## 1. 历史动机与发展脉络
 

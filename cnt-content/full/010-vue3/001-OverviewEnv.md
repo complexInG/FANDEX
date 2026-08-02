@@ -6,12 +6,20 @@ category: 前端技术
 difficulty: beginner
 description: Vue3 发展历程、新特性与开发环境搭建。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'vue3/002-Vue3QuickStartGuide'
   - 'vue3/003-Vue3TemplateSyntax'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你选择 Vue 与配套工具链版本。
+
+- Vue：3.5.x 为当前稳定版；3.6 正在推进 Vapor 模式（无虚拟 DOM 的编译策略）beta。新项目用 3.5 稳定版，Vapor 模式等稳定后再用于生产。
+- 配套生态：Vite 8（Rolldown 驱动）做构建、Pinia 做状态、Vue Router 4 做路由、Vitest 做测试。
+- 组合式 API + <script setup> 是当前唯一推荐写法；选项式 API 仅用于维护存量项目。
+
 
 ## 1. Vue3 概述 | Vue3 Overview
 

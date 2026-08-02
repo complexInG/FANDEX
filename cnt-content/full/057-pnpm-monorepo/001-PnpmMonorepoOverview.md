@@ -6,13 +6,21 @@ category: 工具链
 difficulty: intermediate
 description: pnpm 与 Monorepo 工程化：workspace、内容寻址存储、依赖隔离、catalog、任务编排与发布
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'vite/001-ViteOverview'
   - 'devops/005-CICDPipeline'
 prerequisites:
   - 'getting-started/013-PackageManager'
 ---
+
+
+> 本节为增量补充，帮助你选择 pnpm 版本。
+
+- pnpm：11.x 为当前稳定版（本仓库使用的 11.15.1），支持目录锁（Catalogs）、Turborepo 任务编排与 Changesets 发布。
+- 安装方式：`corepack enable pnpm` 或独立安装脚本；建议通过 packageManager 字段固定版本。
+- Monorepo 场景：pnpm workspaces + Turborepo + Changesets 是当前企业主流组合。
+
 
 
 ## 1. 从"一个仓库装下所有项目"说起

@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: 零基础第一课：5 分钟写出第一个网页，理解 HTML5 结构、语义化标签与核心特性。
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/002-HTML5BasicTagGlobalAttribute'
   - 'html5/003-SemanticTag'
@@ -78,6 +78,14 @@ HTML 是网页的骨架，就像人体的骨骼一样，决定了网页的结构
 
 - 把 `<h1>` 里的文字改成你的名字，保存并刷新，看看发生了什么；
 - 再复制一行 `<p>...</p>`，在浏览器里观察新段落的位置。
+
+
+
+> 本节为增量补充，帮助零基础者理解"HTML 到底有没有版本号"。
+
+- HTML 已不再按"大版本"发布：WHATWG 维护的 Living Standard（活标准）是唯一权威规范，浏览器持续自动更新。
+- "HTML5" 现在泛指现代 Web 平台能力（语义化、表单、多媒体、存储、WebSocket 等），而不是一个需要升级的软件版本。
+- 实际开发中不需要关注版本号，需要关注"Baseline 兼容性"：2023 年以来 Chrome/Edge/Firefox/Safari 对核心新特性的支持基本对齐，新特性可到 MDN 或 caniuse 查询。
 
 ## 1. HTML5 概述 (Overview)
 

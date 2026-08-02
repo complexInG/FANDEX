@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: Tailwind CSS 概述：从传统 CSS 到 utility-first 的演进对比、Tailwind 与 Bootstrap 的区别、Tailwind 4 新特性与适用场景
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'astro/001-AstroOverview'
 prerequisites: []
@@ -20,6 +20,14 @@ prerequisites: []
 Tailwind CSS 就是前端世界里的这盒乐高。它不提供"成品房顶"（预置组件），而是提供成百上千个单一用途的"积木颗粒"——一个工具类只负责一条 CSS 声明。`p-4` 只做一件事：设置 16px 的内边距；`text-lg` 只做一件事：设置 1.125rem 的字号。你要的页面样式，全部由这些颗粒在 HTML 里拼装出来。
 
 本篇文章将用"传统写法 vs 工具类写法"的全程对比，带你理解 Tailwind CSS 为什么诞生、它解决了什么问题、它与 Bootstrap 这类框架的本质区别，以及它适合用在什么场景。
+
+
+
+> 本节为增量补充，帮助你选择 Tailwind CSS 版本。
+
+- Tailwind CSS：v4.x 为当前稳定版（2025-01 发布 v4），采用 CSS-first 配置，不再依赖 tailwind.config.js；v3 仅做维护。
+- v4 与 Vite 8、Next.js 16、Astro 6 均有官方插件；新项目直接使用 v4。
+- 学习顺序：先掌握工具类（布局/排版/响应式），再学习主题令牌与 @theme 自定义。
 
 ## 1. 传统 CSS 的痛点：为什么"写样式"这么累
 

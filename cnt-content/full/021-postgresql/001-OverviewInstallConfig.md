@@ -6,12 +6,20 @@ category: 数据库
 difficulty: beginner
 description: PostgreSQL 17概述、安装与配置、pg_hba.conf认证、postgresql.conf核心参数、连接管理、角色与权限。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'postgresql/002-TransactionConcurrencyControl'
   - 'postgresql/003-IndexQueryOptimization'
 prerequisites: []
 ---
+
+
+> 本节为增量补充，帮助你选择 PostgreSQL 版本。
+
+- PostgreSQL：18.4（2026-05-14）为当前稳定版；19 计划 2026 年底发布。每个大版本支持 5 年，企业生产推荐 17 或 18。
+- 部署形态：Linux 包、Docker 镜像、云厂商托管（RDS/Aurora/Cloud SQL）均常见，学习阶段用 Docker 最快。
+- 扩展生态：PostGIS（地理）、pgvector（向量检索）、TimescaleDB（时序）是当前企业高频扩展。
+
 
 ## 1. PostgreSQL 17 概述
 
