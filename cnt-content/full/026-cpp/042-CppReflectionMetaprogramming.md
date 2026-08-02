@@ -6,7 +6,7 @@ category: 计算机科学
 difficulty: advanced
 description: 编译期反射与代码生成
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-03'
 related:
   - 'cpp/040-CppCodeStyle'
   - 'cpp/041-CppWebAssembly'
@@ -15,7 +15,7 @@ related:
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
 ---
-
+> 阅读建议：反射与元编程为【进阶原理】，建议先掌握模板与类型特征。
 ## Concepts（C++20）
 
 **基本写法：requires 表达式**

@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: 内置工具类型的实现与自定义
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-03'
 related:
   - 'typescript/020-NamespaceModule'
   - 'typescript/021-EnumAdvanced'
@@ -14,7 +14,7 @@ related:
   - 'typescript/024-ECMAScript2024LanguageSpecification'
 prerequisites: []
 ---
-
+> 阅读建议：工具类型原理为【进阶原理】，建议先掌握 010 映射类型。
 ## 第一章 概述
 
 ### 1.1 为什么需要理解工具类型实现原理

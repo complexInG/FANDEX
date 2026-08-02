@@ -6,7 +6,7 @@ category: 后端技术
 difficulty: advanced
 description: C#委托与事件底层原理详解：从ECMA-334类型系统到闭包与多播实现的完整指南。
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-03'
 related:
   - 'csharp/026-LINQDeferredImmediate'
   - 'csharp/027-AsyncAwaitStateMachine'
@@ -15,7 +15,7 @@ related:
 prerequisites:
   - 'csharp/001-COverviewEnvSetup'
 ---
-
+> 阅读建议：底层原理为【进阶原理】，建议先掌握委托与事件基本用法。
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C# 1.0（2002）：委托的诞生

@@ -6,7 +6,7 @@ category: 后端技术
 difficulty: advanced
 description: 系统阐述 JVM 架构、类加载机制、内存模型、垃圾回收算法与性能调优核心知识。
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'java/023-JavaNetworkProgramming'
   - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
@@ -14,9 +14,7 @@ related:
 prerequisites:
   - 'java/001-JavaOverviewDevEnv'
 ---
-
-
-
+> 阅读建议：理论串讲，建议先读 010 类加载、011 GC、048 JVM 调优后再回读本篇。
 # Java 理论知识点：JVM 原理、类加载机制与内存管理
 
 > 本文系统阐述 Java 虚拟机（JVM）的内部架构与运行机制，包括类加载子系统、运行时数据区、字节码执行引擎、即时编译器、垃圾回收器、内存模型与性能调优等核心理论。内容兼顾形式化定义与工程实践，旨在帮助开发者建立对 JVM 的完整认知框架，具备诊断生产环境 JVM 问题与执行性能调优的能力。

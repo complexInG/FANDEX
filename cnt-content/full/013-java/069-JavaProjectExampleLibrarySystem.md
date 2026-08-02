@@ -6,7 +6,7 @@ category: 后端技术
 difficulty: intermediate
 description: 综合运用面向对象、集合框架与文件 I/O 的图书管理系统。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'java/067-SpringCloudMicroserviceDevelopment'
   - 'java/068-JavaSwingGUI'
@@ -14,8 +14,7 @@ related:
 prerequisites:
   - 'java/001-JavaOverviewDevEnv'
 ---
-
-
+> 阅读建议：综合项目，建议完成基础语法与集合（049）后再动手；先运行、再改需求、最后对照讲解。
 | 用户管理   | 注册、登录、用户信息维护           |
 | ---------- | ---------------------------------- |
 | 借阅管理   | 借书、还书、借阅记录查询           |

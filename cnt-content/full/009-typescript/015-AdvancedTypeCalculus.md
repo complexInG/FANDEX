@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: advanced
 description: 映射类型、条件类型、模板字面量类型与类型体操。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'typescript/013-DeclarationFileWriting'
   - 'typescript/014-ModuleResolutionInModernJavaScriptToolchains'
@@ -14,8 +14,7 @@ related:
   - 'typescript/017-CovarianceContravariance'
 prerequisites: []
 ---
-
-
+> 阅读建议：高级类型为【进阶原理】，建议先完成 002-014 基础。
 ## 1. 类型断言 (Type Assertions)
 
 类型断言允许我们手动告诉编译器一个值的具体类型，当我们比编译器更了解变量的类型时非常有用。

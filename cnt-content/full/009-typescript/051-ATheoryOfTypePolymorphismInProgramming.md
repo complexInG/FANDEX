@@ -6,15 +6,13 @@ category: 前端技术
 difficulty: intermediate
 description: 类型论基础、结构化类型、子类型理论、类型推导、泛型多态与类型级计算的形式语义与工程实践。
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'typescript/049-DecoratorStandardImpl'
   - 'typescript/050-TypeScriptProjectExampleTypeSafeAPIClient'
 prerequisites: []
 ---
-
-
-
+> 里程碑标注：理论串讲，建议学习 6 个月后再读。
 # TypeScript 理论知识点
 
 > 本文以 MIT 6.815、Stanford CS242、CMU 15-312 的类型论教学范式为参考基准，将 TypeScript 的类型系统原理、类型推导算法、子类型理论、泛型多态、类型级计算与控制流分析组织为一篇可独立阅读的核心理论文档。所有形式化描述均基于 Benjamin C. Pierce 的 *Types and Programming Languages* 与 TypeScript 5.x 官方规范。

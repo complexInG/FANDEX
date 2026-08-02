@@ -6,15 +6,27 @@ category: 计算机科学
 difficulty: beginner
 description: C 语言的发展历史、设计哲学、核心特点、应用领域与全栈知识图谱，对标 MIT 6.S081、Stanford CS107、CMU 15-213 教学水准。
 author: Anonymous
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'c/002-ProgramStructureBasicSyntax'
   - 'c/003-DataTypeDetailed'
 prerequisites: []
 ---
+## 0. 学习路径与阅读指南（先读这一节）
 
+本模块 57 篇文档不要按编号顺序读。零基础推荐路径：
 
+```text
+第 1 阶段（语法基础）：001 概述 → 002 程序结构 → 003 数据类型 → 004 变量常量
+    → 017 控制流 → 006 运算符 → 028 函数详解
+第 2 阶段（核心难点）：036 数组 → 039 指针深度 → 042 结构体 → 009 动态内存
+第 3 阶段（系统编程）：022 线程并发 → 023 POSIX 线程 → 024 Socket → 048 文件 IO
+第 4 阶段（项目回炉）：051 学生成绩管理系统 → 之后按需查速查（052-057）
+```
 
+分层说明：前两阶段为【核心必读】；049 理论、050 高级系统编程、038 C23 新标准为【进阶原理】；编译/调试命令速查【用到再查】。
+
+> 一句话记住：C 的核心是“指针与内存”，前两阶段务必亲手调试每一段代码。
 # C 语言概述
 
 > "C is quirky, flawed, and an enormous success." — Dennis M. Ritchie

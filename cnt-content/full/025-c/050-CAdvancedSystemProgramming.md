@@ -6,7 +6,7 @@ category: 计算机科学
 difficulty: advanced
 description: 高级数据结构、内存管理、文件系统、网络编程与并发模型。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'c/048-IO'
   - 'c/049-CLanguageTheory'
@@ -14,8 +14,7 @@ related:
 prerequisites:
   - 'c/001-CLanguageOverview'
 ---
-
-
+> 阅读建议：高级专题，建议有项目经验后再读。
 ## 1. 高级数据结构
 
 ### 1.1 链表

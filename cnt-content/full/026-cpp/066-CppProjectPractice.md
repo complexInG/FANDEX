@@ -6,14 +6,14 @@ category: 计算机科学
 difficulty: intermediate
 description: 综合运用面向对象、模板与 STL 的实战项目。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'cpp/064-CppExceptionAndPerformance'
   - 'cpp/065-CDebugPerformanceAnalysis'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
 ---
-
+> 阅读建议：综合项目，建议完成 RAII、STL 与并发基础后再动手。
 ## 1. 项目一：简易文件管理器
 
 ### 1.1 项目需求

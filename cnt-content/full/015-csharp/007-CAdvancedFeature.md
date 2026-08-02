@@ -6,7 +6,7 @@ category: 后端技术
 difficulty: advanced
 description: 反射、特性(Attribute)、动态编程(dynamic)、Span/Memory、ref struct、不安全代码、指针、委托与事件、多播委托
 author: fanquanpp
-updated: '2026-06-14'
+updated: '2026-08-03'
 related:
   - 'csharp/005-CAsyncProgramming'
   - 'csharp/006-CLINQFunctionalProgramming'
@@ -14,7 +14,7 @@ related:
   - 'csharp/009-CTestEngineering'
 prerequisites: []
 ---
-
+> 阅读建议：本篇为【进阶原理】，建议先掌握 002-006 基础。
 ## 1. 历史动机与背景
 
 ### 1.1 元编程的演进脉络

@@ -2038,6 +2038,8 @@ concept Entity = requires {
     typename T::id_type;
     requires std::default_initializable<T>;
     requires
+```
+
 ## 定义 Concept
 
 **基本写法：requires 表达式**

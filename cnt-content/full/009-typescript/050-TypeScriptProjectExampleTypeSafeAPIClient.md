@@ -6,15 +6,14 @@ category: 前端技术
 difficulty: intermediate
 description: 综合运用泛型、装饰器与类型体操的类型安全 API 客户端。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'typescript/048-TsconfigStrictMode'
   - 'typescript/049-DecoratorStandardImpl'
   - 'typescript/051-ATheoryOfTypePolymorphismInProgramming'
 prerequisites: []
 ---
-
-
+> 阅读建议：综合项目，建议完成类型进阶与工程化（039）后再动手。
 | 请求拦截器 | 请求前添加认证头、日志等       |
 | ---------- | ------------------------------ |
 | 响应拦截器 | 统一错误处理、响应转换         |

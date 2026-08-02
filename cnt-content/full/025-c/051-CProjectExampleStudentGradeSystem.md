@@ -6,15 +6,14 @@ category: 计算机科学
 difficulty: intermediate
 description: 综合运用结构体、文件 I/O 和动态内存管理的学生成绩管理系统。
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'c/049-CLanguageTheory'
   - 'c/050-CAdvancedSystemProgramming'
 prerequisites:
   - 'c/001-CLanguageOverview'
 ---
-
-
+> 阅读建议：综合项目，建议完成指针与内存管理（039/009）后再动手。
 | 查询学生 | 按学号或姓名精确/模糊查询                   |
 | -------- | ------------------------------------------- |
 | 修改学生 | 修改指定学号的学生信息                      |
