@@ -121,7 +121,7 @@ DOM 和 CSSOM 合并为渲染树。渲染树只包含需要显示的节点（`di
 .animated-element.moved {
     transform: translateX(100px);
 }
-````
+```
 
 ---
 
