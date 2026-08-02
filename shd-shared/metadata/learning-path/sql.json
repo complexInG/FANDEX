@@ -1,0 +1,123 @@
+{
+  "version": "1.0.0",
+  "module": "sql",
+  "summary": "? SQL ????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "SELECT??????",
+      "nodes": [
+        {
+          "id": "sql-001",
+          "title": "概述与标准",
+          "doc": "001-OverviewStandard"
+        },
+        {
+          "id": "sql-002",
+          "title": "数据操作",
+          "doc": "004-DML"
+        },
+        {
+          "id": "sql-003",
+          "title": "高级查询",
+          "doc": "007-AdvancedQuery"
+        },
+        {
+          "id": "sql-004",
+          "title": "SQL实战与面试",
+          "doc": "010-SQLPracticeInterview"
+        },
+        {
+          "id": "sql-005",
+          "title": "SELECT执行顺序",
+          "doc": "013-SelectExecutionOrder"
+        },
+        {
+          "id": "sql-006",
+          "title": "GROUP BY与分组集",
+          "doc": "016-GROUPBYGroupingSet"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "???????????",
+      "nodes": [
+        {
+          "id": "sql-101",
+          "title": "自连接",
+          "doc": "019-SelfJoin"
+        },
+        {
+          "id": "sql-102",
+          "title": "LATERAL派生表",
+          "doc": "021-LateralDerivedTable"
+        },
+        {
+          "id": "sql-103",
+          "title": "CTE",
+          "doc": "023-CTE"
+        },
+        {
+          "id": "sql-104",
+          "title": "PIVOT与UNPIVOT",
+          "doc": "025-PivotUnpivot"
+        },
+        {
+          "id": "sql-105",
+          "title": "DCL",
+          "doc": "027-DCL"
+        },
+        {
+          "id": "sql-106",
+          "title": "索引",
+          "doc": "029-Index"
+        },
+        {
+          "id": "sql-107",
+          "title": "事务ACID特性",
+          "doc": "031-TransactionACIDProperty"
+        },
+        {
+          "id": "sql-108",
+          "title": "脏读不可重复读幻读",
+          "doc": "033-DirtyReadNonRepeatablePhantom"
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "title": "?????",
+      "subtitle": "?????????",
+      "nodes": [
+        {
+          "id": "sql-201",
+          "title": "锁机制",
+          "doc": "034-LockMechanism"
+        },
+        {
+          "id": "sql-202",
+          "title": "窗口函数框架",
+          "doc": "036-WindowFunctionFramework"
+        },
+        {
+          "id": "sql-203",
+          "title": "乐观锁与悲观锁",
+          "doc": "038-OptimisticPessimisticLock"
+        },
+        {
+          "id": "sql-204",
+          "title": "SQL MERGE / UPSERT 语句语法速查手册",
+          "doc": "040-MergeStatement"
+        },
+        {
+          "id": "sql-205",
+          "title": "类型转换 语法速查手册",
+          "doc": "042-TypeConversion"
+        }
+      ]
+    }
+  ]
+}

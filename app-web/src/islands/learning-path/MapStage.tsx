@@ -76,15 +76,15 @@ export default function MapStage({
             {stage.subtitle}
           </text>
         )}
-        {/* 节点数徽标 */}
-        <g transform={`translate(${LAYOUT.nodeWidth - 52} 12)`}>
-          <rect className="lp-stage__count-rect" width={28} height={24} rx={12} />
-          <text className="lp-stage__count" x={14} y={16} textAnchor="middle">
+        {/* 节点数徽标：直角小圆角，垂直居中于标题栏右侧 */}
+        <g transform={`translate(${LAYOUT.nodeWidth - 56} 15)`}>
+          <rect className="lp-stage__count-rect" width={30} height={26} rx={2} />
+          <text className="lp-stage__count" x={15} y={17} textAnchor="middle">
             {nodeCount}
           </text>
         </g>
-        {/* 折叠箭头：外层 g 负责定位，内层 path 仅负责旋转，避免 CSS transform 覆盖定位 */}
-        <g transform={`translate(${LAYOUT.nodeWidth - 18} 24)`}>
+        {/* 折叠箭头：位于徽标右侧，与徽标同一垂直中心线 */}
+        <g transform={`translate(${LAYOUT.nodeWidth - 21} 21)`}>
           <path
             className={`lp-stage__chevron${collapsed ? ' lp-stage__chevron--collapsed' : ''}`}
             d="M 0 0 L 7 7 L 0 14"

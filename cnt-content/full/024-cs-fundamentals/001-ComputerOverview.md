@@ -8,8 +8,8 @@ description: 计算机科学学科全景图，知识体系脉络与核心抽象�
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/002-ComputerArchitecture'
-  - 'cs-fundamentals/003-OperatingSystem'
+  - 'cs-fundamentals/003-ComputerArchitecture'
+  - 'cs-fundamentals/004-OperatingSystem'
 prerequisites: []
 ---
 
@@ -473,21 +473,3 @@ graph LR
 - _Computer Science: An Overview_ -- J. Glenn Brookshear
 - _Structure and Interpretation of Computer Programs_ -- Abelson & Sussman
 - _The Art of Computer Programming_ -- Donald Knuth
-
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 大 O 分析与复杂度推导
-
-渐进符号：O（上界）、Ω（下界）、Θ（紧界）；常数与低阶项忽略。
-常见阶：O(1)、O(log n)、O(n)、O(n log n)、O(n²)、O(2ⁿ)；识别主循环与递归式。
-主定理：T(n)=aT(n/b)+f(n) 的三种情形。
-实践：先估规模与时限，再选算法与数据结构。
-
-### 13.2 缓存与局部性
-
-时间局部性：近期访问的数据再访问；空间局部性：邻近数据一起访问。
-缓存行：64 字节粒度；数组遍历比链表友好。
-伪共享：多线程改同一缓存行不同变量，缓存乒乓。
-优化手段：数据结构重排、分块（blocking）、无锁队列。

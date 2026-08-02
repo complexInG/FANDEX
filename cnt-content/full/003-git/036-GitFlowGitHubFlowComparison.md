@@ -262,20 +262,3 @@ flowchart TD
 Git 基础操作与分支，见 003-git 模块文档。
 GitHub 协作与 PR，见 004-github 模块。
 CI/CD 自动化，见 031-devops 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 Git 对象模型与内部机制
-
-git add 创建 blob 与 tree，git commit 创建 commit 对象，引用（HEAD/分支）指向 commit。
-packfile 压缩对象；gc 清理悬空对象；fsck 校验完整性。
-reflog 记录引用变动，是误操作恢复的最后防线。
-理解对象模型后可解释 cherry-pick、rebase 与 reset 的底层行为。
-
-### 13.2 合并策略与冲突解决
-
-三路合并：base/ours/theirs 对比；rerere 记录重复冲突解决方案。
-冲突标记：<<<<<<< 与 >>>>>>> 之间手工合并，保持语义正确后重新 add。
-merge --no-ff 保留合并提交；squash 合并压缩 PR 历史。
-策略选择：特性分支多 commit 用 squash/merge；持续集成用 rebase 保持线性。

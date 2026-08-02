@@ -3,7 +3,7 @@
  * 在线编程实验场首页
  *
  * 功能概述：
- *   - 提供前端效果实验与编程算法练习两个入口
+ *   - 提供前端效果实验与在线编程沙箱两个入口
  *   - 展示本地作品库统计、存储用量与最近记录（由 PlaygroundHub 岛组件加载）
  *
  * 美术对齐：
@@ -16,6 +16,7 @@ import HomeLayout from '@/components/HomeLayout.astro'
 import SEO from '@/components/SEO.astro'
 import GeoBgDecor from '@/components/GeoBgDecor.astro'
 import PlaygroundHub from '@/islands/playground/PlaygroundHub'
+import { LAB_LANGUAGES } from '@/islands/playground/languages'
 import { SITE } from '@/lib/constants'
 import '@/styles/pages/index.css'
 import '@/styles/islands/playground.css'
@@ -27,12 +28,12 @@ const base = import.meta.env.BASE_URL
   <SEO
     slot="head"
     title="在线编程实验场 · FANDEX"
-    description="FANDEX 在线编程实验场：前端效果实验（HTML/CSS/JS 实时预览）与编程算法练习（多语言浏览器内运行测试），全部数据保存在本地。"
+    description="FANDEX 在线编程实验场：前端效果实验（HTML/CSS/JS 实时预览）与在线编程沙箱（多语言编辑与浏览器内运行），全部数据保存在本地。"
     canonical={`${SITE.url}${base}playground/`}
     type="website"
   />
 
-  <div class="home-page">
+  <div class="home-page home-page--sub">
     <!-- 几何背景装饰：playground 专属变体（网格 + 尖括号 + 终端方块） -->
     <GeoBgDecor variant="playground" />
 
@@ -50,12 +51,7 @@ const base = import.meta.env.BASE_URL
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <span class="stat-num">8</span>
-            <span class="stat-label">题目</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <span class="stat-num">5</span>
+            <span class="stat-num">{LAB_LANGUAGES.length}</span>
             <span class="stat-label">语言</span>
           </div>
         </div>

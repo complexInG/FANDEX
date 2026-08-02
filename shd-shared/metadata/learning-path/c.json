@@ -1,0 +1,128 @@
+{
+  "version": "1.0.0",
+  "module": "c",
+  "summary": "? C ????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "c-001",
+          "title": "C 语言概述",
+          "doc": "001-CLanguageOverview"
+        },
+        {
+          "id": "c-002",
+          "title": "变量与常量",
+          "doc": "004-VariableConstant"
+        },
+        {
+          "id": "c-003",
+          "title": "枚举与typedef",
+          "doc": "007-EnumTypedef"
+        },
+        {
+          "id": "c-004",
+          "title": "函数指针与回调",
+          "doc": "010-FunctionPointerCallback"
+        },
+        {
+          "id": "c-005",
+          "title": "原子操作与内存模型",
+          "doc": "013-AtomicAndMemoryModel"
+        },
+        {
+          "id": "c-006",
+          "title": "对齐与内存布局",
+          "doc": "016-AlignmentMemoryLayout"
+        },
+        {
+          "id": "c-007",
+          "title": "安全函数与边界检查",
+          "doc": "019-SafeFunctionBoundsCheck"
+        }
+      ]
+    },
+    {
+      "id": "pointer",
+      "title": "?????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "c-101",
+          "title": "复杂声明解析",
+          "doc": "021-ComplexDeclarationParsing"
+        },
+        {
+          "id": "c-102",
+          "title": "Socket网络编程",
+          "doc": "024-SocketNetworkProgramming"
+        },
+        {
+          "id": "c-103",
+          "title": "文件系统操作",
+          "doc": "027-FileSystemOperation"
+        },
+        {
+          "id": "c-104",
+          "title": "国际化与本地化",
+          "doc": "030-HelloWorldOrOr"
+        },
+        {
+          "id": "c-105",
+          "title": "跨平台编程",
+          "doc": "033-CrossPlatformProgramming"
+        },
+        {
+          "id": "c-106",
+          "title": "数组详解",
+          "doc": "036-ArrayDetailed"
+        },
+        {
+          "id": "c-107",
+          "title": "指针深度解析",
+          "doc": "039-PointerDeep"
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "c-201",
+          "title": "内存对齐",
+          "doc": "041-MemoryAlignment"
+        },
+        {
+          "id": "c-202",
+          "title": "指针与数组的区别",
+          "doc": "044-PointerArrayDifference"
+        },
+        {
+          "id": "c-203",
+          "title": "volatile关键字",
+          "doc": "047-LinuxKernelMemoryBarriers"
+        },
+        {
+          "id": "c-204",
+          "title": "C 语言高级特性与系统编程",
+          "doc": "050-CAdvancedSystemProgramming"
+        },
+        {
+          "id": "c-205",
+          "title": "C POSIX 与系统调用速查",
+          "doc": "053-CPosixSystemCall"
+        },
+        {
+          "id": "c-206",
+          "title": "C gdb 调试 语法速查手册",
+          "doc": "056-CDebugGdb"
+        }
+      ]
+    }
+  ]
+}

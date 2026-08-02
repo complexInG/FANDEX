@@ -26,7 +26,7 @@ export const LAYOUT = {
   /** 阶段内节点垂直间距 */
   nodeGap: 18,
   /** 阶段标题高度 */
-  headerHeight: 48,
+  headerHeight: 56,
   /** 阶段列水平间距 */
   stageGap: 56,
   /** 根节点与首列间距 */
@@ -129,11 +129,11 @@ export function computeMapLayout(
   stages.forEach((stage, index) => {
     const x = padding + rootWidth + rootGap + index * (nodeWidth + stageGap);
     const visibleNodes = collapsedStageIds.has(stage.id) ? [] : stage.nodes;
-    const nodes = layoutStageNodes(visibleNodes, x, padding + headerHeight + 12);
+    const nodes = layoutStageNodes(visibleNodes, x, padding + headerHeight + 14);
     const height =
       headerHeight +
       (nodes.length > 0
-        ? 12 + nodes.length * LAYOUT.nodeHeight + (nodes.length - 1) * LAYOUT.nodeGap
+        ? 14 + nodes.length * LAYOUT.nodeHeight + (nodes.length - 1) * LAYOUT.nodeGap
         : 0);
 
     placedStages.push({ id: stage.id, x, y: padding, height, nodes });

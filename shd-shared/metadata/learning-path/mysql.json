@@ -1,0 +1,143 @@
+{
+  "version": "1.0.0",
+  "module": "mysql",
+  "summary": "??? MySQL ???????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "?????",
+      "subtitle": "?????SQL ???",
+      "nodes": [
+        {
+          "id": "mysql-001",
+          "title": "MySQL 概述与数据库设计",
+          "doc": "001-MySQLOverviewDatabaseDesign"
+        },
+        {
+          "id": "mysql-002",
+          "title": "MyISAM存储引擎",
+          "doc": "005-MyISAMStorageEngine"
+        },
+        {
+          "id": "mysql-003",
+          "title": "聚簇索引与二级索引",
+          "doc": "009-ClusteredIndexSecondaryIndex"
+        },
+        {
+          "id": "mysql-004",
+          "title": "前缀索引",
+          "doc": "013-PrefixIndex"
+        },
+        {
+          "id": "mysql-005",
+          "title": "索引失效场景",
+          "doc": "017-IndexFailureScene"
+        },
+        {
+          "id": "mysql-006",
+          "title": "子查询优化",
+          "doc": "021-SubqueryOptimization"
+        },
+        {
+          "id": "mysql-007",
+          "title": "事务隔离级别底层实现",
+          "doc": "025-TransactionIsolationImplementation"
+        },
+        {
+          "id": "mysql-008",
+          "title": "死锁检测与处理",
+          "doc": "029-DeadlockDetectionHandling"
+        }
+      ]
+    },
+    {
+      "id": "index",
+      "title": "?????",
+      "subtitle": "???????????",
+      "nodes": [
+        {
+          "id": "mysql-101",
+          "title": "二进制日志",
+          "doc": "031-Binlog"
+        },
+        {
+          "id": "mysql-102",
+          "title": "逻辑备份",
+          "doc": "035-LogicalBackup"
+        },
+        {
+          "id": "mysql-103",
+          "title": "进阶查询与多表操作",
+          "doc": "039-AdvancedQueryMultiTableOperation"
+        },
+        {
+          "id": "mysql-104",
+          "title": "InnoDB-Cluster",
+          "doc": "043-InnoDBCluster"
+        },
+        {
+          "id": "mysql-105",
+          "title": "SSL-TLS加密",
+          "doc": "047-SSLEncryption"
+        },
+        {
+          "id": "mysql-106",
+          "title": "MySQL 索引与执行计划",
+          "doc": "051-MySQLIndexExecutionPlan"
+        },
+        {
+          "id": "mysql-107",
+          "title": "复制与高可用",
+          "doc": "055-ReplicationHA"
+        },
+        {
+          "id": "mysql-108",
+          "title": "存储过程与函数",
+          "doc": "059-StoredProcedureAndFunction"
+        }
+      ]
+    },
+    {
+      "id": "arch",
+      "title": "?????",
+      "subtitle": "?????????",
+      "nodes": [
+        {
+          "id": "mysql-201",
+          "title": "索引原理与性能优化",
+          "doc": "061-IndexPrinciplePerformanceOptimization"
+        },
+        {
+          "id": "mysql-202",
+          "title": "间隙锁与临键锁解决幻读",
+          "doc": "065-GapLockNextKeyLockSolutionPhantomRead"
+        },
+        {
+          "id": "mysql-203",
+          "title": "事务与锁机制",
+          "doc": "069-TransactionLockMechanism"
+        },
+        {
+          "id": "mysql-204",
+          "title": "SQL 注入基础与检测",
+          "doc": "073-SQLInjectionBasicsDetection"
+        },
+        {
+          "id": "mysql-205",
+          "title": "MySQL 理论知识点",
+          "doc": "077-MySQLTheoryKnowledge"
+        },
+        {
+          "id": "mysql-206",
+          "title": "MySQL 索引管理",
+          "doc": "081-IndexManagement"
+        },
+        {
+          "id": "mysql-207",
+          "title": "视图 语法速查手册",
+          "doc": "085-View"
+        }
+      ]
+    }
+  ]
+}

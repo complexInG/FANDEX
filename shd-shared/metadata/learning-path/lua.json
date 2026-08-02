@@ -1,0 +1,123 @@
+{
+  "version": "1.0.0",
+  "module": "lua",
+  "summary": "???Lua????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "?????????",
+      "nodes": [
+        {
+          "id": "lua-001",
+          "title": "Lua 概述与环境配置",
+          "doc": "001-LuaOverviewEnvSetup"
+        },
+        {
+          "id": "lua-002",
+          "title": "数据类型与 Table 详解",
+          "doc": "003-DataTypeTableDetailed"
+        },
+        {
+          "id": "lua-003",
+          "title": "元表与面向对象编程",
+          "doc": "005-MetatableOOP"
+        },
+        {
+          "id": "lua-004",
+          "title": "面向对象编程",
+          "doc": "007-OOP"
+        },
+        {
+          "id": "lua-005",
+          "title": "环境与模块",
+          "doc": "009-EnvironmentModule"
+        },
+        {
+          "id": "lua-006",
+          "title": "Lua 与 C 交互",
+          "doc": "011-LuaC"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "?????? C API",
+      "nodes": [
+        {
+          "id": "lua-101",
+          "title": "Lua与Love2D",
+          "doc": "013-LuaLove2D"
+        },
+        {
+          "id": "lua-102",
+          "title": "Lua与Redis脚本",
+          "doc": "015-LuaRedisScript"
+        },
+        {
+          "id": "lua-103",
+          "title": "模块与包",
+          "doc": "017-ModulePackage"
+        },
+        {
+          "id": "lua-104",
+          "title": "Lua迭代器",
+          "doc": "019-LuaIterator"
+        },
+        {
+          "id": "lua-105",
+          "title": "Lua性能优化",
+          "doc": "021-LuaPerformance"
+        },
+        {
+          "id": "lua-106",
+          "title": "协程与异步",
+          "doc": "023-CoroutineAsync"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "lua-201",
+          "title": "元表与元方法详解",
+          "doc": "025-MetatableMetamethodDetailed"
+        },
+        {
+          "id": "lua-202",
+          "title": "弱表",
+          "doc": "027-WeakTable"
+        },
+        {
+          "id": "lua-203",
+          "title": "C-API栈操作",
+          "doc": "029-CAPIStackOperation"
+        },
+        {
+          "id": "lua-204",
+          "title": "模块加载",
+          "doc": "031-ModuleLoading"
+        },
+        {
+          "id": "lua-205",
+          "title": "Lua 5.4 新特性",
+          "doc": "033-Lua54Features"
+        },
+        {
+          "id": "lua-206",
+          "title": "Lua io 库语法速查手册",
+          "doc": "035-IoLibrary"
+        },
+        {
+          "id": "lua-207",
+          "title": "Lua os 库语法速查手册",
+          "doc": "037-OsLibrary"
+        }
+      ]
+    }
+  ]
+}

@@ -15,6 +15,7 @@
  */
 
 import {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -25,6 +26,7 @@ import {
 } from 'react';
 import CodeMirrorBox from './CodeMirrorBox';
 import { PgIcon } from './pg-icons';
+import { formatCode } from './pg-formatter';
 import { buildPreviewDoc, estimatePenBytes, parsePreviewMessage } from './pg-frontend-runtime';
 import {
   deletePen,
@@ -48,6 +50,7 @@ const DEFAULT_TEMPLATE: FrontendPen = {
   showHtml: true,
   showCss: true,
   showJs: true,
+  paneWeights: { html: 1, css: 1, js: 1 },
   showConsole: true,
   createdAt: 0,
   updatedAt: 0,
@@ -68,6 +71,11 @@ const STORAGE_WARN_RATIO = 0.85;
 
 /** 保存状态文案 */
 type SaveState = 'saved' | 'saving';
+/** 编辑器面板 key（与作品字段一一对应） */
+type PaneKey = 'html' | 'css' | 'js';
+/** 拖拽调整面板权重时的最小/最大占比 */
+const PANE_RATIO_MIN = 0.15;
+const PANE_RATIO_MAX = 0.85;
 
 /**
  * 格式化时间戳为本地时间字符串
@@ -110,6 +118,10 @@ function FrontendLab() {
   const [split, setSplit] = useState(0.5);
   /** 是否正在拖拽分隔条 */
   const [dragging, setDragging] = useState(false);
+  /** 是否正在格式化代码 */
+  const [formatting, setFormatting] = useState(false);
+  /** 工具栏提示（格式化结果等） */
+  const [toolbarNote, setToolbarNote] = useState('');
   /** 存储用量提示 */
   const [storageWarning, setStorageWarning] = useState<string>('');
   /** 当前作品字节数（用于本地占用提示） */
@@ -118,6 +130,10 @@ function FrontendLab() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   /** 拖拽起始信息 */
   const dragRef = useRef<{ start: number; value: number } | null>(null);
+  /** 面板权重拖拽起始信息 */
+  const paneDragRef = useRef<{ a: PaneKey; b: PaneKey; start: number; wa: number; wb: number } | null>(null);
+  /** 编辑器区域容器引用（用于计算拖拽比例） */
+  const editorsRef = useRef<HTMLElement | null>(null);
 
   /**
    * 挂载时读取本地草稿与存储用量
@@ -136,7 +152,12 @@ function FrontendLab() {
         target = await loadPenDraft();
       }
       if (!cancelled && target) {
-        const opened = { ...target, lastOpenedAt: target.lastOpenedAt || Date.now() };
+        // 兼容历史作品：缺失 paneWeights 时回退默认权重
+        const opened = {
+          ...target,
+          paneWeights: target.paneWeights ?? { html: 1, css: 1, js: 1 },
+          lastOpenedAt: target.lastOpenedAt || Date.now(),
+        };
         setPen(opened);
         setPreviewDoc(buildPreviewDoc(opened));
       }
@@ -224,6 +245,40 @@ function FrontendLab() {
   }, [pen]);
 
   /**
+   * 格式化三个编辑器（HTML/CSS/JS 使用各自语言解析器）
+   * 仅更新发生变化的编辑器，避免无意义重绘
+   */
+  const handleFormat = useCallback(async () => {
+    if (formatting) return;
+    setFormatting(true);
+    setToolbarNote('');
+    const targets = [
+      { key: 'html' as PaneKey, lang: 'html', value: pen.html },
+      { key: 'css' as PaneKey, lang: 'css', value: pen.css },
+      { key: 'js' as PaneKey, lang: 'javascript', value: pen.js },
+    ];
+    const results = await Promise.all(
+      targets.map((t) => formatCode(t.lang, t.value)),
+    );
+    const patch: Partial<FrontendPen> = {};
+    const notes: string[] = [];
+    results.forEach((result, index) => {
+      const target = targets[index]!;
+      if (result.code !== target.value) {
+        patch[target.key] = result.code;
+      }
+      if (result.note) notes.push(result.note);
+    });
+    if (Object.keys(patch).length > 0) {
+      updatePen(patch);
+    }
+    if (notes.length > 0) {
+      setToolbarNote(notes.join('；'));
+    }
+    setFormatting(false);
+  }, [formatting, pen.html, pen.css, pen.js, updatePen]);
+
+  /**
    * 将当前作品另存为新作品（复制到作品库）
    */
   const handleSaveAsNew = useCallback(async () => {
@@ -278,7 +333,12 @@ function FrontendLab() {
   const handleOpenPen = useCallback(
     async (item: FrontendPen) => {
       const now = Date.now();
-      const opened = { ...item, lastOpenedAt: now };
+      // 兼容历史作品：缺失 paneWeights 时回退默认权重
+      const opened = {
+        ...item,
+        paneWeights: item.paneWeights ?? { html: 1, css: 1, js: 1 },
+        lastOpenedAt: now,
+      };
       await savePen(opened);
       setPen(opened);
       setPreviewDoc(buildPreviewDoc(opened));
@@ -337,12 +397,63 @@ function FrontendLab() {
     setDragging(false);
   }, []);
 
+  /**
+   * 开始拖拽面板权重（HTML/CSS/JS 三栏边界）
+   * 捕获指针，保证拖出分隔条后仍能持续更新
+   */
+  const handlePaneSplitStart = useCallback(
+    (e: ReactPointerEvent<HTMLDivElement>, a: PaneKey, b: PaneKey) => {
+      e.preventDefault();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      paneDragRef.current = {
+        a,
+        b,
+        start: pen.layout === 'left' ? e.clientY : e.clientX,
+        wa: pen.paneWeights[a],
+        wb: pen.paneWeights[b],
+      };
+      setDragging(true);
+    },
+    [pen.layout, pen.paneWeights],
+  );
+
+  /**
+   * 拖拽过程中更新两侧面板权重
+   * 位移换算为总权重内的增量，并限制单侧最小占比
+   */
+  const handlePaneSplitMove = useCallback(
+    (e: ReactPointerEvent<HTMLDivElement>) => {
+      const drag = paneDragRef.current;
+      const container = editorsRef.current;
+      if (!drag || !container) return;
+      const size = pen.layout === 'left' ? container.clientHeight : container.clientWidth;
+      if (size <= 0) return;
+      const total = drag.wa + drag.wb;
+      const delta = (pen.layout === 'left' ? e.clientY : e.clientX) - drag.start;
+      const nextA = Math.min(
+        total * PANE_RATIO_MAX,
+        Math.max(total * PANE_RATIO_MIN, drag.wa + total * (delta / size)),
+      );
+      setPen((prev) => ({
+        ...prev,
+        paneWeights: { ...prev.paneWeights, [drag.a]: nextA, [drag.b]: total - nextA },
+      }));
+    },
+    [pen.layout],
+  );
+
+  /** 结束面板权重拖拽 */
+  const handlePaneSplitEnd = useCallback(() => {
+    paneDragRef.current = null;
+    setDragging(false);
+  }, []);
+
   /** 编辑器区域网格模板（按布局方向生成） */
   const workspaceStyle = useMemo<CSSProperties>(() => {
     const ratio = `${split * 100}%`;
     return pen.layout === 'left'
-      ? { gridTemplateColumns: `${ratio} 6px 1fr`, gridTemplateRows: '100%' }
-      : { gridTemplateColumns: '100%', gridTemplateRows: `${ratio} 6px 1fr` };
+      ? { gridTemplateColumns: `${ratio} 3px 1fr`, gridTemplateRows: '100%' }
+      : { gridTemplateColumns: '100%', gridTemplateRows: `${ratio} 3px 1fr` };
   }, [pen.layout, split]);
 
   /** 当前打开的编辑器语言映射 */
@@ -355,6 +466,8 @@ function FrontendLab() {
       ] as const,
     [pen.showHtml, pen.showCss, pen.showJs],
   );
+  /** 可见编辑器列表（用于在相邻面板间插入分隔条） */
+  const visibleEditors = editors.filter((editor) => editor.visible);
 
   return (
     <div className={`pg-frontend ${dragging ? 'pg-dragging' : ''}`}>
@@ -402,6 +515,16 @@ function FrontendLab() {
           </button>
         </div>
         <div className="pg-toolbar-group">
+          <button
+            type="button"
+            className="pg-btn pg-btn--ghost"
+            onClick={() => void handleFormat()}
+            disabled={formatting}
+            title="格式化 HTML/CSS/JS 代码"
+          >
+            <PgIcon name="spark" size={14} />
+            <span>{formatting ? '格式化中' : '格式化'}</span>
+          </button>
           <button
             type="button"
             className="pg-btn pg-btn--ghost"
@@ -454,6 +577,7 @@ function FrontendLab() {
         <span className={`pg-save-state pg-save-state--${saveState}`}>
           {saveState === 'saved' ? '已保存到本地' : '保存中'}
         </span>
+        {toolbarNote && <span className="pg-toolbar-note">{toolbarNote}</span>}
       </header>
 
       {/* 存储用量预警 */}
@@ -470,43 +594,65 @@ function FrontendLab() {
         <section
           className={`pg-editors pg-editors--${pen.layout}`}
           aria-label="代码编辑器"
+          ref={editorsRef}
         >
-          {editors.map((editor) => {
-            if (!editor.visible) return null;
+          {visibleEditors.map((editor, index) => {
             const value = editor.key === 'html' ? pen.html : editor.key === 'css' ? pen.css : pen.js;
             const language = editor.key === 'html' ? 'html' : editor.key === 'css' ? 'css' : 'javascript';
             return (
-              <div className="pg-pane" key={editor.key}>
-                <div className="pg-pane-head">
-                  <span className="pg-pane-title">{editor.label}</span>
-                  <button
-                    type="button"
-                    className="pg-pane-toggle"
-                    onClick={() =>
-                      updatePen(
-                        editor.key === 'html'
-                          ? { showHtml: false }
-                          : editor.key === 'css'
-                            ? { showCss: false }
-                            : { showJs: false },
-                      )
+              <Fragment key={editor.key}>
+                {index > 0 && (
+                  <div
+                    className={`pg-pane-splitter pg-pane-splitter--${pen.layout}`}
+                    onPointerDown={(e) =>
+                      handlePaneSplitStart(e, visibleEditors[index - 1]!.key, editor.key)
                     }
-                    title={`收起 ${editor.label}`}
-                  >
-                    <PgIcon name="close" size={12} />
-                  </button>
-                </div>
-                <div className="pg-pane-body">
-                  <CodeMirrorBox
-                    value={value}
-                    language={language as 'html' | 'css' | 'javascript'}
-                    onChange={(next) =>
-                      updatePen(editor.key === 'html' ? { html: next } : editor.key === 'css' ? { css: next } : { js: next })
-                    }
-                    ariaLabel={`${editor.label} 编辑器`}
+                    onPointerMove={handlePaneSplitMove}
+                    onPointerUp={handlePaneSplitEnd}
+                    onPointerCancel={handlePaneSplitEnd}
+                    role="separator"
+                    aria-orientation={pen.layout === 'left' ? 'horizontal' : 'vertical'}
+                    aria-label={`调整 ${visibleEditors[index - 1]!.label} 与 ${editor.label} 比例`}
                   />
+                )}
+                <div
+                  className="pg-pane"
+                  style={{
+                    flexGrow: pen.paneWeights[editor.key],
+                    flexBasis: 0,
+                  }}
+                >
+                  <div className="pg-pane-head">
+                    <span className="pg-pane-title">{editor.label}</span>
+                    <button
+                      type="button"
+                      className="pg-pane-toggle"
+                      onClick={() =>
+                        updatePen(
+                          editor.key === 'html'
+                            ? { showHtml: false }
+                            : editor.key === 'css'
+                              ? { showCss: false }
+                              : { showJs: false },
+                        )
+                      }
+                      title={`收起 ${editor.label}`}
+                    >
+                      <PgIcon name="close" size={12} />
+                    </button>
+                  </div>
+                  <div className="pg-pane-body">
+                    <CodeMirrorBox
+                      value={value}
+                      language={language as 'html' | 'css' | 'javascript'}
+                      onChange={(next) =>
+                        updatePen(editor.key === 'html' ? { html: next } : editor.key === 'css' ? { css: next } : { js: next })
+                      }
+                      ariaLabel={`${editor.label} 编辑器`}
+                    />
+                  </div>
                 </div>
-              </div>
+              </Fragment>
             );
           })}
           {!pen.showHtml && !pen.showCss && !pen.showJs && (

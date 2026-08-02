@@ -1,5 +1,5 @@
 ---
-order: 20
+order: 10
 title: 开发环境搭建
 module: 'getting-started'
 category: 工具链
@@ -8,10 +8,8 @@ description: 从零开始选择操作系统、安装编辑器和配置终端环�
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/001-GettingStartedGuide'
-  - 'getting-started/003-LearningGuide'
-  - 'getting-started/004-ComputerArchitecture'
-prerequisites: []
+  - 'cs-fundamentals/002-ComputerArchitectureBasics'
+prerequisites:
 ---
 
 ## 1. 选择操作系统
@@ -272,4 +270,3 @@ set
 # PowerShell 列出所有环境变量
 Get-ChildItem Env:
 ```
-

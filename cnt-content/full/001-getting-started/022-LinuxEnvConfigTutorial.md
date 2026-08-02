@@ -1,5 +1,5 @@
 ---
-order: 220
+order: 130
 title: Linux环境配置教程
 module: 'getting-started'
 category: 工具链
@@ -11,9 +11,8 @@ related:
   - 'getting-started/020-WindowsEnvConfigTutorial'
   - 'getting-started/021-MacOSEnvConfigTutorial'
 prerequisites:
-  - 'getting-started/001-GettingStartedGuide'
+  - 'getting-started/002-DevEnvSetup'
 ---
-
 
 ## 1. 包管理器
 
@@ -673,7 +672,3 @@ echo 'export LANG=zh_CN.UTF-8' >> ~/.bashrc
 
 > [!tip] 远程开发
 > 如果你的开发环境在远程 Linux 服务器上，推荐使用 VS Code 的 **Remote - SSH** 扩展。本地 VS Code 通过 SSH 连接远程服务器，获得与本地开发相同的体验，而代码编译运行都在服务器端完成。
-
-## 延伸阅读
-从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
-语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。

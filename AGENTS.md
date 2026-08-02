@@ -4,6 +4,8 @@
 
 - 代码与对话中一律不使用 emoji 表情。
 - 代码项目中的图形需求：优先使用 SVG 或 Mermaid 自行绘制，不引入位图素材。
+- 界面装饰禁止使用点状元素（圆点、胶囊圆点、点阵等），统一改为 1-4px 宽的竖条
+  或几何刻度线；按钮、徽章、状态指示器一律使用直角小圆角（`--radius-md` 以内）。
 - 代码需有完善、简洁的中文注释。
 - 每次任务完成后删除一次性脚本、废弃代码文件等临时产物。
 - 文档内容统一存放于 `cnt-content/full`；`cnt-content/mobile` 为历史遗留目录，
@@ -55,7 +57,7 @@ prerequisites:
 
 ### related / prerequisites 引用格式
 
-- 统一为 `module/文件名`，文件名不带 `.md` 后缀，例如 `getting-started/004-ComputerArchitecture`。
+- 统一为 `module/文件名`，文件名不带 `.md` 后缀，例如 `getting-started/002-DevEnvSetup`。
 - 引用必须指向真实存在的文档；标题式、别名式引用需解析为文件名，
   指向不存在文档的死链应删除。
 - `module` 必须是 modules.json 中的模块 id；历史旧名（如 network、math）需先映射。

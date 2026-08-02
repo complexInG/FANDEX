@@ -12,7 +12,7 @@
  *   - 不自动删除任何用户数据；存储占用通过惰性写入与去重控制
  */
 
-import type { FrontendPen, LabRecord, PlaygroundStats } from './types';
+import type { FrontendPen, PlaygroundStats } from './types';
 
 /** 数据库名称 */
 const DB_NAME = 'fandex-playground';
@@ -22,7 +22,7 @@ const DB_VERSION = 1;
 const STORE_PENS = 'pens';
 /** 草稿对象仓库（key 为 'frontend' 或 `lab:${exerciseId}:${language}`） */
 const STORE_DRAFTS = 'drafts';
-/** 练习记录对象仓库 */
+/** 练习记录对象仓库（历史遗留，仅用于清空兼容；新版本不再写入） */
 const STORE_RECORDS = 'records';
 
 /** SSR 环境检测 */
@@ -129,11 +129,6 @@ function idbAll<T>(storeName: string): Promise<T[]> {
 /** 前端实验草稿的固定 key */
 export const DRAFT_PEN_KEY = 'frontend';
 
-/** 练习草稿 key 生成规则：`lab:${exerciseId}:${language}` */
-export function labDraftKey(exerciseId: string, language: string): string {
-  return `lab:${exerciseId}:${language}`;
-}
-
 /**
  * 保存前端实验草稿（自动保存调用，防抖由 UI 层控制）
  * @param pen - 当前编辑中的作品
@@ -197,48 +192,8 @@ export async function deletePen(id: string): Promise<void> {
 }
 
 /**
- * 保存练习记录（每次运行后更新）
- * @param record - 练习记录
- */
-export async function saveLabRecord(record: LabRecord): Promise<void> {
-  if (!isClient) return;
-  try {
-    await idbPut(STORE_RECORDS, record);
-  } catch {
-    // 存储失败不阻断运行结果展示
-  }
-}
-
-/**
- * 读取全部练习记录
- */
-export async function loadLabRecords(): Promise<LabRecord[]> {
-  if (!isClient) return [];
-  try {
-    return await idbAll<LabRecord>(STORE_RECORDS);
-  } catch {
-    return [];
-  }
-}
-
-/**
- * 读取单条练习记录
- * @param exerciseId - 题目 ID
- * @param language - 语言
- */
-export async function loadLabRecord(exerciseId: string, language: string): Promise<LabRecord | null> {
-  if (!isClient) return null;
-  try {
-    const record = await idbGet<LabRecord>(STORE_RECORDS, `${exerciseId}:${language}`);
-    return record ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/**
  * 保存练习草稿（自动保存调用）
- * @param key - 草稿 key（labDraftKey 生成）
+ * @param key - 草稿 key（沙箱为 `lab:${language}`，前端实验为固定 key）
  * @param code - 用户代码
  */
 export async function saveLabDraft(key: string, code: string): Promise<void> {
@@ -289,17 +244,18 @@ export async function getStorageUsage(): Promise<{ quotaBytes: number; usageByte
  */
 export async function getPlaygroundStats(): Promise<PlaygroundStats> {
   if (!isClient) {
-    return { penCount: 0, labCount: 0, solvedCount: 0, totalAttempts: 0, quotaBytes: 0, usageBytes: 0 };
+    return { penCount: 0, languageCount: 0, quotaBytes: 0, usageBytes: 0 };
   }
-  const [pens, records, storage] = await Promise.all([loadPens(), loadLabRecords(), getStorageUsage()]);
-  const labCount = records.length;
-  const solvedCount = records.filter((r) => r.status === 'solved').length;
-  const totalAttempts = records.reduce((sum, r) => sum + r.attempts, 0);
+  const [pens, drafts, storage] = await Promise.all([
+    loadPens(),
+    idbAll<{ id: string }>(STORE_DRAFTS),
+    getStorageUsage(),
+  ]);
+  // 语言数统计：仅统计 lab: 前缀的沙箱草稿（历史题目草稿不计入）
+  const languageCount = drafts.filter((d) => d.id.startsWith('lab:')).length;
   return {
     penCount: pens.length,
-    labCount,
-    solvedCount,
-    totalAttempts,
+    languageCount,
     quotaBytes: storage.quotaBytes,
     usageBytes: storage.usageBytes,
   };

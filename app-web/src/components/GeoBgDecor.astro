@@ -10,8 +10,8 @@
  *
  * 适配来源：参考 KeMuONEXueKao 的 React 版 GeoBgDecor，重写为 Astro 组件。
  *
- * 变体说明：
- * - home：首页 Hero 区，S 曲线 + 涟漪环 + 三角切片等 7 项装饰
+ * 变体说明（装饰规则：禁止点状元素，统一竖条/刻度线/几何切片）：
+ * - home：首页 Hero 区，S 曲线 + 涟漪环 + 三角切片 + 轨道环等动态装饰
  * - docs：文档详情页，网格底纹 + 几何线条 + 动态元素（克制 7 项）
  * - list：模块/标签列表页，网格底纹 + 平行斜线 + 十字坐标点 + 动态元素
  * - learning-path：学习路线页，网格底纹 + 竖条点阵装饰（点状装饰统一为竖条）
@@ -50,10 +50,12 @@ const GEO_DECOR_CONFIG: Record<GeoBgVariant, GeoDecorItem[]> = {
     'geo-curve-s',
     'geo-ripple-tr',
     'geo-triangle-rt',
-    'geo-cross-marks',
+    'geo-bars-marks',
     'geo-spiral-ccw',
     'geo-pulse-ring',
     'geo-float-block',
+    'geo-orbit-ring',
+    'geo-crosshair',
   ],
   /** 文档详情页：网格底纹 + 几何线条 + 动态元素
    *  克制使用 7 项装饰，营造专注但不单调的阅读氛围
@@ -86,6 +88,7 @@ const GEO_DECOR_CONFIG: Record<GeoBgVariant, GeoDecorItem[]> = {
     'geo-bars-radial',
     'geo-bars-pulse',
     'geo-float-block',
+    'geo-bars-float',
   ],
   /** 轻量变体：仅网格底纹 + 小点阵（搜索/404 等辅助页） */
   minimal: ['geo-bg-grid', 'geo-dots-sm'],
@@ -103,15 +106,18 @@ const GEO_DECOR_CONFIG: Record<GeoBgVariant, GeoDecorItem[]> = {
     'geo-pulse-ring',
     'geo-float-block',
   ],
-  /** 在线编程实验场变体：网格底纹 + 尖括号对 + 终端方块 + 平行线 + 点阵 + 十字标记 + 脉冲环 */
+  /** 在线编程实验场变体：网格底纹 + 尖括号对 + 终端方块 + 扫描线 + 代码光标等动态装饰 */
   playground: [
     'geo-bg-grid',
     'geo-bracket-pair',
     'geo-terminal-block',
     'geo-parallel-lines',
-    'geo-dots-radial',
-    'geo-cross-marks',
-    'geo-pulse-ring',
+    'geo-bars-radial',
+    'geo-bars-marks',
+    'geo-bars-pulse',
+    'geo-scan-line',
+    'geo-code-cursor',
+    'geo-bezier-flow',
   ],
 };
 

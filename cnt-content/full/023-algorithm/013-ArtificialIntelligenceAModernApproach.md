@@ -20,7 +20,7 @@ related:
 prerequisites:
   - 'algorithm/001-MIT6006IntroductionToAlgorithms'
   - 'algorithm/011-NQueensBenchmarkBitManipulationApproach'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 ---
 
 

@@ -1,8 +1,8 @@
 /**
  * 思维导图知识点节点原子组件
  * -----------------------------------------------------------------------------
- * - 已发布节点渲染为 SVG 链接（整卡可点，支持新标签打开）
- * - 待补充节点渲染为按钮（点击选中并查看详情）
+ * - 全部节点统一为可选中卡片：点击在右侧面板展示说明与文档入口
+ * - 已发布节点由面板中的"阅读专项文档"按钮负责跳转，画布内不直接导航
  * - 标题自动换行（最多两行），尾部显示难度竖条与状态
  */
 import type { NodeVM } from './types';
@@ -102,23 +102,11 @@ export default function MapNode(props: Props) {
     onPointerLeave: () => onHover(null),
   };
 
-  if (node.href) {
-    return (
-      <a
-        href={node.href}
-        {...commonProps}
-        aria-label={`${node.title}（阅读专项文档）`}
-      >
-        <NodeBody {...props} />
-      </a>
-    );
-  }
-
   return (
     <g
       role="button"
       tabIndex={0}
-      aria-label={`${node.title}（文档待补充）`}
+      aria-label={`${node.title}（${node.href ? '已发布，点击查看文档入口' : '文档待补充'}）`}
       onClick={() => onSelect(node.id)}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {

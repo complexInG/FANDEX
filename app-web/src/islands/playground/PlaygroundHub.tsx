@@ -3,12 +3,13 @@
  *
  * 功能概述：
  *   - 展示前端实验与编程练习两个功能入口（紧凑卡片，自绘 SVG 几何装饰）
- *   - 汇总本地数据：作品数、练习记录、存储用量（全部来自浏览器本地）
+ *   - 展示前端实验与在线编程沙箱两个功能入口（紧凑卡片，自绘 SVG 几何装饰）
+ *   - 汇总本地数据：作品数、已用语言数、存储用量（全部来自浏览器本地）
  *   - 展示最近作品，支持一键打开继续编辑
  *
  * 数据原则：
  *   - 所有数据仅存用户浏览器（IndexedDB/localStorage），不对外分享
- *   - 清空数据操作必须由用户显式确认，程序不做自动清理
+ *   - 清空数据操作必须由用户通过站点确认面板显式确认，程序不做自动清理
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -62,6 +63,8 @@ function PlaygroundHub() {
   const [stats, setStats] = useState<PlaygroundStats | null>(null);
   /** 最近前端作品 */
   const [pens, setPens] = useState<FrontendPen[]>([]);
+  /** 清空确认面板是否打开 */
+  const [confirmClear, setConfirmClear] = useState(false);
 
   /**
    * 刷新本地统计与最近作品
@@ -77,12 +80,11 @@ function PlaygroundHub() {
   }, [refresh]);
 
   /**
-   * 用户主动清空全部本地数据（双重确认）
+   * 执行清空全部本地数据（由确认面板触发，避免浏览器原生弹窗）
    */
   const handleClearAll = useCallback(async () => {
-    if (!window.confirm('清空 Playground 全部本地数据？包括作品库、草稿与练习记录。')) return;
-    if (!window.confirm('此操作不可恢复，确定继续？')) return;
     await clearAllPlaygroundData();
+    setConfirmClear(false);
     await refresh();
   }, [refresh]);
 
@@ -126,17 +128,17 @@ function PlaygroundHub() {
             </div>
             <div className="pg-hub-card__heading">
               <h2>编程与算法练习</h2>
-              <p className="pg-hub-card__brief">内置经典算法题目，五种语言在浏览器内直接运行测试</p>
+              <p className="pg-hub-card__brief">自由编写与运行多语言代码，浏览器内直接执行并保存草稿</p>
             </div>
           </div>
           <ul className="pg-hub-card-features">
-            <li>自动用例测试与结果汇总</li>
-            <li>五种语言起始模板</li>
-            <li>练习记录与通过统计</li>
+            <li>全语言编辑与语法高亮</li>
+            <li>浏览器沙箱直接运行</li>
+            <li>代码格式化与自动保存</li>
             <li>代码草稿自动保存</li>
           </ul>
           <span className="pg-hub-card-action">
-            进入练习
+            进入沙箱
             <PgIcon name="arrow-left" size={13} />
           </span>
         </a>
@@ -154,16 +156,8 @@ function PlaygroundHub() {
             <span className="pg-stat-label">前端作品</span>
           </div>
           <div className="pg-stat">
-            <span className="pg-stat-num">{stats?.labCount ?? '-'}</span>
-            <span className="pg-stat-label">练习组合</span>
-          </div>
-          <div className="pg-stat">
-            <span className="pg-stat-num">{stats?.solvedCount ?? '-'}</span>
-            <span className="pg-stat-label">已通过题目</span>
-          </div>
-          <div className="pg-stat">
-            <span className="pg-stat-num">{stats?.totalAttempts ?? '-'}</span>
-            <span className="pg-stat-label">累计运行</span>
+            <span className="pg-stat-num">{stats?.languageCount ?? '-'}</span>
+            <span className="pg-stat-label">已用语言</span>
           </div>
         </div>
 
@@ -183,7 +177,7 @@ function PlaygroundHub() {
             <div className="pg-hub-storage-bar" role="progressbar" aria-valuenow={Math.round(usageRatio * 100)} aria-valuemin={0} aria-valuemax={100}>
               <i style={{ width: `${usageRatio * 100}%` }} />
             </div>
-            <button type="button" className="pg-btn pg-btn--danger" onClick={handleClearAll}>
+            <button type="button" className="pg-btn pg-btn--danger" onClick={() => setConfirmClear(true)}>
               <PgIcon name="trash" size={14} />
               清空全部本地数据
             </button>
@@ -214,6 +208,47 @@ function PlaygroundHub() {
           </ul>
         )}
       </section>
+
+      {/* 清空数据确认面板：站点风格自绘遮罩，替代浏览器原生弹窗 */}
+      {confirmClear && (
+        <div className="pg-drawer-mask" onClick={() => setConfirmClear(false)}>
+          <div
+            className="pg-confirm"
+            role="alertdialog"
+            aria-modal="true"
+            aria-label="清空全部本地数据确认"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="pg-confirm__head">
+              <span className="pg-confirm__title">
+                <PgIcon name="alert" size={15} />
+                清空全部本地数据
+              </span>
+              <button
+                type="button"
+                className="pg-btn pg-btn--ghost pg-btn--sm"
+                onClick={() => setConfirmClear(false)}
+                aria-label="取消"
+              >
+                <PgIcon name="close" size={13} />
+              </button>
+            </div>
+            <p className="pg-confirm__body">
+              将删除当前浏览器中的全部作品库、草稿与历史练习记录，
+              此操作不可恢复。是否继续？
+            </p>
+            <div className="pg-confirm__actions">
+              <button type="button" className="pg-btn pg-btn--ghost" onClick={() => setConfirmClear(false)}>
+                取消
+              </button>
+              <button type="button" className="pg-btn pg-btn--danger" onClick={() => void handleClearAll()}>
+                <PgIcon name="trash" size={14} />
+                确认清空
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

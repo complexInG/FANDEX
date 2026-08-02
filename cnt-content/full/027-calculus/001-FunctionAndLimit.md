@@ -11,7 +11,7 @@ related:
   - 'calculus/002-PhilosophiaeNaturalisPrincipiaMathematica'
   - 'calculus/003-AMeanValueTheorem'
   - 'calculus/005-DefiniteIntegralAndApplication'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 prerequisites: []
 ---
 

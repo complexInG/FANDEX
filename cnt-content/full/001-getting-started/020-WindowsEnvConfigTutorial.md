@@ -1,5 +1,5 @@
 ---
-order: 200
+order: 110
 title: Windows环境配置教程
 module: 'getting-started'
 category: 工具链
@@ -8,13 +8,11 @@ description: Windows 开发环境完整配置指南，涵盖 WSL2、包管理器
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/019-SoftwareDownloadURLSummary'
   - 'getting-started/021-MacOSEnvConfigTutorial'
   - 'getting-started/022-LinuxEnvConfigTutorial'
 prerequisites:
-  - 'getting-started/001-GettingStartedGuide'
+  - 'getting-started/002-DevEnvSetup'
 ---
-
 
 ## 1. WSL2 安装与配置
 
@@ -587,7 +585,3 @@ code --diff a.txt b.txt  # 对比两个文件
 
 > [!tip] 配置同步
 > VS Code 支持 Settings Sync，通过 GitHub 或 Microsoft 账号同步你的设置、插件和快捷键到云端，换设备时一键恢复。
-
-## 延伸阅读
-从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
-语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。

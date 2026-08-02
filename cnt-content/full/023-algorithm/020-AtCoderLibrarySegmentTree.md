@@ -20,7 +20,7 @@ prerequisites:
   - 'algorithm/001-MIT6006IntroductionToAlgorithms'
   - 'algorithm/007-TheUbiquitousBTree'
   - 'algorithm/021-PostgreSQLStatisticsCollector'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 ---
 
 

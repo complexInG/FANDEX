@@ -262,20 +262,3 @@ TS 基础类型与接口，见 009-typescript 模块文档。
 TS 泛型与工具类型，见 009-typescript 模块进阶文档。
 React + TS 组件类型，见 011-react 模块。
 Vue3 + TS 组合式 API，见 010-vue3 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 条件类型与类型体操
-
-条件类型 T extends U ? X : Y 在类型层做分支；infer 提取类型片段（ReturnType、Parameters 的底层实现）。
-映射类型 { [K in keyof T]: T[K] } 变换对象结构；key remapping（as）过滤键。
-模板字面量类型 `${K}Id` 组合字符串类型，配合推断实现精确匹配。
-工程建议：类型体操控制在团队可读范围，复杂类型用注释解释意图。
-
-### 13.2 声明文件与模块解析
-
-.d.ts 声明 JS 库类型：declare module、declare global、export =；@types 包集中管理社区类型。
-moduleResolution：node16/nodenext 遵循 ESM/CJS 规则；bundler 模式适配 Vite。
-三斜线指令（/// reference）用于旧式依赖声明；现代代码用 import。
-发布库时生成 .d.ts 并测试（arethetypeswrong）。

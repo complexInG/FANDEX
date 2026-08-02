@@ -17,7 +17,7 @@ related:
 prerequisites:
   - 'algorithm/007-TheUbiquitousBTree'
   - 'algorithm/001-MIT6006IntroductionToAlgorithms'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 ---
 
 

@@ -23,10 +23,34 @@ import { css } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { cpp } from '@codemirror/lang-cpp';
+import { StreamLanguage } from '@codemirror/language';
+// legacy-modes 提供多语言流式高亮（Java/Go/Rust/C#/Kotlin/Lua/SQL/Shell 等），
+// 无需为每种语言引入完整解析器，保持打包体积可控
+import { java, csharp, kotlin } from '@codemirror/legacy-modes/mode/clike';
+import { go } from '@codemirror/legacy-modes/mode/go';
+import { rust } from '@codemirror/legacy-modes/mode/rust';
+import { lua } from '@codemirror/legacy-modes/mode/lua';
+import { standardSQL } from '@codemirror/legacy-modes/mode/sql';
+import { shell } from '@codemirror/legacy-modes/mode/shell';
 import { tags } from '@lezer/highlight';
 
 /** 编辑器支持的语言类型 */
-export type EditorLanguage = 'html' | 'css' | 'javascript' | 'typescript' | 'python' | 'c' | 'cpp';
+export type EditorLanguage =
+  | 'html'
+  | 'css'
+  | 'javascript'
+  | 'typescript'
+  | 'python'
+  | 'c'
+  | 'cpp'
+  | 'java'
+  | 'kotlin'
+  | 'go'
+  | 'rust'
+  | 'csharp'
+  | 'lua'
+  | 'sql'
+  | 'shell';
 
 /** 组件 Props */
 export interface CodeMirrorBoxProps {
@@ -58,6 +82,22 @@ function languageSupport(language: EditorLanguage) {
     case 'c':
     case 'cpp':
       return cpp();
+    case 'java':
+      return StreamLanguage.define(java);
+    case 'kotlin':
+      return StreamLanguage.define(kotlin);
+    case 'go':
+      return StreamLanguage.define(go);
+    case 'rust':
+      return StreamLanguage.define(rust);
+    case 'csharp':
+      return StreamLanguage.define(csharp);
+    case 'lua':
+      return StreamLanguage.define(lua);
+    case 'sql':
+      return StreamLanguage.define(standardSQL);
+    case 'shell':
+      return StreamLanguage.define(shell);
     case 'javascript':
     default:
       return javascript();
@@ -73,7 +113,8 @@ const fandexEditorTheme = EditorView.theme(
     '&': {
       height: '100%',
       fontSize: '13px',
-      backgroundColor: 'var(--color-bg-sunken)',
+      // 编辑器背景使用代码块专用令牌；浅色模式下比普通凹陷背景更深，保证文字可读
+      backgroundColor: 'var(--cm-bg, var(--color-bg-code, var(--color-bg-sunken)))',
       color: 'var(--color-text)',
     },
     '.cm-scroller': {
@@ -89,7 +130,7 @@ const fandexEditorTheme = EditorView.theme(
       padding: '0 12px',
     },
     '.cm-gutters': {
-      backgroundColor: 'var(--color-bg-sunken)',
+      backgroundColor: 'var(--cm-bg, var(--color-bg-code, var(--color-bg-sunken)))',
       color: 'var(--color-text-tertiary)',
       border: 'none',
     },
@@ -105,7 +146,8 @@ const fandexEditorTheme = EditorView.theme(
       color: 'var(--color-text-secondary)',
     },
     '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
-      backgroundColor: 'var(--color-primary-200)',
+      // 选中态使用中性色，避免彩色遮罩干扰代码类型识别
+      backgroundColor: 'var(--cm-selection-bg, rgba(125, 135, 150, 0.28))',
     },
     '.cm-cursor': {
       borderLeftColor: 'var(--color-primary)',

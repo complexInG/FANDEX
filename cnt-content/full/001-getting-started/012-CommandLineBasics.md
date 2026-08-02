@@ -1,5 +1,5 @@
 ---
-order: 120
+order: 50
 title: 命令行基础
 module: 'getting-started'
 category: 工具链
@@ -13,7 +13,7 @@ related:
   - 'getting-started/013-PackageManager'
   - 'getting-started/014-VCSSelection'
 prerequisites:
-  - 'getting-started/001-GettingStartedGuide'
+  - 'getting-started/002-DevEnvSetup'
 ---
 
 ## 文件列表查看
@@ -911,9 +911,3 @@ cd ~
 # 切换到上次所在的目录
 cd -
 ```
-
----
-
-## 延伸阅读
-从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
-语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。

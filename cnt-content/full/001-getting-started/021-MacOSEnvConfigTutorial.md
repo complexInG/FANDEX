@@ -1,5 +1,5 @@
 ---
-order: 210
+order: 120
 title: macOS环境配置教程
 module: 'getting-started'
 category: 工具链
@@ -8,13 +8,11 @@ description: macOS 开发环境完整配置指南，涵盖 Homebrew、Xcode Comm
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/019-SoftwareDownloadURLSummary'
   - 'getting-started/020-WindowsEnvConfigTutorial'
   - 'getting-started/022-LinuxEnvConfigTutorial'
 prerequisites:
-  - 'getting-started/001-GettingStartedGuide'
+  - 'getting-started/002-DevEnvSetup'
 ---
-
 
 ## 1. Homebrew 安装
 
@@ -585,7 +583,3 @@ echo "请重启终端使所有配置生效。"
 chmod +x setup-macos.sh
 ./setup-macos.sh
 ```
-
-## 延伸阅读
-从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
-语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。

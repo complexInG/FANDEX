@@ -19,7 +19,7 @@ prerequisites:
   - 'algorithm/001-MIT6006IntroductionToAlgorithms'
   - 'algorithm/007-TheUbiquitousBTree'
   - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 ---
 
 

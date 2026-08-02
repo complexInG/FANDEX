@@ -19,7 +19,7 @@ prerequisites:
   - 'algorithm/001-MIT6006IntroductionToAlgorithms'
   - 'algorithm/014-NumPyArraysABeginnerGuideCSRCSCSparseMatrixFormats'
   - 'algorithm/007-TheUbiquitousBTree'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 ---
 
 

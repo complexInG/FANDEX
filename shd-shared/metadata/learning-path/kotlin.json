@@ -1,0 +1,118 @@
+{
+  "version": "1.0.0",
+  "module": "kotlin",
+  "summary": "???Kotlin????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "?????????",
+      "nodes": [
+        {
+          "id": "kotlin-001",
+          "title": "Kotlin 概述与环境配置",
+          "doc": "001-KotlinOverviewEnvSetup"
+        },
+        {
+          "id": "kotlin-002",
+          "title": "Kotlin 类与对象",
+          "doc": "004-KotlinClassObject"
+        },
+        {
+          "id": "kotlin-003",
+          "title": "Kotlin 协程进阶",
+          "doc": "007-KotlinCoroutineAdvanced"
+        },
+        {
+          "id": "kotlin-004",
+          "title": "Kotlin 测试与最佳实践",
+          "doc": "010-KotlinTestBestPractice"
+        },
+        {
+          "id": "kotlin-005",
+          "title": "密封类与代数数据类型",
+          "doc": "013-SealedClassAlgebraicDataType"
+        },
+        {
+          "id": "kotlin-006",
+          "title": "协程基础",
+          "doc": "016-CoroutineBasics"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "kotlin-101",
+          "title": "Kotlin作用域函数",
+          "doc": "018-KotlinScopeFunction"
+        },
+        {
+          "id": "kotlin-102",
+          "title": "Kotlin 契约（Contracts）",
+          "doc": "021-KotlinContractContracts"
+        },
+        {
+          "id": "kotlin-103",
+          "title": "Kotlin与Android",
+          "doc": "024-KotlinAndroid"
+        },
+        {
+          "id": "kotlin-104",
+          "title": "Kotlin与Compose",
+          "doc": "027-KotlinCompose"
+        },
+        {
+          "id": "kotlin-105",
+          "title": "Kotlin与Exposed",
+          "doc": "030-KotlinExposed"
+        },
+        {
+          "id": "kotlin-106",
+          "title": "Kotlin与测试",
+          "doc": "033-KotlinTest"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "Android ???",
+      "nodes": [
+        {
+          "id": "kotlin-201",
+          "title": "Kotlin与原子操作",
+          "doc": "036-KotlinAtomicOperation"
+        },
+        {
+          "id": "kotlin-202",
+          "title": "Kotlin 与正则表达式",
+          "doc": "039-KotlinRegex"
+        },
+        {
+          "id": "kotlin-203",
+          "title": "Kotlin与WebSocket",
+          "doc": "042-KotlinWebSocket"
+        },
+        {
+          "id": "kotlin-204",
+          "title": "Flow冷流与SharedFlow和StateFlow",
+          "doc": "045-FlowColdSharedState"
+        },
+        {
+          "id": "kotlin-205",
+          "title": "内联类",
+          "doc": "048-InlineClass"
+        },
+        {
+          "id": "kotlin-206",
+          "title": "协程异常处理",
+          "doc": "051-CoroutineExceptionHandling"
+        }
+      ]
+    }
+  ]
+}

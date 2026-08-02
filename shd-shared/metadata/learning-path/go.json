@@ -1,0 +1,133 @@
+{
+  "version": "1.0.0",
+  "module": "go",
+  "summary": "??? Go ??????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "go-001",
+          "title": "Go 概述与环境配置",
+          "doc": "001-GoOverviewEnvSetup"
+        },
+        {
+          "id": "go-002",
+          "title": "Go 数据结构",
+          "doc": "004-GoDataStructure"
+        },
+        {
+          "id": "go-003",
+          "title": "Go 错误处理",
+          "doc": "007-GoErrorHandling"
+        },
+        {
+          "id": "go-004",
+          "title": "Go Web 开发与微服务",
+          "doc": "010-GoWebDevelopmentMicroservice"
+        },
+        {
+          "id": "go-005",
+          "title": "unsafe与指针",
+          "doc": "013-UnsafePointer"
+        },
+        {
+          "id": "go-006",
+          "title": "内存对齐",
+          "doc": "016-MemoryAlignment"
+        },
+        {
+          "id": "go-007",
+          "title": "接口与类型断言",
+          "doc": "019-InterfaceTypeAssertion"
+        }
+      ]
+    },
+    {
+      "id": "concurrency",
+      "title": "?????",
+      "subtitle": "goroutine?channel ????",
+      "nodes": [
+        {
+          "id": "go-101",
+          "title": "Go与GraphQL",
+          "doc": "021-GoGraphQL"
+        },
+        {
+          "id": "go-102",
+          "title": "Go与Redis",
+          "doc": "025-GoRedis"
+        },
+        {
+          "id": "go-103",
+          "title": "Go与JSON",
+          "doc": "029-GoJSON"
+        },
+        {
+          "id": "go-104",
+          "title": "Go与代码生成",
+          "doc": "033-GoCodeGeneration"
+        },
+        {
+          "id": "go-105",
+          "title": "Go与模板",
+          "doc": "037-GoTemplate"
+        },
+        {
+          "id": "go-106",
+          "title": "Go与正则表达式",
+          "doc": "041-GoRegex"
+        },
+        {
+          "id": "go-107",
+          "title": "Go与HTTP服务器",
+          "doc": "045-GoHTTP"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "go-201",
+          "title": "Go与OAuth2",
+          "doc": "046-GoOAuth2"
+        },
+        {
+          "id": "go-202",
+          "title": "Go与分布式追踪",
+          "doc": "048-GoDistributedTracing"
+        },
+        {
+          "id": "go-203",
+          "title": "goroutine与channel通信原理",
+          "doc": "050-GoroutineChannelPrinciple"
+        },
+        {
+          "id": "go-204",
+          "title": "并发模式",
+          "doc": "052-ConcurrencyPattern"
+        },
+        {
+          "id": "go-205",
+          "title": "内存逃逸分析",
+          "doc": "054-MemoryEscapeAnalysis"
+        },
+        {
+          "id": "go-206",
+          "title": "泛型详解",
+          "doc": "056-GenericDetailed"
+        },
+        {
+          "id": "go-207",
+          "title": "竞态检测与原子操作",
+          "doc": "058-RaceDetectionAtomic"
+        }
+      ]
+    }
+  ]
+}

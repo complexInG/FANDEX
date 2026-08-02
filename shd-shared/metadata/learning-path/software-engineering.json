@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "module": "software-engineering",
+  "summary": "???软件工程????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "software-engineering-001",
+          "title": "软件工程概述",
+          "doc": "001-SoftwareEngineeringOverview"
+        },
+        {
+          "id": "software-engineering-002",
+          "title": "敏捷开发",
+          "doc": "002-AgileDevelopment"
+        },
+        {
+          "id": "software-engineering-003",
+          "title": "需求分析方法",
+          "doc": "003-RequirementAnalysisMethod"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "software-engineering-101",
+          "title": "UML图详解",
+          "doc": "004-UMLGraphDetailed"
+        },
+        {
+          "id": "software-engineering-102",
+          "title": "设计模式详解",
+          "doc": "005-DesignPatternDetailed"
+        },
+        {
+          "id": "software-engineering-103",
+          "title": "代码重构",
+          "doc": "006-Refactoring"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "software-engineering-201",
+          "title": "软件测试方法",
+          "doc": "007-SoftwareTestMethod"
+        },
+        {
+          "id": "software-engineering-202",
+          "title": "软件度量",
+          "doc": "008-SoftwareMetrics"
+        },
+        {
+          "id": "software-engineering-203",
+          "title": "技术债务管理",
+          "doc": "009-TechDebtManagement"
+        },
+        {
+          "id": "software-engineering-204",
+          "title": "DevOps与CICD集成",
+          "doc": "010-DevOpsCICDIntegration"
+        }
+      ]
+    }
+  ]
+}

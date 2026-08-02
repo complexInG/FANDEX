@@ -2,7 +2,7 @@
  * 代码运行沙箱 Web Worker
  *
  * 功能概述：
- * 在隔离的 Web Worker 线程中执行用户提交的 JS/TS/Python/C/C++ 代码，
+ * 在隔离的 Web Worker 线程中执行用户提交的 JS/TS/Python/C/C++/Lua 代码，
  * 主线程通过 postMessage 与本 Worker 通信，超时后可强制 terminate。
  *
  * 通信协议：
@@ -17,6 +17,7 @@
  * - JS/TS：原生执行（Worker 内置 V8），无需额外加载
  * - Python：动态 import Pyodide CDN（v0.27.7），首次加载缓存
  * - C/C++：动态 import JSCPP CDN，首次加载缓存
+ * - Lua：动态 import Fengari CDN（纯 JS 实现），首次加载缓存
  * - Go：暂不支持，返回 exitCode=1 与提示信息
  *
  * 安全设计：
@@ -41,8 +42,11 @@ const PYODIDE_BASE = 'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/';
 /** JSCPP CDN URL（浏览器 UMD 版本） */
 const JSCPP_URL = 'https://cdn.jsdelivr.net/npm/jscpp@2.0.10/dist/JSCPP.web.js';
 
+/** Fengari CDN URL（Lua 5.3 纯 JS 实现，浏览器 UMD 版本） */
+const FENGARI_URL = 'https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js';
+
 /** 支持的语言枚举 */
-type SupportedLanguage = 'javascript' | 'typescript' | 'python' | 'cpp' | 'c' | 'go';
+type SupportedLanguage = 'javascript' | 'typescript' | 'python' | 'cpp' | 'c' | 'go' | 'lua';
 
 /** 主线程发往 Worker 的运行请求消息 */
 interface RunMessage {
@@ -85,11 +89,41 @@ interface JSCPPRunner {
   ) => { exitCode: number };
 }
 
+/** Fengari 运行时的最小类型声明（外部 CDN 加载，无类型定义） */
+interface FengariModule {
+  lua: {
+    LUA_OK: number;
+    lua_gettop: (L: unknown) => number;
+    lua_isstring: (L: unknown, i: number) => boolean;
+    lua_isnumber: (L: unknown, i: number) => boolean;
+    lua_tostring: (L: unknown, i: number) => unknown;
+    lua_tonumber: (L: unknown, i: number) => number;
+    lua_pushcfunction: (L: unknown, fn: (l: unknown) => number) => void;
+    lua_setglobal: (L: unknown, name: unknown) => void;
+    lua_pcall: (L: unknown, nargs: number, nresults: number, errfunc: number) => number;
+    lua_pop: (L: unknown, n: number) => void;
+  };
+  lauxlib: {
+    luaL_newstate: () => unknown;
+    luaL_openlibs: (L: unknown) => void;
+    luaL_loadstring: (L: unknown, code: unknown) => number;
+    luaL_tolstring: (L: unknown, i: number, len: unknown) => unknown;
+  };
+  lualib: {
+    luaL_openlibs: (L: unknown) => void;
+  };
+  to_luastring: (text: string) => unknown;
+  to_jsstring: (value: unknown) => string;
+}
+
 /** Pyodide 实例缓存（首次加载后复用） */
 let pyodideInstance: PyodideInstance | null = null;
 
 /** JSCPP 模块缓存 */
 let jscppModule: JSCPPRunner | null = null;
+
+/** Fengari 模块缓存 */
+let fengariModule: FengariModule | null = null;
 
 /**
  * 通过动态 import 加载外部 CDN 脚本到 Worker 全局作用域
@@ -142,6 +176,25 @@ async function loadJSCPP(): Promise<JSCPPRunner> {
 
   jscppModule = mod;
   return jscppModule;
+}
+
+/**
+ * 加载 Fengari 运行时（Lua 5.3 纯 JS 解释器，体积约 400KB）
+ * @returns Fengari 模块
+ */
+async function loadFengari(): Promise<FengariModule> {
+  if (fengariModule) return fengariModule;
+
+  await loadExternalScript(FENGARI_URL);
+
+  // Fengari UMD 模块挂载到 self.fengari
+  const mod = (self as unknown as { fengari?: FengariModule }).fengari;
+  if (!mod) {
+    throw new Error('Fengari 加载失败：self.fengari 未定义');
+  }
+
+  fengariModule = mod;
+  return fengariModule;
 }
 
 /**
@@ -282,6 +335,70 @@ async function runCpp(
 }
 
 /**
+ * 执行 Lua 代码（通过 Fengari 解释器）
+ * - 重写全局 print，将输出转发到主线程
+ * - 加载/编译/执行任一环节失败时返回退出码 1
+ * @param code - Lua 代码
+ * @param sendLog - 日志上报回调
+ * @returns 退出码
+ */
+async function runLua(
+  code: string,
+  sendLog: (stream: 'stdout' | 'stderr', text: string) => void
+): Promise<number> {
+  try {
+    const fengari = await loadFengari();
+    const { lua, lauxlib, lualib, to_luastring, to_jsstring } = fengari;
+    const L = lauxlib.luaL_newstate();
+    lualib.luaL_openlibs(L);
+
+    /** print 输出缓冲 */
+    const lines: string[] = [];
+
+    // 注册自定义 print：将多个参数以 Tab 连接后写入 stdout
+    lua.lua_pushcfunction(L, (state: unknown) => {
+      const n = lua.lua_gettop(state);
+      const parts: string[] = [];
+      for (let i = 1; i <= n; i++) {
+        if (lua.lua_isstring(state, i)) {
+          parts.push(to_jsstring(lua.lua_tostring(state, i)));
+        } else if (lua.lua_isnumber(state, i)) {
+          parts.push(String(lua.lua_tonumber(state, i)));
+        } else {
+          parts.push(to_jsstring(lauxlib.luaL_tolstring(state, i, null)));
+        }
+      }
+      lines.push(parts.join('\t'));
+      return 0;
+    });
+    lua.lua_setglobal(L, to_luastring('print'));
+
+    // 先编译：失败时栈顶为错误信息，上报后直接返回
+    const loadStatus = lauxlib.luaL_loadstring(L, to_luastring(code));
+    if (loadStatus !== lua.LUA_OK) {
+      const message = to_jsstring(lua.lua_tostring(L, -1));
+      sendLog('stderr', message);
+      lua.lua_pop(L, 1);
+      return 1;
+    }
+    // 再执行：失败时栈顶为运行时错误信息
+    const callStatus = lua.lua_pcall(L, 0, 0, 0);
+    if (callStatus !== lua.LUA_OK) {
+      const message = to_jsstring(lua.lua_tostring(L, -1));
+      sendLog('stderr', message);
+      lua.lua_pop(L, 1);
+      return 1;
+    }
+
+    lines.forEach((line) => sendLog('stdout', line));
+    return 0;
+  } catch (err) {
+    sendLog('stderr', err instanceof Error ? err.message : String(err));
+    return 1;
+  }
+}
+
+/**
  * Go 代码暂不支持的兜底处理
  * @param sendLog - 日志上报回调
  * @returns 退出码 1
@@ -328,6 +445,10 @@ async function handleRun(msg: RunMessage): Promise<void> {
       case 'cpp':
         sendLoading('正在加载 C/C++ 运行时（JSCPP）...');
         exitCode = await runCpp(code, stdin, sendLog);
+        break;
+      case 'lua':
+        sendLoading('正在加载 Lua 运行时（Fengari）...');
+        exitCode = await runLua(code, sendLog);
         break;
       case 'go':
         exitCode = runGoUnsupported(sendLog);

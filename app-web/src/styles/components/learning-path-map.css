@@ -4,6 +4,7 @@
  * 设计说明：
  * - 全部自绘 SVG，样式基于 ark 语义令牌，支持明暗双主题
  * - 主题色通过 --lp-color（技术分类色）注入，节点/阶段/连线统一取色
+ * - 禁止点状装饰：序号/徽标/指示均使用直角小圆角与竖条刻度
  * - 归入 @layer components，避免覆盖未分层样式
  */
 @layer components {
@@ -68,7 +69,7 @@
 
   .lp-canvas {
     position: relative;
-    height: 560px;
+    height: 620px;
     overflow: hidden;
     border: 1px solid var(--color-border-light);
     background:
@@ -195,6 +196,10 @@
     stroke-width: 1;
   }
 
+  .lp-stage__count-rect {
+    rx: 2;
+  }
+
   .lp-stage__count {
     font-family: var(--font-display);
     font-size: 0.68rem;
@@ -203,10 +208,11 @@
   }
 
   .lp-stage__chevron {
-    stroke: var(--color-fg-secondary);
+    stroke: var(--lp-color);
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+    opacity: 0.8;
     transform-box: fill-box;
     transform-origin: center;
     transition: transform var(--motion-duration-normal) var(--motion-easing-out);
@@ -239,9 +245,19 @@
     fill: var(--color-bg-card);
     stroke: var(--color-border-default);
     stroke-width: 1;
+    rx: 3;
     transition:
       stroke var(--motion-duration-instant) var(--motion-easing-out),
       fill var(--motion-duration-instant) var(--motion-easing-out);
+  }
+
+  /* 卡片基础投影：柔和层次，hover 时加深 */
+  .lp-node__rect {
+    filter: drop-shadow(0 1px 2px rgba(10, 14, 20, 0.08));
+  }
+
+  .lp-node--hovered .lp-node__rect {
+    filter: drop-shadow(0 2px 5px rgba(10, 14, 20, 0.16));
   }
 
   /* 待补充节点：虚线边框 + 警示色 */
@@ -254,6 +270,17 @@
   .lp-node--selected .lp-node__rect {
     stroke: var(--lp-color);
     fill: color-mix(in oklch, var(--lp-color) 6%, var(--color-bg-card));
+  }
+
+  /* 悬停微抬升：SVG g 使用 fill-box 变换，避免位移方向错乱 */
+  .lp-node {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform var(--motion-duration-fast) var(--motion-easing-out);
+  }
+
+  .lp-node--hovered {
+    transform: translateY(-2px);
   }
 
   .lp-node--selected .lp-node__rect {
@@ -432,7 +459,7 @@
     align-items: center;
     gap: 6px;
     align-self: flex-start;
-    padding: 6px 12px;
+    padding: 8px 14px;
     border: 1px solid color-mix(in oklch, var(--lp-panel-color) 55%, transparent);
     border-radius: 2px;
     background: color-mix(in oklch, var(--lp-panel-color) 8%, transparent);
@@ -578,6 +605,10 @@
   @media (prefers-reduced-motion: reduce) {
     .lp-map {
       animation: none;
+    }
+
+    .lp-node {
+      transition: none;
     }
   }
 }

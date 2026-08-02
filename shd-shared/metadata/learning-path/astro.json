@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0",
+  "module": "astro",
+  "summary": "???Astro????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "?????",
+      "nodes": [
+        {
+          "id": "astro-001",
+          "title": "Astro 框架概述与文档站实践",
+          "doc": "001-AstroOverview"
+        },
+        {
+          "id": "astro-002",
+          "title": "Astro 项目创建与目录结构",
+          "doc": "002-QuickStartProject"
+        },
+        {
+          "id": "astro-003",
+          "title": "Astro 页面与路由",
+          "doc": "003-PagesRouting"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "?????",
+      "subtitle": "?????",
+      "nodes": [
+        {
+          "id": "astro-101",
+          "title": "Astro 组件与 Props 插槽",
+          "doc": "004-ComponentsProps"
+        },
+        {
+          "id": "astro-102",
+          "title": "Astro 内容集合与 Schema",
+          "doc": "005-ContentCollections"
+        },
+        {
+          "id": "astro-103",
+          "title": "Astro 岛屿架构与客户端指令",
+          "doc": "006-IslandsClientComponents"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "astro-201",
+          "title": "Astro 样式与资源优化",
+          "doc": "007-StylingFontsAssets"
+        },
+        {
+          "id": "astro-202",
+          "title": "Astro 构建与部署",
+          "doc": "008-BuildDeploy"
+        },
+        {
+          "id": "astro-203",
+          "title": "Astro 7 新特性速览",
+          "doc": "009-Astro7Features"
+        }
+      ]
+    }
+  ]
+}

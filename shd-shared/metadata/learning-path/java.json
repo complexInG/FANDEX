@@ -1,0 +1,138 @@
+{
+  "version": "1.0.0",
+  "module": "java",
+  "summary": "? Java ?????????????????? JVM??????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "java-001",
+          "title": "Java 概述与开发环境",
+          "doc": "001-JavaOverviewDevEnv"
+        },
+        {
+          "id": "java-002",
+          "title": "变量与常量",
+          "doc": "005-VariableConstant"
+        },
+        {
+          "id": "java-003",
+          "title": "JUC并发包",
+          "doc": "009-JUCConcurrency"
+        },
+        {
+          "id": "java-004",
+          "title": "Java序列化",
+          "doc": "013-JavaSerialization"
+        },
+        {
+          "id": "java-005",
+          "title": "Spring 基础：IoC 容器、AOP、Bean 生命周期与企业级开发核心",
+          "doc": "017-SpringBasicsIoCAOPBeanLifecycle"
+        },
+        {
+          "id": "java-006",
+          "title": "Java设计模式",
+          "doc": "021-JavaDesignPattern"
+        },
+        {
+          "id": "java-007",
+          "title": "Java单元测试",
+          "doc": "025-JavaUnitTest"
+        },
+        {
+          "id": "java-008",
+          "title": "Java与消息队列",
+          "doc": "029-JavaMessageQueue"
+        }
+      ]
+    },
+    {
+      "id": "oop",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "java-101",
+          "title": "Java与Docker",
+          "doc": "031-JavaDocker"
+        },
+        {
+          "id": "java-102",
+          "title": "Java与WebAssembly",
+          "doc": "036-JavaWebAssembly"
+        },
+        {
+          "id": "java-103",
+          "title": "Java与Kubernetes",
+          "doc": "041-JavaKubernetes"
+        },
+        {
+          "id": "java-104",
+          "title": "Java 新特性与生态",
+          "doc": "046-JavaNewFeaturesEcosystem"
+        },
+        {
+          "id": "java-105",
+          "title": "CompletableFuture异步编排",
+          "doc": "051-CompletableFutureAsync"
+        },
+        {
+          "id": "java-106",
+          "title": "面向对象编程",
+          "doc": "056-OOP"
+        },
+        {
+          "id": "java-107",
+          "title": "多线程基础",
+          "doc": "061-MultithreadingBasics"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "???JVM ?????",
+      "nodes": [
+        {
+          "id": "java-201",
+          "title": "网络编程",
+          "doc": "066-NetworkProgramming"
+        },
+        {
+          "id": "java-202",
+          "title": "Java 理论知识点：JVM 原理、类加载机制与内存管理",
+          "doc": "070-JavaTheoryJVMClassLoadingMemory"
+        },
+        {
+          "id": "java-203",
+          "title": "Java Executor 与 ForkJoin",
+          "doc": "074-ExecutorForkJoinPool"
+        },
+        {
+          "id": "java-204",
+          "title": "Java 阻塞队列 BlockingQueue 语法速查手册",
+          "doc": "078-JavaBlockingQueue"
+        },
+        {
+          "id": "java-205",
+          "title": "Java 类型擦除与桥接方法语法速查手册",
+          "doc": "082-JavaTypeErasure"
+        },
+        {
+          "id": "java-206",
+          "title": "Java String.format/printf/MessageFormat 语法速查手册",
+          "doc": "086-JavaStringFormat"
+        },
+        {
+          "id": "java-207",
+          "title": "Maven pom.xml 配置语法速查手册",
+          "doc": "090-MavenPomConfiguration"
+        }
+      ]
+    }
+  ]
+}

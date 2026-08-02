@@ -880,12 +880,12 @@
     flex: 1 1 auto;
   }
 
-  /* 模块分类颜色圆点（替代旧版竖条，更现代简洁） */
+  /* 模块分类颜色竖条（项目规范：禁止圆点装饰，统一为竖条刻度） */
   .fndx-sidebar__color-dot {
     flex-shrink: 0;
-    width: 6px;
-    height: 6px;
-    border-radius: var(--radius-full);
+    width: 2px;
+    height: 11px;
+    border-radius: 1px;
     background-color: var(--color-accent-base);
   }
 
@@ -1102,20 +1102,20 @@
     display: none;
   }
 
-  /* 模块分类圆点（小尺寸） */
+  /* 模块分类竖条（小尺寸） */
   .fndx-sidebar__module-dot {
     flex-shrink: 0;
-    width: var(--size-icon-xs);
-    height: var(--size-icon-xs);
-    border-radius: var(--radius-full);
+    width: 2px;
+    height: 10px;
+    border-radius: 1px;
   }
 
-  /* 分组标题圆点（全部模块视图分类标识） */
+  /* 分组标题竖条（全部模块视图分类标识） */
   .fndx-sidebar__group-dot {
     display: inline-flex;
-    width: var(--size-icon-xs);
-    height: var(--size-icon-xs);
-    border-radius: var(--radius-full);
+    width: 2px;
+    height: 10px;
+    border-radius: 1px;
     flex-shrink: 0;
   }
 
@@ -1417,7 +1417,7 @@
     width: 0;
     background-image: var(--reading-progress-gradient);
     transition: width var(--motion-duration-instant) linear;
-    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+    border-radius: 0 2px 2px 0;
   }
 
   /* 尊重 prefers-reduced-motion：禁用过渡 */

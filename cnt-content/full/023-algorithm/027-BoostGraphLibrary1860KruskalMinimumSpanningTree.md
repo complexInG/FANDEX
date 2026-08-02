@@ -20,7 +20,7 @@ prerequisites:
   - 'algorithm/008-GraphAlgorithmsCPAlgorithms'
   - 'algorithm/010-GreedyAlgorithm'
   - 'algorithm/019-RedisClusterHashSlotAndConsistentHashingDesignNotes'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 ---
 
 

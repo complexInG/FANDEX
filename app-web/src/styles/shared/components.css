@@ -570,11 +570,11 @@
     vertical-align: middle;
   }
 
-  /* 子元素：圆点指示 */
+  /* 子元素：竖条指示（项目规范：禁止圆点装饰，统一为竖条刻度） */
   .fndx-badge__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: var(--radius-full);
+    width: 2px;
+    height: 10px;
+    border-radius: 1px;
     background-color: currentColor;
     flex-shrink: 0;
   }
@@ -703,9 +703,9 @@
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22);
   }
 
-  /* --- 药丸形态（圆角变 full） --- */
+  /* --- 药丸形态：统一为直角小圆角（禁止胶囊圆点形态） --- */
   .fndx-badge--pill {
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-md);
   }
 
   /* ============================================================

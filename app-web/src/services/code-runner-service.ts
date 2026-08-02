@@ -27,8 +27,8 @@ import { RUNTIME } from '@/config/runtime';
 // 显式 ?worker 后缀导入 Vite Worker，确保构建期正确打包为独立 chunk
 import CodeRunnerWorker from '@/workers/code-runner-worker.ts?worker';
 
-/** 支持的代码语言 */
-export type CodeLanguage = 'javascript' | 'typescript' | 'python' | 'cpp' | 'c' | 'go';
+/** 支持的代码语言（在线沙箱中可运行的浏览器运行时集合） */
+export type CodeLanguage = 'javascript' | 'typescript' | 'python' | 'cpp' | 'c' | 'go' | 'lua';
 
 /** 运行请求：UI 层调用 runCode 时传入的参数 */
 export interface RunRequest {

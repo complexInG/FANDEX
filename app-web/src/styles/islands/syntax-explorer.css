@@ -6,6 +6,7 @@
  *   顶部分类色条展开、hover 边框转色 + 阴影加深、几何图标角标、按下下沉
  * - 本文件只补充语法卡片的按钮重置、公式行、网格、悬浮面板与状态提示
  * - 悬浮面板沿用几何科技风：细线边框 + 直切圆角 + ark 语义令牌
+ * - 禁止点状装饰：状态标记使用竖条刻度，按钮统一直角小圆角
  *
  * 归入 @layer islands：低于 pages 层，避免覆盖页面级布局
  */
@@ -208,6 +209,7 @@
     gap: var(--spacing-sm);
     width: min(760px, calc(100vw - 40px));
     max-height: min(82vh, 720px);
+    min-width: 0;
     overflow: auto;
     padding: var(--spacing-xl);
     background: var(--color-bg-card);
@@ -276,6 +278,7 @@
   /* 完整公式：等宽字体 + 语言色文字 + 淡色底，允许换行 */
   .syntax-panel__formula {
     display: block;
+    min-width: 0;
     padding: 10px 12px;
     border: 1px solid var(--color-border-light);
     border-left: 3px solid color-mix(in oklch, var(--lang-color, var(--color-accent-base)) 65%, transparent);
@@ -287,6 +290,7 @@
     line-height: 1.6;
     white-space: pre-wrap;
     word-break: break-word;
+    overflow-wrap: anywhere;
   }
 
   /* 示例代码区 */
@@ -295,6 +299,7 @@
     border-radius: 2px;
     background: var(--color-bg-code);
     overflow: hidden;
+    min-width: 0;
   }
 
   .syntax-panel__codebar {
@@ -337,6 +342,8 @@
     background: transparent;
     color: var(--color-text);
     tab-size: 2;
+    overflow-wrap: anywhere;
+    overscroll-behavior: contain;
   }
 
   .syntax-panel__pre code {

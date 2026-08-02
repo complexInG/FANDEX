@@ -22,7 +22,6 @@ interface PgIconProps {
 export type PgIconName =
   | 'play'
   | 'stop'
-  | 'save'
   | 'copy'
   | 'trash'
   | 'folder'
@@ -32,7 +31,6 @@ export type PgIconName =
   | 'refresh'
   | 'check'
   | 'close'
-  | 'chevron-down'
   | 'arrow-left'
   | 'code'
   | 'cpu'
@@ -40,7 +38,7 @@ export type PgIconName =
   | 'alert'
   | 'plus'
   | 'spark'
-  | 'document';
+  ;
 
 /** 图标路径表：每个图标包含若干 path/形状定义 */
 const PATHS: Record<PgIconName, ReactNode> = {
@@ -52,13 +50,6 @@ const PATHS: Record<PgIconName, ReactNode> = {
   stop: (
     <>
       <rect x="7" y="7" width="10" height="10" rx="1.5" />
-    </>
-  ),
-  save: (
-    <>
-      <path d="M5 4h11l3 3v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" />
-      <path d="M8 4v5h8V4" />
-      <path d="M8 20v-6h8v6" />
     </>
   ),
   copy: (
@@ -115,11 +106,6 @@ const PATHS: Record<PgIconName, ReactNode> = {
       <path d="M6 6l12 12M18 6L6 18" />
     </>
   ),
-  'chevron-down': (
-    <>
-      <path d="M6 9.5l6 6 6-6" />
-    </>
-  ),
   'arrow-left': (
     <>
       <path d="M19 12H5" />
@@ -161,13 +147,6 @@ const PATHS: Record<PgIconName, ReactNode> = {
   spark: (
     <>
       <path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2L12 3Z" />
-    </>
-  ),
-  document: (
-    <>
-      <path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
-      <path d="M14 3v5h5" />
-      <path d="M9 12h6M9 16h6" />
     </>
   ),
 };

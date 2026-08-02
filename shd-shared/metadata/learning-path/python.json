@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "module": "python",
+  "summary": "??? Python ???????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "python-001",
+          "title": "Python 概述与环境配置",
+          "doc": "001-PythonOverviewEnvSetup"
+        },
+        {
+          "id": "python-002",
+          "title": "Python 描述符协议：属性访问的底层机制与工程实践",
+          "doc": "004-PythonDescriptorProtocol"
+        },
+        {
+          "id": "python-003",
+          "title": "列表推导式进阶",
+          "doc": "007-ListComprehensionAdvanced"
+        },
+        {
+          "id": "python-004",
+          "title": "元类",
+          "doc": "010-Metaclass"
+        },
+        {
+          "id": "python-005",
+          "title": "Python与FastAPI",
+          "doc": "013-PythonFastAPI"
+        },
+        {
+          "id": "python-006",
+          "title": "Python与Redis",
+          "doc": "016-PythonRedis"
+        },
+        {
+          "id": "python-007",
+          "title": "Python与Docker",
+          "doc": "019-PythonDocker"
+        },
+        {
+          "id": "python-008",
+          "title": "Python与NLP",
+          "doc": "022-PythonAndNLP"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "???????????",
+      "nodes": [
+        {
+          "id": "python-101",
+          "title": "Python与自动化",
+          "doc": "025-PythonAutomationCookbook"
+        },
+        {
+          "id": "python-102",
+          "title": "Python 与配置管理：从环境变量到云原生动态配置的工程实践",
+          "doc": "030-Python"
+        },
+        {
+          "id": "python-103",
+          "title": "Python与CI-CD",
+          "doc": "035-PythonCICD"
+        },
+        {
+          "id": "python-104",
+          "title": "Python与设计模式",
+          "doc": "040-PythonDesignPattern"
+        },
+        {
+          "id": "python-105",
+          "title": "并发编程",
+          "doc": "045-ConcurrentProgramming"
+        },
+        {
+          "id": "python-106",
+          "title": "推导式与生成器",
+          "doc": "050-ComprehensionGenerator"
+        },
+        {
+          "id": "python-107",
+          "title": "弱引用",
+          "doc": "055-WeakReference"
+        },
+        {
+          "id": "python-108",
+          "title": "类型注解与mypy",
+          "doc": "060-TypeAnnotationMypy"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "python-201",
+          "title": "面向对象编程",
+          "doc": "061-OOP"
+        },
+        {
+          "id": "python-202",
+          "title": "Python 理论知识点",
+          "doc": "066-PythonTheoryKnowledge"
+        },
+        {
+          "id": "python-203",
+          "title": "Python itertools 迭代工具",
+          "doc": "071-Itertools"
+        },
+        {
+          "id": "python-204",
+          "title": "Python sys/os 平台接口",
+          "doc": "076-SysOsPlatform"
+        },
+        {
+          "id": "python-205",
+          "title": "Python 字符串格式化与方法",
+          "doc": "081-StringFormattingMethods"
+        },
+        {
+          "id": "python-206",
+          "title": "Python ssl 安全套接字",
+          "doc": "086-SslCrypto"
+        },
+        {
+          "id": "python-207",
+          "title": "Python 字符串与文本处理",
+          "doc": "091-StringText"
+        },
+        {
+          "id": "python-208",
+          "title": "Python httpx 与 requests",
+          "doc": "096-HttpxRequests"
+        }
+      ]
+    }
+  ]
+}

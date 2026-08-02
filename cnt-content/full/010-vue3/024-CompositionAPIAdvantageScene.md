@@ -377,20 +377,3 @@ Vue Teleport 与 Portal，见 010-vue3/026-TeleportPortalApp 文档。
 Vue KeepAlive 缓存，见 010-vue3/027-KeepAliveCacheLifecycle 文档。
 Vue Router 导航守卫，见 010-vue3/030-VueRouterNavigationGuard 文档。
 TypeScript 与 Vue 组合，见 009-typescript 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 响应式原理与依赖收集
-
-ref 内部用 class RefImpl 保存值并收集依赖；reactive 用 Proxy 的 get/set 拦截，依赖以 WeakMap<target, Map<key, Set<effect>>> 存储。
-effect 在触发时重新执行，scheduler 控制批处理（微任务队列）；computed 用惰性求值与缓存标志。
-渲染更新：组件渲染函数是 effect，数据变化触发重渲染；Vue 的更新粒度到组件级，配合虚拟 DOM diff。
-调试：onRenderTracked/onRenderTriggered 追踪依赖；性能面板观察更新频率。
-
-### 13.2 组合函数与可复用逻辑
-
-组合函数（composable）以 use 前缀命名，内部可组合 ref/computed/watch/lifecycle，实现逻辑复用。
-示例：useFetch 封装请求状态（data/error/loading）与取消；useLocalStorage 同步持久化。
-与 Mixin 对比：组合函数无命名冲突、显式依赖、类型友好。
-工程规范：每个组合函数单一职责，返回只读引用防止外部破坏。

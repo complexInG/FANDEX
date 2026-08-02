@@ -1,5 +1,5 @@
 ---
-order: 90
+order: 20
 title: 环境变量与PATH
 module: 'getting-started'
 category: 工具链
@@ -8,12 +8,11 @@ description: 环境变量概念、PATH机制、跨平台配置与常见问题排
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'getting-started/007-FunctionModular'
-  - 'getting-started/008-LearningPathPlanning'
+  - 'cs-fundamentals/012-FunctionModular'
   - 'getting-started/010-IDEEditorSelection'
   - 'getting-started/011-PluginEcosystem'
 prerequisites:
-  - 'getting-started/001-GettingStartedGuide'
+  - 'getting-started/002-DevEnvSetup'
 ---
 
 ## 1. 环境变量基础
@@ -479,7 +478,3 @@ reg delete "HKCU\Environment" /F /V MY_VAR
 # 删除当前 shell 中的环境变量
 unset MY_VAR
 ```
-
-## 延伸阅读
-从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
-语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。

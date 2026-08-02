@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "module": "rust",
+  "summary": "???Rust????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "??????????",
+      "nodes": [
+        {
+          "id": "rust-001",
+          "title": "Rust 语言概述与学习路线",
+          "doc": "001-RustOverview"
+        },
+        {
+          "id": "rust-002",
+          "title": "Rust 环境搭建与工具链",
+          "doc": "002-RustEnvSetup"
+        },
+        {
+          "id": "rust-003",
+          "title": "Rust 基础语法",
+          "doc": "003-RustBasicSyntax"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "???trait ??",
+      "nodes": [
+        {
+          "id": "rust-101",
+          "title": "所有权与借用",
+          "doc": "004-RustOwnershipBorrowing"
+        },
+        {
+          "id": "rust-102",
+          "title": "结构体、枚举与模式匹配",
+          "doc": "005-RustStructEnumMatch"
+        },
+        {
+          "id": "rust-103",
+          "title": "Rust 错误处理",
+          "doc": "006-RustErrorHandling"
+        },
+        {
+          "id": "rust-104",
+          "title": "集合与迭代器",
+          "doc": "007-RustCollectionsIterators"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "rust-201",
+          "title": "泛型与 Trait",
+          "doc": "008-RustGenericTrait"
+        },
+        {
+          "id": "rust-202",
+          "title": "测试与调试",
+          "doc": "009-RustTestingDebugging"
+        },
+        {
+          "id": "rust-203",
+          "title": "异步编程与 Tokio",
+          "doc": "010-RustAsyncTokio"
+        },
+        {
+          "id": "rust-204",
+          "title": "常用生态与实战",
+          "doc": "011-RustEcosystemProject"
+        }
+      ]
+    }
+  ]
+}

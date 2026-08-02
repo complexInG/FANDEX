@@ -1,0 +1,138 @@
+{
+  "version": "1.0.0",
+  "module": "csharp",
+  "summary": "???C#????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "???????",
+      "nodes": [
+        {
+          "id": "csharp-001",
+          "title": "C# 概述与环境配置",
+          "doc": "001-COverviewEnvSetup"
+        },
+        {
+          "id": "csharp-002",
+          "title": "C# 面向对象编程",
+          "doc": "003-COOP"
+        },
+        {
+          "id": "csharp-003",
+          "title": "C# 异步编程",
+          "doc": "005-CAsyncProgramming"
+        },
+        {
+          "id": "csharp-004",
+          "title": "C# 高级特性",
+          "doc": "007-CAdvancedFeature"
+        },
+        {
+          "id": "csharp-005",
+          "title": "C# 测试与工程化",
+          "doc": "009-CTestEngineering"
+        },
+        {
+          "id": "csharp-006",
+          "title": "LINQ深度解析",
+          "doc": "011-LINQDeep"
+        },
+        {
+          "id": "csharp-007",
+          "title": "模式匹配",
+          "doc": "013-PatternMatching"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "LINQ??????",
+      "nodes": [
+        {
+          "id": "csharp-101",
+          "title": "泛型与协变逆变",
+          "doc": "015-GenericCovarianceContravariance"
+        },
+        {
+          "id": "csharp-102",
+          "title": "源生成器",
+          "doc": "017-SourceGenerator"
+        },
+        {
+          "id": "csharp-103",
+          "title": "C#与Blazor",
+          "doc": "019-CBlazor"
+        },
+        {
+          "id": "csharp-104",
+          "title": "C#与EF Core",
+          "doc": "021-CEFCore"
+        },
+        {
+          "id": "csharp-105",
+          "title": "C#与最小API",
+          "doc": "023-CAPI"
+        },
+        {
+          "id": "csharp-106",
+          "title": "C#与反射",
+          "doc": "025-CSharpReflection"
+        },
+        {
+          "id": "csharp-107",
+          "title": "async-await状态机",
+          "doc": "027-AsyncAwaitStateMachine"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": ".NET ?????",
+      "nodes": [
+        {
+          "id": "csharp-201",
+          "title": "反射与特性应用",
+          "doc": "029-ReflectionAndFeatureApplication"
+        },
+        {
+          "id": "csharp-202",
+          "title": "ASP-NET-Core中间件管道",
+          "doc": "031-AspNetCoreMiddlewarePipeline"
+        },
+        {
+          "id": "csharp-203",
+          "title": "GC代机制",
+          "doc": "033-GCGeneration"
+        },
+        {
+          "id": "csharp-204",
+          "title": "记录类型与不可变性",
+          "doc": "035-RecordTypeImmutability"
+        },
+        {
+          "id": "csharp-205",
+          "title": "C# LINQ 与异步速查",
+          "doc": "037-LinqAsync"
+        },
+        {
+          "id": "csharp-206",
+          "title": "C# 文件与流操作",
+          "doc": "039-FileAndStream"
+        },
+        {
+          "id": "csharp-207",
+          "title": "C# 正则表达式",
+          "doc": "041-RegularExpression"
+        },
+        {
+          "id": "csharp-208",
+          "title": "C# HttpClient 网络请求",
+          "doc": "043-NetworkingHttp"
+        }
+      ]
+    }
+  ]
+}

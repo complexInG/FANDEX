@@ -201,20 +201,3 @@ JavaScript 基础语法，见 008-javascript 模块文档。
 TypeScript 类型系统，见 009-typescript 模块。
 浏览器 DOM 与事件，见 006-html5/007-css 模块。
 前端框架 React/Vue，见 011-react/010-vue3 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 事件循环深入
-
-宏任务：script、setTimeout、setInterval、I/O、UI 渲染；微任务：Promise.then、queueMicrotask、MutationObserver。
-每轮循环：执行一个宏任务，清空整个微任务队列，必要时渲染；微任务中产生的微任务继续执行，可能饿死宏任务。
-Node 的事件循环分阶段：timers、pending callbacks、idle、poll、check、close；process.nextTick 优先于微任务。
-调试技巧：用 Performance API 测量；async 栈追踪定位未处理拒绝。
-
-### 13.2 this 与作用域
-
-四种绑定：直接调用（undefined/global）、方法调用（对象）、call/apply/bind（显式）、箭头函数（词法）。
-class 方法默认严格模式，事件回调中 this 丢失需绑定或箭头函数。
-作用域链：全局 -> 模块 -> 函数 -> 块级（let/const）；闭包保留整个作用域链。
-工程建议：避免 this 魔法，优先箭头函数与显式参数。

@@ -1,0 +1,123 @@
+{
+  "version": "1.0.0",
+  "module": "probability-statistics",
+  "summary": "???概率论与数理统计????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "???????",
+      "nodes": [
+        {
+          "id": "probability-statistics-001",
+          "title": "样本空间与事件",
+          "doc": "001-SampleSpaceAndEvent"
+        },
+        {
+          "id": "probability-statistics-002",
+          "title": "几何概型",
+          "doc": "003-GeometricProbability"
+        },
+        {
+          "id": "probability-statistics-003",
+          "title": "贝叶斯公式",
+          "doc": "005-BayesFormula"
+        },
+        {
+          "id": "probability-statistics-004",
+          "title": "离散型随机变量",
+          "doc": "008-DiscreteRandomVariable"
+        },
+        {
+          "id": "probability-statistics-005",
+          "title": "分布函数",
+          "doc": "010-DistributionFunction"
+        },
+        {
+          "id": "probability-statistics-006",
+          "title": "随机变量函数的分布",
+          "doc": "012-DistributionOfRandomVariableFunction"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "probability-statistics-101",
+          "title": "边缘分布",
+          "doc": "015-MarginalDistribution"
+        },
+        {
+          "id": "probability-statistics-102",
+          "title": "随机变量的独立性",
+          "doc": "017-RandomVariableIndependence"
+        },
+        {
+          "id": "probability-statistics-103",
+          "title": "数学期望",
+          "doc": "020-MathematicalExpectation"
+        },
+        {
+          "id": "probability-statistics-104",
+          "title": "协方差",
+          "doc": "022-Covariance"
+        },
+        {
+          "id": "probability-statistics-105",
+          "title": "矩与协方差矩阵",
+          "doc": "024-MomentAndCovarianceMatrix"
+        },
+        {
+          "id": "probability-statistics-106",
+          "title": "大数定律",
+          "doc": "027-LawOfLargeNumbers"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "???????",
+      "nodes": [
+        {
+          "id": "probability-statistics-201",
+          "title": "随机样本",
+          "doc": "030-RandomSample"
+        },
+        {
+          "id": "probability-statistics-202",
+          "title": "三大分布",
+          "doc": "032-ThreeMajorDistributions"
+        },
+        {
+          "id": "probability-statistics-203",
+          "title": "点估计",
+          "doc": "035-PointEstimation"
+        },
+        {
+          "id": "probability-statistics-204",
+          "title": "区间估计",
+          "doc": "037-IntervalEstimation"
+        },
+        {
+          "id": "probability-statistics-205",
+          "title": "假设检验基本概念",
+          "doc": "040-HypothesisTestingBasics"
+        },
+        {
+          "id": "probability-statistics-206",
+          "title": "t检验",
+          "doc": "042-TTest"
+        },
+        {
+          "id": "probability-statistics-207",
+          "title": "F检验",
+          "doc": "044-FTest"
+        }
+      ]
+    }
+  ]
+}

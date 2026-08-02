@@ -1,0 +1,108 @@
+{
+  "version": "1.0.0",
+  "module": "linear-algebra",
+  "summary": "???线性代数????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "???????????",
+      "nodes": [
+        {
+          "id": "linear-algebra-001",
+          "title": "行列式定义与几何意义",
+          "doc": "001-DeterminantDefinitionAndGeometry"
+        },
+        {
+          "id": "linear-algebra-002",
+          "title": "行列式按行（列）展开",
+          "doc": "003-DeterminantRowColumnExpansion"
+        },
+        {
+          "id": "linear-algebra-003",
+          "title": "克莱姆法则",
+          "doc": "005-CramersRule"
+        },
+        {
+          "id": "linear-algebra-004",
+          "title": "逆矩阵",
+          "doc": "008-InverseMatrix"
+        },
+        {
+          "id": "linear-algebra-005",
+          "title": "矩阵的秩",
+          "doc": "010-MatrixRank"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "?????????",
+      "nodes": [
+        {
+          "id": "linear-algebra-101",
+          "title": "高斯消元法",
+          "doc": "013-GaussianElimination"
+        },
+        {
+          "id": "linear-algebra-102",
+          "title": "齐次线性方程组",
+          "doc": "015-HomogeneousLinearSystem"
+        },
+        {
+          "id": "linear-algebra-103",
+          "title": "解的结构",
+          "doc": "017-SolutionStructure"
+        },
+        {
+          "id": "linear-algebra-104",
+          "title": "基与维数",
+          "doc": "020-BasisAndDimension"
+        },
+        {
+          "id": "linear-algebra-105",
+          "title": "内积与正交性",
+          "doc": "022-InnerProductAndOrthogonality"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "???????",
+      "nodes": [
+        {
+          "id": "linear-algebra-201",
+          "title": "特征值与特征向量计算",
+          "doc": "025-EigenvalueAndEigenvectorCalculation"
+        },
+        {
+          "id": "linear-algebra-202",
+          "title": "矩阵对角化",
+          "doc": "027-MatrixDiagonalization"
+        },
+        {
+          "id": "linear-algebra-203",
+          "title": "二次型的标准形",
+          "doc": "030-QuadraticFormStandardForm"
+        },
+        {
+          "id": "linear-algebra-204",
+          "title": "正定二次型",
+          "doc": "032-PositiveDefiniteQuadraticForm"
+        },
+        {
+          "id": "linear-algebra-205",
+          "title": "QR分解",
+          "doc": "035-QR"
+        },
+        {
+          "id": "linear-algebra-206",
+          "title": "矩阵分解应用",
+          "doc": "037-MatrixDecompositionApplication"
+        }
+      ]
+    }
+  ]
+}

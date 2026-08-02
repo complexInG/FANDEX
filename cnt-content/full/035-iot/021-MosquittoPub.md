@@ -247,20 +247,3 @@ mosquitto_pub -o ~/.config/mosquitto_pub -t "test/topic" -m "Hello"
 MQTT 与设备接入，见 035-iot 模块文档。
 嵌入式 C 与硬件，见 025-c 模块。
 时序数据与数据平台，见 052-big-data 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 MQTT 协议深入
-
-报文类型：CONNECT/CONNACK/PUBLISH/PUBACK/SUBSCRIBE/SUBACK/PINGREQ/DISCONNECT。
-会话状态：clean session、持久会话、消息保留（retain）与遗嘱（LWT）。
-QoS 语义：0 至多一次，1 至少一次，2 恰好一次；QoS2 四步握手。
-共享订阅（shared subscription）实现负载均衡；主题层级与通配符（+/#）。
-
-### 13.2 边缘计算架构
-
-边缘节点形态：网关、边缘服务器、设备端推理；部署容器或原生应用。
-断网续传：本地消息队列 + 持久化 + 重连补传。
-云端协同：模型下发（边缘推理）、规则下沉、影子同步。
-KubeEdge/OpenYurt 把 K8s 延伸到边缘。

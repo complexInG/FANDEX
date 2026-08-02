@@ -252,20 +252,3 @@ math.sin(math.rad(30))   -- 0.5（正确：先转为弧度）
 Lua 与 Redis 脚本，见 022-redis 模块相关文档。
 Lua 与 OpenResty 网关，见 031-devops 模块相关文档。
 游戏开发与脚本扩展，见 017-lua 模块文档。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 元表与面向对象
-
-用 table 模拟类：构造函数返回新表，__index 指向类表实现继承；冒号语法 self 绑定。
-类继承链：子类 __index 指向父类实例/类表；方法查找沿链上行。
-多态与组合：元方法 __call 让 table 可调用；__tostring 控制输出。
-工程建议：对象体系保持浅继承，优先组合；性能敏感路径避免动态派发。
-
-### 13.2 Lua C API 集成
-
-宿主初始化 lua_State，注册 C 函数（lua_pushcfunction），调用 lua_pcall 执行脚本并处理错误。
-值传递通过栈：lua_pushnumber/lua_tointeger 等；返回值按栈顺序返回。
-用户数据（userdata）包装 C 对象，配合元表实现面向对象接口。
-安全：限制可用库（require 白名单）、执行超时（debug.sethook）与内存上限。

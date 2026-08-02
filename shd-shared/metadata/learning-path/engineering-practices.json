@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "module": "engineering-practices",
+  "summary": "???工程实践????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "engineering-practices-001",
+          "title": "工程实践概述",
+          "doc": "001-EngineeringPracticeOverview"
+        },
+        {
+          "id": "engineering-practices-002",
+          "title": "设计文档规范",
+          "doc": "002-DesignDocumentStandard"
+        },
+        {
+          "id": "engineering-practices-003",
+          "title": "Code-Review-Checklist",
+          "doc": "003-CodeReviewChecklist"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "engineering-practices-101",
+          "title": "On-Call最佳实践",
+          "doc": "004-OnCallPractice"
+        },
+        {
+          "id": "engineering-practices-102",
+          "title": "事故复盘方法论",
+          "doc": "005-IncidentRetrospectiveMethodology"
+        },
+        {
+          "id": "engineering-practices-103",
+          "title": "技术方案评审",
+          "doc": "006-TechnicalReview"
+        },
+        {
+          "id": "engineering-practices-104",
+          "title": "知识管理",
+          "doc": "007-KnowledgeManagement"
+        }
+      ]
+    }
+  ]
+}

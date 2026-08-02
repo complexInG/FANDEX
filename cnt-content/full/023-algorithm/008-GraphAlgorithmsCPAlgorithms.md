@@ -16,11 +16,11 @@ related:
   - 'algorithm/030-CS261AlgorithmsNetworkFlows'
   - 'algorithm/012-RipgrepRecursivelySearchDirectoriesForARegexPattern'
   - 'algorithm/004-SearchAlgorithm'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 prerequisites:
   - 'algorithm/001-MIT6006IntroductionToAlgorithms'
   - 'algorithm/004-SearchAlgorithm'
-  - 'cs-fundamentals/006-DiscreteMathematics'
+  - 'cs-fundamentals/007-DiscreteMathematics'
 ---
 
 

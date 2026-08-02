@@ -156,7 +156,7 @@ const careers = [
     type="website"
   />
 
-  <div class="home-page">
+  <div class="home-page home-page--sub">
     <!-- 几何背景装饰：learning-path 变体（点状装饰已统一为竖条） -->
     <GeoBgDecor variant="learning-path" />
 
@@ -228,27 +228,18 @@ const careers = [
               <path class="lp-career__curve-base" d="M2,8 C60,2 120,11 200,6 C280,1 340,10 398,5" />
               <path class="lp-career__curve-flow" d="M2,8 C60,2 120,11 200,6 C280,1 340,10 398,5" />
             </svg>
-            <header class="lp-career__head">
-              <span class="lp-career__index" aria-hidden="true">{career.index}</span>
-              <div class="lp-career__titles">
-                <h3 class="lp-career__title">{career.title}</h3>
-                <span class="lp-career__en">{career.en}</span>
-              </div>
-              <span class={`lp-career__status${career.status === '规划中' ? ' is-planned' : ''}`}>
-                {career.status}
-              </span>
-            </header>
-            <p class="lp-career__desc">{career.desc}</p>
-            <div class="lp-career__route">
-              {career.stages.map((stage) => (
-                <div class="lp-career__stage">
-                  <span class="lp-career__stage-label">{stage.label}</span>
-                  <span class="lp-career__stage-points">{stage.points.join(' · ')}</span>
+            <div class="lp-career__main">
+              <header class="lp-career__head">
+                <span class="lp-career__index" aria-hidden="true">{career.index}</span>
+                <div class="lp-career__titles">
+                  <h3 class="lp-career__title">{career.title}</h3>
+                  <span class="lp-career__en">{career.en}</span>
                 </div>
-              ))}
-            </div>
-            <footer class="lp-career__foot">
-              <span class="lp-career__foot-label">知识体系</span>
+                <span class={`lp-career__status${career.status === '规划中' ? ' is-planned' : ''}`}>
+                  {career.status}
+                </span>
+              </header>
+              <p class="lp-career__desc">{career.desc}</p>
               <div class="lp-career__modules">
                 {career.modules.map((moduleId) => {
                   const meta = getModule(moduleId)
@@ -263,15 +254,22 @@ const careers = [
                   )
                 })}
               </div>
-              <span class="lp-career__foot-label">职业阶梯</span>
-              <div class="lp-career__ladder">
-                {career.ladder.map((step) => (
-                  <span class="lp-career__step">
-                    {step}
-                  </span>
-                ))}
-              </div>
-            </footer>
+            </div>
+            <div class="lp-career__route">
+              {career.stages.map((stage) => (
+                <div class="lp-career__stage">
+                  <span class="lp-career__stage-label">{stage.label}</span>
+                  <span class="lp-career__stage-points">{stage.points.join(' · ')}</span>
+                </div>
+              ))}
+            </div>
+            <div class="lp-career__ladder">
+              {career.ladder.map((step, stepIndex) => (
+                <span class={`lp-career__step${stepIndex === 0 ? ' is-first' : ''}`}>
+                  {step}
+                </span>
+              ))}
+            </div>
           </article>
         ))}
       </div>

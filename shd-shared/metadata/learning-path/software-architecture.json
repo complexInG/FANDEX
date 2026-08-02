@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "module": "software-architecture",
+  "summary": "???软件架构????????????????????????????????????????????",
+  "stages": [
+    {
+      "id": "basics",
+      "title": "????",
+      "subtitle": "?????????",
+      "nodes": [
+        {
+          "id": "software-architecture-001",
+          "title": "软件架构概述",
+          "doc": "001-SoftwareArchitectureOverview"
+        },
+        {
+          "id": "software-architecture-002",
+          "title": "分层架构",
+          "doc": "002-LayeredArchitecture"
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "????",
+      "subtitle": "????DDD ???",
+      "nodes": [
+        {
+          "id": "software-architecture-101",
+          "title": "微服务架构",
+          "doc": "003-MicroserviceArchitecture"
+        },
+        {
+          "id": "software-architecture-102",
+          "title": "事件驱动架构",
+          "doc": "004-EventDrivenArchitecture"
+        },
+        {
+          "id": "software-architecture-103",
+          "title": "质量属性",
+          "doc": "005-QualityAttribute"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "title": "????",
+      "subtitle": "????????",
+      "nodes": [
+        {
+          "id": "software-architecture-201",
+          "title": "CAP理论与最终一致性",
+          "doc": "006-CAP"
+        },
+        {
+          "id": "software-architecture-202",
+          "title": "领域驱动设计",
+          "doc": "007-DDD"
+        },
+        {
+          "id": "software-architecture-203",
+          "title": "架构评估",
+          "doc": "008-ArchitectureEvaluation"
+        }
+      ]
+    }
+  ]
+}

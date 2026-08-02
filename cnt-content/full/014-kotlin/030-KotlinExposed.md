@@ -429,20 +429,3 @@ fun migrateDemo() = transaction {
 Kotlin 基础语法精讲，见 014-kotlin/002-KotlinBasicSyntax 文档。
 协程与 Flow，见 014-kotlin 模块协程文档。
 Android 与 HarmonyOS 应用开发，见 018-harmonyos 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 协程调度与 Flow 背压
-
-协程调度器决定线程切换：Dispatchers.Main 走 Android 主线程，IO 用于阻塞 I/O，Default 用于 CPU 密集；withContext 切换上下文而不阻塞调用方。
-Flow 是冷流：每次收集重新执行；`flowOn` 切换上游上下文，`buffer` 缓冲背压，`conflate` 丢弃中间值。
-StateFlow 持有最新值并去重，适合 UI 状态；SharedFlow 支持多订阅与事件广播。
-取消协作：挂起点检查取消状态并抛出 CancellationException；耗时计算需周期调用 ensureActive。
-
-### 13.2 KMP 多平台架构
-
-KMP 项目以 kotlin-multiplatform 插件定义 targets（jvm、iosArm64、js 等）；commonMain 中 expect 声明，平台源集 actual 实现。
-依赖管理：commonMain 使用 kotlinx 库（coroutines、serialization、datetime），平台差异库放对应源集。
-与 Compose Multiplatform 组合时，UI 逻辑共享、平台能力通过 expect/actual 隔离。
-构建产物：Android 输出 AAR，iOS 输出 framework；通过 CocoaPods 或 Swift Package 集成。

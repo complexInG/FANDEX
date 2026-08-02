@@ -412,20 +412,3 @@ grpcurl -plaintext localhost:50051 user.UserService/GetUser -d '{"id":"123"}'
 Go 并发与 channel，见 016-go 模块并发文档。
 Go 原子操作与竞争检测，见 016-go/058-RaceDetectionAtomic 文档。
 云原生与 Kubernetes，见 031-devops 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 Go 调度器 GMP 模型
-
-G（Goroutine）是任务单元，M（Machine）是内核线程，P（Processor）是执行上下文与本地队列。P 的数量默认等于 CPU 核心数（GOMAXPROCS）。
-调度事件：go 语句创建 G 入本地队列；本地队列满时偷取（work stealing）；阻塞系统调用时 M 与 P 解绑，P 被其他 M 接管。
-网络 I/O 通过 netpoller 事件驱动，阻塞的 G 挂起而非占用线程，因此 Go 的并发 I/O 效率极高。
-理解 GMP 可以解释：为什么 goroutine 数量不等于并行度；为什么 GOMAXPROCS 影响吞吐；为什么 CPU 密集任务要限制并发数。
-
-### 13.2 Go 泛型与类型约束
-
-Go 1.18 引入类型参数 `[T any]` 与约束接口；`~int` 表示底层类型为 int 的类型集合，`comparable` 约束可比较类型。
-泛型函数示例：`func Map[T, U any](s []T, f func(T) U) []U`；泛型类型示例：`type Set[T comparable] map[T]struct{}`。
-约束中的类型集（union）与接口方法并存；1.21 的 slices/maps 标准包提供泛型工具。
-工程建议：能用接口解决的不必泛型；泛型用于容器、算法与类型安全抽象。

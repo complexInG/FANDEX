@@ -48,6 +48,7 @@ const LANG_LABELS: Record<CodeLanguage, string> = {
   cpp: 'C++',
   c: 'C',
   go: 'Go',
+  lua: 'Lua',
 };
 
 /** 语言徽章颜色类映射（与语言主色调呼应） */
@@ -60,6 +61,7 @@ const LANG_BADGE_CLASSES: Record<CodeLanguage, string> = {
   cpp: 'bg-primary-100 text-primary-800 border-primary-300 dark:bg-primary-900 dark:text-primary-200',
   c: 'bg-primary-100 text-primary-800 border-primary-300 dark:bg-primary-900 dark:text-primary-200',
   go: 'bg-accent-100 text-accent-800 border-accent-300 dark:bg-accent-900 dark:text-accent-200',
+  lua: 'bg-info-bg text-info-dark border-info-border dark:bg-info-bg dark:text-info-light',
 };
 
 export function CodeRunner({ lang, code, editable = true }: CodeRunnerProps) {

@@ -1,5 +1,5 @@
 ---
-order: 150
+order: 80
 title: 项目初始化
 module: 'getting-started'
 category: 工具链
@@ -11,9 +11,9 @@ related:
   - 'getting-started/013-PackageManager'
   - 'getting-started/014-VCSSelection'
   - 'getting-started/016-BuildTool'
-  - 'getting-started/017-ProgrammingParadigmBasics'
+  - 'cs-fundamentals/013-ProgrammingParadigmBasics'
 prerequisites:
-  - 'getting-started/001-GettingStartedGuide'
+  - 'getting-started/002-DevEnvSetup'
 ---
 
 
@@ -345,24 +345,3 @@ GitHub 支持将仓库标记为**模板仓库**，其他用户可以基于模板
 1. 仓库 Settings → 勾选 "Template repository"
 2. 其他用户点击 "Use this template" 创建新仓库
 3. 新仓库不包含 Git 历史，从零开始
-
-## 延伸阅读
-从入门到进阶路径：001 入门 -> 002 Markdown -> 003 Git -> 006 HTML -> 007 CSS -> 008 JS。
-语言进阶：013 Java / 040 Python / 016 Go 按兴趣选择。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 如何高效自学编程
-
-目标驱动：每个阶段一个小项目（计算器、笔记、网站）。
-费曼技巧：把学到的知识写出来或讲出来。
-刻意练习：专注薄弱点，带反馈循环。
-社区参与：提问、回答、代码评审加速成长。
-
-### 13.2 学习路径规划
-
-阶段一（2-4 周）：环境 + 基础语法 + 小练习。
-阶段二（4-8 周）：数据结构 + 简单项目。
-阶段三（2-3 月）：框架 + 实战项目 + 部署。
-持续：算法刷题、源码阅读、开源贡献。

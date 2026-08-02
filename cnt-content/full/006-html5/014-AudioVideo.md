@@ -352,20 +352,3 @@ video.play().then(() => {
 HTML 列表与链接精讲，见 006-html5/011-List 与 012-LinkageAnchor 文档。
 CSS 样式与布局，见 007-css 模块。
 JavaScript DOM 操作，见 008-javascript 模块。
-## 深度专题扩展
-
-以下专题从不同角度深入本文主题，供有进阶需求的读者研读。每个专题独立成节，内容相互补充。
-
-### 13.1 HTML 解析与 DOM 树
-
-浏览器解析 HTML 时先 tokenize 再建树；解析器对错误标记有容错规则（错误恢复算法）。
-DOM 是内存中的树结构：元素节点、文本节点、属性；document.querySelector 沿树查找。
-渲染流程：HTML -> DOM，CSS -> CSSOM，合并为渲染树，布局与绘制；理解流程可定位性能瓶颈。
-脚本与解析：defer 延后执行，async 异步执行，模块脚本默认 defer 语义。
-
-### 13.2 表单校验与无障碍
-
-原生校验：required、pattern、min/max、type 约束；novalidate 可关闭，交由 JS 自定义。
-校验 UI：:invalid/:valid 伪类样式；aria-invalid 标记错误；错误信息用 aria-describedby 关联。
-键盘可达：所有交互元素可 Tab 聚焦，焦点可见，弹层焦点管理（trap）。
-屏幕阅读器测试：NVDA/VoiceOver 实际朗读验证语义。

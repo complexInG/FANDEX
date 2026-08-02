@@ -15,6 +15,7 @@
  * - 层次感通过背景色阶 + 微阴影实现
  * - 交互反馈通过位移和颜色变化
  * - 所有颜色消费 ark 语义令牌，主题切换自动跟随
+ * - 禁止点状装饰：指示器使用 2-3px 竖条，计数徽章使用直角小圆角
  *
  * 横向滑动器设计要点：
  * - 分类标题栏使用圆点指示器 + 计数药丸
@@ -103,6 +104,8 @@
     align-items: baseline;
     cursor: default;
     position: relative;
+    /* 强制单行：保证残影伪元素与本体严格对齐，避免长标题换行错位 */
+    white-space: nowrap;
     /* 渐变背景 + background-clip: text 实现文字渐变填充
      * 使用 var(--color-accent-base) 与前景色组合，主题切换自动跟随 */
     background: linear-gradient(
@@ -165,6 +168,18 @@
     transform: translate(-10px, -10px) scale(1.03);
     opacity: 0.9;
     -webkit-text-stroke: 1.5px color-mix(in oklch, var(--color-accent-base) 70%, transparent);
+  }
+
+  /* 子页面（在线编程/语法速览/学习路线等）Hero 标题缩小
+   * 避免长文本（如"TypeScript 学习路线"）在残影中换行产生视觉残影 */
+  .home-page--sub .hero-title {
+    font-size: 2.1rem;
+    letter-spacing: 0.12em;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .home-page--sub .hero-title:hover {
+    letter-spacing: 0.13em;
   }
 
   @keyframes heroGhostIdle {
@@ -493,7 +508,7 @@
     color: var(--color-fg-tertiary);
     font-variant-numeric: tabular-nums;
     padding: 1px 8px;
-    border-radius: var(--fandex-radius-pill, 9999px);
+    border-radius: var(--fandex-radius-md, 4px);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border-subtle);
     line-height: 1.5;
@@ -623,6 +638,11 @@
       margin: 0;
     }
 
+    .home-page--sub .hero-title {
+      font-size: 1.55rem;
+      letter-spacing: 0.08em;
+    }
+
     .hero-stats {
       gap: var(--spacing-sm);
       font-size: 0.75rem;
@@ -671,6 +691,10 @@
   @media (max-width: 480px) {
     .hero-title {
       font-size: 1.6rem;
+    }
+
+    .home-page--sub .hero-title {
+      font-size: 1.3rem;
     }
 
     /* 小屏卡片进一步收窄 */
