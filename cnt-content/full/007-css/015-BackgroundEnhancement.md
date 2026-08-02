@@ -25,512 +25,14 @@ prerequisites:
 
 ---
 
-## 1. 历史动机与发展脉络
+## 0. 直觉：背景是元素的“画布”
 
-### 1.1 CSS 1（1996）：背景的雏形
+背景就是元素背后的画布，可以填充颜色（`background-color`）、贴图片（`background-image`）、控制平铺与位置（`repeat`/`position`）、叠加多层背景，还能用渐变、混合模式与滤镜做视觉增强。
 
-CSS 1 由 Håkon Wium Lie 与 Bert Bos 于 1996 年提出，首次定义背景相关属性。当时的背景系统极为简陋：
+先记一个最小模型：`background: color image position / size repeat` 的简写顺序。单独用 `background-color` 是最基础也最常用的写法。
 
-```css
-/* CSS 1 语法 */
-BODY {
-  background-color: white;
-  background-image: url("marble.gif");
-  background-repeat: repeat;
-  background-attachment: scroll;
-  background-position: center;
-}
-```
-
-CSS 1 的背景系统存在显著限制：
-
-1. **单背景**：每个元素仅能有一张背景图。
-2. **无尺寸控制**：无法缩放背景图，`background-size` 尚未存在。
-3. **无裁剪控制**：`background-clip` 尚未存在，背景始终绘制到 padding 边界。
-4. **定位粗糙**：`background-position` 仅支持关键字（`top`、`center`、`bottom`、`left`、`right`），不支持百分比与长度。
-
-### 1.2 CSS 2.1（2011）：背景属性的成熟
-
-CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
-
-1. **百分比与长度定位**：`background-position: 50% 50%` 或 `10px 20px`。
-2. **`background` 简写**：允许在一条声明中设置所有背景属性。
-3. **背景绘制区域**：明确背景绘制到 padding 边界（即现代的 `background-clip: padding-box` 默认行为）。
-4. **`background-attachment: fixed`**：引入视口固定背景。
-
-但 CSS 2.1 仍未支持多背景与 `background-size`，开发者常通过嵌套 `<div>` 模拟多层背景：
-
-```html
-<!-- 嵌套 div 模拟多背景（CSS 2.1 时代） -->
-<div class="layer-1">
-  <div class="layer-2">
-    <div class="content">...</div>
-  </div>
-</div>
-```
-
-### 1.3 CSS Backgrounds Module Level 3（2012-2017）
-
-[CSS Backgrounds and Borders Module Level 3](https://www.w3.org/TR/css-backgrounds-3/) 是背景系统的革命性升级，引入：
-
-1. **多背景**：允许在 `background-image` 中声明多个图像，以逗号分隔。
-2. **`background-size`**：支持 `cover`、`contain`、长度、百分比。
-3. **`background-clip`**：支持 `border-box`、`padding-box`、`content-box`。
-4. **`background-origin`**：独立于 `background-clip`，控制定位起点。
-5. **多值语法**：`background-position: right 10px bottom 20px`（四值语法）。
-6. **`background-repeat: space` 与 `round`**：智能重复模式。
-
-```css
-/* CSS Backgrounds Level 3 多背景示例 */
-.card {
-  background:
-    url('overlay.png') no-repeat center,
-    linear-gradient(to right, #667eea, #764ba2);
-  background-size: cover, auto;
-  background-origin: padding-box, border-box;
-  background-clip: padding-box, padding-box;
-}
-```
-
-2017 年，Chrome 60、Firefox 55、Safari 11 全面支持 CSS Backgrounds Level 3，多背景进入生产可用阶段。
-
-### 1.4 `background-clip: text` 的引入（2011-2018）
-
-`background-clip: text` 是 WebKit 于 2011 年引入的非标准扩展，用于将背景裁剪到文字区域，实现「渐变文字」效果：
-
-```css
-.gradient-text {
-  background: linear-gradient(to right, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text; /* 现代标准 */
-}
-```
-
-长期作为 `-webkit-` 前缀私有特性存在，2018 年后逐渐被各浏览器支持，2023 年正式进入 [CSS Backgrounds Module Level 4](https://www.w3.org/TR/css-backgrounds-4/#background-clip) 草案。
-
-### 1.5 CSS Backgrounds Module Level 4（2020-2024）
-
-[CSS Backgrounds Module Level 4](https://www.w3.org/TR/css-backgrounds-4/) 引入了多项增强：
-
-1. **`background-clip: text` 标准化**：从 WebKit 私有特性升级为正式规范。
-2. **`background-position` 多值扩展**：支持 `right 10px bottom 20px` 四值语法的标准化。
-3. **`background-repeat: space | round`**：在 Level 3 基础上进一步细化。
-4. **`background-size` 与 `object-fit` 的语义对齐**：统一图像缩放语义。
-5. **`background-attachment: local`**：在内容滚动容器内的背景跟随行为。
-
-### 1.6 浏览器兼容性演进
-
-| 年份 | 事件 | 核心变化 |
-| --- | --- | --- |
-| 1996 | CSS 1 推荐 | 基础背景属性，单背景，无尺寸控制 |
-| 2011 | CSS 2.1 推荐 | 百分比定位、`background` 简写 |
-| 2011 | WebKit 实现 `-webkit-background-clip: text` | 渐变文字效果 |
-| 2012 | CSS Backgrounds Level 3 候选推荐 | 多背景、`background-size`、`background-clip`、`background-origin` |
-| 2017 | 主流浏览器全面支持 Level 3 | 多背景进入生产可用 |
-| 2018 | `background-clip: text` 浏览器支持扩展 | 渐变文字普及 |
-| 2020 | CSS Backgrounds Level 4 草案 | `background-clip: text` 标准化 |
-| 2023 | `background-clip: text` 进入正式规范 | 无前缀使用成为可能 |
-| 2024 | 高 DPI 与 HDR 背景支持 | Display P3 色彩空间背景图 |
-
-### 1.7 演进时间线
-
-| 年份 | 规范/事件 | 核心变化 |
-| --- | --- | --- |
-| 1996 | CSS 1 | 基础背景属性，单背景 |
-| 2011 | CSS 2.1 | 百分比定位、简写属性 |
-| 2011 | WebKit `-webkit-background-clip: text` | 渐变文字效果 |
-| 2012 | CSS Backgrounds Level 3 候选推荐 | 多背景、`background-size` |
-| 2014 | `background-attachment: local` 支持 | 内容滚动背景跟随 |
-| 2017 | Level 3 全面支持 | 多背景生产可用 |
-| 2018 | `background-clip: text` 普及 | 渐变文字主流化 |
-| 2020 | Level 4 草案 | `background-clip: text` 标准化 |
-| 2023 | `background-clip: text` 规范化 | 无前缀支持 |
-| 2024 | HDR 背景 | Display P3 色彩 |
-
----
-
-## 2. 形式化定义
-
-### 2.1 规范条款
-
-依据 [CSS Backgrounds and Borders Module Level 3 §3](https://www.w3.org/TR/css-backgrounds-3/#backgrounds)：
-
-> The background properties allow specifying the background color, the background image, its size, its position, its repeat behavior, its painting area, its positioning area, and its attachment.
-
-以及 [CSS Backgrounds Module Level 4 §3.7](https://www.w3.org/TR/css-backgrounds-4/#background-clip)：
-
-> The `background-clip` property determines the background painting area, which determines the area within which the background is painted.
-
-### 2.2 核心术语
-
-| 术语 | 英文 | 定义 |
-| --- | --- | --- |
-| 背景层 | Background Layer | `background-image` 中的一张图像或渐变 |
-| 背景栈 | Background Stack | 多背景层的有序集合，第一个声明在最上层 |
-| 绘制区域 | Painting Area | `background-clip` 决定的背景绘制边界 |
-| 定位区域 | Positioning Area | `background-origin` 决定的背景定位起点 |
-| 定位点 | Position Point | `background-position` 在定位区域内的坐标 |
-| 缩放模式 | Sizing Mode | `background-size` 决定的图像缩放算法 |
-| 重复模式 | Repeat Mode | `background-repeat` 决定的图像平铺方式 |
-| 附件模式 | Attachment Mode | `background-attachment` 决定的滚动行为 |
-| 背景颜色 | Background Color | `background-color`，始终位于背景栈最底层 |
-
-### 2.3 背景属性全景
-
-| 属性 | 取值 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `background-color` | `<color>` | `transparent` | 背景颜色，位于最底层 |
-| `background-image` | `<image>` \| `none` | `none` | 背景图像或渐变 |
-| `background-repeat` | `repeat` \| `repeat-x` \| `repeat-y` \| `no-repeat` \| `space` \| `round` | `repeat` | 重复模式 |
-| `background-attachment` | `scroll` \| `fixed` \| `local` | `scroll` | 滚动行为 |
-| `background-position` | `<position>` | `0% 0%` | 定位点 |
-| `background-clip` | `border-box` \| `padding-box` \| `content-box` \| `text` | `border-box` | 绘制区域 |
-| `background-origin` | `padding-box` \| `border-box` \| `content-box` | `padding-box` | 定位区域 |
-| `background-size` | `auto` \| `cover` \| `contain` \| `<length>` \| `<percentage>` | `auto` | 缩放模式 |
-
-### 2.4 `background` 简写语法
-
-```
-background = 
-  [ <bg-layer> , ]* <final-bg-layer>
-
-<bg-layer> = 
-  <background-image> 
-  || <background-position> [ / <background-size> ]? 
-  || <background-repeat> 
-  || <background-attachment> 
-  || <background-origin> 
-  || <background-clip>
-```
-
-注意：
-
-1. `background-origin` 与 `background-clip` 在简写中可同时出现，第二个值若省略则与第一个相同。
-2. `background-size` 必须跟在 `background-position` 后面，以 `/` 分隔。
-3. `background-color` 只能在最后一层（`<final-bg-layer>`）声明。
-
-### 2.5 形式化定义：背景栈
-
-设元素的背景栈 $\mathcal{B}$ 为有序集合：
-
-$$
-\mathcal{B} = (L_1, L_2, \ldots, L_n, C)
-$$
-
-其中 $L_i$ 为第 $i$ 个背景层（图像或渐变），$C$ 为 `background-color`。绘制顺序为 $L_1$ 在最上层，$L_n$ 在 $C$ 之上，$C$ 在最底层。
-
-形式化地，第 $i$ 层的绘制函数：
-
-$$
-\text{Paint}(L_i, x, y) = \text{Composite}\left(\text{Draw}(L_i, x, y), \text{Paint}(L_{i+1}, x, y)\right)
-$$
-
-其中 $\text{Composite}$ 是合成操作（默认为 `source-over`），$\text{Draw}(L_i, x, y)$ 是单层绘制函数。
-
-### 2.6 形式化定义：`background-size`
-
-设图像原始尺寸为 $(w_0, h_0)$，容器尺寸为 $(W, H)$，`background-size` 取值为 $S$。定义缩放函数 $\text{Size}(S, w_0, h_0, W, H)$：
-
-$$
-\text{Size}(\text{cover}, w_0, h_0, W, H) = \left(W, W \cdot \frac{h_0}{w_0}\right) \quad \text{if } \frac{W}{w_0} \ge \frac{H}{h_0}
-$$
-
-$$
-\text{Size}(\text{cover}, w_0, h_0, W, H) = \left(H \cdot \frac{w_0}{h_0}, H\right) \quad \text{if } \frac{W}{w_0} < \frac{H}{h_0}
-$$
-
-$$
-\text{Size}(\text{contain}, w_0, h_0, W, H) = \left(W, W \cdot \frac{h_0}{w_0}\right) \quad \text{if } \frac{W}{w_0} \le \frac{H}{h_0}
-$$
-
-$$
-\text{Size}(\text{contain}, w_0, h_0, W, H) = \left(H \cdot \frac{w_0}{h_0}, H\right) \quad \text{if } \frac{W}{w_0} > \frac{H}{h_0}
-$$
-
-`cover` 保证图像覆盖整个容器（可能裁剪），`contain` 保证图像完整显示（可能留白）。
-
-### 2.7 形式化定义：`background-position`
-
-`background-position` 的百分比定位遵循以下公式：
-
-$$
-\text{Pos}(p\%) = p\% \cdot (W_{\text{container}} - W_{\text{image}})
-$$
-
-其中 $W_{\text{container}}$ 是定位区域宽度（由 `background-origin` 决定），$W_{\text{image}}$ 是缩放后图像宽度。
-
-- `0% 0%`：图像左上角与容器左上角对齐。
-- `50% 50%`：图像中心与容器中心对齐。
-- `100% 100%`：图像右下角与容器右下角对齐。
-
-长度值（如 `10px`）则是绝对偏移：
-
-$$
-\text{Pos}(L) = L
-$$
-
-四值语法 `right 10px bottom 20px` 表示从右边偏移 10px，从底部偏移 20px。
-
-### 2.8 形式化定义：`background-clip` 与 `background-origin`
-
-设元素的盒模型区域：
-
-- Border Box：$B = \{(x, y) : 0 \le x \le W_{\text{border}}, 0 \le y \le H_{\text{border}}\}$
-- Padding Box：$P = \{(x, y) : bw_l \le x \le W_{\text{border}} - bw_r, bw_t \le y \le H_{\text{border}} - bw_b\}$
-- Content Box：$K = \{(x, y) : bw_l + pw_l \le x \le W_{\text{border}} - bw_r - pw_r, \ldots\}$
-
-`background-clip` 决定绘制区域 $D$：
-
-$$
-D = \begin{cases}
-B, & \text{background-clip: border-box} \\
-P, & \text{background-clip: padding-box} \\
-K, & \text{background-clip: content-box} \\
-\text{Text}, & \text{background-clip: text}
-\end{cases}
-$$
-
-`background-origin` 决定定位区域 $P_A$：
-
-$$
-P_A = \begin{cases}
-B, & \text{background-origin: border-box} \\
-P, & \text{background-origin: padding-box} \\
-K, & \text{background-origin: content-box}
-\end{cases}
-$$
-
-注意：`background-clip` 与 `background-origin` 是独立的，可以分别设置不同值。
-
-### 2.9 形式化定义：`background-attachment`
-
-`background-attachment` 决定背景相对于什么坐标系滚动：
-
-$$
-\text{Coord}(\text{attachment}) = \begin{cases}
-\text{Document}, & \text{scroll} \\
-\text{Viewport}, & \text{fixed} \\
-\text{Element}, & \text{local}
-\end{cases}
-$$
-
-- `scroll`：背景相对于文档滚动（即随页面滚动，但不随元素内容滚动）。
-- `fixed`：背景相对于视口固定（不随页面或元素内容滚动）。
-- `local`：背景相对于元素内容滚动（随元素内容滚动）。
-
-### 2.10 背景绘制顺序
-
-浏览器绘制背景的完整顺序：
-
-1. 绘制 `background-color`（最底层）。
-2. 从最后一层到第一层（从底到顶），依次绘制每个 `background-image` 层。
-3. 每层依次应用：`background-size` → `background-position` → `background-repeat` → `background-clip`。
-4. 在所有背景层之上绘制 `border`（边框）。
-5. 在 `border` 之上绘制内容（文本、子元素）。
-
-形式化地：
-
-$$
-\text{Render} = \text{Content} \succ \text{Border} \succ L_1 \succ L_2 \succ \cdots \succ L_n \succ C
-$$
-
-其中 $\succ$ 表示「在...之上绘制」。
-
----
-
-## 3. 理论推导与原理解析
-
-### 3.1 多背景的层级模型
-
-CSS 多背景采用「栈式合成」模型，每层独立计算位置、尺寸、重复模式，然后按顺序合成。设第 $i$ 层的图像为 $I_i$，定位点为 $(x_i, y_i)$，尺寸为 $(w_i, h_i)$，则该层的绘制：
-
-$$
-\text{Layer}_i(x, y) = \begin{cases}
-I_i\left(\frac{x - x_i}{w_i}, \frac{y - y_i}{h_i}\right), & \text{if } (x, y) \in [x_i, x_i + w_i] \times [y_i, y_i + h_i] \\
-\text{transparent}, & \text{otherwise}
-\end{cases}
-$$
-
-多层的合成：
-
-$$
-\text{Background}(x, y) = \text{Blend}\left(\text{Layer}_1(x, y), \text{Background}_{2..n}(x, y)\right)
-$$
-
-其中 $\text{Blend}$ 默认是 alpha 合成（`source-over`）。
-
-### 3.2 `background-size: cover` 的几何推导
-
-设图像原始尺寸为 $(w_0, h_0)$，容器尺寸为 $(W, H)$。`cover` 要求图像缩放后完全覆盖容器，即：
-
-$$
-\frac{w_{\text{scaled}}}{W} \ge 1 \quad \wedge \quad \frac{h_{\text{scaled}}}{H} \ge 1
-$$
-
-且保持宽高比：
-
-$$
-\frac{w_{\text{scaled}}}{h_{\text{scaled}}} = \frac{w_0}{h_0}
-$$
-
-取最小缩放比例满足上述约束：
-
-$$
-s = \max\left(\frac{W}{w_0}, \frac{H}{h_0}\right)
-$$
-
-则：
-
-$$
-w_{\text{scaled}} = s \cdot w_0, \quad h_{\text{scaled}} = s \cdot h_0
-$$
-
-由于 $s \ge W/w_0$ 且 $s \ge H/h_0$，缩放后图像至少覆盖容器。若宽高比不匹配，超出部分被 `background-clip` 裁剪。
-
-### 3.3 `background-size: contain` 的几何推导
-
-`contain` 要求图像完整显示，即：
-
-$$
-\frac{w_{\text{scaled}}}{W} \le 1 \quad \wedge \quad \frac{h_{\text{scaled}}}{H} \le 1
-$$
-
-取最大缩放比例：
-
-$$
-s = \min\left(\frac{W}{w_0}, \frac{H}{h_0}\right)
-$$
-
-则缩放后图像完整显示，但可能在某一方向留白。
-
-### 3.4 `background-position` 百分比的几何意义
-
-百分比的精确定义：图像的 $p\%$ 点与容器的 $p\%$ 点对齐。形式化地：
-
-$$
-x_{\text{image}} = p\% \cdot w_{\text{image}}, \quad x_{\text{container}} = p\% \cdot W
-$$
-
-$$
-x_{\text{offset}} = x_{\text{container}} - x_{\text{image}} = p\% \cdot (W - w_{\text{image}})
-$$
-
-因此：
-
-- `0%`：图像左边缘与容器左边缘对齐。
-- `50%`：图像中心与容器中心对齐。
-- `100%`：图像右边缘与容器右边缘对齐。
-
-这种「相对对齐」设计使得百分比比绝对偏移更直观：`50% 50%` 总是居中，无论图像与容器尺寸如何。
-
-### 3.5 `background-clip` 与 `background-origin` 的独立性
-
-考虑以下场景：
-
-```css
-.box {
-  background-image: url('image.png');
-  background-origin: border-box;   /* 定位起点包含 border */
-  background-clip: padding-box;    /* 但只绘制到 padding 边界 */
-  border: 10px solid rgba(0,0,0,0.2);
-}
-```
-
-此时：
-
-- 图像定位起点在 border-box（即左上角包含 border）。
-- 但图像绘制被裁剪到 padding-box，超出 padding 的部分不显示。
-
-这种组合常用于：背景图对齐到外边界（包含 border），但避免被 border 遮挡。
-
-### 3.6 `background-attachment: fixed` 的视口绑定
-
-`background-attachment: fixed` 将背景绑定到视口坐标系：
-
-$$
-\text{Pos}_{\text{fixed}}(\text{scroll}_x, \text{scroll}_y) = \text{Pos}_{\text{initial}}(0, 0)
-$$
-
-即无论页面如何滚动，背景相对视口保持不动。这常用于视差滚动效果。
-
-但移动端浏览器（特别是 iOS Safari）出于性能考虑，禁用 `fixed` 的视口绑定，将其降级为 `scroll` 行为。这是移动端视差滚动效果失效的常见原因。
-
-### 3.7 `background-attachment: local` 的内容滚动
-
-`background-attachment: local` 将背景绑定到元素的内容坐标系：
-
-$$
-\text{Pos}_{\text{local}}(\text{scroll}_x, \text{scroll}_y) = \text{Pos}_{\text{initial}} + (\text{scroll}_x, \text{scroll}_y)
-$$
-
-即背景随元素内容滚动。这适用于可滚动容器内的背景（如聊天窗口的水印）。
-
-### 3.8 `background-clip: text` 的几何
-
-`background-clip: text` 将背景裁剪到文字的 glyph 区域：
-
-$$
-D_{\text{text}} = \{(x, y) : (x, y) \in \text{Glyph}(\text{text})\}
-$$
-
-这要求文字本身有颜色（`color`）或填充（`-webkit-text-fill-color`）设为 `transparent`，否则文字会遮挡背景。完整实现：
-
-```css
-.gradient-text {
-  background: linear-gradient(to right, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent; /* 回退 */
-}
-```
-
-### 3.9 `background-repeat: space` 与 `round` 的算法
-
-`space`：在不裁剪的前提下，尽可能多地放置图像，剩余空间均匀分配到图像之间：
-
-$$
-n = \left\lfloor \frac{W}{w_{\text{image}}} \right\rfloor
-$$
-
-$$
-\text{gap} = \frac{W - n \cdot w_{\text{image}}}{n + 1}
-$$
-
-`round`：将图像缩放为整数倍以填满容器：
-
-$$
-n = \text{round}\left(\frac{W}{w_{\text{image}}}\right)
-$$
-
-$$
-w_{\text{scaled}} = \frac{W}{n}
-$$
-
-`space` 保留图像原始尺寸但留空隙，`round` 拉伸图像以填满。
-
-### 3.10 多背景的性能模型
-
-浏览器渲染多背景的成本：
-
-1. **图像解码**：每张图像需独立解码（可并行）。
-2. **光栅化**：每层独立光栅化为位图。
-3. **合成**：多层按顺序合成。
-
-设层数为 $n$，每层光栅化时间为 $t_r$，合成时间为 $t_c$，则总渲染时间：
-
-$$
-T = n \cdot t_r + n \cdot t_c
-$$
-
-实测：4 层背景在现代浏览器（2024）约耗时 2-5ms，对 60 FPS（16.67ms 帧预算）影响可控；超过 8 层可能引发掉帧。
-
----
-
-## 4. 代码示例
-
-### 4.1 基础示例：多背景叠加
+## 1. 核心必读：代码示例
+### 1.1 基础示例：多背景叠加
 
 ```html
 <!DOCTYPE html>
@@ -570,7 +72,7 @@ $$
 </html>
 ```
 
-### 4.2 `background-size: cover` 与 `contain` 对比
+### 1.2 `background-size: cover` 与 `contain` 对比
 
 ```html
 <!DOCTYPE html>
@@ -644,7 +146,7 @@ $$
 </html>
 ```
 
-### 4.3 `background-clip` 区域对比
+### 1.3 `background-clip` 区域对比
 
 ```html
 <!DOCTYPE html>
@@ -688,7 +190,7 @@ $$
 </html>
 ```
 
-### 4.4 `background-origin` 区域对比
+### 1.4 `background-origin` 区域对比
 
 ```html
 <!DOCTYPE html>
@@ -733,7 +235,7 @@ $$
 </html>
 ```
 
-### 4.5 渐变文字效果
+### 1.5 渐变文字效果
 
 ```html
 <!DOCTYPE html>
@@ -800,7 +302,7 @@ $$
 </html>
 ```
 
-### 4.6 `background-attachment` 滚动行为
+### 1.6 `background-attachment` 滚动行为
 
 ```html
 <!DOCTYPE html>
@@ -878,7 +380,7 @@ $$
 </html>
 ```
 
-### 4.7 多背景复合效果（卡片设计）
+### 1.7 多背景复合效果（卡片设计）
 
 ```html
 <!DOCTYPE html>
@@ -933,7 +435,7 @@ $$
 </html>
 ```
 
-### 4.8 `background-position` 四值语法
+### 1.8 `background-position` 四值语法
 
 ```html
 <!DOCTYPE html>
@@ -986,7 +488,7 @@ $$
 </html>
 ```
 
-### 4.9 `background-repeat` 模式对比
+### 1.9 `background-repeat` 模式对比
 
 ```html
 <!DOCTYPE html>
@@ -1032,7 +534,7 @@ $$
 </html>
 ```
 
-### 4.10 企业级：响应式 Hero 区背景系统
+### 1.10 企业级：响应式 Hero 区背景系统
 
 ```html
 <!DOCTYPE html>
@@ -1155,7 +657,7 @@ $$
 </html>
 ```
 
-### 4.11 企业级：设计令牌驱动的背景系统
+### 1.11 企业级：设计令牌驱动的背景系统
 
 ```html
 <!DOCTYPE html>
@@ -1244,7 +746,7 @@ $$
 </html>
 ```
 
-### 4.12 调试工具：背景可视化检查器
+### 1.12 调试工具：背景可视化检查器
 
 ```html
 <!DOCTYPE html>
@@ -1389,9 +891,8 @@ $$
 
 ---
 
-## 5. 对比分析
-
-### 5.1 `background-image` 与 `<img>` 标签对比
+## 2. 对比分析
+### 2.1 `background-image` 与 `<img>` 标签对比
 
 | 维度 | `background-image` | `<img>` 标签 |
 | --- | --- | --- |
@@ -1405,7 +906,7 @@ $$
 | 响应式 | `image-set()`、媒体查询 | `srcset`、`<picture>` |
 | 适用场景 | 装饰、纹理、渐变 | 内容图像、产品图 |
 
-### 5.2 `background-clip` 与 `background-origin` 对比
+### 2.2 `background-clip` 与 `background-origin` 对比
 
 | 属性 | 控制内容 | 默认值 | 取值范围 | 典型用途 |
 | --- | --- | --- | --- | --- |
@@ -1414,7 +915,7 @@ $$
 
 关键差异：`background-clip` 决定「画到哪里」，`background-origin` 决定「从哪里开始算」。
 
-### 5.3 `background-size` 与 `object-fit` 对比
+### 2.3 `background-size` 与 `object-fit` 对比
 
 | 维度 | `background-size` | `object-fit` |
 | --- | --- | --- |
@@ -1425,7 +926,7 @@ $$
 | 多层 | 支持 | 不支持 |
 | 配合属性 | `background-position` | `object-position` |
 
-### 5.4 多背景与伪元素叠加对比
+### 2.4 多背景与伪元素叠加对比
 
 | 维度 | 多背景 | 伪元素 `::before`/`::after` |
 | --- | --- | --- |
@@ -1437,7 +938,7 @@ $$
 | 语义 | 装饰性 | 可承载语义 |
 | 适用场景 | 多层渐变、纹理 | 复杂叠加、需要独立动画 |
 
-### 5.5 主流框架背景实践对比
+### 2.5 主流框架背景实践对比
 
 | 框架 | 多背景策略 | `background-size` | `background-clip` | 工具类 |
 | --- | --- | --- | --- | --- |
@@ -1447,7 +948,7 @@ $$
 | GitHub Primer | `.color-bg-*`、渐变工具 | 不直接提供 | 不直接提供 | `.bg-gradient-*` |
 | Ant Design 5 | 主题色 | 不直接提供 | 不直接提供 | 主题变量 |
 
-### 5.6 Tailwind 与 Bootstrap 背景哲学对比
+### 2.6 Tailwind 与 Bootstrap 背景哲学对比
 
 **Tailwind CSS v3.4**：原子化工具类，灵活组合。
 
@@ -1467,7 +968,7 @@ $$
 
 Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。现代项目多倾向 Tailwind。
 
-### 5.7 预处理器对比
+### 2.7 预处理器对比
 
 | 预处理器 | 多背景 Mixin | `background-size` 支持 | `background-clip: text` 支持 |
 | --- | --- | --- | --- |
@@ -1492,9 +993,8 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 
 ---
 
-## 6. 常见陷阱与最佳实践
-
-### 6.1 陷阱 1：`background-clip: text` 忘记回退
+## 3. 常见陷阱与最佳实践
+### 3.1 陷阱 1：`background-clip: text` 忘记回退
 
 **错误代码**：
 
@@ -1526,7 +1026,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 6.2 陷阱 2：多背景层数过多导致性能问题
+### 3.2 陷阱 2：多背景层数过多导致性能问题
 
 **错误代码**：
 
@@ -1565,7 +1065,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 6.3 陷阱 3：`background-attachment: fixed` 在移动端失效
+### 3.3 陷阱 3：`background-attachment: fixed` 在移动端失效
 
 **问题**：iOS Safari 出于性能考虑，禁用 `fixed` 的视口绑定，将其降级为 `scroll`。
 
@@ -1591,7 +1091,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 6.4 陷阱 4：`background-size: 100% 100%` 拉伸变形
+### 3.4 陷阱 4：`background-size: 100% 100%` 拉伸变形
 
 **错误代码**：
 
@@ -1615,7 +1115,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 6.5 陷阱 5：`background-origin` 与 `background-clip` 混淆
+### 3.5 陷阱 5：`background-origin` 与 `background-clip` 混淆
 
 **误区**：误认为两者作用相同。
 
@@ -1635,7 +1135,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 6.6 陷阱 6：`background` 简写覆盖独立属性
+### 3.6 陷阱 6：`background` 简写覆盖独立属性
 
 **错误代码**：
 
@@ -1663,7 +1163,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 6.7 陷阱 7：高 DPI 背景图加载性能
+### 3.7 陷阱 7：高 DPI 背景图加载性能
 
 **问题**：为 Retina 屏幕加载 2x、3x 图像，移动端流量消耗大。
 
@@ -1679,7 +1179,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 6.8 陷阱 8：背景与可访问性
+### 3.8 陷阱 8：背景与可访问性
 
 **问题**：背景图上的文字对比度不足，影响阅读。
 
@@ -1696,7 +1196,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 6.9 最佳实践清单
+### 3.9 最佳实践清单
 
 1. **优先使用渐变而非图像**：渐变无需 HTTP 请求，性能更优。
 2. **使用 `background-size: cover` 适配响应式**：避免固定尺寸。
@@ -1711,9 +1211,8 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 
 ---
 
-## 7. 工程实践
-
-### 7.1 背景设计令牌系统
+## 4. 工程实践
+### 4.1 背景设计令牌系统
 
 ```css
 :root {
@@ -1751,7 +1250,7 @@ Tailwind 的优势在于灵活组合，Bootstrap 的优势在于快速原型。�
 }
 ```
 
-### 7.2 PostCSS 自动前缀与优化
+### 4.2 PostCSS 自动前缀与优化
 
 ```javascript
 // postcss.config.js
@@ -1772,7 +1271,7 @@ module.exports = {
 };
 ```
 
-### 7.3 SCSS Mixin 库
+### 4.3 SCSS Mixin 库
 
 ```scss
 // _backgrounds.scss
@@ -1841,7 +1340,7 @@ module.exports = {
 }
 ```
 
-### 7.4 Tailwind CSS 自定义配置
+### 4.4 Tailwind CSS 自定义配置
 
 ```javascript
 // tailwind.config.js
@@ -1889,7 +1388,7 @@ module.exports = {
 };
 ```
 
-### 7.5 React 组件封装
+### 4.5 React 组件封装
 
 ```tsx
 import React, { CSSProperties } from 'react';
@@ -1980,7 +1479,7 @@ export function Demo() {
 }
 ```
 
-### 7.6 性能优化策略
+### 4.6 性能优化策略
 
 1. **懒加载背景图**：
 
@@ -2047,7 +1546,7 @@ document.querySelectorAll('[data-bg]').forEach((el) => observer.observe(el));
 .icon-settings { background-position: -40px 0; }
 ```
 
-### 7.7 调试工具
+### 4.7 调试工具
 
 1. **Chrome DevTools**：
 
@@ -2062,7 +1561,7 @@ document.querySelectorAll('[data-bg]').forEach((el) => observer.observe(el));
    - [CSS Backgrounds Visualizer](https://css-tricks.com/almanac/properties/b/background/)
    - [Gradient Generator](https://cssgradient.io/)
 
-### 7.8 Stylelint 校验规则
+### 4.8 Stylelint 校验规则
 
 ```json
 {
@@ -2083,7 +1582,7 @@ document.querySelectorAll('[data-bg]').forEach((el) => observer.observe(el));
 }
 ```
 
-### 7.9 Playwright 视觉回归测试
+### 4.9 Playwright 视觉回归测试
 
 ```typescript
 import { test, expect } from '@playwright/test';
@@ -2114,7 +1613,7 @@ test('渐变文字渲染正确', async ({ page }) => {
 });
 ```
 
-### 7.10 浏览器兼容性处理
+### 4.10 浏览器兼容性处理
 
 ```css
 /* background-clip: text 回退 */
@@ -2161,9 +1660,8 @@ test('渐变文字渲染正确', async ({ page }) => {
 
 ---
 
-## 8. 案例研究
-
-### 8.1 案例 1：Bootstrap 5 背景系统
+## 5. 案例研究
+### 5.1 案例 1：Bootstrap 5 背景系统
 
 Bootstrap 5 通过 `.bg-*` 工具类提供主题色背景：
 
@@ -2190,7 +1688,7 @@ Bootstrap 5 通过 `.bg-*` 工具类提供主题色背景：
 2. **`!important` 强制覆盖**：避免优先级冲突。
 3. **`.bg-gradient` 渐变扩展**：在纯色基础上叠加半透明渐变。
 
-### 8.2 案例 2：Tailwind CSS v3.4 背景
+### 5.2 案例 2：Tailwind CSS v3.4 背景
 
 Tailwind 提供更细粒度的背景工具类：
 
@@ -2239,7 +1737,7 @@ Tailwind 提供更细粒度的背景工具类：
 2. **组合性**：`bg-gradient-to-r from-purple-500 to-pink-500` 灵活组合。
 3. **JIT 编译**：按需生成，无冗余 CSS。
 
-### 8.3 案例 3：Material Design 3 背景
+### 5.3 案例 3：Material Design 3 背景
 
 Material Design 3 通过 Design Token 系统管理背景：
 
@@ -2269,7 +1767,7 @@ Material Design 3 通过 Design Token 系统管理背景：
 2. **主题响应**：通过 Token 自动切换明暗主题。
 3. **无渐变**：Material Design 3 倾向纯色背景，避免视觉干扰。
 
-### 8.4 案例 4：GitHub Primer 背景
+### 5.4 案例 4：GitHub Primer 背景
 
 GitHub Primer 使用功能化背景工具类：
 
@@ -2285,7 +1783,7 @@ GitHub Primer 使用功能化背景工具类：
 }
 ```
 
-### 8.5 案例 5：Stripe 渐变美学
+### 5.5 案例 5：Stripe 渐变美学
 
 Stripe 网站以精致的渐变背景著称：
 
@@ -2306,7 +1804,7 @@ Stripe 网站以精致的渐变背景著称：
 2. **径向 + 线性混合**：丰富视觉层次。
 3. **品牌色驱动**：以 Stripe 紫（#635BFF）为核心。
 
-### 8.6 案例 6：生产事故 - 背景图导致 CLS
+### 5.6 案例 6：生产事故 - 背景图导致 CLS
 
 **场景**：某电商网站 Hero 区背景图加载后导致布局偏移（CLS）。
 
@@ -2623,6 +2121,549 @@ Stripe 网站以精致的渐变背景著称：
 
 ---
 
+## 6. 深入理解（选读）
+
+> 以下内容适合想彻底搞懂机制原理的读者，第一遍学习可跳过。
+
+### 6.1 历史演进
+
+### 6.1.1 CSS 1（1996）：背景的雏形
+
+CSS 1 由 Håkon Wium Lie 与 Bert Bos 于 1996 年提出，首次定义背景相关属性。当时的背景系统极为简陋：
+
+```css
+/* CSS 1 语法 */
+BODY {
+  background-color: white;
+  background-image: url("marble.gif");
+  background-repeat: repeat;
+  background-attachment: scroll;
+  background-position: center;
+}
+```
+
+CSS 1 的背景系统存在显著限制：
+
+1. **单背景**：每个元素仅能有一张背景图。
+2. **无尺寸控制**：无法缩放背景图，`background-size` 尚未存在。
+3. **无裁剪控制**：`background-clip` 尚未存在，背景始终绘制到 padding 边界。
+4. **定位粗糙**：`background-position` 仅支持关键字（`top`、`center`、`bottom`、`left`、`right`），不支持百分比与长度。
+
+### 6.1.2 CSS 2.1（2011）：背景属性的成熟
+
+CSS 2.1 §14 将背景属性扩展为现代熟悉的形态：
+
+1. **百分比与长度定位**：`background-position: 50% 50%` 或 `10px 20px`。
+2. **`background` 简写**：允许在一条声明中设置所有背景属性。
+3. **背景绘制区域**：明确背景绘制到 padding 边界（即现代的 `background-clip: padding-box` 默认行为）。
+4. **`background-attachment: fixed`**：引入视口固定背景。
+
+但 CSS 2.1 仍未支持多背景与 `background-size`，开发者常通过嵌套 `<div>` 模拟多层背景：
+
+```html
+<!-- 嵌套 div 模拟多背景（CSS 2.1 时代） -->
+<div class="layer-1">
+  <div class="layer-2">
+    <div class="content">...</div>
+  </div>
+</div>
+```
+
+### 6.1.3 CSS Backgrounds Module Level 3（2012-2017）
+
+[CSS Backgrounds and Borders Module Level 3](https://www.w3.org/TR/css-backgrounds-3/) 是背景系统的革命性升级，引入：
+
+1. **多背景**：允许在 `background-image` 中声明多个图像，以逗号分隔。
+2. **`background-size`**：支持 `cover`、`contain`、长度、百分比。
+3. **`background-clip`**：支持 `border-box`、`padding-box`、`content-box`。
+4. **`background-origin`**：独立于 `background-clip`，控制定位起点。
+5. **多值语法**：`background-position: right 10px bottom 20px`（四值语法）。
+6. **`background-repeat: space` 与 `round`**：智能重复模式。
+
+```css
+/* CSS Backgrounds Level 3 多背景示例 */
+.card {
+  background:
+    url('overlay.png') no-repeat center,
+    linear-gradient(to right, #667eea, #764ba2);
+  background-size: cover, auto;
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, padding-box;
+}
+```
+
+2017 年，Chrome 60、Firefox 55、Safari 11 全面支持 CSS Backgrounds Level 3，多背景进入生产可用阶段。
+
+### 6.1.4 `background-clip: text` 的引入（2011-2018）
+
+`background-clip: text` 是 WebKit 于 2011 年引入的非标准扩展，用于将背景裁剪到文字区域，实现「渐变文字」效果：
+
+```css
+.gradient-text {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* 现代标准 */
+}
+```
+
+长期作为 `-webkit-` 前缀私有特性存在，2018 年后逐渐被各浏览器支持，2023 年正式进入 [CSS Backgrounds Module Level 4](https://www.w3.org/TR/css-backgrounds-4/#background-clip) 草案。
+
+### 6.1.5 CSS Backgrounds Module Level 4（2020-2024）
+
+[CSS Backgrounds Module Level 4](https://www.w3.org/TR/css-backgrounds-4/) 引入了多项增强：
+
+1. **`background-clip: text` 标准化**：从 WebKit 私有特性升级为正式规范。
+2. **`background-position` 多值扩展**：支持 `right 10px bottom 20px` 四值语法的标准化。
+3. **`background-repeat: space | round`**：在 Level 3 基础上进一步细化。
+4. **`background-size` 与 `object-fit` 的语义对齐**：统一图像缩放语义。
+5. **`background-attachment: local`**：在内容滚动容器内的背景跟随行为。
+
+### 6.1.6 浏览器兼容性演进
+
+| 年份 | 事件 | 核心变化 |
+| --- | --- | --- |
+| 1996 | CSS 1 推荐 | 基础背景属性，单背景，无尺寸控制 |
+| 2011 | CSS 2.1 推荐 | 百分比定位、`background` 简写 |
+| 2011 | WebKit 实现 `-webkit-background-clip: text` | 渐变文字效果 |
+| 2012 | CSS Backgrounds Level 3 候选推荐 | 多背景、`background-size`、`background-clip`、`background-origin` |
+| 2017 | 主流浏览器全面支持 Level 3 | 多背景进入生产可用 |
+| 2018 | `background-clip: text` 浏览器支持扩展 | 渐变文字普及 |
+| 2020 | CSS Backgrounds Level 4 草案 | `background-clip: text` 标准化 |
+| 2023 | `background-clip: text` 进入正式规范 | 无前缀使用成为可能 |
+| 2024 | 高 DPI 与 HDR 背景支持 | Display P3 色彩空间背景图 |
+
+### 6.1.7 演进时间线
+
+| 年份 | 规范/事件 | 核心变化 |
+| --- | --- | --- |
+| 1996 | CSS 1 | 基础背景属性，单背景 |
+| 2011 | CSS 2.1 | 百分比定位、简写属性 |
+| 2011 | WebKit `-webkit-background-clip: text` | 渐变文字效果 |
+| 2012 | CSS Backgrounds Level 3 候选推荐 | 多背景、`background-size` |
+| 2014 | `background-attachment: local` 支持 | 内容滚动背景跟随 |
+| 2017 | Level 3 全面支持 | 多背景生产可用 |
+| 2018 | `background-clip: text` 普及 | 渐变文字主流化 |
+| 2020 | Level 4 草案 | `background-clip: text` 标准化 |
+| 2023 | `background-clip: text` 规范化 | 无前缀支持 |
+| 2024 | HDR 背景 | Display P3 色彩 |
+
+---
+
+### 6.2 形式化定义
+
+### 6.2.1 规范条款
+
+依据 [CSS Backgrounds and Borders Module Level 3 §3](https://www.w3.org/TR/css-backgrounds-3/#backgrounds)：
+
+> The background properties allow specifying the background color, the background image, its size, its position, its repeat behavior, its painting area, its positioning area, and its attachment.
+
+以及 [CSS Backgrounds Module Level 4 §3.7](https://www.w3.org/TR/css-backgrounds-4/#background-clip)：
+
+> The `background-clip` property determines the background painting area, which determines the area within which the background is painted.
+
+### 6.2.2 核心术语
+
+| 术语 | 英文 | 定义 |
+| --- | --- | --- |
+| 背景层 | Background Layer | `background-image` 中的一张图像或渐变 |
+| 背景栈 | Background Stack | 多背景层的有序集合，第一个声明在最上层 |
+| 绘制区域 | Painting Area | `background-clip` 决定的背景绘制边界 |
+| 定位区域 | Positioning Area | `background-origin` 决定的背景定位起点 |
+| 定位点 | Position Point | `background-position` 在定位区域内的坐标 |
+| 缩放模式 | Sizing Mode | `background-size` 决定的图像缩放算法 |
+| 重复模式 | Repeat Mode | `background-repeat` 决定的图像平铺方式 |
+| 附件模式 | Attachment Mode | `background-attachment` 决定的滚动行为 |
+| 背景颜色 | Background Color | `background-color`，始终位于背景栈最底层 |
+
+### 6.2.3 背景属性全景
+
+| 属性 | 取值 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `background-color` | `<color>` | `transparent` | 背景颜色，位于最底层 |
+| `background-image` | `<image>` \| `none` | `none` | 背景图像或渐变 |
+| `background-repeat` | `repeat` \| `repeat-x` \| `repeat-y` \| `no-repeat` \| `space` \| `round` | `repeat` | 重复模式 |
+| `background-attachment` | `scroll` \| `fixed` \| `local` | `scroll` | 滚动行为 |
+| `background-position` | `<position>` | `0% 0%` | 定位点 |
+| `background-clip` | `border-box` \| `padding-box` \| `content-box` \| `text` | `border-box` | 绘制区域 |
+| `background-origin` | `padding-box` \| `border-box` \| `content-box` | `padding-box` | 定位区域 |
+| `background-size` | `auto` \| `cover` \| `contain` \| `<length>` \| `<percentage>` | `auto` | 缩放模式 |
+
+### 6.2.4 `background` 简写语法
+
+```
+background = 
+  [ <bg-layer> , ]* <final-bg-layer>
+
+<bg-layer> = 
+  <background-image> 
+  || <background-position> [ / <background-size> ]? 
+  || <background-repeat> 
+  || <background-attachment> 
+  || <background-origin> 
+  || <background-clip>
+```
+
+注意：
+
+1. `background-origin` 与 `background-clip` 在简写中可同时出现，第二个值若省略则与第一个相同。
+2. `background-size` 必须跟在 `background-position` 后面，以 `/` 分隔。
+3. `background-color` 只能在最后一层（`<final-bg-layer>`）声明。
+
+### 6.2.5 形式化定义：背景栈
+
+设元素的背景栈 $\mathcal{B}$ 为有序集合：
+
+$$
+\mathcal{B} = (L_1, L_2, \ldots, L_n, C)
+$$
+
+其中 $L_i$ 为第 $i$ 个背景层（图像或渐变），$C$ 为 `background-color`。绘制顺序为 $L_1$ 在最上层，$L_n$ 在 $C$ 之上，$C$ 在最底层。
+
+形式化地，第 $i$ 层的绘制函数：
+
+$$
+\text{Paint}(L_i, x, y) = \text{Composite}\left(\text{Draw}(L_i, x, y), \text{Paint}(L_{i+1}, x, y)\right)
+$$
+
+其中 $\text{Composite}$ 是合成操作（默认为 `source-over`），$\text{Draw}(L_i, x, y)$ 是单层绘制函数。
+
+### 6.2.6 形式化定义：`background-size`
+
+设图像原始尺寸为 $(w_0, h_0)$，容器尺寸为 $(W, H)$，`background-size` 取值为 $S$。定义缩放函数 $\text{Size}(S, w_0, h_0, W, H)$：
+
+$$
+\text{Size}(\text{cover}, w_0, h_0, W, H) = \left(W, W \cdot \frac{h_0}{w_0}\right) \quad \text{if } \frac{W}{w_0} \ge \frac{H}{h_0}
+$$
+
+$$
+\text{Size}(\text{cover}, w_0, h_0, W, H) = \left(H \cdot \frac{w_0}{h_0}, H\right) \quad \text{if } \frac{W}{w_0} < \frac{H}{h_0}
+$$
+
+$$
+\text{Size}(\text{contain}, w_0, h_0, W, H) = \left(W, W \cdot \frac{h_0}{w_0}\right) \quad \text{if } \frac{W}{w_0} \le \frac{H}{h_0}
+$$
+
+$$
+\text{Size}(\text{contain}, w_0, h_0, W, H) = \left(H \cdot \frac{w_0}{h_0}, H\right) \quad \text{if } \frac{W}{w_0} > \frac{H}{h_0}
+$$
+
+`cover` 保证图像覆盖整个容器（可能裁剪），`contain` 保证图像完整显示（可能留白）。
+
+### 6.2.7 形式化定义：`background-position`
+
+`background-position` 的百分比定位遵循以下公式：
+
+$$
+\text{Pos}(p\%) = p\% \cdot (W_{\text{container}} - W_{\text{image}})
+$$
+
+其中 $W_{\text{container}}$ 是定位区域宽度（由 `background-origin` 决定），$W_{\text{image}}$ 是缩放后图像宽度。
+
+- `0% 0%`：图像左上角与容器左上角对齐。
+- `50% 50%`：图像中心与容器中心对齐。
+- `100% 100%`：图像右下角与容器右下角对齐。
+
+长度值（如 `10px`）则是绝对偏移：
+
+$$
+\text{Pos}(L) = L
+$$
+
+四值语法 `right 10px bottom 20px` 表示从右边偏移 10px，从底部偏移 20px。
+
+### 6.2.8 形式化定义：`background-clip` 与 `background-origin`
+
+设元素的盒模型区域：
+
+- Border Box：$B = \{(x, y) : 0 \le x \le W_{\text{border}}, 0 \le y \le H_{\text{border}}\}$
+- Padding Box：$P = \{(x, y) : bw_l \le x \le W_{\text{border}} - bw_r, bw_t \le y \le H_{\text{border}} - bw_b\}$
+- Content Box：$K = \{(x, y) : bw_l + pw_l \le x \le W_{\text{border}} - bw_r - pw_r, \ldots\}$
+
+`background-clip` 决定绘制区域 $D$：
+
+$$
+D = \begin{cases}
+B, & \text{background-clip: border-box} \\
+P, & \text{background-clip: padding-box} \\
+K, & \text{background-clip: content-box} \\
+\text{Text}, & \text{background-clip: text}
+\end{cases}
+$$
+
+`background-origin` 决定定位区域 $P_A$：
+
+$$
+P_A = \begin{cases}
+B, & \text{background-origin: border-box} \\
+P, & \text{background-origin: padding-box} \\
+K, & \text{background-origin: content-box}
+\end{cases}
+$$
+
+注意：`background-clip` 与 `background-origin` 是独立的，可以分别设置不同值。
+
+### 6.2.9 形式化定义：`background-attachment`
+
+`background-attachment` 决定背景相对于什么坐标系滚动：
+
+$$
+\text{Coord}(\text{attachment}) = \begin{cases}
+\text{Document}, & \text{scroll} \\
+\text{Viewport}, & \text{fixed} \\
+\text{Element}, & \text{local}
+\end{cases}
+$$
+
+- `scroll`：背景相对于文档滚动（即随页面滚动，但不随元素内容滚动）。
+- `fixed`：背景相对于视口固定（不随页面或元素内容滚动）。
+- `local`：背景相对于元素内容滚动（随元素内容滚动）。
+
+### 6.2.10 背景绘制顺序
+
+浏览器绘制背景的完整顺序：
+
+1. 绘制 `background-color`（最底层）。
+2. 从最后一层到第一层（从底到顶），依次绘制每个 `background-image` 层。
+3. 每层依次应用：`background-size` → `background-position` → `background-repeat` → `background-clip`。
+4. 在所有背景层之上绘制 `border`（边框）。
+5. 在 `border` 之上绘制内容（文本、子元素）。
+
+形式化地：
+
+$$
+\text{Render} = \text{Content} \succ \text{Border} \succ L_1 \succ L_2 \succ \cdots \succ L_n \succ C
+$$
+
+其中 $\succ$ 表示「在...之上绘制」。
+
+---
+
+### 6.3 理论推导与原理解析
+
+### 6.3.1 多背景的层级模型
+
+CSS 多背景采用「栈式合成」模型，每层独立计算位置、尺寸、重复模式，然后按顺序合成。设第 $i$ 层的图像为 $I_i$，定位点为 $(x_i, y_i)$，尺寸为 $(w_i, h_i)$，则该层的绘制：
+
+$$
+\text{Layer}_i(x, y) = \begin{cases}
+I_i\left(\frac{x - x_i}{w_i}, \frac{y - y_i}{h_i}\right), & \text{if } (x, y) \in [x_i, x_i + w_i] \times [y_i, y_i + h_i] \\
+\text{transparent}, & \text{otherwise}
+\end{cases}
+$$
+
+多层的合成：
+
+$$
+\text{Background}(x, y) = \text{Blend}\left(\text{Layer}_1(x, y), \text{Background}_{2..n}(x, y)\right)
+$$
+
+其中 $\text{Blend}$ 默认是 alpha 合成（`source-over`）。
+
+### 6.3.2 `background-size: cover` 的几何推导
+
+设图像原始尺寸为 $(w_0, h_0)$，容器尺寸为 $(W, H)$。`cover` 要求图像缩放后完全覆盖容器，即：
+
+$$
+\frac{w_{\text{scaled}}}{W} \ge 1 \quad \wedge \quad \frac{h_{\text{scaled}}}{H} \ge 1
+$$
+
+且保持宽高比：
+
+$$
+\frac{w_{\text{scaled}}}{h_{\text{scaled}}} = \frac{w_0}{h_0}
+$$
+
+取最小缩放比例满足上述约束：
+
+$$
+s = \max\left(\frac{W}{w_0}, \frac{H}{h_0}\right)
+$$
+
+则：
+
+$$
+w_{\text{scaled}} = s \cdot w_0, \quad h_{\text{scaled}} = s \cdot h_0
+$$
+
+由于 $s \ge W/w_0$ 且 $s \ge H/h_0$，缩放后图像至少覆盖容器。若宽高比不匹配，超出部分被 `background-clip` 裁剪。
+
+### 6.3.3 `background-size: contain` 的几何推导
+
+`contain` 要求图像完整显示，即：
+
+$$
+\frac{w_{\text{scaled}}}{W} \le 1 \quad \wedge \quad \frac{h_{\text{scaled}}}{H} \le 1
+$$
+
+取最大缩放比例：
+
+$$
+s = \min\left(\frac{W}{w_0}, \frac{H}{h_0}\right)
+$$
+
+则缩放后图像完整显示，但可能在某一方向留白。
+
+### 6.3.4 `background-position` 百分比的几何意义
+
+百分比的精确定义：图像的 $p\%$ 点与容器的 $p\%$ 点对齐。形式化地：
+
+$$
+x_{\text{image}} = p\% \cdot w_{\text{image}}, \quad x_{\text{container}} = p\% \cdot W
+$$
+
+$$
+x_{\text{offset}} = x_{\text{container}} - x_{\text{image}} = p\% \cdot (W - w_{\text{image}})
+$$
+
+因此：
+
+- `0%`：图像左边缘与容器左边缘对齐。
+- `50%`：图像中心与容器中心对齐。
+- `100%`：图像右边缘与容器右边缘对齐。
+
+这种「相对对齐」设计使得百分比比绝对偏移更直观：`50% 50%` 总是居中，无论图像与容器尺寸如何。
+
+### 6.3.5 `background-clip` 与 `background-origin` 的独立性
+
+考虑以下场景：
+
+```css
+.box {
+  background-image: url('image.png');
+  background-origin: border-box;   /* 定位起点包含 border */
+  background-clip: padding-box;    /* 但只绘制到 padding 边界 */
+  border: 10px solid rgba(0,0,0,0.2);
+}
+```
+
+此时：
+
+- 图像定位起点在 border-box（即左上角包含 border）。
+- 但图像绘制被裁剪到 padding-box，超出 padding 的部分不显示。
+
+这种组合常用于：背景图对齐到外边界（包含 border），但避免被 border 遮挡。
+
+### 6.3.6 `background-attachment: fixed` 的视口绑定
+
+`background-attachment: fixed` 将背景绑定到视口坐标系：
+
+$$
+\text{Pos}_{\text{fixed}}(\text{scroll}_x, \text{scroll}_y) = \text{Pos}_{\text{initial}}(0, 0)
+$$
+
+即无论页面如何滚动，背景相对视口保持不动。这常用于视差滚动效果。
+
+但移动端浏览器（特别是 iOS Safari）出于性能考虑，禁用 `fixed` 的视口绑定，将其降级为 `scroll` 行为。这是移动端视差滚动效果失效的常见原因。
+
+### 6.3.7 `background-attachment: local` 的内容滚动
+
+`background-attachment: local` 将背景绑定到元素的内容坐标系：
+
+$$
+\text{Pos}_{\text{local}}(\text{scroll}_x, \text{scroll}_y) = \text{Pos}_{\text{initial}} + (\text{scroll}_x, \text{scroll}_y)
+$$
+
+即背景随元素内容滚动。这适用于可滚动容器内的背景（如聊天窗口的水印）。
+
+### 6.3.8 `background-clip: text` 的几何
+
+`background-clip: text` 将背景裁剪到文字的 glyph 区域：
+
+$$
+D_{\text{text}} = \{(x, y) : (x, y) \in \text{Glyph}(\text{text})\}
+$$
+
+这要求文字本身有颜色（`color`）或填充（`-webkit-text-fill-color`）设为 `transparent`，否则文字会遮挡背景。完整实现：
+
+```css
+.gradient-text {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* 回退 */
+}
+```
+
+### 6.3.9 `background-repeat: space` 与 `round` 的算法
+
+`space`：在不裁剪的前提下，尽可能多地放置图像，剩余空间均匀分配到图像之间：
+
+$$
+n = \left\lfloor \frac{W}{w_{\text{image}}} \right\rfloor
+$$
+
+$$
+\text{gap} = \frac{W - n \cdot w_{\text{image}}}{n + 1}
+$$
+
+`round`：将图像缩放为整数倍以填满容器：
+
+$$
+n = \text{round}\left(\frac{W}{w_{\text{image}}}\right)
+$$
+
+$$
+w_{\text{scaled}} = \frac{W}{n}
+$$
+
+`space` 保留图像原始尺寸但留空隙，`round` 拉伸图像以填满。
+
+### 6.3.10 多背景的性能模型
+
+浏览器渲染多背景的成本：
+
+1. **图像解码**：每张图像需独立解码（可并行）。
+2. **光栅化**：每层独立光栅化为位图。
+3. **合成**：多层按顺序合成。
+
+设层数为 $n$，每层光栅化时间为 $t_r$，合成时间为 $t_c$，则总渲染时间：
+
+$$
+T = n \cdot t_r + n \cdot t_c
+$$
+
+实测：4 层背景在现代浏览器（2024）约耗时 2-5ms，对 60 FPS（16.67ms 帧预算）影响可控；超过 8 层可能引发掉帧。
+
+---
+
+## 7. 本章综合挑战（选做）
+
+1. 用 `background-color` + `background-image` + `background-repeat` 做一张卡片背景；
+2. 用 `background-size: cover` 让图片铺满容器且不变形；
+3. 用多重背景叠加（逗号分隔）实现“纹理 + 渐变”；
+4. 用 `background-blend-mode: multiply` 让背景图与底色融合。
+
+## 8. 核心知识点
+
+> 一句话记住背景：`color` 打底，`image` 贴图，`repeat` 控平铺，`position` 定位置，`size` 定大小；多背景逗号分隔，简写顺序 color image position/size repeat。
+
+- `background-color`：背景底色，永远最先加载；
+- `background-image`：背景图或渐变，不参与布局；
+- `background-repeat`：`repeat`/`no-repeat`/`repeat-x`/`repeat-y`；
+- `background-position` 与 `background-size`：定位与尺寸，`cover`/`contain` 常用；
+- 多重背景用逗号分隔，第一层在最上面；
+- `background-blend-mode` 控制背景层之间的混合；
+- 简写 `background` 会重置未写的子属性，注意顺序。
+
+## 9. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 忘记底色 | 图片加载前一片白 | 始终给 `background-color` |
+| 大图直接贴 | 加载慢、浪费流量 | 用 `background-size: cover` + 压缩图 |
+| 简写重置 | 简写会清空其它背景属性 | 简写放最后或单独写子属性 |
+| 多重背景顺序反了 | 显示层级不对 | 第一层放最上层 |
+| 混合模式过度 | 文字可读性下降 | 混合后检查对比度 |
+
+## 10. 扩展学习
+
+- 渐变：`css/013-Gradient`；
+- 阴影：`css/014-Shadow`；
+- 滤镜与混合：`css/058-CSSFilters`（滤镜体系）；
+- 响应式背景：`css/030-ResponsiveDesign`。
+
 ## 附录 A：术语表
 
 | 术语 | 英文 | 定义 |
@@ -2713,7 +2754,9 @@ Stripe 网站以精致的渐变背景著称：
 ---
 
 > **结语**：CSS 背景系统是 Web 视觉设计的基础设施。从 CSS 1 的单背景到 CSS Backgrounds Level 4 的 `background-clip: text` 标准化，背景系统经历了近 30 年的演进。理解其层级模型、绘制算法、定位机制与性能特性，是构建高质量 Web 体验的关键。在实践中，应遵循「设计令牌化、响应式优先、可访问性保障、性能预算」四大原则，将 CSS 背景系统作为设计系统的核心组成部分。
-## background-color 背景颜色
+## 附录 D：背景属性速查
+
+### D.1 background-color 背景颜色
 
 **基本写法：纯色背景**
 `background-color: <颜色>;`

@@ -26,313 +26,14 @@ prerequisites:
 
 ---
 
-## 1. 历史动机与发展脉络
+## 0. 直觉：让组件“看自己的容器”而不是屏幕
 
-### 1.1 媒体查询的局限（2010s）
+媒体查询（`@media`）根据**视口**宽度响应；容器查询（`@container`）根据**父容器**宽度响应。同一个卡片组件，放在窄栏里就变窄，放在宽栏里就变宽——组件真正做到了“自带响应式”。
 
-CSS Media Queries 在 2012 年随 CSS3 引入，让 Web 设计进入响应式时代。开发者通过 `@media (min-width: 768px)` 等条件针对视口尺寸适配。然而，组件化时代的到来暴露了媒体查询的根本缺陷：
+三步用法：给容器加 `container-type: inline-size` 建立上下文，然后用 `@container (min-width: 400px)` 写条件样式，需要时用 `cqw` 等单位取容器尺寸。
 
-```html
-<!-- 一个卡片组件可能出现在侧栏（200px 宽）或主内容区（800px 宽） -->
-<aside class="sidebar">
-  <Card /> <!-- 在 200px 容器内仍按视口（如 1440px）的样式渲染 -->
-</aside>
-<main class="content">
-  <Card /> <!-- 在 800px 容器内 -->
-</main>
-```
-
-问题：卡片组件无法感知自身容器的实际宽度，只能依赖父级传递 props 或 JS 监听 ResizeObserver。这种「视口驱动」的响应式与「组件驱动」的设计系统存在根本矛盾。
-
-### 1.2 早期尝试：Element Query（2013-2017）
-
-社区曾提出「Element Queries」构想：
-
-```css
-/* 假想语法，从未标准化 */
-.card(min-width: 400px) {
-  display: flex;
-}
-```
-
-但元素查询存在循环依赖问题：若元素 A 的样式依赖于自身的宽度，而样式又影响宽度，将导致无限循环。例如：
-
-```css
-/* 循环依赖示例 */
-.box(min-width: 200px) {
-  width: 100px; /* 改变自身宽度，触发条件失效，再变回... */
-}
-```
-
-W3C 长期拒绝将元素查询纳入规范，正是因为此问题。
-
-### 1.3 CSS Containment 的引入（2016）
-
-[CSS Containment Module Level 1](https://www.w3.org/TR/css-contain-1/) 引入了 `contain` 属性，允许浏览器隔离元素的渲染，提升性能：
-
-```css
-.component {
-  contain: layout paint size; /* 隔离布局、绘制与尺寸 */
-}
-```
-
-`contain: size` 的关键意义：明确告知浏览器「该元素的尺寸不受子元素影响」，从而打破元素查询的循环依赖。这为容器查询奠定了基础。
-
-### 1.4 Container Queries Level 3（2021-2023）
-
-2021 年，Miriam Suzanne 与 Tab Atkins 在 [CSS Containment Module Level 3](https://www.w3.org/TR/css-contain-3/) 中正式提出容器查询规范：
-
-- `container-type` 属性：声明元素为查询容器。
-- `container-name` 属性：为容器命名，支持多层嵌套时的精确匹配。
-- `@container` 规则：根据容器条件应用样式。
-- `cqw`、`cqh`、`cqi`、`cqb`、`cqmin`、`cqmax` 单位：相对于容器尺寸的长度单位。
-
-2022 年 8 月，Chrome 105、Safari 16、Firefox 110 相继实现容器查询，正式进入生产可用阶段。
-
-### 1.5 Style Queries 的实验（2023+）
-
-容器查询的下一阶段是「样式查询」（Style Queries），允许根据容器的 CSS 变量或计算样式应用规则：
-
-```css
-@container style(--theme: dark) {
-  .card {
-    background: #1a1a1a;
-  }
-}
-```
-
-截至 2024 年，Chrome 111+ 部分支持，Safari 与 Firefox 仍在实现中。
-
-### 1.6 演进时间线
-
-| 年份 | 事件 | 核心变化 |
-| --- | --- | --- |
-| 2012 | CSS Media Queries Level 3 推荐 | 视口驱动响应式 |
-| 2013 | 社区提出 Element Query | 因循环依赖被否决 |
-| 2016 | CSS Containment Level 1 | 引入 `contain` 属性 |
-| 2019 | Miriam Suzanne 提议 Container Query | 基于 containment 解决循环 |
-| 2021 | CSS Containment Level 3 草案 | `container-type`、`@container` 规范化 |
-| 2022.8 | Chrome 105 / Safari 16 实现 | 容器查询进入生产可用 |
-| 2023 | Style Queries 实验 | `style(--var: val)` 查询 |
-| 2024 | 容器查询单位普及 | `cqi` 单位被广泛使用 |
-
----
-
-## 2. 形式化定义
-
-### 2.1 规范条款
-
-依据 [CSS Containment Module Level 3 §3](https://www.w3.org/TR/css-contain-3/#container-queries)：
-
-> A container query allows styling of elements based on the size of a container element rather than the viewport.
-
-### 2.2 核心属性
-
-| 属性 | 取值 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `container-type` | `normal` \| `inline-size` \| `size` | `normal` | 声明容器类型 |
-| `container-name` | `<custom-ident>+` \| `none` | `none` | 容器命名 |
-| `container` | `<container-type>` \|\| `<container-name>` | - | 简写属性 |
-
-### 2.3 `@container` 规则语法
-
-```
-@container [ <container-name> ]? <container-condition> {
-  <stylesheet>
-}
-```
-
-其中 `<container-condition>` 支持以下查询：
-
-- 尺寸查询：`(min-width: 400px)`、`(max-width: 800px)`、`(orientation: landscape)`
-- 复合查询：`(min-width: 400px) and (max-width: 800px)`、`not (min-width: 400px)`
-- 样式查询（实验）：`style(--theme: dark)`、`style(--accent-color: blue)`
-
-### 2.4 容器查询单位
-
-| 单位 | 含义 | 对应视口单位 |
-| --- | --- | --- |
-| `cqw` | 容器宽度的 1% | `vw` |
-| `cqh` | 容器高度的 1% | `vh` |
-| `cqi` | 容器 inline 方向的 1% | `vi` |
-| `cqb` | 容器 block 方向的 1% | `vb` |
-| `cqmin` | `cqi` 与 `cqb` 中较小者 | `vmin` |
-| `cqmax` | `cqi` 与 `cqb` 中较大者 | `vmax` |
-
-### 2.5 形式化定义
-
-设容器 $C$ 的 `container-type` 为 $T \in \{\text{normal}, \text{inline-size}, \text{size}\}$，则：
-
-- 若 $T = \text{normal}$：$C$ 不是查询容器，`@container` 规则不匹配。
-- 若 $T = \text{inline-size}$：$C$ 是 inline-size 容器，可查询 `width`、`inline-size`、`aspect-ratio`。
-- 若 $T = \text{size}$：$C$ 是 size 容器，可查询 `width`、`height`、`inline-size`、`block-size`、`aspect-ratio`、`orientation`。
-
-`@container` 规则的匹配函数：
-
-$$
-\text{Match}(@container, E) =
-\begin{cases}
-\text{true}, & \text{if } \exists C \in \text{Ancestors}(E) \text{ s.t. } \\
-& \quad \text{Type}(C) \neq \text{normal} \\
-& \quad \wedge \text{Name}(C) = \text{Name}(@container) \\
-& \quad \wedge \text{Condition}(@container, C) = \text{true} \\
-\text{false}, & \text{otherwise}
-\end{cases}
-$$
-
-其中 `Ancestors(E)` 是元素 E 的祖先链中最近的匹配容器。
-
-### 2.6 循环依赖的解决
-
-CSS Containment Level 3 通过 `contain: size`（由 `container-type: size` 隐式触发）解决循环依赖：
-
-- 容器的尺寸被声明为「与子元素无关」，浏览器先布局容器，再应用 `@container` 规则。
-- 子元素的样式变化不会回流影响容器尺寸，从而打破循环。
-
-形式化地：
-
-$$
-\text{Layout}(C) \to \text{Evaluate}(@container, C) \to \text{Layout}(\text{Children}(C))
-$$
-
-而非：
-
-$$
-\text{Layout}(\text{Children}(C)) \to \text{Layout}(C) \to \text{Evaluate}(@container, C) \to \text{Layout}(\text{Children}(C)) \to \ldots
-$$
-
----
-
-## 3. 理论推导与原理解析
-
-### 3.1 容器查询的渲染管线
-
-1. 浏览器构建 DOM 树与 CSSOM。
-2. 进行布局（Layout）：计算每个元素的位置与尺寸。
-3. 遇到声明了 `container-type: inline-size` 的元素时，浏览器先计算其尺寸，再匹配 `@container` 规则。
-4. 应用匹配的样式，对子元素进行二次布局。
-5. 进入绘制（Paint）阶段。
-
-### 3.2 `inline-size` vs `size` 的性能差异
-
-`inline-size`：
-
-- 只查询容器的 inline 方向（通常是宽度）。
-- 容器的 block 方向（高度）仍可被子元素撑开。
-- 性能较优，因为只需一次布局。
-
-`size`：
-
-- 同时查询容器的 inline 与 block 方向。
-- 容器必须显式设置高度，否则高度为 0（因 `contain: size` 生效）。
-- 性能较差，因为需要先布局容器，再评估条件，再布局子元素。
-
-数学上，`inline-size` 容器的高度计算函数：
-
-$$
-\text{Height}(C) = f(\text{Content}(C), \text{Styles}(C))
-$$
-
-而 `size` 容器的高度计算函数：
-
-$$
-\text{Height}(C) = \text{ExplicitHeight}(C) \quad \text{(子元素不影响)}
-$$
-
-### 3.3 `container-name` 的命名作用域
-
-当容器嵌套时，`container-name` 用于精确匹配：
-
-```css
-.outer {
-  container-type: inline-size;
-  container-name: outer;
-}
-.inner {
-  container-type: inline-size;
-  container-name: inner;
-}
-
-@container outer (min-width: 800px) {
-  .card { /* 匹配最近的名为 outer 的容器 */ }
-}
-@container inner (min-width: 400px) {
-  .card { /* 匹配最近的名为 inner 的容器 */ }
-}
-```
-
-匹配规则：从子元素向上遍历祖先链，找到第一个匹配名称的容器。若未指定名称，匹配最近的任何类型容器。
-
-### 3.4 `cqi` 单位的计算
-
-`cqi`（container query inline）是容器 inline 方向尺寸的 1%。例如：
-
-```css
-.card {
-  font-size: 5cqi; /* 容器宽度的 5% */
-}
-```
-
-若容器宽度为 400px，则 `5cqi = 5% * 400px = 20px`。
-
-数学定义：
-
-$$
-1\text{cqi} = \frac{\text{Width}(C)}{100}
-$$
-
-当元素不在任何容器内时，`cqi` 回退为视口 inline 方向的 1%（即 `vi`）。
-
-### 3.5 Style Queries 的算法
-
-Style Queries（实验性）允许查询容器的 CSS 变量或计算样式：
-
-```css
-.card-container {
-  --theme: dark;
-  container-type: inline-size;
-}
-@container style(--theme: dark) {
-  .card {
-    background: #1a1a1a;
-    color: white;
-  }
-}
-```
-
-匹配函数：
-
-$$
-\text{Match}(@container\ style(\text{var}: \text{val}), C) =
-\begin{cases}
-\text{true}, & \text{if } \text{getComputedStyle}(C).\text{var} = \text{val} \\
-\text{false}, & \text{otherwise}
-\end{cases}
-$$
-
-注意：Style Queries 仅支持查询自定义属性（CSS Variables），暂不支持查询标准属性（如 `color`、`display`）。
-
-### 3.6 容器查询与可访问性
-
-容器查询提升了组件的灵活性，但需注意可访问性：
-
-1. **字号放大**：用户在浏览器设置中放大字号时，容器尺寸不变，但内容可能溢出。应配合 `text-wrap: balance` 或 `text-wrap: pretty`。
-2. **屏幕阅读器**：容器查询仅影响视觉，不影响 DOM 顺序，对屏幕阅读器友好。
-3. **prefers-reduced-motion**：容器查询触发的布局变化应尊重用户的运动偏好。
-
-```css
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-  }
-}
-```
-
----
-
-## 4. 代码示例
-
-### 4.1 基础示例：响应式卡片
+## 1. 核心必读：代码示例
+### 1.1 基础示例：响应式卡片
 
 ```html
 <!DOCTYPE html>
@@ -430,7 +131,7 @@ $$
 </html>
 ```
 
-### 4.2 命名容器：嵌套场景
+### 1.2 命名容器：嵌套场景
 
 ```html
 <!DOCTYPE html>
@@ -486,7 +187,7 @@ $$
 </html>
 ```
 
-### 4.3 `container-type: size`：查询高度
+### 1.3 `container-type: size`：查询高度
 
 ```html
 <!DOCTYPE html>
@@ -569,7 +270,7 @@ $$
 </html>
 ```
 
-### 4.4 `cqi` 单位：响应式字体
+### 1.4 `cqi` 单位：响应式字体
 
 ```html
 <!DOCTYPE html>
@@ -624,7 +325,7 @@ $$
 </html>
 ```
 
-### 4.5 Style Queries：主题切换（实验性）
+### 1.5 Style Queries：主题切换（实验性）
 
 ```html
 <!DOCTYPE html>
@@ -706,7 +407,7 @@ $$
 </html>
 ```
 
-### 4.6 企业级组件：可复用响应式卡片
+### 1.6 企业级组件：可复用响应式卡片
 
 ```html
 <!DOCTYPE html>
@@ -913,7 +614,7 @@ $$
 </html>
 ```
 
-### 4.7 渐进增强：兼容旧浏览器
+### 1.7 渐进增强：兼容旧浏览器
 
 ```html
 <!DOCTYPE html>
@@ -962,7 +663,7 @@ $$
 </html>
 ```
 
-### 4.8 React 组件示例
+### 1.8 React 组件示例
 
 ```jsx
 // ResponsiveCard.jsx
@@ -1017,7 +718,7 @@ export default function ResponsiveCard({ title, text, image }) {
 }
 ```
 
-### 4.9 Vue 组件示例
+### 1.9 Vue 组件示例
 
 ```vue
 <!-- ResponsiveCard.vue -->
@@ -1076,7 +777,7 @@ defineProps({
 </style>
 ```
 
-### 4.10 调试技巧：DevTools 可视化
+### 1.10 调试技巧：DevTools 可视化
 
 ```html
 <!DOCTYPE html>
@@ -1112,9 +813,8 @@ defineProps({
 
 ---
 
-## 5. 对比分析
-
-### 5.1 容器查询 vs 媒体查询
+## 2. 对比分析
+### 2.1 容器查询 vs 媒体查询
 
 | 维度 | 媒体查询 `@media` | 容器查询 `@container` |
 | --- | --- | --- |
@@ -1127,7 +827,7 @@ defineProps({
 | 嵌套查询 | 不支持 | 支持（`container-name`） |
 | 主题切换 | `prefers-color-scheme` | `style(--var)`（实验） |
 
-### 5.2 容器查询 vs ResizeObserver
+### 2.2 容器查询 vs ResizeObserver
 
 | 维度 | 容器查询 `@container` | ResizeObserver（JS） |
 | --- | --- | --- |
@@ -1140,7 +840,7 @@ defineProps({
 | SSR | 不友好 | 不友好 |
 | 推荐 | 布局适配 | 复杂逻辑场景 |
 
-### 5.3 容器查询 vs CSS 变量驱动
+### 2.3 容器查询 vs CSS 变量驱动
 
 | 维度 | 容器查询 | CSS 变量（props 传递） |
 | --- | --- | --- |
@@ -1150,7 +850,7 @@ defineProps({
 | 学习成本 | 低 | 中（需要 props 设计） |
 | 适用场景 | 视觉适配 | 业务逻辑切换 |
 
-### 5.4 容器查询与 Tailwind CSS
+### 2.4 容器查询与 Tailwind CSS
 
 Tailwind CSS v3.4+ 支持容器查询插件：
 
@@ -1175,7 +875,7 @@ module.exports = {
 };
 ```
 
-### 5.5 容器查询与 Bootstrap
+### 2.5 容器查询与 Bootstrap
 
 Bootstrap 5.3+ 开始在部分组件中使用容器查询：
 
@@ -1192,7 +892,7 @@ Bootstrap 5.3+ 开始在部分组件中使用容器查询：
 }
 ```
 
-### 5.6 容器查询与 Material Design
+### 2.6 容器查询与 Material Design
 
 Material Design 3 在组件库 MDC Web 中引入容器查询：
 
@@ -1217,9 +917,8 @@ Material Design 3 在组件库 MDC Web 中引入容器查询：
 
 ---
 
-## 6. 常见陷阱与最佳实践
-
-### 6.1 陷阱 1：`container-type: size` 导致高度塌陷
+## 3. 常见陷阱与最佳实践
+### 3.1 陷阱 1：`container-type: size` 导致高度塌陷
 
 **问题代码**：
 
@@ -1250,7 +949,7 @@ Material Design 3 在组件库 MDC Web 中引入容器查询：
 }
 ```
 
-### 6.2 陷阱 2：忘记声明 `container-type`
+### 3.2 陷阱 2：忘记声明 `container-type`
 
 **问题代码**：
 
@@ -1273,7 +972,7 @@ Material Design 3 在组件库 MDC Web 中引入容器查询：
 }
 ```
 
-### 6.3 陷阱 3：SSR 场景下的布局抖动
+### 3.3 陷阱 3：SSR 场景下的布局抖动
 
 **问题**：服务端渲染时，容器尺寸未知，`@container` 规则无法预先评估。客户端 hydration 后，容器尺寸变化可能导致布局抖动（CLS）。
 
@@ -1303,7 +1002,7 @@ Material Design 3 在组件库 MDC Web 中引入容器查询：
 </style>
 ```
 
-### 6.4 陷阱 4：`@container` 与 `@media` 混淆
+### 3.4 陷阱 4：`@container` 与 `@media` 混淆
 
 **错误代码**：
 
@@ -1333,7 +1032,7 @@ Material Design 3 在组件库 MDC Web 中引入容器查询：
 }
 ```
 
-### 6.5 陷阱 5：嵌套容器未命名
+### 3.5 陷阱 5：嵌套容器未命名
 
 **问题代码**：
 
@@ -1363,7 +1062,7 @@ Material Design 3 在组件库 MDC Web 中引入容器查询：
 }
 ```
 
-### 6.6 最佳实践清单
+### 3.6 最佳实践清单
 
 1. **优先使用 `inline-size`**：除非需要查询高度，否则使用 `inline-size` 而非 `size`。
 2. **为嵌套容器命名**：使用 `container-name` 避免歧义。
@@ -1376,7 +1075,7 @@ Material Design 3 在组件库 MDC Web 中引入容器查询：
 9. **Storybook 测试**：在各种容器尺寸下进行视觉回归。
 10. **文档化容器边界**：在组件文档中说明容器查询的断点。
 
-### 6.7 兼容性参考
+### 3.7 兼容性参考
 
 | 特性 | Chrome | Firefox | Safari | Edge |
 | --- | --- | --- | --- | --- |
@@ -1390,9 +1089,8 @@ Material Design 3 在组件库 MDC Web 中引入容器查询：
 
 ---
 
-## 7. 工程实践
-
-### 7.1 PostCSS 容器查询 polyfill
+## 4. 工程实践
+### 4.1 PostCSS 容器查询 polyfill
 
 ```javascript
 // postcss.config.js
@@ -1408,7 +1106,7 @@ module.exports = {
 };
 ```
 
-### 7.2 设计令牌：容器断点系统
+### 4.2 设计令牌：容器断点系统
 
 ```css
 :root {
@@ -1430,7 +1128,7 @@ module.exports = {
 }
 ```
 
-### 7.3 SCSS 工具 mixin
+### 4.3 SCSS 工具 mixin
 
 ```scss
 // _container-queries.scss
@@ -1468,7 +1166,7 @@ module.exports = {
 }
 ```
 
-### 7.4 Tailwind 配置
+### 4.4 Tailwind 配置
 
 ```javascript
 // tailwind.config.js
@@ -1488,7 +1186,7 @@ module.exports = {
 };
 ```
 
-### 7.5 性能优化
+### 4.5 性能优化
 
 1. **避免 `size` 容器**：除非必须，使用 `inline-size` 减少布局开销。
 2. **限制容器数量**：每个 `container-type` 都会创建独立的布局上下文，过多会降低性能。
@@ -1502,14 +1200,14 @@ module.exports = {
 }
 ```
 
-### 7.6 调试工具
+### 4.6 调试工具
 
 1. **Chrome DevTools 105+**：在 Elements 面板显示 `@container` 标记。
 2. **Firefox DevTools**：盒模型可视化中显示容器边界。
 3. **Safari Web Inspector**：CSS 编辑器支持 `@container` 语法高亮。
 4. **VS Code 插件**：CSS Language Service 支持 `@container` 智能补全。
 
-### 7.7 自动化测试
+### 4.7 自动化测试
 
 ```javascript
 // container-queries.test.js
@@ -1548,7 +1246,7 @@ test('卡片在宽容器下水平布局', async ({ page }) => {
 });
 ```
 
-### 7.8 ESLint 规则（CSS-in-JS）
+### 4.8 ESLint 规则（CSS-in-JS）
 
 ```javascript
 // .stylelintrc.js
@@ -1567,9 +1265,8 @@ module.exports = {
 
 ---
 
-## 8. 案例研究
-
-### 8.1 案例一：Bootstrap 5.3 的容器查询实践
+## 5. 案例研究
+### 5.1 案例一：Bootstrap 5.3 的容器查询实践
 
 Bootstrap 5.3 在部分组件中引入容器查询，例如卡片组件：
 
@@ -1593,7 +1290,7 @@ Bootstrap 5.3 在部分组件中引入容器查询，例如卡片组件：
 - Bootstrap 5.3 仍以媒体查询为主，容器查询为辅。
 - 通过容器查询，卡片组件在不同栅格列中表现一致。
 
-### 8.2 案例二：Tailwind CSS 的 `@container` 插件
+### 5.2 案例二：Tailwind CSS 的 `@container` 插件
 
 Tailwind v3.4 提供 `@tailwindcss/container-queries` 插件：
 
@@ -1623,7 +1320,7 @@ Tailwind v3.4 提供 `@tailwindcss/container-queries` 插件：
 - 使用 `@` 前缀避免与媒体查询 `md:` 冲突。
 - 断点（`@sm`、`@md`、`@lg`）与媒体查询断点一致。
 
-### 8.3 案例三：Material Design 3 的容器查询
+### 5.3 案例三：Material Design 3 的容器查询
 
 Material Design 3 在 MDC Web 中使用容器查询：
 
@@ -1650,7 +1347,7 @@ Material Design 3 在 MDC Web 中使用容器查询：
 - 遵循 Material Design 的 8dp 网格。
 - 卡片在 Drawer、Modal、Full-screen 三种容器中表现一致。
 
-### 8.4 案例四：GitHub Primer 的容器查询
+### 5.4 案例四：GitHub Primer 的容器查询
 
 GitHub Primer 在部分组件中使用容器查询：
 
@@ -1666,7 +1363,7 @@ GitHub Primer 在部分组件中使用容器查询：
 }
 ```
 
-### 8.5 案例五：Ant Design 的容器查询
+### 5.5 案例五：Ant Design 的容器查询
 
 Ant Design v5 部分组件支持容器查询：
 
@@ -1682,7 +1379,7 @@ Ant Design v5 部分组件支持容器查询：
 }
 ```
 
-### 8.6 案例六：真实生产实践
+### 5.6 案例六：真实生产实践
 
 **场景**：某新闻网站的文章卡片，可能出现在侧栏（240px）、主内容区（640px）、全屏 Modal（1200px）三种场景。
 
@@ -2146,6 +1843,349 @@ Ant Design v5 部分组件支持容器查询：
 
 ---
 
+## 6. 深入理解（选读）
+
+> 以下内容适合想彻底搞懂机制原理的读者，第一遍学习可跳过。
+
+### 6.1 历史演进
+
+### 6.1.1 媒体查询的局限（2010s）
+
+CSS Media Queries 在 2012 年随 CSS3 引入，让 Web 设计进入响应式时代。开发者通过 `@media (min-width: 768px)` 等条件针对视口尺寸适配。然而，组件化时代的到来暴露了媒体查询的根本缺陷：
+
+```html
+<!-- 一个卡片组件可能出现在侧栏（200px 宽）或主内容区（800px 宽） -->
+<aside class="sidebar">
+  <Card /> <!-- 在 200px 容器内仍按视口（如 1440px）的样式渲染 -->
+</aside>
+<main class="content">
+  <Card /> <!-- 在 800px 容器内 -->
+</main>
+```
+
+问题：卡片组件无法感知自身容器的实际宽度，只能依赖父级传递 props 或 JS 监听 ResizeObserver。这种「视口驱动」的响应式与「组件驱动」的设计系统存在根本矛盾。
+
+### 6.1.2 早期尝试：Element Query（2013-2017）
+
+社区曾提出「Element Queries」构想：
+
+```css
+/* 假想语法，从未标准化 */
+.card(min-width: 400px) {
+  display: flex;
+}
+```
+
+但元素查询存在循环依赖问题：若元素 A 的样式依赖于自身的宽度，而样式又影响宽度，将导致无限循环。例如：
+
+```css
+/* 循环依赖示例 */
+.box(min-width: 200px) {
+  width: 100px; /* 改变自身宽度，触发条件失效，再变回... */
+}
+```
+
+W3C 长期拒绝将元素查询纳入规范，正是因为此问题。
+
+### 6.1.3 CSS Containment 的引入（2016）
+
+[CSS Containment Module Level 1](https://www.w3.org/TR/css-contain-1/) 引入了 `contain` 属性，允许浏览器隔离元素的渲染，提升性能：
+
+```css
+.component {
+  contain: layout paint size; /* 隔离布局、绘制与尺寸 */
+}
+```
+
+`contain: size` 的关键意义：明确告知浏览器「该元素的尺寸不受子元素影响」，从而打破元素查询的循环依赖。这为容器查询奠定了基础。
+
+### 6.1.4 Container Queries Level 3（2021-2023）
+
+2021 年，Miriam Suzanne 与 Tab Atkins 在 [CSS Containment Module Level 3](https://www.w3.org/TR/css-contain-3/) 中正式提出容器查询规范：
+
+- `container-type` 属性：声明元素为查询容器。
+- `container-name` 属性：为容器命名，支持多层嵌套时的精确匹配。
+- `@container` 规则：根据容器条件应用样式。
+- `cqw`、`cqh`、`cqi`、`cqb`、`cqmin`、`cqmax` 单位：相对于容器尺寸的长度单位。
+
+2022 年 8 月，Chrome 105、Safari 16、Firefox 110 相继实现容器查询，正式进入生产可用阶段。
+
+### 6.1.5 Style Queries 的实验（2023+）
+
+容器查询的下一阶段是「样式查询」（Style Queries），允许根据容器的 CSS 变量或计算样式应用规则：
+
+```css
+@container style(--theme: dark) {
+  .card {
+    background: #1a1a1a;
+  }
+}
+```
+
+截至 2024 年，Chrome 111+ 部分支持，Safari 与 Firefox 仍在实现中。
+
+### 6.1.6 演进时间线
+
+| 年份 | 事件 | 核心变化 |
+| --- | --- | --- |
+| 2012 | CSS Media Queries Level 3 推荐 | 视口驱动响应式 |
+| 2013 | 社区提出 Element Query | 因循环依赖被否决 |
+| 2016 | CSS Containment Level 1 | 引入 `contain` 属性 |
+| 2019 | Miriam Suzanne 提议 Container Query | 基于 containment 解决循环 |
+| 2021 | CSS Containment Level 3 草案 | `container-type`、`@container` 规范化 |
+| 2022.8 | Chrome 105 / Safari 16 实现 | 容器查询进入生产可用 |
+| 2023 | Style Queries 实验 | `style(--var: val)` 查询 |
+| 2024 | 容器查询单位普及 | `cqi` 单位被广泛使用 |
+
+---
+
+### 6.2 形式化定义
+
+### 6.2.1 规范条款
+
+依据 [CSS Containment Module Level 3 §3](https://www.w3.org/TR/css-contain-3/#container-queries)：
+
+> A container query allows styling of elements based on the size of a container element rather than the viewport.
+
+### 6.2.2 核心属性
+
+| 属性 | 取值 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `container-type` | `normal` \| `inline-size` \| `size` | `normal` | 声明容器类型 |
+| `container-name` | `<custom-ident>+` \| `none` | `none` | 容器命名 |
+| `container` | `<container-type>` \|\| `<container-name>` | - | 简写属性 |
+
+### 6.2.3 `@container` 规则语法
+
+```
+@container [ <container-name> ]? <container-condition> {
+  <stylesheet>
+}
+```
+
+其中 `<container-condition>` 支持以下查询：
+
+- 尺寸查询：`(min-width: 400px)`、`(max-width: 800px)`、`(orientation: landscape)`
+- 复合查询：`(min-width: 400px) and (max-width: 800px)`、`not (min-width: 400px)`
+- 样式查询（实验）：`style(--theme: dark)`、`style(--accent-color: blue)`
+
+### 6.2.4 容器查询单位
+
+| 单位 | 含义 | 对应视口单位 |
+| --- | --- | --- |
+| `cqw` | 容器宽度的 1% | `vw` |
+| `cqh` | 容器高度的 1% | `vh` |
+| `cqi` | 容器 inline 方向的 1% | `vi` |
+| `cqb` | 容器 block 方向的 1% | `vb` |
+| `cqmin` | `cqi` 与 `cqb` 中较小者 | `vmin` |
+| `cqmax` | `cqi` 与 `cqb` 中较大者 | `vmax` |
+
+### 6.2.5 形式化定义
+
+设容器 $C$ 的 `container-type` 为 $T \in \{\text{normal}, \text{inline-size}, \text{size}\}$，则：
+
+- 若 $T = \text{normal}$：$C$ 不是查询容器，`@container` 规则不匹配。
+- 若 $T = \text{inline-size}$：$C$ 是 inline-size 容器，可查询 `width`、`inline-size`、`aspect-ratio`。
+- 若 $T = \text{size}$：$C$ 是 size 容器，可查询 `width`、`height`、`inline-size`、`block-size`、`aspect-ratio`、`orientation`。
+
+`@container` 规则的匹配函数：
+
+$$
+\text{Match}(@container, E) =
+\begin{cases}
+\text{true}, & \text{if } \exists C \in \text{Ancestors}(E) \text{ s.t. } \\
+& \quad \text{Type}(C) \neq \text{normal} \\
+& \quad \wedge \text{Name}(C) = \text{Name}(@container) \\
+& \quad \wedge \text{Condition}(@container, C) = \text{true} \\
+\text{false}, & \text{otherwise}
+\end{cases}
+$$
+
+其中 `Ancestors(E)` 是元素 E 的祖先链中最近的匹配容器。
+
+### 6.2.6 循环依赖的解决
+
+CSS Containment Level 3 通过 `contain: size`（由 `container-type: size` 隐式触发）解决循环依赖：
+
+- 容器的尺寸被声明为「与子元素无关」，浏览器先布局容器，再应用 `@container` 规则。
+- 子元素的样式变化不会回流影响容器尺寸，从而打破循环。
+
+形式化地：
+
+$$
+\text{Layout}(C) \to \text{Evaluate}(@container, C) \to \text{Layout}(\text{Children}(C))
+$$
+
+而非：
+
+$$
+\text{Layout}(\text{Children}(C)) \to \text{Layout}(C) \to \text{Evaluate}(@container, C) \to \text{Layout}(\text{Children}(C)) \to \ldots
+$$
+
+---
+
+### 6.3 理论推导与原理解析
+
+### 6.3.1 容器查询的渲染管线
+
+1. 浏览器构建 DOM 树与 CSSOM。
+2. 进行布局（Layout）：计算每个元素的位置与尺寸。
+3. 遇到声明了 `container-type: inline-size` 的元素时，浏览器先计算其尺寸，再匹配 `@container` 规则。
+4. 应用匹配的样式，对子元素进行二次布局。
+5. 进入绘制（Paint）阶段。
+
+### 6.3.2 `inline-size` vs `size` 的性能差异
+
+`inline-size`：
+
+- 只查询容器的 inline 方向（通常是宽度）。
+- 容器的 block 方向（高度）仍可被子元素撑开。
+- 性能较优，因为只需一次布局。
+
+`size`：
+
+- 同时查询容器的 inline 与 block 方向。
+- 容器必须显式设置高度，否则高度为 0（因 `contain: size` 生效）。
+- 性能较差，因为需要先布局容器，再评估条件，再布局子元素。
+
+数学上，`inline-size` 容器的高度计算函数：
+
+$$
+\text{Height}(C) = f(\text{Content}(C), \text{Styles}(C))
+$$
+
+而 `size` 容器的高度计算函数：
+
+$$
+\text{Height}(C) = \text{ExplicitHeight}(C) \quad \text{(子元素不影响)}
+$$
+
+### 6.3.3 `container-name` 的命名作用域
+
+当容器嵌套时，`container-name` 用于精确匹配：
+
+```css
+.outer {
+  container-type: inline-size;
+  container-name: outer;
+}
+.inner {
+  container-type: inline-size;
+  container-name: inner;
+}
+
+@container outer (min-width: 800px) {
+  .card { /* 匹配最近的名为 outer 的容器 */ }
+}
+@container inner (min-width: 400px) {
+  .card { /* 匹配最近的名为 inner 的容器 */ }
+}
+```
+
+匹配规则：从子元素向上遍历祖先链，找到第一个匹配名称的容器。若未指定名称，匹配最近的任何类型容器。
+
+### 6.3.4 `cqi` 单位的计算
+
+`cqi`（container query inline）是容器 inline 方向尺寸的 1%。例如：
+
+```css
+.card {
+  font-size: 5cqi; /* 容器宽度的 5% */
+}
+```
+
+若容器宽度为 400px，则 `5cqi = 5% * 400px = 20px`。
+
+数学定义：
+
+$$
+1\text{cqi} = \frac{\text{Width}(C)}{100}
+$$
+
+当元素不在任何容器内时，`cqi` 回退为视口 inline 方向的 1%（即 `vi`）。
+
+### 6.3.5 Style Queries 的算法
+
+Style Queries（实验性）允许查询容器的 CSS 变量或计算样式：
+
+```css
+.card-container {
+  --theme: dark;
+  container-type: inline-size;
+}
+@container style(--theme: dark) {
+  .card {
+    background: #1a1a1a;
+    color: white;
+  }
+}
+```
+
+匹配函数：
+
+$$
+\text{Match}(@container\ style(\text{var}: \text{val}), C) =
+\begin{cases}
+\text{true}, & \text{if } \text{getComputedStyle}(C).\text{var} = \text{val} \\
+\text{false}, & \text{otherwise}
+\end{cases}
+$$
+
+注意：Style Queries 仅支持查询自定义属性（CSS Variables），暂不支持查询标准属性（如 `color`、`display`）。
+
+### 6.3.6 容器查询与可访问性
+
+容器查询提升了组件的灵活性，但需注意可访问性：
+
+1. **字号放大**：用户在浏览器设置中放大字号时，容器尺寸不变，但内容可能溢出。应配合 `text-wrap: balance` 或 `text-wrap: pretty`。
+2. **屏幕阅读器**：容器查询仅影响视觉，不影响 DOM 顺序，对屏幕阅读器友好。
+3. **prefers-reduced-motion**：容器查询触发的布局变化应尊重用户的运动偏好。
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+```
+
+---
+
+## 7. 本章综合挑战（选做）
+
+1. 给一个卡片容器加 `container-type: inline-size`，用 `@container` 在窄/宽两种尺寸下切换布局；
+2. 用容器查询单位 `cqw` 让标题字号跟随容器宽度；
+3. 对比 `@media` 与 `@container` 在同一个组件上的行为差异；
+4. 用 `container-name` 命名容器，让嵌套容器精确匹配。
+
+## 8. 核心知识点
+
+> 一句话记住容器查询：`container-type` 建上下文，`@container` 写条件，`cqw`/`cqh` 取尺寸；组件看容器，不看屏幕。
+
+- 容器查询让组件按父容器尺寸响应，而非视口；
+- 建立上下文：`container-type: inline-size`（或 `size`）；
+- 条件语法：`@container (min-width: 400px)`；
+- 容器查询单位：`cqw`/`cqh`/`cqi`/`cqb` 相对容器尺寸；
+- `container-name` 命名容器，避免嵌套冲突；
+- 浏览器支持：现代浏览器已普遍可用，旧环境用媒体查询兜底。
+
+## 9. 注意事项与改进建议
+
+| 问题点 | 说明 | 改进方案 |
+| --- | --- | --- |
+| 忘记 `container-type` | 查询不生效 | 先在容器上建立上下文 |
+| 与媒体查询混用 | 行为不一致 | 组件内用容器查询，页面级用媒体查询 |
+| 嵌套容器歧义 | 命中错误容器 | 用 `container-name` 明确指向 |
+| 依赖容器查询做整页布局 | 视口级需求不适用 | 页面骨架仍用媒体查询 |
+| 旧浏览器不兼容 | 组件样式缺失 | 提供媒体查询兜底 |
+
+## 10. 扩展学习
+
+- 媒体查询：`css/019-MediaQuery`；
+- 响应式设计：`css/030-ResponsiveDesign`；
+- 新特性：`css/041-CSSNewFeatures`；
+- 组件化实践：`css/045-CSSProjectExampleResponsiveHomepage`。
+
 ## 附录 A：术语表
 
 | 术语 | 英文 | 定义 |
@@ -2197,7 +2237,9 @@ Ant Design v5 部分组件支持容器查询：
 ---
 
 > 本文最后更新于 2026-06-14，内容基于 W3C CSS Containment Module Level 3（2024 Working Draft）。如规范更新，请以 W3C 最新发布为准。
-## 建立容器上下文
+## 附录 D：容器查询速查
+
+### D.1 建立容器上下文
 
 **基本写法：声明查询容器**
 `container-type: <size|inline-size|normal>;`
