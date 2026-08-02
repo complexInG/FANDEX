@@ -68,6 +68,13 @@ def process(values: list[int], flag: bool = False) -> str | None:
     ...
 ```
 
+**讲解：**
+
+1. `typing` 模块提供类型标注工具：Optional 表示可空，Union 表示联合，List 表示列表。
+2. 类型标注只在开发期与静态检查工具（mypy/pyright）中使用，不影响运行。
+3. 现代 Python 推荐直接用 `list[str]`、`int | None` 内置写法，typing 旧写法用于兼容。
+
+
 ### 1.2 "一切皆对象"的设计哲学
 
 Python 的核心设计哲学是"一切皆对象"（Everything is an object）。这意味着：
@@ -116,6 +123,13 @@ Python 的基础数据类型（`int`、`float`、`complex`、`bool`、`str`、`b
 >>> 0.1 + 0.2 == 0.3
 False
 ```
+
+**讲解：**
+
+1. `>>>` 是 Python 交互式提示符，直接回车即可看到表达式结果。
+2. `0.1 + 0.2` 输出 `0.30000000000000004`：二进制浮点无法精确表示 0.1。
+3. 金额等精确计算用 Decimal，见后面示例。
+
 
 这一现象并非 Python 独有，而是 IEEE 754 标准的固有特性，影响所有使用二进制浮点的语言（C、Java、JavaScript 等）。Python 的 `decimal` 模块（PEP 327）通过十进制浮点运算解决了这一问题，适用于金融、会计等对精度敏感的场景。
 
@@ -307,6 +321,13 @@ True
 False  # 大整数不缓存
 ```
 
+**讲解：**
+
+1. Python 是动态类型：同一变量可以先存整数再存字符串。
+2. 灵活性高，但大项目易出错——类型标注 + 静态检查可以弥补。
+3. `type(a)` 可以查看变量当前类型。
+
+
 ### 3.2 字符串驻留机制
 
 字符串驻留（interning）是 Python 的内存优化机制。符合标识符规则的字符串（仅含字母、数字、下划线）会被自动驻留：
@@ -337,6 +358,13 @@ False  # 含空格，不自动驻留
 >>> a is b
 True  # 显式驻留
 ```
+
+**讲解：**
+
+1. 字符串与整数互转要显式：`int("42")`、`str(42)`。
+2. 隐式拼接数字与字符串会报 TypeError。
+3. 复习动态类型：a 的类型随赋值变化。
+
 
 ### 3.3 IEEE 754 精度误差分析
 
@@ -410,6 +438,13 @@ math.isclose(0.1 + 0.2, 0.3)  # True
 math.isclose(a, b, rel_tol=1e-6, abs_tol=1e-9)
 ```
 
+**讲解：**
+
+1. `math` 是标准库数学模块：`isclose` 比较浮点数是否近似相等。
+2. `rel_tol` 是相对容差：两数差距小于该比例即认为相等。
+3. 浮点比较一律用 isclose，不要用 ==。
+
+
 ### 3.5 Decimal 的精度模型
 
 `decimal.Decimal` 使用十进制浮点运算，精度由上下文（context）控制：
@@ -435,6 +470,13 @@ Decimal('0.1') + Decimal('0.2')  # Decimal('0.3')
 getcontext().prec = 50
 Decimal(1) / Decimal(7)  # 50 位有效数字
 ```
+
+**讲解：**
+
+1. `Decimal` 提供十进制精确运算，适合金额场景。
+2. 从字符串构造 Decimal（`Decimal("0.1")`）才能保证精确。
+3. `getcontext().prec` 设置全局精度位数。
+
 
 ### 3.6 整数任意精度的性能分析
 
@@ -486,6 +528,13 @@ data = ['a', 'b', 'c']
 data[True]  # 'b'，等价于 data[1]
 ```
 
+**讲解：**
+
+1. Python 中 `bool` 是 `int` 子类：True 等于 1，False 等于 0。
+2. `sum([True, False, True])` 因此直接得到 2。
+3. 这是 Python 与多数语言不同的特性，知道即可。
+
+
 **陷阱**：
 
 ```python
@@ -496,6 +545,13 @@ isinstance(True, int)  # True，可能出乎意料
 d = {1: 'int', True: 'bool'}
 d  # {1: 'bool'}，True 覆盖了 1
 ```
+
+**讲解：**
+
+1. `isinstance(x, int)` 判断 x 是否为 int 类型（含子类）。
+2. 与 `type(x) == int` 的区别：isinstance 识别继承关系。
+3. 运行时类型检查推荐 isinstance。
+
 
 设计决策：在需要严格区分 `bool` 与 `int` 的场景，使用 `type(x) is bool` 而非 `isinstance(x, bool)`。
 
@@ -621,6 +677,13 @@ if __name__ == '__main__':
     print("\n=== 内存占用 ===")
     demo_integer_memory()
 ```
+
+**讲解：**
+
+1. 三引号字符串是文档字符串（docstring），写在模块/函数第一行。
+2. 用 `help(函数名)` 或 `函数名.__doc__` 查看。
+3. 也是多行字符串的一种写法。
+
 
 ### 4.2 浮点数与精度陷阱
 
@@ -779,6 +842,13 @@ if __name__ == '__main__':
     print("\n=== Decimal 金融场景 ===")
     demo_decimal_for_finance()
 ```
+
+**讲解：**
+
+1. 这是类级 docstring：说明类的作用。
+2. 编辑器会把它显示为悬浮文档。
+3. 公共 API 必须写 docstring。
+
 
 ### 4.3 字符串与编码
 
@@ -975,6 +1045,13 @@ if __name__ == '__main__':
     print("\n=== 字符串内存 ===")
     demo_string_memory()
 ```
+
+**讲解：**
+
+1. 方法 docstring 说明方法职责与参数。
+2. 与函数 docstring 规则一致。
+3. 保持“一句话说明用途 + 可选参数说明”的简洁风格。
+
 
 ### 4.4 布尔类型与 None
 
@@ -1194,6 +1271,13 @@ if __name__ == '__main__':
     demo_null_object_pattern()
 ```
 
+**讲解：**
+
+1. 模块级 docstring 描述整个模块的用途。
+2. 放在模块文件最顶部（import 之前）。
+3. 大型项目用它说明模块边界。
+
+
 ### 4.5 类型转换与 Decimal/Fraction
 
 ```python
@@ -1396,6 +1480,13 @@ if __name__ == '__main__':
     print("\n=== 数值选型 ===")
     demo_numeric_choice()
 ```
+
+**讲解：**
+
+1. 这是带参数说明的完整 docstring 风格。
+2. `:param x:` 与 `:return:` 是 reST 格式，Sphinx 可生成文档。
+3. 团队统一一种 docstring 风格即可。
+
 
 ### 4.6 bytes、bytearray 与 memoryview
 
@@ -1614,6 +1705,13 @@ if __name__ == '__main__':
     demo_base64_hex()
 ```
 
+**讲解：**
+
+1. 带类型说明的 docstring：参数类型写在冒号后。
+2. 配合类型标注形成双重文档。
+3. 现代项目更倾向类型标注 + 简短 docstring。
+
+
 ## 5. 对比分析
 
 ### 5.1 数值类型对比
@@ -1683,6 +1781,13 @@ def calculate_total(prices: list[float]) -> bool:
     return total == 100.0  # 可能因浮点误差返回 False
 ```
 
+**讲解：**
+
+1. 反模式：用 `==` 比较浮点运算结果。
+2. 0.1+0.2 与 0.3 在二进制下不相等，比较必失败。
+3. 修复见下一块：用 math.isclose。
+
+
 **事故案例**：某电商平台的促销活动，计算商品总价是否达到优惠门槛（100 元）。由于浮点误差，`19.99 + 5.49 + 3.50 + 71.02` 结果为 `100.00000000000001`，与 `100.0` 不相等，导致用户无法享受优惠。该问题在测试环境未复现，仅在特定价格组合下出现，排查耗时 8 小时。
 
 **正确做法**：
@@ -1710,6 +1815,13 @@ def calculate_total_v3(prices_in_cents: list[int], target_cents: int = 10000) ->
     return sum(prices_in_cents) == target_cents
 ```
 
+**讲解：**
+
+1. 正解：`math.isclose(a, b)` 做近似比较。
+2. 相对容差 rel_tol 默认 1e-9，足够多数场景。
+3. 记住口诀：浮点不比较相等，只比较接近。
+
+
 ### 6.2 可变默认参数
 
 **反模式**：
@@ -1727,6 +1839,13 @@ print(add_item(1))  # [1]
 print(add_item(2))  # [1, 2]，而不是 [2]
 ```
 
+**讲解：**
+
+1. 反模式：默认参数写 `items=[]`——默认值在函数定义时创建一次。
+2. 多次调用会共享同一个列表，越加越多。
+3. 修复见下一块：默认值写 None，函数内新建。
+
+
 **事故案例**：某 Web 框架的请求处理函数使用 `def handle(request, cache=[])` 缓存数据。在高并发下，多个请求共享同一 cache 列表，导致用户 A 看到了用户 B 的数据。该问题在单用户测试时未复现，上线后引发数据泄漏投诉。
 
 **正确做法**：
@@ -1743,6 +1862,13 @@ print(add_item(1))  # [1]
 print(add_item(2))  # [2]
 ```
 
+**讲解：**
+
+1. 正解：默认参数为 None，函数体内 `if items is None: items = []`。
+2. 每次调用都得到新列表，互不干扰。
+3. 这是 Python 面试必考的可变默认参数陷阱。
+
+
 ### 6.3 is 与 == 混淆
 
 **反模式**：
@@ -1757,6 +1883,13 @@ print(a is b)  # False（大整数不缓存）
 if x == None:  # 应该用 is None
     ...
 ```
+
+**讲解：**
+
+1. 反模式：用 `is` 比较两个字符串/数字值。
+2. `is` 比较对象身份（内存地址），`==` 比较值。
+3. 小整数与短字符串可能因驻留巧合相等，但这是实现细节，不能依赖。
+
 
 **事故案例**：某服务在开发环境（使用小整数）测试通过，但在生产环境（大整数 ID）下，`if user_id is target_id` 始终返回 False，导致权限检查失效。
 
@@ -1775,6 +1908,13 @@ if x is True:  # 而非 x == True
     ...
 ```
 
+**讲解：**
+
+1. 正解：值比较一律 `==`，`is` 只用于 `is None` 判断。
+2. `x is None` 是唯一推荐使用 is 的常见场景。
+3. 记住：is 问“是同一个对象吗”，== 问“值相等吗”。
+
+
 ### 6.4 整数除法的负数行为
 
 **反模式**：
@@ -1787,6 +1927,13 @@ def calculate_pages(total: int, per_page: int) -> int:
 
 print(calculate_pages(-10, 3))  # -2（-10 // 3 = -4，+1 = -3）
 ```
+
+**讲解：**
+
+1. `//` 是向下取整（floor）：`-7 // 2` 得 -4，不是 -3。
+2. 与 C/Java 的向零取整不同，这是 Python 常见认知坑。
+3. 需要向零取整用 `int(a / b)` 或 math.trunc。
+
 
 **正确做法**：
 
@@ -1805,6 +1952,13 @@ def calculate_pages_v2(total: int, per_page: int) -> int:
     return quotient + (1 if remainder > 0 else 0)
 ```
 
+**讲解：**
+
+1. `math.trunc` 向零取整，`math.floor` 向下取整。
+2. 示例展示两者对负数的差异。
+3. 业务上“分页、偏移”等场景先想清楚取整方向。
+
+
 ### 6.5 字符串编码错误
 
 **反模式**：
@@ -1821,6 +1975,13 @@ def process(data) -> str:
     """处理数据"""
     return data + "suffix"  # 如果 data 是 bytes，会 TypeError
 ```
+
+**讲解：**
+
+1. 反模式：读取文件不指定编码，依赖系统默认值。
+2. 换机器后默认编码变化，中文内容可能乱码。
+3. 修复见下一块：显式传 encoding='utf-8'。
+
 
 **事故案例**：某数据处理脚本在 Windows 开发环境（默认 GBK）运行正常，部署到 Linux 服务器（默认 UTF-8）后读取含中文的文件报 `UnicodeDecodeError`。
 
@@ -1839,6 +2000,13 @@ def process(data) -> str:
     return data + "suffix"
 ```
 
+**讲解：**
+
+1. 正解：open 时显式指定 `encoding='utf-8'`。
+2. 配合 `with` 语句自动关闭文件。
+3. 写入文件同样要指定编码，保证跨平台一致。
+
+
 ### 6.6 round() 的银行家舍入
 
 **反模式**：
@@ -1852,6 +2020,13 @@ def calculate_tax(amount: float) -> float:
 print(calculate_tax(2.675))  # 0.21（不是 0.22！）
 # 因为 round() 使用银行家舍入，且 2.675 实际是 2.674999...
 ```
+
+**讲解：**
+
+1. `round()` 采用银行家舍入：0.5 向偶数靠拢。
+2. `round(0.5)` 得 0，`round(1.5)` 得 2。
+3. 业务要求严格四舍五入时用 Decimal 的 ROUND_HALF_UP。
+
 
 **事故案例**：某财务系统的税额计算使用 `round()`，导致大量交易税额少收 1 分钱，累计损失显著。
 
@@ -1868,6 +2043,13 @@ def calculate_tax(amount: Decimal) -> Decimal:
 print(calculate_tax(Decimal('2.675')))  # 0.22
 ```
 
+**讲解：**
+
+1. `Decimal("2.5").quantize(Decimal("0"), rounding=ROUND_HALF_UP)` 实现四舍五入。
+2. `quantize` 指定保留到哪一位，rounding 指定舍入模式。
+3. 金额、统计场景用这套 API 而不是 round()。
+
+
 ### 6.7 布尔作为整数索引
 
 **反模式**：
@@ -1883,6 +2065,13 @@ flag = True
 print(data[flag])  # 'b'（可能不是预期）
 ```
 
+**讲解：**
+
+1. bool 是 int 子类：True 与 1 哈希相同，字典里会互相覆盖。
+2. `{True: 'a', 1: 'b'}` 实际只有一项。
+3. 字典键应使用语义明确的字符串或元组。
+
+
 **正确做法**：
 
 ```python
@@ -1897,6 +2086,13 @@ print(data[index])
 print('b' if flag else 'a')
 ```
 
+**讲解：**
+
+1. 正解：键用字符串（"enabled"），避免 True/1 冲突。
+2. 需要布尔语义时在值里表达，而不是键。
+3. 这类“看似能跑”的陷阱正是类型标注的价值所在。
+
+
 ### 6.8 大字符串的 += 操作
 
 **反模式**：
@@ -1910,6 +2106,13 @@ def build_csv(rows: list[list[str]]) -> str:
         result += ",".join(row) + "\n"
     return result
 ```
+
+**讲解：**
+
+1. 反模式：循环里 `s += item`——字符串不可变，每次拼接都创建新对象。
+2. 数据量大时是 O(n^2) 复杂度。
+3. 修复见下一块：用列表收集后 join。
+
 
 **正确做法**：
 
@@ -1930,6 +2133,13 @@ def build_csv_v2(rows: list[list[str]]) -> str:
         buffer.write("\n")
     return buffer.getvalue()
 ```
+
+**讲解：**
+
+1. 正解：把片段收集到列表，最后 `"".join(parts)`。
+2. join 只创建一次最终字符串，性能好一个数量级。
+3. 这是 Python 字符串拼接的标准最佳实践。
+
 
 ## 7. 工程实践
 
@@ -2022,6 +2232,13 @@ for i, share in enumerate(shares):
 # 份额 3: 33.34 CNY（余数给最后一份）
 ```
 
+**讲解：**
+
+1. 综合示例的模块 docstring：说明模块职责。
+2. 文档字符串是 Python 文化的一部分，公开代码必写。
+3. 本模块把“类型、陷阱、最佳实践”串成一个完整练习。
+
+
 ### 7.2 类型安全的配置处理
 
 ```python
@@ -2099,6 +2316,13 @@ if __name__ == '__main__':
     print(f"port: {port} ({type(port)})")          # 8080
     print(f"hosts: {hosts} ({type(hosts)})")       # ['localhost', '127.0.0.1', 'example.com']
 ```
+
+**讲解：**
+
+1. 综合示例的函数 docstring：说明函数做什么与参数含义。
+2. 配合类型标注，调用方无需读实现即可正确使用。
+3. 写完 docstring 后用 help() 自检一次。
+
 
 ### 7.3 二进制协议解析器
 
