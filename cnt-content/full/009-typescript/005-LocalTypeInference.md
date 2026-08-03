@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: advanced
 description: 字面量类型、联合类型、可辨识联合的形式语义、类型论基础与穷尽性检查的工程实践
 author: fanquanpp
-updated: '2026-07-20'
+updated: '2026-08-03'
 related:
   - 'typescript/003-InterfaceTypeAlias'
   - 'typescript/004-FunctionGeneric'
@@ -16,6 +16,21 @@ related:
   - 'typescript/044-MappedTypeKeyRemap'
 prerequisites: []
 ---
+> ????????????????????????? `Γ ⊢ e : τ`?????????????????"????"???????????????????????????????????
+
+
+## 0. 为什么需要这一篇（先读）
+
+> 一句话直觉：类型推断 = 你家的"智能管家"。你不写类型，TS 会根据你给的值自动猜出类型；猜对了你少打字，猜错了它立刻提醒你。
+
+JavaScript 里 `let x = 1` 就是数字、`"a"` 就是字符串，写起来很自由；TypeScript 想保持这份自由，又不想失去类型安全，于是有了**类型推断（Inference）**：能自动推断的地方不强制你写注解，只有推断不出来时才要求你写。
+
+本节导航：
+
+1. 先看"字面量类型与联合类型"（基础，必读）；
+2. 再看"类型推断的规则"（核心，必读）；
+3. 最后看"可辨识联合"与实战示例（进阶，第一遍可浏览）；
+4. 理论推导与形式化定义（含 ADT 符号）——按开头的统一规则直接跳过。
 
 ## 引言：从 JavaScript 的灵活性到 TypeScript 的精确性
 
