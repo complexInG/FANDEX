@@ -1,5 +1,5 @@
 ---
-order: 280
+order: 320
 title: 类型安全的事件系统
 module: 'typescript'
 category: 前端技术

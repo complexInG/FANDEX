@@ -1,5 +1,5 @@
 ---
-order: 510
+order: 550
 title: TypeScript 理论知识点
 module: 'typescript'
 category: 前端技术

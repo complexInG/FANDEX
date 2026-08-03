@@ -1,5 +1,5 @@
 ---
-order: 250
+order: 290
 title: 递归类型与深度操作
 module: 'typescript'
 category: 前端技术

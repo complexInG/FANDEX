@@ -1,5 +1,5 @@
 ---
-order: 220
+order: 260
 title: 工具类型实现原理
 module: 'typescript'
 category: 前端技术

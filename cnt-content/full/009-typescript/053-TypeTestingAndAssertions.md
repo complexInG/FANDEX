@@ -1,5 +1,5 @@
 ---
-order: 530
+order: 570
 title: TypeScript 类型测试与断言
 module: 'typescript'
 category: 前端技术

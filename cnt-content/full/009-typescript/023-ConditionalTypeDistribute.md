@@ -1,5 +1,5 @@
 ---
-order: 230
+order: 270
 title: 条件类型分发
 module: 'typescript'
 category: 前端技术

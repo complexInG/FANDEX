@@ -1,5 +1,5 @@
 ---
-order: 400
+order: 440
 title: satisfies操作符
 module: 'typescript'
 category: 前端技术

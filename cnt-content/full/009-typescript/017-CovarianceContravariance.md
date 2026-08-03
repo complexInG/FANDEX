@@ -1,5 +1,5 @@
 ---
-order: 170
+order: 210
 title: 协变与逆变
 module: 'typescript'
 category: 前端技术

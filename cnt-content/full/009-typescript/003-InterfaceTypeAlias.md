@@ -1,5 +1,5 @@
 ---
-order: 30
+order: 70
 title: 接口与类型别名
 module: 'typescript'
 category: 前端技术

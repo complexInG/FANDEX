@@ -1,5 +1,5 @@
 ---
-order: 260
+order: 300
 title: 条件类型与映射类型
 module: 'typescript'
 category: 前端技术

@@ -1,5 +1,5 @@
 ---
-order: 50
+order: 90
 title: 字面量类型与联合类型
 module: 'typescript'
 category: 前端技术

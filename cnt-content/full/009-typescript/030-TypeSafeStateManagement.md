@@ -1,5 +1,5 @@
 ---
-order: 300
+order: 340
 title: 类型安全的状态管理
 module: 'typescript'
 category: 前端技术

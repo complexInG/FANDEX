@@ -1,5 +1,5 @@
 ---
-order: 470
+order: 510
 title: 模块声明与全局类型增强
 module: 'typescript'
 category: 前端技术

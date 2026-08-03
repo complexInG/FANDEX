@@ -1,5 +1,5 @@
 ---
-order: 430
+order: 470
 title: TypeScript 编译与性能优化
 module: 'typescript'
 category: 前端技术

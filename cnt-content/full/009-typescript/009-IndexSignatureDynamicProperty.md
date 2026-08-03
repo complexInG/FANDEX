@@ -1,5 +1,5 @@
 ---
-order: 90
+order: 130
 title: 索引签名与动态属性
 module: 'typescript'
 category: 前端技术

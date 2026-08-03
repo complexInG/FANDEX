@@ -1,5 +1,5 @@
 ---
-order: 460
+order: 500
 title: 类型体操
 module: 'typescript'
 category: 前端技术

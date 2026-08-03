@@ -1,5 +1,5 @@
 ---
-order: 450
+order: 490
 title: 模板字面量类型
 module: 'typescript'
 category: 前端技术

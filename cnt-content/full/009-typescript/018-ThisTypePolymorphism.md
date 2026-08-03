@@ -1,5 +1,5 @@
 ---
-order: 180
+order: 220
 title: this类型与多态
 module: 'typescript'
 category: 前端技术

@@ -1,5 +1,5 @@
 ---
-order: 190
+order: 230
 title: 符号与唯一类型
 module: 'typescript'
 category: 前端技术

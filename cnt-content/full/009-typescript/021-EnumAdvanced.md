@@ -1,5 +1,5 @@
 ---
-order: 210
+order: 250
 title: 枚举进阶
 module: 'typescript'
 category: 前端技术

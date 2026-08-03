@@ -1,5 +1,5 @@
 ---
-order: 200
+order: 240
 title: 命名空间与模块
 module: 'typescript'
 category: 前端技术

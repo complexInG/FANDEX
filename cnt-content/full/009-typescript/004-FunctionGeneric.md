@@ -1,5 +1,5 @@
 ---
-order: 40
+order: 80
 title: 函数与泛型
 module: 'typescript'
 category: 前端技术

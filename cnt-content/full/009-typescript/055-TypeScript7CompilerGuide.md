@@ -1,5 +1,5 @@
 ---
-order: 550
+order: 590
 title: TypeScript 7 原生编译器
 module: 'typescript'
 category: 前端技术

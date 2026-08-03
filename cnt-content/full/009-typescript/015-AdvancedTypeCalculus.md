@@ -1,5 +1,5 @@
 ---
-order: 150
+order: 190
 title: 高级类型与类型演算
 module: 'typescript'
 category: 前端技术

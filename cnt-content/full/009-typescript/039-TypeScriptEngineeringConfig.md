@@ -1,5 +1,5 @@
 ---
-order: 390
+order: 430
 title: TypeScript 工程化配置
 module: 'typescript'
 category: 前端技术

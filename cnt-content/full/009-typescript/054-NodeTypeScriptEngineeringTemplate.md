@@ -1,5 +1,5 @@
 ---
-order: 540
+order: 580
 title: Node.js 与 TypeScript 工程化
 module: 'typescript'
 category: 前端技术

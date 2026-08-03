@@ -1,5 +1,5 @@
 ---
-order: 420
+order: 460
 title: 条件类型与infer
 module: 'typescript'
 category: 前端技术

@@ -1,5 +1,5 @@
 ---
-order: 270
+order: 310
 title: TypeScript 类型声明与模块解析
 module: 'typescript'
 category: 前端技术

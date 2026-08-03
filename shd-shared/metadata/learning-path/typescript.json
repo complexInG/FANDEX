@@ -10,41 +10,69 @@
       "nodes": [
         {
           "id": "ts-001",
+          "title": "变量与基础类型（前篇）",
+          "desc": "let/const 与 var 的区别、基础类型注解、解构赋值——零基础第一课",
+          "difficulty": "beginner",
+          "doc": "001-TSBasicsVariablesAndTypes"
+        },
+        {
+          "id": "ts-002",
+          "title": "函数基础（前篇）",
+          "desc": "函数三种写法、参数与返回类型、可选/默认/剩余参数、this 入门",
+          "difficulty": "beginner",
+          "doc": "002-TSBasicsFunctions"
+        },
+        {
+          "id": "ts-003",
+          "title": "类基础（前篇）",
+          "desc": "类成员、继承与 super、访问修饰符、参数属性与抽象类",
+          "difficulty": "beginner",
+          "doc": "003-TSBasicsClasses"
+        },
+        {
+          "id": "ts-004",
+          "title": "泛型基础（前篇）",
+          "desc": "泛型函数/接口/类、extends 约束、keyof 与工厂函数",
+          "difficulty": "beginner",
+          "doc": "004-TSBasicsGenerics"
+        },
+        {
+          "id": "ts-005",
           "title": "概述与环境配置",
           "desc": "TypeScript 的定位、安装与 tsconfig 起步",
           "difficulty": "beginner",
           "doc": "001-TypeScriptOverviewEnvSetup"
         },
         {
-          "id": "ts-002",
+          "id": "ts-006",
           "title": "基础类型系统",
           "desc": "原始类型、数组、元组与 any/unknown 的取舍",
           "difficulty": "beginner",
           "doc": "002-BasicTypeSystem"
         },
         {
-          "id": "ts-003",
+          "id": "ts-007",
           "title": "接口与类型别名",
           "desc": "interface 与 type 的语法、差异与选择",
           "difficulty": "beginner",
           "doc": "003-InterfaceTypeAlias"
         },
         {
-          "id": "ts-004",
+          "id": "ts-008",
           "title": "函数与泛型",
           "desc": "函数类型标注与泛型基础",
           "difficulty": "beginner",
           "doc": "004-FunctionGeneric"
         },
         {
-          "id": "ts-005",
+          "id": "ts-009",
           "title": "字面量类型与联合类型",
           "desc": "精确类型与类型收窄的起点",
           "difficulty": "beginner",
           "doc": "005-LocalTypeInference"
         },
         {
-          "id": "ts-006",
+          "id": "ts-010",
           "title": "类与装饰器",
           "desc": "类的类型标注与装饰器入门",
           "difficulty": "intermediate",
@@ -58,63 +86,63 @@
       "subtitle": "组合与收窄的常用工具",
       "nodes": [
         {
-          "id": "ts-007",
+          "id": "ts-011",
           "title": "交叉类型与类型合并",
           "desc": "对象合并与类型组合的规则",
           "difficulty": "intermediate",
           "doc": "007-IntersectionTypeMerge"
         },
         {
-          "id": "ts-008",
+          "id": "ts-012",
           "title": "类型守卫与自定义守卫",
           "desc": "typeof/in/instanceof 与 is 断言",
           "difficulty": "intermediate",
           "doc": "008-TypeGuardCustomGuard"
         },
         {
-          "id": "ts-009",
+          "id": "ts-013",
           "title": "索引签名与动态属性",
           "desc": "键类型约束与 Record 工具",
           "difficulty": "intermediate",
           "doc": "009-IndexSignatureDynamicProperty"
         },
         {
-          "id": "ts-010",
+          "id": "ts-014",
           "title": "映射类型进阶",
           "desc": "属性变换、修饰符与键重映射",
           "difficulty": "advanced",
           "doc": "010-MappedTypeAdvanced"
         },
         {
-          "id": "ts-011",
+          "id": "ts-015",
           "title": "泛型约束与默认值",
           "desc": "extends 约束、默认参数与泛型边界",
           "difficulty": "intermediate",
           "doc": "011-GenericConstraintDefault"
         },
         {
-          "id": "ts-012",
+          "id": "ts-016",
           "title": "枚举进阶",
           "desc": "数字枚举、字符串枚举与 const 枚举",
           "difficulty": "intermediate",
           "doc": "021-EnumAdvanced"
         },
         {
-          "id": "ts-013",
+          "id": "ts-017",
           "title": "模板字面量类型",
           "desc": "字符串模式与类型拼接",
           "difficulty": "advanced",
           "doc": "045-TemplateLiteralType"
         },
         {
-          "id": "ts-014",
+          "id": "ts-018",
           "title": "satisfies 操作符",
           "desc": "保留精确字面量同时校验类型",
           "difficulty": "intermediate",
           "doc": "040-SatisfiesOperator"
         },
         {
-          "id": "ts-015",
+          "id": "ts-019",
           "title": "装饰器标准实现",
           "desc": "TC39 标准装饰器的语义与差异",
           "difficulty": "advanced",
@@ -128,56 +156,56 @@
       "subtitle": "条件类型与类型体操",
       "nodes": [
         {
-          "id": "ts-016",
+          "id": "ts-020",
           "title": "高级类型与类型演算",
           "desc": "复杂类型组合的思维模型",
           "difficulty": "advanced",
           "doc": "015-AdvancedTypeCalculus"
         },
         {
-          "id": "ts-017",
+          "id": "ts-021",
           "title": "条件类型与分发",
           "desc": "条件类型与裸类型分发机制",
           "difficulty": "advanced",
           "doc": "023-ConditionalTypeDistribute"
         },
         {
-          "id": "ts-018",
+          "id": "ts-022",
           "title": "条件类型与 infer",
           "desc": "infer 提取与模式匹配",
           "difficulty": "advanced",
           "doc": "042-ConditionalTypeInfer"
         },
         {
-          "id": "ts-019",
+          "id": "ts-023",
           "title": "递归类型与深度操作",
           "desc": "深度可选、深层映射与递归约束",
           "difficulty": "advanced",
           "doc": "025-RecursiveTypeDeepOperation"
         },
         {
-          "id": "ts-020",
+          "id": "ts-024",
           "title": "协变与逆变",
           "desc": "函数参数与返回值的类型兼容规则",
           "difficulty": "advanced",
           "doc": "017-CovarianceContravariance"
         },
         {
-          "id": "ts-021",
+          "id": "ts-025",
           "title": "this 类型与多态",
           "desc": "this 参数与多态 this",
           "difficulty": "advanced",
           "doc": "018-ThisTypePolymorphism"
         },
         {
-          "id": "ts-022",
+          "id": "ts-026",
           "title": "工具类型实现原理",
           "desc": "内置工具类型的源码级理解",
           "difficulty": "advanced",
           "doc": "022-UtilityTypePrinciple"
         },
         {
-          "id": "ts-023",
+          "id": "ts-027",
           "title": "类型体操实用模式",
           "desc": "从套路到实战的常用模式库",
           "difficulty": "advanced",
@@ -191,70 +219,70 @@
       "subtitle": "配置、迁移与类型安全应用",
       "nodes": [
         {
-          "id": "ts-024",
+          "id": "ts-028",
           "title": "声明文件编写",
           "desc": "d.ts 文件的编写与第三方类型适配",
           "difficulty": "intermediate",
           "doc": "013-DeclarationFileWriting"
         },
         {
-          "id": "ts-025",
+          "id": "ts-029",
           "title": "模块解析策略",
           "desc": "模块解析算法与导入方案选择",
           "difficulty": "intermediate",
           "doc": "014-ModuleResolutionInModernJavaScriptToolchains"
         },
         {
-          "id": "ts-026",
+          "id": "ts-030",
           "title": "工程化配置",
           "desc": "tsconfig 各选项的作用与推荐组合",
           "difficulty": "intermediate",
           "doc": "039-TypeScriptEngineeringConfig"
         },
         {
-          "id": "ts-027",
+          "id": "ts-031",
           "title": "tsconfig 严格模式",
           "desc": "strict 系列开关逐个击破",
           "difficulty": "intermediate",
           "doc": "048-TsconfigStrictMode"
         },
         {
-          "id": "ts-028",
+          "id": "ts-032",
           "title": "编译与性能优化",
           "desc": "tsc 编译提速与构建工具集成",
           "difficulty": "advanced",
           "doc": "043-TypeScriptCompilePerformanceOptimization"
         },
         {
-          "id": "ts-029",
+          "id": "ts-033",
           "title": "迁移实战",
           "desc": "存量 JavaScript 渐进迁移策略",
           "difficulty": "intermediate",
           "doc": "041-TypeScriptMigrationPractice"
         },
         {
-          "id": "ts-030",
+          "id": "ts-034",
           "title": "类型安全 API 客户端",
           "desc": "请求层类型安全的完整实践",
           "difficulty": "advanced",
           "doc": "029-TypeSafeAPIClient"
         },
         {
-          "id": "ts-031",
+          "id": "ts-035",
           "title": "项目示例：类型安全 API 客户端",
           "desc": "从零搭建类型安全请求层的完整工程",
           "difficulty": "advanced",
           "doc": "050-TypeScriptProjectExampleTypeSafeAPIClient"
         },
         {
-          "id": "ts-032",
+          "id": "ts-036",
           "title": "类型测试与断言",
           "desc": "用 tsd/dtslint 验证类型行为的笔记",
           "difficulty": "advanced",
           "doc": "053-TypeTestingAndAssertions"
         },
         {
-          "id": "ts-033",
+          "id": "ts-037",
           "title": "Node.js 与 TypeScript 工程化",
           "desc": "服务端 TypeScript 项目结构与运行方案",
           "difficulty": "intermediate",

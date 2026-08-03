@@ -1,5 +1,5 @@
 ---
-order: 140
+order: 180
 title: 模块解析策略
 module: 'typescript'
 category: 前端技术

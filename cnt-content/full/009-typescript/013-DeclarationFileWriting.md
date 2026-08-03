@@ -1,5 +1,5 @@
 ---
-order: 130
+order: 170
 title: 声明文件编写
 module: 'typescript'
 category: 前端技术

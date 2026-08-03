@@ -1,5 +1,5 @@
 ---
-order: 100
+order: 140
 title: 映射类型进阶
 module: 'typescript'
 category: 前端技术

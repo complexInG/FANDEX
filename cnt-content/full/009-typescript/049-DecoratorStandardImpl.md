@@ -1,5 +1,5 @@
 ---
-order: 490
+order: 530
 title: 装饰器标准实现
 module: 'typescript'
 category: 前端技术

@@ -1,5 +1,5 @@
 ---
-order: 120
+order: 160
 title: 装饰器详解
 module: 'typescript'
 category: 前端技术

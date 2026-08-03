@@ -1,5 +1,5 @@
 ---
-order: 110
+order: 150
 title: 泛型约束与默认值
 module: 'typescript'
 category: 前端技术

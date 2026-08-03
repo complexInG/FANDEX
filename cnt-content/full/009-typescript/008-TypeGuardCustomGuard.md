@@ -1,5 +1,5 @@
 ---
-order: 80
+order: 120
 title: 类型守卫与自定义守卫
 module: 'typescript'
 category: 前端技术

@@ -1,5 +1,5 @@
 ---
-order: 240
+order: 280
 title: 类型推断infer扩展
 module: 'typescript'
 category: 前端技术

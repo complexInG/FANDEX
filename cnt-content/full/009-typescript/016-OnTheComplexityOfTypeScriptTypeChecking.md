@@ -1,5 +1,5 @@
 ---
-order: 160
+order: 200
 title: 类型体操实用模式
 module: 'typescript'
 category: 前端技术

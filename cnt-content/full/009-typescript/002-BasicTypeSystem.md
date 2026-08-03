@@ -1,5 +1,5 @@
 ---
-order: 20
+order: 60
 title: 基础类型系统
 module: 'typescript'
 category: 前端技术

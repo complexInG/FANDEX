@@ -1,5 +1,5 @@
 ---
-order: 70
+order: 110
 title: 交叉类型与类型合并
 module: 'typescript'
 category: 前端技术

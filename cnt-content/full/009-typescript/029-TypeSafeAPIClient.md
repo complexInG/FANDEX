@@ -1,5 +1,5 @@
 ---
-order: 290
+order: 330
 title: 类型安全的API客户端
 module: 'typescript'
 category: 前端技术

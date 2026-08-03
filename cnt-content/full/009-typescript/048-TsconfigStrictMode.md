@@ -1,5 +1,5 @@
 ---
-order: 480
+order: 520
 title: tsconfig严格模式
 module: 'typescript'
 category: 前端技术

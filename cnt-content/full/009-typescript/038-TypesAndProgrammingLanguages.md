@@ -1,5 +1,5 @@
 ---
-order: 380
+order: 420
 title: TypeScript5新特性
 module: 'typescript'
 category: 前端技术

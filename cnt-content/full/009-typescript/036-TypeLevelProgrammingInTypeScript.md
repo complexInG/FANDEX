@@ -1,5 +1,5 @@
 ---
-order: 360
+order: 400
 title: 类型安全的数据库查询
 module: 'typescript'
 category: 前端技术

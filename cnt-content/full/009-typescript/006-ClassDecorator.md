@@ -1,5 +1,5 @@
 ---
-order: 60
+order: 100
 title: 类与装饰器
 module: 'typescript'
 category: 前端技术
