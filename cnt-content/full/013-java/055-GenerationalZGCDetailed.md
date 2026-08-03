@@ -8,10 +8,10 @@ description: JDK 21分代ZGC详解：原理、配置与调优。
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'java/053-ReflectionDynamicProxy'
-  - 'java/054-AnnotationProcessor'
-  - 'java/056-OOP'
-  - 'java/057-AbstractClassInterface'
+  - 'java/033-ReflectionDynamicProxy'
+  - 'java/034-AnnotationProcessor'
+  - 'java/013-OOP'
+  - 'java/014-AbstractClassInterface'
 prerequisites:
   - 'java/001-JavaOverviewDevEnv'
 ---

@@ -10,8 +10,8 @@ updated: '2026-08-01'
 related:
   - 'java/003-ProgramStructureBasicSyntax'
   - 'java/004-DataTypeConversion'
-  - 'java/006-JavaAnnotationsTutorial'
-  - 'java/007-JavaGenericsTutorial'
+  - 'java/027-JavaAnnotationsTutorial'
+  - 'java/031-JavaGenericsTutorial'
 prerequisites:
   - 'java/001-JavaOverviewDevEnv'
 ---

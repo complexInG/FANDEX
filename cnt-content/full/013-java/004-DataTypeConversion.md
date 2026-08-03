@@ -11,7 +11,7 @@ related:
   - 'java/002-QuickStart'
   - 'java/003-ProgramStructureBasicSyntax'
   - 'java/005-VariableConstant'
-  - 'java/006-JavaAnnotationsTutorial'
+  - 'java/027-JavaAnnotationsTutorial'
 prerequisites:
   - 'java/001-JavaOverviewDevEnv'
 ---
