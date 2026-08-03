@@ -9,6 +9,13 @@
       "subtitle": "页面结构的第一课",
       "nodes": [
         {
+          "id": "html-000",
+          "title": "第 0 课：环境搭建与第一个网页",
+          "desc": "编辑器、.html 文件、浏览器打开与 F12 工具",
+          "difficulty": "beginner",
+          "doc": "000-HTML5EnvSetupFirstPage"
+        },
+        {
           "id": "html-001",
           "title": "概述与核心特性",
           "desc": "HTML5 的定位与新特性总览",

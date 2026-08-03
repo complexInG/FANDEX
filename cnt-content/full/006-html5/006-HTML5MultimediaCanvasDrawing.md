@@ -1,5 +1,5 @@
 ---
-order: 60
+order: 70
 title: HTML5 多媒体与 Canvas 绘图
 module: 'html5'
 category: 前端技术

@@ -1,5 +1,5 @@
 ---
-order: 90
+order: 100
 title: 元数据与字符编码
 module: 'html5'
 category: 前端技术

@@ -1,13 +1,14 @@
 ---
-order: 80
+order: 90
 title: HTML5 离线存储与 Web API
 module: 'html5'
 category: 前端技术
 difficulty: intermediate
 description: localStorage、sessionStorage、IndexedDB 与 Web Workers。
 author: Anonymous
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
+  - 'javascript/021-IndexedDBADatabaseInYourBrowser'
   - 'html5/006-HTML5MultimediaCanvasDrawing'
   - 'html5/007-DocTypeDeclaration'
   - 'html5/009-MetadataCharacterEncoding'
@@ -532,6 +533,20 @@ ctx.arc(150, 100, 30, 0, Math.PI * 2);
 ctx.fillStyle = 'blue';
 ctx.fill();
 ```
+
+### 6.5 IndexedDB：什么时候该用它（决策指南）
+
+IndexedDB 是浏览器内置的"本地数据库"，适合存储**结构化、量大、需要按条件查询**的数据。它不在本次示例中展开完整 API，但你需要先知道"什么时候选它"：
+
+| 场景 | 推荐方案 | 原因 |
+| --- | --- | --- |
+| 记住用户名、主题色、少量偏好 | localStorage | 键值对足够，API 最简单 |
+| 登录态、临时会话 | sessionStorage | 关标签页自动清理 |
+| 复杂 JSON 文档、大量记录、索引查询 | IndexedDB | 支持事务、索引、游标，容量远大于 localStorage |
+| 必须同步到服务器 | 后端数据库 + API | 浏览器存储只是缓存，不能替代服务端 |
+| 离线优先的 PWA 应用 | IndexedDB + Service Worker | 数据本地落盘，断网可读 |
+
+一句话判断：**存"几 KB 的设置"用 localStorage；存"几千条需要查询的业务数据"用 IndexedDB。** 完整教程见 `javascript/021-IndexedDBADatabaseInYourBrowser`；与 Service Worker 组合的离线场景见 `html5/022-ServiceWorkerPWA`。
 
 ## 7. 实际应用示例
 

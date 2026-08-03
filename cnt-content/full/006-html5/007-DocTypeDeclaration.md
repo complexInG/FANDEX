@@ -1,5 +1,5 @@
 ---
-order: 70
+order: 80
 title: 文档类型声明
 module: 'html5'
 category: 前端技术
