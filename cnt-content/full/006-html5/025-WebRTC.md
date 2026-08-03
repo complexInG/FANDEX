@@ -6,13 +6,15 @@ category: 前端技术
 difficulty: advanced
 description: WebRTC（getUserMedia）
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/026-MicrodataJSONLD'
   - 'html5/027-CustomDataAttribute'
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
+> 前置要求（本模块最高难度）：除 JavaScript 中级基础（Promise/async/class/事件，`javascript/001`-`005`、`027`、`030`）外，还需要基本网络概念：TCP/UDP、NAT、HTTP（`networking/001`）。信令流程（Offer/Answer/ICE）是本篇核心，建议先读 4.1 完整 demo 建立整体印象，再回头读第 2-3 章理论；调试时用 `chrome://webrtc-internals`（见 4.7）。
 
 ## 1. 历史动机与发展脉络
 
@@ -858,6 +860,21 @@ setInterval(() => monitorStats(pc), 5000);
 ```
 
 ---
+
+### 4.7 调试技巧：chrome://webrtc-internals
+
+WebRTC 连接失败的调试难度极高，浏览器内置了专用调试页：地址栏输入 `chrome://webrtc-internals`（Edge 为 `edge://webrtc-internals`），打开后**先点"开始录制"，再打开你的通话页面**，所有 RTCPeerConnection 的 SDP、ICE 候选、连接状态、统计信息都会实时记录。新手排查顺序：
+
+1. 看 **ICE Connection State**：卡在 `checking` 说明候选没有配对成功——先确认 STUN 服务器可访问；
+2. 看 **ICE Candidate Pair**：是否出现 `srflx`（NAT 穿透成功）还是全部 `relay`（走了 TURN，延迟高但可用）；
+3. 看 **inbound-rtp / outbound-rtp**：有没有收到/发出媒体包，区分"连接失败"与"媒体静音/黑屏"；
+4. 看 **DataChannel**：数据通道状态是否为 open，用于定位信令或媒体之外的通信问题。
+
+**讲解：**
+
+1. 录制必须在建立连接之前开始，否则看不到完整过程。
+2. `getStats()`（4.6）负责业务内监控，webrtc-internals 负责连接期排障，两者配合使用。
+3. 常见假象：`connected` 状态但看不到画面，多半是 `addTrack/ontrack` 或 `<video>` 的 `srcObject` 没接上。
 
 ## 5. 对比分析
 

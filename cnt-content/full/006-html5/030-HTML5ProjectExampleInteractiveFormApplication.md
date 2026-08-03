@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: 综合运用表单验证、Canvas 与本地存储的交互式应用。
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/028-CrossDocumentCommunication'
   - 'html5/029-ViewportConfigMobileFirst'
@@ -24,6 +24,8 @@ prerequisites:
 | 数据导出      | JSON/PDF 导出             |
 | 地理位置      | Geolocation API 获取位置  |
 | 通知          | Notification API 推送提醒 |
+
+> 前置要求：本篇是 HTML5 模块的"毕业设计"，默认你已完成 001-029 与 JavaScript 基础（`javascript/001`-`030`）。它综合 HTML + CSS + JS + 表单验证 + 存储 + 事件；如果某一环薄弱，可以**先跳过本篇**，回头补完对应章节再回来，不要硬啃。
 
 ## 需求分析
 
@@ -1114,6 +1116,41 @@ form-app/
   app.js
 ```
 
+## 部署上线
+
+项目做完不部署 = 半成品。本项目是纯静态页面（HTML/CSS/JS + localStorage），两种免费方案任选：
+
+### 方案 A：GitHub Pages
+
+```bash
+# 1. 在 GitHub 新建仓库并上传项目（或用 git 命令）
+git init
+git add .
+git commit -m "form app"
+git branch -M main
+git remote add origin https://github.com/<你的用户名>/form-app.git
+git push -u origin main
+```
+
+1. 仓库页面 → Settings → Pages → Source 选择 `main` 分支，保存；
+2. 等待 1-2 分钟，访问 `https://<你的用户名>.github.io/form-app/`；
+3. 之后的更新：`git add . && git commit -m "更新" && git push` 自动重新部署。
+
+### 方案 B：Vercel
+
+```bash
+npm i -g vercel
+vercel          # 在项目目录执行，按提示登录并确认
+vercel --prod   # 部署到生产环境
+```
+
+**讲解：**
+
+1. GitHub Pages 适合静态项目且免费，配合 Git 学习正好一体化。
+2. Vercel 会自动识别静态目录，`vercel` 交互式完成部署，连接 GitHub 仓库后每次 `git push` 可自动触发。
+3. 本项目使用 localStorage 存储，数据只在访问者的浏览器里；部署上线后行为与本地完全一致。
+4. 部署后记得用手机访问一次，验证 029 学过的移动端适配。
+
 ## 扩展方向
 
 1. **PDF 导出** -- 使用 jsPDF 生成 PDF
@@ -1122,6 +1159,8 @@ form-app/
 4. **WebSocket 实时协作** -- 多人同时填写
 5. **离线支持** -- Service Worker + IndexedDB
 6. **OCR 识别** -- 上传证件自动填充
+
+> 下一步学习出路：项目已经用上了 HTML5 的表单验证、存储、事件与拖拽，接下来三选一继续深入——CSS 进阶（`css/030-ResponsiveDesign` 与 `css/045-CSSProjectExampleResponsiveHomepage`）、JavaScript 进阶（`javascript/048-TypicalProjectPractice`）、或框架入门（`vue3/001-OverviewEnv`、`react/001-OverviewEnvSetup`）。记住：项目能力来自写出的代码量，继续做第二个、第三个项目比反复读文档更有效。
 
 ---
 

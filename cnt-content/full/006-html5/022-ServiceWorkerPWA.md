@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: advanced
 description: Service Worker与PWA
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/020-Geolocation'
 prerequisites:
@@ -97,6 +97,28 @@ self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-data') event.waitUntil(syncData());
 });
 ```
+
+## 6. Workbox：生产级 Service Worker 工具库（知道即可）
+
+实际项目中很少完全手写 Service Worker，缓存策略、版本管理、路由匹配都由 **Workbox**（Google 维护的 SW 工具库）封装好了。至少要知道它的存在与形态：
+
+```javascript
+// 常见做法：在 sw.js 中使用 workbox-routing + workbox-strategies
+// import { registerRoute } from 'workbox-routing';
+// import { StaleWhileRevalidate } from 'workbox-strategies';
+// registerRoute(
+//   ({ request }) => request.destination === 'image',
+//   new StaleWhileRevalidate({ cacheName: 'images' })
+// );
+```
+
+**讲解：**
+
+1. Workbox 提供 `registerRoute`（路由匹配）与 `StaleWhileRevalidate`、`CacheFirst`、`NetworkFirst` 等现成策略，对应本节的五种缓存策略。
+2. 版本更新、预缓存清单、导航回退等痛点都有现成模块，不再手写生命周期细节。
+3. 学习顺序建议：先手写 SW 理解原理（本篇 1-3 章），再用 Workbox 做生产项目。
+4. 完整集成方式见 <https://developer.chrome.com/docs/workbox/>。
+
 ## Service Worker 注册
 
 **注册 Service Worker**

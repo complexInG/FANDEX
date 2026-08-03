@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: viewport、移动优先设计
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/027-CustomDataAttribute'
   - 'html5/028-CrossDocumentCommunication'
@@ -101,6 +101,32 @@ console.log(window.devicePixelRatio); // 1, 2, 3 等
 | md   | ≥ 768px  | 平板   |
 | lg   | ≥ 992px  | 小桌面 |
 | xl   | ≥ 1200px | 桌面   |
+## 7. 前沿：容器查询（Container Queries）
+
+媒体查询看"视口"，容器查询看"父容器"——组件能根据自身宽度自适应，2023 年后主流浏览器已全面支持，属于"知道即可"的前沿特性：
+
+```css
+/* 1. 给父容器声明容器类型 */
+.card-list {
+  container-type: inline-size;
+}
+
+/* 2. 按容器宽度写组件样式 */
+@container (min-width: 400px) {
+  .card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+```
+
+**讲解：**
+
+1. `container-type: inline-size` 让该元素成为"容器查询的参考容器"。
+2. `@container (min-width: 400px)` 与媒体查询写法几乎一样，但判断的是容器宽度而非视口。
+3. 它与组件化开发天然契合：同一个组件在侧边栏与主内容区可以呈现不同布局。
+4. 完整教程见 `css/020-ContainerQuery`；第一遍了解概念即可。
+
 ## 视口类型
 
 | 视口类型     | 说明                          |
