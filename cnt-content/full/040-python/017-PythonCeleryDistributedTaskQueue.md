@@ -2104,7 +2104,7 @@ def process_order(order: Order):
 
 ### 11.5 相关主题
 
-- `python/Python与Redis`: Redis 作为 Broker 与 Backend
-- `python/Python与消息队列`: AMQP 协议与消息中间件
-- `python/Python与Docker`: 容器化部署 Celery
-- `python/Python与Django`: Django 项目中集成 Celery
+- `python/030-Python与Redis`: Redis 作为 Broker 与 Backend
+- `python/030-Python与消息队列`: AMQP 协议与消息中间件
+- `python/030-Python与Docker`: 容器化部署 Celery
+- `python/030-Python与Django`: Django 项目中集成 Celery

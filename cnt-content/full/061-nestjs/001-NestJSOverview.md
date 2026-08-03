@@ -12,7 +12,7 @@ related:
   - 'nestjs/003-ValidationPipes'
   - 'typescript/001-TypeScriptOverviewEnvSetup'
 prerequisites:
-  - 'typescript/002-BasicTypeSystem'
+  - 'typescript/006-BasicTypeSystem'
 ---
 
 ## 0. 五分钟创建第一个接口（先读这里）

@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: Vite 快速上手：手把手创建项目、读懂目录结构、掌握 dev/build/preview 三个核心命令与 ESM 加速原理
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'vite/003-ConfigFile'
   - 'vite/004-StaticAssets'
@@ -83,20 +83,20 @@ pnpm install
 
 以 `react-ts` 模板为例，核心文件如下：
 
-```text
-my-vite-app/
-├── index.html          # 页面入口 HTML（唯一的 HTML 文件，位于项目根目录）
-├── package.json        # 依赖与脚本定义
-├── vite.config.ts      # Vite 配置文件（003 篇详解）
-├── tsconfig.json       # TypeScript 编译配置
-├── tsconfig.app.json   # 应用代码的 TS 配置（模板拆分出来的）
-├── public/             # 公共静态资源，原样复制（004 篇详解）
-└── src/
-    ├── main.tsx        # 应用入口，挂载到 #root
-    ├── App.tsx         # 根组件
-    ├── App.css         # 根组件样式
-    ├── index.css       # 全局样式
-    └── assets/         # 需要构建处理的资源（图片、字体等）
+```mermaid
+graph TD
+  A["my-vite-app/"] --> B["index.html（页面入口 HTML，位于项目根目录）"]
+  A --> C["package.json（依赖与脚本定义）"]
+  A --> D["vite.config.ts（Vite 配置文件，003 篇详解）"]
+  A --> E["tsconfig.json（TypeScript 编译配置）"]
+  A --> F["tsconfig.app.json（应用代码的 TS 配置）"]
+  A --> G["public/（公共静态资源，原样复制，004 篇详解）"]
+  A --> H["src/"]
+  H --> H1["main.tsx（应用入口，挂载到 #root）"]
+  H --> H2["App.tsx（根组件）"]
+  H --> H3["App.css（根组件样式）"]
+  H --> H4["index.css（全局样式）"]
+  H --> H5["assets/（需要构建处理的资源）"]
 ```
 
 请特别注意：**`index.html` 位于项目根目录，而不是 `src` 内**。这是 Vite 与传统脚手架（如 Create React App）的重要差异。`index.html` 是整个应用的入口，其中通过 `<script type="module">` 引用源码入口：
@@ -126,8 +126,8 @@ pnpm dev
 ```text
   VITE v8.x.x  ready in 300 ms
 
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: http://192.168.1.5:5173/
+  Local:   http://localhost:5173/
+  Network: http://192.168.1.5:5173/
 ```
 
 在浏览器打开 `http://localhost:5173/`，你会看到模板默认页面。此时做两件事：
@@ -176,13 +176,13 @@ pnpm build
 
 构建完成后，终端会输出产物清单与体积报告：
 
-```text
-dist/ 目录已生成
-assets/
-├── index-3f2b1c2a.js    # JS 产物（自动加内容哈希）
-├── index-8a9d0f2e.css   # CSS 产物
-└── vite-6a7b8c9d.svg    # 图片等静态资源
-index.html                # 最终 HTML
+```mermaid
+graph TD
+  A["dist/ 目录已生成"] --> B["assets/"]
+  B --> B1["index-3f2b1c2a.js（JS 产物，自动加内容哈希）"]
+  B --> B2["index-8a9d0f2e.css（CSS 产物）"]
+  B --> B3["vite-6a7b8c9d.svg（图片等静态资源）"]
+  A --> C["index.html（最终 HTML）"]
 ```
 
 讲解：`pnpm build` 调用 Rolldown（Vite 8 的统一打包引擎）对全部源码做打包、代码分割、压缩与 Tree Shaking，输出到 `dist/` 目录。文件名中的哈希基于内容生成——内容不变文件名不变，配合服务器缓存即可实现"内容更新后用户自动加载新版本"。

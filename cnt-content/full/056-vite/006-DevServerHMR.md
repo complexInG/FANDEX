@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: Vite dev server：server 配置、host 端口、代理、HMR 原理（模块图/WebSocket/热替换边界）与 import.meta.hot API
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'vite/003-ConfigFile'
   - 'vite/002-QuickStart'
@@ -80,8 +80,8 @@ dev server 启动时，Vite 会做一件重要的事：把 `node_modules` 里的
 ```text
 pnpm dev 启动时的输出：
   vite v8.x.x ready in 320 ms
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: http://192.168.1.100:5173/
+  Local:   http://localhost:5173/
+  Network: http://192.168.1.100:5173/
 ```
 
 ### 2.3 冷启动与按需加载
@@ -221,13 +221,12 @@ importers        指向"谁 import 了这个模块"（向上引用）
 
 "能不能热替换"取决于模块是否声明了"我接受热更新"。Vite 内部用 `isSelfAccepting`（模块自己调用了 `import.meta.hot.accept()`）和 `acceptedHmrDeps`（声明接受了哪些依赖的更新）两个标记来判断：
 
-```text
-修改 counter.ts（普通模块，无 accept）
-        ↓ 沿 importers 向上冒泡
-main.ts 调用了 import.meta.hot.accept() ？ 
-        ├─ 是 -> 只重新执行 main.ts 边界内的更新（热替换）
-        └─ 否 -> 继续向上冒泡，直到遇到边界或顶层
-               └─ 没有边界 -> 整页刷新（reload）
+```mermaid
+flowchart TD
+  A["修改 counter.ts（普通模块，无 accept）"] -->|"沿 importers 向上冒泡"| B{"main.ts 调用了 import.meta.hot.accept()？"}
+  B -->|"是"| C["只重新执行 main.ts 边界内的更新（热替换）"]
+  B -->|"否"| D["继续向上冒泡，直到遇到边界或顶层"]
+  D -->|"没有边界"| E["整页刷新（reload）"]
 ```
 
 各类型模块的默认更新方式：

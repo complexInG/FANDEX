@@ -1,5 +1,5 @@
 ---
-order: 140
+order: 150
 title: 泛型选择
 module: 'c'
 category: 计算机科学

@@ -6,7 +6,7 @@ category: 工具链
 difficulty: beginner
 description: 'GitHub Discussions深度解析：从"Issue 还是 Discussion 怎么选"的困惑切入，讲解论坛式讨论的分类体系、问答、公告、投票与维护者协作。'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/012-ProjectsBoard'
 prerequisites:
@@ -59,12 +59,10 @@ GitHub Discussions 是仓库（或组织）自带的一个**论坛式沟通区**
 
 ### 2.2 决策速查
 
-```text
-想报告 Bug / 要求修东西 / 分配任务
-    └── 用 Issue（贴模板、打标签、挂里程碑）
-
-想问用法 / 讨论方案 / 收集想法 / 发公告 / 展示作品
-    └── 用 Discussion
+```mermaid
+flowchart LR
+  A["想报告 Bug / 要求修东西 / 分配任务"] --> B["用 Issue（贴模板、打标签、挂里程碑）"]
+  C["想问用法 / 讨论方案 / 收集想法 / 发公告 / 展示作品"] --> D["用 Discussion"]
 ```
 
 官方文档给出的"Discussion 场景"清单：
@@ -78,17 +76,11 @@ GitHub Discussions 是仓库（或组织）自带的一个**论坛式沟通区**
 
 在一个成熟的开源项目里，它们这样配合：
 
-```
-Discussions（前期：聊想法、问问题）
-    │ 想法成熟、确认要做
-    ▼
-Issues（中期：转为任务，排期、指派）
-    │ 开发完成
-    ▼
-Pull Requests（后期：提交代码改动）
-    │ 合并后
-    ▼
-Discussions（发布公告、沉淀答疑）
+```mermaid
+flowchart TD
+  A["Discussions（前期：聊想法、问问题）"] -->|"想法成熟、确认要做"| B["Issues（中期：转为任务，排期、指派）"]
+  B -->|"开发完成"| C["Pull Requests（后期：提交代码改动）"]
+  C -->|"合并后"| A
 ```
 
 ## 3. 启用 Discussions 并配置分类

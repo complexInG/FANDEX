@@ -6,7 +6,7 @@ category: 工具链
 difficulty: beginner
 description: '以"从代码到正式发布"的完整旅程为主线，讲解 gh release 系列命令，包括创建、查看、上传下载、编辑与删除发布，配以原理讲解、错误对策。'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related: []
 prerequisites: []
 ---
@@ -128,7 +128,7 @@ gh release create v1.2.3 --discussion-category "General"
 创建成功后，终端会打印类似输出：
 
 ```text
-✓ Created release v1.2.3 on owner/repo
+Created release v1.2.3 on owner/repo
 https://github.com/owner/repo/releases/tag/v1.2.3
 ```
 
@@ -167,7 +167,7 @@ gh release view v1.2.3 --jq '.assets[].name'
 TITLE           TAG       PRERELEASE  CREATED_AT
 v1.2.3 正式版   v1.2.3                about 2 minutes ago
 v1.2.2          v1.2.2                about 3 days ago
-v1.3.0 测试版   v1.3.0-beta.1  ✓     about 1 week ago
+v1.3.0 测试版   v1.3.0-beta.1  是     about 1 week ago
 ```
 
 ---
@@ -207,10 +207,10 @@ gh release download --pattern "*.dmg"
 
 下载完成后目录里会出现对应的文件，例如：
 
-```text
-downloads/
-├── app-1.2.3-win-x64.zip
-└── app-1.2.3-linux-x64.tar.gz
+```mermaid
+graph TD
+  A["downloads/"] --> B["app-1.2.3-win-x64.zip"]
+  A --> C["app-1.2.3-linux-x64.tar.gz"]
 ```
 
 ---

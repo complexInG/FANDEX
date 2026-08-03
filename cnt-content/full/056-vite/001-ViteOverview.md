@@ -177,21 +177,18 @@ Vite 8：
 
 ## 8. 一张图看懂 Vite 的完整工作流程
 
-```text
-                        ┌─────────────────────────────┐
-                        │  源码：.vue / .tsx / .css    │
-                        └─────────────┬───────────────┘
-                                      │
-              开发（dev server）       │         生产（vite build）
-                                      │
-        ┌─────────────────────────────┼─────────────────────────────┐
-        │                             │                             │
-   浏览器按需请求模块            依赖预构建                  Rolldown 全量打包
-        │                        (Rolldown)                    (Rolldown + Oxc)
-        │                             │                             │
-   Vite 逐个转换(Oxc)          node_modules/.vite            分包 / 压缩 / Tree Shaking
-        │                             │                             │
-   HMR 只更新受影响模块           浏览器一次请求加载              输出 dist/ 优化产物
+```mermaid
+flowchart TD
+  S["源码：.vue / .tsx / .css"] --> D{"开发 or 生产"}
+  D -->|"开发（dev server）"| E["浏览器按需请求模块"]
+  E --> F["Vite 逐个转换（Oxc）"]
+  F --> G["HMR 只更新受影响模块"]
+  D -->|"开发"| H["依赖预构建（Rolldown）"]
+  H --> I["node_modules/.vite"]
+  I --> J["浏览器一次请求加载"]
+  D -->|"生产（vite build）"| K["Rolldown 全量打包（Rolldown + Oxc）"]
+  K --> L["分包 / 压缩 / Tree Shaking"]
+  L --> M["输出 dist/ 优化产物"]
 ```
 
 ## 9. 常见错误与对策表

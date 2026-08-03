@@ -1,5 +1,5 @@
 ---
-order: 400
+order: 410
 title: 内存管理
 module: 'c'
 category: 计算机科学

@@ -1,5 +1,5 @@
 ---
-order: 10
+order: 20
 title: C 语言概述
 module: 'c'
 category: 计算机科学
@@ -8,15 +8,18 @@ description: C 语言的发展历史、设计哲学、核心特点、应用领�
 author: Anonymous
 updated: '2026-08-03'
 related:
+  - 'c/000-CZeroBasisStart'
   - 'c/002-ProgramStructureBasicSyntax'
   - 'c/003-DataTypeDetailed'
-prerequisites: []
+prerequisites:
+  - 'c/000-CZeroBasisStart'
 ---
 ## 0. 学习路径与阅读指南（先读这一节）
 
-本模块 57 篇文档不要按编号顺序读。零基础推荐路径：
+本模块 58 篇文档不要按编号顺序读。零基础推荐路径：
 
 ```text
+第 0 步（零基础必读）：000 零基础起步（环境搭建 + 第一个程序 + 编译与报错入门）
 第 1 阶段（语法基础）：001 概述 → 002 程序结构 → 003 数据类型 → 004 变量常量
     → 017 控制流 → 006 运算符 → 028 函数详解
 第 2 阶段（核心难点）：036 数组 → 039 指针深度 → 042 结构体 → 009 动态内存

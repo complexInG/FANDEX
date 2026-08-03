@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: Issues 模板配置、Labels 标签体系、Milestones 里程碑管理、自动化关闭关键词与项目板衔接。
 author: Anonymous
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/018-SecretScanning'
   - 'github/019-CodeQLCodeScanning'
@@ -37,13 +37,13 @@ GitHub 的 **Issues** 就是这套"工单系统"：**Issue 模板** 统一填写
 
 在仓库创建 `.github/ISSUE_TEMPLATE/` 目录，放入模板文件：
 
-```text
-.github/
-├── ISSUE_TEMPLATE/
-│   ├── bug_report.md        # Bug 报告模板
-│   ├── feature_request.md   # 功能请求模板
-│   ├── question.md          # 提问模板（可选）
-│   └── config.yml           # 模板选择页配置
+```mermaid
+graph TD
+  A[".github/"] --> B["ISSUE_TEMPLATE/"]
+  B --> C["bug_report.md（Bug 报告模板）"]
+  B --> D["feature_request.md（功能请求模板）"]
+  B --> E["question.md（提问模板，可选）"]
+  B --> F["config.yml（模板选择页配置）"]
 ```
 
 ### 2.2 Bug 报告模板（可直接使用）

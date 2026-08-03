@@ -6,7 +6,7 @@ category: 后端技术
 difficulty: beginner
 description: Rust 环境搭建：rustup、cargo、rust-analyzer 与第一个程序
 author: fanquanpp
-updated: '2026-08-01'
+updated: '2026-08-03'
 related:
   - 'rust/003-RustBasicSyntax'
   - 'rust/001-RustOverview'
@@ -92,12 +92,12 @@ fn main() {
 
 ## 5. Cargo 项目结构
 
-```
-hello_world/
-├── Cargo.toml   # 项目清单：元信息 + 依赖声明
-├── Cargo.lock   # 依赖版本锁定（由 cargo 自动维护）
-└── src/
-    └── main.rs  # 源码
+```mermaid
+graph TD
+  A["hello_world/"] --> B["Cargo.toml（项目清单：元信息 + 依赖声明）"]
+  A --> C["Cargo.lock（依赖版本锁定，由 cargo 自动维护）"]
+  A --> D["src/"]
+  D --> E["main.rs（源码）"]
 ```
 
 `Cargo.toml` 是项目的核心配置文件：

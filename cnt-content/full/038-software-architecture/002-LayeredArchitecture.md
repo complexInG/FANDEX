@@ -6,7 +6,7 @@ category: 云与基础设施
 difficulty: intermediate
 description: 分层架构模式、表现层/业务层/持久层设计与实践。
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'software-architecture/001-SoftwareArchitectureOverview'
   - 'software-architecture/003-MicroserviceArchitecture'
@@ -164,11 +164,14 @@ Controller（控制器）→ Service（服务）→ Repository（仓库）→ DB
 
 六边形架构强调**"核心"与"外界"的隔离**：核心（业务逻辑）位于中心，通过"端口"（接口）与外界交互，外界通过"适配器"实现端口。
 
-```
-        [Web 适配器]──┐
-                      ├── [端口]── 核心业务逻辑 ──[端口]──┐
-        [消息适配器]──┘                                  ├──[数据库适配器]
-                                                         └──[外部API适配器]
+```mermaid
+flowchart LR
+  A["Web 适配器"] --> P1["端口"]
+  B["消息适配器"] --> P1
+  P1 --> C["核心业务逻辑"]
+  C --> P2["端口"]
+  P2 --> D["数据库适配器"]
+  P2 --> E["外部 API 适配器"]
 ```
 
 **价值**：核心完全不依赖任何具体技术（Web 框架、数据库），可以独立测试、独立演进。这是"依赖倒置"原则的极致体现。

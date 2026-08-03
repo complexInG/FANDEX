@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'iot/015-LwM2MManagement'
   - 'iot/016-TimeSeriesDatabase'
-  - 'iot/018-IoT'
+  - 'iot/018-MainstreamIoTPlatforms'
   - 'iot/019-DigitalTwin'
 prerequisites:
   - 'iot/001-OverviewArchitecture'

@@ -11,7 +11,7 @@ related:
   - 'astro/003-PagesRouting'
   - 'astro/004-ComponentsProps'
 prerequisites:
-  - 'html5/003-SemanticTag'
+  - 'html5/008-SemanticTag'
 ---
 
 
@@ -129,7 +129,7 @@ npm run dev
 看到类似输出即为成功：
 
 ```text
-  🚀  Local: http://localhost:4321/
+  Local: http://localhost:4321/
 ```
 
 用浏览器打开 **http://localhost:4321/**，你应该能看到模板默认的首页。

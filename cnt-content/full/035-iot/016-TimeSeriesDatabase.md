@@ -11,7 +11,7 @@ related:
   - 'iot/014-AI'
   - 'iot/015-LwM2MManagement'
   - 'iot/017-IoTSecurity'
-  - 'iot/018-IoT'
+  - 'iot/018-MainstreamIoTPlatforms'
 prerequisites:
   - 'iot/001-OverviewArchitecture'
 ---

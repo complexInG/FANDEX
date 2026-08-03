@@ -1,5 +1,5 @@
 ---
-order: 130
+order: 140
 title: 原子操作与内存模型
 module: 'c'
 category: 计算机科学

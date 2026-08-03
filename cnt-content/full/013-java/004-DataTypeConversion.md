@@ -5,16 +5,30 @@ module: 'java'
 category: 后端技术
 difficulty: beginner
 description: 基本类型、引用类型、自动装箱与类型转换规则。
-author: Anonymous
-updated: '2026-08-01'
+author: fanquanpp
+updated: '2026-08-03'
 related:
   - 'java/002-QuickStart'
   - 'java/003-ProgramStructureBasicSyntax'
-  - 'java/005-VariableConstant'
-  - 'java/027-JavaAnnotationsTutorial'
+  - 'java/006-VariableConstant'
+  - 'java/034-JavaAnnotationsTutorial'
 prerequisites:
   - 'java/001-JavaOverviewDevEnv'
 ---
+
+## 0. 本节阅读指引（先读这一节）
+
+本篇是「数据类型与类型转换」，目标：分清 8 种基本类型与引用类型，理解自动/强制转换规则。
+
+零基础第一遍只读：
+
+1. 第 1 节 数据类型分类、2. 基本数据类型详解、3. 引用数据类型；
+2. 第 4 节 类型转换；5. 类型转换的特殊情况（装箱拆箱、类型提升、字符串拼接）建议一并看，最常踩坑。
+
+可跳过：浮点精度等二进制细节不理解不阻塞，二刷再看；6-7 节浏览即可。
+
+> 记住：小范围自动转大范围，大范围强转小范围可能丢精度。
+
 
 ## 1. 数据类型分类
 

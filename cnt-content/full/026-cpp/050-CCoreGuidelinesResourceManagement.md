@@ -12,7 +12,7 @@ related:
   - 'cpp/006-PointersCppreferenceCom'
   - 'cpp/005-RvalueReferenceMoveSemantics'
   - 'cpp/049-ConcurrentProgramming'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
   - 'cpp/051-CSTLAlgorithmAndFunctionObject'
   - 'cpp/052-MoveSemanticsDetailed'
   - 'cpp/015-COOPBasics'

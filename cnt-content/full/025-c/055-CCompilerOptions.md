@@ -1,5 +1,5 @@
 ---
-order: 550
+order: 560
 title: C 编译器命令 语法速查手册
 module: 'c'
 category: 计算机科学

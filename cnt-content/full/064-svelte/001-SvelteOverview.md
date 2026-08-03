@@ -12,7 +12,7 @@ related:
   - 'svelte/003-ReactivityRunes'
   - 'javascript/001-JavaScriptOverviewRuntimeEnv'
 prerequisites:
-  - 'html5/001-HTML5OverviewCoreFeature'
+  - 'html5/005-HTML5OverviewCoreFeature'
   - 'javascript/001-JavaScriptOverviewRuntimeEnv'
 ---
 

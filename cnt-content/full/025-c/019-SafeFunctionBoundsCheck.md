@@ -1,5 +1,5 @@
 ---
-order: 190
+order: 200
 title: 安全函数与边界检查
 module: 'c'
 category: 计算机科学

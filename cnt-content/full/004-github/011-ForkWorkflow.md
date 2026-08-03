@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: 'GitHub Fork工作流深度解析：以"菜谱复刻"类比，按 fork→clone→修改→PR→合回 的完整流程讲解开源协作、同步策略与冲突解决。'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/009-OpenSourceLicense'
   - 'github/010-DependencySecurityOptions'
@@ -35,21 +35,18 @@ prerequisites:
 
 在动手之前，先记住整条链路涉及"三个仓库、一个申请"：
 
-```
-原始仓库 upstream（别人的，你无权修改）
-    │ ① Fork（在网页上点一下按钮）
-    ▼
-你的云端副本 origin（在你自己的账号下）
-    │ ② Clone（复制到你电脑上）
-    ▼
-本地仓库（在你自己电脑上，随便改）
-    │ ③ 修改、提交
-    │ ④ Push（推回你的 origin）
-    ▼
-你的云端副本 origin
-    │ ⑤ Pull Request（向原作者发起合并申请）
-    ▼
-原始仓库 upstream（维护者审查、合并）
+```mermaid
+flowchart TD
+  A["原始仓库 upstream（别人的，你无权修改）"]
+  B["你的云端副本 origin（在你自己的账号下）"]
+  C["本地仓库（在你自己电脑上，随便改）"]
+  D["你的云端副本 origin"]
+  E["原始仓库 upstream（维护者审查、合并）"]
+  A -->|"① Fork（在网页上点一下按钮）"| B
+  B -->|"② Clone（复制到你电脑上）"| C
+  C -->|"③ 修改、提交"| D
+  C -->|"④ Push（推回你的 origin）"| D
+  D -->|"⑤ Pull Request（向原作者发起合并申请）"| E
 ```
 
 术语速记：

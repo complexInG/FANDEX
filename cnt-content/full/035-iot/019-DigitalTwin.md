@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'iot/017-IoTSecurity'
-  - 'iot/018-IoT'
+  - 'iot/018-MainstreamIoTPlatforms'
 prerequisites:
   - 'iot/001-OverviewArchitecture'
 ---

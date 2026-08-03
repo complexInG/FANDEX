@@ -1,5 +1,5 @@
 ---
-order: 90
+order: 100
 title: 动态内存管理
 module: 'c'
 category: 计算机科学

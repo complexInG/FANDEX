@@ -5,15 +5,30 @@ module: 'java'
 category: 后端技术
 difficulty: beginner
 description: Java 程序结构、注释、标识符与关键字。
-author: Anonymous
-updated: '2026-08-01'
+author: fanquanpp
+updated: '2026-08-03'
 related:
   - 'java/001-JavaOverviewDevEnv'
   - 'java/002-QuickStart'
   - 'java/004-DataTypeConversion'
-  - 'java/005-VariableConstant'
+  - 'java/006-VariableConstant'
 prerequisites: []
 ---
+
+## 0. 本节阅读指引（先读这一节）
+
+本篇是「程序结构与基本语法」，目标：掌握 Java 源文件结构、注释、标识符、关键字与键盘录入。
+
+零基础第一遍只读：
+
+1. 第 1 节 Java 程序结构（源文件、类、主方法）；
+2. 第 2 节 注释规范、3. 标识符、4. 关键字；
+3. 第 5 节 键盘录入，每段代码亲手敲一遍。
+
+可跳过：6-7 节（代码风格与实际应用示例）快速浏览；文末「Java 25+ 新特性」等速查小节留作查阅。
+
+> 记住：本篇只解决「程序长什么样、名字怎么起」，不涉及算法与底层原理。
+
 
 ## 1. Java 程序结构
 

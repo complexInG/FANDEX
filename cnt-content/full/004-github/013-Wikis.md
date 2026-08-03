@@ -6,7 +6,7 @@ category: 工具链
 difficulty: beginner
 description: 'GitHub Wikis深度解析：围绕"团队知识沉淀"场景，讲解 Wiki 的启用、页面组织、侧边栏页脚、本地克隆编辑与维护最佳实践。'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/011-ForkWorkflow'
   - 'github/012-ProjectsBoard'
@@ -51,16 +51,15 @@ Wiki 是每个 GitHub 仓库自带的文档托管区域，适合放**长篇幅�
 
 ### 1.3 最后看示例
 
-```
-README.md                 ← "这是什么"（一页）
-Wiki
-├── Home.md               ← 首页：知识库入口/目录
-├── Getting-Started.md    ← 新人上手指南
-├── Architecture.md       ← 架构设计与决策记录（ADR）
-├── Database-Design.md    ← 数据库设计说明
-├── Deployment.md         ← 部署手册
-├── Meeting-Notes.md      ← 会议纪要归档
-└── _Sidebar.md           ← 全局侧边栏导航
+```mermaid
+flowchart TD
+  A["Wiki"] --> B["Home.md（首页：知识库入口/目录）"]
+  A --> C["Getting-Started.md（新人上手指南）"]
+  A --> D["Architecture.md（架构设计与决策记录 ADR）"]
+  A --> E["Database-Design.md（数据库设计说明）"]
+  A --> F["Deployment.md（部署手册）"]
+  A --> G["Meeting-Notes.md（会议纪要归档）"]
+  A --> H["_Sidebar.md（全局侧边栏导航）"]
 ```
 
 ## 2. 启用与权限配置

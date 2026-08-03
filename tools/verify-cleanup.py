@@ -29,8 +29,9 @@ BAD_PATTERNS = [
 
 def main():
     docs = [
-        "006-html5/015-SVG.md",
-        "006-html5/002-HTML5BasicTagGlobalAttribute.md",
+        "006-html5/020-SVG.md",
+        "006-html5/006-HTML5BasicContentTags.md",
+        "006-html5/007-HTML5TableAndStructuredContent.md",
         "020-mysql/032-RedoLog.md",
         "040-python/001-PythonOverviewEnvSetup.md",
         "008-javascript/001-JavaScriptOverviewRuntimeEnv.md",

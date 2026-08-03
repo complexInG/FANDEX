@@ -73,7 +73,7 @@ pnpm build
 
 # 典型输出
 vite v8.x.x building for production...
-✓ 42 modules transformed.
+42 modules transformed.
 dist/index.html                  0.45 kB
 dist/assets/index-Bh7kRCDa.js    85.14 kB │ gzip: 26.32 kB
 ```

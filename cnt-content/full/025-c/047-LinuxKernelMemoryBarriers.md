@@ -1,5 +1,5 @@
 ---
-order: 470
+order: 480
 title: volatile关键字
 module: 'c'
 category: 计算机科学

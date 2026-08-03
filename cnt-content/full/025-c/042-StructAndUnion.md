@@ -1,5 +1,5 @@
 ---
-order: 420
+order: 430
 title: 结构体与联合体
 module: 'c'
 category: 计算机科学

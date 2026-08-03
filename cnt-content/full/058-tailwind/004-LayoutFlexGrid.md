@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: Tailwind CSS 布局系统：Flex 与 Grid 布局原理（主轴/交叉轴、网格线/网格区域）、对应工具类映射、gap 间距、容器居中与定位，配大量布局示例
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'tailwind/003-UtilityCore'
   - 'tailwind/006-ResponsiveDark'
@@ -83,13 +83,16 @@ Flex（Flexible Box，弹性盒子）解决的是**一维**排布：元素沿一
 
 第二，**容器与项目**。给父元素加 `flex`，它就是"容器"（flex container），直接子元素成为"项目"（flex item）。**容器管整体排布，项目管自身伸缩**。这是 Flex 最重要的心智模型：对齐类（`justify-*`、`items-*`）写在容器上，伸缩类（`flex-1`、`grow`、`shrink`）写在项目上。
 
-```text
-主轴（默认水平，flex-row）
-┌──────────────────────────────────────┐
-│  项目1        项目2        项目3      │ ← 交叉轴（垂直）
-└──────────────────────────────────────┘
-justify-* 控制主轴方向的对齐（左右）
-items-*   控制交叉轴方向的对齐（上下）
+```mermaid
+flowchart TB
+  subgraph box["flex 容器：主轴水平（flex-row）"]
+    direction LR
+    P1["项目1"] --- P2["项目2"] --- P3["项目3"]
+  end
+  J["justify-* 控制主轴方向的对齐（左右）"]
+  I["items-* 控制交叉轴方向的对齐（上下）"]
+  box -.-> J
+  box -.-> I
 ```
 
 ### 2.2 容器类：控制整体排布
@@ -180,13 +183,17 @@ Grid（网格）解决的是**二维**排布：同时控制行与列。如果说
 
 第三，**网格区域**。通过 `col-span-2`、`row-span-2` 可以让一个元素横跨多列/多行，占据一块矩形"区域"。
 
-```text
-grid-cols-3：显式声明 3 列，行数由内容自动决定
-┌───────┬───────┬───────┐
-│  1    │  2    │  3    │  ← 第一行（显式）
-├───────┼───────┼───────┤
-│  4    │  5    │  6    │  ← 第二行（隐式）
-└───────┴───────┴───────┘
+```mermaid
+flowchart TB
+  subgraph row1["第一行（显式）"]
+    direction LR
+    G1["1"] --- G2["2"] --- G3["3"]
+  end
+  subgraph row2["第二行（隐式）"]
+    direction LR
+    G4["4"] --- G5["5"] --- G6["6"]
+  end
+  row1 --- row2
 ```
 
 ### 3.2 容器类：定义网格骨架

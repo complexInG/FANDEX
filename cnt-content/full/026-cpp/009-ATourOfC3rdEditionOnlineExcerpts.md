@@ -14,7 +14,7 @@ related:
   - 'cpp/008-LambdaExpression'
   - 'cpp/010-Cpp20Range'
   - 'cpp/011-Cpp20Module'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
   - 'cpp/002-CppBasicSyntax'

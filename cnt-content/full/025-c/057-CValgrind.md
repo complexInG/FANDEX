@@ -1,5 +1,5 @@
 ---
-order: 570
+order: 580
 title: C Valgrind 内存检测 语法速查手册
 module: 'c'
 category: 计算机科学

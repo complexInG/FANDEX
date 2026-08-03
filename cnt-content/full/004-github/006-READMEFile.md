@@ -6,7 +6,7 @@ category: 工具链
 difficulty: beginner
 description: 'GitHub README文件深度解析：用"店铺招牌与产品说明书"的对比讲透README的结构、写作要点与开源项目最佳实践。'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/004-SSHHTTPS'
   - 'github/005-CollaborationDevelopmentStandard'
@@ -70,14 +70,14 @@ GitHub 对 README 的识别有一套固定规则（官方文档明确说明）�
 
 以本学习平台项目为例（示意）：
 
-```
-my-project/               # 仓库根目录
-├── README.md             # 会被 GitHub 自动展示
-├── .github/
-│   └── README.md         # 如果存在，优先展示这个
-├── docs/
-│   └── README.md         # 优先级最低
-└── src/                  # 源代码不影响 README 展示
+```mermaid
+graph TD
+  A["my-project/（仓库根目录）"] --> B["README.md（会被 GitHub 自动展示）"]
+  A --> C[".github/"]
+  C --> D["README.md（如果存在，优先展示这个）"]
+  A --> E["docs/"]
+  E --> F["README.md（优先级最低）"]
+  A --> G["src/（源代码不影响 README 展示）"]
 ```
 
 ## 3. 操作示例：一份带注释的完整 README 模板

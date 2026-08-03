@@ -15,7 +15,7 @@ related:
   - 'cpp/060-Cpp20Concept'
   - 'cpp/061-Cpp23NewFeatures'
   - 'cpp/008-LambdaExpression'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
   - 'cpp/064-CppExceptionAndPerformance'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'

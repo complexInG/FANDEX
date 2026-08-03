@@ -179,10 +179,10 @@ git checkout -b hotfix/security-patch
 ### 5.3 其他保护机制：Rulesets 与 CODEOWNERS
 
 - **Rulesets（规则集）**：较新的替代方案，支持把多条规则打包应用于整个分支/标签，比单条保护规则更易管理。
-- **CODEOWNERS**：在 `.github/CODEOWNERS` 中按路径指定负责人，改动该路径文件时自动要求对应负责人审查：
+- **CODEOWNERS**：在 `.github/025-CODEOWNERS` 中按路径指定负责人，改动该路径文件时自动要求对应负责人审查：
 
 ```gitignore
-# .github/CODEOWNERS
+# .github/025-CODEOWNERS
 # 整个仓库的默认所有者
 * @maintainer
 # src/ 目录需要前端团队审查

@@ -8,7 +8,8 @@ description: 零基础第一课：安装编辑器、创建并保存 .html 文件
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'html5/001-HTML5OverviewCoreFeature'
+  - 'html5/001-HTML5CommentsAndEntities'
+  - 'html5/005-HTML5OverviewCoreFeature'
   - 'getting-started/031-VSCodeInstall'
   - 'getting-started/010-IDEEditorSelection'
 prerequisites: []
@@ -73,7 +74,7 @@ prerequisites: []
 **讲解：**
 
 1. 双击打开文件用的是"本地文件协议"（地址栏以 `file://` 开头），适合学习阶段。
-2. 后期做网站时改用 `http://localhost` 本地服务器访问，效果一样但能力更强（见 030 综合项目）。
+2. 后期做网站时改用 `http://localhost` 本地服务器访问，效果一样但能力更强（见 035 综合项目）。
 3. 刷新是开发者的日常操作：改代码后忘记刷新，会以为"没生效"。
 
 ## 5. 第四步：认识 F12 开发者工具（3 分钟）
@@ -145,4 +146,4 @@ prerequisites: []
 
 ## 10. 下一步
 
-你已经完成了网页制作的完整闭环。下一篇 `001-HTML5OverviewCoreFeature` 会用 5 分钟写第二个网页，并拆解刚才那几行代码背后的含义。
+你已经完成了网页制作的完整闭环。接下来 001-004 四篇前置课会依次补上零基础必懂的概念：注释与特殊字符（001）、块级与行内元素（002）、div 与 span 容器（003）、id/class/style 全局属性（004）；然后 `005-HTML5OverviewCoreFeature` 会用 5 分钟写第二个网页，并拆解刚才那几行代码背后的含义。

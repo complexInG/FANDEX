@@ -1,5 +1,5 @@
 ---
-order: 280
+order: 290
 title: 函数详解
 module: 'c'
 category: 计算机科学

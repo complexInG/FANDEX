@@ -1,5 +1,5 @@
 ---
-order: 530
+order: 540
 title: C POSIX 与系统调用速查
 module: 'c'
 category: 计算机科学

@@ -1,5 +1,5 @@
 ---
-order: 350
+order: 360
 title: C与汇编交互
 module: 'c'
 category: 计算机科学

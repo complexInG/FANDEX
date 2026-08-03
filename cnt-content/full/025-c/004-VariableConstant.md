@@ -1,5 +1,5 @@
 ---
-order: 40
+order: 50
 title: 变量与常量
 module: 'c'
 category: 计算机科学

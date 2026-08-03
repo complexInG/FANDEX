@@ -6,7 +6,7 @@ category: 工具链
 difficulty: beginner
 description: 'GitHub社区健康文件深度解析：以"社区公约"清单为主线，逐一讲解 CONTRIBUTING、CODE_OF_CONDUCT、SUPPORT、SECURITY、CODEOWNERS 等文件与默认文件机制。'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/027-PullRequestCompleteCollaborationFlow'
   - 'github/028-GitHubPagesMultiSolution'
@@ -203,7 +203,7 @@ GitHub 提供一键模板：仓库 → **Add file → Create new file** → 文�
 
 ### 6.1 CODEOWNERS：指定代码审查负责人
 
-在 `.github/CODEOWNERS` 中声明"谁负责哪些路径"，PR 改动这些路径时自动指定审查人：
+在 `.github/025-CODEOWNERS` 中声明"谁负责哪些路径"，PR 改动这些路径时自动指定审查人：
 
 ```text
 # 全局默认
@@ -234,12 +234,12 @@ custom: [https://你的赞助页地址]
 
 如果组织/账号下有多个仓库，不必在每个仓库重复维护同样文件。**官方机制**：在组织或用户名下创建一个名为 `.github` 的**公开**仓库，把默认社区健康文件放进去（根目录），其他没有自带对应文件的仓库会自动"继承"使用这些默认文件。
 
-```text
-your-org/.github（公开仓库）
-├── CONTRIBUTING.md      ← 所有仓库默认使用
-├── CODE_OF_CONDUCT.md
-├── SUPPORT.md
-└── ISSUE_TEMPLATE/
+```mermaid
+graph TD
+  A["your-org/.github（公开仓库）"] --> B["CONTRIBUTING.md（所有仓库默认使用）"]
+  A --> C["CODE_OF_CONDUCT.md"]
+  A --> D["SUPPORT.md"]
+  A --> E["ISSUE_TEMPLATE/"]
 ```
 
 优先级规则（官方明确）：单个仓库的查找顺序为 `.github` 文件夹 → 仓库根目录 → `docs` 文件夹；都没有时，才使用 `.github` 默认仓库中的文件。注意：**LICENSE 不能作为默认文件**，许可证必须放到每个仓库本身；私有 `.github` 仓库不生效。

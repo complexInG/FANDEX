@@ -8,15 +8,15 @@ description: CSS性能优化深度指南：关键CSS内联、异步加载、选�
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'css/040-CSSTheoryKnowledge'
-  - 'css/041-CSSNewFeatures'
-  - 'css/043-HTMLSemanticSEO'
-  - 'css/044-ResponsiveImage'
+  - 'css/063-CSSTheoryKnowledge'
+  - 'css/064-CSSNewFeatures'
+  - 'css/065-HTMLSemanticSEO'
+  - 'css/066-ResponsiveImage'
 prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
-> 阅读建议：有性能优化需求后再读，先掌握 035 与 040。
+> 阅读建议：有性能优化需求后再读，先掌握 060 与 063。
 
 ## 1. 关键渲染路径与 CSS
 
@@ -408,6 +408,6 @@ npx postcss styles.css -u cssnano -o styles.min.css
 
 ## 扩展学习
 
-- 渲染路径：`css/035-CriticalRenderPathOptimization`；
-- 指标：`javascript/059-CoreWebVitalsAndPerformanceMetrics`；
-- 动画：`css/017-CSSAnimationTransition`。
+- 渲染路径：`css/060-CriticalRenderPathOptimization`；
+- 指标：`javascript/048-CoreWebVitalsAndPerformanceMetrics`；
+- 动画：`css/028-CSSAnimationTransition`。

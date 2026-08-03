@@ -6,7 +6,7 @@ category: 后端技术
 difficulty: beginner
 description: 第一个 Java 程序、编译运行与基本概念。
 author: fanquanpp
-updated: '2026-07-20'
+updated: '2026-08-03'
 related:
   - 'java/001-JavaOverviewDevEnv'
   - 'java/003-ProgramStructureBasicSyntax'
@@ -24,6 +24,8 @@ prerequisites: []
 ## 0. 零基础阅读指引（先读这一节）
 
 本篇是"快速入门"，但为了保持体系完整，文中同时包含 JVM 字节码、JIT、GraalVM、CI 等进阶内容。**零基础第一遍只读四件事**：
+
+**新手防火墙：本篇只看 `javac` / `java` 命令与 Hello World 的代码块；JIT 阈值公式、GraalVM、CI/CD 属于 JVM 进阶，第一遍直接跳过。**
 
 1. 第 4 节中 Hello World 的编写、编译与运行（`javac` / `java` 两条命令）；
 2. 第 4 节中"运行"之前的最小代码示例，跳过模块与自定义 JRE；

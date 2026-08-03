@@ -1,5 +1,5 @@
 ---
-order: 50
+order: 60
 title: 位运算与位域
 module: 'c'
 category: 计算机科学

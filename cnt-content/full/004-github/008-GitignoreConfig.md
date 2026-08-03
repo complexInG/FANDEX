@@ -6,7 +6,7 @@ category: 工具链
 difficulty: beginner
 description: .gitignore配置详解：忽略规则清单、语法、优先级、全局配置与官方模板库使用。
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/006-READMEFile'
   - 'github/007-BranchModelBranchRule'
@@ -57,15 +57,25 @@ Git 默认会追踪目录里的所有文件。如果你不做任何声明，`nod
 
 ### 1.2 直观理解：一个 Node.js 项目装箱前 vs 装箱后
 
-```
-项目目录（未配置 .gitignore）          项目目录（已配置 .gitignore）
-├── package.json                    ├── package.json
-├── package-lock.json               ├── package-lock.json
-├── src/                            ├── src/
-├── node_modules/    ← 5万+文件      └── .gitignore
-├── dist/            ← 编译产物
-├── .env             ← 数据库密码
-└── .vscode/
+```mermaid
+flowchart LR
+  subgraph before["项目目录（未配置 .gitignore）"]
+    direction TB
+    B1["package.json"]
+    B2["package-lock.json"]
+    B3["src/"]
+    B4["node_modules/（5万+文件）"]
+    B5["dist/（编译产物）"]
+    B6[".env（数据库密码）"]
+    B7[".vscode/"]
+  end
+  subgraph after["项目目录（已配置 .gitignore）"]
+    direction TB
+    A1["package.json"]
+    A2["package-lock.json"]
+    A3["src/"]
+    A4[".gitignore"]
+  end
 ```
 
 右侧才是"干净"的仓库：只有源代码、配置文件清单和 `.gitignore` 本身。任何协作者克隆后执行 `npm install` 即可恢复完整环境。

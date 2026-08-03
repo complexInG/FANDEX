@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: GitHub Actions 与 CI/CD 总纲：以智能工厂流水线为类比，讲透 CI/CD 概念、workflow 文件结构（name/on/jobs/steps）、Actions 市场使用与工程最佳实践。
 author: Anonymous
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/027-PullRequestCompleteCollaborationFlow'
   - 'github/028-GitHubPagesMultiSolution'
@@ -81,13 +81,13 @@ workflow（工作流）→ jobs（任务）→ steps（步骤）→ actions（�
 
 工作流文件必须放在仓库根目录的固定文件夹中：
 
-```
-仓库根目录
-└── .github
-    └── workflows        # 固定目录名，不能改名
-        ├── ci.yml       # 每个 .yml 文件 = 一个独立工作流
-        ├── deploy.yml
-        └── nightly.yml
+```mermaid
+graph TD
+  A["仓库根目录"] --> B[".github"]
+  B --> C["workflows（固定目录名，不能改名）"]
+  C --> D["ci.yml（每个 .yml 文件 = 一个独立工作流）"]
+  C --> E["deploy.yml"]
+  C --> F["nightly.yml"]
 ```
 
 ### 3.2 顶层结构总览

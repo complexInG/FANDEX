@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: 'workspace: 协议用法、本地包引用与发布时版本转换'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'pnpm-monorepo/003-WorkspaceSetup'
   - 'pnpm-monorepo/005-CatalogManagement'
@@ -156,9 +156,10 @@ pnpm add lodash --filter @fandex/web
 
 **解决**：重新分层，抽取共同依赖到更底层的 C：
 
-```
-A ─┐        A ─→ C
-B ─┘   =>   B ─→ C
+```mermaid
+flowchart LR
+  A[A] --> C[C]
+  B[B] --> C[C]
 ```
 
 ### 6.2 误用 file: 协议

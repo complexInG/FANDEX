@@ -225,7 +225,7 @@ jobs:
 ### 5.2 CODEOWNERS 配置
 
 ```
-# .github/CODEOWNERS
+# .github/025-CODEOWNERS
 
 # 全局审查者
 * @team-lead

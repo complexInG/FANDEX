@@ -1,5 +1,5 @@
 ---
-order: 300
+order: 310
 title: 国际化与本地化
 module: 'c'
 category: 计算机科学

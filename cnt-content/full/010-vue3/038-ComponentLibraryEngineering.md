@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: advanced
 description: 从源码、构建到发布，讲清 Vue 3 组件库的工程骨架：目录设计、样式方案、类型导出与版本发布。
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'vue3/018-ComponentSystem'
   - 'vue3/019-TypeScriptIntegration'
@@ -27,22 +27,22 @@ prerequisites:
 
 ## 目录设计
 
-```text
-my-ui/
-├── src/
-│   ├── components/
-│   │   ├── Button/
-│   │   │   ├── Button.vue
-│   │   │   └── index.ts        # 组件入口
-│   │   └── index.ts            # 统一导出
-│   ├── styles/
-│   │   ├── tokens.css          # 设计令牌（CSS 变量）
-│   │   └── index.css
-│   └── index.ts                # 库入口
-├── docs/                       # 文档与演示
-├── vite.config.ts              # 库模式构建
-├── package.json
-└── tsconfig.json
+```mermaid
+graph TD
+  A["my-ui/"] --> B["src/"]
+  B --> C["components/"]
+  C --> D["Button/"]
+  D --> E["Button.vue"]
+  D --> F["index.ts（组件入口）"]
+  C --> G["index.ts（统一导出）"]
+  B --> H["styles/"]
+  H --> I["tokens.css（设计令牌 CSS 变量）"]
+  H --> J["index.css"]
+  B --> K["index.ts（库入口）"]
+  A --> L["docs/（文档与演示）"]
+  A --> M["vite.config.ts（库模式构建）"]
+  A --> N["package.json"]
+  A --> O["tsconfig.json"]
 ```
 
 ## 构建配置：Vite 库模式

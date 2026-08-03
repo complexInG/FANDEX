@@ -10,7 +10,7 @@ updated: '2026-06-14'
 related:
   - 'cpp/045-CppDateTime'
   - 'cpp/046-CppFormatOutput'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
   - 'cpp/049-ConcurrentProgramming'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'

@@ -6,7 +6,7 @@ category: 工具链
 difficulty: beginner
 description: '以"手机 App 应用商店"为线索讲解 gh extension 系列命令，涵盖搜索、安装、升级、移除、浏览与创建扩展，配以原理讲解、安全提示、错误对策。'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related: []
 prerequisites: []
 ---
@@ -199,10 +199,10 @@ gh extension create --precompiled=other my-ext
 
 以脚本扩展为例，生成的结构大致是：
 
-```text
-my-ext/
-├── gh-my-ext        # 同名可执行脚本（核心！）
-├── ...              # 其余文件按需补充
+```mermaid
+graph TD
+  A["my-ext/"] --> B["gh-my-ext（同名可执行脚本，核心）"]
+  A --> C["...（其余文件按需补充）"]
 ```
 
 ### 5.2 本地开发调试

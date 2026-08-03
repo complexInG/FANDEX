@@ -1,5 +1,5 @@
 ---
-order: 520
+order: 530
 title: C 标准库函数速查
 module: 'c'
 category: 计算机科学

@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: 问题驱动理解岛屿架构：为什么页面没有交互、client 指令全家桶、水合原理、多框架集成与岛屿间通信
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'astro/004-ComponentsProps'
   - 'astro/005-ContentCollections'
@@ -106,17 +106,11 @@ import Counter from '../components/Counter.tsx'
 3. **脚本期**：浏览器下载并执行 Counter 的 chunk，React 运行时找到服务端渲染出的那个按钮（通过 `data-astro-cid` 之类的标记），把虚拟 DOM 与现有 DOM 对齐；
 4. **激活期**：事件绑定生效，`useState` 接管状态，按钮开始响应点击。
 
-```text
-浏览器收到 HTML（页面立即可读）
-        │
-        ▼
-加载并执行岛屿脚本（仅交互组件）
-        │
-        ▼
-框架接管该组件的 DOM，绑定事件（水合完成）
-        │
-        ▼
-其余页面仍是纯静态 HTML（零成本）
+```mermaid
+flowchart TD
+  A["浏览器收到 HTML（页面立即可读）"] --> B["加载并执行岛屿脚本（仅交互组件）"]
+  B --> C["框架接管该组件的 DOM，绑定事件（水合完成）"]
+  C --> D["其余页面仍是纯静态 HTML（零成本）"]
 ```
 
 ### 2.4 对比：岛屿架构 vs 传统 SPA

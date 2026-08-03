@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: beginner
 description: 'Vite 静态资源：按"一个 Logo 从设计到上线"的场景，讲清 public 与 src/assets 的区别、import 资源、SVG、字体、favicon 与 base 路径'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'vite/003-ConfigFile'
   - 'vite/007-BuildSplit'
@@ -76,11 +76,11 @@ export function Header() {
 
 生产构建时，这两个文件会怎样？看 `pnpm build` 的输出：
 
-```text
-dist/
-└── assets/
-    ├── logo-1a2b3c4d.svg     # 加上了内容哈希
-    └── logo-full-9f8e7d6c.png
+```mermaid
+graph TD
+  A["dist/"] --> B["assets/"]
+  B --> B1["logo-1a2b3c4d.svg（加上了内容哈希）"]
+  B --> B2["logo-full-9f8e7d6c.png"]
 ```
 
 讲解：`import` 引入的静态资源会**参与构建**：自动追加内容哈希（内容不变文件名不变，配合服务器 `Cache-Control: immutable` 可实现永久缓存；内容一改，哈希变化，浏览器自动加载新文件），小于阈值（默认 4096 字节，约 4KB）的还会被**内联为 base64** 直接嵌入代码，减少一次网络请求。Vite 自动识别常见类型：图片（png/jpg/gif/svg/webp/avif）、字体（woff/woff2/eot/ttf/otf）、媒体（mp4/webm/ogg/mp3/wav）以及 JSON。
@@ -107,10 +107,10 @@ public/
 
 那么它构建后会**原样复制**到产物根目录，不做任何处理：
 
-```text
-dist/
-├── logo.png        # 文件名不变，没有哈希
-└── index.html
+```mermaid
+graph TD
+  A["dist/"] --> B["logo.png（文件名不变，没有哈希）"]
+  A --> C["index.html"]
 ```
 
 引用方式必须是**根绝对路径**（以 `/` 开头，不能是相对路径）：

@@ -14,11 +14,11 @@ related:
   - 'cpp/018-FileIOFileSystem'
   - 'cpp/008-LambdaExpression'
   - 'cpp/010-Cpp20Range'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
   - 'cpp/003-CppTypeSystem'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
 ---
 
 ## 1. 历史动机与发展脉络

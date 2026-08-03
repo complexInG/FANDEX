@@ -14,7 +14,7 @@ related:
   - 'cpp/004-CppReference'
   - 'cpp/009-ATourOfC3rdEditionOnlineExcerpts'
   - 'cpp/008-LambdaExpression'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
   - 'cpp/064-CppExceptionAndPerformance'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'

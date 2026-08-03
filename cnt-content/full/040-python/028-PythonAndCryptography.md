@@ -2125,11 +2125,11 @@ def hybrid_kem_demo():
 ### 20.2 FANDEX 学习路径
 
 继续学习：
-- `python/Python与测试`：为密码学代码编写单元测试与属性测试；
-- `python/Python与日志`：安全日志记录与审计；
-- `python/Python与CLI`：构建密钥生成、轮转等命令行工具；
-- `python/Python与配置管理`：安全配置文件加载与密钥注入；
-- `python/Python与Web开发`：将加密服务集成到 FastAPI/Flask。
+- `python/030-Python与测试`：为密码学代码编写单元测试与属性测试；
+- `python/030-Python与日志`：安全日志记录与审计；
+- `python/030-Python与CLI`：构建密钥生成、轮转等命令行工具；
+- `python/030-Python与配置管理`：安全配置文件加载与密钥注入；
+- `python/030-Python与Web开发`：将加密服务集成到 FastAPI/Flask。
 
 ---
 

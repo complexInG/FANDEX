@@ -1,5 +1,5 @@
 ---
-order: 30
+order: 40
 title: 数据类型详解
 module: 'c'
 category: 计算机科学

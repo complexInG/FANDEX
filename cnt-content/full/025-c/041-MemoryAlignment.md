@@ -1,5 +1,5 @@
 ---
-order: 410
+order: 420
 title: 内存对齐
 module: 'c'
 category: 计算机科学

@@ -1,5 +1,5 @@
 ---
-order: 70
+order: 80
 title: 枚举与typedef
 module: 'c'
 category: 计算机科学

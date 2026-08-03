@@ -5,17 +5,28 @@ module: 'css'
 category: 前端技术
 difficulty: beginner
 description: CSS 发展历程、语法结构与层叠规则。
-author: Anonymous
+author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'css/002-CSS3BoxModelDetailed'
-  - 'css/003-CSS3SelectorSystem'
-prerequisites: []
+  - 'css/003-CSS3BoxModelDetailed'
+  - 'css/007-CSS3SelectorSystem'
+prerequisites:
+  - 'html5/005-HTML5OverviewCoreFeature'
 ---
 
 ## 0. 快速上手：2 分钟写出第一行 CSS
 
 > 目标：不管懂不懂 CSS，先让浏览器里的字变色。
+
+### 0.0 学前准备（30 秒）
+
+开始前确认三样东西已就位：
+
+1. **浏览器**：Chrome 或 Edge（本模块的调试演示均基于 Chrome DevTools）；
+2. **编辑器**：VS Code（或任意纯文本编辑器，记事本也可以）；
+3. **HTML 基础**：能写一个含 `<h1>` 与 `<p>` 标签的 `index.html`（HTML 入门见 `html5/005-HTML5OverviewCoreFeature`）。
+
+不需要装任何额外软件，CSS 由浏览器直接解析，本模块所有示例都可用“一个 HTML 文件 + 一个 CSS 文件”复现。
 
 ### 0.1 准备（30 秒）
 
@@ -57,11 +68,35 @@ h1 {
 本模块文档很多，0 基础推荐路径：
 
 ```text
-001 概述语法 → 002 盒模型 → 003 选择器 → 005 Flexbox
-    → 016 Grid → 019 媒体查询 → 030 响应式设计 → 045 综合项目
+001 概述语法 → 003 盒模型 → 007 选择器 → 021 Flexbox
+    → 022 Grid → 031 媒体查询 → 033 响应式设计 → 067 综合项目
 ```
 
-路径说明：先会写规则（001），再理解盒子（002）与选择器（003），掌握两套布局（005/016），学会响应式（019/030），最后做综合项目（045）。其余文档（变量、动画、预处理器、架构等）按需查阅，每篇开头的“速通路径/前置依赖”会告诉你何时读。
+路径说明：先会写规则（001），再理解盒子（003）与选择器（007），掌握两套布局（021/022），学会响应式（031/033），最后做综合项目（067）。其余文档（变量、动画、预处理器、架构等）按需查阅，每篇开头的“速通路径/前置依赖”会告诉你何时读。
+
+```mermaid
+flowchart LR
+    A["001 概述语法"] --> B["003 盒模型"]
+    B --> C["007 选择器"]
+    C --> D["021 Flexbox"]
+    D --> E["022 Grid"]
+    E --> F["031 媒体查询"]
+    F --> G["033 响应式设计"]
+    G --> H["067 综合项目"]
+```
+
+### 0.6 学完本章后你能做什么
+
+学完本章（第 0-5 节）后，你应该能：
+
+- 说出 CSS 的三个组成部分：选择器、属性、值；
+- 用外部样式表让页面的标题与段落改变颜色和字号；
+- 区分行内、内部、外部、@import 四种引入方式并说出各自适用场景；
+- 解释“后写的规则为什么能覆盖先写的规则”；
+- 说出 `px`/`em`/`rem` 的大致区别；
+- 按“三步急救法”排查样式不生效的常见原因。
+
+如果以上任一项答不上来，建议回头重读对应小节；都能回答，就可以进入 `css/003-CSS3BoxModelDetailed`。
 
 
 
@@ -479,7 +514,7 @@ CSS 变量（也称为自定义属性）允许你定义可重用的值，提高�
 
 - 用 `--` 前缀定义变量，用 `var(变量名)` 引用；
 - 变量写在 `:root` 中即全局可用，一处修改、全局生效；
-- 变量是运行时特性，可以被媒体查询与 JavaScript 动态覆盖（详见 css/023）。
+- 变量是运行时特性，可以被媒体查询与 JavaScript 动态覆盖（详见 `css/035-CSSVariableCustomAttribute`）。
 
 动手试试（2 分钟）：在 `:root` 中定义 `--main-color: #3498db` 与 `--spacing: 1rem`，在按钮样式中使用它们；改一处变量值，观察全局变化。
 
@@ -828,8 +863,8 @@ CSS3 是现代网页设计的重要组成部分，提供了丰富的特性和功
 ## 14. 扩展学习
 
 - CSS 历史：CSS1（1996）→ CSS2（1998）→ CSS2.1（2011）→ CSS3 模块化（2012 起），了解即可；
-- 选择器：`css/003-CSS3SelectorSystem` 系统掌握选择器；
-- 盒模型：`css/002-CSS3BoxModelDetailed` 理解尺寸计算；
-- 变量深入：`css/023-CSSVariableCustomAttribute` 作用域与动态主题；
-- 响应式：`css/030-ResponsiveDesign` 与 `css/019-MediaQuery`；
-- 工程化：`css/039-CSSArchitectureMethodology` 与 BEM 命名。
+- 选择器：`css/007-CSS3SelectorSystem` 系统掌握选择器；
+- 盒模型：`css/003-CSS3BoxModelDetailed` 理解尺寸计算；
+- 变量深入：`css/035-CSSVariableCustomAttribute` 作用域与动态主题；
+- 响应式：`css/033-ResponsiveDesign` 与 `css/031-MediaQuery`；
+- 工程化：`css/043-CSSArchitectureMethodology` 与 BEM 命名。

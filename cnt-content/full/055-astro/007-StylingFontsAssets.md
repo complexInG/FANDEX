@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: 流程驱动掌握 Astro 样式与资源：全局风格、scoped 样式、Fonts API、Image 组件与 SVG 优化
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'astro/002-QuickStartProject'
   - 'astro/009-Astro7Features'
@@ -21,18 +21,15 @@ prerequisites:
 
 给 Astro 网站加样式，和装修是同一套逻辑。本文按"装修流程"组织成一条完整的操作链：
 
-```text
-第一步 全屋打底：全局样式与主题变量（墙、地板）
-   │
-第二步 逐间软装：组件 scoped 样式（每间房自己挑窗帘）
-   │
-第三步 门面招牌：字体（Fonts API）
-   │
-第四步 家具家电：图片资源（Image / Picture）
-   │
-第五步 装饰点缀：SVG 与图标
-   │
-第六步 竣工验收：性能基线与检查清单
+```mermaid
+flowchart TD
+  A["第一步 全屋打底：全局样式与主题变量（墙、地板）"]
+  B["第二步 逐间软装：组件 scoped 样式（每间房自己挑窗帘）"]
+  C["第三步 门面招牌：字体（Fonts API）"]
+  D["第四步 家具家电：图片资源（Image / Picture）"]
+  E["第五步 装饰点缀：SVG 与图标"]
+  F["第六步 竣工验收：性能基线与检查清单"]
+  A --> B --> C --> D --> E --> F
 ```
 
 每一步都可以独立使用，但理解了顺序，你才知道"全局样式应该放哪、为什么组件样式不会互相污染、字体和图片为什么应该走专用 API"。

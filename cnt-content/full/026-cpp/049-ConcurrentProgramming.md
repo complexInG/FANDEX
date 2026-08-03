@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'cpp/047-Cpp26AndLatestStandard'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
   - 'cpp/050-CCoreGuidelinesResourceManagement'
   - 'cpp/051-CSTLAlgorithmAndFunctionObject'
 prerequisites:

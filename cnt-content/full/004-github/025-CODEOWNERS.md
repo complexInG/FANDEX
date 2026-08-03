@@ -74,7 +74,7 @@ GitHub 官方规定，`CODEOWNERS` 文件可放在三个位置之一，若多处
 
 1. 仓库根目录 `CODEOWNERS`
 2. `docs/CODEOWNERS`
-3. `.github/CODEOWNERS`（**推荐**）
+3. `.github/025-CODEOWNERS`（**推荐**）
 
 官方推荐放在 `.github/` 目录，与 CI 配置、模板文件放在一起。注意：**文件在哪个分支，就对该分支的 PR 生效**——可以为不同分支配置不同的负责人（如 main 分支与 gh-pages 分支）。
 
@@ -154,8 +154,8 @@ GitHub 官方规定，`CODEOWNERS` 文件可放在三个位置之一，若多处
 
 ```
 仓库 → Settings → Branches → Branch protection rules → 编辑 main 分支规则
-    ✅ Require a pull request before merging
-        ✅ Require review from Code Owners
+    [x] Require a pull request before merging
+        [x] Require review from Code Owners
 ```
 
 ### 4.2 效果对比
@@ -179,7 +179,7 @@ GitHub 官方规定，`CODEOWNERS` 文件可放在三个位置之一，若多处
 ## 5. 完整示例：一个全栈仓库的 CODEOWNERS
 
 ```gitignore
-# .github/CODEOWNERS
+# .github/025-CODEOWNERS
 # 规则说明：后面的规则优先级更高；匹配的规则都会添加审查者
 
 # ========== 兜底规则 ==========

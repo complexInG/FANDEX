@@ -1,5 +1,5 @@
 ---
-order: 20
+order: 30
 title: 程序结构与基本语法
 module: 'c'
 category: 计算机科学

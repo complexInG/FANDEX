@@ -6,7 +6,7 @@ category: 工具链
 difficulty: intermediate
 description: 'GitHub Projects深度解析：以"项目白板与便利贴"为主线，讲解表格/看板/时间线三种视图、自定义字段、内置自动化与洞察图表。'
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'github/010-DependencySecurityOptions'
   - 'github/011-ForkWorkflow'
@@ -69,15 +69,13 @@ Projects 用"**双向同步**"解决了这个问题。
 
 ### 2.3 最后看示例
 
-```
-Issue #42：登录页按钮样式错位   ← 在仓库里创建的 Issue
-    │ 添加到项目
-    ▼
-Projects 条目
-    ├── Status 字段：In Progress（看板视图的"进行中"列）
-    ├── Priority 字段：High（自定义字段）
-    ├── Sprint 字段：Sprint 2（迭代字段）
-    └── 与 Issue #42 双向同步
+```mermaid
+flowchart TD
+  A["Issue #42：登录页按钮样式错位（在仓库里创建的 Issue）"] -->|"添加到项目"| B["Projects 条目"]
+  B --> C["Status 字段：In Progress（看板视图的进行中列）"]
+  B --> D["Priority 字段：High（自定义字段）"]
+  B --> E["Sprint 字段：Sprint 2（迭代字段）"]
+  B --> F["与 Issue #42 双向同步"]
 ```
 
 ## 3. 操作示例：从创建到投入使用

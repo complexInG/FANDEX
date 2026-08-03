@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: 旅程驱动理解从构建到上线：astro build、产物分析、适配器与按需渲染、CI 部署、域名与 HTTPS、路由缓存
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'astro/005-ContentCollections'
   - 'astro/009-Astro7Features'
@@ -21,18 +21,15 @@ prerequisites:
 
 网站上线是同一趟旅程。本文按"从构建到上线"的完整旅程组织，你跟着走一遍，就能理解 Astro 站点是如何从源代码变成全球可访问的网站的：
 
-```text
-第 1 站  印刷厂：astro build（构建产物）
-   │
-第 2 站  质检：产物分析（dist/ 里有什么）
-   │
-第 3 站  选出版社：适配器与运行模式（静态 vs 按需渲染）
-   │
-第 4 站  决定卖给谁：SSR 与静态的取舍
-   │
-第 5 站  物流车队：CI/CD 与平台部署
-   │
-第 6 站  挂牌营业：域名、HTTPS 与检查清单
+```mermaid
+flowchart TD
+  A["第 1 站 印刷厂：astro build（构建产物）"]
+  B["第 2 站 质检：产物分析（dist/ 里有什么）"]
+  C["第 3 站 选出版社：适配器与运行模式（静态 vs 按需渲染）"]
+  D["第 4 站 决定卖给谁：SSR 与静态的取舍"]
+  E["第 5 站 物流车队：CI/CD 与平台部署"]
+  F["第 6 站 挂牌营业：域名、HTTPS 与检查清单"]
+  A --> B --> C --> D --> E --> F
 ```
 
 ## 1. 第 1 站，印刷厂：astro build
@@ -56,18 +53,18 @@ npm run preview   # 本地模拟生产环境，预览 dist/ 产物的实际效�
 
 一次构建结束后，`dist/` 大致是这样的结构：
 
-```text
-dist/
-├── index.html              # 首页（完整静态 HTML）
-├── about/
-│   └── index.html          # 目录格式页面
-├── posts/
-│   └── hello-world/
-│       └── index.html
-└── _astro/                 # 哈希命名的静态资源
-    ├── index-abc123.css    # 打包后的 CSS（含 scoped 规则）
-    ├── hero-7f3k9a.webp    # 优化后的图片
-    └── counter-xyz789.js   # 岛屿组件的客户端脚本（按需加载）
+```mermaid
+graph TD
+  A["dist/"] --> B["index.html（首页，完整静态 HTML）"]
+  A --> C["about/"]
+  C --> C1["index.html（目录格式页面）"]
+  A --> D["posts/"]
+  D --> D1["hello-world/"]
+  D1 --> D2["index.html"]
+  A --> E["_astro/（哈希命名的静态资源）"]
+  E --> E1["index-abc123.css（打包后的 CSS，含 scoped 规则）"]
+  E --> E2["hero-7f3k9a.webp（优化后的图片）"]
+  E --> E3["counter-xyz789.js（岛屿组件的客户端脚本，按需加载）"]
 ```
 
 ### 1.3 构建提速：Astro 7 的"新印刷机"

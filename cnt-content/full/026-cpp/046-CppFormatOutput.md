@@ -11,7 +11,7 @@ related:
   - 'cpp/030-CppRegex'
   - 'cpp/045-CppDateTime'
   - 'cpp/047-Cpp26AndLatestStandard'
-  - 'cpp/048-CSTL'
+  - 'cpp/048-CSTLContainersIterators'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
 ---
