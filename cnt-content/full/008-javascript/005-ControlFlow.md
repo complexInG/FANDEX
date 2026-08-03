@@ -10,9 +10,9 @@ updated: '2026-07-21'
 related:
   - 'javascript/003-VariableDataType'
   - 'javascript/004-DataTypeOperator'
-  - 'javascript/006-HigherOrderFunction'
-  - 'javascript/007-LinearGeneticProgramming'
-  - 'javascript/033-EventLoopDetailed'
+  - 'javascript/013-HigherOrderFunction'
+  - 'javascript/014-LinearGeneticProgramming'
+  - 'javascript/028-EventLoopDetailed'
 prerequisites: []
 ---
 

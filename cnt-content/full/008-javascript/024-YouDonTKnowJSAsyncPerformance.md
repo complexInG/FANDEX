@@ -8,15 +8,15 @@ description: 深入解析 Promise 构造器的形式化语义、Promise A+ 规�
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'javascript/023-IteratorHelper'
-  - 'javascript/025-RecordsTuples'
-  - 'javascript/026-ObjectArray'
-  - 'javascript/009-CoroutinesInJavaScript'
-  - 'javascript/012-EventLoop'
-  - 'javascript/019-ImageOptimization'
+  - 'javascript/029-IteratorHelper'
+  - 'javascript/057-RecordsTuples'
+  - 'javascript/006-ObjectArray'
+  - 'javascript/030-CoroutinesInJavaScript'
+  - 'javascript/027-EventLoop'
+  - 'javascript/042-ImageOptimization'
 prerequisites:
-  - 'javascript/012-EventLoop'
-  - 'javascript/006-HigherOrderFunction'
+  - 'javascript/027-EventLoop'
+  - 'javascript/013-HigherOrderFunction'
 ---
 
 ## 0. 学习导览

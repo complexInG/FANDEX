@@ -9,9 +9,9 @@ author: fanquanpp
 updated: '2026-07-21'
 related:
   - 'javascript/047-DebugPerformanceOptimization'
-  - 'javascript/048-TypicalProjectPractice'
-  - 'javascript/050-JavaScriptProjectExampleTodoApp'
-  - 'javascript/051-JavaScriptTheory'
+  - 'javascript/052-TypicalProjectPractice'
+  - 'javascript/053-JavaScriptProjectExampleTodoApp'
+  - 'javascript/059-JavaScriptTheory'
 prerequisites: []
 ---
 

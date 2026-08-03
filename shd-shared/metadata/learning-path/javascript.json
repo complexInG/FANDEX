@@ -1,285 +1,481 @@
 {
   "version": "1.0.0",
   "module": "javascript",
-  "summary": "从零开始掌握 JavaScript：先建立语法直觉，再理解事件循环与异步核心，最后进入元编程、性能与工程实战。",
+  "summary": "从 JavaScript 零基础语法、对象与函数出发，覆盖原型、异步、DOM、模块化与工程实践，达到计算机本科前端开发水平。",
   "stages": [
     {
       "id": "basics",
-      "title": "基础语法",
-      "subtitle": "零基础起步，先建立语言直觉",
+      "title": "入门基础",
+      "subtitle": "环境、语法、对象、函数与闭包",
       "nodes": [
         {
           "id": "js-001",
-          "title": "运行环境与开发工具",
-          "desc": "浏览器与 Node.js 中运行 JavaScript 的方式，以及开发工具链的搭建",
-          "difficulty": "beginner",
-          "doc": "001-JavaScriptOverviewRuntimeEnv"
+          "title": "JavaScript 概述与运行环境",
+          "doc": "001-JavaScriptOverviewRuntimeEnv",
+          "desc": "JavaScript 发展历程、ECMAScript 标准与运行环境。",
+          "difficulty": "beginner"
         },
         {
           "id": "js-002",
           "title": "程序结构与基本语法",
-          "desc": "语句、注释、标识符与程序的基本构成",
-          "difficulty": "beginner",
-          "doc": "002-ProgramStructureBasicSyntax"
+          "doc": "002-ProgramStructureBasicSyntax",
+          "desc": "JavaScript 语法基础、语句与表达式。",
+          "difficulty": "beginner"
         },
         {
           "id": "js-003",
           "title": "变量与数据类型",
-          "desc": "var/let/const 的差异与七大基础数据类型",
-          "difficulty": "beginner",
-          "doc": "003-VariableDataType"
+          "doc": "003-VariableDataType",
+          "desc": "var/let/const、原始类型、引用类型与类型转换。",
+          "difficulty": "beginner"
         },
         {
           "id": "js-004",
           "title": "数据类型与运算符",
-          "desc": "类型转换规则、运算符与优先级",
-          "difficulty": "beginner",
-          "doc": "004-DataTypeOperator"
+          "doc": "004-DataTypeOperator",
+          "desc": "算术、比较、逻辑、位运算及运算符优先级。",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-005",
           "title": "控制流",
-          "desc": "条件、循环与跳转语句的写法与陷阱",
-          "difficulty": "beginner",
-          "doc": "005-ControlFlow"
+          "doc": "005-ControlFlow",
+          "desc": "JavaScript 控制流的数学语义、形式化推导、工程实践与反模式：条件分支、循环结构、迭代器协议、短路求值、异常控制流的完整剖析。",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-006",
           "title": "对象与数组",
-          "desc": "对象、数组的创建、遍历与常用操作",
-          "difficulty": "beginner",
-          "doc": "026-ObjectArray"
+          "doc": "006-ObjectArray",
+          "desc": "对象操作、数组方法与解构赋值。",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-007",
           "title": "函数、作用域与闭包",
-          "desc": "函数声明、执行上下文与闭包机制",
-          "difficulty": "beginner",
-          "doc": "016-FunctionScopeClosure"
+          "doc": "007-FunctionScopeClosure",
+          "desc": "函数声明、箭头函数、作用域链、闭包原理、this 绑定机制、高阶函数、柯里化、尾调用优化的形式化定义与工程实践。",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-008",
-          "title": "正则表达式",
-          "desc": "模式匹配语法、捕获组与常用场景",
-          "difficulty": "beginner",
-          "doc": "043-Regex"
+          "title": "数组高阶方法",
+          "doc": "008-ArrayHigherOrderMethod",
+          "desc": "JavaScript数组高阶方法详解：reduce、flatMap及函数式数组操作模式。",
+          "difficulty": "intermediate"
         }
       ]
     },
     {
-      "id": "core",
-      "title": "核心机制",
-      "subtitle": "理解语言运行的核心模型",
+      "id": "core-api",
+      "title": "核心语法工具",
+      "subtitle": "正则、错误与函数式编程",
       "nodes": [
         {
           "id": "js-009",
-          "title": "高阶函数",
-          "desc": "函数作为一等公民：map/filter/reduce 与函数组合",
-          "difficulty": "intermediate",
-          "doc": "006-HigherOrderFunction"
+          "title": "正则表达式",
+          "doc": "009-Regex",
+          "desc": "JavaScript正则表达式语法、常用模式、RegExp对象、字符串方法与实战技巧详解。",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-010",
-          "title": "递归与尾调用优化",
-          "desc": "递归思想、调用栈溢出与尾调用优化",
-          "difficulty": "intermediate",
-          "doc": "007-LinearGeneticProgramming"
+          "title": "具名捕获组",
+          "doc": "010-ES2018RegExpNamedCaptureGroups",
+          "desc": "正则表达式具名捕获组的形式语义、工程实践与生产级应用",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-011",
-          "title": "原型链与 class 本质",
-          "desc": "原型继承模型与 class 语法糖背后的机制",
-          "difficulty": "intermediate",
-          "doc": "032-PrototypeChainClassEssence"
+          "title": "Unicode属性转义",
+          "doc": "011-UnicodePropertyEscape",
+          "desc": "正则表达式 Unicode 属性转义机制、形式语义、性能调优与生产实践",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-012",
-          "title": "深拷贝与浅拷贝",
-          "desc": "引用复制陷阱与深拷贝的完整实现",
-          "difficulty": "intermediate",
-          "doc": "037-DeepShallowCopy"
+          "title": "自定义Error",
+          "doc": "012-ErrorReferenceAndControlFlowAndErrorHandling",
+          "desc": "JavaScript 自定义错误类型体系——Error 子类化、Error Cause、AggregateError、堆栈追踪与生产级错误监控",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-013",
-          "title": "事件循环",
-          "desc": "调用栈、任务队列与事件循环模型",
-          "difficulty": "intermediate",
-          "doc": "012-EventLoop"
+          "title": "高阶函数",
+          "doc": "013-HigherOrderFunction",
+          "desc": "以函数为参数或返回值的编程模式",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-014",
-          "title": "异步编程基础",
-          "desc": "回调、Promise 与 async/await 的演进与写法",
-          "difficulty": "intermediate",
-          "doc": "030-AsyncProgramming"
+          "title": "递归与尾调用优化",
+          "doc": "014-LinearGeneticProgramming",
+          "desc": "深入解析递归的形式化定义、调用栈模型、尾调用与 TCO 规范、trampoline 技术、CPS 续延传递、栈溢出防护等高级主题,涵盖 MIT 6.001 / Stanford C",
+          "difficulty": "advanced"
         },
         {
           "id": "js-015",
-          "title": "Promise 构造器",
-          "desc": "Promise 状态机与构造器执行细节",
-          "difficulty": "intermediate",
-          "doc": "024-YouDonTKnowJSAsyncPerformance"
-        },
+          "title": "柯里化与偏函数",
+          "doc": "015-CurryAndFunctionComposition",
+          "desc": "函数柯里化与偏函数应用的数学基础、形式语义、工程实现与生产级应用",
+          "difficulty": "intermediate"
+        }
+      ]
+    },
+    {
+      "id": "oop",
+      "title": "原型与对象",
+      "subtitle": "原型链、class 与深拷贝",
+      "nodes": [
         {
           "id": "js-016",
-          "title": "Promise 静态方法",
-          "desc": "all/race/allSettled/any 的差异与选型",
-          "difficulty": "intermediate",
-          "doc": "034-PromiseStaticMethod"
+          "title": "JavaScript 原型与继承",
+          "doc": "016-JavaScriptPrototypeInheritance",
+          "desc": "原型链、构造函数、class 语法与继承模式。",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-017",
-          "title": "异步并发控制",
-          "desc": "并发限制、重试、取消与信号量模式",
-          "difficulty": "advanced",
-          "doc": "035-AsyncConcurrencyControl"
-        }
-      ]
-    },
-    {
-      "id": "advanced",
-      "title": "进阶能力",
-      "subtitle": "模块化、元编程与运行时性能",
-      "nodes": [
+          "title": "原型链继承与class本质",
+          "doc": "017-PrototypeChainClassEssence",
+          "desc": "JavaScript原型链继承机制与class语法糖本质深度解析。",
+          "difficulty": "advanced"
+        },
         {
           "id": "js-018",
-          "title": "模块化",
-          "desc": "CommonJS 与 ESM 模块体系的差异与互操作",
-          "difficulty": "intermediate",
-          "doc": "029-JavaScriptModular"
+          "title": "深拷贝与浅拷贝",
+          "doc": "018-DeepShallowCopy",
+          "desc": "JavaScript深拷贝与浅拷贝详解：structuredClone、JSON方案缺陷与自定义实现。",
+          "difficulty": "intermediate"
         },
         {
           "id": "js-019",
-          "title": "动态导入与代码分割",
-          "desc": "import() 与按需加载的实现方式",
-          "difficulty": "intermediate",
-          "doc": "041-ModuleDynamicImportCodeSplitting"
-        },
-        {
-          "id": "js-020",
-          "title": "Proxy 与 Reflect",
-          "desc": "元编程基础：拦截对象操作与转发语义",
-          "difficulty": "advanced",
-          "doc": "010-ExploringES6ProxiesAndReflect"
-        },
-        {
-          "id": "js-021",
-          "title": "生成器函数",
-          "desc": "惰性求值、协程风格编程与迭代器协作",
-          "difficulty": "advanced",
-          "doc": "009-CoroutinesInJavaScript"
-        },
-        {
-          "id": "js-022",
-          "title": "迭代器帮助器",
-          "desc": "可迭代协议与迭代器辅助方法",
-          "difficulty": "advanced",
-          "doc": "023-IteratorHelper"
-        },
-        {
-          "id": "js-023",
-          "title": "事件循环详解",
-          "desc": "宏任务、微任务与渲染时机的完整时序",
-          "difficulty": "advanced",
-          "doc": "033-EventLoopDetailed"
-        },
-        {
-          "id": "js-024",
-          "title": "闭包内存泄漏与优化",
-          "desc": "闭包与垃圾回收的边界问题",
-          "difficulty": "advanced",
-          "doc": "031-ClosureMemoryLeakOptimization"
-        },
-        {
-          "id": "js-025",
-          "title": "内存泄漏排查",
-          "desc": "堆快照、性能面板与泄漏定位方法论",
-          "difficulty": "advanced",
-          "doc": "045-MemoryLeakTroubleshoot"
-        },
-        {
-          "id": "js-026",
-          "title": "ES6+ 新特性",
-          "desc": "从 ES6 到 ESNext 的语法与 API 演进",
-          "difficulty": "intermediate",
-          "doc": "036-ES6NewFeatures"
-        },
-        {
-          "id": "js-027",
-          "title": "防抖与节流",
-          "desc": "高频事件场景的性能优化手段",
-          "difficulty": "intermediate",
-          "doc": "038-DebounceThrottle"
-        },
-        {
-          "id": "js-028",
-          "title": "垃圾回收与内存管理",
-          "desc": "标记清除、分代回收与内存优化实践",
-          "difficulty": "advanced",
-          "doc": "057-MemoryManagementAndGarbageCollection"
+          "title": "Object扩展",
+          "doc": "019-ObjectReference",
+          "desc": "ES6+ Object 静态方法体系、属性描述符、对象不可变性、TC39 演进时间线与工程实践",
+          "difficulty": "intermediate"
         }
       ]
     },
     {
-      "id": "practice",
-      "title": "工程实战",
-      "subtitle": "浏览器、Node 与真实项目",
+      "id": "es6-data",
+      "title": "ES6+ 与数据结构",
+      "subtitle": "新特性、Map/Set 与 TypedArray",
+      "nodes": [
+        {
+          "id": "js-020",
+          "title": "ES6+ 新特性",
+          "doc": "020-ES6NewFeatures",
+          "desc": "ES6 至 ES2024 重要新特性的形式化定义、工程实践与生产案例：解构赋值、展开运算符、Symbol、Proxy、可选链、空值合并、Records & Tuples、装饰器、模",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-021",
+          "title": "JavaScript Map/Set/WeakMap/WeakSet 语法速查",
+          "doc": "021-MapSetWeakMapWeakSet",
+          "desc": "JavaScript Map/Set/WeakMap/WeakSet 语法速查 的完整教学讲解。",
+          "difficulty": "beginner"
+        },
+        {
+          "id": "js-022",
+          "title": "JavaScript ArrayBuffer 与 TypedArray 语法速查",
+          "doc": "022-ArrayBufferTypedArray",
+          "desc": "JavaScript ArrayBuffer 与 TypedArray 语法速查 的完整教学讲解。",
+          "difficulty": "beginner"
+        }
+      ]
+    },
+    {
+      "id": "async",
+      "title": "异步与事件循环",
+      "subtitle": "Promise、async/await 与宏微任务",
+      "nodes": [
+        {
+          "id": "js-023",
+          "title": "异步编程",
+          "doc": "023-AsyncProgramming",
+          "desc": "回调、Promise、async/await 与事件循环。",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-024",
+          "title": "Promise构造器",
+          "doc": "024-YouDonTKnowJSAsyncPerformance",
+          "desc": "深入解析 Promise 构造器的形式化语义、Promise A+ 规范、状态机模型、thenable 鸭子类型、微任务调度、并发原语(all/race/allSettled/an",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-025",
+          "title": "Promise静态方法",
+          "doc": "025-PromiseStaticMethod",
+          "desc": "Promise静态方法详解：allSettled、any、withResolvers及传统方法对比。",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-026",
+          "title": "异步并发控制",
+          "doc": "026-AsyncConcurrencyControl",
+          "desc": "JavaScript异步并发控制：p-limit模式、队列实现与并发限制策略。",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-027",
+          "title": "事件循环",
+          "doc": "027-EventLoop",
+          "desc": "JavaScript 事件循环模型——HTML 规范、Node.js 实现、微任务/宏任务、渲染调度",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-028",
+          "title": "事件循环详解",
+          "doc": "028-EventLoopDetailed",
+          "desc": "JavaScript事件循环深度解析：宏任务与微任务优先级、浏览器与Node.js差异。",
+          "difficulty": "advanced"
+        }
+      ]
+    },
+    {
+      "id": "meta",
+      "title": "迭代器与元编程",
+      "subtitle": "生成器、Proxy 与 Reflect",
       "nodes": [
         {
           "id": "js-029",
-          "title": "DOM 操作与事件",
-          "desc": "DOM 查询、修改、事件委托与自定义事件",
-          "difficulty": "intermediate",
-          "doc": "027-DOMOperationEvent"
+          "title": "迭代器帮助器",
+          "doc": "029-IteratorHelper",
+          "desc": "Iterator Helpers提案详解",
+          "difficulty": "advanced"
         },
         {
           "id": "js-030",
-          "title": "浏览器 Web API",
-          "desc": "网络请求、存储、IndexedDB 等浏览器接口",
-          "difficulty": "intermediate",
-          "doc": "046-WebAPIBrowserInterface"
+          "title": "生成器函数",
+          "doc": "030-CoroutinesInJavaScript",
+          "desc": "深入解析 ES6 生成器函数的协程语义、迭代器协议、异步生成器、与 async/await 的关系,以及无限流处理、co 库原理等高级主题",
+          "difficulty": "advanced"
         },
         {
           "id": "js-031",
-          "title": "错误边界与全局错误捕获",
-          "desc": "错误处理体系、监控与上报",
-          "difficulty": "intermediate",
-          "doc": "044-ErrorBoundaryGlobalErrorCatch"
+          "title": "Proxy与Reflect",
+          "doc": "031-ExploringES6ProxiesAndReflect",
+          "desc": "深入解析 ES6 Proxy 与 Reflect 的元编程理论、代理不变量、Vue 3 响应式实现、MobX 代理模式等高级主题",
+          "difficulty": "advanced"
         },
         {
           "id": "js-032",
-          "title": "调试与性能优化",
-          "desc": "断点调试、性能面板与优化实践",
-          "difficulty": "advanced",
-          "doc": "047-DebugPerformanceOptimization"
-        },
+          "title": "Proxy与Reflect实际应用",
+          "doc": "032-ProxyReflectPractice",
+          "desc": "JavaScript 元编程双壁 Proxy 与 Reflect 的形式化语义、陷阱（Trap）体系、Vue3 响应式实现、Immer/MobX/Solid 对比、企业级验证/缓存",
+          "difficulty": "advanced"
+        }
+      ]
+    },
+    {
+      "id": "memory",
+      "title": "内存与闭包",
+      "subtitle": "闭包泄漏、排查与 GC",
+      "nodes": [
         {
           "id": "js-033",
-          "title": "Node.js 高级特性",
-          "desc": "服务端能力、流处理与性能优化",
-          "difficulty": "advanced",
-          "doc": "049-NodeJsAdvancedFeaturePerformanceOptimization"
+          "title": "闭包的内存泄露与优化",
+          "doc": "033-ClosureMemoryLeakOptimization",
+          "desc": "JavaScript 闭包导致的内存泄露原理、形式化建模、检测方法与工程级优化策略，对标 V8 引擎实现与现代前端框架实践。",
+          "difficulty": "advanced"
         },
         {
           "id": "js-034",
-          "title": "项目实战：待办事项应用",
-          "desc": "综合运用语法、DOM 与存储的完整项目",
-          "difficulty": "intermediate",
-          "doc": "050-JavaScriptProjectExampleTodoApp"
+          "title": "内存泄漏排查",
+          "doc": "034-MemoryLeakTroubleshoot",
+          "desc": "JavaScript内存泄漏排查详解：Chrome DevTools Memory面板、堆快照、分配时间线。",
+          "difficulty": "advanced"
         },
         {
           "id": "js-035",
-          "title": "模块打包原理与 Tree Shaking",
-          "desc": "打包器的工作原理与摇树优化",
-          "difficulty": "advanced",
-          "doc": "058-ModuleBundlingAndTreeShaking"
-        },
+          "title": "JavaScript 垃圾回收与内存管理",
+          "doc": "035-MemoryManagementAndGarbageCollection",
+          "desc": "用可达性、标记清除、分代回收三个模型讲透 JavaScript 的自动内存管理，并给出写代码时避免内存泄漏的实用清单。",
+          "difficulty": "advanced"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "title": "浏览器与工程",
+      "subtitle": "DOM、Web API、网络、模块化与项目",
+      "nodes": [
         {
           "id": "js-036",
+          "title": "JavaScript 模块化",
+          "doc": "036-JavaScriptModular",
+          "desc": "CommonJS、ES Modules 与模块打包工具。",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-037",
+          "title": "模块动态导入与代码分割",
+          "doc": "037-ModuleDynamicImportCodeSplitting",
+          "desc": "JavaScript 模块动态导入 import() 与代码分割策略深度剖析，涵盖 ES2020 规范、V8 模块图、Webpack/Vite/Rollup 实现细节与企业级性能优",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-038",
+          "title": "模块打包原理与 Tree Shaking",
+          "doc": "038-ModuleBundlingAndTreeShaking",
+          "desc": "讲清打包器把模块变成浏览器可运行文件的原理，以及 Tree Shaking 为什么只能\"摇掉\"没被用到的 ESM 导出。",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-039",
+          "title": "DOM 操作与事件",
+          "doc": "039-DOMOperationEvent",
+          "desc": "DOM 树操作、事件模型与事件委托。",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-040",
+          "title": "BOM",
+          "doc": "040-CrossDocumentMessaging",
+          "desc": "浏览器对象模型（BOM）原理、API 体系、工程实践与规范演进",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-041",
+          "title": "Web API 与浏览器接口",
+          "doc": "041-WebAPIBrowserInterface",
+          "desc": "浏览器 Web API 详解：Fetch、Storage、IntersectionObserver、Web Workers、Geolocation、Broadcast Channe",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-042",
+          "title": "网络请求API",
+          "doc": "042-ImageOptimization",
+          "desc": "深入解析 WHATWG Fetch 标准、AbortController 取消语义、Web Streams API、Service Worker 缓存策略、GraphQL 客户端实",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-043",
+          "title": "Web存储API",
+          "doc": "043-StorageForTheWeb",
+          "desc": "浏览器端存储机制的形式语义、安全模型、工程实践与生产级应用",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-044",
+          "title": "索引数据库",
+          "doc": "044-IndexedDBADatabaseInYourBrowser",
+          "desc": "浏览器端事务型 NoSQL 数据库的形式语义、事务模型、索引机制与生产级工程实践",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-045",
+          "title": "错误边界与全局错误捕获",
+          "doc": "045-ErrorBoundaryGlobalErrorCatch",
+          "desc": "JavaScript错误边界与全局错误捕获：ErrorBoundary、window.onerror、unhandledrejection。",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-046",
+          "title": "防抖与节流",
+          "doc": "046-DebounceThrottle",
+          "desc": "JavaScript 防抖（debounce）与节流（throttle）的形式化定义、速率限制理论、事件流调度算法、Lodash/VueUse/React Hooks 实现剖析与企",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-047",
+          "title": "调试与性能优化",
+          "doc": "047-DebugPerformanceOptimization",
+          "desc": "浏览器 DevTools、性能分析模型、内存泄漏排查、火焰图解读、Core Web Vitals 治理与生产级性能优化实践的形式化定义与工程指南。",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-048",
           "title": "前端性能指标与 Core Web Vitals",
-          "desc": "性能度量标准与优化闭环",
-          "difficulty": "intermediate",
-          "doc": "059-CoreWebVitalsAndPerformanceMetrics"
+          "doc": "048-CoreWebVitalsAndPerformanceMetrics",
+          "desc": "用 LCP、INP、CLS 三个核心指标学会量化\"页面快不快\"，并给出浏览器端采集与上报的完整示例。",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-049",
+          "title": "Node.js 高级特性与性能优化",
+          "doc": "049-NodeJsAdvancedFeaturePerformanceOptimization",
+          "desc": "异步编程模式、流处理、集群与 Worker、性能调优与安全实践。",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-050",
+          "title": "JavaScript 包管理命令速查（npm/pnpm/yarn）",
+          "doc": "050-PackageManagerCommands",
+          "desc": "JavaScript 包管理命令速查（npm/pnpm/yarn） 的完整教学讲解。",
+          "difficulty": "beginner"
+        },
+        {
+          "id": "js-051",
+          "title": "JavaScript console API 语法速查",
+          "doc": "051-ConsoleAPI",
+          "desc": "JavaScript console API 语法速查 的完整教学讲解。",
+          "difficulty": "beginner"
+        },
+        {
+          "id": "js-052",
+          "title": "典型项目实战",
+          "doc": "052-TypicalProjectPractice",
+          "desc": "综合运用 DOM、异步与模块化的项目实践。",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "js-053",
+          "title": "JavaScript 项目示例：待办事项应用",
+          "doc": "053-JavaScriptProjectExampleTodoApp",
+          "desc": "综合运用 DOM 操作、事件处理与本地存储的待办事项应用。",
+          "difficulty": "intermediate"
+        }
+      ]
+    },
+    {
+      "id": "frontier",
+      "title": "新特性与理论",
+      "subtitle": "前沿提案与理论串讲",
+      "nodes": [
+        {
+          "id": "js-054",
+          "title": "ES2023/2024/2025 新特性",
+          "doc": "054-ES2024NewFeatures",
+          "desc": "ES2023/2024/2025 新特性 的完整教学讲解。",
+          "difficulty": "beginner"
+        },
+        {
+          "id": "js-055",
+          "title": "JavaScript 最新特性与运行时",
+          "doc": "055-JavaScriptLatestFeature",
+          "desc": "ES2024-2026 新特性、V8 引擎原理、Node.js 22+、Deno 2.0、Bun 运行时与 WebAssembly 进阶。",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-056",
+          "title": "Temporal",
+          "doc": "056-TemporalJavaScriptAPI",
+          "desc": "TC39 Temporal 现代日期时间 API——类型体系、时区算法、历法支持、Duration 运算与工程实践",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-057",
+          "title": "Records与Tuples",
+          "doc": "057-RecordsTuples",
+          "desc": "TC39 Record与Tuple不可变数据提案",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-058",
+          "title": "断言",
+          "doc": "058-Assert",
+          "desc": "正则表达式先行断言（Lookahead）与后行断言（Lookbehind）的形式化理论、自动机基础、V8/SpiderMonkey 实现细节与企业级文本处理实践，对标 MIT 6.",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "js-059",
+          "title": "JavaScript 理论知识点",
+          "doc": "059-JavaScriptTheory",
+          "desc": "执行上下文、作用域链、事件循环、原型继承与内存管理的形式语义与工程实践。",
+          "difficulty": "intermediate"
         }
       ]
     }

@@ -1037,7 +1037,7 @@ oscillator.stop(audioCtx.currentTime + 2); // 2 秒后停止
 
 ## 12. 扩展学习
 
-- Canvas 进阶：`javascript/006-HigherOrderFunction` 理解回调与动画循环的配合；
+- Canvas 进阶：`javascript/013-HigherOrderFunction` 理解回调与动画循环的配合；
 - WebGL 与 3D：`css/037-CSSCanvasDrawing` 与 Three.js 官方示例；
 - 音视频进阶：Web Audio 节点图、MediaSource 流式播放；
 - 性能：`html5/031-CriticalRenderingPathAndResourceLoading` 中媒体资源加载策略；

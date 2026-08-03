@@ -962,8 +962,8 @@ fetch('/api/submit', {
 
 ## 12. 扩展学习
 
-- 交互进阶：`javascript/027-DOMOperationEvent` 全面掌握事件机制；
-- 异步提交：`javascript/030-AsyncProgramming` 中 `fetch` 与 `FormData` 的完整用法；
+- 交互进阶：`javascript/039-DOMOperationEvent` 全面掌握事件机制；
+- 异步提交：`javascript/023-AsyncProgramming` 中 `fetch` 与 `FormData` 的完整用法；
 - 后端配合：`sql/` 与 `backend` 模块了解服务端校验与数据存储；
 - 无障碍：`html5/004-Accessibility` 中表单与 `aria-describedby` 的规范；
 - 校验实践：在真实项目中把“声明式校验 + JS 补充校验 + 后端校验”三层都实现一遍。

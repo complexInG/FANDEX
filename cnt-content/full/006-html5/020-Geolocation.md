@@ -15,7 +15,7 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-> 前置要求与运行环境：示例使用 JavaScript 异步回调，需先完成 `javascript/001`-`005` 与 `javascript/030`（Promise/async）。
+> 前置要求与运行环境：示例使用 JavaScript 异步回调，需先完成 `javascript/001`-`005` 与 `javascript/023`（Promise/async）。
 >
 > **重要：Geolocation 只在安全上下文（Secure Context）可用——`https://` 或 `http://localhost`；直接双击打开本地文件（`file://`）会被浏览器拒绝。** 本地测试请用 Live Server 或 `npx serve`。
 

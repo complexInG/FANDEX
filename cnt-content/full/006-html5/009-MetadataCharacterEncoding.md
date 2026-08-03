@@ -377,8 +377,8 @@ console.log(document.inputEncoding);
 
 ## 扩展学习
 
-- 字符集：`javascript/015-UnicodePropertyEscape` 了解 Unicode 属性转义；
+- 字符集：`javascript/011-UnicodePropertyEscape` 了解 Unicode 属性转义；
 - 性能：`html5/031-CriticalRenderingPathAndResourceLoading` 中资源加载策略；
-- 安全：`javascript/044-ErrorBoundaryGlobalErrorCatch` 与 CSP 的配合；
+- 安全：`javascript/045-ErrorBoundaryGlobalErrorCatch` 与 CSP 的配合；
 - SEO：`css/043-HTMLSemanticSEO` 全面理解语义化与元数据的组合；
 - 移动端：`html5/029-ViewportConfigMobileFirst` 深入 viewport 配置。

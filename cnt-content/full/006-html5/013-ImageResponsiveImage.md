@@ -1584,8 +1584,8 @@ console.log(img.currentSrc); // 当前加载的 URL
 
 ## 扩展学习
 
-- 格式对比：AVIF/WebP/JPEG 的选择见 `html5/019-ImageOptimization`（JavaScript 模块）；
-- 性能指标：`javascript/059-CoreWebVitalsAndPerformanceMetrics` 中 LCP/CLS 的测量；
-- 懒加载原理：`javascript/046-WebAPIBrowserInterface` 中 IntersectionObserver 实现；
+- 格式对比：AVIF/WebP/JPEG 的选择见 `html5/042-ImageOptimization`（JavaScript 模块）；
+- 性能指标：`javascript/048-CoreWebVitalsAndPerformanceMetrics` 中 LCP/CLS 的测量；
+- 懒加载原理：`javascript/041-WebAPIBrowserInterface` 中 IntersectionObserver 实现；
 - 工程化：`html5/031-CriticalRenderingPathAndResourceLoading` 资源加载策略；
 - 组件方案：React 的 `next/image` 或 Vue 的 `v-img` 自动生成多档图。

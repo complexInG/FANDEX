@@ -8,7 +8,7 @@ description: localStorage、sessionStorage、IndexedDB 与 Web Workers。
 author: Anonymous
 updated: '2026-08-03'
 related:
-  - 'javascript/021-IndexedDBADatabaseInYourBrowser'
+  - 'javascript/044-IndexedDBADatabaseInYourBrowser'
   - 'html5/006-HTML5MultimediaCanvasDrawing'
   - 'html5/007-DocTypeDeclaration'
   - 'html5/009-MetadataCharacterEncoding'
@@ -546,7 +546,7 @@ IndexedDB 是浏览器内置的"本地数据库"，适合存储**结构化、量
 | 必须同步到服务器 | 后端数据库 + API | 浏览器存储只是缓存，不能替代服务端 |
 | 离线优先的 PWA 应用 | IndexedDB + Service Worker | 数据本地落盘，断网可读 |
 
-一句话判断：**存"几 KB 的设置"用 localStorage；存"几千条需要查询的业务数据"用 IndexedDB。** 完整教程见 `javascript/021-IndexedDBADatabaseInYourBrowser`；与 Service Worker 组合的离线场景见 `html5/022-ServiceWorkerPWA`。
+一句话判断：**存"几 KB 的设置"用 localStorage；存"几千条需要查询的业务数据"用 IndexedDB。** 完整教程见 `javascript/044-IndexedDBADatabaseInYourBrowser`；与 Service Worker 组合的离线场景见 `html5/022-ServiceWorkerPWA`。
 
 ## 7. 实际应用示例
 
@@ -1549,8 +1549,8 @@ ctx.fill();
 
 ## 扩展学习
 
-- 存储进阶：`javascript/020-StorageForTheWeb` 对比 Cookie/Web Storage/IndexedDB 的完整取舍；
+- 存储进阶：`javascript/043-StorageForTheWeb` 对比 Cookie/Web Storage/IndexedDB 的完整取舍；
 - 离线进阶：`html5/022-ServiceWorkerPWA` 深入 Service Worker 生命周期与缓存策略；
 - 通信：`html5/024-WebSocket` 实时数据通道与 `fetch` 的差异；
-- 性能：`javascript/059-CoreWebVitalsAndPerformanceMetrics` 中本地缓存对加载指标的影响；
-- 安全：`javascript/044-ErrorBoundaryGlobalErrorCatch` 与 CSP 内容安全策略的配合。
+- 性能：`javascript/048-CoreWebVitalsAndPerformanceMetrics` 中本地缓存对加载指标的影响；
+- 安全：`javascript/045-ErrorBoundaryGlobalErrorCatch` 与 CSP 内容安全策略的配合。

@@ -1160,7 +1160,7 @@ vercel --prod   # 部署到生产环境
 5. **离线支持** -- Service Worker + IndexedDB
 6. **OCR 识别** -- 上传证件自动填充
 
-> 下一步学习出路：项目已经用上了 HTML5 的表单验证、存储、事件与拖拽，接下来三选一继续深入——CSS 进阶（`css/030-ResponsiveDesign` 与 `css/045-CSSProjectExampleResponsiveHomepage`）、JavaScript 进阶（`javascript/048-TypicalProjectPractice`）、或框架入门（`vue3/001-OverviewEnv`、`react/001-OverviewEnvSetup`）。记住：项目能力来自写出的代码量，继续做第二个、第三个项目比反复读文档更有效。
+> 下一步学习出路：项目已经用上了 HTML5 的表单验证、存储、事件与拖拽，接下来三选一继续深入——CSS 进阶（`css/030-ResponsiveDesign` 与 `css/045-CSSProjectExampleResponsiveHomepage`）、JavaScript 进阶（`javascript/052-TypicalProjectPractice`）、或框架入门（`vue3/001-OverviewEnv`、`react/001-OverviewEnvSetup`）。记住：项目能力来自写出的代码量，继续做第二个、第三个项目比反复读文档更有效。
 
 ---
 
@@ -2064,4 +2064,4 @@ const data = {
 - 签名板：`html5/006-HTML5MultimediaCanvasDrawing`（Canvas 绘制与导出）；
 - 存储：`html5/008-HTML5OfflineStorageWebAPI`（LocalStorage/File API）；
 - 拖拽：`html5/019-DragAPI`（拖拽排序与上传）；
-- 工程化：`javascript/048-TypicalProjectPractice` 中小型项目的组织方式。
+- 工程化：`javascript/052-TypicalProjectPractice` 中小型项目的组织方式。

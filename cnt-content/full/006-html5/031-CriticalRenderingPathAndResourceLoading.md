@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'css/035-CriticalRenderPathOptimization'
-  - 'javascript/059-CoreWebVitalsAndPerformanceMetrics'
+  - 'javascript/048-CoreWebVitalsAndPerformanceMetrics'
   - 'html5/029-ViewportConfigMobileFirst'
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
@@ -21,7 +21,7 @@ prerequisites:
 >
 > 本节导航：先学流水线五步（含回流/重绘/合成）→ 再学脚本加载与资源提示 → 最后用性能指标验证优化效果。
 >
-> 前置要求：本篇是 001"性能优化"小节的深化版。需要先理解资源加载与响应式图片（`html5/013`）、CSS 盒模型（`css/002`）、浏览器事件循环（`javascript/012`）；移动端性能关联 `html5/029`。建议学完 CSS 性能优化（`css/035`）后再做完整实践。
+> 前置要求：本篇是 001"性能优化"小节的深化版。需要先理解资源加载与响应式图片（`html5/013`）、CSS 盒模型（`css/002`）、浏览器事件循环（`javascript/027`）；移动端性能关联 `html5/029`。建议学完 CSS 性能优化（`css/035`）后再做完整实践。
 
 ## 一句话理解
 
@@ -213,7 +213,7 @@ list.appendChild(fragment);
 | TTFB | Time To First Byte | 服务器首字节到达 | ≤ 800ms |
 | TBT | Total Blocking Time | 主线程长任务阻塞总时长 | ≤ 200ms |
 
-测量方式：Lighthouse（F12 → Lighthouse → Generate report）一键生成；详细教程见 `javascript/059-CoreWebVitalsAndPerformanceMetrics`。本文的每一条优化都可以映射到指标：内联 CSS 优化 FCP/LCP，图片宽高优化 CLS，脚本 defer 优化 TBT。
+测量方式：Lighthouse（F12 → Lighthouse → Generate report）一键生成；详细教程见 `javascript/048-CoreWebVitalsAndPerformanceMetrics`。本文的每一条优化都可以映射到指标：内联 CSS 优化 FCP/LCP，图片宽高优化 CLS，脚本 defer 优化 TBT。
 
 ## 优化清单
 
@@ -285,8 +285,8 @@ list.appendChild(fragment);
 ## 扩展学习
 
 - CSS 侧：`css/035-CriticalRenderPathOptimization` 的渲染路径优化清单；
-- 概念基础：`css/002-CSS3BoxModelDetailed`（盒模型）、`javascript/012-EventLoop`（事件循环与主线程）；
-- 指标验证：`javascript/059-CoreWebVitalsAndPerformanceMetrics` 中 LCP/CLS/TBT 的测量；
+- 概念基础：`css/002-CSS3BoxModelDetailed`（盒模型）、`javascript/027-EventLoop`（事件循环与主线程）；
+- 指标验证：`javascript/048-CoreWebVitalsAndPerformanceMetrics` 中 LCP/CLS/TBT 的测量；
 - 资源加载：`html5/013-ImageResponsiveImage` 中图片的优先级与懒加载；
 - 移动性能：`html5/029-ViewportConfigMobileFirst` 中移动优先与视口策略；
 - 工程实践：构建工具的资源拆分与预加载清单生成。
@@ -295,4 +295,4 @@ list.appendChild(fragment);
 
 把资源分三类：**首屏必须的**（内联/高优先级）、**当前页次要的**（defer/lazy）、
 **未来可能用的**（prefetch/preconnect）。配合
-`css/035-CriticalRenderPathOptimization` 与 `javascript/059-CoreWebVitalsAndPerformanceMetrics` 形成闭环验证。
+`css/035-CriticalRenderPathOptimization` 与 `javascript/048-CoreWebVitalsAndPerformanceMetrics` 形成闭环验证。

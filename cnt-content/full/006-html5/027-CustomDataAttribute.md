@@ -1631,7 +1631,7 @@ const user = JSON.parse(el.dataset.user);
 
 ## 扩展学习
 
-- 属性操作：`javascript/027-DOMOperationEvent` 中 `getAttribute`/`setAttribute` 全解；
-- 事件委托：`javascript/027-DOMOperationEvent` 事件冒泡与委托模式；
+- 属性操作：`javascript/039-DOMOperationEvent` 中 `getAttribute`/`setAttribute` 全解；
+- 事件委托：`javascript/039-DOMOperationEvent` 事件冒泡与委托模式；
 - 组件实践：`html5/018-WebComponentsPWADevelopment` 自定义元素中 `observedAttributes`；
-- 测试钩子：`javascript/048-TypicalProjectPractice` 中 `data-testid` 的 E2E 约定。
+- 测试钩子：`javascript/052-TypicalProjectPractice` 中 `data-testid` 的 E2E 约定。

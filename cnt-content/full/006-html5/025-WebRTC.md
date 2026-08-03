@@ -14,7 +14,7 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-> 前置要求（本模块最高难度）：除 JavaScript 中级基础（Promise/async/class/事件，`javascript/001`-`005`、`027`、`030`）外，还需要基本网络概念：TCP/UDP、NAT、HTTP（`networking/001`）。信令流程（Offer/Answer/ICE）是本篇核心，建议先读 4.1 完整 demo 建立整体印象，再回头读第 2-3 章理论；调试时用 `chrome://webrtc-internals`（见 4.7）。
+> 前置要求（本模块最高难度）：除 JavaScript 中级基础（Promise/async/class/事件，`javascript/001`-`005`、`039`、`023`）外，还需要基本网络概念：TCP/UDP、NAT、HTTP（`networking/001`）。信令流程（Offer/Answer/ICE）是本篇核心，建议先读 4.1 完整 demo 建立整体印象，再回头读第 2-3 章理论；调试时用 `chrome://webrtc-internals`（见 4.7）。
 
 ## 1. 历史动机与发展脉络
 
@@ -1952,7 +1952,7 @@ pc.close();
 
 ## 扩展学习
 
-- 前置基础：`html5/024-WebSocket` 信令传输；`javascript/030-AsyncProgramming` 异步流程；
+- 前置基础：`html5/024-WebSocket` 信令传输；`javascript/023-AsyncProgramming` 异步流程；
 - 服务端：Node.js `ws` 信令服务器与 STUN/TURN（coturn）部署；
 - 开源方案：LiveKit、mediasoup、Janus 的架构对比；
-- 性能：`javascript/059-CoreWebVitalsAndPerformanceMetrics` 与实时媒体质量监控。
+- 性能：`javascript/048-CoreWebVitalsAndPerformanceMetrics` 与实时媒体质量监控。

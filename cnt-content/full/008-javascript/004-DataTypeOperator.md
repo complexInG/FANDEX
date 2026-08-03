@@ -11,7 +11,7 @@ related:
   - 'javascript/002-ProgramStructureBasicSyntax'
   - 'javascript/003-VariableDataType'
   - 'javascript/005-ControlFlow'
-  - 'javascript/006-HigherOrderFunction'
+  - 'javascript/013-HigherOrderFunction'
 prerequisites: []
 ---
 

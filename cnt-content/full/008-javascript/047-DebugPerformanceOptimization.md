@@ -8,14 +8,14 @@ description: 浏览器 DevTools、性能分析模型、内存泄漏排查、火�
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - 'javascript/045-MemoryLeakTroubleshoot'
-  - 'javascript/046-WebAPIBrowserInterface'
-  - 'javascript/048-TypicalProjectPractice'
+  - 'javascript/034-MemoryLeakTroubleshoot'
+  - 'javascript/041-WebAPIBrowserInterface'
+  - 'javascript/052-TypicalProjectPractice'
   - 'javascript/049-NodeJsAdvancedFeaturePerformanceOptimization'
 prerequisites:
   - 'javascript/005-ControlFlow'
-  - 'javascript/016-FunctionScopeClosure'
-  - 'javascript/036-ES6NewFeatures'
+  - 'javascript/007-FunctionScopeClosure'
+  - 'javascript/020-ES6NewFeatures'
 ---
 
 ## 1. 引言

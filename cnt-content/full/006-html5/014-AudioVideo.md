@@ -16,7 +16,7 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-> 前置要求：本节主体是纯 HTML 标签（audio/video/source/track），零基础可直接学；涉及播放控制的 JavaScript 示例（play/pause、timeupdate 等事件）需要 JS 基础，建议先完成 `javascript/001`-`005` 与 `javascript/027`（DOM 与事件）后再读。纯 HTML 阶段可先跳过这些代码块，不影响理解标签本身。
+> 前置要求：本节主体是纯 HTML 标签（audio/video/source/track），零基础可直接学；涉及播放控制的 JavaScript 示例（play/pause、timeupdate 等事件）需要 JS 基础，建议先完成 `javascript/001`-`005` 与 `javascript/039`（DOM 与事件）后再读。纯 HTML 阶段可先跳过这些代码块，不影响理解标签本身。
 
 ## 1. audio 元素
 

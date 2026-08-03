@@ -18,7 +18,7 @@ prerequisites:
 
 > 0基础速通：只读第 0 节直觉、第 2 章 iframe 核心速览与 4.1 示例；其余（安全、微前端等）为进阶参考。
 
-> 前置要求：iframe/embed/object 标签本身零基础可学；4.2/4.3 的 postMessage 与 MessageChannel 通信依赖 JavaScript（事件监听、异步），建议先完成 `javascript/001`-`005` 与 `javascript/027` 再读；4.4 起的安全与微前端章节为进阶内容，第一遍可跳过。
+> 前置要求：iframe/embed/object 标签本身零基础可学；4.2/4.3 的 postMessage 与 MessageChannel 通信依赖 JavaScript（事件监听、异步），建议先完成 `javascript/001`-`005` 与 `javascript/039` 再读；4.4 起的安全与微前端章节为进阶内容，第一遍可跳过。
 
 ## 1. 历史动机与发展脉络
 

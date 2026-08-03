@@ -15,7 +15,7 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-> 前置要求（中级）：本节需要 JavaScript 中级基础——Promise、async/await、事件监听、class（`javascript/001`-`005`、`027`、`030`、`032`），以及事件循环概念（`javascript/012`）。Worker 内没有 DOM/window，所有通信都走 postMessage 消息，先理解"消息传递"再写代码。
+> 前置要求（中级）：本节需要 JavaScript 中级基础——Promise、async/await、事件监听、class（`javascript/001`-`005`、`039`、`023`、`017`），以及事件循环概念（`javascript/027`）。Worker 内没有 DOM/window，所有通信都走 postMessage 消息，先理解"消息传递"再写代码。
 >
 > 进阶方向：Worker 中绘图可使用 OffscreenCanvas（速查区有完整示例），适合图像处理、游戏渲染场景；第一遍可跳过。
 
@@ -498,4 +498,4 @@ try {
 - 离线场景：`html5/022-ServiceWorkerPWA` 中 Service Worker（Worker 家族的一员）；
 - 数据缓存：`html5/008-HTML5OfflineStorageWebAPI` 中 Worker 与 IndexedDB 的配合；
 - 性能：`javascript/047-DebugPerformanceOptimization` 用性能面板分析主线程任务；
-- 并发模式：`javascript/035-AsyncConcurrencyControl` 对比异步任务与 Worker 的取舍。
+- 并发模式：`javascript/026-AsyncConcurrencyControl` 对比异步任务与 Worker 的取舍。

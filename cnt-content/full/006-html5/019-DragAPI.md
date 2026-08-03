@@ -15,7 +15,7 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-> 前置要求：本节全部示例依赖 JavaScript 事件监听（dragstart/dragover/drop 等），请先完成 `javascript/001`-`005` 与 `javascript/027`（DOM 与事件）。
+> 前置要求：本节全部示例依赖 JavaScript 事件监听（dragstart/dragover/drop 等），请先完成 `javascript/001`-`005` 与 `javascript/039`（DOM 与事件）。
 >
 > 测试提示：拖拽在本地 `file://` 打开大多可用，但部分浏览器行为受限，建议用 VS Code 的 Live Server 或 `npx serve` 起本地服务器（`http://localhost`）测试；移动端触摸不触发本 API，替代方案见第 5 章。
 
