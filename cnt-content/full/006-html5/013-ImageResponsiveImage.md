@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: img、srcset、sizes、picture元素
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/011-List'
   - 'html5/012-LinkageAnchor'
@@ -645,6 +645,25 @@ function checkFormatSupport(mimeType) {
 ```
 
 ---
+
+### 4.9 图片热区 map/area（知道即可）
+
+`<map>` + `<area>` 可以在**一张图片上划分多个可点击区域**（矩形、圆形、多边形），例如地图导航、商品示意图。它属于低频特性，知道"存在且长什么样"即可，需要时再回速查区 `image map 图像映射` 查阅：
+
+```html
+<img src="floor-map.png" alt="楼层地图" usemap="#floors" />
+<map name="floors">
+  <area shape="rect" coords="10,10,120,90" href="/floor/1" alt="一层" />
+  <area shape="circle" coords="200,150,40" href="/floor/2" alt="二层" />
+</map>
+```
+
+**讲解：**
+
+1. `usemap="#名字"` 把图片与 `<map>` 关联，`name` 必须一致。
+2. `coords` 的取值随 `shape` 变化：rect 是"左上、右下"两组坐标，circle 是"圆心、半径"。
+3. 每个 `<area>` 都可以带 `alt` 与 `href`，行为类似链接，也支持 `target`。
+4. 无障碍提醒：热区必须写 `alt`，否则读屏用户不知道图片上有哪些入口。
 
 ## 5. 对比分析
 

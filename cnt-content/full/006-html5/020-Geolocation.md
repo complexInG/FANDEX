@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: Geolocation
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/018-WebComponentsPWADevelopment'
   - 'html5/019-DragAPI'
@@ -14,6 +14,10 @@ related:
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
+> 前置要求与运行环境：示例使用 JavaScript 异步回调，需先完成 `javascript/001`-`005` 与 `javascript/030`（Promise/async）。
+>
+> **重要：Geolocation 只在安全上下文（Secure Context）可用——`https://` 或 `http://localhost`；直接双击打开本地文件（`file://`）会被浏览器拒绝。** 本地测试请用 Live Server 或 `npx serve`。
 
 ## 1. Geolocation API
 

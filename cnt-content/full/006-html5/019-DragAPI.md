@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: drag/drop
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/017-ProgressMeter'
   - 'html5/018-WebComponentsPWADevelopment'
@@ -14,6 +14,10 @@ related:
 prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
+
+> 前置要求：本节全部示例依赖 JavaScript 事件监听（dragstart/dragover/drop 等），请先完成 `javascript/001`-`005` 与 `javascript/027`（DOM 与事件）。
+>
+> 测试提示：拖拽在本地 `file://` 打开大多可用，但部分浏览器行为受限，建议用 VS Code 的 Live Server 或 `npx serve` 起本地服务器（`http://localhost`）测试；移动端触摸不触发本 API，替代方案见第 5 章。
 
 ## 1. 拖拽 API 概述
 
@@ -78,11 +82,47 @@ e.dataTransfer.setDragImage(img, 0, 0);
 dropzone.addEventListener('drop', (e) => {
   e.preventDefault();
   const files = e.dataTransfer.files;
-  for (const file of files) {
+for (const file of files) {
     console.log(`文件名: ${file.name}, 大小: ${file.size} bytes`);
   }
 });
 ```
+
+## 5. 移动端兼容：Touch Events 替代方案
+
+HTML5 拖拽 API 是**桌面端专属**：触摸屏上不会触发 `dragstart/drop`。移动端做"拖拽排序、滑动放置"要用触摸事件（Touch Events）自己实现，或直接用成熟的库（如 SortableJS）。下面是最小实现骨架：
+
+```javascript
+const item = document.getElementById('drag-item');
+let offsetX = 0, offsetY = 0;
+
+item.addEventListener('touchstart', (e) => {
+  const touch = e.touches[0];
+  const rect = item.getBoundingClientRect();
+  offsetX = touch.clientX - rect.left;
+  offsetY = touch.clientY - rect.top;
+});
+
+item.addEventListener('touchmove', (e) => {
+  e.preventDefault(); // 阻止页面滚动
+  const touch = e.touches[0];
+  item.style.left = touch.clientX - offsetX + 'px';
+  item.style.top = touch.clientY - offsetY + 'px';
+});
+
+item.addEventListener('touchend', () => {
+  // 放置逻辑：判断落点、写回数据、恢复定位
+});
+```
+
+**讲解：**
+
+1. `touchstart` 记录手指按下位置与元素偏移，为后续移动计算基准。
+2. `touchmove` 里必须 `preventDefault()`，否则页面会跟着手指滚动。
+3. `e.touches[0]` 是第一个触点；多指场景还要处理 `e.changedTouches`。
+4. 生产项目优先用 SortableJS 等库：边界、排序、动画、无障碍都已处理好，不用重复造轮子。
+5. 别忘了样式：`touch-action: none` 或 `position: absolute` 才能让元素自由跟随手指。
+
 ## draggable 属性
 
 **启用元素拖拽**

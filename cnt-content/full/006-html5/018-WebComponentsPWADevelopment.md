@@ -6,7 +6,7 @@ category: 前端技术
 difficulty: intermediate
 description: Web组件与渐进式Web应用开发
 author: fanquanpp
-updated: '2026-08-02'
+updated: '2026-08-03'
 related:
   - 'html5/016-EmbeddedContent'
   - 'html5/017-ProgressMeter'
@@ -16,7 +16,12 @@ prerequisites:
   - 'html5/001-HTML5OverviewCoreFeature'
 ---
 
-> 速通路径：Web Components 部分（第 1-5 章）入门必读，PWA 部分（第 6-12 章）进阶选读。
+> 分段阅读指南（这篇内容量约等于 2-3 篇，建议**分两次读**，中间完成练习）：
+>
+> - **Part A（第 1-5 章）Web Components**：Custom Elements、Shadow DOM、Template、生命周期。前置要求：class、构造函数、DOM 与事件（`javascript/001`-`005`、`027`、`032`）。
+> - **Part B（第 6-12 章）PWA**：Manifest、Service Worker、离线缓存、推送。前置要求：Promise 与 async/await（`javascript/012`、`030`）。
+>
+> 零基础第一遍只读 Part A，做完"动手试试"的入门版；Part B 等学过 JS 异步后再来。样式隔离的 `:host` / `::part` 完整速查在文末"CSS Scoping 样式隔离"。
 
 ## 1. Web Components 概述
 
