@@ -15,6 +15,15 @@ related:
 prerequisites: []
 ---
 
+## 0. 本篇定位与阅读建议（先读这一节）
+
+本文是 TS 模块的**第 4 课（函数与泛型）**，正文小节从 1 开始。
+
+- 前置：先读完 002 的类型基础与 003 的接口/类型别名，理解"类型是什么"再学"如何抽象行为"。
+- 推荐路径：读到 **8. 最佳实践** 即可完成本课目标；**9. 代码示例**快速浏览；文件末尾（`## 函数声明` 之后）是**速查区**，按需查阅。
+- 文件最末的 **TypeScript 5.x 新特性** 是进阶预览：有项目经验后再读，第一遍直接跳过。
+- 本文与 002/003 的衔接：002 介绍了泛型推断的入门形态、003 介绍了泛型接口与泛型别名，本文把这些线索汇总成完整体系（约束、默认值、泛型类、工具类型）。
+
 ## 1. 函数重载 (Function Overloading)
 
 函数重载允许为同一个函数提供多个类型定义，根据传入的参数类型和数量来选择合适的类型定义。
@@ -235,6 +244,15 @@ console.log(stringToNumber('123')); // 输出: 123
 ## 3. 泛型约束 (Generic Constraints)
 
 泛型约束允许我们限制泛型类型参数的范围，确保它们具有某些特定的属性或方法。
+
+```mermaid
+flowchart LR
+    A["T 任意类型"] --> B{"T extends Lengthwise?"}
+    B -->|"有 length 属性"| C["可安全调用 arg.length"]
+    B -->|"没有 length"| D["编译报错：不满足约束"]
+```
+
+**结构解析：** 约束（`extends`）是泛型的"准入条件"：只有满足约束的类型能替换 T，换来的是函数体内可以安全使用约束提供的能力（如 `.length`）。
 
 ### 3.1 基本泛型约束
 
@@ -1031,7 +1049,77 @@ console.log(updateUserRequest);
 
 ---
 
+## 10. 常见错误与修正（错-对对比）
+
+### 10.1 泛型当 any 用
+
+```typescript
+// 错误：T 没有任何约束时，函数体不能访问 .length
+// function bad<T>(x: T): number { return x.length } // 报错
+
+// 正确：用约束声明能力
+function ok<T extends { length: number }>(x: T): number {
+  return x.length
+}
+```
+
+**讲解：** 泛型不是 any：T 的能力由约束决定；需要在 T 上调用什么，就先约束什么。
+
+### 10.2 重载实现签名不兼容
+
+```typescript
+// 错误：实现签名必须覆盖所有重载
+// function f(x: string): string
+// function f(x: number): number
+// function f(x: string): string { return x } // 报错：number 重载未覆盖
+
+// 正确：实现签名用联合类型覆盖全部重载
+function f(x: string): string
+function f(x: number): number
+function f(x: string | number): string | number {
+  return typeof x === "string" ? x.toUpperCase() : x.toFixed(2)
+}
+```
+
+**讲解：** 重载分两层：对外是多个精确签名，对内是一个兼容所有签名的实现；实现签名必须能接收所有重载的参数。
+
+### 10.3 keyof 约束写错键名
+
+```typescript
+interface User3 { name: string; age: number }
+
+// 错误：键名拼错，编译期报错
+// getProperty(user3, "naem")
+
+// 正确：K extends keyof T 保证键名合法
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key]
+}
+const user3: User3 = { name: "A", age: 20 }
+const name3: string = getProperty(user3, "name") // 类型精确为 string
+```
+
+**讲解：** `keyof T` 把键集合变成类型，`K extends keyof T` 让"拼错键名"变成编译错误，而不是运行期 undefined。
+
+### 10.4 泛型类的静态成员误用 T
+
+```typescript
+// 错误：静态成员不能使用类的类型参数 T
+// class Bad<T> { static data: T } // 报错
+
+// 正确：静态成员使用具体类型，或把 T 用在实例成员上
+class Good<T> {
+  static data: string = ""
+  value: T
+  constructor(value: T) { this.value = value }
+}
+```
+
+**讲解：** 静态成员属于类本身、不属于某个实例，因此不能用"实例化时才确定"的 T。
+
 ## 函数声明
+
+> 速查索引：从这里到文件末尾与正文内容重复，按需查阅，第一遍阅读可以跳过。
 
 **基本写法：函数声明**
 `function <函数名>(<参数>: <类型>): <返回类型> { <语句> }`
@@ -1902,6 +1990,8 @@ type StringUser = Stringify<User>  // { name: string, age: string }
 
 ## TypeScript 5.x 新特性
 
+> 进阶预览（第一遍可跳过）：本节是 TS 5.x 新特性的速览（标准装饰器、const 类型参数、NoInfer、erasableSyntaxOnly 等），需要项目经验才能体会其价值。零基础读完上面的速查区即可，回头再看本节。
+
 **基本写法：TypeScript 5.0 装饰器**
 `function <decorator>(<target>, <context>) { }`
 
@@ -2072,3 +2162,19 @@ type Status = "active" | "inactive"
 2. `enum` 与 `namespace` 会生成运行时代码，被该选项禁止。
 3. 替代方案：用 `as const` 对象或字面量联合表达枚举。
 
+## 11. 自测（小测验）
+
+**第 1 题（填空）**：`function identity<T>(x: T): T` 中，`identity("hi")` 的返回类型是什么？
+
+**第 2 题（单选）**：想让泛型函数能安全访问 `arg.length`，应该怎么做？
+
+**第 3 题（判断）**：函数重载的实现签名可以是任意签名，对吗？
+
+<details>
+<summary>点击查看答案</summary>
+
+1. `string`（编译器从实参自动推断 T）。
+2. 给 T 加约束：`function f<T extends { length: number }>(arg: T): number`。
+3. 不对。实现签名必须兼容所有重载签名（参数取联合、返回取联合），否则编译报错。
+
+</details>

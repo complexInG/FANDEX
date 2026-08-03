@@ -15,6 +15,15 @@ related:
 prerequisites: []
 ---
 
+## 0. 本篇定位与阅读建议（先读这一节）
+
+本文是 TS 模块的**第 3 课（接口与类型别名）**，正文小节从 1 开始。
+
+- 前置：先读完 002 的类型基础，理解"类型是什么"再学"如何描述对象"。
+- 推荐路径：读到 **5. 最佳实践** 即可完成本课目标；**6. 代码示例**快速浏览；文件末尾（`## 接口定义` 之后）是**速查区**，按需查阅。
+- **3.6 条件类型**是进阶预览：第一遍可以跳过，004 与 023 会系统展开。
+- 本文 1.4（函数接口）与 4.5（泛型支持）只是"接口的两种特殊形态"，完整体系分别在 004 的函数与泛型章节讲解。
+
 ## 1. 接口 (Interface)
 
 接口是 TypeScript 中用于定义对象结构的重要工具，它描述了对象应该具有的属性和方法。
@@ -107,6 +116,8 @@ product.price = 899.99; // 可以修改非只读属性
 ### 1.4 函数接口
 
 接口可以定义函数的类型。
+
+> 衔接说明：函数类型有三种等价写法（interface 调用签名、type 箭头签名、直接标注），004 的"函数声明/函数类型"速查区会对比展示；这里先掌握"接口能描述函数"这一事实。
 
 ```typescript
 // 函数接口
@@ -456,6 +467,8 @@ const employee: EmployeePerson = {
 
 ### 3.6 条件类型
 
+> 进阶预览（第一遍可跳过）：条件类型是"类型层面的三目运算"（`T extends X ? A : B`），本节能感知语法即可；它在 004-7.2 展开，完整体系在 023 条件类型分发中讲解。
+
 使用条件类型根据其他类型创建新类型。
 
 ```typescript
@@ -485,6 +498,18 @@ const employee: EmployeePerson = {
 
 
 ## 4. 接口与类型别名的对比
+
+```mermaid
+flowchart TD
+    A["要描述什么结构?"] --> B["对象/类契约"]
+    A --> C["联合、元组、条件、映射"]
+    B --> D["interface（可合并、extends 继承）"]
+    C --> E["type（& 交叉、| 联合）"]
+    D --> F["多数场景都能用，优先 interface"]
+    E --> F
+```
+
+**结构解析：** 决策顺序是"先看用途，再选工具"：描述对象契约优先 interface，表达联合/元组/条件等组合类型只能用 type。两条路最终殊途同归，团队统一即可。
 
 ### 4.1 核心差异
 
@@ -630,6 +655,8 @@ const map: StringMap = {
 ### 4.5 泛型支持
 
 两者都支持泛型。
+
+> 衔接说明：泛型的完整体系（约束、默认值、泛型类、工具类型）在 `004-FunctionGeneric` 讲解；本节的泛型接口只需记住"T 在使用时替换"。
 
 ```typescript
 // 泛型接口
@@ -899,7 +926,63 @@ processEntity(product);
 
 ---
 
+## 7. 常见错误与修正（错-对对比）
+
+### 7.1 少写必填属性
+
+```typescript
+// 错误：Person 有 name 和 age，只给 name 会报错
+const p: { name: string; age: number } = { name: "Alice" }
+
+// 正确：补全必填字段
+const p2: { name: string; age: number } = { name: "Alice", age: 30 }
+```
+
+**讲解：** 接口/对象类型的所有非可选属性都必须出现，这是 TS 结构检查的第一课。
+
+### 7.2 类型别名重复声明
+
+```typescript
+// 错误：type 不能重复声明
+type User = { name: string }
+// type User = { age: number } // 报错：重复标识符
+
+// 正确：同名 interface 可以合并（声明合并）
+interface User2 { name: string }
+interface User2 { age: number }
+```
+
+**讲解：** 需要"多次追加字段"的场景用 interface；type 的合并通过交叉类型 `&` 完成。
+
+### 7.3 多继承时同名方法冲突
+
+```typescript
+// 场景：两个父接口有同名方法，签名必须互相兼容
+interface A { read(): string }
+interface B { read(): string }
+interface C extends A, B { write(): void } // 合法：read 签名一致
+
+// 若签名不一致会报错，解决办法是子接口显式重写兼容签名
+interface D extends A, B { read(): string }
+```
+
+**讲解：** 多继承遇到同名成员时，TS 要求签名兼容；先看父接口声明，再决定子接口是否重写。
+
+### 7.4 索引签名限制了普通属性
+
+```typescript
+// 错误：声明了 [key: string]: string 后，number 属性不合法
+// interface Bad { [key: string]: string; count: number } // 报错
+
+// 正确：让值类型包含所有可能性
+interface Ok { [key: string]: string | number; count: number }
+```
+
+**讲解：** 索引签名是"字典的总规则"，所有具名属性都必须服从该规则；需要混合值时把值类型写成联合。
+
 ## 接口定义
+
+> 速查索引：从这里到文件末尾与正文内容重复，按需查阅，第一遍阅读可以跳过。
 
 **换行写法：定义基本接口**
 `interface <接口名> {`
@@ -1614,3 +1697,19 @@ interface ClockInterface {
 2. 它描述“能 new 出 ClockInterface 的类构造函数”，用于工厂函数约束。
 3. 这是依赖注入、工厂模式中常见的类型设计。
 
+## 8. 自测（小测验）
+
+**第 1 题（单选）**：想让"任意字符串键都对应字符串值"的字典结构，应该用哪种语法？
+
+**第 2 题（判断）**：`interface` 与 `type` 都能表达联合类型，这句话对吗？
+
+**第 3 题（填空）**：两个同名 `interface Box` 会怎样？这是 interface 独有的什么能力？
+
+<details>
+<summary>点击查看答案</summary>
+
+1. 索引签名：`interface X { [key: string]: string }`（或 `Record<string, string>`）。
+2. 不对。联合类型只能用 `type` 表达，`interface` 只能描述对象/函数结构。
+3. 自动合并（声明合并），所有字段取并集；这是 type 不具备的能力。
+
+</details>

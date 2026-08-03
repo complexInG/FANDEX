@@ -14,6 +14,15 @@ related:
 prerequisites: []
 ---
 
+## 0. 本篇定位与阅读建议（先读这一节）
+
+本文是 TS 模块的**第 2 课（基础类型）**，正文小节从 1 开始，与 001 的"0. 学习路径"编号方式对应：0 号章节是"先读指引"，1 号以后是正式内容。
+
+- 零基础路径：读完 001 的环境配置后，先跑通 `tsc --init` 与 `tsc --watch`，再读本文的类型系统。
+- 本文读到 **9. 最佳实践** 即可形成完整认知；**10. 实际应用示例**快速浏览；**11. 常见问题**遇到报错再查。
+- 文件末尾（`## 原始类型` 之后）是**速查区**：与正文内容重复，按需查阅，不需要逐行读。
+- 本文 8.3 只讲"泛型推断"的入门形态，泛型的完整体系在 004 展开。
+
 ## 1. 基础类型 (Basic Types)
 
 TypeScript 提供了丰富的类型系统，包括 JavaScript 原有的类型和 TypeScript 增强的类型。
@@ -328,6 +337,18 @@ function greet(name?: string) {
 （3）`name || 'Guest'` 利用空值回退，是处理可选参数的最简写法。
 
 ## 3. 联合类型与交叉类型 (Unions & Intersections)
+
+```mermaid
+flowchart LR
+    A["值"] --> B{"是 string 还是 number?"}
+    B -->|"string"| C["string"]
+    B -->|"number"| D["number"]
+    C --> E["联合类型：string | number<br/>满足其中一个即可"]
+    D --> E
+    F["对象同时需要 name 与 age"] --> G["交叉类型：A & B<br/>两个结构的字段都要有"]
+```
+
+**结构解析：** 联合类型是"或"——值属于其中一个成员；交叉类型是"且"——值必须同时满足全部成员。上图是两者心智模型的对比，代码示例见 3.1 与 3.2。
 
 ### 3.1 联合类型 (Union Types)
 
@@ -901,6 +922,8 @@ function log(message: string) {
 
 ### 8.3 泛型类型推断
 
+> 进阶衔接：泛型（`<T>`）在这里只是"推断"的配角；它的完整体系——约束、默认值、泛型类、工具类型——在 `004-FunctionGeneric` 中系统讲解。第一遍读到本节知道"编译器会从实参推断 T"即可。
+
 ```typescript
 function identity<T>(value: T): T {
   return value;
@@ -1217,7 +1240,71 @@ TypeScript 的类型系统是其最强大的特性之一，它提供了丰富的
 - **使用类型别名**：为复杂类型创建有意义的名称
   TypeScript 的类型系统是一个强大的工具，掌握它可以帮助开发者构建更加可靠、可维护的应用程序，提高开发效率和代码质量。
 
+## 13. 常见错误与修正（错-对对比）
+
+> 以下每组都是"错误写法 → 正确写法"，零基础建议亲手把错误版本敲一遍，感受编译器报错，再改成正确版本。
+
+### 13.1 对象字面量缺字段
+
+```typescript
+// 错误：缺少 age，编译器报 "Property 'age' is missing"
+const user: { name: string; age: number } = { name: "Alice" }
+
+// 正确：补全所有必填字段
+const user2: { name: string; age: number } = { name: "Alice", age: 30 }
+```
+
+**讲解：** 结构类型检查是 TS 的核心：对象字面量必须满足声明中的所有必填属性，少一个都不行。
+
+### 13.2 把 any 当万能类型
+
+```typescript
+// 错误：any 让类型检查失效，拼错属性名也不会报错
+let data: any = { id: 1 }
+console.log(data.nmae) // 运行期才报错
+
+// 正确：用具体类型或 unknown，让错误在编译期暴露
+let data2: { id: number } = { id: 1 }
+// console.log(data2.nmae) // 编译期就报错
+```
+
+**讲解：** any 是"退出类型系统"的逃生口；能用具体类型就不用 any，不确定时用 unknown 再收窄。
+
+### 13.3 用 == 判断空值
+
+```typescript
+// 错误：== null 同时匹配 null 与 undefined，语义模糊
+function f(x: string | null | undefined) {
+  if (x == null) return
+}
+
+// 正确：显式声明判断目标
+function g(x: string | null | undefined) {
+  if (x === null || x === undefined) return
+}
+```
+
+**讲解：** TS 类型与 `===` 配合时，分支收窄更精确，代码意图也更清楚。
+
+### 13.4 类型断言滥用
+
+```typescript
+// 错误：as 强制断言，掩盖了真实的 undefined 风险
+const el = document.getElementById("app") as HTMLDivElement
+el.innerText = "hi" // 运行时可能报错：el 是 null
+
+// 正确：先收窄再使用
+const el2 = document.getElementById("app")
+if (el2) {
+  el2.innerText = "hi"
+}
+```
+
+**讲解：** 断言是"我比编译器懂"，但 null 风险是运行时事实；先判断再使用是最稳的写法。
+
 ## 原始类型
+
+> 速查索引：从这里到文件末尾与正文内容重复，按需查阅，第一遍阅读可以跳过。
 
 **基本写法：布尔类型**
 `let <变量>: boolean = <值>`
@@ -1720,3 +1807,22 @@ let name: string | undefined = user?.name
 let name: string | null = null
 let display_name: string = name ?? "Anonymous"
 ```
+
+## 14. 自测（小测验）
+
+先不看答案，把每题自己写一遍或口头回答，再对照答案。
+
+**第 1 题（单选）**：`type A = string | number` 中，`true` 属于 A 吗？
+
+**第 2 题（填空）**：`let x: unknown = "hi"` 后，直接执行 `x.toUpperCase()` 会怎样？应该先做什么？
+
+**第 3 题（判断）**：`interface User { name: string; age?: number }` 中，`{ name: "A" }` 是否满足 User？为什么？
+
+<details>
+<summary>点击查看答案</summary>
+
+1. 不属于。`true` 是布尔类型，`string | number` 只接受字符串或数字。
+2. 编译报错。unknown 必须先收窄：`if (typeof x === "string") x.toUpperCase()`。
+3. 满足。`age?: number` 是可选属性，缺省时合法；而 `name` 必填不能缺。
+
+</details>
