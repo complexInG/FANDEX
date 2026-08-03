@@ -1,5 +1,5 @@
 ---
-order: 870
+order: 100
 title: Java Arrays 工具类语法速查手册
 module: 'java'
 category: 后端技术

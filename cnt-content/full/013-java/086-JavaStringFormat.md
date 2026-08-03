@@ -1,5 +1,5 @@
 ---
-order: 860
+order: 120
 title: Java String.format/printf/MessageFormat 语法速查手册
 module: 'java'
 category: 后端技术

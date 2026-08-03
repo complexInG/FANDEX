@@ -1,5 +1,5 @@
 ---
-order: 710
+order: 590
 title: Java NIO 通道与缓冲区
 module: 'java'
 category: 后端技术

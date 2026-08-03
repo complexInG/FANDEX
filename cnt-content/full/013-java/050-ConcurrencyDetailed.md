@@ -1,5 +1,5 @@
 ---
-order: 500
+order: 430
 title: 并发编程详解
 module: 'java'
 category: 后端技术

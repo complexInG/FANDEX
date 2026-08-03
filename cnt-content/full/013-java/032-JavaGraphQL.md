@@ -1,5 +1,5 @@
 ---
-order: 320
+order: 820
 title: Java与GraphQL
 module: 'java'
 category: 后端技术

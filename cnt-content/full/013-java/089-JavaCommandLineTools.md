@@ -1,5 +1,5 @@
 ---
-order: 890
+order: 910
 title: Java 命令行工具 javac/java/jar/jshell/jpackage 语法速查手册
 module: 'java'
 category: 后端技术

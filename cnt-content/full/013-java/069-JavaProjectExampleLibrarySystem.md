@@ -1,5 +1,5 @@
 ---
-order: 690
+order: 930
 title: Java 项目示例：图书管理系统
 module: 'java'
 category: 后端技术

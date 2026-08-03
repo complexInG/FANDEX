@@ -1,5 +1,5 @@
 ---
-order: 760
+order: 900
 title: 启动 REPL 交互环境
 module: 'java'
 category: 后端技术

@@ -1,5 +1,5 @@
 ---
-order: 880
+order: 210
 title: Java Objects 工具类语法速查手册
 module: 'java'
 category: 后端技术

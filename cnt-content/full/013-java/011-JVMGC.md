@@ -1,5 +1,5 @@
 ---
-order: 110
+order: 520
 title: JVM垃圾回收
 module: 'java'
 category: 后端技术

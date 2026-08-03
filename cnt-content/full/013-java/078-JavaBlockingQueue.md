@@ -1,5 +1,5 @@
 ---
-order: 780
+order: 480
 title: Java 阻塞队列 BlockingQueue 语法速查手册
 module: 'java'
 category: 后端技术

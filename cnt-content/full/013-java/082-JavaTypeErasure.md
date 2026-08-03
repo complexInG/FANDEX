@@ -1,5 +1,5 @@
 ---
-order: 820
+order: 300
 title: Java 类型擦除与桥接方法语法速查手册
 module: 'java'
 category: 后端技术

@@ -1,5 +1,5 @@
 ---
-order: 750
+order: 600
 title: Java Path 与 Files 语法速查手册
 module: 'java'
 category: 后端技术

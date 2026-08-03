@@ -1,5 +1,5 @@
 ---
-order: 630
+order: 220
 title: Lambda与函数式编程
 module: 'java'
 category: 后端技术

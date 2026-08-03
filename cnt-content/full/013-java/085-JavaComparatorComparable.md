@@ -1,5 +1,5 @@
 ---
-order: 850
+order: 200
 title: Java Comparator/Comparable 语法速查手册
 module: 'java'
 category: 后端技术

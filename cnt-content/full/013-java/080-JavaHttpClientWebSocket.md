@@ -1,5 +1,5 @@
 ---
-order: 800
+order: 640
 title: Java HttpClient 与 WebSocket 语法速查手册
 module: 'java'
 category: 后端技术

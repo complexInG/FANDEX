@@ -1,5 +1,5 @@
 ---
-order: 770
+order: 470
 title: Java 同步器 CountDownLatch/CyclicBarrier/Phaser 语法速查手册
 module: 'java'
 category: 后端技术

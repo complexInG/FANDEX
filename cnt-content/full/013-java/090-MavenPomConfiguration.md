@@ -1,5 +1,5 @@
 ---
-order: 900
+order: 750
 title: Maven pom.xml 配置语法速查手册
 module: 'java'
 category: 后端技术

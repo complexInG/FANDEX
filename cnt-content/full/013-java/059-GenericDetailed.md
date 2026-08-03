@@ -1,5 +1,5 @@
 ---
-order: 590
+order: 290
 title: 泛型详解
 module: 'java'
 category: 后端技术

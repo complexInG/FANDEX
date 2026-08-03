@@ -1,5 +1,5 @@
 ---
-order: 380
+order: 80
 title: 方法详解
 module: 'java'
 category: 后端技术

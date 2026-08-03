@@ -1,5 +1,5 @@
 ---
-order: 400
+order: 890
 title: Java与GraalVM
 module: 'java'
 category: 后端技术

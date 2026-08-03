@@ -1,5 +1,5 @@
 ---
-order: 790
+order: 170
 title: Java try-with-resources 与异常链语法速查手册
 module: 'java'
 category: 后端技术

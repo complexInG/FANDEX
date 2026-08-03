@@ -1,5 +1,5 @@
 ---
-order: 720
+order: 660
 title: Java JDBC 数据库连接
 module: 'java'
 category: 后端技术

@@ -1,5 +1,5 @@
 ---
-order: 830
+order: 280
 title: Java 枚举进阶 EnumSet/EnumMap/枚举单例语法速查手册
 module: 'java'
 category: 后端技术
