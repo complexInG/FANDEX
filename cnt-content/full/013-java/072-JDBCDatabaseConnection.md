@@ -7,9 +7,79 @@ difficulty: beginner
 description: Java JDBC 数据库连接 的完整教学讲解。
 author: fanquanpp
 updated: '2026-08-01'
-related: []
-prerequisites: []
+related:
+  - 'java/045-JavaDatabaseConnection'
+  - 'java/020-SpringBootDataAccess'
+prerequisites:
+  - 'java/045-JavaDatabaseConnection'
+  - 'java/058-ExceptionHandlingMechanism'
 ---
+
+## 0. 学习目标（可验证）
+
+- [ ] 能说出原生 JDBC 的 5 个核心步骤
+- [ ] 能写出 `DriverManager` 获取 `Connection` 的代码
+- [ ] 能说明 `PreparedStatement` 为什么能防 SQL 注入
+- [ ] 能用 try-with-resources 正确关闭 `Connection` / `Statement` / `ResultSet`
+
+## 1. 一句话理解
+
+> JDBC 是 Java 访问数据库的"官方插座"：`DriverManager` 插上驱动，`Connection` 建立管道，`Statement` / `PreparedStatement` 递 SQL，`ResultSet` 收结果。MyBatis、JPA 这些 ORM 只是在它外面包了一层。
+
+## 2. 完整可运行示例：五步走
+
+```java
+// 1. 加载驱动（JDBC 4.0+ 可以省略，驱动 jar 会自动注册）
+Class.forName("com.mysql.cj.jdbc.Driver");
+
+// 2-5. 连接 -> 预编译 SQL -> 绑定参数 -> 执行
+try (Connection conn = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/library?useSSL=false&serverTimezone=Asia/Shanghai",
+        "root", "123456");
+     PreparedStatement ps = conn.prepareStatement(
+        "INSERT INTO user(name, age) VALUES(?, ?)")) {
+    ps.setString(1, "张三");          // 绑定第 1 个占位符
+    ps.setInt(2, 20);                 // 绑定第 2 个占位符
+    int rows = ps.executeUpdate();    // 执行写入，返回影响行数
+    System.out.println("影响行数: " + rows);
+}   // try-with-resources 自动逆序关闭 ps 与 conn
+```
+
+**拆解讲解**：
+
+1. `DriverManager.getConnection` 返回一个物理连接，`jdbc:mysql://` 是协议头，后面依次是主机、端口、库名。
+2. `PreparedStatement` 用 `?` 占位、`setXxx` 绑定参数，参数永远不会拼进 SQL 字符串，因此天然防 SQL 注入。
+3. `executeUpdate()` 用于增删改，返回受影响行数；查询用 `executeQuery()`（见下一节）。
+4. 用 try-with-resources 包裹资源，无论成功失败都会自动关闭，避免连接耗尽。
+
+## 3. 查询并遍历 ResultSet
+
+```java
+String sql = "SELECT id, name, age FROM user WHERE age > ?";
+try (Connection conn = DriverManager.getConnection(url, user, pwd);
+     PreparedStatement ps = conn.prepareStatement(sql)) {
+    ps.setInt(1, 18);
+    try (ResultSet rs = ps.executeQuery()) {   // ResultSet 也要关闭
+        while (rs.next()) {                    // 移动到下一行，没有则返回 false
+            int id = rs.getInt("id");
+            String name = rs.getString("name");
+            System.out.println(id + " " + name);
+        }
+    }
+}
+```
+
+**拆解讲解**：`rs.next()` 既是"移动到下一行"也是"还有没有下一行"的判断；`getXxx("列名")` 按列名取值，也可以用下标 `getXxx(1)`。
+
+## 4. 常见陷阱
+
+| 陷阱 | 后果 | 解决 |
+| --- | --- | --- |
+| 资源不关闭 | 数据库连接耗尽 | try-with-resources |
+| 用字符串拼接用户输入 | SQL 注入 | 一律 `PreparedStatement` |
+| 缺少驱动依赖 | `ClassNotFoundException` | 引入 `mysql-connector-j` 依赖 |
+| 时区参数缺失 | 时间字段偏差 | URL 追加 `serverTimezone=Asia/Shanghai` |
+| 每次请求新建连接 | 性能差、连接数爆炸 | 使用连接池 HikariCP/Druid |
 
 ## 建立连接
 

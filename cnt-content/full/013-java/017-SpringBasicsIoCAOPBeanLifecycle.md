@@ -1,5 +1,5 @@
 ---
-order: 680
+order: 710
 title: Spring 基础：IoC 容器、AOP、Bean 生命周期与企业级开发核心
 module: 'java'
 category: 后端技术
@@ -14,9 +14,25 @@ related:
   - 'java/019-SpringBootSecurity'
   - 'java/045-JavaDatabaseConnection'
 prerequisites:
-  - 'java/001-JavaOverviewDevEnv'
-  - 'java/045-JavaDatabaseConnection'
+  - 'java/056-OOP'
+  - 'java/057-AbstractClassInterface'
+  - 'java/049-CollectionFrameworkDetailed'
+  - 'java/006-JavaAnnotationsTutorial'
+  - 'java/059-GenericDetailed'
+  - 'java/072-JDBCDatabaseConnection'
+  - 'java/021-JavaDesignPattern'
 ---
+
+## 0. 前置必读与阅读警告（先读这一节）
+
+> **警告：这是全模块最不建议跳级阅读的文档之一。** 如果还没有完成 Java SE 核心，@Autowired、BeanPostProcessor、动态代理与事务传播行为（REQUIRES_NEW）对你就是天书。请按顺序先读完：
+>
+> 1. 013 面向对象编程（多态与接口回调）；
+> 2. 014 抽象类与接口、015 内部类（匿名内部类与代理的基础）；
+> 3. 018 集合框架、027 注解与枚举、029 泛型详解（@Component/@Autowired 与 Repository 的语法前提）；
+> 4. 066 原生 JDBC（先会底层数据访问）、070 设计模式（工厂模式对应 IoC，代理模式对应 AOP）。
+>
+> 推荐顺序：066 JDBC → 067-069 构建工具 → 070 设计模式 → 本篇。跳级阅读者请做好反复回查的准备。
 
 ## 1. 历史动机与背景
 

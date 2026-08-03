@@ -1,5 +1,5 @@
 ---
-order: 690
+order: 720
 title: SpringBoot进阶
 module: 'java'
 category: 后端技术
@@ -13,8 +13,13 @@ related:
   - 'java/019-SpringBootSecurity'
   - 'java/020-SpringBootDataAccess'
 prerequisites:
-  - 'java/001-JavaOverviewDevEnv'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/006-JavaAnnotationsTutorial'
+  - 'java/059-GenericDetailed'
+  - 'java/049-CollectionFrameworkDetailed'
 ---
+
+> 前置必读：本篇依赖 071 Spring 基础（IoC/AOP/Bean 生命周期），并建议先掌握 027 注解与 029 泛型。
 
 ## 概述
 

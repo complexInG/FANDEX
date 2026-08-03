@@ -1,5 +1,5 @@
 ---
-order: 710
+order: 750
 title: Spring Boot 学习笔记
 module: 'java'
 category: 后端技术
@@ -12,11 +12,14 @@ related:
   - 'java/066-NetworkProgramming'
   - 'java/067-SpringCloudMicroserviceDevelopment'
 prerequisites:
-  - 'java/001-JavaOverviewDevEnv'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/020-SpringBootDataAccess'
 ---
 
 
 # Spring Boot 深度指南：从自动配置到生产级微服务
+
+> 前置必读：本篇是 Spring 系列的"深度总览"，建议先完成 071 Spring 基础与 074 Spring Boot 数据访问，再把它当作查漏补缺的进阶读物。
 
 > 本文档对标 MIT 6.170（Software Studio）、Stanford CS 142（Web Applications）与 CMU 17-445（Software Engineering for Web Applications）教学水准，系统阐述 Spring Boot 的形式化基础、内核原理与生产级工程实践。所有代码示例均在 Spring Boot 3.x（基于 Spring Framework 6.x，运行于 Java 17+）上编译验证。
 

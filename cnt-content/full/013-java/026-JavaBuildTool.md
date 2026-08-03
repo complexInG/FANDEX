@@ -1,5 +1,5 @@
 ---
-order: 740
+order: 670
 title: Java构建工具
 module: 'java'
 category: 后端技术

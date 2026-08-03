@@ -1,5 +1,5 @@
 ---
-order: 760
+order: 690
 title: Gradle build.gradle 配置语法速查手册
 module: 'java'
 category: 后端技术

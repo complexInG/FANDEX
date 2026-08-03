@@ -1,5 +1,5 @@
 ---
-order: 770
+order: 700
 title: Java设计模式
 module: 'java'
 category: 后端技术

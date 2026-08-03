@@ -1,5 +1,5 @@
 ---
-order: 670
+order: 740
 title: SpringBoot数据访问
 module: 'java'
 category: 后端技术
@@ -15,14 +15,17 @@ related:
   - 'java/037-JavaReactiveProgramming'
   - 'java/008-ConcurrencyBasics'
 prerequisites:
-  - 'java/001-JavaOverviewDevEnv'
   - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/018-SpringBootAdvanced'
   - 'java/049-CollectionFrameworkDetailed'
+  - 'java/072-JDBCDatabaseConnection'
 ---
 
 
 
 # Spring Boot 数据访问深度指南
+
+> 前置必读：本篇依赖 071 Spring 基础、072 Spring Boot 进阶与 066 原生 JDBC。ORM（JPA/MyBatis）都是 JDBC 之上的封装，先会 JDBC 再看本篇。
 
 > 数据访问是企业级应用的核心。Spring Boot 在数据访问层提供了从底层 JDBC 到高层 ORM 的完整栈：JdbcTemplate 简化原生 JDBC 编码；Spring Data JPA 通过方法名派生查询实现"零 SQL"开发；MyBatis 在保留 SQL 控制力的同时消除样板代码；R2DBC 与响应式栈适配高并发非阻塞场景；事务管理、连接池、缓存、多数据源等横切关注点被统一抽象。本文将以"数据访问的层次模型"为骨架，从 JDBC 起步，逐层向上剖析 JPA、MyBatis、R2DBC 的内部机制，覆盖事务传播、N+1 问题、批量优化、缓存一致性等工程关键问题，让读者既能编写高效的数据访问代码，也能理解主流框架的设计取舍。
 

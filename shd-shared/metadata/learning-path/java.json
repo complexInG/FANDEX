@@ -511,89 +511,89 @@
           "doc": "072-JDBCDatabaseConnection",
           "desc": "Java JDBC 数据库连接 的完整教学讲解。",
           "difficulty": "beginner"
-        },
-        {
-          "id": "java-067",
-          "title": "SpringBoot数据访问",
-          "doc": "020-SpringBootDataAccess",
-          "desc": "Spring Data JPA、MyBatis、R2DBC、JdbcTemplate 与事务、缓存、连接池的系统性深度剖析",
-          "difficulty": "intermediate"
         }
       ]
     },
     {
       "id": "engineering",
       "title": "框架与工程实践",
-      "subtitle": "Spring、构建、设计模式与项目",
+      "subtitle": "构建、设计模式、Spring 与项目",
       "nodes": [
         {
-          "id": "java-068",
-          "title": "Spring 基础：IoC 容器、AOP、Bean 生命周期与企业级开发核心",
-          "doc": "017-SpringBasicsIoCAOPBeanLifecycle",
-          "desc": "系统阐述 Spring 框架的 IoC 容器、AOP、Bean 生命周期、依赖注入、事务管理、Spring MVC 与 Spring Boot 核心机制。",
-          "difficulty": "intermediate"
-        },
-        {
-          "id": "java-069",
-          "title": "SpringBoot进阶",
-          "doc": "018-SpringBootAdvanced",
-          "desc": "SpringBoot高级特性",
-          "difficulty": "intermediate"
-        },
-        {
-          "id": "java-070",
-          "title": "SpringBoot安全",
-          "doc": "019-SpringBootSecurity",
-          "desc": "Spring Security与认证授权",
-          "difficulty": "intermediate"
-        },
-        {
-          "id": "java-071",
-          "title": "Spring Boot 学习笔记",
-          "doc": "065-SpringBootNotes",
-          "desc": "Spring Boot 深度指南：自动配置原理、起步依赖、Actuator、Spring Data JPA、Spring Security、Spring Cloud 与生产级工程实",
-          "difficulty": "intermediate"
-        },
-        {
-          "id": "java-072",
-          "title": "Java与微服务",
-          "doc": "028-JavaMicroservice",
-          "desc": "Spring Cloud微服务架构",
-          "difficulty": "advanced"
-        },
-        {
-          "id": "java-073",
-          "title": "Spring Cloud 微服务开发",
-          "doc": "067-SpringCloudMicroserviceDevelopment",
-          "desc": "Spring Cloud微服务架构与开发",
-          "difficulty": "intermediate"
-        },
-        {
-          "id": "java-074",
+          "id": "java-067",
           "title": "Java构建工具",
           "doc": "026-JavaBuildTool",
           "desc": "Maven与Gradle",
           "difficulty": "intermediate"
         },
         {
-          "id": "java-075",
+          "id": "java-068",
           "title": "Maven pom.xml 配置语法速查手册",
           "doc": "090-MavenPomConfiguration",
           "desc": "Maven pom.xml 配置语法速查手册 的完整教学讲解。",
           "difficulty": "beginner"
         },
         {
-          "id": "java-076",
+          "id": "java-069",
           "title": "Gradle build.gradle 配置语法速查手册",
           "doc": "091-GradleBuildConfiguration",
           "desc": "Gradle build.gradle 配置语法速查手册 的完整教学讲解。",
           "difficulty": "beginner"
         },
         {
-          "id": "java-077",
+          "id": "java-070",
           "title": "Java设计模式",
           "doc": "021-JavaDesignPattern",
           "desc": "GoF设计模式Java实现",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "java-071",
+          "title": "Spring 基础：IoC 容器、AOP、Bean 生命周期与企业级开发核心",
+          "doc": "017-SpringBasicsIoCAOPBeanLifecycle",
+          "desc": "系统阐述 Spring 框架的 IoC 容器、AOP、Bean 生命周期、依赖注入、事务管理、Spring MVC 与 Spring Boot 核心机制。",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "java-072",
+          "title": "SpringBoot进阶",
+          "doc": "018-SpringBootAdvanced",
+          "desc": "SpringBoot高级特性",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "java-073",
+          "title": "SpringBoot安全",
+          "doc": "019-SpringBootSecurity",
+          "desc": "Spring Security与认证授权",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "java-074",
+          "title": "SpringBoot数据访问",
+          "doc": "020-SpringBootDataAccess",
+          "desc": "Spring Data JPA、MyBatis、R2DBC、JdbcTemplate 与事务、缓存、连接池的系统性深度剖析",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "java-075",
+          "title": "Spring Boot 学习笔记",
+          "doc": "065-SpringBootNotes",
+          "desc": "Spring Boot 深度指南：自动配置原理、起步依赖、Actuator、Spring Data JPA、Spring Security、Spring Cloud 与生产级工程实",
+          "difficulty": "intermediate"
+        },
+        {
+          "id": "java-076",
+          "title": "Java与微服务",
+          "doc": "028-JavaMicroservice",
+          "desc": "Spring Cloud微服务架构",
+          "difficulty": "advanced"
+        },
+        {
+          "id": "java-077",
+          "title": "Spring Cloud 微服务开发",
+          "doc": "067-SpringCloudMicroserviceDevelopment",
+          "desc": "Spring Cloud微服务架构与开发",
           "difficulty": "intermediate"
         },
         {

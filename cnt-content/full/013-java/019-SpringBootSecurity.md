@@ -1,5 +1,5 @@
 ---
-order: 700
+order: 730
 title: SpringBoot安全
 module: 'java'
 category: 后端技术
@@ -13,9 +13,12 @@ related:
   - 'java/020-SpringBootDataAccess'
   - 'java/021-JavaDesignPattern'
 prerequisites:
-  - 'java/001-JavaOverviewDevEnv'
+  - 'java/017-SpringBasicsIoCAOPBeanLifecycle'
+  - 'java/018-SpringBootAdvanced'
 ---
 
+
+> 前置必读：本篇依赖 071 Spring 基础与 072 Spring Boot 进阶，并建议了解 013 面向对象与 070 设计模式。
 
 ## 概述
 
