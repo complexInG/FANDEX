@@ -121,6 +121,6 @@ npx lighthouse https://example.com --view
 
 ## 扩展学习
 
-- 渲染路径：`html5/036-CriticalRenderingPathAndResourceLoading`；
+- 渲染路径：`html5/037-CriticalRenderingPathAndResourceLoading`；
 - 性能：`css/042-CSSPerformanceOptimizationDetailed`；
 - 指标：`javascript/048-CoreWebVitalsAndPerformanceMetrics`。

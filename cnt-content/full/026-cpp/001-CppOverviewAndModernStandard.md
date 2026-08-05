@@ -6,13 +6,54 @@ category: 计算机科学
 difficulty: beginner
 description: C++ 发展历程、标准演进与现代 C++ 核心特性概览。
 author: Anonymous
-updated: '2026-08-03'
+updated: '2026-08-05'
 related:
   - 'cpp/002-CppBasicSyntax'
   - 'cpp/003-CppTypeSystem'
-  - 'c/001-CLanguageOverview'
+  - 'c/002-CLanguageOverview'
 prerequisites: []
 ---
+
+## 0.1 现代 C++ 最小知识地图
+
+### 从 C 过渡到现代 C++ 的关键变化
+
+| 主题 | C 风格 | 现代 C++ 推荐 | 为什么 |
+| --- | --- | --- | --- |
+| 资源管理 | 手写 `malloc/free` | RAII、`std::unique_ptr`、`std::vector` | 构造和析构自动管理生命周期 |
+| 字符串 | `char*` 与字符数组 | `std::string`、`std::string_view` | 减少越界和手动长度管理 |
+| 数组 | 原生数组 | `std::array`、`std::vector` | 带尺寸信息且可配合算法 |
+| 遍历 | 下标循环 | 范围 `for`、迭代器、Ranges | 表达意图更清晰 |
+| 错误处理 | 返回码 | 异常、`std::optional`、`std::expected` | 区分异常流程和正常返回 |
+| 泛型 | 宏或 `void*` | 模板、概念、类型萃取 | 保留类型安全并生成高性能代码 |
+
+### 第一阶段必须认识的标准库组件
+
+| 组件 | 常用接口 | 使用场景 |
+| --- | --- | --- |
+| `std::vector` | `push_back`、`size`、`at` | 动态数组 |
+| `std::string` | `substr`、`find`、`starts_with` | 文本处理 |
+| `std::optional` | `has_value`、`value_or` | 可能没有结果 |
+| `std::unique_ptr` | `make_unique`、`get`、`reset` | 独占资源所有权 |
+| `std::ranges` | `views::filter`、`views::transform` | 声明式数据处理 |
+
+### 推荐起手式
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main() {
+    std::vector<std::string> names{"Ada", "Bjarne"};
+    for (const auto& name : names) {
+        std::cout << "Hello, " << name << '\n';
+    }
+}
+```
+
+这个示例故意避开裸指针和手动内存管理，优先建立“对象负责资源”的现代 C++ 心智模型。
+
 ## 0. 学习路径与阅读指南（先读这一节）
 
 本模块 76 篇文档不要按编号顺序读。零基础推荐路径：

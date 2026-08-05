@@ -8,7 +8,7 @@ description: Rust 编程语言概述：设计目标、所有权与借用、Cargo
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'c/007-EnumTypedef'
+  - 'c/008-EnumTypedef'
   - 'cpp/062-CppTemplate'
   - 'go/006-GoConcurrentProgramming'
 prerequisites: []

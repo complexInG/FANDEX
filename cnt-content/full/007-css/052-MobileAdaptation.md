@@ -116,6 +116,6 @@ $$
 
 ## 扩展学习
 
-- 视口：`html5/034-ViewportConfigMobileFirst`；
+- 视口：`html5/035-ViewportConfigMobileFirst`；
 - 媒体查询：`css/031-MediaQuery`；
 - 响应式：`css/033-ResponsiveDesign`。

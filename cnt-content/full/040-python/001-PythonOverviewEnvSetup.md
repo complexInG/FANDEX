@@ -6,12 +6,49 @@ category: 后端技术
 difficulty: beginner
 description: Python 发展历程、版本特性与开发环境搭建。
 author: Anonymous
-updated: '2026-08-03'
+updated: '2026-08-05'
 related:
   - 'python/002-ProgramStructureBasicSyntax'
   - 'python/003-VariableConstant'
 prerequisites: []
 ---
+
+## 0.1 Python 入门核心能力清单
+
+### 语法、内置类型与常用方法
+
+| 类型 | 常用操作 | 解决的问题 | 常见误区 |
+| --- | --- | --- | --- |
+| `str` | `split`、`join`、`strip`、`replace`、`format` | 文本清洗和格式化 | 字符串不可变，方法返回新对象 |
+| `list` | `append`、`extend`、`sort`、切片 | 有序可变集合 | 遍历时直接删除元素容易跳项 |
+| `tuple` | 解包、作为不可变记录 | 固定结构数据 | 单元素元组必须写逗号 |
+| `dict` | `get`、`items`、`setdefault` | 键值映射 | 直接索引不存在键会抛 `KeyError` |
+| `set` | `add`、`union`、`intersection` | 去重和集合运算 | 集合无顺序，不能依赖输出顺序 |
+| `pathlib.Path` | `exists`、`read_text`、`write_text` | 跨平台文件路径 | 拼接路径不要手写斜杠 |
+
+### 工程起步命令
+
+```bash
+python --version
+python -m venv .venv
+python -m pip install --upgrade pip
+python -m pip install pytest
+python -m pytest
+```
+
+### 第一个可测试函数
+
+```python
+def normalize_name(name: str) -> str:
+    return name.strip().title()
+
+
+def test_normalize_name() -> None:
+    assert normalize_name('  ada lovelace ') == 'Ada Lovelace'
+```
+
+从第一天就把函数、类型标注和测试放在一起练习，可以避免只会在交互式环境里写临时代码。
+
 
 
 > 本节为增量补充，帮助你选择 Python 版本与包管理方式。

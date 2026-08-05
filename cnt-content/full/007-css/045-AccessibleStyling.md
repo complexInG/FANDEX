@@ -8,7 +8,7 @@ description: 让样式不成为障碍：对比度、焦点可见、减少动效�
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'html5/009-Accessibility'
+  - 'html5/010-Accessibility'
   - 'css/035-CSSVariableCustomAttribute'
 prerequisites:
   - 'css/031-MediaQuery'
@@ -109,7 +109,7 @@ body {
 ## 小结
 
 可访问性样式没有魔法，就是四条纪律：对比度达标、焦点可见、动效可降级、文字可缩放。
-配合 [HTML 无障碍](/FANDEX/html5/009-Accessibility/) 的结构语义，就能覆盖绝大多数障碍场景。
+配合 [HTML 无障碍](/FANDEX/html5/010-Accessibility/) 的结构语义，就能覆盖绝大多数障碍场景。
 
 ## 动手试试
 
@@ -140,6 +140,6 @@ body {
 
 ## 扩展学习
 
-- 无障碍完整教程：`html5/009-Accessibility`；
+- 无障碍完整教程：`html5/010-Accessibility`；
 - 动效：`css/028-CSSAnimationTransition`；
 - 深色主题：`css/031-MediaQuery`。

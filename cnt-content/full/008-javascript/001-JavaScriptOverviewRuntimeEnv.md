@@ -6,12 +6,51 @@ category: 前端技术
 difficulty: beginner
 description: JavaScript 发展历程、ECMAScript 标准与运行环境。
 author: Anonymous
-updated: '2026-08-03'
+updated: '2026-08-05'
 related:
   - 'javascript/002-ProgramStructureBasicSyntax'
   - 'javascript/003-VariableDataType'
 prerequisites: []
 ---
+
+## 0.1 JavaScript 必会运行模型
+
+### 代码从输入到执行的四个环节
+
+| 环节 | 浏览器中发生什么 | Node.js 中发生什么 | 需要掌握的关键词 |
+| --- | --- | --- | --- |
+| 解析 | 读取 `<script>` 或模块文件 | 读取 `.js`、`.mjs`、包入口 | 词法环境、语法错误、模块解析 |
+| 编译 | 引擎生成可执行表示 | V8 生成字节码并按热点优化 | JIT、隐藏类、内联缓存 |
+| 执行 | 主线程运行同步代码 | 事件循环驱动任务执行 | 调用栈、作用域链、闭包 |
+| 调度 | DOM 事件、定时器、网络回调进入队列 | 文件 IO、网络、定时器进入队列 | 宏任务、微任务、Promise |
+
+### 第一阶段要背熟的内置对象与方法
+
+| 对象 | 常用方法 | 解决的问题 | 易错点 |
+| --- | --- | --- | --- |
+| `String` | `slice`、`includes`、`replace`、`trim` | 文本截取、查找和清洗 | 字符串不可变，方法返回新字符串 |
+| `Array` | `map`、`filter`、`reduce`、`find`、`some` | 列表转换、筛选、统计 | `map` 要返回值，`forEach` 不返回新数组 |
+| `Object` | `keys`、`values`、`entries`、`assign` | 枚举和合并对象 | 浅拷贝不能复制嵌套对象 |
+| `Promise` | `then`、`catch`、`finally`、`all`、`allSettled` | 表达异步结果 | `await` 只能等待 Promise 或 thenable |
+| `JSON` | `parse`、`stringify` | 数据序列化 | 函数、`undefined`、循环引用不能直接序列化 |
+
+### 最小调试练习
+
+```js
+const users = [
+  { name: 'Ada', score: 96 },
+  { name: 'Linus', score: 88 },
+];
+
+const excellent = users
+  .filter((user) => user.score >= 90)
+  .map((user) => user.name);
+
+console.log(excellent);
+```
+
+在 DevTools 中给 `filter` 行打断点，观察每次回调的 `user` 值、返回值和最终数组。
+
 
 ## 0. 学习路径与阅读指南（先读这一节）
 

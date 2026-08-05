@@ -10,9 +10,9 @@ updated: '2026-08-03'
 related:
   - 'nestjs/002-ModuleControllerService'
   - 'nestjs/003-ValidationPipes'
-  - 'typescript/001-TypeScriptOverviewEnvSetup'
+  - 'typescript/002-TypeScriptOverviewEnvSetup'
 prerequisites:
-  - 'typescript/006-BasicTypeSystem'
+  - 'typescript/007-BasicTypeSystem'
 ---
 
 ## 0. 五分钟创建第一个接口（先读这里）

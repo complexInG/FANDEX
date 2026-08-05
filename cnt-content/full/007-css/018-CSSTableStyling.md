@@ -11,7 +11,7 @@ related:
   - 'css/023-PseudoClassPseudoElement'
   - 'css/009-PriorityCalculation'
 prerequisites:
-  - 'html5/016-List'
+  - 'html5/017-List'
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
@@ -143,7 +143,7 @@ table {
 
 ## 5. 扩展学习
 
-- 结构语义：`html5/016-List` 与表格的对比；
+- 结构语义：`html5/017-List` 与表格的对比；
 - 隔行变色：`css/023-PseudoClassPseudoElement` 的 `:nth-child`；
 - 响应式表格：`css/033-ResponsiveDesign`；
 - 数据可视化：用 `css/022-CSS3GridGridLayout` 做网格布局。

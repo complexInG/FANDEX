@@ -6,12 +6,47 @@ category: 后端技术
 difficulty: beginner
 description: Java 发展历史、平台体系与开发环境搭建。
 author: fanquanpp
-updated: '2026-08-03'
+updated: '2026-08-05'
 related:
   - 'java/002-QuickStart'
   - 'java/003-ProgramStructureBasicSyntax'
 prerequisites: []
 ---
+
+## 0.1 Java 入门核心 API 与工程动作
+
+### 第一阶段必须掌握的类与方法
+
+| 类 / 接口 | 常用成员 | 解决的问题 | 常见误区 |
+| --- | --- | --- | --- |
+| `String` | `length()`、`substring()`、`contains()`、`equals()` | 文本处理 | 用 `==` 比较字符串内容 |
+| `StringBuilder` | `append()`、`toString()` | 高频拼接字符串 | 在循环中反复使用 `+` 拼接大量文本 |
+| `List` | `add()`、`get()`、`size()`、`remove()` | 有序集合 | 删除元素时忽略索引变化 |
+| `Map` | `put()`、`get()`、`containsKey()` | 键值映射 | 直接对可能为 `null` 的返回值调用方法 |
+| `Optional` | `ofNullable()`、`map()`、`orElse()` | 表达可能为空 | 滥用 `get()` 重新制造空指针风险 |
+| `Files` | `readString()`、`writeString()`、`exists()` | 文件读写 | 不处理字符集和异常 |
+
+### 从源文件到运行的命令链
+
+```bash
+javac Hello.java
+java Hello
+jshell
+jar --create --file app.jar -C out .
+```
+
+### 最小程序结构
+
+```java
+public class Hello {
+    public static void main(String[] args) {
+        System.out.println("Hello, Java");
+    }
+}
+```
+
+学习时要同时理解：类名必须与文件名对应、`main` 是程序入口、`String[] args` 接收命令行参数、`System.out.println` 负责输出。
+
 ## 0. 学习路径与阅读指南（先读这一节）
 
 本模块 94 篇文档已按学习顺序重排：前 17 篇是零基础核心（语法、面向对象与异常），第 18-23 篇是集合、综合项目与基础文件读写，第 24-41 篇是核心类库与类型系统，第 42-65 篇是并发、JVM 与 IO/网络，第 66-67 篇是数据库（JDBC），第 68 篇起是构建工具、设计模式、Spring 与工程实践。零基础推荐路径：
