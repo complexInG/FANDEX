@@ -10,7 +10,7 @@ updated: '2026-08-03'
 related:
   - 'mongodb/002-CRUDOperations'
   - 'mongodb/003-AggregationPipeline'
-  - 'mysql/061-IndexPrinciplePerformanceOptimization'
+  - 'mysql/065-IndexPrinciplePerformanceOptimization'
 prerequisites:
   - 'mongodb/002-CRUDOperations'
 ---

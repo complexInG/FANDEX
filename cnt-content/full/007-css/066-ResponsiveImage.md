@@ -304,6 +304,6 @@ export default defineConfig({
 
 ## 扩展学习
 
-- 完整教程：`html5/018-ImageResponsiveImage`；
+- 完整教程：`html5/019-ImageResponsiveImage`；
 - 对象适配：`css/049-CSSObjectFit`；
 - 性能：`javascript/048-CoreWebVitalsAndPerformanceMetrics`。

@@ -12,7 +12,7 @@ related:
   - 'css/060-CriticalRenderPathOptimization'
 prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
-  - 'html5/005-HTML5OverviewCoreFeature'
+  - 'html5/006-HTML5OverviewCoreFeature'
 ---
 
 ## 0. 直觉：浏览器把“HTML + CSS”变成屏幕上的画面
@@ -146,4 +146,4 @@ flowchart LR
 - 关键渲染路径深入：`css/060-CriticalRenderPathOptimization`；
 - 引入方式与渲染阻塞：`css/011-StyleSheetImportMethod`；
 - 优先级计算：`css/009-PriorityCalculation`；
-- HTML 结构基础：`html5/005-HTML5OverviewCoreFeature`。
+- HTML 结构基础：`html5/006-HTML5OverviewCoreFeature`。

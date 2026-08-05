@@ -13,7 +13,7 @@ related:
   - 'react/001-OverviewEnvSetup'
 prerequisites:
   - 'react/001-OverviewEnvSetup'
-  - 'typescript/001-TypeScriptOverviewEnvSetup'
+  - 'typescript/002-TypeScriptOverviewEnvSetup'
 ---
 
 ## 0. 五分钟创建第一个项目（先读这里）

@@ -340,6 +340,6 @@ Sitemap: https://example.com/sitemap.xml
 
 ## 扩展学习
 
-- 语义：`html5/008-SemanticTag`；
-- 元数据：`html5/014-MetadataCharacterEncoding`；
-- 结构化数据：`html5/031-MicrodataJSONLD`。
+- 语义：`html5/009-SemanticTag`；
+- 元数据：`html5/015-MetadataCharacterEncoding`；
+- 结构化数据：`html5/032-MicrodataJSONLD`。

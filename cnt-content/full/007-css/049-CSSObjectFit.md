@@ -8,7 +8,7 @@ description: object-fit 与 object-position 控制 img/video 等内容在盒子�
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'html5/018-ImageResponsiveImage'
+  - 'html5/019-ImageResponsiveImage'
   - 'css/003-CSS3BoxModelDetailed'
 prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
@@ -111,7 +111,7 @@ prerequisites:
 
 ## 7. 扩展学习
 
-- 响应式图片：`html5/018-ImageResponsiveImage`；
+- 响应式图片：`html5/019-ImageResponsiveImage`；
 - 盒模型：`css/003-CSS3BoxModelDetailed`；
 - 背景适配：`css/026-BackgroundEnhancement`（background-size 对比）；
 - 圆角头像：`css/051-BorderRadius`。

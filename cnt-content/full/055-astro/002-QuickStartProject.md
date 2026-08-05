@@ -11,7 +11,7 @@ related:
   - 'astro/003-PagesRouting'
   - 'astro/004-ComponentsProps'
 prerequisites:
-  - 'html5/008-SemanticTag'
+  - 'html5/009-SemanticTag'
 ---
 
 

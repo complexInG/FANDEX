@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'iot/002-SensorEmbedded'
   - 'iot/003-CommunicationProtocol'
-  - 'c/001-CLanguageOverview'
+  - 'c/002-CLanguageOverview'
 prerequisites: []
 ---
 

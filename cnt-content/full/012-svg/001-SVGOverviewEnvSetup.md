@@ -10,9 +10,9 @@ updated: '2026-07-18'
 related:
   - 'svg/002-SVGBasicSyntaxDocStructure'
   - 'svg/003-SVGCoordinateSystemViewBox'
-  - 'html5/020-SVG'
+  - 'html5/021-SVG'
 prerequisites:
-  - 'html5/005-HTML5OverviewCoreFeature'
+  - 'html5/006-HTML5OverviewCoreFeature'
 ---
 
 ## 1. 历史动机与发展脉络

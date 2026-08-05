@@ -11,7 +11,7 @@ related:
   - 'css/023-PseudoClassPseudoElement'
   - 'css/007-CSS3SelectorSystem'
 prerequisites:
-  - 'html5/016-List'
+  - 'html5/017-List'
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
@@ -121,7 +121,7 @@ ul {
 
 ## 5. 扩展学习
 
-- 列表结构：`html5/016-List`；
+- 列表结构：`html5/017-List`；
 - `::marker`：`css/023-PseudoClassPseudoElement`；
 - 选择器：`css/007-CSS3SelectorSystem`；
 - 导航实战：`css/067-CSSProjectExampleResponsiveHomepage`。

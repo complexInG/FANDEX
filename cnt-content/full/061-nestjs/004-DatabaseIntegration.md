@@ -10,7 +10,7 @@ updated: '2026-08-03'
 related:
   - 'nestjs/003-ValidationPipes'
   - 'postgresql/001-OverviewInstallConfig'
-  - 'typescript/008-FunctionGeneric'
+  - 'typescript/009-FunctionGeneric'
 prerequisites:
   - 'nestjs/003-ValidationPipes'
   - 'postgresql/001-OverviewInstallConfig'

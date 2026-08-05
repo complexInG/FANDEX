@@ -6,13 +6,48 @@ category: 前端技术
 difficulty: beginner
 description: CSS 发展历程、语法结构与层叠规则。
 author: fanquanpp
-updated: '2026-08-03'
+updated: '2026-08-05'
 related:
   - 'css/003-CSS3BoxModelDetailed'
   - 'css/007-CSS3SelectorSystem'
 prerequisites:
-  - 'html5/005-HTML5OverviewCoreFeature'
+  - 'html5/006-HTML5OverviewCoreFeature'
 ---
+
+## 0.3 CSS 核心语法扩展：选择器、声明与层叠
+
+### 一条规则由三部分组成
+
+```css
+.card {
+  color: #1f2937;
+  padding: 16px;
+}
+```
+
+| 部分 | 示例 | 含义 | 排错方法 |
+| --- | --- | --- | --- |
+| 选择器 | `.card` | 找到要应用样式的元素 | 在 DevTools Elements 中确认元素是否真的有该类名 |
+| 属性 | `padding` | 说明要改变哪类视觉特征 | 拼写错误时浏览器会忽略该声明 |
+| 值 | `16px` | 属性的具体取值 | 值不合法时该行不会生效 |
+
+### 初学者最常用的属性
+
+| 类别 | 属性 | 典型值 | 适用场景 |
+| --- | --- | --- | --- |
+| 文本 | `color`、`font-size`、`line-height` | `#111827`、`16px`、`1.7` | 控制阅读体验 |
+| 盒模型 | `width`、`padding`、`border`、`margin` | `320px`、`1rem`、`1px solid` | 控制尺寸与间距 |
+| 布局 | `display`、`gap`、`align-items` | `flex`、`grid`、`12px` | 控制元素排列 |
+| 背景 | `background`、`background-size` | `#fff`、`cover` | 做卡片、横幅和状态块 |
+| 交互 | `cursor`、`transition`、`:hover` | `pointer`、`150ms ease` | 提升按钮和链接反馈 |
+
+### 层叠判断顺序
+
+1. 先看来源：浏览器默认样式、作者样式、用户样式。
+2. 再看重要性：普通声明与 `!important` 声明分开比较。
+3. 再看优先级：内联样式高于 id，id 高于 class，class 高于元素选择器。
+4. 最后看出现顺序：优先级相同，后写的覆盖先写的。
+
 
 ## 0. 快速上手：2 分钟写出第一行 CSS
 
@@ -24,7 +59,7 @@ prerequisites:
 
 1. **浏览器**：Chrome 或 Edge（本模块的调试演示均基于 Chrome DevTools）；
 2. **编辑器**：VS Code（或任意纯文本编辑器，记事本也可以）；
-3. **HTML 基础**：能写一个含 `<h1>` 与 `<p>` 标签的 `index.html`（HTML 入门见 `html5/005-HTML5OverviewCoreFeature`）。
+3. **HTML 基础**：能写一个含 `<h1>` 与 `<p>` 标签的 `index.html`（HTML 入门见 `html5/006-HTML5OverviewCoreFeature`）。
 
 不需要装任何额外软件，CSS 由浏览器直接解析，本模块所有示例都可用“一个 HTML 文件 + 一个 CSS 文件”复现。
 
