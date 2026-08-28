@@ -7,6 +7,8 @@ import { getModule, categoryColors, getPrimaryCategory } from '@/lib/modules';
 // 通过 doc-service 获取模块文档列表，UI 层禁止直接调用 getCollection
 // docSlug 由 modules.ts 唯一定义，通过 services 桶文件统一导出
 import { getDocsByModule, docSlug } from '@/services';
+// 学习进度：客户端记录与装饰（进度条、侧边栏已读标记）
+import '@/lib/progress';
 
 export async function getStaticPaths() {
   const { modules } = await import('@/lib/modules');
@@ -45,6 +47,8 @@ const breadcrumb = [{ label: '首页', href: `${import.meta.env.BASE_URL}` }, { 
       </div>
       <div class="header-docs">
         {/* 文档总数量 chip：实时读取当前模块文档数，非外部链接故无外链图标 */}
+        <!-- 学习进度指示：由 lib/progress.ts 在客户端填充已读数量与进度条 -->
+        <span class="doc-progress" data-progress-module data-module={module} data-total={sortedDocs.length} aria-label="本模块学习进度"></span>
         <span class="doc-chip doc-chip--count" aria-label={`本模块共 ${sortedDocs.length} 篇文档`}>
           <span class="doc-chip-icon">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">

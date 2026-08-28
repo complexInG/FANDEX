@@ -1,0 +1,63 @@
+{
+  "name": "FANDEX — 循序渐进的自学之旅",
+  "short_name": "FANDEX",
+  "description": "覆盖工具链、前端、后端、数据库、计算机科学、数学与云基础设施的自学知识库，支持在线编程实验与学习路线导图。",
+  "id": "/FANDEX/",
+  "start_url": "/FANDEX/",
+  "scope": "/FANDEX/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "zh-CN",
+  "background_color": "#EBEFF3",
+  "theme_color": "#EBEFF3",
+  "categories": ["education", "developer tools", "books"],
+  "icons": [
+    {
+      "src": "/FANDEX/icons/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/FANDEX/icons/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/FANDEX/icons/app-icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/FANDEX/icons/app-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "在线编程",
+      "short_name": "在线编程",
+      "description": "HTML / CSS / JS 前端实验工作台",
+      "url": "/FANDEX/playground/",
+      "icons": [{ "src": "/FANDEX/icons/app-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "语法速览",
+      "short_name": "语法速览",
+      "description": "各编程语言语法要点快速查阅",
+      "url": "/FANDEX/syntax/",
+      "icons": [{ "src": "/FANDEX/icons/app-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "学习路线",
+      "short_name": "学习路线",
+      "description": "系统化技术学习路径思维导图",
+      "url": "/FANDEX/learning-path/",
+      "icons": [{ "src": "/FANDEX/icons/app-icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

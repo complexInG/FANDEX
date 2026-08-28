@@ -2,8 +2,8 @@
  * Playground 本地存储层
  *
  * 功能概述：
- *   - 封装 IndexedDB 访问（Promise 风格），提供作品库、草稿、练习记录的增删查改
- *   - 提供浏览器存储配额与用量统计，用于首页展示与容量预警
+ *   - 封装 IndexedDB 访问（Promise 风格），提供前端实验作品库与草稿的增删查改
+ *   - 提供浏览器存储配额与用量统计，用于容量预警
  *   - 提供"清空本地数据"入口（仅由用户主动触发，程序不做自动清理）
  *
  * 设计原则：
@@ -12,7 +12,7 @@
  *   - 不自动删除任何用户数据；存储占用通过惰性写入与去重控制
  */
 
-import type { FrontendPen, PlaygroundStats } from './types';
+import type { FrontendPen } from './types';
 
 /** 数据库名称 */
 const DB_NAME = 'fandex-playground';
@@ -20,7 +20,7 @@ const DB_NAME = 'fandex-playground';
 const DB_VERSION = 1;
 /** 作品库对象仓库 */
 const STORE_PENS = 'pens';
-/** 草稿对象仓库（key 为 'frontend' 或 `lab:${exerciseId}:${language}`） */
+/** 草稿对象仓库（key 为 'frontend'） */
 const STORE_DRAFTS = 'drafts';
 /** 练习记录对象仓库（历史遗留，仅用于清空兼容；新版本不再写入） */
 const STORE_RECORDS = 'records';
@@ -192,37 +192,8 @@ export async function deletePen(id: string): Promise<void> {
 }
 
 /**
- * 保存练习草稿（自动保存调用）
- * @param key - 草稿 key（沙箱为 `lab:${language}`，前端实验为固定 key）
- * @param code - 用户代码
- */
-export async function saveLabDraft(key: string, code: string): Promise<void> {
-  if (!isClient) return;
-  try {
-    await idbPut(STORE_DRAFTS, { id: key, code, updatedAt: Date.now() });
-  } catch {
-    // 存储失败忽略
-  }
-}
-
-/**
- * 读取练习草稿
- * @param key - 草稿 key
- * @returns 草稿代码；不存在时返回 null
- */
-export async function loadLabDraft(key: string): Promise<string | null> {
-  if (!isClient) return null;
-  try {
-    const draft = await idbGet<{ id: string; code: string; updatedAt: number }>(STORE_DRAFTS, key);
-    return draft?.code ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/**
  * 获取浏览器为本站点分配的存储配额与实际用量
- * 用于首页统计与容量提示；浏览器不支持时返回 0
+ * 用于容量提示；浏览器不支持时返回 0
  */
 export async function getStorageUsage(): Promise<{ quotaBytes: number; usageBytes: number }> {
   if (!isClient || typeof navigator.storage?.estimate !== 'function') {
@@ -240,30 +211,9 @@ export async function getStorageUsage(): Promise<{ quotaBytes: number; usageByte
 }
 
 /**
- * 汇总 Playground 统计数据（首页展示）
- */
-export async function getPlaygroundStats(): Promise<PlaygroundStats> {
-  if (!isClient) {
-    return { penCount: 0, languageCount: 0, quotaBytes: 0, usageBytes: 0 };
-  }
-  const [pens, drafts, storage] = await Promise.all([
-    loadPens(),
-    idbAll<{ id: string }>(STORE_DRAFTS),
-    getStorageUsage(),
-  ]);
-  // 语言数统计：仅统计 lab: 前缀的沙箱草稿（历史题目草稿不计入）
-  const languageCount = drafts.filter((d) => d.id.startsWith('lab:')).length;
-  return {
-    penCount: pens.length,
-    languageCount,
-    quotaBytes: storage.quotaBytes,
-    usageBytes: storage.usageBytes,
-  };
-}
-
-/**
  * 清空 Playground 全部本地数据（仅由用户主动点击确认后调用）
- * 删除作品库、草稿与练习记录三个对象仓库的数据
+ * 删除作品库与草稿两个对象仓库的数据；
+ * STORE_RECORDS 为历史遗留仓库，仅在此处保留清空兼容
  */
 export async function clearAllPlaygroundData(): Promise<void> {
   if (!isClient) return;

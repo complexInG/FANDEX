@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; }
+  body { overflow-x: hidden; }
+  #container svg { max-width: 100%; height: auto; }
+  .error { color: #DC2626; font: 12px/1.5 monospace; padding: 8px; word-break: break-all; }
+</style>
+<script src="mermaid.min.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<script>
+  // mermaid 离线渲染宿主：Android 端通过 evaluateJavascript 调用 renderMermaid
+  // 渲染完成后回报实际内容高度，供 WebView 自适应尺寸；失败时回报错误
+  mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+
+  async function renderMermaid(code, theme) {
+    var container = document.getElementById('container');
+    try {
+      mermaid.initialize({ startOnLoad: false, theme: theme || 'neutral' });
+      var result = await mermaid.render('mmd' + Date.now(), code);
+      container.innerHTML = result.svg;
+      if (window.AndroidBridge && AndroidBridge.onHeight) {
+        AndroidBridge.onHeight(document.documentElement.scrollHeight);
+      }
+    } catch (e) {
+      container.innerHTML = '<div class="error">图表渲染失败，请查看源码</div>';
+      if (window.AndroidBridge && AndroidBridge.onError) {
+        AndroidBridge.onError(String(e));
+      }
+    }
+  }
+</script>
+</body>
+</html>

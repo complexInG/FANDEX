@@ -11,7 +11,6 @@ import TableOfContents from '@/components/TableOfContents.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import DocNav from '@/components/DocNav.astro';
 import GeoBgDecor from '@/components/GeoBgDecor.astro';
-import QuizBlock from '@/islands/QuizBlock';
 import { render } from 'astro:content';
 // KaTeX 样式按需加载：仅含数学公式的页面才引用该 CSS（避免全站 CSS 携带 KaTeX 样式与字体声明）
 import katexCssUrl from 'katex/dist/katex.min.css?url';
@@ -101,7 +100,7 @@ const hasMath = containsMath(doc.body || '');
        注入 --module-color 统一 TOC 链接装饰色与侧边栏/文档列表一致（需求3） -->
   <TableOfContents slot="toc" headings={headings} style={moduleColorStyle} />
 
-  <div class="doc-page" style={moduleColorStyle}>
+  <div class="doc-page" style={moduleColorStyle} id="doc-root" data-module={module} data-slug={slug}>
     <!-- 几何背景装饰层 · docs 变体：网格底纹 + 品牌光晕 + 几何线条（克制 8 项） -->
     <GeoBgDecor variant="docs" />
     <!-- 面包屑导航 -->
@@ -215,8 +214,6 @@ const hasMath = containsMath(doc.body || '');
       <!-- 文档正文内容 -->
       <Content />
     </article>
-    <!-- 知识检测组件：进入视口时加载 -->
-    <QuizBlock client:visible quiz={doc.data.quiz || []} />
     <!-- 上下篇导航：传递预计算的 prev/next，避免组件内部重复查询 -->
     <DocNav prev={navigation.prev} next={navigation.next} />
   </div>
@@ -378,3 +375,15 @@ const hasMath = containsMath(doc.body || '');
   }
   } /* end @layer pages */
 </style>
+
+<!-- 客户端脚本：Mermaid 图表惰性渲染（仅文档页引入）
+     扫描 ```mermaid 代码块，临近视口时按需加载 mermaid ESM 渲染为 SVG；
+     页面不含图表时零网络请求、零运行时开销 -->
+<script>
+  import '@/lib/mermaid-render';
+</script>
+
+<!-- 客户端脚本：学习进度记录与装饰（侧边栏已读标记 / 模块进度条） -->
+<script>
+  import '@/lib/progress';
+</script>

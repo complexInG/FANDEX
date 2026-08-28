@@ -2,7 +2,7 @@
  * 语法速览数据预构建脚本
  * =============================================================================
  * 核心执行流程：
- *   1. 扫描 cnt-content/mobile 目录下允许的语言模块（编程语言/标记语言）
+ *   1. 扫描 cnt-content/syntax 目录下的语言模块（编程语言/数据库命令语言）
  *   2. 解析每篇文档：标题（首个 H1）+ 小节（H2）+ 语法点
  *      （语法点 = 粗体标签 + 行内公式 + 围栏代码块，如
  *       "**基本写法：标准变基**" / "**form 元素**"）
@@ -13,7 +13,9 @@
  *      - public/syntax-data/<module>.json    分语言卡片（客户端按需 fetch）
  *
  * 设计目的：
- *   - mobile 文档是"速查"素材：结构统一、代码示例精简，天然适合生成速查卡片
+ *   - syntax 目录（cnt-content/syntax）是专用"速查"素材源：结构统一、代码示例
+ *     精简，天然适合生成速查卡片；2026-08 起自历史遗留的 cnt-content/mobile 迁入，
+ *     站点构建不再依赖 mobile 目录
  *   - 与 doc-stats.json / doc-index.json 一样，预构建为 JSON 缓存，
  *     避免运行时解析 700+ Markdown 文件，降低 dev/build 内存与耗时
  *   - 模块标题与分类颜色复用共享元数据，保证与全站模块体系一致
@@ -32,13 +34,13 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const mobileContentDir = join(__dirname, '..', '..', 'cnt-content', 'mobile');
+const syntaxContentDir = join(__dirname, '..', '..', 'cnt-content', 'syntax');
 const metadataPath = join(__dirname, '..', '..', 'shd-shared', 'metadata', 'modules.json');
 const indexOutputPath = join(__dirname, '..', 'src', 'data', 'syntax-index.json');
 const publicDataDir = join(__dirname, '..', 'public', 'syntax-data');
 
 /**
- * 语法速览收录的模块：mobile 文件夹前缀 -> 模块 ID
+ * 语法速览收录的模块：syntax 文件夹前缀 -> 模块 ID
  * 只收录编程语言与数据库命令语言（SQL/MySQL/PostgreSQL/Redis），
  * 排除运维、云计算、测试、框架、标记语言等非编程语言模块
  */
@@ -167,14 +169,14 @@ function parseSyntaxPoints(filePath, moduleId) {
  * 主函数：扫描 mobile 语言模块并生成语法速查数据
  */
 function main() {
-  console.log('[build-syntax] Scanning', mobileContentDir);
+  console.log('[build-syntax] Scanning', syntaxContentDir);
   const { byId, categoryColors } = loadModuleMetadata();
   /** @type {Map<string, { id: string, title: string, icon: string, color: string, order: number, count: number, docCount: number, cards: Array<object> }>} */
   const languages = new Map();
 
   for (const [folder, moduleId] of Object.entries(LANGUAGE_FOLDERS)) {
-    const folderPath = join(mobileContentDir, folder);
-    if (!readdirSync(mobileContentDir, { withFileTypes: true }).some((e) => e.isDirectory() && e.name === folder)) {
+    const folderPath = join(syntaxContentDir, folder);
+    if (!readdirSync(syntaxContentDir, { withFileTypes: true }).some((e) => e.isDirectory() && e.name === folder)) {
       console.warn(`[build-syntax] Missing folder: ${folder}`);
       continue;
     }

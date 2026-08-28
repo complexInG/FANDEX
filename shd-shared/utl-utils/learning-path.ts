@@ -65,6 +65,14 @@ export { default as softwareTestingMap } from '../metadata/learning-path/softwar
 export { default as softwareEngineeringMap } from '../metadata/learning-path/software-engineering.json';
 export { default as softwareArchitectureMap } from '../metadata/learning-path/software-architecture.json';
 export { default as engineeringPracticesMap } from '../metadata/learning-path/engineering-practices.json';
+export { default as mongodbMap } from '../metadata/learning-path/mongodb.json';
+export { default as nextjsMap } from '../metadata/learning-path/nextjs.json';
+export { default as nestjsMap } from '../metadata/learning-path/nestjs.json';
+export { default as denoMap } from '../metadata/learning-path/deno.json';
+export { default as bunMap } from '../metadata/learning-path/bun.json';
+export { default as svelteMap } from '../metadata/learning-path/svelte.json';
+export { default as angularMap } from '../metadata/learning-path/angular.json';
+export { default as messageQueueMap } from '../metadata/learning-path/message-queue.json';
 
 // ============================================================
 // 类型定义

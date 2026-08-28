@@ -740,12 +740,16 @@
     }
   }
 
-  /* 480px 以下超小屏：hero-stats 改为纵向堆叠，分隔线隐藏，避免统计项挤压错位 */
+  /* 480px 以下超小屏：hero-stats 保持横向紧凑排布（数字+标签收窄），
+     不再纵向堆叠，避免子页面 Hero 占据过高首屏空间 */
   @media (max-width: 480px) {
     .hero-stats {
-      flex-direction: column;
-      gap: var(--spacing-sm);
-      align-items: center;
+      gap: var(--spacing-md);
+      font-size: 0.72rem;
+    }
+
+    .stat-num {
+      font-size: 1.1em;
     }
   }
 

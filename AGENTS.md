@@ -8,8 +8,9 @@
   或几何刻度线；按钮、徽章、状态指示器一律使用直角小圆角（`--radius-md` 以内）。
 - 代码需有完善、简洁的中文注释。
 - 每次任务完成后删除一次性脚本、废弃代码文件等临时产物。
-- 文档内容统一存放于 `cnt-content/full`；`cnt-content/mobile` 为历史遗留目录，
-  不作为网站内容源，不在其上执行统一化变更。
+- 文档内容统一存放于 `cnt-content/full`；`cnt-content/syntax` 为语法速览
+  专用速查素材源（由 `app-web/scripts/build-syntax.mjs` 消费）；
+  `cnt-content/mobile` 为历史遗留目录，不作为网站内容源，不在其上执行统一化变更。
 
 ## 文档 frontmatter 规范
 
@@ -75,12 +76,12 @@ prerequisites:
 | 模块 id | 分类中文名 |
 | --- | --- |
 | getting-started / markdown / git / github / english / shell / pnpm-monorepo | 工具链 |
-| html5 / css / javascript / typescript / vue3 / react / svg / astro / vite / tailwind | 前端技术 |
-| java / kotlin / csharp / go / lua / harmonyos / python / rust | 后端技术 |
-| sql / mysql / postgresql / redis | 数据库 |
+| html5 / css / javascript / typescript / vue3 / react / svg / astro / vite / tailwind / nextjs / svelte / angular | 前端技术 |
+| java / kotlin / csharp / go / lua / harmonyos / python / rust / deno / bun / nestjs | 后端技术 |
+| sql / mysql / postgresql / redis / mongodb | 数据库 |
 | algorithm / cs-fundamentals / c / cpp | 计算机科学 |
 | calculus / discrete-math / linear-algebra / probability-statistics | 数学 |
-| devops / networking / cybersecurity / cloud-computing / iot / software-testing / software-engineering / software-architecture / engineering-practices | 云与基础设施 |
+| devops / networking / cybersecurity / cloud-computing / iot / software-testing / software-engineering / software-architecture / engineering-practices / message-queue | 云与基础设施 |
 
 ## 校验入口
 

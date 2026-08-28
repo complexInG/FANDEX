@@ -203,11 +203,12 @@ export async function scanContentDir(
   const strategy = new ConfigurableNamingStrategy(config);
   const warnings: string[] = [];
 
-  /* 扫描所有 .md 文件（排除 _ 开头的目录与文件，如 _drafts、_template、_id-registry.json） */
+  /* 扫描所有 .md 文件（排除 _ 开头的目录与文件，如 _drafts、_template、_id-registry.json；
+     排除 MERGED 合集 —— 合集由各模块文档拼接生成，不参与 ID 分配，与 app-android 生成器约定一致） */
   const mdFiles = await fg.glob('**/*.md', {
     cwd: contentDir,
     onlyFiles: true,
-    ignore: ['_*', '_*/**', 'node_modules/**'],
+    ignore: ['_*', '_*/**', 'node_modules/**', '**/*-MERGED.md'],
     dot: false,
   });
 

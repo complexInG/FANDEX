@@ -25,6 +25,7 @@ import '@/styles/typography.css';
 import '@/styles/code.css';
 import '@/styles/components.css';
 import '@/styles/geo-decor.css';
+import '@/styles/components/search-palette.css';
 import { SITE } from '@/lib/constants';
 import { MAIN_CSP } from '@/lib/csp';
 import { ClientRouter } from 'astro:transitions';
@@ -54,50 +55,45 @@ const base = import.meta.env.BASE_URL;
     <!-- 程序图标：统一引用 @fandex/shared-assets 共享资产源 -->
     <link rel="icon" type="image/svg+xml" href={faviconUrl} />
     <link rel="apple-touch-icon" href={appleTouchIconUrl} />
+    <!-- PWA 清单：配合 public/sw.js 提供可安装、可离线的站点体验 -->
+    <link rel="manifest" href={`${base}manifest.webmanifest`} />
     <!-- 内容安全策略：限制脚本、样式、字体等资源的加载来源 -->
     <meta http-equiv="Content-Security-Policy" content={MAIN_CSP} />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-    <!-- 预连接 CDN 以加速资源加载 -->
+    <!-- 预连接 CDN 以加速资源加载（mermaid 等按需 ESM 运行时仍走 jsDelivr） -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
 
-    <!-- FANDEX 品牌字体预连接：Chakra Petch（展示/标题）+ IBM Plex Sans（正文）
-         Google Fonts CDN 提供 woff2 格式，preconnect 提前建立 TLS 连接减少字体加载延迟 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- FANDEX 品牌字体加载：Chakra Petch 500/600/700 + IBM Plex Sans 400/500/600
-         使用 media=print 技巧异步加载，避免阻塞首屏渲染
-         font-display: swap 确保字体加载期间使用回退字体，消除 FOIT
+    <!-- FANDEX 品牌字体：全部自托管（Chakra Petch + IBM Plex Sans + JetBrains Mono）
+         不再依赖 Google Fonts CDN，消除第三方域 TLS 握手与不可达风险
+         字体声明统一位于 fonts.css，关键字体额外 preload 加速首屏文本渲染
          注：astro check 会将 onload 内联事件中的 this.media 误报为未使用变量（ts(6133) hint），
          属工具限制，不影响运行时行为 -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-
-    <!-- 自托管字体 CSS 异步加载：JetBrains Mono（代码专用）使用 media=print 技巧避免阻塞首屏渲染
-         浏览器会以低优先级加载该样式表，加载完成后切换为 all 媒体应用样式
-         配合下方 preload 提前获取字体文件，整体减少 FCP/LCP 阻塞 -->
     <link
       rel="stylesheet"
       href={`${base}fonts/fonts.css`}
       media="print"
       onload="this.media='all'"
     />
+    <!-- 关键字体预加载：正文 400 + 标题 600 + 代码 400，其余字重按需懒加载 -->
     <link
       rel="preload"
-      href={`${base}fonts/jetbrains-mono-400.woff2`}
+      href={`${base}fonts/ibm-plex-sans-400.woff2`}
       as="font"
       type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href={`${base}fonts/jetbrains-mono-700.woff2`}
+      href={`${base}fonts/chakra-petch-600.woff2`}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={`${base}fonts/jetbrains-mono-400.woff2`}
       as="font"
       type="font/woff2"
       crossorigin
@@ -165,17 +161,16 @@ const base = import.meta.env.BASE_URL;
 </html>
 
 <script>
-  // 代码运行器挂载入口：扫描页面中 div[data-code-runner] 容器并动态挂载 CodeRunner 组件
-  // 由 remark-code-runner 插件在 Markdown 渲染期生成容器，惰性加载 React 与 CodeRunner 组件
-  import { initCodeRunnerMounting } from '@/lib/code-runner-mount';
-  initCodeRunnerMounting();
-</script>
-
-<script>
   // 主题持久化初始化（FOUC 四层防护 · 第二层）
   // 监听 astro:after-swap 事件，在 View Transitions 切换页面后重新应用主题
   // 解决 ClientRouter 替换 document.documentElement 时 data-theme 属性丢失导致的白闪
   // 同时处理跨标签页主题同步与系统主题变化跟随
   import { initThemePersistence } from '@/lib/theme';
   initThemePersistence();
+</script>
+
+<script>
+  // 全站搜索命令面板：Ctrl/Cmd + K 或导航栏搜索按钮触发
+  // pagefind 索引在构建后生成，运行时按需惰性加载
+  import '@/lib/search-palette';
 </script>

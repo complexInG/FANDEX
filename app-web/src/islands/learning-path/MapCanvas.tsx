@@ -71,6 +71,8 @@ const MIN_SCALE = 0.3;
 const MAX_SCALE = 2.5;
 /** 拖拽与点击的位移阈值（超过则视为拖拽） */
 const DRAG_THRESHOLD = 4;
+/** 舒适阅读缩放下限：首屏视图低于该值时节点文字不可读，改用聚焦首阶段的初始视图 */
+const COMFORT_SCALE = 0.75;
 
 /**
  * 计算视口可用尺寸（容器减去留白）
@@ -110,6 +112,10 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
   const transformRef = useRef({ x: 0, y: 0, k: 1 });
   /** 拖拽状态 */
   const dragRef = useRef({ active: false, moved: false, startX: 0, startY: 0, tx: 0, ty: 0 });
+  /** 活动触点表（触屏双指捏合缩放用）：pointerId -> 客户端坐标 */
+  const pointersRef = useRef(new Map<number, { x: number; y: number }>());
+  /** 捏合手势状态：初始双指间距与中点（SVG 本地坐标） */
+  const pinchRef = useRef<{ dist: number; mid: { x: number; y: number } } | null>(null);
   /** 缩放读数 rAF 节流标志 */
   const scaleRafRef = useRef(0);
 
@@ -157,6 +163,45 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
     applyTransform();
   }, [applyTransform, layout]);
 
+  /**
+   * 首屏默认视图：可读优先
+   * 整图适配缩放 >= COMFORT_SCALE 时直接整图居中；
+   * 否则不再整体缩小到不可读，而是以舒适缩放聚焦"根节点 + 首阶段"，
+   * 用户可通过滚轮/按钮/适应视口查看其余阶段
+   */
+  const fitStart = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const { width: vw, height: vh } = viewportSize(container);
+    const pad = 24;
+    const kFit = Math.min(
+      MAX_SCALE,
+      Math.max(MIN_SCALE, Math.min((vw - pad * 2) / layout.width, (vh - pad * 2) / layout.height)),
+    );
+    const t = transformRef.current;
+    if (kFit >= COMFORT_SCALE) {
+      // 整图可读：整图居中
+      t.k = kFit;
+      t.x = (vw - layout.width * kFit) / 2;
+      t.y = (vh - layout.height * kFit) / 2;
+      applyTransform();
+      return;
+    }
+    // 整图过小时以舒适缩放聚焦首阶段（垂直居中该列，水平从画布起点开始）
+    const firstStage = layout.stages[0];
+    const k = Math.min(0.85, Math.max(COMFORT_SCALE, Math.min(0.85, (vh - pad * 2) / layout.height)));
+    t.k = k;
+    t.x = pad;
+    const focusY = firstStage
+      ? firstStage.y + firstStage.height / 2
+      : layout.height / 2;
+    t.y = Math.min(
+      pad,
+      Math.max(vh - layout.height * k - pad, vh / 2 - focusY * k),
+    );
+    applyTransform();
+  }, [applyTransform, layout]);
+
   /** 复位：100% 并居中 */
   const reset = useCallback(() => {
     const container = containerRef.current;
@@ -198,11 +243,11 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
     focusNode,
   }));
 
-  /** 首次渲染与布局变化后自适应 */
+  /** 首次渲染与布局变化后使用"可读优先"初始视图 */
   useLayoutEffect(() => {
-    const raf = requestAnimationFrame(fit);
+    const raf = requestAnimationFrame(fitStart);
     return () => cancelAnimationFrame(raf);
-  }, [fit]);
+  }, [fitStart]);
 
   /** 容器尺寸变化时重新适应 */
   useEffect(() => {
@@ -226,8 +271,29 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
     return () => svg.removeEventListener('wheel', onWheel);
   }, [zoomAt]);
 
-  /** 拖拽平移 */
+  /** 将客户端坐标换算为 SVG 本地坐标 */
+  const toLocalPoint = (clientX: number, clientY: number) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+    return { x: clientX - (rect?.left ?? 0), y: clientY - (rect?.top ?? 0) };
+  };
+
+  /** 拖拽平移 + 双指捏合缩放 */
   const onPointerDown = (event: React.PointerEvent<SVGSVGElement>) => {
+    // 触点登记：无论落点在空白处还是节点上，双指手势都需要完整跟踪
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    // 第二根手指落下：进入捏合模式，取消单指平移
+    if (pointersRef.current.size === 2) {
+      dragRef.current.active = false;
+      const [firstPoint, secondPoint] = [...pointersRef.current.values()];
+      if (!firstPoint || !secondPoint) return;
+      pinchRef.current = {
+        dist: Math.hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y),
+        mid: toLocalPoint((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2),
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+      return;
+    }
     if (event.button !== 0) return;
     // 仅在点击画布空白处时启动平移；
     // 若从节点按下，指针捕获会把后续 click 重定向到画布，导致节点链接无法打开
@@ -245,6 +311,28 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
   };
 
   const onPointerMove = (event: React.PointerEvent<SVGSVGElement>) => {
+    // 捏合模式：以双指间距比例缩放（锚点为中点），中点位移作为平移
+    if (pointersRef.current.has(event.pointerId)) {
+      pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    }
+    const pinch = pinchRef.current;
+    if (pinch && pointersRef.current.size >= 2) {
+      const [firstPoint, secondPoint] = [...pointersRef.current.values()];
+      if (!firstPoint || !secondPoint) return;
+      const dist = Math.hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
+      const mid = toLocalPoint((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2);
+      if (pinch.dist > 0 && dist > 0) {
+        // 先按中点位移平移，再围绕新中点缩放
+        const t = transformRef.current;
+        t.x += mid.x - pinch.mid.x;
+        t.y += mid.y - pinch.mid.y;
+        applyTransform();
+        zoomAt(mid.x, mid.y, dist / pinch.dist);
+      }
+      pinchRef.current = { dist, mid };
+      return;
+    }
+
     const drag = dragRef.current;
     if (!drag.active) return;
     const dx = event.clientX - drag.startX;
@@ -259,9 +347,19 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
   };
 
   const onPointerUp = (event: React.PointerEvent<SVGSVGElement>) => {
+    pointersRef.current.delete(event.pointerId);
+    // 手指少于两根时退出捏合模式
+    if (pointersRef.current.size < 2) pinchRef.current = null;
     if (!dragRef.current.active) return;
     dragRef.current.active = false;
     event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+
+  /** 触点中断（来电/系统手势）：与抬指同等清理，避免捏合状态残留 */
+  const onPointerCancel = (event: React.PointerEvent<SVGSVGElement>) => {
+    pointersRef.current.delete(event.pointerId);
+    if (pointersRef.current.size < 2) pinchRef.current = null;
+    dragRef.current.active = false;
   };
 
   /** 拖拽结束后抑制一次点击（防止拖拽触发链接跳转） */
@@ -358,6 +456,7 @@ const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         onClickCapture={onClickCapture}
       >
         <defs>

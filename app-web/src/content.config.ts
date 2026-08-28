@@ -26,7 +26,7 @@ import { glob } from 'astro/loaders';
  *    因此 references/etymology 恢复严格 schema 校验；
  * 2. learningObjectives / exercises 字段已随内容清理移除（存量 0 使用），
  *    schema 不再为已废弃字段预留宽容；
- * 3. 保留 quiz 字段（向后兼容，QuizBlock 仍消费该字段）；
+ * 3. quiz 字段已随 QuizBlock 组件下线移除（2026-08，存量 0 使用）；
  * 4. 新增字段必须同时通过本 schema 与 content-audit 的覆盖审计，禁止再引入 z.any()。
  */
 
@@ -131,32 +131,7 @@ const docs = defineCollection({
     readingTime: z.number().optional(),
     related: z.array(z.string()).default([]),
     prerequisites: z.array(z.string()).default([]),
-    quiz: z
-      .array(
-        z.union([
-          z.object({
-            type: z.literal('fill'),
-            question: z.string(),
-            answer: z.string(),
-            hint: z.string().optional(),
-          }),
-          z.object({
-            type: z.literal('choice'),
-            question: z.string(),
-            options: z.array(z.string()),
-            answer: z.number(),
-            explanation: z.string().optional(),
-          }),
-          z.object({
-            type: z.literal('fix'),
-            question: z.string(),
-            code: z.string().optional(),
-            answer: z.string(),
-            explanation: z.string().optional(),
-          }),
-        ])
-      )
-      .default([]),
+    // quiz 字段已随 QuizBlock 组件下线移除（存量 0 使用，且为 AGENTS.md 禁止字段）
     // === 结构化字段（Phase 2.0，严格校验） ===
     // references / etymology 已完成存量归一化迁移（2026-08-01），
     // 此处直接使用严格 schema，任何新增字段缺失或格式漂移都会在构建期报错。

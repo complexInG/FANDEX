@@ -1,0 +1,27 @@
+---
+order: 1020
+title: 密封类与模式匹配
+module: 'java'
+category: 后端技术
+difficulty: intermediate
+description: sealed、record 与 switch 模式匹配：现代 Java 的代数数据类型表达。
+author: fanquanpp
+updated: '2026-08-29'
+related:
+  - 'java/044-JavaRecordClass'
+  - 'java/037-JavaEnumAdvanced'
+prerequisites:
+  - 'java/044-JavaRecordClass'
+---
+
+# 密封类与模式匹配
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- sealed 类与许可子类
+- record 解构
+- switch 模式匹配与守卫
+- 类型安全的领域建模
+- 与 Visitor 模式的对比

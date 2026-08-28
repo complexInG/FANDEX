@@ -49,7 +49,6 @@ import 'prismjs/components/prism-ini';
 import 'prismjs/components/prism-cmake';
 import 'prismjs/components/prism-makefile';
 import 'prismjs/components/prism-protobuf';
-import 'prismjs/components/prism-mermaid';
 // 复用首页模块卡片样式（顶部色条、hover 边框/阴影、几何图标、标题变色）
 import '@/styles/components/module-card.css';
 import '@/styles/islands/syntax-explorer.css';
@@ -115,7 +114,6 @@ const PRISM_LANG_ALIAS: Readonly<Record<string, string>> = {
   kotlin: 'kotlin',
   lua: 'lua',
   makefile: 'makefile',
-  mermaid: 'mermaid',
   properties: 'properties',
   protobuf: 'protobuf',
   python: 'python',

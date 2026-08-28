@@ -20,21 +20,10 @@ function envString(key: string, fallback: string): string {
   return typeof value === 'string' && value.length > 0 ? value : fallback;
 }
 
-/** 从环境变量读取数值，未设置或无效时返回 fallback */
-function envNumber(key: string, fallback: number): number {
-  const raw = import.meta.env[key] as string | undefined;
-  if (typeof raw !== 'string' || raw.length === 0) return fallback;
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
 /** 集中配置对象：所有可配置项的唯一来源 */
 export const RUNTIME = {
   /** 站点地址（用于 sitemap、canonical、RSS 等绝对链接生成） */
   siteUrl: envString('PUBLIC_SITE_URL', 'https://fanquanpp.github.io/FANDEX'),
-
-  /** 代码运行器默认超时时间（毫秒），防止用户代码死循环 */
-  codeRunnerTimeoutMs: envNumber('PUBLIC_CODE_RUNNER_TIMEOUT', 5000),
 } as const;
 
 /** 集中配置的类型声明，供外部模块引用 */

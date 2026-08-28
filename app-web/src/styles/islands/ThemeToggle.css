@@ -12,10 +12,46 @@
  * 避免未分层 CSS 覆盖 @layer tokens 导致主题切换失效。
  *
  * 性能说明：已移除 View Transitions 圆形扩散动画（root 快照合成在复杂
- * DOM 场景下导致严重卡顿），改由 Motion React 驱动图标旋转过渡。
+ * DOM 场景下导致严重卡顿）；图标旋转过渡亦由 Motion React 改为纯 CSS 实现，
+ * 主题切换组件不再携带任何动画运行时。
  * -----------------------------------------------------------------------------
  */
 @layer islands {
+  /* 日/月双图标叠放容器：按钮作为定位上下文 */
+  .fndx-theme-toggle {
+    position: relative;
+  }
+
+  /* 图标叠放与旋转交叉过渡（纯 CSS，替代 Motion React）
+     透明 + 旋转 -90deg 隐藏，可见态旋转回 0deg，形成切换时的旋入旋出效果 */
+  .fndx-theme-icon {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+    transition:
+      opacity 0.2s cubic-bezier(0, 0, 0.2, 1),
+      transform 0.2s cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  .fndx-theme-icon--moon {
+    transform: rotate(90deg) scale(0.5);
+  }
+
+  .fndx-theme-icon.is-visible {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  /* 减弱动态效果偏好下直接切换，不做旋转过渡 */
+  @media (prefers-reduced-motion: reduce) {
+    .fndx-theme-icon {
+      transition: none;
+      transform: none;
+    }
+  }
+
   /* 主题切换按钮基础容器
      复用 theme.css 的 .fndx-theme-toggle 通用样式（透明背景 + 无边框），
      此处补充 Islands 专属的 SSR 占位与挂载淡入 */

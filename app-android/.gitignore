@@ -1,0 +1,13 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+/app/build
+# 旧版 FANDEX-App 安装包归档（恢复用，二进制不入库）
+/legacy

@@ -46,6 +46,14 @@ const base = import.meta.env.BASE_URL;
       </a>
     </div>
     <div class="nav-right">
+      <!-- 全站搜索：打开命令面板（Ctrl/Cmd + K），纯 DOM 实现无岛屿水合 -->
+      <button class="nav-search-btn fndx-icon-btn fndx-icon-btn--labeled" type="button" data-search-trigger aria-label="搜索" data-tooltip="搜索（Ctrl+K）" data-tooltip-pos="bottom">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+        </svg>
+        <span class="nav-search-text">搜索</span>
+      </button>
       <!-- GitHub 仓库链接：统一 fndx-icon-btn 风格，悬停提示简化为 GitHub -->
       <a
         href="https://github.com/fanquanpp/FANDEX"

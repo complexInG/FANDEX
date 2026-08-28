@@ -67,6 +67,14 @@ import {
   softwareEngineeringMap,
   softwareArchitectureMap,
   engineeringPracticesMap,
+  mongodbMap,
+  nextjsMap,
+  nestjsMap,
+  denoMap,
+  bunMap,
+  svelteMap,
+  angularMap,
+  messageQueueMap,
 } from '@fandex/utils/learning-path';
 import docIndex from '@/data/doc-index.json';
 import { getModule, categoryColors, getPrimaryCategory } from '@/lib/modules';
@@ -185,6 +193,14 @@ const technologyMaps: Readonly<Record<string, TechnologyMap>> = {
   'software-engineering': softwareEngineeringMap as unknown as TechnologyMap,
   'software-architecture': softwareArchitectureMap as unknown as TechnologyMap,
   'engineering-practices': engineeringPracticesMap as unknown as TechnologyMap,
+  mongodb: mongodbMap as unknown as TechnologyMap,
+  nextjs: nextjsMap as unknown as TechnologyMap,
+  nestjs: nestjsMap as unknown as TechnologyMap,
+  deno: denoMap as unknown as TechnologyMap,
+  bun: bunMap as unknown as TechnologyMap,
+  svelte: svelteMap as unknown as TechnologyMap,
+  angular: angularMap as unknown as TechnologyMap,
+  'message-queue': messageQueueMap as unknown as TechnologyMap,
 };
 
 /** 文档索引映射：module/slug -> title，供节点文档标题解析 */

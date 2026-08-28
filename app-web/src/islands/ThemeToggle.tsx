@@ -8,16 +8,12 @@
  * - SSR 阶段渲染不可见占位按钮（保留布局空间避免 CLS），
  *   客户端挂载后填充实际图标，避免水合后布局偏移
  *
- * 动效体系（Motion React）：
- * - MotionProvider 包裹，reducedMotion="user" 自动降级
- * - motion.button：whileTap 按压回弹、whileHover 轻微放大（ark 微交互）
- * - AnimatePresence + motion.svg：日/月图标旋转交叉淡入淡出（局部动画，性能开销小）
- *
- * 性能说明（View Transitions 移除原因）：
- * - 原 impl 使用 startViewTransition 对整个 root 捕获快照 + clipPath 圆形扩散
- * - FANDEX 页面 DOM 复杂（背景装饰 + 大量卡片），root 快照合成层成本巨大
- * - flushSync 同步刷新 React 状态阻塞主线程，叠加 VT 合成导致严重卡顿
- * - 现改为：CSS 变量即时切换 + Motion 图标旋转过渡，流畅无卡顿
+ * 动效体系（纯 CSS，零运行时依赖）：
+ * - 日/月双图标常驻叠放，通过 is-visible 类切换
+ * - 透明度 + 旋转过渡由 ThemeToggle.css 驱动（200ms ease-out）
+ * - prefers-reduced-motion 下动画自动关闭（见 ThemeToggle.css）
+ * - 历史说明：曾使用 Motion React（whileTap/AnimatePresence）驱动图标动画，
+ *   为摘除全站关键路径上的 motion 运行时改为纯 CSS 实现，交互效果不变
  *
  * 数据流：
  * - 挂载时从 localStorage 读取已保存的主题，无保存值时检测系统偏好
@@ -28,9 +24,7 @@
  * - 放置在页面顶部导航栏，作为全局主题控制入口
  * - 配合 Astro 群岛架构，仅客户端交互
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { MotionProvider } from '@/motion';
+import { useState, useEffect, useCallback } from 'react';
 import { getSavedTheme, prefersDarkMode, setTheme as persistTheme, type Theme } from '@/lib/theme';
 import '@/styles/islands/ThemeToggle.css';
 
@@ -40,10 +34,53 @@ import '@/styles/islands/ThemeToggle.css';
  */
 interface ThemeToggleProps {}
 
+/** 太阳图标（暗色模式下显示，提示可切换到亮色） */
+function SunIcon({ visible }: { visible: boolean }) {
+  return (
+    <svg
+      className={`fndx-theme-icon${visible ? ' is-visible' : ''}`}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  );
+}
+
+/** 月亮图标（亮色模式下显示，提示可切换到暗色） */
+function MoonIcon({ visible }: { visible: boolean }) {
+  return (
+    <svg
+      className={`fndx-theme-icon fndx-theme-icon--moon${visible ? ' is-visible' : ''}`}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      aria-hidden="true"
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
+
 /**
  * 主题切换组件
  * 在亮色与暗色模式间切换，状态持久化到 localStorage
- * 支持 View Transitions API 圆形扩散过渡动画
  */
 export function ThemeToggle({}: ThemeToggleProps = {}) {
   /**
@@ -59,12 +96,6 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
    * - 客户端挂载后通过 opacity 平滑显示图标
    */
   const [mounted, setMounted] = useState(false);
-
-  /**
-   * 按钮元素引用
-   * 用于获取按钮位置，作为 View Transition 圆形扩散动画的起点
-   */
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   /**
    * 组件挂载后的初始化逻辑
@@ -95,13 +126,12 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
   }, []);
 
   /**
- * 切换主题并持久化到 localStorage
- *
- * 实现说明：
- * - 直接调用 persistTheme 同步更新 DOM data-theme 属性与 localStorage
- * - CSS 变量即时切换，Motion 驱动图标旋转交叉淡入淡出提供视觉过渡
- * - 无 View Transitions 快照合成，避免复杂 DOM 场景下的合成层卡顿
- */
+   * 切换主题并持久化到 localStorage
+   *
+   * 实现说明：
+   * - 直接调用 persistTheme 同步更新 DOM data-theme 属性与 localStorage
+   * - CSS 变量即时切换，CSS 过渡驱动图标旋转交叉淡入淡出提供视觉过渡
+   */
   const toggle = useCallback(() => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
     persistTheme(next);
@@ -110,76 +140,26 @@ export function ThemeToggle({}: ThemeToggleProps = {}) {
 
   return (
     /*
-     * MotionProvider 包裹：统一 reduced-motion 降级策略
      * 始终渲染按钮以保留布局空间（避免水合后 CLS）：
      * - SSR 阶段：按钮透明不可点击（mounted=false）
      * - 客户端挂载后：opacity 过渡到 1，pointer-events 启用
      * - 悬停/按下微交互由 .fndx-icon-btn 统一 CSS 驱动（与全站图标按钮一致）
      */
-    <MotionProvider>
-      <motion.button
-        ref={buttonRef}
-        className={`fndx-theme-toggle fndx-icon-btn${mounted ? ' fndx-theme-toggle--ready' : ''}`}
-        onClick={mounted ? toggle : undefined}
-        data-tooltip={theme === 'dark' ? '亮色模式' : '暗色模式'}
-        data-tooltip-pos="bottom"
-        aria-label={theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'}
-        tabIndex={mounted ? 0 : -1}
-        aria-hidden={!mounted}
-      >
-        {/*
-          AnimatePresence mode="wait"：日/月图标依次旋转交叉切换
-          - 旧图标先旋转淡出，再淡入新图标，避免叠加错位
-          - initial={false}：首挂载不播放入场（由容器 CSS opacity 接管淡入）
-        */}
-        <AnimatePresence mode="wait" initial={false}>
-          {/* 暗色模式下显示太阳图标（提示用户可切换到亮色） */}
-          {mounted && theme === 'dark' && (
-            <motion.svg
-              key="sun"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-              animate={{ opacity: 1, rotate: 0, scale: 1 }}
-              exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-              transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
-            >
-              <circle cx="12" cy="12" r="5" />
-              <line x1="12" y1="1" x2="12" y2="3" />
-              <line x1="12" y1="21" x2="12" y2="23" />
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-              <line x1="1" y1="12" x2="3" y2="12" />
-              <line x1="21" y1="12" x2="23" y2="12" />
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-            </motion.svg>
-          )}
-          {/* 亮色模式下显示月亮图标（提示用户可切换到暗色） */}
-          {mounted && theme === 'light' && (
-            <motion.svg
-              key="moon"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              initial={{ opacity: 0, rotate: 90, scale: 0.5 }}
-              animate={{ opacity: 1, rotate: 0, scale: 1 }}
-              exit={{ opacity: 0, rotate: -90, scale: 0.5 }}
-              transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </motion.svg>
-          )}
-        </AnimatePresence>
-      </motion.button>
-    </MotionProvider>
+    <button
+      type="button"
+      className={`fndx-theme-toggle fndx-icon-btn${mounted ? ' fndx-theme-toggle--ready' : ''}`}
+      onClick={mounted ? toggle : undefined}
+      data-tooltip={theme === 'dark' ? '亮色模式' : '暗色模式'}
+      data-tooltip-pos="bottom"
+      aria-label={theme === 'dark' ? '切换到亮色模式' : '切换到暗色模式'}
+      tabIndex={mounted ? 0 : -1}
+      aria-hidden={!mounted}
+    >
+      {/* 暗色模式下显示太阳图标（提示用户可切换到亮色） */}
+      <SunIcon visible={mounted && theme === 'dark'} />
+      {/* 亮色模式下显示月亮图标（提示用户可切换到暗色） */}
+      <MoonIcon visible={mounted && theme === 'light'} />
+    </button>
   );
 }
 

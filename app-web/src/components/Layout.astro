@@ -57,6 +57,14 @@ const hasToc = Astro.slots.has('toc');
         </a>
       </div>
       <div class="nav-right">
+        <!-- 全站搜索：打开命令面板（Ctrl/Cmd + K），纯 DOM 实现无岛屿水合 -->
+        <button class="nav-search-btn fndx-icon-btn fndx-icon-btn--labeled" type="button" data-search-trigger aria-label="搜索" data-tooltip="搜索（Ctrl+K）" data-tooltip-pos="bottom">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+          </svg>
+          <span class="nav-search-text">搜索</span>
+        </button>
         <!-- 返回顶部按钮：图标 + Top 文字标注，统一 fndx-icon-btn 风格 -->
         <button class="nav-back-to-top fndx-icon-btn fndx-icon-btn--labeled" id="nav-back-to-top" aria-label="返回顶部" data-tooltip="返回顶部" data-tooltip-pos="bottom">
           <svg

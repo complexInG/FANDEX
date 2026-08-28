@@ -93,10 +93,10 @@ function validateManifestType(manifestType) {
     usedFolderOrders.add(order);
     compliantFolders++;
 
-    /* 验证文件夹内文档 */
+    /* 验证文件夹内文档（MERGED 合集为生成产物，前缀 000，不参与命名规范校验） */
     const folderPath = join(dir, folder.name);
     const docEntries = readdirSync(folderPath, { withFileTypes: true }).filter(
-      (e) => e.isFile() && e.name.endsWith('.md'),
+      (e) => e.isFile() && e.name.endsWith('.md') && !e.name.endsWith('-MERGED.md'),
     );
 
     const usedDocOrders = new Set();

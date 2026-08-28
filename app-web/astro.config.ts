@@ -22,7 +22,6 @@ import { visualizer } from 'rollup-plugin-visualizer'; // Bundle 体积可视化
 import { remarkAdmonition } from './src/plugins/remark-admonition'; // 自定义提示块解析器
 import { rehypeLazyImages } from './src/plugins/rehype-lazy-images'; // 图片懒加载处理器
 import { rehypeWrapTables } from './src/plugins/rehype-wrap-tables'; // 表格包裹处理器：将 table 包入 <div class="table-wrap"> 以承担横向滚动
-import { remarkCodeRunner } from './src/plugins/remark-code-runner'; // 代码运行器：识别 ```lang runnable 标记
 import remarkMath from 'remark-math'; // 数学公式语法解析（LaTeX 语法）
 import rehypeKatex from 'rehype-katex'; // KaTeX 数学公式渲染
 import remarkGfm from 'remark-gfm'; // GitHub Flavored Markdown 支持（表格、删除线等）
@@ -90,8 +89,13 @@ export default defineConfig({
   },
   // 集成：MDX 支持、站点地图生成、React 组件支持
   // 偏差报备：原含 pagefind() 静态搜索索引集成，搜索页（search.astro）已删除，
-  // astro-pagefind 集成及相关脚本已移除
-  integrations: [mdx(), sitemap(), react()],
+  // astro-pagefind 集成及相关脚本已移除（站内搜索改由 pagefind 构建脚本 + 命令面板提供）
+  // sitemap 过滤：design-system 为内部开发页（robots.txt 已 Disallow），同步从站点地图排除
+  integrations: [
+    mdx(),
+    sitemap({ filter: (page) => !page.includes('/design-system/') }),
+    react(),
+  ],
   markdown: {
     // Remark 插件（Markdown → MDAST 转换阶段）
     remarkPlugins: [
@@ -99,7 +103,6 @@ export default defineConfig({
       remarkEmoji, // Emoji 短代码转换
       remarkMath, // 数学公式语法解析（$...$ 和 $$...$$）
       remarkAdmonition, // 自定义提示块（:::note、:::tip 等）
-      remarkCodeRunner, // 代码运行器：识别 ```lang runnable 标记并替换为容器
     ],
     // Rehype 插件（MDAST → HAST → HTML 转换阶段）
     rehypePlugins: [

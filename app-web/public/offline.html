@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--
+  FANDEX 离线兜底页
+  当 Service Worker 缓存中无目标页面且网络不可用时展示。
+  样式完全自包含（内联 CSS + 系统字体栈），不依赖任何外部资源，
+  确保在完全离线的环境下也能正常渲染。
+  美术规范：与站点一致的冷雾灰/深蓝黑双主题、几何刻度装饰、直角小圆角。
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>离线状态 · FANDEX</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ebeff3;
+      --surface: #f6f8fa;
+      --fg: #1c2733;
+      --fg-2: #5a6b7d;
+      --accent: #0b6e7e;
+      --border: #c9d4de;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0e14;
+        --surface: #11161d;
+        --fg: #dbe4ec;
+        --fg-2: #8296a9;
+        --accent: #35c4dc;
+        --border: #232d38;
+      }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      padding: 24px;
+    }
+    .panel {
+      max-width: 420px;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      padding: 32px 28px;
+    }
+    .panel-index {
+      font-family: ui-monospace, 'JetBrains Mono', Consolas, monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--fg-2);
+    }
+    .panel h1 {
+      margin: 10px 0 8px;
+      font-size: 20px;
+      letter-spacing: 0.04em;
+    }
+    .panel p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--fg-2);
+      margin-bottom: 20px;
+    }
+    .panel a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      padding: 0 16px;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+    .panel a:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+    .panel a::before {
+      content: '';
+      width: 0;
+      height: 0;
+      border-block: 4px solid transparent;
+      border-right: 6px solid currentColor;
+    }
+  </style>
+</head>
+<body>
+  <main class="panel">
+    <span class="panel-index">ERR_NETWORK // OFFLINE</span>
+    <h1>当前处于离线状态</h1>
+    <p>无法连接到网络，且本地缓存中没有该页面。已访问过的页面在离线时仍可直接打开；恢复网络后点击下方按钮返回首页。</p>
+    <a href="/FANDEX/">返回首页</a>
+  </main>
+</body>
+</html>

@@ -1,0 +1,169 @@
+/**
+ * 全站搜索命令面板样式（search-palette.ts 动态创建的 dialog）
+ * -----------------------------------------------------------------------------
+ * 美术规范：与站点一致的卡片容器语言 —— 1px 边框 + 直角小圆角 + 左侧强调色竖条，
+ * 结果项 hover 高亮，选中项以 2px 左竖条标记（禁止点状装饰）。
+ * 层级归属：@layer components。
+ * -----------------------------------------------------------------------------
+ */
+@layer components {
+
+  .search-palette {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(640px, calc(100vw - 32px));
+    max-height: min(560px, calc(100dvh - 64px));
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border: 1px solid var(--color-border, var(--color-border-light));
+    border-radius: var(--radius-md, 4px);
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+  }
+
+  /* dialog 原生遮罩：与站点半透明遮罩一致 */
+  .search-palette::backdrop {
+    background: rgba(8, 12, 18, 0.55);
+  }
+
+  .search-palette__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  /* 输入框前 geometric 刻度：4px 竖条强调（禁止圆点） */
+  .search-palette__mark {
+    width: 4px;
+    height: 16px;
+    border-radius: 1px;
+    background: var(--color-accent-base, var(--color-primary));
+    flex-shrink: 0;
+  }
+
+  .search-palette__input {
+    flex: 1;
+    min-width: 0;
+    height: 32px;
+    padding: 0 8px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font-size: 14px;
+    font-family: var(--font-body, sans-serif);
+  }
+
+  .search-palette__input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .search-palette__kbd {
+    padding: 2px 6px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 3px;
+    font-family: var(--font-family-mono, monospace);
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+  }
+
+  .search-palette__status {
+    padding: 6px 14px;
+    font-family: var(--font-family-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--color-text-tertiary);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .search-palette__list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+  }
+
+  .search-palette__entry + .search-palette__entry {
+    margin-top: 2px;
+  }
+
+  .search-palette__item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 12px;
+    border: none;
+    border-left: 2px solid transparent;
+    border-radius: var(--radius-sm, 3px);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      background-color var(--motion-duration-instant, 150ms) var(--motion-easing-out, ease-out),
+      border-color var(--motion-duration-instant, 150ms) var(--motion-easing-out, ease-out);
+  }
+
+  .search-palette__item:hover,
+  .search-palette__item[aria-selected='true'] {
+    background: var(--color-bg-hover, rgba(127, 127, 127, 0.12));
+    border-left-color: var(--color-accent-base, var(--color-primary));
+  }
+
+  .search-palette__title {
+    font-family: var(--font-display, sans-serif);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .search-palette__crumb {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--color-text-tertiary);
+  }
+
+  .search-palette__excerpt {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* pagefind 高亮片段：命中词用主题色加重 */
+  .search-palette__excerpt mark {
+    background: transparent;
+    color: var(--color-accent-base, var(--color-primary));
+    font-weight: 600;
+  }
+
+  .search-palette__foot {
+    padding: 8px 14px;
+    border-top: 1px solid var(--color-border-light);
+    font-family: var(--font-family-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--color-text-tertiary);
+  }
+
+  /* 移动端：去掉文字标签，仅保留图标按钮；面板占满宽度 */
+  @media (max-width: 768px) {
+    .nav-search-text {
+      display: none;
+    }
+
+    .search-palette {
+      width: calc(100vw - 24px);
+    }
+  }
+}

@@ -1,21 +1,28 @@
 /**
  * FANDEX Service Worker
- * 缓存策略：
- * - HTML 页面：不缓存，直接走网络（浏览器自带条件请求机制）
+ * =============================================================================
+ * 缓存策略（v8）：
+ * - HTML 页面：Stale While Revalidate（先回缓存秒开，后台拉取最新版覆盖）
+ *   - 缓存键归一化为 pathname（忽略 ?sidebar / ?pen 等视图参数，避免缓存碎片）
+ *   - 上限 40 页（LRU 淘汰），兼顾离线覆盖与存储占用
+ *   - 高延迟网络下重复访问 TTFB 从秒级降到毫秒级；后台更新保证下次进入是新版
  * - 含 hash 的资源（CSS/JS/字体）：Cache First（长期缓存）
  * - JSON 数据文件：Network First
  * - 图片/其他：Stale While Revalidate
+ * - 离线兜底：HTML 无缓存且网络失败时返回 offline.html（预缓存保证可用）
  */
 
 /** @type {string} 缓存版本号，更新时修改以清除旧缓存 */
-const CACHE_NAME = 'fandex-v7';
+const CACHE_NAME = 'fandex-v8';
 /** @type {string} 站点基础路径（与 astro.config.ts base 一致） */
 const BASE = '/FANDEX/';
+/** @type {string} 离线兜底页路径 */
+const OFFLINE_URL = `${BASE}offline.html`;
+/** @type {number} HTML 页面缓存上限（超出后按最旧淘汰） */
+const HTML_CACHE_LIMIT = 40;
 
-/** @type {string[]} 预缓存资源列表（仅静态资源，不含 HTML）
- * 当前为空：所有静态资源均通过运行时缓存策略处理。
- * 后续若新增需要预缓存的关键静态资源，可在此处追加。 */
-const PRECACHE_URLS = [];
+/** @type {string[]} 预缓存资源列表（离线兜底页必须预缓存） */
+const PRECACHE_URLS = [OFFLINE_URL];
 
 /** @type {Set<string>} 含 hash 的资源扩展名，可长期缓存 */
 const HASHED_EXTS = new Set(['.css', '.js', '.woff2', '.woff', '.ttf']);
@@ -72,19 +79,22 @@ self.addEventListener('activate', (event) => {
 
 /**
  * Fetch 事件：根据资源类型选择缓存策略
- * HTML 页面不经过 SW 缓存，确保用户始终看到最新版本
  * @param {FetchEvent} event
  */
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== 'GET') return;
+  if (url.origin !== self.location.origin) return;
   if (!url.pathname.startsWith(BASE)) return;
 
   const ext = getExt(url.pathname);
   const isHTML = ext === '' || ext === '.html' || url.pathname.endsWith('/');
 
-  // HTML 页面：不缓存，直接走网络，由浏览器管理缓存
-  if (isHTML) return;
+  // HTML 页面：SWR（含离线兜底）
+  if (isHTML) {
+    event.respondWith(htmlStaleWhileRevalidate(event.request, url));
+    return;
+  }
 
   if (HASHED_EXTS.has(ext)) {
     event.respondWith(cacheFirstLong(event.request));
@@ -97,6 +107,69 @@ self.addEventListener('fetch', (event) => {
 
 /** @type {Set<string>} Stale While Revalidate 适用的扩展名 */
 const STALE_REVALIDATE_EXTS = new Set(['.webp', '.svg', '.png', '.avif', '.json']);
+
+/**
+ * HTML 页面 Stale While Revalidate：
+ * 1. 缓存命中 → 立即返回缓存副本，同时后台拉取最新版并更新缓存
+ * 2. 缓存未命中 → 等待网络响应并写入缓存；网络失败回退 offline.html
+ * 缓存键使用 pathname（忽略查询参数），视图状态参数不产生缓存碎片
+ * @param {Request} request
+ * @param {URL} url - 请求 URL 对象
+ * @returns {Promise<Response>}
+ */
+async function htmlStaleWhileRevalidate(request, url) {
+  const cache = await caches.open(CACHE_NAME);
+  // 归一化缓存键：仅保留 pathname，查询参数不参与匹配
+  const cacheKey = url.pathname;
+  const cached = await cache.match(cacheKey);
+
+  // 后台更新：无论是否命中都拉取最新版（失败静默，不打扰用户）
+  const fetchPromise = (async () => {
+    try {
+      const response = await fetch(request);
+      if (response.ok && response.type === 'basic') {
+        await putHtmlWithLimit(cache, cacheKey, response);
+      }
+      return response;
+    } catch {
+      // 网络失败：有缓存时静默忽略；无缓存时由下方兜底
+      return null;
+    }
+  })();
+
+  if (cached) return cached;
+
+  // 缓存未命中：等待网络；仍失败则回退离线兜底页
+  const networkResponse = await fetchPromise;
+  if (networkResponse) return networkResponse;
+  const offline = await cache.match(OFFLINE_URL);
+  return (
+    offline ||
+    new Response('Offline', { status: 503, statusText: 'Offline' })
+  );
+}
+
+/**
+ * 写入 HTML 缓存并执行 LRU 上限淘汰
+ * 通过请求时间戳排序，超出上限时删除最旧的条目
+ * @param {Cache} cache
+ * @param {string} cacheKey - 归一化缓存键（pathname）
+ * @param {Response} response - 最新响应（函数内部 clone）
+ */
+async function putHtmlWithLimit(cache, cacheKey, response) {
+  await cache.put(cacheKey, response.clone());
+  const keys = await cache.keys();
+  const htmlKeys = keys.filter((req) => {
+    const path = new URL(req.url).pathname;
+    return path.startsWith(BASE) && getExt(path) === '';
+  });
+  if (htmlKeys.length <= HTML_CACHE_LIMIT) return;
+  // keys() 返回顺序即创建顺序，淘汰最旧的超出部分
+  const excess = htmlKeys.length - HTML_CACHE_LIMIT;
+  for (let i = 0; i < excess; i += 1) {
+    await cache.delete(htmlKeys[i]);
+  }
+}
 
 /**
  * Cache First 策略：优先从缓存读取，缓存未命中时回退网络

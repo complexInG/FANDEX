@@ -9,10 +9,11 @@
     "build:syntax": "node scripts/build-syntax.mjs",
     "audit:learning-path": "node scripts/audit-learning-path.mjs",
     "dev": "node scripts/build-stats.mjs && node scripts/build-syntax.mjs && astro dev",
-    "build": "node scripts/build-stats.mjs && node scripts/build-syntax.mjs && astro build && node scripts/clean-prerender.mjs",
+    "build": "node scripts/build-stats.mjs && node scripts/build-syntax.mjs && astro build && node scripts/clean-prerender.mjs && pagefind --site dist",
     "preview": "astro preview",
     "qa": "node scripts/qa-check.mjs",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "build:search": "pagefind --site dist"
   },
   "dependencies": {
     "@astrojs/mdx": "catalog:",
@@ -71,6 +72,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "glob": "catalog:",
+    "pagefind": "^1.5.2",
     "rollup-plugin-visualizer": "catalog:",
     "typescript": "catalog:"
   }

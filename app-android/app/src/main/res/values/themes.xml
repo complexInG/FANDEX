@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 浅色主题：冷雾灰窗口底色，避免启动期与 Compose 内容色差 -->
+    <style name="Theme.FANDEX" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/bg_primary_light</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
