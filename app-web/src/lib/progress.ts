@@ -143,5 +143,8 @@ function onPageLoad(): void {
   decorateModuleProgress();
 }
 
-onPageLoad();
-document.addEventListener('astro:page-load', onPageLoad);
+// SSR/预渲染环境不执行任何 DOM 逻辑（Astro 构建期会求值页面脚本模块）
+if (!import.meta.env.SSR && typeof document !== 'undefined') {
+  onPageLoad();
+  document.addEventListener('astro:page-load', onPageLoad);
+}

@@ -217,8 +217,10 @@ function closePalette(): void {
   panel?.close();
 }
 
-// 全局快捷键：Ctrl/Cmd + K 打开（window 级绑定，ClientRouter 导航后依然有效）
-window.addEventListener('keydown', (e) => {
+// SSR/预渲染环境不执行任何 DOM 逻辑（Astro 构建期会求值页面脚本模块）
+if (!import.meta.env.SSR && typeof window !== 'undefined') {
+  // 全局快捷键：Ctrl/Cmd + K 打开（window 级绑定，ClientRouter 导航后依然有效）
+  window.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
     e.preventDefault();
     if (panel?.open) {
@@ -237,3 +239,4 @@ function bindTrigger(): void {
 }
 bindTrigger();
 document.addEventListener('astro:page-load', bindTrigger);
+}

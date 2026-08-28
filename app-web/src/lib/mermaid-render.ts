@@ -130,6 +130,9 @@ function renderAllMermaid(): void {
   });
 }
 
-// 首次加载与 View Transitions 页面切换后均重新扫描
-renderAllMermaid();
-document.addEventListener('astro:page-load', renderAllMermaid);
+// SSR/预渲染环境不执行任何 DOM 逻辑（Astro 构建期会求值页面脚本模块）
+if (!import.meta.env.SSR && typeof document !== 'undefined') {
+  // 首次加载与 View Transitions 页面切换后均重新扫描
+  renderAllMermaid();
+  document.addEventListener('astro:page-load', renderAllMermaid);
+}
