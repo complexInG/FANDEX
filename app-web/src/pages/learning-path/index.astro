@@ -162,9 +162,10 @@ const careers = [
 
     <!-- Hero 区域：复用首页美术（渐变标题 + 统计 + SVG 描边入口） -->
     <section class="hero">
-      <!-- Hero 标题：仅保留英文 logo，删除中文 logo（学习路线） -->
-      <h1 class="hero-title" data-text="Learning Path">
-        <span class="hero-title-fan">Learning</span><span class="hero-title-dex">Path</span>
+      <!-- Hero 标题：中文双字结构，与语法速览/在线编程页统一
+           （英文长标题会使 data-text 残影伪元素换行错位产生重影，故统一中文） -->
+      <h1 class="hero-title" data-text="学习路线">
+        <span class="hero-title-fan">学习</span><span class="hero-title-dex">路线</span>
       </h1>
 
       <!-- 统计 + 功能入口同一行容器（与首页/语法速览结构一致） -->
@@ -199,7 +200,7 @@ const careers = [
             </svg>
             <span class="entry-name">首页</span>
           </a>
-          <a href={`${base}playground/`} class="entry-btn" data-tooltip="在线编程沙箱" data-tooltip-pos="bottom">
+          <a href={`${base}playground/`} class="entry-btn" data-tooltip="前端实验工作台" data-tooltip-pos="bottom">
             <svg class="entry-border" viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true">
               <path d="M10,26 Q30,6 60,10 T110,26 T160,42 T190,26"/>
             </svg>

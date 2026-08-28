@@ -28,6 +28,11 @@
     overflow: hidden;
   }
 
+  /* 关闭态双重保险：:not([open]) 显式隐藏（与基础 display:none 等效，防层叠覆盖） */
+  .search-palette:not([open]) {
+    display: none;
+  }
+
   /* 打开态：showModal() 后以 flex 纵向布局呈现 */
   .search-palette[open] {
     display: flex;

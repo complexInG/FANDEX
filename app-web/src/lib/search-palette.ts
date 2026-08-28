@@ -212,9 +212,15 @@ function openPalette(): void {
   if (listEl) listEl.innerHTML = '';
 }
 
-/** 关闭面板 */
+/** 关闭面板并彻底销毁 DOM：杜绝任何"残留背景"路径（下次打开时重建） */
 function closePalette(): void {
-  panel?.close();
+  if (!panel) return;
+  if (panel.open) panel.close();
+  panel.remove();
+  panel = null;
+  inputEl = null;
+  listEl = null;
+  statusEl = null;
 }
 
 // SSR/预渲染环境不执行任何 DOM 逻辑（Astro 构建期会求值页面脚本模块）
@@ -239,4 +245,14 @@ function bindTrigger(): void {
 }
 bindTrigger();
 document.addEventListener('astro:page-load', bindTrigger);
+
+// View Transitions 路由切换前销毁面板，避免旧页面实例残留
+document.addEventListener('astro:before-swap', () => {
+  closePalette();
+});
+
+// 防御性清扫：移除任何游离在文档中的关闭态面板（异常路径兜底）
+document.addEventListener('astro:page-load', () => {
+  document.querySelectorAll('dialog.search-palette:not([open])').forEach((el) => el.remove());
+});
 }
