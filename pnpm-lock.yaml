@@ -297,6 +297,9 @@ importers:
       '@astrojs/check':
         specifier: 'catalog:'
         version: 0.9.9(prettier@3.9.6)(typescript@5.9.3)
+      '@pagefind/windows-x64':
+        specifier: 1.5.2
+        version: 1.5.2
       '@types/hast':
         specifier: 'catalog:'
         version: 3.0.5
@@ -5045,8 +5048,7 @@ snapshots:
   '@pagefind/windows-arm64@1.5.2':
     optional: true
 
-  '@pagefind/windows-x64@1.5.2':
-    optional: true
+  '@pagefind/windows-x64@1.5.2': {}
 
   '@radix-ui/number@1.1.2': {}
 

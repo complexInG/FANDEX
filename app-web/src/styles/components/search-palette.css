@@ -9,6 +9,9 @@
 @layer components {
 
   .search-palette {
+    /* dialog 默认关闭态为 display:none；此处自定义了 display，
+       必须显式恢复关闭态隐藏，否则面板会常驻显示 */
+    display: none;
     position: fixed;
     inset: 0;
     margin: auto;
@@ -23,6 +26,11 @@
     color: var(--color-text-primary);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
     overflow: hidden;
+  }
+
+  /* 打开态：showModal() 后以 flex 纵向布局呈现 */
+  .search-palette[open] {
+    display: flex;
   }
 
   /* dialog 原生遮罩：与站点半透明遮罩一致 */

@@ -69,15 +69,14 @@ function isNearViewport(el: HTMLElement): boolean {
 
 /**
  * 渲染单个 mermaid 代码块
- * @param codeEl - Shiki 输出的 code.language-mermaid 元素
+ * @param pre - Shiki 输出的 pre[data-language="mermaid"] 元素
  */
-async function renderOne(codeEl: Element): Promise<void> {
-  const pre = codeEl.closest('pre');
-  if (!pre || pre.getAttribute('data-mermaid-state')) return;
+async function renderOne(pre: Element): Promise<void> {
+  if (pre.getAttribute('data-mermaid-state')) return;
   pre.setAttribute('data-mermaid-state', 'loading');
   pre.classList.add('mermaid-loading');
 
-  const source = codeEl.textContent ?? '';
+  const source = pre.textContent ?? '';
   try {
     const mermaid = await getMermaid();
     renderCounter += 1;
@@ -108,19 +107,19 @@ async function renderOne(codeEl: Element): Promise<void> {
  * 扫描并渲染当前页面全部 mermaid 代码块（临近视口的优先立即处理）
  */
 function renderAllMermaid(): void {
-  const blocks = document.querySelectorAll<HTMLElement>('pre code.language-mermaid');
-  blocks.forEach((codeEl) => {
-    const pre = codeEl.closest('pre');
-    if (!pre || pre.getAttribute('data-mermaid-state')) return;
+  // Shiki 为 mermaid 块输出 pre[data-language="mermaid"]（无 code.language-mermaid 类）
+  const blocks = document.querySelectorAll<HTMLElement>('pre[data-language="mermaid"]');
+  blocks.forEach((pre) => {
+    if (pre.getAttribute('data-mermaid-state')) return;
     if (isNearViewport(pre)) {
-      void renderOne(codeEl);
+      void renderOne(pre);
     } else {
       // 视口外的图表延迟到滚动临近时渲染，避免长页面一次性渲染全部
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries.some((entry) => entry.isIntersecting)) {
             observer.disconnect();
-            void renderOne(codeEl);
+            void renderOne(pre);
           }
         },
         { rootMargin: '50% 0px' },
