@@ -1,0 +1,111 @@
+# =============================================================================
+# FANDEX Android 端自动构建与发布工作流
+# =============================================================================
+# 触发条件：
+#   1. push 到 main（仅 app-android / cnt-content / shd-shared 路径变更）
+#      -> 构建校验 + 上传 APK 构建产物（不发布）
+#   2. push v* 标签 或 手动触发（release 输入为 true）
+#      -> 构建签名 APK 并创建 GitHub Release 附带安装包
+#
+# 构建流程：
+#   Node 内容同步（generate-content.mjs）→ JDK 21 → Gradle assembleRelease
+#
+# 说明：
+# - release 构建使用 debug 签名（个人项目分发策略，与本地构建一致），
+#   CI 首次构建时 AGP 会自动生成 debug keystore，无需注入密钥。
+# - assets/docs 已随仓库提交；构建前仍重跑内容同步，保证产物与
+#   cnt-content 源始终一致（即使有人忘记同步直接提交）。
+# - 标签触发时使用 softprops/action-gh-release：若同名 Release 已存在
+#   则更新并替换同名资产，与本地 gh release create 发布链路兼容。
+# - Gradle wrapper 使用腾讯镜像下载发行包，GitHub 托管运行器可正常访问。
+# =============================================================================
+
+name: Android Build & Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app-android/**'
+      - 'cnt-content/**'
+      - 'shd-shared/**'
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      release:
+        description: '构建并发布 Release（true 时需要带 v 前缀标签）'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 构建签名 APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 配置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: 配置 Gradle（含依赖缓存）
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 配置 Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 同步内容资产（docs / 元数据 / 语法数据）
+        run: node app-android/scripts/generate-content.mjs
+
+      - name: 构建 Release APK
+        working-directory: app-android
+        run: ./gradlew :app:assembleRelease --stacktrace
+
+      - name: 上传 APK 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: fandex-android-apk
+          path: app-android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 14
+
+  release:
+    name: 发布 GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.release == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: 下载 APK 产物
+        uses: actions/download-artifact@v4
+        with:
+          name: fandex-android-apk
+          path: apk
+
+      - name: 重命名为发布文件名
+        run: mv apk/app-release.apk apk/FANDEX-${{ github.ref_name }}.apk
+
+      - name: 创建 Release 并上传 APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: FANDEX Android ${{ github.ref_name }}
+          body: |
+            FANDEX Android 端 ${{ github.ref_name }} 自动构建产物。
+
+            - 安装包：FANDEX-${{ github.ref_name }}.apk（debug 签名，可直接安装）
+            - 与旧版 FANDEX-App（com.fandex.app）相互独立，可并存安装
+            - 详细更新说明见提交历史与发布说明
+
+            完整变更请查阅 [提交历史](https://github.com/fanquanpp/FANDEX/commits/main)。
+          files: apk/FANDEX-${{ github.ref_name }}.apk
