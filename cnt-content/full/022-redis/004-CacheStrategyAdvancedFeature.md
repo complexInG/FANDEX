@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'redis/002-PersistenceModule'
   - 'redis/003-ClusterHA'
-  - 'redis/005-BitGraph'
+  - 'redis/005-BitMapRedis'
 prerequisites: []
 ---
 

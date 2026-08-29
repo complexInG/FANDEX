@@ -1,6 +1,6 @@
 ---
 order: 190
-title: JSON-TABLE
+title: JSON_TABLE
 module: 'postgresql'
 category: 数据库
 difficulty: advanced

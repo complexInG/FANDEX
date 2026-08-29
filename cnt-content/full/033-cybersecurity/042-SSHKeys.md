@@ -1,6 +1,6 @@
 ---
 order: 420
-title: Cybersecurity SSH 密钥管理
+title: SSH 密钥管理
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

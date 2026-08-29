@@ -1,6 +1,6 @@
 ---
 order: 260
-title: Socket网络编程
+title: Socket 网络编程
 module: 'c'
 category: 计算机科学
 difficulty: advanced

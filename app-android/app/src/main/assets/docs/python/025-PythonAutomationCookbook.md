@@ -1,6 +1,6 @@
 ---
 order: 250
-title: Python与自动化
+title: Python 与自动化
 module: 'python'
 category: 后端技术
 difficulty: advanced

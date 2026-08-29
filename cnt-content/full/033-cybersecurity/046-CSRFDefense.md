@@ -1,6 +1,6 @@
 ---
 order: 460
-title: Cybersecurity CSRF 防御命令与配置
+title: CSRF 防御命令与配置
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

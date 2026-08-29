@@ -1,6 +1,6 @@
 ---
 order: 230
-title: 物联网 ESP32 开发环境
+title: ESP32 开发环境
 module: 'iot'
 category: 云与基础设施
 difficulty: beginner

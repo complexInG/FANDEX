@@ -1,6 +1,6 @@
 ---
 order: 350
-title: React与D3
+title: React 与 D3
 module: 'react'
 category: 前端技术
 difficulty: advanced

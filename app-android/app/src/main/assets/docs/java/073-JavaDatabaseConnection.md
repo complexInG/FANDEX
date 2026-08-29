@@ -1,6 +1,6 @@
 ---
 order: 730
-title: Java与数据库连接
+title: Java 与数据库连接
 module: 'java'
 category: 后端技术
 difficulty: intermediate

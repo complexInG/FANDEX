@@ -1,6 +1,6 @@
 ---
 order: 500
-title: 数组类型操作 语法速查手册
+title: 数组类型操作语法速查手册
 module: 'postgresql'
 category: 数据库
 difficulty: beginner

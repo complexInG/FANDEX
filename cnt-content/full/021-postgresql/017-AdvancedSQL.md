@@ -1,6 +1,6 @@
 ---
 order: 170
-title: 高级SQL
+title: 高级 SQL
 module: 'postgresql'
 category: 数据库
 difficulty: advanced

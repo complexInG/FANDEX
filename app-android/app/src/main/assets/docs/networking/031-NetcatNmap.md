@@ -1,6 +1,6 @@
 ---
 order: 310
-title: Networking nc 与 nmap
+title: nc 与 nmap
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

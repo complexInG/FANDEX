@@ -8,7 +8,7 @@ description: CMake、vcpkg与包管理
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'cpp/026-COOPAdvanced'
+  - 'cpp/026-CppOOPAdvanced'
   - 'cpp/027-CppMemoryModel'
   - 'cpp/032-CppTestFramework'
   - 'cpp/031-CppPythonInteraction'

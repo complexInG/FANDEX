@@ -109,7 +109,7 @@
         {
           "id": "js-014",
           "title": "递归与尾调用优化",
-          "doc": "015-LinearGeneticProgramming",
+          "doc": "015-RecursionTailCallOptimization",
           "desc": "深入解析递归的形式化定义、调用栈模型、尾调用与 TCO 规范、trampoline 技术、CPS 续延传递、栈溢出防护等高级主题,涵盖 MIT 6.001 / Stanford C",
           "difficulty": "advanced"
         },
@@ -151,7 +151,7 @@
         {
           "id": "js-019",
           "title": "Object扩展",
-          "doc": "020-ObjectReference",
+          "doc": "020-ObjectStaticMethods",
           "desc": "ES6+ Object 静态方法体系、属性描述符、对象不可变性、TC39 演进时间线与工程实践",
           "difficulty": "intermediate"
         }
@@ -333,7 +333,7 @@
         {
           "id": "js-040",
           "title": "BOM",
-          "doc": "041-CrossDocumentMessaging",
+          "doc": "041-BOMBrowserObjectModel",
           "desc": "浏览器对象模型（BOM）原理、API 体系、工程实践与规范演进",
           "difficulty": "intermediate"
         },
@@ -347,7 +347,7 @@
         {
           "id": "js-042",
           "title": "网络请求API",
-          "doc": "044-ImageOptimization",
+          "doc": "044-FetchApiWebStreams",
           "desc": "深入解析 WHATWG Fetch 标准、AbortController 取消语义、Web Streams API、Service Worker 缓存策略、GraphQL 客户端实",
           "difficulty": "advanced"
         },

@@ -1,5 +1,6 @@
 package com.fandex.app.ui.screens.home
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -39,12 +40,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fandex.app.data.model.CategoryInfo
+import com.fandex.app.ui.common.fandexEntrance
 import com.fandex.app.ui.common.pressScale
+import com.fandex.app.ui.common.tweenNormal
+import com.fandex.app.ui.components.CategoryColor
 import com.fandex.app.ui.components.FilterChip
 import com.fandex.app.ui.components.ModuleCard
 import com.fandex.app.ui.components.ThemeQuickToggle
 import com.fandex.app.ui.components.TopDock
-import com.fandex.app.ui.theme.CategoryColors
 import com.fandex.app.ui.theme.LocalExtendedColors
 
 /**
@@ -54,6 +57,11 @@ import com.fandex.app.ui.theme.LocalExtendedColors
  * - 顶部 Dock：抽屉菜单 + 品牌名 + 常驻功能按钮
  * - 分类筛选 chips（多彩，选中态高亮）
  * - 模块内容列表（按分类分组）
+ *
+ * 动效：
+ * - Loading / Error / Success 状态切换使用 Crossfade（220ms）
+ * - 首次进入成功态时，chips / 最近浏览 / 区块标题 / 模块卡片
+ *   以 fandexEntrance 做 stagger 入场（仅首次播放一次）
  */
 @Composable
 fun HomeScreen(
@@ -67,10 +75,16 @@ fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val recentDocs by viewModel.recentDocs.collectAsState()
-    val extendedColors = LocalExtendedColors.current
 
     // 当前筛选分类（null = 全部）
     var selectedCategory by remember { mutableStateOf<String?>(null) }
+
+    // 入场门控：内容就绪后的下一帧置 true，触发首次 stagger 入场
+    var hasEntered by remember { mutableStateOf(false) }
+    val dataReady = state is HomeUiState.Success
+    LaunchedEffect(dataReady) {
+        if (dataReady) hasEntered = true
+    }
 
     LaunchedEffect(Unit) {
         viewModel.load()
@@ -95,75 +109,132 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (state) {
-                is HomeUiState.Loading -> LoadingView()
-                is HomeUiState.Error -> ErrorView(
-                    message = (state as HomeUiState.Error).message,
-                    onRetry = { viewModel.load() }
-                )
-                is HomeUiState.Success -> {
-                    val data = state as HomeUiState.Success
-                    // 筛选后的分类列表
-                    val visibleCategories = selectedCategory
-                        ?.let { id -> data.categories.filter { it.id == id } }
-                        ?: data.categories
+            // 状态切换：220ms 淡入淡出
+            Crossfade(
+                targetState = state,
+                animationSpec = tweenNormal(),
+                label = "homeStateCrossfade"
+            ) { current ->
+                when (current) {
+                    is HomeUiState.Loading -> LoadingView()
+                    is HomeUiState.Error -> ErrorView(
+                        message = current.message,
+                        onRetry = { viewModel.load() }
+                    )
+                    is HomeUiState.Success -> {
+                        val data = current
+                        // 筛选后的分类列表
+                        val visibleCategories = selectedCategory
+                            ?.let { id -> data.categories.filter { it.id == id } }
+                            ?: data.categories
 
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // 分类筛选 chips（横滑，多彩，选中态高亮）
-                        item(key = "filters") {
-                            LazyRow(
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                item {
-                                    FilterChip(
-                                        label = "全部",
-                                        selected = selectedCategory == null,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        onClick = { selectedCategory = null }
-                                    )
-                                }
-                                items(data.categories, key = { it.id }) { category ->
-                                    FilterChip(
-                                        label = category.label,
-                                        selected = selectedCategory == category.id,
-                                        color = parseColor(category.colorHex),
-                                        onClick = {
-                                            selectedCategory =
-                                                if (selectedCategory == category.id) null else category.id
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        // 最近浏览（有历史时展示，紧凑单行）
-                        if (recentDocs.isNotEmpty()) {
-                            item(key = "recent") {
-                                RecentDocsSection(
-                                    docs = recentDocs,
-                                    onDocClick = onDocClick
-                                )
-                            }
-                        }
-
-                        // 分类模块内容
-                        items(
-                            items = visibleCategories,
-                            key = { it.id }
-                        ) { category ->
-                            CategorySection(
-                                category = category,
-                                onModuleClick = onModuleClick
-                            )
-                        }
+                        HomeContent(
+                            categories = visibleCategories,
+                            recentDocs = recentDocs,
+                            hasEntered = hasEntered,
+                            selectedCategory = selectedCategory,
+                            onSelectCategory = { selectedCategory = it },
+                            onModuleClick = onModuleClick,
+                            onDocClick = onDocClick
+                        )
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * 首页内容（成功态）
+ *
+ * @param entranceBases 各分类区块的入场下标基数（前置区块数累计，保证 stagger 递增）
+ */
+@Composable
+private fun HomeContent(
+    categories: List<CategoryInfo>,
+    recentDocs: List<com.fandex.app.data.prefs.HistoryEntry>,
+    hasEntered: Boolean,
+    selectedCategory: String?,
+    onSelectCategory: (String?) -> Unit,
+    onModuleClick: (String) -> Unit,
+    onDocClick: (String, String) -> Unit
+) {
+    // 入场下标基数：chips 占 0；最近浏览标题占 1、卡片占 2..n+1；
+    // 各分类区块按（标题 + 模块数）累计，保证 stagger 下标全局递增
+    val entranceBases = remember(categories, recentDocs) {
+        var acc = recentDocs.size + 2
+        categories.map { category ->
+            val base = acc
+            acc += category.modules.size + 1
+            base
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // 分类筛选 chips（横滑，多彩，选中态高亮；逐个 stagger 入场）
+        item(key = "filters") {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    FilterChip(
+                        label = "全部",
+                        selected = selectedCategory == null,
+                        color = MaterialTheme.colorScheme.primary,
+                        onClick = { onSelectCategory(null) },
+                        modifier = Modifier.fandexEntrance(index = 0, visible = hasEntered)
+                    )
+                }
+                itemsIndexed(
+                    items = categories,
+                    key = { _, category -> category.id }
+                ) { chipIndex, category ->
+                    FilterChip(
+                        label = category.label,
+                        selected = selectedCategory == category.id,
+                        color = CategoryColor.parse(category.colorHex),
+                        onClick = {
+                            onSelectCategory(
+                                if (selectedCategory == category.id) null else category.id
+                            )
+                        },
+                        modifier = Modifier.fandexEntrance(
+                            index = chipIndex + 1,
+                            visible = hasEntered
+                        )
+                    )
+                }
+            }
+        }
+
+        // 最近浏览（有历史时展示，紧凑单行）
+        if (recentDocs.isNotEmpty()) {
+            item(key = "recent") {
+                RecentDocsSection(
+                    docs = recentDocs,
+                    hasEntered = hasEntered,
+                    onDocClick = onDocClick
+                )
+            }
+        }
+
+        // 分类模块内容（筛选切换时对位置变化做重排动画）
+        itemsIndexed(
+            items = categories,
+            key = { _, category -> category.id }
+        ) { index, category ->
+            CategorySection(
+                category = category,
+                entranceBase = entranceBases[index],
+                hasEntered = hasEntered,
+                onModuleClick = onModuleClick,
+                modifier = Modifier.animateItem()
+            )
         }
     }
 }
@@ -174,13 +245,19 @@ fun HomeScreen(
 @Composable
 private fun RecentDocsSection(
     docs: List<com.fandex.app.data.prefs.HistoryEntry>,
+    hasEntered: Boolean,
     onDocClick: (String, String) -> Unit
 ) {
     val extendedColors = LocalExtendedColors.current
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         // 区块标题
-        SectionHeader(label = "最近浏览")
+        SectionHeader(
+            label = "最近浏览",
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fandexEntrance(index = 1, visible = hasEntered)
+        )
         androidx.compose.foundation.lazy.LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -191,6 +268,7 @@ private fun RecentDocsSection(
                 Column(
                     modifier = Modifier
                         .width(168.dp)
+                        .fandexEntrance(index = index + 2, visible = hasEntered)
                         .pressScale(interaction)
                         .clip(RoundedCornerShape(4.dp))
                         .background(extendedColors.bgElevated)
@@ -224,15 +302,23 @@ private fun RecentDocsSection(
 
 /**
  * 分类区块
+ *
+ * @param entranceBase 区块内元素入场的下标基数（标题在前，卡片依次递增）
  */
 @Composable
 private fun CategorySection(
     category: CategoryInfo,
-    onModuleClick: (String) -> Unit
+    entranceBase: Int,
+    hasEntered: Boolean,
+    onModuleClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val categoryColor = parseColor(category.colorHex)
+    val categoryColor = CategoryColor.parse(category.colorHex)
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         // 分类标题栏
         Row(
             modifier = Modifier
@@ -243,11 +329,12 @@ private fun CategorySection(
             SectionHeader(
                 label = category.label,
                 color = categoryColor,
-                trailing = "${category.modules.size}"
+                trailing = "${category.modules.size}",
+                modifier = Modifier.fandexEntrance(index = entranceBase, visible = hasEntered)
             )
         }
 
-        // 模块卡片列表（带分类内学习顺序编号）
+        // 模块卡片列表（带分类内学习顺序编号 + stagger 入场）
         Column(
             modifier = Modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -257,7 +344,11 @@ private fun CategorySection(
                     module = module,
                     categoryColor = categoryColor,
                     onClick = { onModuleClick(module.id) },
-                    indexLabel = "%02d".format(index + 1)
+                    indexLabel = "%02d".format(index + 1),
+                    modifier = Modifier.fandexEntrance(
+                        index = entranceBase + 1 + index,
+                        visible = hasEntered
+                    )
                 )
             }
         }
@@ -271,10 +362,14 @@ private fun CategorySection(
 private fun SectionHeader(
     label: String,
     color: Color = MaterialTheme.colorScheme.primary,
-    trailing: String? = null
+    trailing: String? = null,
+    modifier: Modifier = Modifier
 ) {
     val extendedColors = LocalExtendedColors.current
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(
             modifier = Modifier
                 .width(3.dp)
@@ -347,14 +442,4 @@ private fun ErrorView(message: String, onRetry: () -> Unit) {
             )
         }
     }
-}
-
-/**
- * 解析十六进制颜色
- */
-private fun parseColor(hex: String): Color {
-    val normalized = hex.removePrefix("#")
-    return runCatching {
-        Color(normalized.toLong(16) or 0xFF000000)
-    }.getOrDefault(CategoryColors.Tools)
 }

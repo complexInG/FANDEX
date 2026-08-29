@@ -1,6 +1,6 @@
 ---
 order: 240
-title: Redis Hash 命令速查
+title: Redis Hash 命令速查手册
 module: 'redis'
 category: 数据库
 difficulty: beginner

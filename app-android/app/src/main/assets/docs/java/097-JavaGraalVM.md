@@ -1,6 +1,6 @@
 ---
 order: 970
-title: Java与GraalVM
+title: Java 与 GraalVM
 module: 'java'
 category: 后端技术
 difficulty: advanced

@@ -1,6 +1,6 @@
 ---
 order: 50
-title: XSS攻击
+title: XSS 攻击
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: intermediate

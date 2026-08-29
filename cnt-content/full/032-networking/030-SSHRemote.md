@@ -1,6 +1,6 @@
 ---
 order: 300
-title: Networking SSH 远程连接
+title: SSH 远程连接
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

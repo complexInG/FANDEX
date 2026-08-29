@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'cs-fundamentals/028-NetworkSecurity'
   - 'cs-fundamentals/029-MultimediaTechnology'
-  - 'cs-fundamentals/031-ComputerShape'
+  - 'cs-fundamentals/031-ComputerGraphics'
   - 'cs-fundamentals/032-DesignPattern'
 prerequisites:
   - 'cs-fundamentals/001-ComputerOverview'

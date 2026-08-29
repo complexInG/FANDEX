@@ -8,7 +8,7 @@ description: 高斯消元法的操作流程——前向消元与回代，增广�
 author: fanquanpp
 updated: '2026-08-29'
 related:
-  - 'linear-algebra/010-ChunkingMatrix'
+  - 'linear-algebra/010-BlockMatrix'
   - 'linear-algebra/012-SolutionExistenceDetermination'
   - 'linear-algebra/013-HomogeneousLinearSystem'
 prerequisites: []

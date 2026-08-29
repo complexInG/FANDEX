@@ -1,6 +1,6 @@
 ---
 order: 130
-title: RAII与资源管理
+title: RAII 与资源管理
 module: 'cpp'
 category: 计算机科学
 difficulty: intermediate
@@ -11,7 +11,7 @@ related:
   - 'cpp/011-Cpp20Module'
   - 'cpp/034-Cpp23Cpp26NewFeatures'
   - 'cpp/014-OperatorOverloading'
-  - 'cpp/015-COOPBasics'
+  - 'cpp/015-CppOOPBasics'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
 ---

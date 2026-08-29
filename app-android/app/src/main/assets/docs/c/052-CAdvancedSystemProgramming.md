@@ -8,7 +8,7 @@ description: 高级数据结构、内存管理、文件系统、网络编程与�
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'c/050-IO'
+  - 'c/050-StdioFileIO'
   - 'c/051-CLanguageTheory'
   - 'c/053-CProjectExampleStudentGradeSystem'
 prerequisites:

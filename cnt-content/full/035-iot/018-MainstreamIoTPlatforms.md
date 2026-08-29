@@ -1,6 +1,6 @@
 ---
 order: 180
-title: 主流IoT平台
+title: 主流 IoT 平台
 module: 'iot'
 category: 云与基础设施
 difficulty: intermediate

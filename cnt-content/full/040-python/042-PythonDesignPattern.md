@@ -1,6 +1,6 @@
 ---
 order: 420
-title: Python与设计模式
+title: Python 与设计模式
 module: 'python'
 category: 后端技术
 difficulty: intermediate

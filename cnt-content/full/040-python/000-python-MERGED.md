@@ -13,8 +13,6 @@ prerequisites: []
 
 <!-- ============ 文档分隔线：040-python/001-PythonOverviewEnvSetup.md ============ -->
 
-
-
 ## 0.1 Python 入门核心能力清单
 
 ### 语法、内置类型与常用方法
@@ -552,8 +550,6 @@ Python 作为一种不断发展的编程语言，未来将继续在以下方面�
   Python 的学习是一个持续的过程，随着版本的更新和技术的发展，需要不断学习和实践，才能更好地掌握和应用 Python 技术。
 
 <!-- ============ 文档分隔线：040-python/002-ProgramStructureBasicSyntax.md ============ -->
-
-
 
 ## 1. 程序结构 (Program Structure)
 
@@ -1646,10 +1642,6 @@ if (condition1 and
 ```
 
 <!-- ============ 文档分隔线：040-python/003-VariableConstant.md ============ -->
-
-
-
-
 
 # 变量与常量（Variables & Constants）
 
@@ -5201,10 +5193,6 @@ lst[0], lst[1] = lst[1], lst[0]
 
 <!-- ============ 文档分隔线：040-python/004-PythonDescriptorProtocol.md ============ -->
 
-
-
-
-
 # Python 描述符协议：属性访问的底层机制与工程实践
 
 > 描述符协议是 Python 面向对象模型中最核心、却又最常被忽视的机制之一。`property`、`classmethod`、`staticmethod`、`super()`、ORM 字段、ORM 关系、Pydantic 字段、Django Form 字段，无一不是描述符的应用。本文从形式化定义出发，系统阐述描述符协议的工作原理、属性查找链、数据描述符与非数据描述符的优先级差异、与元类和 `__slots__` 的协作，并通过 ORM 字段、类型验证器、缓存属性、观察者模式等工程案例，帮助开发者掌握 Python 元编程的基石。
@@ -7390,10 +7378,6 @@ class Cache:
 - `python/031-Python与设计模式`: 描述符实现的设计模式（观察者、代理、单例）
 
 <!-- ============ 文档分隔线：040-python/005-DataTypeObjectModelDeepDive.md ============ -->
-
-
-
-
 
 # Python 基础数据类型：从对象模型到工程实践的深度解析
 
@@ -9731,8 +9715,6 @@ class PacketHeader(NamedTuple):
 
 <!-- ============ 文档分隔线：040-python/006-CoroutineAsyncio.md ============ -->
 
-
-
 ## 事件循环
 
 **基本写法：运行协程**
@@ -10588,8 +10570,6 @@ async def main():
 ```
 
 <!-- ============ 文档分隔线：040-python/007-ListComprehensionAdvanced.md ============ -->
-
-
 
 ## 摘要
 
@@ -12743,8 +12723,6 @@ filtered = [(k, v) for k, v in person.items() if isinstance(v, str)]
 
 <!-- ============ 文档分隔线：040-python/008-OperatorExpression.md ============ -->
 
-
-
 ## 1. 运算符分类 (Operator Categories)
 
 ### 1.1 算术运算符 (Arithmetic)
@@ -14310,8 +14288,6 @@ class Matrix:
 3. 是容器协议的重要组成部分。
 
 <!-- ============ 文档分隔线：040-python/009-PythonVirtualEnv.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -16804,8 +16780,6 @@ Python 虚拟环境与依赖管理经历了从"全局混沌"到"标准库隔离"
 ---
 
 <!-- ============ 文档分隔线：040-python/010-Metaclass.md ============ -->
-
-
 
 ## 1. 历史动机与演化
 
@@ -19961,10 +19935,6 @@ class Shape(ABC):
 
 <!-- ============ 文档分隔线：040-python/011-PythonSQLAlchemy.md ============ -->
 
-
-
-
-
 # Python 与 SQLAlchemy（Python & SQLAlchemy）
 
 > "SQLAlchemy is not an ORM, it's a database toolkit that happens to include an ORM." —— Michael Bayer, SQLAlchemy Creator
@@ -22629,8 +22599,6 @@ SQLAlchemy 的未来：
 
 <!-- ============ 文档分隔线：040-python/012-MultiprocessingMultithreading.md ============ -->
 
-
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 早期单核时代（Python 0.9 – 1.x，1991–2000）
@@ -24891,9 +24859,6 @@ if hasattr(sys, "_enable_gil_disabled"):
 
 <!-- ============ 文档分隔线：040-python/013-PythonFastAPI.md ============ -->
 
-
-
-
 ## 什么是 FastAPI
 
 FastAPI 是一个现代、高性能的 Python Web 框架，用于构建 API。它基于 Starlette（处理网络请求）和 Pydantic（数据验证），利用 Python 的类型注解实现自动的数据验证、序列化和 API 文档生成。
@@ -25349,9 +25314,6 @@ app.include_router(users_router)
 ```
 
 <!-- ============ 文档分隔线：040-python/014-PythonDjango.md ============ -->
-
-
-
 
 ## 什么是 Django
 
@@ -25848,8 +25810,6 @@ def notify_subscribers(sender, instance, created, **kwargs):
 ```
 
 <!-- ============ 文档分隔线：040-python/015-DataClassPydantic.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -28185,9 +28145,6 @@ for err in e.errors():
 
 <!-- ============ 文档分隔线：040-python/016-PythonRedis.md ============ -->
 
-
-
-
 ## 什么是 Redis
 
 Redis 是一个基于内存的高性能键值数据库。因为数据存储在内存中，读写速度极快，每秒可以处理数十万次操作。Redis 不仅仅是一个简单的键值存储，它还支持字符串、列表、哈希、集合、有序集合等多种数据结构，以及发布/订阅、事务、Lua 脚本等高级功能。
@@ -28664,10 +28621,6 @@ print(f"请求是否允许: {bool(result)}")
 ```
 
 <!-- ============ 文档分隔线：040-python/017-PythonCeleryDistributedTaskQueue.md ============ -->
-
-
-
-
 
 # Python 与 Celery：分布式任务队列的设计、实现与工程实践
 
@@ -30761,8 +30714,6 @@ def process_order(order: Order):
 
 <!-- ============ 文档分隔线：040-python/018-ControlFlow.md ============ -->
 
-
-
 ## 1. 条件分支 (Selection)
 
 条件分支用于根据不同的条件执行不同的代码块。
@@ -31805,9 +31756,6 @@ print(list(evens))
 
 <!-- ============ 文档分隔线：040-python/019-PythonDocker.md ============ -->
 
-
-
-
 ## 什么是 Docker
 
 Docker 是一种容器化技术，它可以把你的应用和所有依赖打包到一个标准化的容器中。这个容器可以在任何安装了 Docker 的机器上一致地运行，不会出现"在我电脑上能跑"的问题。
@@ -32344,9 +32292,6 @@ docker buildx build --platform linux/amd64,linux/arm64 -t my-app .
 
 <!-- ============ 文档分隔线：040-python/020-PythonMachineLearning.md ============ -->
 
-
-
-
 ## 什么是机器学习
 
 机器学习是人工智能的一个分支，它让计算机从数据中自动学习规律，而不需要人为编写规则。比如，你想让计算机识别垃圾邮件，不需要手动列出所有垃圾邮件的特征，而是给它大量已标记的邮件数据，让它自己找出区分垃圾邮件和正常邮件的模式。
@@ -32861,10 +32806,6 @@ print(f"准确率: {clf.score(X_test, y_test):.2%}")
 ```
 
 <!-- ============ 文档分隔线：040-python/021-PythonDeepLearning.md ============ -->
-
-
-
-
 
 # Python 与深度学习：从感知机到 Transformer 的工程化全景
 
@@ -35219,10 +35160,6 @@ Python 在深度学习领域的统治地位并非偶然，而是其优秀的语�
 
 <!-- ============ 文档分隔线：040-python/022-PythonAndNLP.md ============ -->
 
-
-
-
-
 ## 1. 概述与学习路径
 
 自然语言处理（Natural Language Processing，NLP）是计算机科学、人工智能与语言学的交叉学科，目标是让计算机能够理解、生成、翻译人类自然语言。Python 凭借其简洁语法、丰富的科学计算生态与开源社区的持续投入，已成为 NLP 研究与工业实践的事实标准语言。
@@ -36728,9 +36665,6 @@ NLP 是一门快速演进的学科，本模块内容会持续更新以反映最�
 
 <!-- ============ 文档分隔线：040-python/023-PythonComputerVision.md ============ -->
 
-
-
-
 ## 什么是计算机视觉
 
 计算机视觉是让计算机"看懂"图像和视频的技术。人类可以轻松识别照片中的人脸、读取路牌上的文字、判断前方是否有障碍物，但对计算机来说，图像只是一堆数字。计算机视觉的目标就是让计算机从这些数字中提取出有意义的信息。
@@ -37308,10 +37242,6 @@ cv2.imwrite('gradient.jpg', gradient)
 ```
 
 <!-- ============ 文档分隔线：040-python/024-WebScrapingWithPython.md ============ -->
-
-
-
-
 
 # Python 与 Web 爬虫
 
@@ -39939,10 +39869,6 @@ Go (goroutine)                3s      100MB   10K goroutine
 
 <!-- ============ 文档分隔线：040-python/025-PythonAutomationCookbook.md ============ -->
 
-
-
-
-
 # Python 与自动化
 
 > 自动化的本质不是消灭工作，而是把人从重复劳动中解放出来，专注于创造性的问题。Python 因其简洁语法、丰富生态与跨平台特性，是当今最受欢迎的自动化脚本语言之一。
@@ -42372,8 +42298,6 @@ def enable_asyncio_debug():
 
 <!-- ============ 文档分隔线：040-python/026-FunctionDetailed.md ============ -->
 
-
-
 ## 1. 函数基本语法 (Basic Syntax)
 
 函数是封装逻辑的可重用代码块，用于组织和简化代码。
@@ -43694,8 +43618,6 @@ def expensive_computation(n):
 
 <!-- ============ 文档分隔线：040-python/027-ArgsKwargsUnpacking.md ============ -->
 
-
-
 # *args、**kwargs 与解包
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -43709,9 +43631,6 @@ def expensive_computation(n):
 - 签名设计最佳实践
 
 <!-- ============ 文档分隔线：040-python/028-PythonLog.md ============ -->
-
-
-
 
 ## 什么是日志
 
@@ -44264,10 +44183,6 @@ logger.info("用户登录", user_id=123, ip="192.168.1.1")
 ```
 
 <!-- ============ 文档分隔线：040-python/029-PythonAndCryptography.md ============ -->
-
-
-
-
 
 # Python 与加密
 
@@ -46387,10 +46302,6 @@ def hybrid_kem_demo():
 
 <!-- ============ 文档分隔线：040-python/030-PythonTest.md ============ -->
 
-
-
-
-
 ## 概述
 
 测试是软件工程的基石。在 Python 生态中，测试不仅是验证代码正确性的手段，更是一种设计哲学——测试驱动的代码往往具有更清晰的接口、更松散的耦合、更可维护的结构。Python 测试生态历经二十余年演进，已形成以 pytest 为事实标准、unittest 为标准库基础、hypothesis 提供属性测试、tox/nox 提供多环境矩阵、coverage.py 提供覆盖率分析的完整工具链。
@@ -48301,8 +48212,6 @@ Python 测试生态历经二十余年演进，已形成理论扎实、工具丰�
 掌握 Python 测试，不仅是掌握 pytest、Mock、coverage 这些工具，更是掌握一种工程思维：**代码是为了人而写，测试是为了信心而写**。本篇文档希望成为读者构建企业级 Python 测试体系的参考指南，让每一行生产代码都有测试守护，让每一次重构都充满信心。
 
 <!-- ============ 文档分隔线：040-python/031-Python.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -51651,8 +51560,6 @@ print(os.process_cpu_count())
 
 <!-- ============ 文档分隔线：040-python/032-Decorator.md ============ -->
 
-
-
 ## 1. 装饰器基础
 
 ### 1.1 什么是装饰器
@@ -52802,9 +52709,6 @@ def my_decorator(func: Callable[..., T]) -> Callable[..., T]:
 
 <!-- ============ 文档分隔线：040-python/033-PythonMessageQueue.md ============ -->
 
-
-
-
 ## 什么是消息队列
 
 消息队列是一种进程间通信方式。发送方把消息放入队列，接收方从队列中取出消息处理。发送方和接收方不需要同时在线，也不需要知道对方是谁，它们只需要关心消息本身。
@@ -53341,9 +53245,6 @@ for message in consumer:
 
 <!-- ============ 文档分隔线：040-python/034-PythonGrpc.md ============ -->
 
-
-
-
 ## 什么是 gRPC
 
 gRPC 是 Google 开发的高性能远程过程调用（RPC）框架。它让客户端像调用本地函数一样调用服务器上的函数，不需要关心底层的网络通信细节。
@@ -53783,9 +53684,6 @@ health_servicer.set('', health_pb2.HealthCheckResponse.SERVING)
 ```
 
 <!-- ============ 文档分隔线：040-python/035-PythonWebSocket.md ============ -->
-
-
-
 
 ## 什么是 WebSocket
 
@@ -54359,10 +54257,6 @@ async def websocket_endpoint(websocket: WebSocket):
 ```
 
 <!-- ============ 文档分隔线：040-python/036-PythonCICD.md ============ -->
-
-
-
-
 
 ## 1. 历史动机与背景
 
@@ -56175,10 +56069,6 @@ jobs:
 5. 检查 BuildKit
 
 <!-- ============ 文档分隔线：040-python/037-PythonPerformance.md ============ -->
-
-
-
-
 
 # Python 与性能优化
 
@@ -58161,8 +58051,6 @@ mprof plot
 
 <!-- ============ 文档分隔线：040-python/038-BuiltinDataStructure.md ============ -->
 
-
-
 ## 1. 列表 (List - `list`)
 
 列表是Python中最常用的数据结构之一，它是一个有序、可变的序列，允许存储重复元素。
@@ -59470,8 +59358,6 @@ matrix = {
 
 <!-- ============ 文档分隔线：040-python/039-EnumerateZipBuiltinPairs.md ============ -->
 
-
-
 # enumerate 与 zip 详解
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -59485,8 +59371,6 @@ matrix = {
 - 循环重构成对遍历示例
 
 <!-- ============ 文档分隔线：040-python/040-Regex.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -62508,9 +62392,6 @@ urls = re.findall(r"https?://[\w./-]+", text)
 
 <!-- ============ 文档分隔线：040-python/041-PythonCLI.md ============ -->
 
-
-
-
 ## 什么是 CLI
 
 CLI 是 Command Line Interface 的缩写，即命令行界面。CLI 工具是用户在终端中通过输入命令来操作的程序，比如 git、pip、docker 都是 CLI 工具。
@@ -62964,8 +62845,6 @@ def config(config, api_key):
 ```
 
 <!-- ============ 文档分隔线：040-python/042-PythonDesignPattern.md ============ -->
-
-
 
 ## 单例模式
 
@@ -63663,8 +63542,6 @@ with Transaction():
 ```
 
 <!-- ============ 文档分隔线：040-python/043-PythonPackagingEvolution.md ============ -->
-
-
 
 ## 1. 概述与定位
 
@@ -65402,10 +65279,6 @@ select = ["E", "F", "I", "UP"]
 
 <!-- ============ 文档分隔线：040-python/044-PythonJupyter.md ============ -->
 
-
-
-
-
 # Python 与 Jupyter：交互式计算、数据分析与可复现研究
 
 > 本文系统阐述 Jupyter 生态的核心机制与工程实践，包括 IPython 内核、Jupyter Message Protocol、Notebook 文档格式（.ipynb）、魔法命令系统、富显示对象、交互式 Widgets、可视化集成、性能优化（Cython、numba、joblib）、企业级部署（JupyterHub、Enterprise Gateway）与可复现研究实践。内容兼顾形式化定义与生产级应用，旨在帮助开发者建立对交互式计算的完整认知框架，具备构建数据科学工作流与生产级 Jupyter 平台的能力。
@@ -67061,10 +66934,6 @@ df = result.DataFrame()  # 转为 Pandas DataFrame
 
 <!-- ============ 文档分隔线：040-python/045-PythonGraphQL.md ============ -->
 
-
-
-
-
 ## 1. 历史动机与发展脉络
 
 GraphQL 由 Facebook 于 2012 年在移动端改造中发明，2015 年公开规范，2018 年由 GraphQL Foundation 管理。动机：移动端网络带宽有限，REST 的“服务端决定响应形状”导致过度获取与多次往返；Facebook 需要客户端按需声明字段。
@@ -67946,10 +67815,6 @@ class Subscription:
 ```
 
 <!-- ============ 文档分隔线：040-python/046-PythonCodeQuality.md ============ -->
-
-
-
-
 
 # Python 与代码质量
 
@@ -69625,8 +69490,6 @@ type 取值：
 
 <!-- ============ 文档分隔线：040-python/047-ConcurrentProgramming.md ============ -->
 
-
-
 ## 1. Python 并发模型概述
 
 ### 1.1 三种并发方式
@@ -70355,9 +70218,6 @@ executor.shutdown(wait=True, cancel_futures=True)
 
 <!-- ============ 文档分隔线：040-python/048-PythonDatabaseMigration.md ============ -->
 
-
-
-
 ## 什么是数据库迁移
 
 数据库迁移是指对数据库结构进行版本化管理的过程。当你修改了数据表的结构（比如新增一列、删除一张表、修改字段类型），你需要一种可靠的方式把这些变更记录下来，并能在不同环境（开发、测试、生产）中重复执行。
@@ -70890,9 +70750,6 @@ alembic upgrade a1b2c3:e5f6a7b --sql
 ```
 
 <!-- ============ 文档分隔线：040-python/049-PythonOAuth2.md ============ -->
-
-
-
 
 ## 什么是 OAuth2
 
@@ -71498,9 +71355,6 @@ app.add_middleware(
 
 <!-- ============ 文档分隔线：040-python/050-PythonVectorDatabase.md ============ -->
 
-
-
-
 ## 什么是向量数据库
 
 向量数据库是专门用来存储和检索向量（一组浮点数）的数据库。在大语言模型和 AI 应用中，文本、图片等数据会被转换成高维向量（比如 1536 维的浮点数组），向量数据库能快速找到与某个向量最相似的其他向量。
@@ -72042,9 +71896,6 @@ print(result["result"])
 ```
 
 <!-- ============ 文档分隔线：040-python/051-PythonAdvancedLatestFeature.md ============ -->
-
-
-
 
 ## 1. Python 3.12-3.14 新特性
 
@@ -72726,8 +72577,6 @@ Python 3.12-3.14 的演进方向清晰：
 这些进步使得 Python 在保持简洁易用的同时，越来越适合构建大型、高性能、类型安全的生产级应用。
 
 <!-- ============ 文档分隔线：040-python/052-ComprehensionGenerator.md ============ -->
-
-
 
 ## 1. 推导式 (Comprehensions)
 
@@ -73897,8 +73746,6 @@ def main_generator():
 ```
 
 <!-- ============ 文档分隔线：040-python/053-ModulePackageEngineering.md ============ -->
-
-
 
 ## 泛型
 
@@ -75085,8 +74932,6 @@ type Callback = Callable[[int], str]
 ```
 
 <!-- ============ 文档分隔线：040-python/054-ContextManager.md ============ -->
-
-
 
 ## 概述
 
@@ -77406,10 +77251,6 @@ with (
 ```
 
 <!-- ============ 文档分隔线：040-python/055-MetaclassSingleton.md ============ -->
-
-
-
-
 
 # 元类与单例模式（Metaclass & Singleton Pattern）
 
@@ -80153,10 +79994,6 @@ Python 之禅（PEP 20）："Explicit is better than implicit." 单例模式隐�
 
 <!-- ============ 文档分隔线：040-python/056-AsyncProgrammingDetailed.md ============ -->
 
-
-
-
-
 ## 1. 历史动机与发展脉络
 
 异步编程并非 Python 独有概念，其根源可追溯至 1960 年代的操作系统 I/O 调度理论与 1980 年代的事件驱动编程模型。
@@ -82321,8 +82158,6 @@ except KeyboardInterrupt:
 - `asyncio.taskgroups`：任务组（3.11+）。
 
 <!-- ============ 文档分隔线：040-python/057-WeakReference.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -84519,10 +84354,6 @@ print(weakref.getweakrefs(obj))
 
 <!-- ============ 文档分隔线：040-python/058-PackagePublish.md ============ -->
 
-
-
-
-
 ## 1. 历史动机与发展脉络
 
 理解 Python 打包生态的现状，必须穿越 30 余年的演进史。这条路径上有大量被废弃的方案与教训，对今天的工程决策仍然具有现实指导意义。
@@ -86576,10 +86407,6 @@ __all__ = ["__version__", "greet"]
 ```
 
 <!-- ============ 文档分隔线：040-python/059-Descriptor.md ============ -->
-
-
-
-
 
 ## 概述
 
@@ -88934,10 +88761,6 @@ class MethodView:
 描述符的学习曲线陡峭，但其价值无可替代。建议读者在掌握本篇内容后，深入阅读 CPython 源码与主流框架源码，将理论知识转化为工程能力。
 
 <!-- ============ 文档分隔线：040-python/060-DataClassFieldDefault.md ============ -->
-
-
-
-
 
 # 数据类与字段默认值（Dataclasses & Field Defaults）
 
@@ -91497,8 +91320,6 @@ dataclass 与 attrs 的"竞争"是 Python 生态健康的体现。attrs 推动�
 ---
 
 <!-- ============ 文档分隔线：040-python/061-GeneratorCoroutine.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -94166,8 +93987,6 @@ for i, v in enumerate(["a", "b"], start=1):
 
 <!-- ============ 文档分隔线：040-python/062-TypeAnnotationMypy.md ============ -->
 
-
-
 ## 概述
 
 Python 类型注解（Type Hints）是 Python 3.0 以来最重要的语言演进之一。它改变了 Python 作为"动态类型语言"的传统定位，引入了一套"渐进式类型系统"（Gradual Typing System），让开发者可以在保留动态类型灵活性的同时，获得静态类型检查的工程收益。
@@ -96787,9 +96606,6 @@ def build() -> Node:
 
 <!-- ============ 文档分隔线：040-python/063-OOP.md ============ -->
 
-
-
-
 ## 1. 类与实例 (Class & Instance)
 
 Python 是一门纯粹的面向对象语言，几乎所有的东西都是对象。
@@ -97442,8 +97258,6 @@ Python 采用鸭子类型，不关注对象的具体类型，只关注对象是�
 ```
 
 <!-- ============ 文档分隔线：040-python/064-DecoratorAdvanced.md ============ -->
-
-
 
 ### functools.wraps 保留元信息
 
@@ -98120,8 +97934,6 @@ def old_func():
 ```
 
 <!-- ============ 文档分隔线：040-python/065-ExceptionHandling.md ============ -->
-
-
 
 ## 1. 异常体系 (Exception Hierarchy)
 
@@ -99273,8 +99085,6 @@ def retry(max_retries=3, delay=1):
 ```
 
 <!-- ============ 文档分隔线：040-python/066-FileIOContextManager.md ============ -->
-
-
 
 ## 1. 文件打开与关闭 (Open & Close)
 
@@ -100627,9 +100437,6 @@ async def write_file(path, content):
 
 <!-- ============ 文档分隔线：040-python/067-PythonProjectExampleWebCrawlerDataAnalysis.md ============ -->
 
-
-
-
 | HTML 解析  | 使用 BeautifulSoup 提取结构化数据        |
 | ---------- | ---------------------------------------- |
 | 反爬处理   | 请求头伪装、延时策略、重试机制           |
@@ -101241,9 +101048,6 @@ for attempt in range(1, max_retries + 1):
 
 <!-- ============ 文档分隔线：040-python/068-PythonTheoryKnowledge.md ============ -->
 
-
-
-
 1. 线程获取 GIL
 2. 执行一定数量的字节码（check interval，默认 100 条）或达到时间片（5ms）
 3. 线程释放 GIL
@@ -101687,8 +101491,6 @@ class MyClass(metaclass=Meta):
 | 协程     | async/await 基于生成器实现                   | 事件循环调度，非抢占式                |
 
 <!-- ============ 文档分隔线：040-python/069-BasicDataType.md ============ -->
-
-
 
 ## 整数类型
 
@@ -102355,8 +102157,6 @@ print(result)
 
 <!-- ============ 文档分隔线：040-python/070-OOPFundamentals.md ============ -->
 
-
-
 ## 类定义
 
 **基本写法：定义简单类**
@@ -102882,8 +102682,6 @@ class Multiplier:
 
 <!-- ============ 文档分隔线：040-python/071-OOPAdvanced.md ============ -->
 
-
-
 ## 抽象基类
 
 **换行写法：定义抽象基类**
@@ -103211,8 +103009,6 @@ for color in Color:
 ```
 
 <!-- ============ 文档分隔线：040-python/072-Pathlib.md ============ -->
-
-
 
 ## 路径创建
 
@@ -103576,8 +103372,6 @@ Path("/a/b/c.txt").full_match("/a/**/*.txt")
 
 <!-- ============ 文档分隔线：040-python/073-Itertools.md ============ -->
 
-
-
 ## 无限迭代器
 
 **基本写法：count 无限计数**
@@ -103843,8 +103637,6 @@ for a, b in zip_longest([1, 2, 3], ["a", "b"], fillvalue="?"):
 
 <!-- ============ 文档分隔线：040-python/074-Functools.md ============ -->
 
-
-
 ## reduce 归约
 
 **基本写法：reduce 归约**
@@ -104108,8 +103900,6 @@ def _(data):
 ```
 
 <!-- ============ 文档分隔线：040-python/075-DatetimeTime.md ============ -->
-
-
 
 ## datetime 基本创建
 
@@ -104423,8 +104213,6 @@ print(calendar.monthrange(2024, 2))  # (3, 29)
 
 <!-- ============ 文档分隔线：040-python/076-SerializationJsonCsvPickle.md ============ -->
 
-
-
 ## json 序列化
 
 **基本写法：对象转 JSON 字符串**
@@ -104695,8 +104483,6 @@ print(orjson.dumps({"名": "Tom"}))  # b'{"name":"Tom"}'
 
 <!-- ============ 文档分隔线：040-python/077-NetworkSocketHttp.md ============ -->
 
-
-
 ## socket TCP 服务端
 
 **基本写法：创建 TCP 服务端**
@@ -104954,8 +104740,6 @@ except URLError as e:
 ```
 
 <!-- ============ 文档分隔线：040-python/078-SysOsPlatform.md ============ -->
-
-
 
 ## sys 解释器接口
 
@@ -105230,8 +105014,6 @@ print(platform.machine())  # AMD64 / arm64
 
 <!-- ============ 文档分隔线：040-python/079-MathRandomStatistics.md ============ -->
 
-
-
 ## math 数学函数
 
 **基本写法：平方根与幂**
@@ -105475,8 +105257,6 @@ print(statistics.harmonic_mean([1, 2, 4]))   # 1.714...
 
 <!-- ============ 文档分隔线：040-python/080-Subprocess.md ============ -->
 
-
-
 ## subprocess.run 推荐用法
 
 **基本写法：执行命令**
@@ -105680,8 +105460,6 @@ with open("input.txt", encoding="utf-8") as f:
 ```
 
 <!-- ============ 文档分隔线：040-python/081-Logging.md ============ -->
-
-
 
 ## 基础配置
 
@@ -105905,8 +105683,6 @@ logger.propagate = False
 ```
 
 <!-- ============ 文档分隔线：040-python/082-UnittestPytest.md ============ -->
-
-
 
 ## unittest 基础
 
@@ -106212,8 +105988,6 @@ print(len(m))  # 5
 ```
 
 <!-- ============ 文档分隔线：040-python/083-StringFormattingMethods.md ============ -->
-
-
 
 ## f-string 格式化
 
@@ -106554,8 +106328,6 @@ print("a1b2c".translate(table))  # abc
 
 <!-- ============ 文档分隔线：040-python/084-ArgparseCli.md ============ -->
 
-
-
 ## ArgumentParser 创建解析器
 
 **基本写法：创建解析器**
@@ -106873,8 +106645,6 @@ parser = argparse.ArgumentParser(
 ```
 
 <!-- ============ 文档分隔线：040-python/085-TypingAdvanced.md ============ -->
-
-
 
 ## Literal 字面量类型
 
@@ -107221,8 +106991,6 @@ class Sub(Base):
 
 <!-- ============ 文档分隔线：040-python/086-Enum.md ============ -->
 
-
-
 ## Enum 基础
 
 **基本写法：定义枚举**
@@ -107451,8 +107219,6 @@ for name, member in Color.__members__.items():
 ```
 
 <!-- ============ 文档分隔线：040-python/087-HashlibHmac.md ============ -->
-
-
 
 ## hashlib 哈希
 
@@ -107687,8 +107453,6 @@ print(key.hex())
 
 <!-- ============ 文档分隔线：040-python/088-SslCrypto.md ============ -->
 
-
-
 ## SSLContext 上下文
 
 **基本写法：创建默认上下文**
@@ -107893,8 +107657,6 @@ ctx.verify_mode = ssl.CERT_REQUIRED
 ```
 
 <!-- ============ 文档分隔线：040-python/089-HttpClient.md ============ -->
-
-
 
 ## HTTPConnection
 
@@ -108127,8 +107889,6 @@ conn.close()
 ```
 
 <!-- ============ 文档分隔线：040-python/090-Sqlite3.md ============ -->
-
-
 
 ## 连接数据库
 
@@ -108383,8 +108143,6 @@ for col in cur.fetchall():
 
 <!-- ============ 文档分隔线：040-python/091-ZipfileTarfile.md ============ -->
 
-
-
 ## zipfile 读取
 
 **基本写法：打开 ZIP**
@@ -108626,8 +108384,6 @@ with open("data.txt", "rb") as f:
 
 <!-- ============ 文档分隔线：040-python/092-ArrayBisect.md ============ -->
 
-
-
 ## array 数组
 
 **基本写法：创建数组**
@@ -108832,8 +108588,6 @@ for x in a:
 ```
 
 <!-- ============ 文档分隔线：040-python/093-StringText.md ============ -->
-
-
 
 ## string 模块
 
@@ -109084,8 +108838,6 @@ print(base64.urlsafe_b64encode(b"ab?cd"))
 
 <!-- ============ 文档分隔线：040-python/094-DecimalFractions.md ============ -->
 
-
-
 ## decimal Decimal
 
 **基本写法：创建 Decimal**
@@ -109316,8 +109068,6 @@ print(Decimal(f.numerator) / Decimal(f.denominator))
 ```
 
 <!-- ============ 文档分隔线：040-python/095-ShutilTempfile.md ============ -->
-
-
 
 ## shutil 文件操作
 
@@ -109591,8 +109341,6 @@ print(fnmatch.translate("*.txt"))
 ```
 
 <!-- ============ 文档分隔线：040-python/096-GcInspect.md ============ -->
-
-
 
 ## gc 垃圾回收
 
@@ -109924,8 +109672,6 @@ def total_size(obj):
 
 <!-- ============ 文档分隔线：040-python/097-TracebackWarnings.md ============ -->
 
-
-
 ## traceback 打印异常
 
 **基本写法：打印当前异常**
@@ -110207,8 +109953,6 @@ except RuntimeError as e:
 ```
 
 <!-- ============ 文档分隔线：040-python/098-HttpxRequests.md ============ -->
-
-
 
 ## httpx 客户端
 
@@ -110532,8 +110276,6 @@ with open("big.zip", "wb") as f:
 ```
 
 <!-- ============ 文档分隔线：040-python/099-ProfilingOptimization.md ============ -->
-
-
 
 ## timeit 计时
 
@@ -110876,8 +110618,6 @@ result = "".join(parts)  # 优于 result = parts[0] + parts[1] + ...
 
 <!-- ============ 文档分隔线：040-python/100-GILAndFreeThreading.md ============ -->
 
-
-
 # GIL 与自由线程
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -110892,8 +110632,6 @@ result = "".join(parts)  # 优于 result = parts[0] + parts[1] + ...
 
 <!-- ============ 文档分隔线：040-python/101-CExtensionsAndFfi.md ============ -->
 
-
-
 # C 扩展与 FFI
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -110905,4 +110643,3 @@ result = "".join(parts)  # 优于 result = parts[0] + parts[1] + ...
 - cffi 与 ABI/API 模式
 - CPython C 扩展最小实现
 - 构建打包与替代方案（Cython 方向）
-

@@ -1,6 +1,6 @@
 ---
 order: 390
-title: Cybersecurity 哈希工具
+title: 哈希工具
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

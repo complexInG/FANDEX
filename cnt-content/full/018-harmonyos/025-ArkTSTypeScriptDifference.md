@@ -1,6 +1,6 @@
 ---
 order: 250
-title: ArkTS与TypeScript差异
+title: ArkTS 与 TypeScript 差异
 module: 'harmonyos'
 category: 后端技术
 difficulty: advanced

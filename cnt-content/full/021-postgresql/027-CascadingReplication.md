@@ -8,7 +8,7 @@ description: PostgreSQL级联复制：备库作为上游、多层级联架构与
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'postgresql/025-FDWFDW'
+  - 'postgresql/025-FDWForeignDataWrapper'
   - 'postgresql/026-StreamingReplication'
   - 'postgresql/028-PhysicalReplicationSlot'
   - 'postgresql/029-LogicalDecodingOutputPlugin'

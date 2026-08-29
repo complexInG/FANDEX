@@ -1,6 +1,6 @@
 ---
 order: 200
-title: Kotlin集合操作
+title: Kotlin 集合操作
 module: 'kotlin'
 category: 后端技术
 difficulty: beginner

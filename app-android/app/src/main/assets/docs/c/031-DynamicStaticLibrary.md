@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-07-21'
 related:
   - 'c/033-BuildSystem'
-  - 'c/010-TheLinuxProgrammingInterface'
+  - 'c/010-MultiFileCompilation'
   - 'c/035-CrossPlatformProgramming'
   - 'c/030-FunctionDetailed'
 prerequisites:

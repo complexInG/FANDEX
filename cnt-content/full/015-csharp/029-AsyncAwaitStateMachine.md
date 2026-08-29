@@ -1,6 +1,6 @@
 ---
 order: 290
-title: async-await状态机
+title: async/await 状态机
 module: 'csharp'
 category: 后端技术
 difficulty: advanced
@@ -12,7 +12,7 @@ related:
   - 'csharp/030-DelegateEventUnderlying'
   - 'csharp/031-ReflectionAndFeatureApplication'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

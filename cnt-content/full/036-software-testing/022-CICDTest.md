@@ -1,6 +1,6 @@
 ---
 order: 220
-title: CI-CD测试门禁
+title: CI/CD 测试门禁
 module: 'software-testing'
 category: 云与基础设施
 difficulty: intermediate

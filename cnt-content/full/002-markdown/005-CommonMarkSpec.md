@@ -1,6 +1,6 @@
 ---
 order: 50
-title: CommonMark规范
+title: CommonMark 规范
 module: 'markdown'
 category: 工具链
 difficulty: intermediate

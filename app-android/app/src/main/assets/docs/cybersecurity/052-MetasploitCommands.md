@@ -1,6 +1,6 @@
 ---
 order: 520
-title: Cybersecurity Metasploit 命令(渗透测试)
+title: Metasploit 命令（渗透测试）
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

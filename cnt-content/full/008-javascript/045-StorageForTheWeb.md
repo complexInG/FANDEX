@@ -1,6 +1,6 @@
 ---
 order: 450
-title: Web存储API
+title: Web 存储 API
 module: 'javascript'
 category: 前端技术
 difficulty: intermediate
@@ -8,7 +8,7 @@ description: 浏览器端存储机制的形式语义、安全模型、工程实�
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'javascript/044-ImageOptimization'
+  - 'javascript/044-FetchApiWebStreams'
   - 'javascript/046-IndexedDBADatabaseInYourBrowser'
 prerequisites: []
 ---

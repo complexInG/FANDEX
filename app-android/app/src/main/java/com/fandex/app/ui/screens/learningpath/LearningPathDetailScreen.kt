@@ -1,5 +1,7 @@
 package com.fandex.app.ui.screens.learningpath
 
+import com.fandex.app.ui.components.CategoryColor
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,12 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,6 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +39,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fandex.app.data.model.LearningPathStage
+import com.fandex.app.ui.common.fandexEntrance
+import com.fandex.app.ui.common.tweenNormal
 import com.fandex.app.ui.components.DifficultyBadge
 import com.fandex.app.ui.components.ThemeQuickToggle
 import com.fandex.app.ui.components.TopDock
@@ -64,7 +69,14 @@ fun LearningPathDetailScreen(
     val state by viewModel.state.collectAsState()
     val title by viewModel.title.collectAsState()
     val accentHex by viewModel.accentHex.collectAsState()
-    val accent = parseLpAccent(accentHex)
+    val accent = CategoryColor.parse(accentHex)
+
+    // 入场门控：内容就绪后的下一帧置 true，触发首次 stagger 入场
+    var hasEntered by remember { mutableStateOf(false) }
+    val dataReady = state is LearningPathDetailUiState.Success
+    LaunchedEffect(dataReady) {
+        if (dataReady) hasEntered = true
+    }
 
     Scaffold(
         topBar = {
@@ -79,6 +91,7 @@ fun LearningPathDetailScreen(
                 showNavActions = false,
                 showHome = true,
                 onHome = onHome,
+                accentHex = accentHex,
                 themeQuickToggle = { ThemeQuickToggle(viewModel = viewModel()) }
             )
         }
@@ -88,51 +101,67 @@ fun LearningPathDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (state) {
-                is LearningPathDetailUiState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+            // 状态切换：220ms 淡入淡出
+            Crossfade(
+                targetState = state,
+                animationSpec = tweenNormal(),
+                label = "pathDetailStateCrossfade"
+            ) { current ->
+                when (current) {
+                    is LearningPathDetailUiState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
-                }
-                is LearningPathDetailUiState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = (state as LearningPathDetailUiState.Error).message,
-                            color = LocalExtendedColors.current.fgSecondary
-                        )
+                    is LearningPathDetailUiState.Error -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = current.message,
+                                color = LocalExtendedColors.current.fgSecondary
+                            )
+                        }
                     }
-                }
-                is LearningPathDetailUiState.Success -> {
-                    val path = (state as LearningPathDetailUiState.Success).path
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // 摘要
-                        if (path.summary.isNotEmpty()) {
-                            item(key = "summary") {
-                                Text(
-                                    text = path.summary,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = LocalExtendedColors.current.fgSecondary
+                    is LearningPathDetailUiState.Success -> {
+                        val path = current.path
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            // 摘要
+                            if (path.summary.isNotEmpty()) {
+                                item(key = "summary") {
+                                    Text(
+                                        text = path.summary,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = LocalExtendedColors.current.fgSecondary,
+                                        modifier = Modifier
+                                            .animateItem()
+                                            .fandexEntrance(index = 0, visible = hasEntered)
+                                    )
+                                }
+                            }
+                            // 阶段（stagger 入场 + 重排动画）
+                            itemsIndexed(
+                                path.stages,
+                                key = { _, stage -> stage.id.ifEmpty { stage.title } }
+                            ) { index, stage ->
+                                StageItem(
+                                    moduleId = path.module,
+                                    stage = stage,
+                                    accent = accent,
+                                    onDocClick = onDocClick,
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .fandexEntrance(index = index + 1, visible = hasEntered)
                                 )
                             }
-                        }
-                        // 阶段
-                        items(path.stages, key = { it.id.ifEmpty { it.title } }) { stage ->
-                            StageItem(
-                                moduleId = path.module,
-                                stage = stage,
-                                accent = accent,
-                                onDocClick = onDocClick
-                            )
                         }
                     }
                 }
@@ -149,12 +178,13 @@ private fun StageItem(
     moduleId: String,
     stage: LearningPathStage,
     accent: androidx.compose.ui.graphics.Color,
-    onDocClick: (String, String) -> Unit
+    onDocClick: (String, String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val extendedColors = LocalExtendedColors.current
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
             .background(extendedColors.bgElevated)
@@ -223,12 +253,3 @@ private fun StageItem(
 }
 
 
-/**
- * 解析十六进制颜色
- */
-private fun parseLpAccent(hex: String): androidx.compose.ui.graphics.Color {
-    val normalized = hex.removePrefix("#")
-    return runCatching {
-        androidx.compose.ui.graphics.Color(normalized.toLong(16) or 0xFF000000)
-    }.getOrDefault(androidx.compose.ui.graphics.Color(0xFF4F5BD5))
-}

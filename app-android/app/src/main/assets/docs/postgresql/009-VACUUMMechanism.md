@@ -1,6 +1,6 @@
 ---
 order: 90
-title: VACUUM机制
+title: VACUUM 机制
 module: 'postgresql'
 category: 数据库
 difficulty: advanced

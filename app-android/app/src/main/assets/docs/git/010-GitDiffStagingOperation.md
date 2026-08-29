@@ -1,6 +1,6 @@
 ---
 order: 100
-title: git-diff与暂存区操作
+title: git-diff 与暂存区操作
 module: 'git'
 category: 工具链
 difficulty: intermediate

@@ -12,7 +12,7 @@ related:
   - 'cpp/006-CppPointers'
   - 'cpp/008-LambdaExpression'
   - 'cpp/009-TemplateMetaprogramming'
-  - 'cpp/050-CCoreGuidelinesResourceManagement'
+  - 'cpp/050-CppCoreGuidelinesResourceManagement'
   - 'cpp/004-CppReferenceTypes'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
@@ -2823,25 +2823,25 @@ let w = Arc::downgrade(&p);           // 弱引用 +1
 - [cpp/内存分配器](cpp/内存分配器)：自定义分配器与 `allocate_shared` 的协同机制
 - [cpp/内存池](cpp/内存池)：对象池模式与 `weak_ptr` 的生命周期观察
 - [cpp/垃圾回收](cpp/垃圾回收)：C++ 与 GC 语言的内存管理范式对比，含 Boehm GC 论述
-- [c/指针深度解析](../c/指针深度解析)：C 语言裸指针的底层机制，作为智能指针的前置基础
-- [c/内存管理](../c/内存管理)：`malloc`/`free`、`alloca`、`mmap` 的系统级内存管理
+- c/指针深度解析：C 语言裸指针的底层机制，作为智能指针的前置基础
+- c/内存管理：`malloc`/`free`、`alloca`、`mmap` 的系统级内存管理
 
 #### 15.3.2 跨语言对比
 
-- [rust/所有权系统](../rust/所有权系统)：Rust 所有权、借用、生命周期三件套，与 C++ 智能指针的哲学对比
+- rust/所有权系统：Rust 所有权、借用、生命周期三件套，与 C++ 智能指针的哲学对比
 - [rust/Box Rc Arc](../rust/Box-Rc-Arc)：Rust 的 `Box<T>`、`Rc<T>`、`Arc<T>` 与 C++ `unique_ptr`、`shared_ptr` 的等价性分析
-- [java/引用类型](../java/引用类型)：强引用、软引用、弱引用、虚引用与 GC 的协同机制
-- [go/内存管理](../go/内存管理)：Go 三色标记 GC 与 C++ 引用计数的性能对比
-- [python/引用计数](../python/引用计数)：CPython 的引用计数 + 分代 GC 混合方案
+- java/引用类型：强引用、软引用、弱引用、虚引用与 GC 的协同机制
+- go/内存管理：Go 三色标记 GC 与 C++ 引用计数的性能对比
+- python/引用计数：CPython 的引用计数 + 分代 GC 混合方案
 
 #### 15.3.3 设计模式与架构
 
-- [design-pattern/对象池模式](../design-pattern/对象池模式)：基于 `weak_ptr` 的对象池设计
-- [design-pattern/观察者模式](../design-pattern/观察者模式)：`weak_ptr` 在事件系统中的应用
-- [design-pattern/工厂模式](../design-pattern/工厂模式)：`unique_ptr` 作为工厂返回类型的设计动机
-- [design-pattern/Pimpl惯用法](../design-pattern/Pimpl惯用法)：编译防火墙与 `unique_ptr` 的协同
-- [software-engineering/ABI稳定性](../software-engineering/ABI稳定性)：智能指针作为 ABI 边界的风险与对策
-- [software-engineering/异常安全](../software-engineering/异常安全)：RAII 与异常安全保证等级
+- design-pattern/对象池模式：基于 `weak_ptr` 的对象池设计
+- design-pattern/观察者模式：`weak_ptr` 在事件系统中的应用
+- design-pattern/工厂模式：`unique_ptr` 作为工厂返回类型的设计动机
+- design-pattern/Pimpl惯用法：编译防火墙与 `unique_ptr` 的协同
+- software-engineering/ABI稳定性：智能指针作为 ABI 边界的风险与对策
+- software-engineering/异常安全：RAII 与异常安全保证等级
 
 ### 15.4 推荐学习路径
 

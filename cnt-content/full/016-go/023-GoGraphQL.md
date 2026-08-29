@@ -1,6 +1,6 @@
 ---
 order: 230
-title: Go与GraphQL
+title: Go 与 GraphQL
 module: 'go'
 category: 后端技术
 difficulty: intermediate

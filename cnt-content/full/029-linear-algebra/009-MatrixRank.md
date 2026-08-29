@@ -10,7 +10,7 @@ updated: '2026-08-29'
 related:
   - 'linear-algebra/007-InverseMatrix'
   - 'linear-algebra/008-ElementaryTransformationAndMatrix'
-  - 'linear-algebra/010-ChunkingMatrix'
+  - 'linear-algebra/010-BlockMatrix'
 prerequisites: []
 ---
 

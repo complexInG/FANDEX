@@ -1,6 +1,6 @@
 ---
 order: 50
-title: id、class、style：打通 HTML 到 CSS/JS 的通道
+title: id、 class、 style：打通 HTML 到 CSS/JS 的通道
 module: 'html5'
 category: 前端技术
 difficulty: beginner

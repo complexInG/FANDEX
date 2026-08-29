@@ -8,7 +8,7 @@ description: GitHub 平台核心功能与协作开发流程：从注册账户、
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'github/002-AccountRegister2FA2FA'
+  - 'github/002-AccountRegister2FA'
   - 'github/003-RepositoryCreateCloneArchiveDelete'
 prerequisites: []
 ---

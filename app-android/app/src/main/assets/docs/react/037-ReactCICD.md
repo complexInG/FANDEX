@@ -1,6 +1,6 @@
 ---
 order: 370
-title: React与CI-CD
+title: React 与 CI/CD
 module: 'react'
 category: 前端技术
 difficulty: intermediate

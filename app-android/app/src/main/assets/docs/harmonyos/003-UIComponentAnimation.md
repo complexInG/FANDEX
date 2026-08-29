@@ -1,6 +1,6 @@
 ---
 order: 30
-title: UI组件与动画
+title: UI 组件与动画
 module: 'harmonyos'
 category: 后端技术
 difficulty: intermediate

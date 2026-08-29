@@ -1,6 +1,6 @@
 ---
 order: 140
-title: Server-Components
+title: Server Components
 module: 'react'
 category: 前端技术
 difficulty: advanced

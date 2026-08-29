@@ -1,6 +1,6 @@
 ---
 order: 280
-title: React与WebAssembly
+title: React 与 WebAssembly
 module: 'react'
 category: 前端技术
 difficulty: advanced

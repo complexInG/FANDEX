@@ -1,6 +1,6 @@
 ---
 order: 40
-title: Hooks深入
+title: Hooks 深入
 module: 'react'
 category: 前端技术
 difficulty: intermediate
@@ -346,7 +346,7 @@ const handleClick = useMemo(
 
 ## 5. useContext
 
-`useContext` 用于消费 Context 值，详见 [Context与全局状态](./Context与全局状态.md)。
+`useContext` 用于消费 Context 值，详见 Context与全局状态。
 
 ```tsx
 import { createContext, useContext } from 'react';

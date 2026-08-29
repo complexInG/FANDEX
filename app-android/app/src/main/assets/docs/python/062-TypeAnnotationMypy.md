@@ -1,6 +1,6 @@
 ---
 order: 620
-title: 类型注解与mypy
+title: 类型注解与 mypy
 module: 'python'
 category: 后端技术
 difficulty: advanced

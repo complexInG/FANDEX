@@ -1,6 +1,6 @@
 ---
 order: 260
-title: Kotlin与Spring
+title: Kotlin 与 Spring
 module: 'kotlin'
 category: 后端技术
 difficulty: intermediate

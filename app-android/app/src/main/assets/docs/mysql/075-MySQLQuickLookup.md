@@ -1,6 +1,6 @@
 ---
 order: 750
-title: MySQL 快速查阅
+title: MySQL 语法速查手册
 module: 'mysql'
 category: 数据库
 difficulty: intermediate

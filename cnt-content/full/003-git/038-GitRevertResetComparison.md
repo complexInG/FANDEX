@@ -1,6 +1,6 @@
 ---
 order: 380
-title: git-revert与reset对比
+title: git-revert 与 reset 对比
 module: 'git'
 category: 工具链
 difficulty: intermediate

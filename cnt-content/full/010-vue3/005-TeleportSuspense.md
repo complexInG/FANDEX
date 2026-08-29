@@ -1,6 +1,6 @@
 ---
 order: 50
-title: Teleport与Suspense
+title: Teleport 与 Suspense
 module: 'vue3'
 category: 前端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 240
-title: Stage模型与FA模型区别
+title: Stage 模型与 FA 模型区别
 module: 'harmonyos'
 category: 后端技术
 difficulty: advanced

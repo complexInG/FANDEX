@@ -10,7 +10,7 @@ updated: '2026-08-03'
 related:
   - 'java/073-JavaDatabaseConnection'
   - 'java/048-JavaNewFeaturesEcosystem'
-  - 'java/063-JVMtuning'
+  - 'java/063-JVMTuning'
   - 'java/020-CollectionFrameworkDetailed'
 prerequisites:
   - 'java/001-JavaOverviewDevEnv'

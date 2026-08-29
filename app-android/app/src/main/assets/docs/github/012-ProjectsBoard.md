@@ -1,6 +1,6 @@
 ---
 order: 120
-title: Projects看板
+title: Projects 看板
 module: 'github'
 category: 工具链
 difficulty: intermediate

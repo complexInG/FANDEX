@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-29'
 related:
   - 'csharp/036-ValueTypeReferenceType'
-  - 'csharp/008-CAdvancedFeature'
+  - 'csharp/008-CSharpAdvancedFeature'
 prerequisites:
   - 'csharp/036-ValueTypeReferenceType'
 ---

@@ -1,6 +1,6 @@
 ---
 order: 100
-title: 管道与重定向速查手册
+title: 管道与重定向命令速查手册
 module: 'shell'
 category: 工具链
 difficulty: beginner

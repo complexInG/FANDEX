@@ -13,7 +13,7 @@ related:
   - 'csharp/016-CRecordType'
   - 'csharp/017-GenericCovarianceContravariance'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 ## 一、学习目标
@@ -1796,13 +1796,6 @@ string Classify(object obj) => obj switch {
 2. **中级开发者**：学习属性模式、位置模式、逻辑模式，应用于领域建模；
 3. **高级开发者**：研究列表模式、递归模式、活动模式，构建 DSL 与规则引擎；
 4. **架构师**：用模式匹配设计穷尽性强的领域模型，结合源生成器实现编译期检查。
-
-后续推荐阅读：
-
-- 《记录类型与不可变性》：与模式匹配配合的最佳搭档
-- 《源生成器》：编译期代码生成与模式匹配结合
-- 《表达式树》：理解模式匹配的编译期翻译
-- 《F# 入门》：体验完整穷尽性检查与活动模式
 ## 类型模式
 
 **基本写法：is 类型检查**

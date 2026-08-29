@@ -1,6 +1,6 @@
 ---
 order: 240
-title: Go与gRPC
+title: Go 与 gRPC
 module: 'go'
 category: 后端技术
 difficulty: intermediate

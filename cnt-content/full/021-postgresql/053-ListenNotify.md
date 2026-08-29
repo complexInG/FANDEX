@@ -1,6 +1,6 @@
 ---
 order: 530
-title: LISTEN/NOTIFY 监听通知 语法速查手册
+title: LISTEN/NOTIFY 监听通知语法速查手册
 module: 'postgresql'
 category: 数据库
 difficulty: beginner

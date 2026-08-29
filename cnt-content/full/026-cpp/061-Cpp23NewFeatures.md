@@ -1,6 +1,6 @@
 ---
 order: 610
-title: C++23新特性
+title: C++23 新特性
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced

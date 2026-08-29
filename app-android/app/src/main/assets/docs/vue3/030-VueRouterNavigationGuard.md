@@ -1,6 +1,6 @@
 ---
 order: 300
-title: Vue-Router导航守卫
+title: Vue-Router 导航守卫
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

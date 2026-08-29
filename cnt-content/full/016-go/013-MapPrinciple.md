@@ -1,6 +1,6 @@
 ---
 order: 130
-title: Map原理
+title: Map 原理
 module: 'go'
 category: 后端技术
 difficulty: advanced

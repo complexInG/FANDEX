@@ -10,7 +10,7 @@ updated: '2026-08-05'
 related:
   - 'mysql/002-Roadmap'
   - 'mysql/003-Glossary'
-  - 'mysql/004-SQL-Playground'
+  - 'mysql/004-SQLPlayground'
 prerequisites: []
 ---
 
@@ -76,12 +76,12 @@ DELETE FROM students WHERE score < 60;
 **三条原则**
 
 1. 先动手再理解：先在沙箱里跑通，再回来读原理；
-2. 术语不认识先查 `000-Glossary`，不要卡住；
+2. 术语不认识先查 `003-Glossary`，不要卡住；
 3. 每条 SQL 都要自己敲一遍，复制粘贴记不住。
 
 ## 1. 学习路线图
 
-详细时间线见 `000-Roadmap`。一句话版：
+详细时间线见 `002-Roadmap`。一句话版：
 
 ```text
 第 1 周：沙箱 + SELECT 五动作 + 环境搭建
@@ -115,5 +115,5 @@ DELETE FROM students WHERE score < 60;
 
 - 路线图：`mysql/002-Roadmap`；
 - 术语表：`mysql/003-Glossary`；
-- 沙箱练习：`mysql/004-SQL-Playground`；
+- 沙箱练习：`mysql/004-SQLPlayground`；
 - 第一课：`mysql/005-MySQLOverviewDatabaseDesign`。

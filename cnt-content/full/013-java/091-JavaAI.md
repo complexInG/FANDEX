@@ -1,6 +1,6 @@
 ---
 order: 910
-title: Java与AI
+title: Java 与 AI
 module: 'java'
 category: 后端技术
 difficulty: intermediate

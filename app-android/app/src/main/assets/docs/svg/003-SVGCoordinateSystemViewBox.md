@@ -10,7 +10,7 @@ updated: '2026-07-18'
 related:
   - 'svg/002-SVGBasicSyntaxDocStructure'
   - 'svg/004-SVGBasicShapeDetailed'
-  - 'svg/009-SVGTransformTransform'
+  - 'svg/009-SVGTransform'
 prerequisites:
   - 'svg/002-SVGBasicSyntaxDocStructure'
 ---

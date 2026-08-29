@@ -1,6 +1,6 @@
 ---
 order: 400
-title: 云计算 GCP Compute 与 Storage
+title: GCP Compute 与 Storage
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

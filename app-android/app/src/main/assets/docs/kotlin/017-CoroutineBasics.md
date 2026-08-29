@@ -2068,19 +2068,19 @@ class DynamicPool(initialConcurrency: Int = 4) {
 
 ### 11.7 相关 Kotlin 文档
 
-- [概述与环境配置](./概述与环境配置.md)
-- [协程进阶](./协程进阶.md)
-- [协程异常处理](./协程异常处理.md)
-- [协程调度器与上下文](./协程调度器与上下文.md)
-- [Flow 与响应式流](./Flow与响应式流.md)
-- [Flow 冷流与 SharedFlow 和 StateFlow](./Flow冷流与SharedFlow和StateFlow.md)
-- [Channel 与 BroadcastChannel](./Channel与BroadcastChannel.md)
-- [Kotlin 与并发安全](./Kotlin与并发安全.md)
-- [集合与协程](./集合与协程.md)
-- [Kotlin 与 Spring](./Kotlin与Spring.md)
-- [Kotlin 与 Ktor](./Kotlin与Ktor.md)
-- [Kotlin 与 Android](./Kotlin与Android.md)
-- [测试与最佳实践](./测试与最佳实践.md)
+- 概述与环境配置
+- 协程进阶
+- 协程异常处理
+- 协程调度器与上下文
+- Flow 与响应式流
+- Flow 冷流与 SharedFlow 和 StateFlow
+- Channel 与 BroadcastChannel
+- Kotlin 与并发安全
+- 集合与协程
+- Kotlin 与 Spring
+- Kotlin 与 Ktor
+- Kotlin 与 Android
+- 测试与最佳实践
 
 ---
 

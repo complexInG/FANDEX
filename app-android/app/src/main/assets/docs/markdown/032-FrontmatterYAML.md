@@ -1,6 +1,6 @@
 ---
 order: 320
-title: Markdown Frontmatter YAML 语法速查
+title: Markdown Frontmatter YAML 语法速查手册
 module: 'markdown'
 category: 工具链
 difficulty: beginner

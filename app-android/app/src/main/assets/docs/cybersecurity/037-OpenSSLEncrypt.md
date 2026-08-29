@@ -1,6 +1,6 @@
 ---
 order: 370
-title: Cybersecurity OpenSSL 加密解密
+title: OpenSSL 加密解密
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

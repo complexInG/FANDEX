@@ -8,7 +8,7 @@ description: Java 并发编程详解：JMM 形式化、synchronized 锁升级、
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'java/063-JVMtuning'
+  - 'java/063-JVMTuning'
   - 'java/020-CollectionFrameworkDetailed'
   - 'java/053-CompletableFutureAsync'
   - 'java/054-ThreadLocalMemoryLeak'

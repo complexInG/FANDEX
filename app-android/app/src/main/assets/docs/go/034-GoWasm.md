@@ -1,6 +1,6 @@
 ---
 order: 340
-title: Go与Wasm
+title: Go 与 Wasm
 module: 'go'
 category: 后端技术
 difficulty: advanced

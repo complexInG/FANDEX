@@ -1,6 +1,6 @@
 ---
 order: 350
-title: Networking VPN 配置命令
+title: VPN 配置命令
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

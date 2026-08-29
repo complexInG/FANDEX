@@ -8,7 +8,7 @@ description: Redis基数统计HyperLogLog：去重计数、UV统计、误差控�
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'redis/005-BitGraph'
+  - 'redis/005-BitMapRedis'
   - 'redis/007-GeoSpatial'
   - 'redis/008-Stream'
 prerequisites:

@@ -1,6 +1,6 @@
 ---
 order: 390
-title: 递归CTE遍历树结构
+title: 递归 CTE 遍历树结构
 module: 'sql'
 category: 数据库
 difficulty: advanced

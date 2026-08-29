@@ -1,6 +1,6 @@
 ---
 order: 560
-title: gh label 与 alias/config 命令速查手册
+title: gh label 命令速查手册
 module: 'github'
 category: 工具链
 difficulty: beginner

@@ -6,14 +6,12 @@ category: 数据库
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：022-redis/001-OverviewCoreDataStructure.md ============ -->
-
-
 
 > 本节为增量补充，帮助你选择 Redis 版本并了解许可变化。
 
@@ -423,11 +421,7 @@ VINFO products:vec
 | 适用场景 | 实时推荐、缓存   | 大规模向量检索 |
 | 数据量   | 受内存限制       | 受磁盘限制     |
 
-
-
 <!-- ============ 文档分隔线：022-redis/002-PersistenceModule.md ============ -->
-
-
 
 ## 1. RDB 快照
 
@@ -795,10 +789,7 @@ MODULE UNLOAD rejson
 | RedisCell       | 限流器             | API 限流、速率控制    |
 | T-Digest        | 分位数估算         | 延迟监控、SLA 告警    |
 
-
-
 <!-- ============ 文档分隔线：022-redis/003-ClusterHA.md ============ -->
-
 
 ## 1. 主从复制
 
@@ -1403,11 +1394,7 @@ CLUSTER RESET [HARD|SOFT]
 -- HARD：清空数据 + 重置集群（重新加入用）
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/004-CacheStrategyAdvancedFeature.md ============ -->
-
-
 
 ## 1. 过期键删除
 
@@ -1935,10 +1922,7 @@ SLOWLOG RESET
 - 监控 SLOWLOG 并告警
 ```
 
-
-
-<!-- ============ 文档分隔线：022-redis/005-BitGraph.md ============ -->
-
+<!-- ============ 文档分隔线：022-redis/005-BitMapRedis.md ============ -->
 
 ## 1. 位图概述
 
@@ -2158,10 +2142,7 @@ BITOP OR mau:2026-06 dau:2026-06-01 dau:2026-06-02 dau:2026-06-03
 BITCOUNT mau:2026-06
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/006-NumberStats.md ============ -->
-
 
 ## 1. HyperLogLog 概述
 
@@ -2289,10 +2270,7 @@ PFMERGE wau:2026-w24 dau:2026-06-09 dau:2026-06-10 dau:2026-06-11
 PFCOUNT wau:2026-w24
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/007-GeoSpatial.md ============ -->
-
 
 ## 1. GEO 概述
 
@@ -2455,10 +2433,7 @@ GEOADD stores 116.397 39.908 "store:1" 116.401 39.912 "store:2"
 GEOSEARCH stores FROMLONLAT 116.4 39.9 BYRADIUS 2 km WITHDIST ASC
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/008-Stream.md ============ -->
-
 
 ## 第 1 章 概述与学习目标
 
@@ -8795,11 +8770,7 @@ XINFO GROUPS mystream
 XINFO CONSUMERS mystream mygroup
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/009-VectorSet.md ============ -->
-
-
 
 ## 1. Vector Set 概述
 
@@ -8865,10 +8836,7 @@ VADD products VALUES 128 <embedding> product:1 SET category "electronics"
 VSIM products product:42 COUNT 10 FILTER "category == 'electronics'"
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/010-RDBSnapshotPersistence.md ============ -->
-
 
 ## 1. RDB 概述
 
@@ -9305,10 +9273,7 @@ rdbchecksum yes
 stop-writes-on-bgsave-error yes
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/011-AOFLogPersistence.md ============ -->
-
 
 ## 1. AOF 概述
 
@@ -9847,11 +9812,7 @@ aof-load-truncated yes
 dir /var/lib/redis
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/012-MixedPersistence.md ============ -->
-
-
 
 ## 1. 混合持久化概述
 
@@ -10093,11 +10054,7 @@ INFO Persistence
 # aof_last_bgrewrite_status: 上次重写状态
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/013-DisklessReplication.md ============ -->
-
-
 
 ## 1. 无盘复制概述
 
@@ -10334,11 +10291,7 @@ INFO Replication
 # connected_slaves: 已连接从节点数
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/014-ModuleSystem.md ============ -->
-
-
 
 ## 1. 模块系统概述
 
@@ -10742,11 +10695,7 @@ RedisModuleType *MyType = RedisModule_CreateDataType(
 
 **Redis Stack**：Redis 官方将常用模块打包为 Redis Stack，包含 RedisJSON、RediSearch、RedisTimeSeries、RedisBloom 等模块，开箱即用。
 
-
-
 <!-- ============ 文档分隔线：022-redis/015-StringSDSStructure.md ============ -->
-
-
 
 ﻿# 字符串 SDS 结构
 
@@ -11127,11 +11076,7 @@ static inline char sdsReqType(size_t string_size) {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/016-SkipListAndSortedSet.md ============ -->
-
-
 
 ## 1. 跳表原理
 
@@ -11340,10 +11285,7 @@ $$E(\text{总指针数}) = n \times \sum_{k=1}^{\infty} \frac{1}{4^{k-1}} = n \t
 
 每个节点平均 1.33 个前进指针，加上 span 和 backward，空间开销约为纯链表的 2-3 倍。
 
-
-
 <!-- ============ 文档分隔线：022-redis/017-ReplicationBuffer.md ============ -->
-
 
 ## 1. 复制缓冲区体系
 
@@ -11739,10 +11681,7 @@ replica-priority 100
 # 旧版：replica-ignore-maxmemory no
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/018-SentinelElection.md ============ -->
-
 
 ## 1. Sentinel 架构
 
@@ -12116,11 +12055,7 @@ SENTINEL flushconfig
 -- 哨兵状态变更（发现新从库/哨兵）后建议执行
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/019-RedisClusterHashSlot.md ============ -->
-
-
 
 ## 1. 哈希槽原理
 
@@ -12349,10 +12284,7 @@ CLUSTER INFO
 # cluster_size:3            ← 3个主节点
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/020-PipeTransactionAtomic.md ============ -->
-
 
 ## 1. Pipeline 管道
 
@@ -12737,11 +12669,7 @@ pipe.execute()
 EVAL "local stock = tonumber(redis.call('GET', KEYS[1])) if stock and stock > 0 then redis.call('DECR', KEYS[1]) redis.call('SADD', KEYS[2], ARGV[1]) return 1 end return 0" 2 stock:item1 users:item1 user42
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/021-LuaScriptAtomicExecution.md ============ -->
-
-
 
 ﻿# Lua 脚本原子执行
 
@@ -13235,11 +13163,7 @@ EVAL "local key = KEYS[1] local limit = tonumber(ARGV[1]) local window = tonumbe
 EVAL "local stock_key = KEYS[1] local user_key = KEYS[2] local user_id = ARGV[1] local quantity = tonumber(ARGV[2]) if redis.call('SISMEMBER', user_key, user_id) == 1 then return -1 end local stock = tonumber(redis.call('GET', stock_key)) if not stock or stock < quantity then return 0 end redis.call('DECRBY', stock_key, quantity) redis.call('SADD', user_key, user_id) return 1" 2 stock:item1 users:item1 user42 1
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/022-CachePenetrationBreakdownAvalanche.md ============ -->
-
-
 
 ## 1. 缓存穿透
 
@@ -13523,11 +13447,7 @@ flowchart TD
 - Key 过期分布: 是否集中
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/023-MemoryEvictionPolicy.md ============ -->
-
-
 
 ﻿# 内存淘汰策略
 
@@ -13896,10 +13816,7 @@ uint8_t LFULogIncr(uint8_t counter) {
 INFO stats
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/024-HashCommand.md ============ -->
-
 
 ## 基本读写
 
@@ -14127,10 +14044,7 @@ HSCAN big:hash 0 COUNT 100
 HGET user:1 name
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/025-ListSetZSetCommand.md ============ -->
-
 
 ## List 列表
 
@@ -14577,10 +14491,7 @@ ZREMRANGEBYSCORE rate:user1 0 1718334540000
 ZCARD rate:user1
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/026-PubSubCommand.md ============ -->
-
 
 ## 订阅命令
 
@@ -14848,10 +14759,7 @@ PUBLISH broadcast:all "system maintenance at 22:00"
 PSUBSCRIBE broadcast:*
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/027-KeyManagement.md ============ -->
-
 
 ## 过期时间设置
 
@@ -15058,10 +14966,7 @@ SUBSCRIBE __keyevent@0__:expired
 -- A 所有事件（g$lshzxe 的别名）
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/028-ACL.md ============ -->
-
 
 ## 认证基础
 
@@ -15298,10 +15203,7 @@ CONFIG SET maxmemory-policy allkeys-lru
 -- 5. 禁用 KEYS（用 SCAN 替代）
 ```
 
-
-
 <!-- ============ 文档分隔线：022-redis/029-NewFeatures7.md ============ -->
-
 
 ## Redis Functions（7.0+）
 
@@ -15547,3 +15449,16 @@ HPERSIST user:1001 FIELDS 1 session_token
 
 -- 字段过期后自动删除，不影响其他字段
 ```
+
+<!-- ============ 文档分隔线：022-redis/030-RedisNewFeatures8.md ============ -->
+
+# Redis 8 新特性
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- 新数据类型与模块演进
+- 性能与内存改进
+- 查询能力演进
+- 升级注意事项与 7.x 对比

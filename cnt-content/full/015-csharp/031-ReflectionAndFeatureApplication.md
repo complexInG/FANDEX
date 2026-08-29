@@ -13,7 +13,7 @@ related:
   - 'csharp/032-EFCoreMigrationOptimization'
   - 'csharp/033-AspNetCoreMiddlewarePipeline'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 ## 1. 历史动机与发展脉络

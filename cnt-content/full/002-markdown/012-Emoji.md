@@ -1,6 +1,6 @@
 ---
 order: 120
-title: Emoji表情
+title: Emoji 表情
 module: 'markdown'
 category: 工具链
 difficulty: beginner

@@ -1,6 +1,6 @@
 ---
 order: 180
-title: 原型链继承与class本质
+title: 原型链继承与 class 本质
 module: 'javascript'
 category: 前端技术
 difficulty: advanced

@@ -8,11 +8,11 @@ description: SMIL animate、animateTransform、animateMotion 与 CSS 动画对�
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'svg/009-SVGTransformTransform'
-  - 'svg/005-SVGPathPathDetailed'
+  - 'svg/009-SVGTransform'
+  - 'svg/005-SVGPathDetailed'
   - 'svg/014-SVGCSSStyling'
 prerequisites:
-  - 'svg/009-SVGTransformTransform'
+  - 'svg/009-SVGTransform'
 ---
 
 ## 1. SVG 动画方案对比

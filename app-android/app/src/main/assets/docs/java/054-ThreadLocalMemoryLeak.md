@@ -1,6 +1,6 @@
 ---
 order: 540
-title: ThreadLocal内存泄漏
+title: ThreadLocal 内存泄漏
 module: 'java'
 category: 后端技术
 difficulty: advanced

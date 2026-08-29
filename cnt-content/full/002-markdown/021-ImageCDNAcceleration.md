@@ -1,6 +1,6 @@
 ---
 order: 210
-title: 图片CDN加速
+title: 图片 CDN 加速
 module: 'markdown'
 category: 工具链
 difficulty: intermediate

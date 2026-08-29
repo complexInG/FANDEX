@@ -1,6 +1,6 @@
 ---
 order: 260
-title: React服务端渲染
+title: React 服务端渲染
 module: 'react'
 category: 前端技术
 difficulty: intermediate

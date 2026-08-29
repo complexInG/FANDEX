@@ -1,6 +1,6 @@
 ---
 order: 270
-title: React设计模式
+title: React 设计模式
 module: 'react'
 category: 前端技术
 difficulty: intermediate

@@ -110,7 +110,7 @@
         {
           "id": "c-203",
           "title": "volatile关键字",
-          "doc": "049-LinuxKernelMemoryBarriers"
+          "doc": "049-VolatileKeyword"
         },
         {
           "id": "c-204",
@@ -167,7 +167,7 @@
           "title": "多文件编译",
           "desc": "C 语言多文件编译的完整知识体系，涵盖翻译单元、链接性、ODR、头文件、预处理器、Makefile/CMake/Ninja、静态/动态库、ABI、链接器原理与工业级工程实践。",
           "difficulty": "intermediate",
-          "doc": "010-TheLinuxProgrammingInterface"
+          "doc": "010-MultiFileCompilation"
         },
         {
           "id": "c-306",
@@ -349,7 +349,7 @@
           "title": "文件 I/O 操作",
           "desc": "标准文件流操作、二进制文件及错误处理。",
           "difficulty": "intermediate",
-          "doc": "050-IO"
+          "doc": "050-StdioFileIO"
         },
         {
           "id": "c-332",

@@ -1,6 +1,6 @@
 ---
 order: 920
-title: Java与安全
+title: Java 与安全
 module: 'java'
 category: 后端技术
 difficulty: intermediate

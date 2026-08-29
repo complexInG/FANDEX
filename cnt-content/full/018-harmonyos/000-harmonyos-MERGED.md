@@ -6,15 +6,12 @@ category: 后端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：018-harmonyos/001-OverviewSetup.md ============ -->
-
-
-
 
 # 概述与环境搭建：HarmonyOS 系统架构与开发环境工程实践
 
@@ -2487,10 +2484,7 @@ enum RuntimeOS { HARMONYOS = 'HarmonyOS', OPENHARMONY = 'OpenHarmony' }
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/002-ArkTSArkUI.md ============ -->
-
 
 ## 1. ArkTS 语言基础
 
@@ -3588,10 +3582,7 @@ Image($r('app.media.photo'))
   .width(100).height(100)
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/003-UIComponentAnimation.md ============ -->
-
 
 ## 1. 基础组件
 
@@ -4861,11 +4852,7 @@ Refresh({ refreshing: $$this.isRefreshing }) {
 })
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/004-NetworkAndPersistence.md ============ -->
-
-
 
 ## 1. HTTP 网络通信
 
@@ -5448,11 +5435,7 @@ export default class MigrationAbility extends UIAbility {
 | **增量同步** | 数据库记录变更     | 时间戳 + 关系型数据库    |
 | **冲突解决** | 多设备同时修改     | 版本号 + 自定义合并逻辑  |
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/005-MultimediaDeviceCapability.md ============ -->
-
-
 
 ## 1. 相机调用
 
@@ -6081,12 +6064,7 @@ hvigorw assembleApp --mode release
 | **versionName** | 用户可见版本号 | 语义化版本 x.y.z |
 | **bundleName**  | 应用唯一标识   | 反域名格式       |
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/006-ArkTSLanguageFeature.md ============ -->
-
-
-
 
 # ArkTS 语言特性：HarmonyOS 声明式应用语言的工程哲学与形式化语义
 
@@ -8605,12 +8583,7 @@ const task = new taskpool.Task(heavyCompute, [1, 2, 3])
 const result = await taskpool.execute(task) as number
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/007-StateManagement.md ============ -->
-
-
-
 
 # 状态管理：ArkUI 响应式系统的形式化语义与工程实践
 
@@ -11388,12 +11361,7 @@ struct CartPage {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/008-CustomComponent.md ============ -->
-
-
-
 
 # 自定义组件：ArkUI 声明式组件模型与组合复用工程实践
 
@@ -13882,10 +13850,7 @@ List() {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/009-ListGrid.md ============ -->
-
 
 ## 概述
 
@@ -14714,10 +14679,7 @@ List().lanes(2, 8)
 List() { ... }.sticky(StickyStyle.Header)  // Header | Footer
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/010-NavigationRoute.md ============ -->
-
 
 ## 概述
 
@@ -15658,10 +15620,7 @@ struct Index {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/011-NetworkRequest.md ============ -->
-
 
 ## 概述
 
@@ -18061,10 +18020,7 @@ ws.on('error', (err) => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/012-DataPersistence.md ============ -->
-
 
 ## 概述
 
@@ -19271,10 +19227,7 @@ kvStore.on('dataChange', distributedKVStore.SubscribeType.SUBSCRIBE_TYPE_ALL, (d
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/013-AnimationSystem.md ============ -->
-
 
 ### 属性动画
 
@@ -20033,10 +19986,7 @@ interface PageTransitionOptions {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/014-GestureInteraction.md ============ -->
-
 
 ### 点击手势
 
@@ -20648,10 +20598,7 @@ Text('鼠标区域')
   });
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/015-NotificationPermission.md ============ -->
-
 
 ### 进度通知
 
@@ -21743,10 +21690,7 @@ reminderAgentManager.ActionButtonType.ACTION_BUTTON_TYPE_CUSTOM     // 自定义
 reminderAgentManager.ActionButtonType.ACTION_BUTTON_TYPE_SNOOZE     // 稍后提醒按钮
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/016-MultimediaCapability.md ============ -->
-
 
 ## 概述
 
@@ -22914,10 +22858,7 @@ enum XComponentType {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/017-SensorLocation.md ============ -->
-
 
 ## 概述
 
@@ -23725,10 +23666,7 @@ interface GeoAddress {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/018-CardDevelopment.md ============ -->
-
 
 ## 概述
 
@@ -24473,10 +24411,7 @@ struct CardPage {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/019-DistributedCapability.md ============ -->
-
 
 ## 分布式任务调度
 
@@ -26231,10 +26166,7 @@ class ServiceStub extends rpc.RemoteObject {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/020-PerformanceOptimization.md ============ -->
-
 
 ### 组件复用
 
@@ -26844,10 +26776,7 @@ w.onmessage = (e) => {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/021-I18nAccessibility.md ============ -->
-
 
 ## 概述
 
@@ -28632,10 +28561,7 @@ Text('自定义操作')
   })
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/022-TestDebug.md ============ -->
-
 
 ## 概述
 
@@ -30504,12 +30430,7 @@ let input = await driver.findComponent(BY.id('username'))
 await input.inputText('admin')
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/023-AppSignaturePublish.md ============ -->
-
-
-
 
 # 应用签名与发布：HarmonyOS 代码签名体系与分发工程实践
 
@@ -32102,12 +32023,7 @@ hdc shell bm dump -n com.example.myapp
 hdc list targets
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/024-StageFAModelDifference.md ============ -->
-
-
-
 
 # Stage 模型与 FA 模型区别：从 Ability 到 UIAbility 的范式跃迁
 
@@ -34080,10 +33996,7 @@ export default class MyAbilityStage extends AbilityStage {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/025-ArkTSTypeScriptDifference.md ============ -->
-
 
 ## 1. 概述与背景
 
@@ -36350,10 +36263,7 @@ windowStage.loadContent('pages/Index', (err, data) => {
 })
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/026-ArkUIDeclarativeSyntax.md ============ -->
-
 
 ## 1. 概述与背景
 
@@ -39278,10 +39188,7 @@ build() {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/027-ComponentLifecycleDetailed.md ============ -->
-
 
 ## 1. 概述与背景
 
@@ -42193,10 +42100,7 @@ struct LifecycleDemo {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/028-RouteJumpStack.md ============ -->
-
 
 ## 1. 概述与背景
 
@@ -44672,12 +44576,7 @@ Navigation(this.pathStack) { ... }
   })
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/029-PermissionRequest.md ============ -->
-
-
-
 
 # 权限申请：HarmonyOS 访问控制模型与运行时权限工程实践
 
@@ -47749,12 +47648,7 @@ struct CameraPage {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/030-DistributedDataManagement.md ============ -->
-
-
-
 
 # 分布式数据管理：从 KVStore 到 CRDT 的跨设备一致性工程
 
@@ -50210,12 +50104,7 @@ await prefs.clear()
 await prefs.flush()
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/031-CrossDeviceCall.md ============ -->
-
-
-
 
 # 跨设备调用：HarmonyOS 分布式软总线与远程 Ability 协同
 
@@ -52089,10 +51978,7 @@ onCreate(want: Want) {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/032-AtomicServiceDevPublish.md ============ -->
-
 
 ## 1. 概述与背景
 
@@ -54774,12 +54660,7 @@ let want: Want = {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：018-harmonyos/033-DevEcoStudioDebugger.md ============ -->
-
-
-
 
 # DevEco Studio 调试器：从断点到分布式性能剖析的工程化调试体系
 
@@ -56870,3 +56751,17 @@ hdc shell ps -ef | grep myapp
 // 5. 查看 Call Chart / Flame Chart
 // 6. 识别耗时最长的函数
 ```
+
+<!-- ============ 文档分隔线：018-harmonyos/034-ArkTsConcurrencyTaskpool.md ============ -->
+
+# ArkTS 并发：TaskPool 与 Worker
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- 为什么 UI 线程不能阻塞
+- TaskPool 使用与任务优先级
+- Worker 生命周期与通信
+- 线程间数据传输与序列化
+- CPU 密集场景的选型建议

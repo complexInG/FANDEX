@@ -1,6 +1,6 @@
 ---
 order: 900
-title: 事件调度器 语法速查手册
+title: 事件调度器语法速查手册
 module: 'mysql'
 category: 数据库
 difficulty: beginner

@@ -1,6 +1,6 @@
 ---
 order: 570
-title: 类型萃取与SFINAE
+title: 类型萃取与 SFINAE
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced

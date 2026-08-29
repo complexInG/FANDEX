@@ -1,6 +1,6 @@
 ---
 order: 670
-title: C++ STL 容器使用速查
+title: C++ STL 容器使用语法速查手册
 module: 'cpp'
 category: 计算机科学
 difficulty: beginner

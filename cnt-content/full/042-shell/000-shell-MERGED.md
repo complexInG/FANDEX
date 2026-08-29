@@ -6,14 +6,12 @@ category: 工具链
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：042-shell/001-ShellBasics.md ============ -->
-
-
 
 ## 1. 从"点菜"说起：Shell 是什么
 
@@ -304,11 +302,7 @@ echo "部署完成"
 
 **陷阱五：忽略退出码。** `command || { echo "失败"; exit 1; }` 显式处理。
 
-
-
 <!-- ============ 文档分隔线：042-shell/002-CommandLineBasics.md ============ -->
-
-
 
 ## 1. 从"整理房间"说起
 
@@ -491,11 +485,7 @@ Ctrl + L                 # 清屏（等价于 clear）
 
 **陷阱四：`find -exec` 忘记 `\;`。** 缺少结束符会立即报语法错误。
 
-
-
 <!-- ============ 文档分隔线：042-shell/003-TextProcessingTools.md ============ -->
-
-
 
 ## 1. 从"三个工人"说起
 
@@ -677,11 +667,7 @@ grep "$(date -d '5 minutes ago' '+%d/%b/%Y:%H:%M')" error.log | wc -l
 
 **误区五：什么都用三剑客硬写。** → 复杂逻辑（超过 20 行的 awk）应该用 Python/Perl，三剑客保持"短小精悍"。
 
-
-
 <!-- ============ 文档分隔线：042-shell/004-ProcessJobControl.md ============ -->
-
-
 
 ## 1. 从"工厂车间"说起
 
@@ -886,11 +872,7 @@ pgrep -f "$SERVICE" > /dev/null && echo "启动成功" || echo "启动失败"
 
 **误区四：jobs 看不到就说明进程没了。** → jobs 只显示当前 Shell 的作业；别的终端/进程用 `ps` 查看。
 
-
-
 <!-- ============ 文档分隔线：042-shell/005-EnvVariablesConfig.md ============ -->
-
-
 
 ## 1. 从"入职工牌"说起
 
@@ -1056,11 +1038,7 @@ set -a; source .env; set +a
 
 **陷阱四：修改配置文件不生效。** 改了 `~/.bashrc` 后未 `source` 也未重开终端。
 
-
-
 <!-- ============ 文档分隔线：042-shell/006-ScriptDebugging.md ============ -->
-
-
 
 ## 1. 从"自动驾驶的刹车"说起
 
@@ -1267,11 +1245,7 @@ shfmt -d script.sh      # 只显示差异（diff）
 
 **误区四：`trap` 只在出错时触发。** → `trap ... EXIT` 无论正常结束还是出错退出都会触发，是"无论成败都要清理"的标准姿势。
 
-
-
 <!-- ============ 文档分隔线：042-shell/007-FunctionsArguments.md ============ -->
-
-
 
 ## 1. 从"菜谱里的步骤分组"说起
 
@@ -1512,11 +1486,7 @@ log ERROR "连接超时"
 
 **陷阱四：循环内调用函数修改全局变量。** 意外改变循环变量（如 `i`），函数内尽量 `local`。
 
-
-
 <!-- ============ 文档分隔线：042-shell/008-PracticalScripts.md ============ -->
-
-
 
 ## 1. 从"菜谱集"说起
 
@@ -1766,10 +1736,7 @@ echo "批量处理完成"
 
 **误区四：删过期文件不留余地。** → 保留份数（KEEP）设大一点，宁多勿少——删除容易恢复难。
 
-
-
 <!-- ============ 文档分隔线：042-shell/009-TextProcessing.md ============ -->
-
 
 ## cat 拼接查看
 
@@ -1948,10 +1915,7 @@ wc -l README.md
 wc -w article.md
 ```
 
-
-
 <!-- ============ 文档分隔线：042-shell/010-PipeRedirect.md ============ -->
-
 
 ## 标准输出重定向
 
@@ -2094,10 +2058,7 @@ cat > note.txt <<EOF
 EOF
 ```
 
-
-
 <!-- ============ 文档分隔线：042-shell/011-ProcessManage.md ============ -->
-
 
 ## 查看进程
 
@@ -2269,10 +2230,7 @@ Get-Process node
 Stop-Process -Name node -Force
 ```
 
-
-
 <!-- ============ 文档分隔线：042-shell/012-CompressArchive.md ============ -->
-
 
 ## tar 归档
 
@@ -2447,3 +2405,31 @@ split -b 100M big.tar.gz part_
 # 合并
 cat part_* > big.tar.gz
 ```
+
+<!-- ============ 文档分隔线：042-shell/013-CronScheduling.md ============ -->
+
+# 定时任务与调度
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- crontab 五字段与常用写法
+- 环境差异与日志重定向
+- at 一次性任务
+- systemd timer 对比 cron
+- 防重叠运行（flock）
+
+<!-- ============ 文档分隔线：042-shell/014-SshRemoteOperations.md ============ -->
+
+# SSH 与远程操作
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- 密钥对与免密登录
+- ssh config 多主机管理
+- scp 与 rsync 同步
+- 本地/远程/动态端口转发
+- 远程批量执行

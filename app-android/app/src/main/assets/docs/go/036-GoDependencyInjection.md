@@ -1,6 +1,6 @@
 ---
 order: 360
-title: Go与依赖注入
+title: Go 与依赖注入
 module: 'go'
 category: 后端技术
 difficulty: intermediate

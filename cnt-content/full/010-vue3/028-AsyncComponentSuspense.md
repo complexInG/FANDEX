@@ -1,6 +1,6 @@
 ---
 order: 280
-title: 异步组件与Suspense
+title: 异步组件与 Suspense
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

@@ -6,13 +6,12 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：007-css/001-CSS3OverviewBasicSyntax.md ============ -->
-
 
 ## 0.3 CSS 核心语法扩展：选择器、声明与层叠
 
@@ -98,29 +97,7 @@ h1 {
 > - 进阶选修（第 6-8 节）：扫一眼标题，知道“有这个东西”即可，不必现在死磕；
 > - 参考手册（第 9-14 节）：随用随查。
 
-### 0.5 CSS 模块学习路径图
-
-本模块文档很多，0 基础推荐路径：
-
-```text
-001 概述语法 → 003 盒模型 → 007 选择器 → 021 Flexbox
-    → 022 Grid → 031 媒体查询 → 033 响应式设计 → 067 综合项目
-```
-
-路径说明：先会写规则（001），再理解盒子（003）与选择器（007），掌握两套布局（021/022），学会响应式（031/033），最后做综合项目（067）。其余文档（变量、动画、预处理器、架构等）按需查阅，每篇开头的“速通路径/前置依赖”会告诉你何时读。
-
-```mermaid
-flowchart LR
-    A["001 概述语法"] --> B["003 盒模型"]
-    B --> C["007 选择器"]
-    C --> D["021 Flexbox"]
-    D --> E["022 Grid"]
-    E --> F["031 媒体查询"]
-    F --> G["033 响应式设计"]
-    G --> H["067 综合项目"]
-```
-
-### 0.6 学完本章后你能做什么
+### 0.5 学完本章后你能做什么
 
 学完本章（第 0-5 节）后，你应该能：
 
@@ -904,10 +881,7 @@ CSS3 是现代网页设计的重要组成部分，提供了丰富的特性和功
 - 响应式：`css/033-ResponsiveDesign` 与 `css/031-MediaQuery`；
 - 工程化：`css/043-CSSArchitectureMethodology` 与 BEM 命名。
 
-
-
 <!-- ============ 文档分隔线：007-css/002-CSSHowItWorks.md ============ -->
-
 
 ## 0. 直觉：浏览器把“HTML + CSS”变成屏幕上的画面
 
@@ -1042,10 +1016,7 @@ flowchart LR
 - 优先级计算：`css/009-PriorityCalculation`；
 - HTML 结构基础：`html5/006-HTML5OverviewCoreFeature`。
 
-
-
 <!-- ============ 文档分隔线：007-css/003-CSS3BoxModelDetailed.md ============ -->
-
 
 ## 0. 阅读指南
 
@@ -2462,10 +2433,7 @@ a::after {
 - 尺寸单位：`css/001-CSS3OverviewBasicSyntax` 中单位章节；
 - 性能：避免大面积重排时的高频尺寸读写。
 
-
-
 <!-- ============ 文档分隔线：007-css/004-TextAndFontsBasics.md ============ -->
-
 
 ## 0. 直觉：把文字当成“可以被打扮的内容”
 
@@ -2630,10 +2598,7 @@ a {
 - 响应式字号（clamp）：`css/053-Function`；
 - 盒模型与间距：`css/003-CSS3BoxModelDetailed`。
 
-
-
 <!-- ============ 文档分隔线：007-css/005-ShorthandProperties.md ============ -->
-
 
 ## 0. 直觉：一个属性写四个方向，省代码也藏陷阱
 
@@ -2767,10 +2732,7 @@ margin: 10px 20px 30px 40px;
 - 文本与字体：`css/004-TextAndFontsBasics`；
 - 动画与过渡简写：`css/028-CSSAnimationTransition`。
 
-
-
 <!-- ============ 文档分隔线：007-css/006-CSSValuesAndUnits.md ============ -->
-
 
 ## 0. 直觉：同样的“100”，在不同单位下含义完全不同
 
@@ -2893,10 +2855,7 @@ code {
 - 响应式设计：`css/033-ResponsiveDesign`；
 - 移动端适配：`css/052-MobileAdaptation`。
 
-
-
 <!-- ============ 文档分隔线：007-css/007-CSS3SelectorSystem.md ============ -->
-
 
 ## 1. 基础选择器
 
@@ -4742,10 +4701,7 @@ div:has(img) {
 - 嵌套规范：`css/041-CSSNativeNesting`、`css/071-CSSNesting`；
 - 现代选择器：`:has()` 与容器查询 `css/032-ContainerQuery`。
 
-
-
 <!-- ============ 文档分隔线：007-css/008-CSSResetAndNormalize.md ============ -->
-
 
 ## 0. 直觉：浏览器给 HTML 元素“预装了默认样式”
 
@@ -4872,10 +4828,7 @@ ol[role="list"] {
 - 层叠层 @layer（重置入层）：`css/039-CascadeLayer`；
 - 架构方法论：`css/043-CSSArchitectureMethodology`。
 
-
-
 <!-- ============ 文档分隔线：007-css/009-PriorityCalculation.md ============ -->
-
 
 > 0基础速通：读第 0 节直觉、第 1 节核心必读（代码示例）与第 7 节综合挑战即可；第 2-5 章按需查阅，第 6 章深入理解（选读）供进阶。
 
@@ -7033,10 +6986,7 @@ div { color: blue !important; }  /* 不覆盖内联 !important */
 - [ ] 使用 Stylelint 检查优先级上限
 - [ ] 编写 Playwright 视觉回归测试
 
-
-
 <!-- ============ 文档分隔线：007-css/010-CascadeInheritanceBasics.md ============ -->
-
 
 ## 0. 直觉：有些样式“传下去”，有些样式“抢着赢”
 
@@ -7150,10 +7100,7 @@ p {
 - 重置方案：`css/008-CSSResetAndNormalize`；
 - 选择器系统：`css/007-CSS3SelectorSystem`。
 
-
-
 <!-- ============ 文档分隔线：007-css/011-StyleSheetImportMethod.md ============ -->
-
 
 ## 0. 直觉：样式“怎么端上桌”
 
@@ -7264,10 +7211,7 @@ CSS 有四种“上桌方式”：直接塞进标签（内联）、写在页面�
 - 性能：`css/060-CriticalRenderPathOptimization`；
 - 工程化：`css/056-PostCSS` 与构建工具的样式处理。
 
-
-
 <!-- ============ 文档分隔线：007-css/012-CSSPriorityQuickStart.md ============ -->
-
 
 ## 0. 一句话记住优先级
 
@@ -7363,10 +7307,7 @@ p {
 - 样式表引入方式：`css/011-StyleSheetImportMethod`；
 - 层叠层 @layer：`css/039-CascadeLayer`。
 
-
-
 <!-- ============ 文档分隔线：007-css/013-MarginCollapse.md ============ -->
-
 
 > 0基础速通：读第 0 节直觉、第 1 节核心必读（代码示例）与第 7 节综合挑战即可；第 6 章深入理解（选读）供进阶。
 
@@ -9172,10 +9113,7 @@ CSS Flexbox §4.2 与 CSS Grid §2.2 明确规定：flex item 与 grid item 的 
 
 > 本文最后更新于 2026-06-14，内容基于 W3C CSS Box Model Module Level 3（2018）与 Level 4（2024 Editor's Draft）。如规范更新，请以 W3C 最新发布为准。
 
-
-
 <!-- ============ 文档分隔线：007-css/014-PositionDetailed.md ============ -->
-
 
 ## 1. position 属性
 
@@ -9921,12 +9859,7 @@ z-index 仅对定位元素生效；同一层叠上下文内比较；子元素无
 - 变换：`css/069-Transform3D`（transform 与包含块）；
 - 布局实战：`css/067-CSSProjectExampleResponsiveHomepage`。
 
-
-
 <!-- ============ 文档分隔线：007-css/015-FloatClear.md ============ -->
-
-
-
 
 # CSS 浮动与清除：原理、实践与现代替代
 
@@ -10303,10 +10236,7 @@ p {
 - 现代布局：`css/021-CSS3FlexboxFlexLayout`、`css/022-CSS3GridGridLayout`；
 - 响应式图文：`css/033-ResponsiveDesign`。
 
-
-
 <!-- ============ 文档分隔线：007-css/016-StackingContext.md ============ -->
-
 
 > 前置依赖：先读 014 定位详解，理解 z-index 基本用法。
 
@@ -10696,10 +10626,7 @@ p {
 - 优先级：`css/009-PriorityCalculation`；
 - 合成与性能：`css/042-CSSPerformanceOptimizationDetailed`。
 
-
-
 <!-- ============ 文档分隔线：007-css/017-CSSListStyle.md ============ -->
-
 
 ## 0. 直觉：列表前面的“小圆点”是可以换的
 
@@ -10812,10 +10739,7 @@ ul {
 - 选择器：`css/007-CSS3SelectorSystem`；
 - 导航实战：`css/067-CSSProjectExampleResponsiveHomepage`。
 
-
-
 <!-- ============ 文档分隔线：007-css/018-CSSTableStyling.md ============ -->
-
 
 ## 0. 直觉：表格默认样式“很散”，需要收拢
 
@@ -10950,10 +10874,7 @@ table {
 - 响应式表格：`css/033-ResponsiveDesign`；
 - 数据可视化：用 `css/022-CSS3GridGridLayout` 做网格布局。
 
-
-
 <!-- ============ 文档分隔线：007-css/019-DebuggingCSS.md ============ -->
-
 
 ## 0. 直觉：样式不生效，先问“谁赢了”
 
@@ -11037,10 +10958,7 @@ Elements 面板右上角有盒模型图：中间是 content，向外依次是 pa
 - 选择器匹配：`css/007-CSS3SelectorSystem`；
 - 盒模型：`css/003-CSS3BoxModelDetailed`。
 
-
-
 <!-- ============ 文档分隔线：007-css/020-TraditionalLayoutTech.md ============ -->
-
 
 > 前置依赖：先读 003 盒模型与 015 浮动。圣杯/双飞翼布局为进阶内容，0 基础可先跳过。
 
@@ -11805,10 +11723,7 @@ BFC（Block Formatting Context）是 CSS 中一个独立的渲染区域，内部
 - 边距折叠：`css/013-MarginCollapse`；
 - 响应式：`css/033-ResponsiveDesign`。
 
-
-
 <!-- ============ 文档分隔线：007-css/021-CSS3FlexboxFlexLayout.md ============ -->
-
 
 ## 1. 核心概念
 
@@ -13654,10 +13569,7 @@ Flexbox 是一种强大的一维布局模型，具有以下优势：
 - 经典布局：`css/020-TraditionalLayoutTech` 对比浮动方案；
 - 实战：`css/067-CSSProjectExampleResponsiveHomepage` 完整响应式首页。
 
-
-
 <!-- ============ 文档分隔线：007-css/022-CSS3GridGridLayout.md ============ -->
-
 
 > 前置依赖：基础选择器与盒模型。本篇为完整版，可配合 068-Grid 速查复习。
 
@@ -15526,10 +15438,7 @@ Grid 布局是一种强大的二维布局系统，具有以下优势：
 - 实战：`css/067-CSSProjectExampleResponsiveHomepage`；
 - 简版速查：`css/068-Grid`。
 
-
-
 <!-- ============ 文档分隔线：007-css/023-PseudoClassPseudoElement.md ============ -->
-
 
 ## 伪元素
 
@@ -16787,10 +16696,7 @@ li::before {
 - 嵌套与作用域：`css/071-CSSNesting`、`css/070-ScopeAtRule`；
 - 伪元素布局：`css/067-CSSProjectExampleResponsiveHomepage` 中的实际应用。
 
-
-
 <!-- ============ 文档分隔线：007-css/024-Gradient.md ============ -->
-
 
 > 0基础速通：读第 0 节直觉与第 1 节核心必读（代码示例）即可；第 6 章深入理解（选读）供进阶。
 
@@ -19694,10 +19600,7 @@ background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：007-css/025-Shadow.md ============ -->
-
 
 ## 1. box-shadow
 
@@ -20261,10 +20164,7 @@ box-shadow 沿盒子形状，drop-shadow 沿元素实际轮廓（适合 PNG 图�
 - 动画：`css/028-CSSAnimationTransition`；
 - 设计令牌：`css/035-CSSVariableCustomAttribute`。
 
-
-
 <!-- ============ 文档分隔线：007-css/026-BackgroundEnhancement.md ============ -->
-
 
 > 0基础速通：读第 0 节直觉与第 1 节核心必读即可；第 6 章深入理解（选读），附录 D 属性速查随用随查。
 
@@ -23764,10 +23664,7 @@ $$
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：007-css/027-CSSMask.md ============ -->
-
 
 ## 0. 直觉：遮罩是“用一张图的透明度决定显示哪里”
 
@@ -23862,10 +23759,7 @@ $$
 - 滤镜组合：`css/048-CSSFilters`；
 - 函数与图像处理：`css/053-Function`。
 
-
-
 <!-- ============ 文档分隔线：007-css/028-CSSAnimationTransition.md ============ -->
-
 
 ## 1. CSS 过渡（Transition）
 
@@ -25246,10 +25140,7 @@ function checkFPS() {
 - 可访问性：`css/045-AccessibleStyling`（减少动效）；
 - 性能：`css/042-CSSPerformanceOptimizationDetailed`。
 
-
-
 <!-- ============ 文档分隔线：007-css/029-CSSViewTransitions.md ============ -->
-
 
 ## 0. 直觉：让“旧画面”和“新画面”自然地切换
 
@@ -25359,10 +25250,7 @@ html {
 - 可访问性与减少动效：`css/045-AccessibleStyling`；
 - 滚动驱动动画：`css/030-CSSScrollDrivenAnimations`。
 
-
-
 <!-- ============ 文档分隔线：007-css/030-CSSScrollDrivenAnimations.md ============ -->
-
 
 ## 0. 直觉：滚动到哪，动画走到哪
 
@@ -25480,11 +25368,7 @@ html {
 - 视图过渡：`css/029-CSSViewTransitions`；
 - 减少动效：`css/045-AccessibleStyling`。
 
-
-
 <!-- ============ 文档分隔线：007-css/031-MediaQuery.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -26786,10 +26670,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
 - 移动适配：`css/052-MobileAdaptation`；
 - 可访问性：`css/045-AccessibleStyling`。
 
-
-
 <!-- ============ 文档分隔线：007-css/032-ContainerQuery.md ============ -->
-
 
 > 前置依赖：先掌握 031 媒体查询。0基础速通：读第 0 节直觉与第 1 节核心必读即可；第 6 章深入理解（选读）供进阶。
 
@@ -29212,10 +29093,7 @@ $$
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：007-css/033-ResponsiveDesign.md ============ -->
-
 
 ## 2. 媒体查询
 
@@ -30132,10 +30010,7 @@ img {
 - 移动适配：`css/052-MobileAdaptation`；
 - 响应式图片：`html5/019-ImageResponsiveImage`。
 
-
-
 <!-- ============ 文档分隔线：007-css/034-ModernColorSpace.md ============ -->
-
 
 ## oklch / oklab 感知均匀色彩
 
@@ -30366,10 +30241,7 @@ img {
 - 变量：`css/035-CSSVariableCustomAttribute`；
 - 滤镜：`css/048-CSSFilters`。
 
-
-
 <!-- ============ 文档分隔线：007-css/035-CSSVariableCustomAttribute.md ============ -->
-
 
 ## 1. CSS 自定义属性基础
 
@@ -31409,10 +31281,7 @@ body {
 - 函数：`css/053-Function`；
 - 工程化：`css/043-CSSArchitectureMethodology`。
 
-
-
 <!-- ============ 文档分隔线：007-css/036-LogicalProperty.md ============ -->
-
 
 > 前置依赖：先理解 003 盒模型的物理属性。
 
@@ -31526,10 +31395,7 @@ border-end-end-radius: 8px; /* 行内结束 + 块结束 */
 - 国际化：`html5/016-TextSemantic` 的 bdi 与方向；
 - 新特性：`css/064-CSSNewFeatures`。
 
-
-
 <!-- ============ 文档分隔线：007-css/037-CSSWritingModes.md ============ -->
-
 
 ## 0. 直觉：文字方向一变，整个布局坐标系都变了
 
@@ -31629,11 +31495,7 @@ border-end-end-radius: 8px; /* 行内结束 + 块结束 */
 - 国际化与可访问性样式：`css/045-AccessibleStyling`；
 - 排版进阶：`css/044-TypographyAndGridSystem`。
 
-
-
 <!-- ============ 文档分隔线：007-css/038-ScrollSnap.md ============ -->
-
-
 
 ## 1. scroll-snap 概述
 
@@ -31781,10 +31643,7 @@ html {
 - 性能：`css/042-CSSPerformanceOptimizationDetailed`；
 - 移动端：`css/052-MobileAdaptation`。
 
-
-
 <!-- ============ 文档分隔线：007-css/039-CascadeLayer.md ============ -->
-
 
 > 前置依赖：先读 009 优先级计算，理解层叠顺序。
 
@@ -32288,11 +32147,7 @@ p {
 - 架构：`css/043-CSSArchitectureMethodology`；
 - 新特性：`css/064-CSSNewFeatures`。
 
-
-
 <!-- ============ 文档分隔线：007-css/040-FeatureQuery.md ============ -->
-
-
 
 ## 1. @supports 语法
 
@@ -32407,11 +32262,7 @@ if (CSS.supports('(display: grid) and (gap: 1rem)')) {
 - 容器查询：`css/032-ContainerQuery`；
 - 兼容性：`css/009-PriorityCalculation` 附录。
 
-
-
 <!-- ============ 文档分隔线：007-css/041-CSSNativeNesting.md ============ -->
-
-
 
 ## 1. CSS 原生嵌套概述
 
@@ -32540,12 +32391,7 @@ CSS 原生嵌套（CSS Nesting）允许在选择器内部嵌套子选择器，�
 - 新特性：`css/064-CSSNewFeatures`；
 - 选择器：`css/007-CSS3SelectorSystem`。
 
-
-
 <!-- ============ 文档分隔线：007-css/042-CSSPerformanceOptimizationDetailed.md ============ -->
-
-
-> 阅读建议：有性能优化需求后再读，先掌握 060 与 063。
 
 ## 1. 关键渲染路径与 CSS
 
@@ -32941,10 +32787,7 @@ npx postcss styles.css -u cssnano -o styles.min.css
 - 指标：`javascript/050-CoreWebVitalsAndPerformanceMetrics`；
 - 动画：`css/028-CSSAnimationTransition`。
 
-
-
 <!-- ============ 文档分隔线：007-css/043-CSSArchitectureMethodology.md ============ -->
-
 
 > 阅读建议：适合有项目经验后再读，0 基础可先跳过。
 
@@ -33377,11 +33220,7 @@ function Card({ variant, children }) {
 - @layer：`css/039-CascadeLayer`；
 - 变量：`css/035-CSSVariableCustomAttribute`。
 
-
-
 <!-- ============ 文档分隔线：007-css/044-TypographyAndGridSystem.md ============ -->
-
-
 
 ## 一句话理解
 
@@ -33534,11 +33373,7 @@ function Card({ variant, children }) {
 - 文本装饰：`css/044-TypographyAndGridSystem` 的文本章节；
 - 设计令牌：`css/035-CSSVariableCustomAttribute`。
 
-
-
 <!-- ============ 文档分隔线：007-css/045-AccessibleStyling.md ============ -->
-
-
 
 ## 一句话理解
 
@@ -33634,7 +33469,7 @@ body {
 ## 小结
 
 可访问性样式没有魔法，就是四条纪律：对比度达标、焦点可见、动效可降级、文字可缩放。
-配合 [HTML 无障碍](/FANDEX/html5/010-Accessibility/) 的结构语义，就能覆盖绝大多数障碍场景。
+配合 HTML 无障碍 的结构语义，就能覆盖绝大多数障碍场景。
 
 ## 动手试试
 
@@ -33669,10 +33504,7 @@ body {
 - 动效：`css/028-CSSAnimationTransition`；
 - 深色主题：`css/031-MediaQuery`。
 
-
-
 <!-- ============ 文档分隔线：007-css/046-CSSCounters.md ============ -->
-
 
 ## 0. 直觉：让浏览器替你“数数”
 
@@ -33812,10 +33644,7 @@ ol li::before {
 - 选择器：`css/007-CSS3SelectorSystem`；
 - 内容生成：`css/053-Function` 中 `counter()` 函数。
 
-
-
 <!-- ============ 文档分隔线：007-css/047-CSSFontLoading.md ============ -->
-
 
 ## 0. 直觉：网页字体是“下载来的”
 
@@ -33909,10 +33738,7 @@ body {
 - 字体转换工具：Font Squirrel Webfont Generator（生成多格式并子集化）、Google Fonts CSS2 API 的子集参数；
 - 资源预加载：`html5/006-HTML5OverviewCoreFeature` 的 preload 章节。
 
-
-
 <!-- ============ 文档分隔线：007-css/048-CSSFilters.md ============ -->
-
 
 ## 0. 直觉：给元素加“滤镜”
 
@@ -34022,10 +33848,7 @@ img {
 - 性能：`css/042-CSSPerformanceOptimizationDetailed`；
 - 动画：`css/028-CSSAnimationTransition` 中滤镜过渡。
 
-
-
 <!-- ============ 文档分隔线：007-css/049-CSSObjectFit.md ============ -->
-
 
 ## 0. 直觉：图片放进“固定相框”怎么摆
 
@@ -34129,10 +33952,7 @@ img {
 - 背景适配：`css/026-BackgroundEnhancement`（background-size 对比）；
 - 圆角头像：`css/051-BorderRadius`。
 
-
-
 <!-- ============ 文档分隔线：007-css/050-CSSAnchorPositioning.md ============ -->
-
 
 ## 0. 直觉：让弹层“钉”在触发按钮旁边
 
@@ -34246,11 +34066,7 @@ img {
 - 层叠上下文与弹层层级：`css/016-StackingContext`；
 - 可访问性样式：`css/045-AccessibleStyling`。
 
-
-
 <!-- ============ 文档分隔线：007-css/051-BorderRadius.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -35248,11 +35064,7 @@ defineProps<{
 - 阴影：`css/025-Shadow`；
 - 背景裁剪：`css/026-BackgroundEnhancement`。
 
-
-
 <!-- ============ 文档分隔线：007-css/052-MobileAdaptation.md ============ -->
-
-
 
 ## 1. 适配单位
 
@@ -35357,11 +35169,7 @@ $$
 - 媒体查询：`css/031-MediaQuery`；
 - 响应式：`css/033-ResponsiveDesign`。
 
-
-
 <!-- ============ 文档分隔线：007-css/053-Function.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -36414,12 +36222,7 @@ li::before {
 - 颜色：`css/034-ModernColorSpace`；
 - 响应式：`css/033-ResponsiveDesign`。
 
-
-
 <!-- ============ 文档分隔线：007-css/054-Sass.md ============ -->
-
-
-> 阅读建议：有项目经验后再读，先掌握 CSS 基础（001-023）。
 
 ## 1. Sass 概述
 
@@ -36593,12 +36396,7 @@ $primary: #3498db;
 - 构建：`css/056-PostCSS`、`vite/005-CSSPreprocessors`；
 - 架构：`css/043-CSSArchitectureMethodology`。
 
-
-
 <!-- ============ 文档分隔线：007-css/055-LessStylus.md ============ -->
-
-
-> 阅读建议：有项目经验后再读，先掌握 CSS 基础（001-023）。
 
 ## 1. Less
 
@@ -36728,11 +36526,7 @@ h1
 - PostCSS：`css/056-PostCSS`；
 - 构建：`vite/005-CSSPreprocessors`。
 
-
-
 <!-- ============ 文档分隔线：007-css/056-PostCSS.md ============ -->
-
-
 
 ## 1. PostCSS 概述
 
@@ -36881,11 +36675,7 @@ module.exports = (opts = {}) => {
 - 预处理器：`css/054-Sass`；
 - 工程化：`css/043-CSSArchitectureMethodology`。
 
-
-
 <!-- ============ 文档分隔线：007-css/057-BEMNamingMethodology.md ============ -->
-
-
 
 ## 1. BEM 概述
 
@@ -37008,11 +36798,7 @@ BEM（Block Element Modifier）是一种 CSS 命名方法论，提高样式可�
 - 模块化：`css/059-CSSModules`；
 - 原子化：`css/058-CSSAtomic`。
 
-
-
 <!-- ============ 文档分隔线：007-css/058-CSSAtomic.md ============ -->
-
-
 
 ## 1. CSS 原子化概述
 
@@ -37126,11 +36912,7 @@ export default defineConfig({
 - BEM：`css/057-BEMNamingMethodology`；
 - 架构：`css/043-CSSArchitectureMethodology`。
 
-
-
 <!-- ============ 文档分隔线：007-css/059-CSSModules.md ============ -->
-
-
 
 ## 1. CSS Modules 概述
 
@@ -37265,10 +37047,7 @@ import styles from './Component.module.css';
 - 原子化：`css/058-CSSAtomic`；
 - 架构：`css/043-CSSArchitectureMethodology`。
 
-
-
 <!-- ============ 文档分隔线：007-css/060-CriticalRenderPathOptimization.md ============ -->
-
 
 > 前置依赖：先读 063 理论知识点与 html5/036 关键渲染路径。
 
@@ -37380,11 +37159,7 @@ npx lighthouse https://example.com --view
 - 性能：`css/042-CSSPerformanceOptimizationDetailed`；
 - 指标：`javascript/050-CoreWebVitalsAndPerformanceMetrics`。
 
-
-
 <!-- ============ 文档分隔线：007-css/061-CSSCanvasDrawing.md ============ -->
-
-
 
 ## 1. Canvas 概述 | Canvas Overview
 
@@ -38030,10 +37805,7 @@ Canvas 是 HTML5 提供的强大绘图 API，通过 JavaScript 可以在网页�
 - 动画：`css/028-CSSAnimationTransition`；
 - SVG 对比：`html5/021-SVG`。
 
-
-
 <!-- ============ 文档分隔线：007-css/062-CSSInJS.md ============ -->
-
 
 > 前置依赖：需先有 React/Vue 组件开发经验。
 
@@ -38634,10 +38406,7 @@ flowchart TD
 - 模块化：`css/059-CSSModules`；
 - 架构：`css/043-CSSArchitectureMethodology`。
 
-
-
 <!-- ============ 文档分隔线：007-css/063-CSSTheoryKnowledge.md ============ -->
-
 
 > 0基础速通：先掌握 003/009/016 再读本篇；本篇是理论串讲，可分段查阅，不要一次读完。
 
@@ -39023,12 +38792,7 @@ HTML 结构与语义，见 006-html5 模块。
 - 优先级：`css/009-PriorityCalculation`；
 - 层叠上下文：`css/016-StackingContext`。
 
-
-
 <!-- ============ 文档分隔线：007-css/064-CSSNewFeatures.md ============ -->
-
-
-> 阅读建议：每项新特性先读对应完整文档（032/039/041 等）再回看本篇。
 
 ## 1. @container 容器查询
 
@@ -39433,11 +39197,7 @@ progress {
 - 容器查询：`css/032-ContainerQuery`；
 - 颜色：`css/034-ModernColorSpace`。
 
-
-
 <!-- ============ 文档分隔线：007-css/065-HTMLSemanticSEO.md ============ -->
-
-
 
 ## 1. 语义化标签体系
 
@@ -39766,11 +39526,7 @@ Sitemap: https://example.com/sitemap.xml
 - 元数据：`html5/015-MetadataCharacterEncoding`；
 - 结构化数据：`html5/032-MicrodataJSONLD`。
 
-
-
 <!-- ============ 文档分隔线：007-css/066-ResponsiveImage.md ============ -->
-
-
 
 ## 1. 响应式图片问题
 
@@ -40064,11 +39820,7 @@ export default defineConfig({
 - 对象适配：`css/049-CSSObjectFit`；
 - 性能：`javascript/050-CoreWebVitalsAndPerformanceMetrics`。
 
-
-
 <!-- ============ 文档分隔线：007-css/067-CSSProjectExampleResponsiveHomepage.md ============ -->
-
-
 
 | 英雄区   | 全屏背景，打字机效果，向下滚动指示  |
 | -------- | ----------------------------------- |
@@ -41216,12 +40968,7 @@ document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
 - 响应式：`css/033-ResponsiveDesign`；
 - 性能：`css/042-CSSPerformanceOptimizationDetailed`。
 
-
-
 <!-- ============ 文档分隔线：007-css/068-Grid.md ============ -->
-
-
-> 阅读建议：先读 022 完整版，本篇作为速查复习使用。
 
 ## 容器属性
 
@@ -41651,10 +41398,7 @@ document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
 - 对比：`css/021-CSS3FlexboxFlexLayout`；
 - 实战：`css/067-CSSProjectExampleResponsiveHomepage`。
 
-
-
 <!-- ============ 文档分隔线：007-css/069-Transform3D.md ============ -->
-
 
 ## 2D 变换
 
@@ -41905,10 +41649,7 @@ document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
 - 层叠：`css/016-StackingContext`；
 - 性能：`css/042-CSSPerformanceOptimizationDetailed`。
 
-
-
 <!-- ============ 文档分隔线：007-css/070-ScopeAtRule.md ============ -->
-
 
 ## 基础语法
 
@@ -42105,10 +41846,7 @@ p { color: black; }              /* 全局 */
 - 架构：`css/043-CSSArchitectureMethodology`；
 - 新特性：`css/064-CSSNewFeatures`。
 
-
-
 <!-- ============ 文档分隔线：007-css/071-CSSNesting.md ============ -->
-
 
 ## 基础嵌套
 

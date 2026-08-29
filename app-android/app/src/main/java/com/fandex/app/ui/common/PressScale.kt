@@ -11,18 +11,22 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 
 /**
- * 卡片按压缩放反馈
+ * 按压缩放反馈
  *
- * 对齐 web 端卡片的按压微交互（active 下沉 / scale 0.98）：
+ * 对齐 web 端的按压微交互（active 下沉）：
  * 按住时轻微缩小，松开回弹，时长与缓动引用 web 动效令牌
  * （instant 75ms 反馈 + out 减速）
+ *
+ * @param interactionSource 绑定的交互源（与 clickable 共用以感知按压）
+ * @param pressedScale 按住时的缩放比例（卡片 0.98，小图标按钮可传 0.94 增强反馈）
  */
 fun Modifier.pressScale(
-    interactionSource: MutableInteractionSource
+    interactionSource: MutableInteractionSource,
+    pressedScale: Float = 0.98f
 ): Modifier = composed {
     val pressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (pressed) 0.98f else 1f,
+        targetValue = if (pressed) pressedScale else 1f,
         animationSpec = tween(durationMillis = 75),
         label = "pressScale"
     )
@@ -35,7 +39,7 @@ fun Modifier.pressScale(
 /**
  * 便捷重载：内部自建 interactionSource（供 clickable 使用）
  */
-fun Modifier.pressScale(): Modifier = composed {
+fun Modifier.pressScale(pressedScale: Float = 0.98f): Modifier = composed {
     val interactionSource = remember { MutableInteractionSource() }
-    pressScale(interactionSource)
+    pressScale(interactionSource, pressedScale)
 }

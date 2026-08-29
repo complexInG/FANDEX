@@ -6,13 +6,12 @@ category: 云与基础设施
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：036-software-testing/001-TestBasicsMethod.md ============ -->
-
 
 ## 1. 软件测试概述
 
@@ -410,11 +409,7 @@ def grade(score: int) -> str:
 | **已修复**   | 55   | 84.6%  |
 | **未修复**   | 10   | 15.4%  |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/002-FunctionalAndAutomatedTest.md ============ -->
-
-
 
 ## 1. 功能测试执行
 
@@ -1014,11 +1009,7 @@ class TestLogin:
 | **可读性**   | 测试代码更接近业务语言                  |
 | **团队协作** | 页面对象与测试用例可并行开发            |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/003-PerformanceInterfaceTest.md ============ -->
-
-
 
 ## 1. 性能测试概述
 
@@ -1445,11 +1436,7 @@ if __name__ == '__main__':
 | **MockServer**    | 独立服务  | Java 生态，功能强大 | 企业级项目 |
 | **Postman Mock**  | 内置功能  | 与 Collection 集成  | API 测试   |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/004-SecurityAndMobileTest.md ============ -->
-
-
 
 ## 1. 安全测试方法
 
@@ -1929,10 +1916,7 @@ flowchart TD
 | **L4 量化** | 质量指标可度量、可预测 | 覆盖率监控、质量门禁  |
 | **L5 优化** | 持续改进、质量内建     | 测试左移、AI 辅助测试 |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/005-TestConceptPrinciple.md ============ -->
-
 
 ## 1. 测试基础概念
 
@@ -2320,11 +2304,7 @@ coverage combine
 coverage report
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/006-TestLevels.md ============ -->
-
-
 
 ## 1. 测试金字塔
 
@@ -2519,11 +2499,7 @@ Feature: 用户登录
 | 微服务   | 契约测试+集成测试 |
 | 关键业务 | 全层级覆盖        |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/007-TestType.md ============ -->
-
-
 
 ## 1. 功能测试
 
@@ -2691,11 +2667,7 @@ Feature: 用户登录
 | 发布后   | 监控+回归      |
 | 迭代中   | 冒烟+回归+探索 |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/008-EquivalenceClassPartition.md ============ -->
-
-
 
 ## 1. 等价类划分原理
 
@@ -2846,11 +2818,7 @@ Feature: 用户登录
 | 考虑隐含需求       | 非显式约束           |
 | 持续更新           | 需求变更时更新等价类 |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/009-BoundaryValueAnalysis.md ============ -->
-
-
 
 ## 1. 边界值分析原理
 
@@ -3019,10 +2987,7 @@ Feature: 用户登录
 | 业务边界     | 折扣阈值、等级分界 |
 | 与等价类结合 | 先划分再取边界     |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/010-Selenium.md ============ -->
-
 
 ## 1. Selenium 概述
 
@@ -3500,10 +3465,7 @@ def test_title(driver):
     assert "Example" in driver.title
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/011-Pytest.md ============ -->
-
 
 ## 1. pytest 基础
 
@@ -4001,10 +3963,7 @@ def test_file_write(tmp_path):
 pytest; echo $?
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/012-JUnit5.md ============ -->
-
 
 ## 1. JUnit 5 概述
 
@@ -4562,10 +4521,7 @@ void testUser() {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/013-APIAutomationTest.md ============ -->
-
 
 ## 1. API 测试概述
 
@@ -5077,11 +5033,7 @@ def test_local_server():
         assert r.json() == {"ok": True}
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/014-JMeter.md ============ -->
-
-
 
 ## 1. JMeter 概述
 
@@ -5308,11 +5260,7 @@ jmeter -g results.jtl -o html-report/
 | 多次运行   | 取平均值           |
 | 清理数据   | 测试前清理         |
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/015-WhiteBoxTestCoverage.md ============ -->
-
-
 
 ## 1. 覆盖度层次
 
@@ -5478,11 +5426,7 @@ gcov是白盒测试覆盖度的重要组成部分。本节详细介绍gcov的核
 
 gcov在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/016-AutomationTestFrameworkComparison.md ============ -->
-
-
 
 ## 1. Selenium
 
@@ -5648,11 +5592,7 @@ Grid 分布式在工程实践中需要根据具体场景选择合适的策略，
 
 场景推荐在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/017-APIAutomationTestDetailed.md ============ -->
-
-
 
 ## 1. Postman
 
@@ -5818,11 +5758,7 @@ Express 应用测试在工程实践中需要根据具体场景选择合适的策
 
 契约测试在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/018-StressAndStabilityTest.md ============ -->
-
-
 
 ## 1. 测试类型
 
@@ -6001,11 +5937,7 @@ TPS/QPS在工程实践中需要根据具体场景选择合适的策略，平衡�
 
 资源耗尽在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/019-SecurityTesting.md ============ -->
-
-
 
 ## 1. OWASP ZAP
 
@@ -6158,11 +6090,7 @@ API 扫描在工程实践中需要根据具体场景选择合适的策略，平�
 
 报告编写在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/020-TestDouble.md ============ -->
-
-
 
 ## 1. 测试双分类
 
@@ -6341,11 +6269,7 @@ WireMock HTTP Stub在工程实践中需要根据具体场景选择合适的策�
 
 契约测试在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/021-TDDBDD.md ============ -->
-
-
 
 ## 1. TDD
 
@@ -6511,11 +6435,7 @@ Gherkin 语法在工程实践中需要根据具体场景选择合适的策略，
 
 持续集成在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/022-CICDTest.md ============ -->
-
-
 
 ## 1. 测试门禁概念
 
@@ -6668,10 +6588,7 @@ GitLab CI是CI-CD测试门禁的重要组成部分。本节详细介绍GitLab CI
 
 GitLab CI在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/023-JestBasics.md ============ -->
-
 
 ## describe 测试分组
 
@@ -6979,10 +6896,7 @@ afterEach(() => { /* 每个测试后执行 */ });
 afterAll(() => { /* 所有测试后执行一次 */ });
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/024-JestMock.md ============ -->
-
 
 ## jest.fn 创建 Mock 函数
 
@@ -7196,10 +7110,7 @@ const asyncFn = jest.fn().mockImplementation(async (id) => {
 await asyncFn(1);
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/025-JestAsync.md ============ -->
-
 
 ## async / await 测试
 
@@ -7377,10 +7288,7 @@ test.concurrent("并发测试1", async () => {
 await expect(asyncFail()).rejects.toThrow("失败原因");
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/026-JestConfig.md ============ -->
-
 
 ## jest.config.js 配置
 
@@ -7569,10 +7477,7 @@ module.exports = {
 };
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/027-Mockito.md ============ -->
-
 
 ## mock 创建模拟对象
 
@@ -7810,10 +7715,7 @@ try (MockedStatic<Utility> mocked = mockStatic(Utility.class)) {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/028-E2ETest.md ============ -->
-
 
 ## Cypress 基础
 
@@ -8070,10 +7972,7 @@ npx playwright test --ui                 # UI 模式
 npx playwright codegen https://example.com  # 录制测试
 ```
 
-
-
 <!-- ============ 文档分隔线：036-software-testing/029-AssertionLibrary.md ============ -->
-
 
 ## Chai BDD 风格
 

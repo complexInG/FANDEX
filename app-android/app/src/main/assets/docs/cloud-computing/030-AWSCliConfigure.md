@@ -1,6 +1,6 @@
 ---
 order: 300
-title: 云计算 AWS CLI 配置
+title: AWS CLI 配置
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

@@ -8,11 +8,11 @@ description: C++ chrono 库全解：duration、time_point、clock、C++20 日历
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - 'cpp/044-SmartPointer'
+  - 'cpp/044-CppSmartPointer'
   - 'cpp/030-CppRegex'
   - 'cpp/046-CppFormatOutput'
   - 'cpp/047-Cpp26AndLatestStandard'
-  - 'cpp/016-CSTL'
+  - 'cpp/016-CppSTL'
   - 'cpp/003-CppTypeSystem'
   - 'cpp/060-Cpp20Concept'
 prerequisites:

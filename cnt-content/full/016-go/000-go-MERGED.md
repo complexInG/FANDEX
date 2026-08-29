@@ -13,9 +13,6 @@ prerequisites: []
 
 <!-- ============ 文档分隔线：016-go/001-GoOverviewEnvSetup.md ============ -->
 
-
-
-
 > 本节为增量补充，帮助你选择 Go 版本。
 
 - Go：1.26.x 为当前稳定系列（最新补丁 1.26.4）；Go 每年发布两个大版本，官方仅支持最近两个大版本，存量 1.24/1.25 应尽快升级。
@@ -419,8 +416,6 @@ func main() {
 ```
 
 <!-- ============ 文档分隔线：016-go/002-GoBasicSyntax.md ============ -->
-
-
 
 ## 1. 变量与常量
 
@@ -1521,8 +1516,6 @@ fmt.Println(*p)   // 输出 85
 
 <!-- ============ 文档分隔线：016-go/003-GoFunctionMethod.md ============ -->
 
-
-
 ## 1. 函数定义
 
 ### 1.1 基本语法
@@ -2365,8 +2358,6 @@ func LoggingMiddleware(next Handler) Handler {
 ```
 
 <!-- ============ 文档分隔线：016-go/004-GoDataStructure.md ============ -->
-
-
 
 ## 1. 数组
 
@@ -3224,9 +3215,6 @@ fmt.Println(unsafe.Sizeof(Optimized{})); // 16
 
 <!-- ============ 文档分隔线：016-go/005-GoInterfaceComposition.md ============ -->
 
-
-
-
 ## 1. 接口定义
 
 ### 1.1 基本语法
@@ -3677,8 +3665,6 @@ func NewStorage(cfg Config) (Storage, error) {
 ```
 
 <!-- ============ 文档分隔线：016-go/006-GoConcurrentProgramming.md ============ -->
-
-
 
 ## 1. Goroutine
 
@@ -4754,8 +4740,6 @@ m.Range(func(key, value any) bool {
 
 <!-- ============ 文档分隔线：016-go/007-GoErrorHandling.md ============ -->
 
-
-
 ## 1. error 接口
 
 ### 1.1 基本概念
@@ -5431,8 +5415,6 @@ if err != nil {
 
 <!-- ============ 文档分隔线：016-go/008-DeferPanicRecoverDeepDive.md ============ -->
 
-
-
 # defer、panic 与 recover 详解
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -5446,8 +5428,6 @@ if err != nil {
 - 性能与常见误用
 
 <!-- ============ 文档分隔线：016-go/009-GoGeneric.md ============ -->
-
-
 
 ## 1. 泛型概述
 
@@ -6285,8 +6265,6 @@ func Reduce[T, U any](slice []T, initial U, fn func(U, T) U) U {
 ```
 
 <!-- ============ 文档分隔线：016-go/010-GoStandardLibraryToolchain.md ============ -->
-
-
 
 ## 1. 核心 I/O 包
 
@@ -7239,9 +7217,6 @@ ok := bytes.Contains([]byte("hello"), []byte("ell"))
 
 <!-- ============ 文档分隔线：016-go/011-GoWebDevelopmentMicroservice.md ============ -->
 
-
-
-
 ## 1. net/http 标准库
 
 ### 1.1 基础 HTTP 服务器
@@ -8047,10 +8022,6 @@ r.GET("/readyz", func(c *gin.Context) {
 ```
 
 <!-- ============ 文档分隔线：016-go/012-SlicePrinciple.md ============ -->
-
-
-
-
 
 # Go 切片原理：从 SliceHeader 到扩容算法的深度剖析
 
@@ -9486,10 +9457,6 @@ A: 理论上 `int` 的最大值（64 位系统为 $2^{63}-1$），实际受限�
 > 本文档基于 Go 1.22 编写，部分内容涉及 Go 1.23+ 的实验性特性。实际使用时请参考官方最新文档与版本变更日志。
 
 <!-- ============ 文档分隔线：016-go/013-MapPrinciple.md ============ -->
-
-
-
-
 
 # Map 原理：从哈希表到 Swiss Table 的演进
 
@@ -10971,8 +10938,6 @@ func main() {
 > **适用 Go 版本**：1.0 - 1.24+
 
 <!-- ============ 文档分隔线：016-go/014-UnsafePointer.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -12729,10 +12694,6 @@ addr := uintptr(unsafe.Pointer(&x));
 
 <!-- ============ 文档分隔线：016-go/015-ChannelPrinciple.md ============ -->
 
-
-
-
-
 # Channel 原理：CSP 模型与 runtime 实现
 
 > 本文以 Go 1.22 为基准版本，深入解析 channel 的 runtime 实现、send/recv 状态机、select 调度、close 语义及 CSP（Communicating Sequential Processes）理论模型。适用于已掌握 goroutine 基础、希望理解并发原语底层机制的工程师。
@@ -14411,8 +14372,6 @@ func main() {
 > **适用 Go 版本**：1.0 - 1.22+
 
 <!-- ============ 文档分隔线：016-go/016-Reflection.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -16451,8 +16410,6 @@ ok := t1.AssignableTo(t2);
 
 <!-- ============ 文档分隔线：016-go/017-SelectStatementDeepDive.md ============ -->
 
-
-
 # select 语句详解
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -16466,8 +16423,6 @@ ok := t1.AssignableTo(t2);
 - nil channel 与死锁排查
 
 <!-- ============ 文档分隔线：016-go/018-MemoryAlignment.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -17738,10 +17693,6 @@ fmt.Println(unsafe.Offsetof(S{}.B)); // 8
 ```
 
 <!-- ============ 文档分隔线：016-go/019-ContextDetailed.md ============ -->
-
-
-
-
 
 # Context 详解：取消传播、超时控制与值传递
 
@@ -19340,10 +19291,6 @@ flowchart TD
 > **适用 Go 版本**：1.7 - 1.22+
 
 <!-- ============ 文档分隔线：016-go/020-GoroutineSchedule.md ============ -->
-
-
-
-
 
 ## 历史动机与发展脉络
 
@@ -21167,8 +21114,6 @@ Goroutine 调度是 Go 语言区别于其他语言的核心竞争力之一。通
 完成本章学习后，建议继续阅读《Channel 原理》《GMP 调度模型》《并发模式》等章节，深入理解 channel、select、context 与 GMP 的协同工作方式。
 
 <!-- ============ 文档分隔线：016-go/021-InterfaceTypeAssertion.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -23193,10 +23138,6 @@ m["two"] = "two";
 ```
 
 <!-- ============ 文档分隔线：016-go/022-ErrorHandlingAdvanced.md ============ -->
-
-
-
-
 
 # 错误处理进阶：error 接口、错误链与生产级实践
 
@@ -25539,9 +25480,6 @@ Go 的错误处理设计体现了"简单即美"的哲学：error 是值，让开
 
 <!-- ============ 文档分隔线：016-go/023-GoGraphQL.md ============ -->
 
-
-
-
 ## 概述
 
 GraphQL 是一种 API 查询语言，由 Facebook 开发。与 REST API 不同，GraphQL 允许客户端精确指定需要的数据字段，避免过度获取或获取不足。Go 社区中最成熟的 GraphQL 框架是 gqlgen，它采用代码优先（schema-first）的方式，先定义 GraphQL Schema，然后自动生成类型安全的 Go 代码。
@@ -25996,9 +25934,6 @@ federation:
 
 <!-- ============ 文档分隔线：016-go/024-GoGRPC.md ============ -->
 
-
-
-
 ## 概述
 
 gRPC 是 Google 开源的高性能远程过程调用（RPC）框架，使用 Protocol Buffers 作为接口定义语言和序列化格式。与 REST/JSON 相比，gRPC 使用二进制传输，性能更高；强类型定义，开发更安全；支持双向流，通信更灵活。Go 是 gRPC 的一等公民语言，官方提供了完整的 SDK。
@@ -26391,10 +26326,6 @@ grpcurl -plaintext localhost:50051 user.UserService/GetUser -d '{"id":"123"}'
 ```
 
 <!-- ============ 文档分隔线：016-go/025-GoKubernetes.md ============ -->
-
-
-
-
 
 # Go 与 Kubernetes：从 client-go 到 Operator 的工程实践
 
@@ -27801,10 +27732,6 @@ reconcile 函数应设计为幂等：基于 spec 计算期望状态，对比 sta
 > 本文档基于 Kubernetes 1.28 与 client-go 0.28 编写，部分内容涉及 1.29+ 的实验性特性。实际使用时请参考官方最新文档与版本变更日志。
 
 <!-- ============ 文档分隔线：016-go/026-GoDocker.md ============ -->
-
-
-
-
 
 # Go 与 Docker：从镜像分层到 distroless 的容器化工程实践
 
@@ -29427,10 +29354,10 @@ CMD ["./myapp"]
 
 ### 11.7 相关主题
 
-- [Go 与 Kubernetes](./Go与Kubernetes.md)：从 client-go 到 Operator 的工程实践
-- [Go 与配置管理](./Go与配置管理.md)：viper、envconfig、环境变量优先级
-- [Go 与信号处理](./Go与信号处理.md)：SIGTERM、SIGINT、优雅关闭
-- [Go 与日志](./Go与日志.md)：zap、zerolog、结构化日志
+- Go 与 Kubernetes：从 client-go 到 Operator 的工程实践
+- Go 与配置管理：viper、envconfig、环境变量优先级
+- Go 与信号处理：SIGTERM、SIGINT、优雅关闭
+- Go 与日志：zap、zerolog、结构化日志
 
 ---
 
@@ -29586,9 +29513,6 @@ docker exec -it myapp sh
 > 本文档以 Go 1.22 与 Docker 25.x 为基准，结合 OCI Image Spec v1.1、BuildKit、distroless、Trivy 等生态工具，系统阐述 Go 程序容器化的工程实践。文中所有 Dockerfile 与命令均经过实际验证，可直接用于生产环境。随着 OCI 生态的演进，建议持续关注 BuildKit、cosign、Wolfi 等项目的最新进展。
 
 <!-- ============ 文档分隔线：016-go/027-GoRedis.md ============ -->
-
-
-
 
 ## 概述
 
@@ -30030,9 +29954,6 @@ if result == 0 {
 
 <!-- ============ 文档分隔线：016-go/028-GoMessageQueue.md ============ -->
 
-
-
-
 ## 概述
 
 消息队列是一种进程间通信机制，用于在不同服务之间异步传递消息。在微服务架构中，消息队列扮演着"邮局"的角色：发送方把消息投递出去，不需要知道谁会接收；接收方按自己的节奏取走消息处理。这种解耦方式让系统更灵活、更可靠。
@@ -30456,9 +30377,6 @@ c.Close()
 
 <!-- ============ 文档分隔线：016-go/029-GoDatabase.md ============ -->
 
-
-
-
 ## 概述
 
 数据库是应用程序持久化数据的核心组件。Go 标准库的 `database/sql` 包提供了统一的数据库操作接口，配合不同的驱动可以连接 MySQL、PostgreSQL、SQLite 等数据库。对于更复杂的需求，社区提供了 GORM 等 ORM 框架，简化数据库操作。
@@ -30871,8 +30789,6 @@ func NewDatabase(cfg *Config) (*sql.DB, error) {
 ```
 
 <!-- ============ 文档分隔线：016-go/030-GoTest.md ============ -->
-
-
 
 ### 表驱动测试
 
@@ -31557,8 +31473,6 @@ func TestTimeout(t *testing.T) {
 ```
 
 <!-- ============ 文档分隔线：016-go/031-GoJSON.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -32881,10 +32795,6 @@ js.Unmarshal(data)
 ```
 
 <!-- ============ 文档分隔线：016-go/032-GoFuzzing.md ============ -->
-
-
-
-
 
 # Go 与 Fuzzing：覆盖率引导的自动化缺陷挖掘
 
@@ -34542,10 +34452,6 @@ Go 原生 fuzzing 不集成符号执行，对此类"魔法值"分支效果较差
 > **适用 Go 版本**：1.18 - 1.24+
 
 <!-- ============ 文档分隔线：016-go/033-GoCGO.md ============ -->
-
-
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -37324,10 +37230,6 @@ CGO 是 Go 与 C 生态互操作的桥梁,虽带来性能开销与构建复杂�
 
 <!-- ============ 文档分隔线：016-go/034-GoWasm.md ============ -->
 
-
-
-
-
 # Go 与 WebAssembly：从浏览器到边缘计算
 
 > 本文以 Go 1.22 为基准版本，覆盖 Go 1.11 至 Go 1.24 的 Wasm 演进，包括 wasm 字节码格式、栈式虚拟机执行语义、`syscall/js` 桥接机制、WASI 接口、TinyGo 替代编译器与典型企业级案例研究。适用于已掌握 Go 基础语法与 HTTP 服务开发、希望深入理解 WebAssembly 工程化落地的工程师。
@@ -38787,10 +38689,6 @@ func process(data js.Value) {
 *本文档基于 Go 1.22 与 WebAssembly 1.0/2.0 规范撰写，最后更新于 2026-06-14。如有疑问或建议，欢迎在项目 issue 中讨论。*
 
 <!-- ============ 文档分隔线：016-go/035-GoCodeGeneration.md ============ -->
-
-
-
-
 
 # Go 与代码生成（Code Generation）
 
@@ -40537,10 +40435,6 @@ A：在 CI 中运行 `go generate ./...` 后用 `git diff --exit-code` 检查是
 
 <!-- ============ 文档分隔线：016-go/036-GoDependencyInjection.md ============ -->
 
-
-
-
-
 ## 历史动机与背景
 
 ### 控制反转的起源
@@ -42099,9 +41993,6 @@ func NewB(a *A) *B { return &B{a: a} }
 
 <!-- ============ 文档分隔线：016-go/037-GoConfigManagement.md ============ -->
 
-
-
-
 ## 概述
 
 配置管理是应用程序读取和管理运行参数的机制。一个应用通常需要数据库连接地址、端口号、日志级别等配置信息。这些信息不应该硬编码在代码中，而应该从配置文件、环境变量或远程配置中心读取。Go 社区最流行的配置管理库是 Viper，它支持多种配置格式和来源，可以灵活组合使用。
@@ -42484,10 +42375,6 @@ port := sub.GetInt("port")
 ```
 
 <!-- ============ 文档分隔线：016-go/038-GoLog.md ============ -->
-
-
-
-
 
 ## 历史动机与发展脉络
 
@@ -43844,11 +43731,11 @@ Uber 工程团队分享的 zap 使用经验：
 
 ### 相关章节
 
-- [Go 与 HTTP 服务器](./Go与HTTP服务器.md)：HTTP 中间件与日志集成
-- [Go 与配置管理](./Go与配置管理.md)：多环境日志配置
-- [Go 与加密](./Go与加密.md)：敏感字段脱敏
-- [Go 与中间件](./Go与中间件.md)：请求级别日志传播
-- [Go 与依赖注入](./Go与依赖注入.md)：Logger 注入与生命周期
+- Go 与 HTTP 服务器：HTTP 中间件与日志集成
+- Go 与配置管理：多环境日志配置
+- Go 与加密：敏感字段脱敏
+- Go 与中间件：请求级别日志传播
+- Go 与依赖注入：Logger 注入与生命周期
 
 ### 推荐书籍
 
@@ -43857,9 +43744,6 @@ Uber 工程团队分享的 zap 使用经验：
 - Majors, C., & Fong-Jones, L. (2022). *Observability Engineering*. O'Reilly Media.
 
 <!-- ============ 文档分隔线：016-go/039-GoTemplate.md ============ -->
-
-
-
 
 ## 概述
 
@@ -44355,9 +44239,6 @@ go func() { tmpl.Execute(w2, data2) }()
 
 <!-- ============ 文档分隔线：016-go/040-GoEncryption.md ============ -->
 
-
-
-
 ## 概述
 
 加密是保护数据安全的核心技术。Go 标准库的 `crypto` 包提供了丰富的加密功能，包括哈希、对称加密、非对称加密、数字签名等。无论是存储用户密码、保护通信数据还是验证数据完整性，都离不开加密技术。
@@ -44802,10 +44683,6 @@ func LoadPrivateKeyPEM(pemStr string) (*rsa.PrivateKey, error) {
 ```
 
 <!-- ============ 文档分隔线：016-go/041-GoFileMonitor.md ============ -->
-
-
-
-
 
 # Go 与文件监控：从 fsnotify 到跨平台事件流的工程实践
 
@@ -46594,10 +46471,10 @@ func (la *LogAnalyzer) parseLine(line string) {
 
 ### 11.6 相关主题
 
-- [Go 与信号处理](./Go与信号处理.md)：SIGTERM、SIGINT、优雅关闭
-- [Go 与配置管理](./Go与配置管理.md)：viper、envconfig、环境变量优先级
-- [Go 与日志](./Go与日志.md)：zap、zerolog、结构化日志
-- [Go 与正则表达式](./Go与正则表达式.md)：regexp、RE2、模式匹配
+- Go 与信号处理：SIGTERM、SIGINT、优雅关闭
+- Go 与配置管理：viper、envconfig、环境变量优先级
+- Go 与日志：zap、zerolog、结构化日志
+- Go 与正则表达式：regexp、RE2、模式匹配
 
 ---
 
@@ -46728,8 +46605,6 @@ EOF
 > 本文档以 Go 1.22 与 fsnotify v1.7 为基准，系统阐述文件系统监控的跨平台机制、事件去重、递归监听、热重载、安全审计等工程实践。文中所有代码示例均经过简化但可直接用于生产环境。随着 Linux fanotify、macOS FSEvents 的演进，建议持续关注内核与社区工具的最新进展。
 
 <!-- ============ 文档分隔线：016-go/042-GoTime.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -48541,10 +48416,6 @@ fmt.Println(time.Since(start))
 ```
 
 <!-- ============ 文档分隔线：016-go/043-GoRegex.md ============ -->
-
-
-
-
 
 # Go 与正则表达式：从 Thompson NFA 到 Pike VM 的工程实践
 
@@ -50929,10 +50800,6 @@ lazy := regexp.MustCompile(`a.*?b`)     // 懒惰
 
 <!-- ============ 文档分隔线：016-go/044-GoSignalHandling.md ============ -->
 
-
-
-
-
 # Go 与信号处理：从 POSIX 信号到优雅关闭
 
 > 本文以 Go 1.22 为基准版本，覆盖 Go 1.0 至 Go 1.24 的 `os/signal` 包演进，包含 POSIX 信号理论、`signal.Notify` 机制、优雅关闭（graceful shutdown）模式、Kubernetes 信号处理实战。适用于已掌握 Go 并发基础、希望深入理解信号机制与生产级优雅关闭的工程师。
@@ -52530,10 +52397,6 @@ Linux 内核对 PID 1 的特殊保护：
 > **适用 Go 版本**：1.0 - 1.24+
 
 <!-- ============ 文档分隔线：016-go/045-GoPerformanceAnalysis.md ============ -->
-
-
-
-
 
 # Go 性能分析：从 pprof 采样到连续剖析
 
@@ -54207,9 +54070,6 @@ traces                # 查看所有调用栈
 
 <!-- ============ 文档分隔线：016-go/046-GoHTTPClient.md ============ -->
 
-
-
-
 ## 概述
 
 HTTP 客户端是程序与外部服务通信的基本工具。无论是调用第三方 API、下载文件还是微服务间通信，都需要发送 HTTP 请求。Go 标准库的 `net/http` 包提供了完整的 HTTP 客户端实现，无需第三方依赖即可完成绝大多数 HTTP 操作。
@@ -54669,8 +54529,6 @@ http2.ConfigureTransport(client.Transport.(*http.Transport))
 ```
 
 <!-- ============ 文档分隔线：016-go/047-GoHTTP.md ============ -->
-
-
 
 ## 历史动机与发展脉络
 
@@ -56326,11 +56184,11 @@ server.ListenAndServeTLS("cert.pem", "key.pem")
 
 ### 相关章节
 
-- [Go 与 JSON](./Go与JSON.md)：请求/响应的 JSON 序列化
-- [Go 与 HTTP 客户端](./Go与HTTP客户端.md)：客户端实现
-- [Go 与中间件](./Go与中间件.md)：中间件模式详解
-- [Go 与 OAuth2](./Go与OAuth2.md)：认证授权
-- [Go 与日志](./Go与日志.md)：请求日志集成
+- Go 与 JSON：请求/响应的 JSON 序列化
+- Go 与 HTTP 客户端：客户端实现
+- Go 与中间件：中间件模式详解
+- Go 与 OAuth2：认证授权
+- Go 与日志：请求日志集成
 
 ### 推荐书籍
 
@@ -56666,10 +56524,6 @@ resp, _ := http.DefaultClient.Do(req)
 ```
 
 <!-- ============ 文档分隔线：016-go/048-GoOAuth2.md ============ -->
-
-
-
-
 
 ## 历史动机与发展脉络
 
@@ -59765,10 +59619,6 @@ OAuth 2.0 与 JWT 是现代分布式系统身份认证与授权的基石。掌�
 
 <!-- ============ 文档分隔线：016-go/049-GoMiddleware.md ============ -->
 
-
-
-
-
 # Go HTTP 中间件：从洋葱模型到企业级网关
 
 > 本文以 Go 1.22 为基准版本，覆盖 Go 1.0 至 Go 1.24 的 `net/http` 与中间件生态演进，包括 Handler 接口语义、洋葱模型形式化、Chain 组合律、context 传播机制、主流框架（chi、gin、echo）对比与企业级 API 网关案例研究。适用于已掌握 Go 基础语法与 HTTP 服务开发、希望深入理解中间件工程化落地的工程师。
@@ -61651,9 +61501,6 @@ func (c *counter) Get() int64 {
 
 <!-- ============ 文档分隔线：016-go/050-GoDistributedTracing.md ============ -->
 
-
-
-
 ## 概述
 
 分布式追踪是一种监控技术，用于跟踪请求在分布式系统中的完整路径。当用户发起一个请求，这个请求可能经过网关、多个微服务、数据库、消息队列等组件。分布式追踪记录每个环节的耗时和状态，帮助开发者定位性能瓶颈和故障原因。OpenTelemetry 是当前最主流的分布式追踪标准，Go 语言有官方的 SDK 支持。
@@ -62058,8 +61905,6 @@ userID := b.Member("user.id").Value()
 ```
 
 <!-- ============ 文档分隔线：016-go/051-Go.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -64519,8 +64364,6 @@ default:
 
 <!-- ============ 文档分隔线：016-go/052-GoroutineChannelPrinciple.md ============ -->
 
-
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 CSP 设计哲学
@@ -66767,9 +66610,6 @@ default:
 
 <!-- ============ 文档分隔线：016-go/053-GMPModel.md ============ -->
 
-
-
-
 ## 概述
 
 Go 语言的并发能力核心在于其调度器。GMP 模型是 Go 运行时调度器的设计基础，它决定了 goroutine 如何被高效地分配到操作系统线程上执行。理解 GMP 模型有助于编写高性能并发程序，并在排查性能瓶颈时提供理论依据。
@@ -67182,10 +67022,6 @@ func fanOutFanIn(input <-chan Data, workerCount int) <-chan Result {
 ```
 
 <!-- ============ 文档分隔线：016-go/054-ConcurrencyPattern.md ============ -->
-
-
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -69463,9 +69299,6 @@ func (p *DynamicWorkerPool) Shutdown() {
 
 <!-- ============ 文档分隔线：016-go/055-ReflectionGenericFunction.md ============ -->
 
-
-
-
 ## 概述
 
 反射（Reflection）是 Go 语言在运行时检查类型信息、操作值的能力。通过 reflect 包，程序可以在编译时不知道具体类型的情况下，动态地调用方法、访问字段和创建值。反射是实现通用函数、序列化框架和 ORM 等工具的基础。但反射性能较差，Go 1.18+ 引入泛型后，许多反射场景可以用泛型替代。
@@ -69887,10 +69720,6 @@ plugin, _ := Create("mysql")
 ```
 
 <!-- ============ 文档分隔线：016-go/056-MemoryEscapeAnalysis.md ============ -->
-
-
-
-
 
 # Go 内存逃逸分析（Escape Analysis）
 
@@ -71326,10 +71155,6 @@ A：基本一致，但栈大小阈值可能因平台而异（如 `linux/amd64` �
 > 本文基于 Go 1.22+ 编写，逃逸分析输出与命令可能随版本演进。建议读者用 `go version` 确认当前版本，并参考官方文档获取最新信息。性能优化的核心原则仍是"测量驱动，避免过早优化"。
 
 <!-- ============ 文档分隔线：016-go/057-GCAndTuning.md ============ -->
-
-
-
-
 
 ## 历史动机与背景
 
@@ -73123,10 +72948,6 @@ var globalCache [1000][]byte
 - 若 GOGC=100,每次 HeapAlloc 达到 2MB 时触发 GC。
 
 <!-- ============ 文档分隔线：016-go/058-GenericDetailed.md ============ -->
-
-
-
-
 
 # 泛型详解：类型参数、约束与 GC Shape Stenciling 实现
 
@@ -75844,10 +75665,6 @@ Go 泛型的引入是 Go 语言历史上最重要的演进之一。它解决了 
 
 <!-- ============ 文档分隔线：016-go/059-UnitTestBenchmark.md ============ -->
 
-
-
-
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 Go 测试文化的设计动机
@@ -78268,10 +78085,6 @@ Go 测试生态的设计哲学——"测试是语言一等公民"——深刻影
 
 <!-- ============ 文档分隔线：016-go/060-RaceDetectionAtomic.md ============ -->
 
-
-
-
-
 ## 1. 历史动机与发展脉络
 
 Go 以 goroutine 与 channel 闻名，但共享内存并发同样存在。2009 年 Go 发布时，团队就意识到数据竞争是并发 bug 的主要来源；2011 年 Go 1.0 前，Go 团队把 ThreadSanitizer（TSan）移植进工具链，`go test -race` 成为内置的竞争检测器。这一决策让 Go 在“并发正确性工具”上领先同期语言。
@@ -79135,10 +78948,6 @@ func debugRace() {
 ```
 
 <!-- ============ 文档分隔线：016-go/061-PackageManagementDetailed.md ============ -->
-
-
-
-
 
 ## 历史动机与发展脉络
 
@@ -80838,8 +80647,6 @@ Go Modules 是 Go 语言在工程化道路上最关键的演进之一。通过 M
 
 <!-- ============ 文档分隔线：016-go/062-GoLatestFeatures.md ============ -->
 
-
-
 # Go 新特性演进
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -80851,4 +80658,3 @@ Go Modules 是 Go 语言在工程化道路上最关键的演进之一。通过 M
 - 工具链改进（含工作区模式）
 - 标准库新增能力
 - 升级项目的方法论
-

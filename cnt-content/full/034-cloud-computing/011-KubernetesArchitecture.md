@@ -1,6 +1,6 @@
 ---
 order: 110
-title: Kubernetes架构
+title: Kubernetes 架构
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: intermediate

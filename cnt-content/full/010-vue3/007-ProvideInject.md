@@ -1,6 +1,6 @@
 ---
 order: 70
-title: Provide与Inject
+title: Provide 与 Inject
 module: 'vue3'
 category: 前端技术
 difficulty: intermediate

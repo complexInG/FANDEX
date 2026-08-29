@@ -6,15 +6,12 @@ category: 数据库
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-28'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：019-sql/001-OverviewStandard.md ============ -->
-
-
-
 
 > 本节为增量补充，帮助你理解 SQL 标准与各数据库"方言"的关系。
 
@@ -352,8 +349,6 @@ CREATE TABLE         →     索引基础               →    执行计划分�
 
 <!-- ============ 文档分隔线：019-sql/002-SQLFirstSteps.md ============ -->
 
-
-
 ## 0. 这一课要达成什么
 
 学习目标：不背语法、先跑通全流程——装好数据库、连上去、建一个自己的库和表、
@@ -577,8 +572,6 @@ WHERE NOT EXISTS (SELECT 1 FROM producer WHERE producer_name = 'ry0');
   想检验综合能力时直接挑战 [SQL 综合实战：曲库数据库](sql/007-SQLProjectMusicLibrary)。
 
 <!-- ============ 文档分隔线：019-sql/003-DataQueryBasics.md ============ -->
-
-
 
 ## 0. 五分钟上手：五条最常用的查询（先读这里）
 
@@ -1230,8 +1223,6 @@ FROM employees;
 
 <!-- ============ 文档分隔线：019-sql/004-MultiTableQuery.md ============ -->
 
-
-
 ## INNER JOIN
 
 **换行写法：基本内连接**
@@ -1866,8 +1857,6 @@ FROM departments d, job_levels j;
 ```
 
 <!-- ============ 文档分隔线：019-sql/005-DML.md ============ -->
-
-
 
 ## INSERT 插入数据
 
@@ -2555,8 +2544,6 @@ TRUNCATE TABLE users, orders CASCADE;
 ```
 
 <!-- ============ 文档分隔线：019-sql/006-DDL.md ============ -->
-
-
 
 ## CREATE TABLE
 
@@ -3377,8 +3364,6 @@ DROP VIEW IF EXISTS high_salary_employees;
 
 <!-- ============ 文档分隔线：019-sql/007-SQLProjectMusicLibrary.md ============ -->
 
-
-
 ## 0. 项目导览
 
 学习目标：把前几课学的 DDL（建库建表）、DML（增删改）、DQL（查询）在同一个项目里
@@ -3702,8 +3687,6 @@ SELECT (SELECT COUNT(*) FROM music) AS src_rows,
   想见识面试题风格的综合题库，见 [SQL 实战与面试](sql/012-SQLPracticeInterview)。
 
 <!-- ============ 文档分隔线：019-sql/008-WindowFunction.md ============ -->
-
-
 
 ### FIRST_VALUE / LAST_VALUE
 
@@ -4487,9 +4470,6 @@ WHERE rn = 1;
 
 <!-- ============ 文档分隔线：019-sql/009-AdvancedQuery.md ============ -->
 
-
-
-
 # 高级查询
 
 ## 递归 CTE 进阶
@@ -5034,8 +5014,6 @@ UPDATE events SET data = JSON_MODIFY(data, '$.status', 'processed') WHERE id = 1
 - MySQL 的 `JSON_TABLE` 和 SQL Server 的 `OPENJSON` 可将 JSON 数据展开为关系表
 
 <!-- ============ 文档分隔线：019-sql/010-PerformanceOptimization.md ============ -->
-
-
 
 ## 执行计划
 
@@ -5845,8 +5823,6 @@ WHERE state = 'active';
 ```
 
 <!-- ============ 文档分隔线：019-sql/011-PLSQLStoredProcedure.md ============ -->
-
-
 
 ## 游标
 
@@ -6818,9 +6794,6 @@ WHERE proname = 'get_dept_count';
 
 <!-- ============ 文档分隔线：019-sql/012-SQLPracticeInterview.md ============ -->
 
-
-
-
 # SQL实战与面试
 
 ### 1. Top N 问题
@@ -7394,8 +7367,6 @@ END IF;
 - 面试准备要兼顾理论深度和实战能力，窗口函数和执行计划是重点
 
 <!-- ============ 文档分隔线：019-sql/013-DataType.md ============ -->
-
-
 
 ## 1. 数据类型概述
 
@@ -8066,8 +8037,6 @@ CREATE TABLE products (id INT, price DECIMAL(10, 2));
 
 <!-- ============ 文档分隔线：019-sql/014-Constraint.md ============ -->
 
-
-
 ## 1. 约束概述
 
 约束（Constraint）是数据库强制执行的数据完整性规则，确保数据满足业务逻辑要求。约束在 DDL 层面保证数据质量，比应用层验证更可靠。
@@ -8640,8 +8609,6 @@ ALTER TABLE users ENABLE CONSTRAINT uk_email;
 
 <!-- ============ 文档分隔线：019-sql/015-SelectExecutionOrder.md ============ -->
 
-
-
 ## 1. 执行顺序概述
 
 SQL 是声明式语言，编写顺序与逻辑执行顺序不同。理解逻辑执行顺序是编写正确、高效查询的基础。
@@ -9150,8 +9117,6 @@ WHERE e1.salary > (
 ```
 
 <!-- ============ 文档分隔线：019-sql/016-FilterCondition.md ============ -->
-
-
 
 ## 1. WHERE 子句概述
 
@@ -9782,8 +9747,6 @@ SELECT * FROM orders WHERE created_at >= '2026-01-01' AND created_at < '2027-01-
 
 <!-- ============ 文档分隔线：019-sql/017-AggregateFunction.md ============ -->
 
-
-
 ## 1. 聚合函数概述
 
 聚合函数对一组值进行计算，返回单个汇总值。它们常与 GROUP BY 子句配合使用，也可单独使用对整个表进行汇总。
@@ -10377,8 +10340,6 @@ GROUP BY department;
 
 <!-- ============ 文档分隔线：019-sql/018-GROUPBYGroupingSet.md ============ -->
 
-
-
 ## 1. GROUP BY 基础
 
 ### 1.1 分组原理
@@ -10932,8 +10893,6 @@ GROUP BY dept;
 
 <!-- ============ 文档分隔线：019-sql/019-JoinQuery.md ============ -->
 
-
-
 ## 1. 连接查询概述
 
 连接（JOIN）是 SQL 最强大的特性之一，用于根据列之间的关系组合两个或多个表中的行。
@@ -11408,8 +11367,6 @@ SELECT * FROM employees NATURAL JOIN departments;
 
 <!-- ============ 文档分隔线：019-sql/020-NaturalJoinUsing.md ============ -->
 
-
-
 ## 1. 自然连接（NATURAL JOIN）
 
 ### 1.1 概念
@@ -11787,9 +11744,6 @@ JOIN locations l USING(location_id);
 ```
 
 <!-- ============ 文档分隔线：019-sql/021-SelfJoin.md ============ -->
-
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -12453,8 +12407,6 @@ WHERE salary = (SELECT MAX(salary) FROM employees);
 
 <!-- ============ 文档分隔线：019-sql/022-SemiAntiJoin.md ============ -->
 
-
-
 ## 1. 半连接与反半连接概念
 
 ### 1.1 定义
@@ -12890,8 +12842,6 @@ JOIN orders o ON o.customer_id = c.id;
 ```
 
 <!-- ============ 文档分隔线：019-sql/023-LateralDerivedTable.md ============ -->
-
-
 
 ## 1. LATERAL 概述
 
@@ -13436,8 +13386,6 @@ LATERAL (
 
 <!-- ============ 文档分隔线：019-sql/024-Subquery.md ============ -->
 
-
-
 ## 1. 子查询概述
 
 子查询（Subquery）是嵌套在另一个查询中的 SELECT 语句，可以出现在 SELECT、FROM、WHERE、HAVING 等子句中。
@@ -13953,8 +13901,6 @@ WHERE d.region = 'East';
 
 <!-- ============ 文档分隔线：019-sql/025-CTE.md ============ -->
 
-
-
 ## 1. CTE 概述
 
 公用表表达式（Common Table Expression，CTE）是 SQL 中定义临时结果集的机制，使用 `WITH` 关键字定义，在后续查询中引用。
@@ -14430,8 +14376,6 @@ WHERE id IN (SELECT id FROM inactive_customers);
 ```
 
 <!-- ============ 文档分隔线：019-sql/026-RecursiveCTE.md ============ -->
-
-
 
 ## 1. 递归 CTE 概述
 
@@ -15013,8 +14957,6 @@ SELECT * FROM tree WHERE NOT is_cycle;
 
 <!-- ============ 文档分隔线：019-sql/027-PivotUnpivot.md ============ -->
 
-
-
 ## 1. 行列转换概述
 
 - **PIVOT（行转列）**：将行数据旋转为列，常用于交叉报表
@@ -15479,8 +15421,6 @@ GROUP BY dept;
 
 <!-- ============ 文档分隔线：019-sql/028-SetOperation.md ============ -->
 
-
-
 ## 1. 集合操作概述
 
 SQL 集合操作将多个查询的结果集合并为一个结果集，基于集合论中的并、交、差运算。
@@ -15896,8 +15836,6 @@ SELECT customer_id FROM orders_2026;
 ```
 
 <!-- ============ 文档分隔线：019-sql/029-DCL.md ============ -->
-
-
 
 ## 1. DCL 概述
 
@@ -16384,8 +16322,6 @@ REVOKE INSERT ON users FROM appuser;
 ```
 
 <!-- ============ 文档分隔线：019-sql/030-TCL.md ============ -->
-
-
 
 ## 1. TCL 概述
 
@@ -16935,9 +16871,6 @@ SELECT * FROM information_schema.INNODB_LOCKS;
 ```
 
 <!-- ============ 文档分隔线：019-sql/031-Index.md ============ -->
-
-
-
 
 # SQL 索引体系：从数据结构到工程实践
 
@@ -20780,8 +20713,6 @@ EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
 
 <!-- ============ 文档分隔线：019-sql/032-ExecutionPlan.md ============ -->
 
-
-
 ## 1. 执行计划概述
 
 执行计划（Execution Plan）是数据库优化器为 SQL 查询选择的执行策略。理解执行计划是 SQL 性能优化的核心技能。
@@ -21309,8 +21240,6 @@ EXPLAIN SELECT * FROM employees e JOIN departments d ON e.dept_id = d.id;
 
 <!-- ============ 文档分隔线：019-sql/033-TransactionACIDProperty.md ============ -->
 
-
-
 ## 1. 事务概述
 
 事务（Transaction）是数据库操作的逻辑单元，由一组 SQL 语句组成，具有 ACID 四大特性。
@@ -21816,8 +21745,6 @@ COMMIT;
 ```
 
 <!-- ============ 文档分隔线：019-sql/034-IsolationLevel.md ============ -->
-
-
 
 ## 1. 隔离级别概述
 
@@ -22384,9 +22311,6 @@ COMMIT;
 
 <!-- ============ 文档分隔线：019-sql/035-DirtyReadNonRepeatablePhantom.md ============ -->
 
-
-
-
 ## 1. 并发异常概述
 
 当多个事务并发执行时，可能产生三种数据不一致问题：
@@ -22629,8 +22553,6 @@ COMMIT;
 ```
 
 <!-- ============ 文档分隔线：019-sql/036-LockMechanism.md ============ -->
-
-
 
 ## 1. 锁概述
 
@@ -23237,8 +23159,6 @@ KILL 12345;
 
 <!-- ============ 文档分隔线：019-sql/037-MVCC.md ============ -->
 
-
-
 ## 1. MVCC 概述
 
 多版本并发控制（Multi-Version Concurrency Control，MVCC）是现代数据库实现高并发读写的核心机制。通过保存数据的多个版本，实现读不阻塞写、写不阻塞读。
@@ -23760,9 +23680,6 @@ SHOW autovacuum;
 
 <!-- ============ 文档分隔线：019-sql/038-WindowFunctionFramework.md ============ -->
 
-
-
-
 ## 1. 窗口函数基础架构
 
 ### 1.1 窗口函数执行模型
@@ -24110,9 +24027,6 @@ WINDOW w AS (PARTITION BY x ORDER BY y);
 - **近似算法**：使用 `HyperLogLog` 等近似去重替代精确 `COUNT(DISTINCT)`
 
 <!-- ============ 文档分隔线：019-sql/039-RecursiveCTETreeTraversal.md ============ -->
-
-
-
 
 ## 1. 递归 CTE 基础
 
@@ -24488,9 +24402,6 @@ LIMIT 1;  -- 最短路径
 
 <!-- ============ 文档分隔线：019-sql/040-OptimisticPessimisticLock.md ============ -->
 
-
-
-
 ## 1. 并发控制基础
 
 ### 1.1 并发问题与锁的关系
@@ -24769,8 +24680,6 @@ WHERE id IN (1, 2, 3)
 ```
 
 <!-- ============ 文档分隔线：019-sql/041-SQLAntipattern.md ============ -->
-
-
 
 ## 1. 存储 CSV 列
 
@@ -25406,8 +25315,6 @@ WHERE user_id = 100 AND status = 'paid';
 
 <!-- ============ 文档分隔线：019-sql/042-MergeStatement.md ============ -->
 
-
-
 ## MERGE 标准语法
 
 **基本写法：SQL 标准 MERGE**
@@ -25605,8 +25512,6 @@ ON DUPLICATE KEY UPDATE
 
 <!-- ============ 文档分隔线：019-sql/043-ExceptIntersect.md ============ -->
 
-
-
 ## 基本集合操作
 
 **基本写法：UNION 并集**
@@ -25781,8 +25686,6 @@ UNION
 
 <!-- ============ 文档分隔线：019-sql/044-TypeConversion.md ============ -->
 
-
-
 ## CAST 标准转换
 
 **基本写法：CAST 函数**
@@ -25949,4 +25852,3 @@ SELECT data->>'name' AS name FROM users WHERE id = 1;
 -- MySQL JSON 转文本
 SELECT CAST(JSON_EXTRACT(config, '$.name') AS CHAR) AS name;
 ```
-

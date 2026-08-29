@@ -11,12 +11,12 @@
         {
           "id": "csharp-001",
           "title": "C# 概述与环境配置",
-          "doc": "001-COverviewEnvSetup"
+          "doc": "001-CSharpOverviewEnvSetup"
         },
         {
           "id": "csharp-002",
           "title": "C# 面向对象编程",
-          "doc": "003-COOP"
+          "doc": "003-CSharpOOP"
         },
         {
           "id": "csharp-003",
@@ -26,12 +26,12 @@
         {
           "id": "csharp-004",
           "title": "C# 高级特性",
-          "doc": "008-CAdvancedFeature"
+          "doc": "008-CSharpAdvancedFeature"
         },
         {
           "id": "csharp-005",
           "title": "C# 测试与工程化",
-          "doc": "011-CTestEngineering"
+          "doc": "011-CSharpTestEngineering"
         },
         {
           "id": "csharp-006",
@@ -63,17 +63,17 @@
         {
           "id": "csharp-103",
           "title": "C#与Blazor",
-          "doc": "021-CBlazor"
+          "doc": "021-CSharpBlazor"
         },
         {
           "id": "csharp-104",
           "title": "C#与EF Core",
-          "doc": "023-CEFCore"
+          "doc": "023-CSharpEFCore"
         },
         {
           "id": "csharp-105",
           "title": "C#与最小API",
-          "doc": "025-CAPI"
+          "doc": "025-CSharpAPI"
         },
         {
           "id": "csharp-106",

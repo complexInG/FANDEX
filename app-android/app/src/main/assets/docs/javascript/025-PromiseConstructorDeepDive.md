@@ -1,6 +1,6 @@
 ---
 order: 250
-title: Promise构造器
+title: Promise 构造器
 module: 'javascript'
 category: 前端技术
 difficulty: advanced
@@ -13,7 +13,7 @@ related:
   - 'javascript/006-ObjectArray'
   - 'javascript/031-CoroutinesInJavaScript'
   - 'javascript/028-EventLoop'
-  - 'javascript/044-ImageOptimization'
+  - 'javascript/044-FetchApiWebStreams'
 prerequisites:
   - 'javascript/028-EventLoop'
   - 'javascript/014-HigherOrderFunction'

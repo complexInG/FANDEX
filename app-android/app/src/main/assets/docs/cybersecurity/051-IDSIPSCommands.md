@@ -1,6 +1,6 @@
 ---
 order: 510
-title: Cybersecurity IDS/IPS 命令(Suricata/Snort)
+title: IDS/IPS 命令（Suricata/Snort）
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

@@ -1,6 +1,6 @@
 ---
 order: 190
-title: Lua错误处理
+title: Lua 错误处理
 module: 'lua'
 category: 后端技术
 difficulty: beginner

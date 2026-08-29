@@ -1,6 +1,6 @@
 ---
 order: 440
-title: 类型转换 语法速查手册
+title: 类型转换语法速查手册
 module: 'sql'
 category: 数据库
 difficulty: beginner

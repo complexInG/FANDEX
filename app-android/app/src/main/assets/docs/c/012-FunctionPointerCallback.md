@@ -8,7 +8,7 @@ description: 函数指针与回调函数模式
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - 'c/010-TheLinuxProgrammingInterface'
+  - 'c/010-MultiFileCompilation'
   - 'c/011-DynamicMemoryManagement'
   - 'c/013-VarargsFunction'
   - 'c/014-SignalHandling'

@@ -1,6 +1,6 @@
 ---
 order: 460
-title: Flow冷流与SharedFlow和StateFlow
+title: Flow 冷流与 SharedFlow 和 StateFlow
 module: 'kotlin'
 category: 后端技术
 difficulty: advanced
@@ -1924,10 +1924,3 @@ viewModelScope.launch {
 - 熟练运用 Flow、StateFlow、SharedFlow 解决工程问题。
 - 在 Android、服务端、KMP 项目中正确选择与组合 Flow 类型。
 - 排查常见陷阱，构建高性能、可维护的响应式系统。
-
-后续文档推荐阅读：
-
-- **《协程调度器与上下文》**：深入理解 Flow 的执行线程。
-- **《协程异常处理》**：与 Flow 异常处理的协同。
-- **《Channel与BroadcastChannel》**：理解为什么 SharedFlow 替代了 BroadcastChannel。
-- **《Flow与响应式流》**：与 Reactive Streams 规范的对接。

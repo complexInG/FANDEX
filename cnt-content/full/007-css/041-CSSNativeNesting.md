@@ -1,6 +1,6 @@
 ---
 order: 410
-title: CSS原生嵌套
+title: CSS 原生嵌套
 module: 'css'
 category: 前端技术
 difficulty: intermediate

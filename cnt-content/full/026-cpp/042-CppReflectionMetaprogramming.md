@@ -11,7 +11,7 @@ related:
   - 'cpp/040-CppCodeStyle'
   - 'cpp/041-CppWebAssembly'
   - 'cpp/043-CppMathLibrary'
-  - 'cpp/044-SmartPointer'
+  - 'cpp/044-CppSmartPointer'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
 ---

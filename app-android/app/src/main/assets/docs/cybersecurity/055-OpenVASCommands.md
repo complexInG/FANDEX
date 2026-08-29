@@ -1,6 +1,6 @@
 ---
 order: 550
-title: Cybersecurity OpenVAS 漏洞扫描
+title: OpenVAS 漏洞扫描
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

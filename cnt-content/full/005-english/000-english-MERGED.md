@@ -6,13 +6,12 @@ category: 工具链
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：005-english/001-ComputerProfessionalEnglishVocabulary.md ============ -->
-
 
 ## 1. 编程语言与软件工程 (Programming Languages & Software Engineering)
 
@@ -333,11 +332,7 @@ prerequisites: []
 | vector          | /ˈvektər/           | n. 向量           | Word vectors represent semantic relationships.             |
 | weight          | /weɪt/              | n. 权重           | Update weights during backpropagation.                     |
 
-
-
 <!-- ============ 文档分隔线：005-english/002-EnglishGrammarSystemOverview.md ============ -->
-
-
 
 ## 1. 英语语法体系概览
 
@@ -640,11 +635,7 @@ $$\text{被动语态} = \text{be} + \text{过去分词}$$
 | 过度关注例外 | 先掌握核心规则       |
 | 只学不练     | 造句、翻译、写作实践 |
 
-
-
 <!-- ============ 文档分隔线：005-english/003-SentenceStructureAnalysis.md ============ -->
-
-
 
 ## 1. 句子成分总论
 
@@ -934,11 +925,7 @@ $$\text{S} + \text{V} + \text{O} + \text{OC}$$
 | bug                              | 动作承受者       | 宾语     |
 | that had caused the system crash | bug 的修饰       | 定语从句 |
 
-
-
 <!-- ============ 文档分隔线：005-english/004-CompoundSentenceClause.md ============ -->
-
-
 
 ## 1. 复合句概述
 
@@ -1226,11 +1213,7 @@ $$\text{such} + (a/an) + \text{adj.} + \text{n.} + \text{that}$$
 | 是否/选择      | 名词性从句 (whether)       |
 | 疑问内容       | 名词性从句 (wh-词)         |
 
-
-
 <!-- ============ 文档分隔线：005-english/005-LongDifficultSentenceBreakdownTechnique.md ============ -->
-
-
 
 ## 1. 长难句的构成特征
 
@@ -1458,11 +1441,7 @@ $$\text{It is/was} + \text{被强调部分} + \text{that/who} + \text{其余部�
 翻译：
 ```
 
-
-
 <!-- ============ 文档分隔线：005-english/006-CommonGrammarErrorSummary.md ============ -->
-
-
 
 ## 1. 主谓一致错误 (Subject-Verb Agreement Errors)
 
@@ -1713,11 +1692,7 @@ $$\text{It is/was} + \text{被强调部分} + \text{that/who} + \text{其余部�
 | stationary / stationery | stationary = 静止的；stationery = 文具    | a **stationary** object / office **stationery**                   |
 | complement / compliment | complement = 补充；compliment = 赞美      | Wine **complements** the meal. / She received a **compliment**.   |
 
-
-
 <!-- ============ 文档分隔线：005-english/007-TechDocReadingMethod.md ============ -->
-
-
 
 ## 1. 技术文档类型总览
 
@@ -2011,11 +1986,7 @@ RFC (Request for Comments) 是互联网标准的官方文档：
 | 代码片段 | 记录关键用法   |
 | 问答对   | 记录疑问和解答 |
 
-
-
 <!-- ============ 文档分隔线：005-english/008-AcademicPaperReadingGuide.md ============ -->
-
-
 
 ## 1. 学术论文的结构
 
@@ -2301,11 +2272,7 @@ $$\text{Abstract} \rightarrow \text{Introduction} \rightarrow \text{Method} \rig
 | 进阶 | 深入研究方向 | 3-5 篇（精读2篇）    |
 | 深入 | 追踪最新进展 | 5-10 篇（精读1-2篇） |
 
-
-
 <!-- ============ 文档分隔线：005-english/009-AcademicWritingStandard.md ============ -->
-
-
 
 ## 1. 学术写作的基本原则
 
@@ -2521,11 +2488,7 @@ $$\text{Abstract} \rightarrow \text{Introduction} \rightarrow \text{Method} \rig
 | 图表无编号和标题   | 每个图表编号和标题 |
 | 页码缺失           | 确保页码连续       |
 
-
-
 <!-- ============ 文档分隔线：005-english/010-TechDocWriting.md ============ -->
-
-
 
 ## 1. 技术文档写作原则
 
@@ -2843,11 +2806,7 @@ curl -X POST https://api.example.com/v1/users \
 技术写作（Markdown），见 002-markdown 模块。
 开源协作中的英语沟通，见 004-github 模块。
 
-
-
 <!-- ============ 文档分隔线：005-english/011-EnglishToChineseTechnique.md ============ -->
-
-
 
 ## 1. 英译汉的基本原则
 
@@ -3095,11 +3054,7 @@ curl -X POST https://api.example.com/v1/users \
 | 术语不统一 | computer → 计算机/电脑 | 统一用"计算机"   |
 | 逻辑不通   | 虽然下雨，但他没去     | 因为下雨，他没去 |
 
-
-
 <!-- ============ 文档分隔线：005-english/012-ChineseToEnglishTechnique.md ============ -->
-
-
 
 ## 1. 汉译英的基本原则
 
@@ -3320,11 +3275,7 @@ curl -X POST https://api.example.com/v1/users \
 2. 分析翻译技巧
 3. 模仿翻译类似文本
 
-
-
 <!-- ============ 文档分隔线：005-english/013-TechTranslationPoints.md ============ -->
-
-
 
 ## 1. 技术翻译的特点
 

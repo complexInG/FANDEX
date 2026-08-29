@@ -8,13 +8,13 @@ description: never 作为空类型的完整语义：联合吸收、交叉吸收�
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
   - 'typescript/017-IntersectionTypeMerge'
   - 'typescript/018-TypeGuardCustomGuard'
   - 'typescript/033-UtilityTypePrinciple'
 prerequisites:
   - 'typescript/007-BasicTypeSystem'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
 ---
 
 ## 0. 学习目标（可验证）

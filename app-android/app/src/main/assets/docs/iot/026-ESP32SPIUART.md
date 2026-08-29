@@ -1,6 +1,6 @@
 ---
 order: 260
-title: 物联网 ESP32 SPI 与 UART
+title: ESP32 SPI 与 UART
 module: 'iot'
 category: 云与基础设施
 difficulty: beginner

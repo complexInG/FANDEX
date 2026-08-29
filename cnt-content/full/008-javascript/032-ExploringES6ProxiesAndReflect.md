@@ -1,6 +1,6 @@
 ---
 order: 320
-title: Proxy与Reflect
+title: Proxy 与 Reflect
 module: 'javascript'
 category: 前端技术
 difficulty: advanced
@@ -10,11 +10,11 @@ updated: '2026-07-20'
 related:
   - 'javascript/016-CurryAndFunctionComposition'
   - 'javascript/031-CoroutinesInJavaScript'
-  - 'javascript/020-ObjectReference'
+  - 'javascript/020-ObjectStaticMethods'
   - 'javascript/028-EventLoop'
   - 'javascript/025-PromiseConstructorDeepDive'
 prerequisites:
-  - 'javascript/020-ObjectReference'
+  - 'javascript/020-ObjectStaticMethods'
 ---
 
 

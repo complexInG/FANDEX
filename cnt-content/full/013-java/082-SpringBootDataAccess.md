@@ -1,6 +1,6 @@
 ---
 order: 820
-title: SpringBoot数据访问
+title: SpringBoot 数据访问
 module: 'java'
 category: 后端技术
 difficulty: intermediate

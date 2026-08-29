@@ -1,6 +1,6 @@
 ---
 order: 150
-title: GitHub-Copilot
+title: GitHub Copilot
 module: 'github'
 category: 工具链
 difficulty: intermediate

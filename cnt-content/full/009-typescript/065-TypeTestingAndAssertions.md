@@ -99,5 +99,5 @@ expectError<ElementOf<string>>(); // 非数组类型应触发约束错误
 
 类型测试的成本很低：一个断言文件 + 一个脚本命令。
 对工具类型、泛型函数、声明文件这些"类型 API"建立契约，重构时 `pnpm test:types`
-就能替你守住边界。下一步可结合 [声明文件编写](/FANDEX/typescript/023-DeclarationFileWriting/)
+就能替你守住边界。下一步可结合 声明文件编写
 理解断言与声明的关系。

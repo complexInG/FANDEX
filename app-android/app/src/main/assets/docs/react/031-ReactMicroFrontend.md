@@ -1,6 +1,6 @@
 ---
 order: 310
-title: React与微前端
+title: React 与微前端
 module: 'react'
 category: 前端技术
 difficulty: advanced

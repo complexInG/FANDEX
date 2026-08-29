@@ -1,6 +1,6 @@
 ---
 order: 370
-title: Networking IPv6 网络命令
+title: IPv6 网络命令
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

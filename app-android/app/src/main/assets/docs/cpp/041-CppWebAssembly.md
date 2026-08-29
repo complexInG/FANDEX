@@ -1,6 +1,6 @@
 ---
 order: 410
-title: C++与WebAssembly
+title: C++与 WebAssembly
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced

@@ -1,6 +1,6 @@
 ---
 order: 390
-title: Go与模板
+title: Go 与模板
 module: 'go'
 category: 后端技术
 difficulty: intermediate

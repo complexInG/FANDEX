@@ -1,6 +1,6 @@
 ---
 order: 120
-title: Unicode属性转义
+title: Unicode 属性转义
 module: 'javascript'
 category: 前端技术
 difficulty: intermediate

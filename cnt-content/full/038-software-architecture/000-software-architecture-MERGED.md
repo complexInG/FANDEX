@@ -6,14 +6,12 @@ category: 云与基础设施
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：038-software-architecture/001-SoftwareArchitectureOverview.md ============ -->
-
-
 
 ## 1. 从"盖楼"说起：什么是软件架构
 
@@ -307,11 +305,7 @@ flowchart TD
 3. **对照验证**：定期检查"实际架构 vs 文档架构"是否一致
 4. **权衡明确**：每次演进都要说清楚"得到了什么、放弃了什么"
 
-
-
 <!-- ============ 文档分隔线：038-software-architecture/002-LayeredArchitecture.md ============ -->
-
-
 
 ## 1. 从"餐厅厨房"说起：为什么要分层
 
@@ -655,11 +649,7 @@ public class MysqlOrderRepository implements OrderRepository {
 
 **对策**：分层的深度要和系统复杂度匹配——小项目用 2-3 层即可，不要为了"规范"而过度分层。
 
-
-
 <!-- ============ 文档分隔线：038-software-architecture/003-MicroserviceArchitecture.md ============ -->
-
-
 
 ## 1. 从"一家大餐厅 vs 连锁餐饮集团"说起
 
@@ -992,11 +982,7 @@ Saga 的核心思想：**把一个长事务拆成一系列本地事务，每个�
 
 **真相**：微服务解决的是"团队协作与独立部署"问题。性能、质量、架构腐化等问题，微服务不会自动解决——它们只是换了一种形态出现。
 
-
-
 <!-- ============ 文档分隔线：038-software-architecture/004-EventDrivenArchitecture.md ============ -->
-
-
 
 ## 1. 从"杂志订阅"说起：什么是事件驱动
 
@@ -1333,11 +1319,7 @@ public void onOrderCreated(OrderCreatedEvent e) {
 
 **真相**：事件是业务语义的一部分，设计过细的事件（"按钮被点击"）没有业务价值，只会增加噪音。**只发布"有业务意义"的事件**。
 
-
-
 <!-- ============ 文档分隔线：038-software-architecture/005-QualityAttribute.md ============ -->
-
-
 
 ## 1. 从"买房子"说起：什么是质量属性
 
@@ -1572,11 +1554,7 @@ $$\text{可用性} = \frac{\text{MTTF}}{\text{MTTF} + \text{MTTR}}$$
 
 **真相**：性能问题要靠测量定位（Profile），不能靠猜。凭感觉优化的结果往往是"优化了不存在的瓶颈"。
 
-
-
 <!-- ============ 文档分隔线：038-software-architecture/006-CAP.md ============ -->
-
-
 
 ## 1. 从"电话会议"说起：CAP 定理是什么
 
@@ -1818,11 +1796,7 @@ Candidate（候选者）: 选举时的临时角色
 
 **真相**：共识算法（Raft/Paxos）解决的是"节点间对单个值达成一致"，但分布式系统的一致性远不止共识——还有事务、消息、缓存同步等更广的范畴。
 
-
-
 <!-- ============ 文档分隔线：038-software-architecture/007-DDD.md ============ -->
-
-
 
 ## 1. 从"语言不通"说起：DDD 要解决什么问题
 
@@ -2134,11 +2108,7 @@ DDD 是微服务拆分的最佳工具之一：**限界上下文 → 微服务边
 
 **真相**：DDD 只是提供了"统一语言 + 建模流程"的工具，**没有业务方的深度参与，DDD 也会沦为空壳**。建模过程本身需要业务和开发紧密协作。
 
-
-
 <!-- ============ 文档分隔线：038-software-architecture/008-ArchitectureEvaluation.md ============ -->
-
-
 
 ## 1. 从"买二手车"说起：为什么架构要评估
 

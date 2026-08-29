@@ -1,6 +1,6 @@
 ---
 order: 380
-title: React与Monorepo
+title: React 与 Monorepo
 module: 'react'
 category: 前端技术
 difficulty: advanced

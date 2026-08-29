@@ -1,6 +1,6 @@
 ---
 order: 400
-title: Server-Components与Client-Components
+title: Server Components 与 Client-Components
 module: 'react'
 category: 前端技术
 difficulty: advanced

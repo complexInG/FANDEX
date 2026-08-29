@@ -1,6 +1,6 @@
 ---
 order: 450
-title: Go与性能分析
+title: Go 与性能分析
 module: 'go'
 category: 后端技术
 difficulty: advanced

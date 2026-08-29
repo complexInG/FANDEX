@@ -5,23 +5,23 @@ import androidx.compose.ui.graphics.Color
 /**
  * FANDEX 原始颜色令牌
  *
- * 与 app-web/src/styles/shared/tokens.css 逐值对齐（同步自 shd-shared/tokens）：
- * - 中性色阶：纯黑到冷雾灰白（无色相偏移），支撑双主题背景体系
- * - 青色色阶：浅色模式强调色为深青 cyan-300，深色模式为亮青 cyan-500
+ * 与 shd-shared/styles/tokens.css 逐值对齐（web 端唯一真值源）：
+ * - 中性色阶：冷青近黑 -> 冷雾灰白，支撑双主题背景体系
+ * - 青色色阶：浅色模式强调色为深青 cyan-300 (#0B6E7E)，深色模式为亮青 cyan-500 (#00C8F0)
  * - 状态色：成功 / 警告 / 危险 / 信息，深色模式整体提亮
  */
 object PrimitiveColors {
     // 中性色阶
     val Neutral0 = Color(0xFF000000)
-    val Neutral50 = Color(0xFF0A0A0A)
-    val Neutral100 = Color(0xFF141414)
-    val Neutral200 = Color(0xFF1F1F1F)
-    val Neutral300 = Color(0xFF2A2A2A)
-    val Neutral400 = Color(0xFF404040)
-    val Neutral500 = Color(0xFF525252)
+    val Neutral50 = Color(0xFF0A0E14)
+    val Neutral100 = Color(0xFF11161E)
+    val Neutral200 = Color(0xFF1B2330)
+    val Neutral300 = Color(0xFF2A3547)
+    val Neutral400 = Color(0xFF3A4753)
+    val Neutral500 = Color(0xFF4E5E6B)
     val Neutral550 = Color(0xFF596671)
-    val Neutral600 = Color(0xFF737373)
-    val Neutral700 = Color(0xFFA3A3A3)
+    val Neutral600 = Color(0xFF6E7E8B)
+    val Neutral700 = Color(0xFF9FADB9)
     val Neutral800 = Color(0xFFBCC8D0)
     val Neutral900 = Color(0xFFCCD5DB)
     val Neutral950 = Color(0xFFDAE1E6)
@@ -32,9 +32,9 @@ object PrimitiveColors {
     val Cyan100 = Color(0xFF053645)
     val Cyan200 = Color(0xFF085263)
     val Cyan300 = Color(0xFF0B6E7E)
-    val Cyan400 = Color(0xFF00BCD4)
-    val Cyan500 = Color(0xFF00E5FF)
-    val Cyan600 = Color(0xFF4FF2FF)
+    val Cyan400 = Color(0xFF00A6CC)
+    val Cyan500 = Color(0xFF00C8F0)
+    val Cyan600 = Color(0xFF3DDDFF)
 
     // 状态色
     val SuccessLight = Color(0xFF16A34A)
@@ -44,13 +44,14 @@ object PrimitiveColors {
     val DangerLight = Color(0xFFDC2626)
     val DangerDark = Color(0xFFEF4444)
     val InfoLight = Color(0xFF0B6E7E)
-    val InfoDark = Color(0xFF00E5FF)
+    val InfoDark = Color(0xFF00C8F0)
 }
 
 /**
  * 模块分类颜色
  *
- * 与 shd-shared/metadata/modules.json categoryColors 一致
+ * 与 shd-shared/metadata/modules.json categoryColors 一致（兜底值，
+ * 运行时优先使用 modules.json 下发的 categoryColors）
  */
 object CategoryColors {
     val Tools = Color(0xFF4F5BD5)

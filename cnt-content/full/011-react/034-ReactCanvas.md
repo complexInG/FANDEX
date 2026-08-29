@@ -1,6 +1,6 @@
 ---
 order: 340
-title: React与Canvas
+title: React 与 Canvas
 module: 'react'
 category: 前端技术
 difficulty: intermediate

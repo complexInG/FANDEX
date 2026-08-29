@@ -1,6 +1,6 @@
 ---
 order: 410
-title: Python与CLI
+title: Python 与 CLI
 module: 'python'
 category: 后端技术
 difficulty: beginner

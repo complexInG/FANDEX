@@ -1,6 +1,6 @@
 ---
 order: 220
-title: computed缓存机制与watch执行时机
+title: computed 缓存机制与 watch 执行时机
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

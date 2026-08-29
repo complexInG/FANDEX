@@ -1,6 +1,6 @@
 ---
 order: 530
-title: GMP调度模型
+title: GMP 调度模型
 module: 'go'
 category: 后端技术
 difficulty: advanced

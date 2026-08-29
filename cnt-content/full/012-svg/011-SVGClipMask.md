@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'svg/010-SVGFilterDetailed'
   - 'svg/008-SVGGradientPattern'
-  - 'svg/009-SVGTransformTransform'
+  - 'svg/009-SVGTransform'
 prerequisites:
   - 'svg/010-SVGFilterDetailed'
 ---

@@ -8,7 +8,7 @@ description: SSH 与 HTTPS 远程配置对比、公钥配置、HTTPS+PAT 配置�
 author: Anonymous
 updated: '2026-08-02'
 related:
-  - 'github/002-AccountRegister2FA2FA'
+  - 'github/002-AccountRegister2FA'
   - 'github/003-RepositoryCreateCloneArchiveDelete'
   - 'github/005-CollaborationDevelopmentStandard'
   - 'github/006-READMEFile'

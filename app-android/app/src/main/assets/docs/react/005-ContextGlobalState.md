@@ -1,6 +1,6 @@
 ---
 order: 50
-title: Context与全局状态
+title: Context 与全局状态
 module: 'react'
 category: 前端技术
 difficulty: intermediate

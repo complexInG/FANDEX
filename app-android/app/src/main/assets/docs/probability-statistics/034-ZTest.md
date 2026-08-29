@@ -1,6 +1,6 @@
 ---
 order: 340
-title: Z检验
+title: Z 检验
 module: 'probability-statistics'
 category: 数学
 difficulty: intermediate

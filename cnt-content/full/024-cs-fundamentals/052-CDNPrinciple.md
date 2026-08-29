@@ -1,6 +1,6 @@
 ---
 order: 520
-title: CDN原理
+title: CDN 原理
 module: 'cs-fundamentals'
 category: 计算机科学
 difficulty: intermediate

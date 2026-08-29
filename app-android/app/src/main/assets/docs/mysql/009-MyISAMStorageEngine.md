@@ -1,6 +1,6 @@
 ---
 order: 90
-title: MyISAM存储引擎
+title: MyISAM 存储引擎
 module: 'mysql'
 category: 数据库
 difficulty: intermediate

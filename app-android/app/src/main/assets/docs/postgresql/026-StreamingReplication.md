@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'postgresql/024-ExtensionModule'
-  - 'postgresql/025-FDWFDW'
+  - 'postgresql/025-FDWForeignDataWrapper'
   - 'postgresql/027-CascadingReplication'
   - 'postgresql/028-PhysicalReplicationSlot'
 prerequisites:

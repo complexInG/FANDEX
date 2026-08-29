@@ -1,6 +1,6 @@
 ---
 order: 360
-title: Kotlin与Gradle
+title: Kotlin 与 Gradle
 module: 'kotlin'
 category: 后端技术
 difficulty: intermediate

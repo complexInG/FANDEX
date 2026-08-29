@@ -13,28 +13,6 @@ prerequisites: []
 
 <!-- ============ 文档分隔线：001-getting-started/001-DevEnvSetup.md ============ -->
 
-
-
-## 0. 学习路线图：先读什么，再读什么
-
-本模块有 20 多篇文档，0 基础学习者不需要按编号顺序读完。推荐按下表的路径走，每完成一步都有明确产出：
-
-| 天数 | 做什么 | 对应文档 | 完成后验证 |
-| --- | --- | --- | --- |
-| 第 1 天 | 通读总览，选择操作系统，安装 VS Code | 本文 + `getting-started/003-IDEEditorSelection` | 能打开 VS Code 并安装扩展 |
-| 第 2 天 | 学命令行基础（常用命令即可） | `getting-started/005-CommandLineBasics` | 能在终端里 `ls`、`cd`、`mkdir` |
-| 第 3 天 | 按自己的系统配置环境 | `getting-started/011-WindowsEnvConfigTutorial`（或 021/022） | 终端能识别 `node`、`git` 等命令 |
-| 第 4 天 | 安装 Node.js 与 npm | `getting-started/014-NodeJsInstall`、`getting-started/015-NpmManager` | `node -v`、`npm -v` 有输出 |
-| 第 5 天 | 安装 Python 与 pip | `getting-started/018-PythonInstall`、`getting-started/019-PipVenvManager` | `python --version` 有输出 |
-| 第 6 天 | 安装并配置 Git | `getting-started/023-GitInstallConfig` | `git --version` 有输出 |
-| 第 7 天 | 在 GitHub 建第一个仓库并提交代码 | 回看 `getting-started/007-VCSSelection` | 代码成功推送到远端 |
-
-**环境变量与 PATH 建议在第 3 天遇到“命令找不到”时再看**：`getting-started/002-EnvVarPath`。
-
-**完成全部安装后**，用 `getting-started/025-EnvVerificationChecklist` 逐项验证；**卡住时**查 `getting-started/026-TroubleshootingGuide`。
-
-**可以跳过的内容（按需选读）**：Vim/Perforce 等历史工具（010/014 中标注）、Monorepo（015）、构建工具原理（016）、调试思想（018，建议写过代码后再读）、插件生态（011，装完编辑器后再读）。
-
 ## 1. 选择操作系统
 
 三大主流操作系统均可用于开发:
@@ -295,8 +273,6 @@ Get-ChildItem Env:
 ```
 
 <!-- ============ 文档分隔线：001-getting-started/002-EnvVarPath.md ============ -->
-
-
 
 ## 1. 环境变量基础
 
@@ -764,8 +740,6 @@ unset MY_VAR
 
 <!-- ============ 文档分隔线：001-getting-started/003-IDEEditorSelection.md ============ -->
 
-
-
 > 阅读建议：0 基础学习者推荐直接选 VS Code，本片其余部分（Vim、JetBrains 对比）可先跳过，等遇到编辑器瓶颈再回来看。
 
 ## 1. 编辑器与IDE概述
@@ -997,9 +971,7 @@ require("lazy").setup({
 
 <!-- ============ 文档分隔线：001-getting-started/004-PluginEcosystem.md ============ -->
 
-
-
-> 阅读建议：先完成 `getting-started/022-VSCodeInstall` 装好编辑器，再读本篇；插件可以边用边装，不需要一次装全。
+> 阅读建议：插件可以边用边装，不需要一次装全。
 
 ## 1. 插件体系概述
 
@@ -1250,8 +1222,6 @@ code --prof-startup
 5. **最小权限**：只授予必要的权限
 
 <!-- ============ 文档分隔线：001-getting-started/005-CommandLineBasics.md ============ -->
-
-
 
 ## 命令的通用结构（先看这里）
 
@@ -2188,8 +2158,6 @@ cd -
 
 <!-- ============ 文档分隔线：001-getting-started/006-PackageManager.md ============ -->
 
-
-
 > 阅读建议：四种包管理器不需要同时学。前端读者重点看 npm/pnpm，Python 读者看 pip，系统包管理器（apt/brew）随用随查。
 
 ## 1. 包管理器概述
@@ -2682,8 +2650,6 @@ sudo systemctl restart nginx
 
 <!-- ============ 文档分隔线：001-getting-started/007-VCSSelection.md ============ -->
 
-
-
 > 阅读建议：现代项目几乎都用 Git，SVN 等历史工具部分仅作背景了解，可跳过。
 
 ## 1. 版本控制系统概述
@@ -2852,8 +2818,6 @@ git push -u origin main
 | **Gerrit**        | 代码审查专用            | Android 等大型项目 |
 
 <!-- ============ 文档分隔线：001-getting-started/008-ProjectInit.md ============ -->
-
-
 
 > 阅读建议：脚手架与项目结构是重点；Monorepo 属于进阶内容，0 基础学习者可先跳过。
 
@@ -3187,8 +3151,6 @@ GitHub 支持将仓库标记为**模板仓库**，其他用户可以基于模板
 3. 新仓库不包含 Git 历史，从零开始
 
 <!-- ============ 文档分隔线：001-getting-started/009-BuildTool.md ============ -->
-
-
 
 > 阅读建议：按你的项目类型选读——前端看 Vite 部分，C/C++ 看 Make/CMake 部分，其余先跳过。
 
@@ -3549,8 +3511,6 @@ export default defineConfig({
 
 <!-- ============ 文档分隔线：001-getting-started/010-DebugThinking.md ============ -->
 
-
-
 > 阅读建议：调试思想建议在“写过一些代码、遇到过 bug”之后阅读，入门阶段可以先跳过本篇。
 
 ## 1. 调试概述
@@ -3885,8 +3845,6 @@ Instruments                     # macOS 性能分析
 ```
 
 <!-- ============ 文档分隔线：001-getting-started/011-WindowsEnvConfigTutorial.md ============ -->
-
-
 
 ## 0. 快速开始：一键脚本与完整教程
 
@@ -4475,8 +4433,6 @@ code --diff a.txt b.txt  # 对比两个文件
 
 <!-- ============ 文档分隔线：001-getting-started/012-MacOSEnvConfigTutorial.md ============ -->
 
-
-
 ## 1. Homebrew 安装
 
 Homebrew 是 macOS 上最流行的包管理器，是配置开发环境的基础。
@@ -5048,8 +5004,6 @@ chmod +x setup-macos.sh
 ```
 
 <!-- ============ 文档分隔线：001-getting-started/013-LinuxEnvConfigTutorial.md ============ -->
-
-
 
 ## 1. 包管理器
 
@@ -5712,8 +5666,6 @@ echo 'export LANG=zh_CN.UTF-8' >> ~/.bashrc
 
 <!-- ============ 文档分隔线：001-getting-started/014-NodeJsInstall.md ============ -->
 
-
-
 ## Windows 安装
 
 **基本写法：winget 安装 Node.js LTS**
@@ -5858,8 +5810,6 @@ node -e "console.log('Node.js 运行正常')"
 ```
 
 <!-- ============ 文档分隔线：001-getting-started/015-NpmManager.md ============ -->
-
-
 
 ## 项目初始化
 
@@ -6060,8 +6010,6 @@ npm config set prefix "D:\npm-global"
 
 <!-- ============ 文档分隔线：001-getting-started/016-PnpmYarnManager.md ============ -->
 
-
-
 ## pnpm 安装
 
 **基本写法：通过 npm 安装 pnpm**
@@ -6259,8 +6207,6 @@ yarn upgrade lodash
 
 <!-- ============ 文档分隔线：001-getting-started/017-NvmVersionManage.md ============ -->
 
-
-
 ## nvm-windows 安装
 
 **基本写法：查看 nvm 版本**
@@ -6433,8 +6379,6 @@ fnm default lts-latest
 
 <!-- ============ 文档分隔线：001-getting-started/018-PythonInstall.md ============ -->
 
-
-
 ## Windows 安装
 
 **基本写法：winget 安装 Python**
@@ -6590,8 +6534,6 @@ pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 <!-- ============ 文档分隔线：001-getting-started/019-PipVenvManager.md ============ -->
-
-
 
 ## pip 包安装
 
@@ -6782,8 +6724,6 @@ pipx run cowsay "hello"
 ```
 
 <!-- ============ 文档分隔线：001-getting-started/020-PyenvUvManage.md ============ -->
-
-
 
 ## pyenv-win 安装
 
@@ -7002,8 +6942,6 @@ uv sync
 
 <!-- ============ 文档分隔线：001-getting-started/021-JavaJdkConfig.md ============ -->
 
-
-
 ## Windows 安装
 
 **基本写法：winget 安装 Microsoft OpenJDK**
@@ -7177,8 +7115,6 @@ java -e "System.out.println(\"Java 运行正常\")"
 ```
 
 <!-- ============ 文档分隔线：001-getting-started/022-VSCodeInstall.md ============ -->
-
-
 
 ## 安装 VS Code
 
@@ -7389,8 +7325,6 @@ code --add ./shared
 ```
 
 <!-- ============ 文档分隔线：001-getting-started/023-GitInstallConfig.md ============ -->
-
-
 
 ## Windows 安装
 
@@ -7606,8 +7540,6 @@ git help commit
 
 <!-- ============ 文档分隔线：001-getting-started/024-DockerInstall.md ============ -->
 
-
-
 ## Windows 安装
 
 **基本写法：winget 安装 Docker Desktop**
@@ -7809,8 +7741,6 @@ docker compose version
 
 <!-- ============ 文档分隔线：001-getting-started/025-EnvVerificationChecklist.md ============ -->
 
-
-
 ## 0. 这份清单怎么用
 
 打开终端（Windows 用 PowerShell 或 WSL，macOS/Linux 用自带终端），逐条执行下面的命令。每一条都有“预期结果”；如果输出与预期不符，跳到 `getting-started/026-TroubleshootingGuide` 找对应问题。
@@ -7938,8 +7868,6 @@ where.exe node # Windows PowerShell
 
 <!-- ============ 文档分隔线：001-getting-started/026-TroubleshootingGuide.md ============ -->
 
-
-
 ## 0. 使用说明
 
 按症状找章节：**命令找不到 → 1**；**权限被拒 → 2**；**下载慢/失败 → 3**；**端口占用 → 4**；**中文乱码 → 5**；**WSL 相关 → 6**；**改了配置不生效 → 7**。
@@ -8028,4 +7956,3 @@ taskkill /PID <PID> /F
 - 环境变量：`getting-started/002-EnvVarPath`；
 - 验证清单：`getting-started/025-EnvVerificationChecklist`；
 - 平台配置：`getting-started/011-WindowsEnvConfigTutorial`、`getting-started/012-MacOSEnvConfigTutorial`、`getting-started/013-LinuxEnvConfigTutorial`。
-

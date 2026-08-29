@@ -1,6 +1,6 @@
 ---
 order: 230
-title: JavaScript ArrayBuffer 与 TypedArray 语法速查
+title: JavaScript ArrayBuffer 与 TypedArray 语法速查手册
 module: 'javascript'
 category: 前端技术
 difficulty: beginner

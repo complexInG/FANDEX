@@ -1,6 +1,6 @@
 ---
 order: 120
-title: SQL实战与面试
+title: SQL 实战与面试
 module: 'sql'
 category: 数据库
 difficulty: advanced

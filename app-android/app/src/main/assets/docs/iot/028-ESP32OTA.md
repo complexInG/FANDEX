@@ -1,6 +1,6 @@
 ---
 order: 280
-title: 物联网 ESP32 OTA 更新
+title: ESP32 OTA 更新
 module: 'iot'
 category: 云与基础设施
 difficulty: beginner

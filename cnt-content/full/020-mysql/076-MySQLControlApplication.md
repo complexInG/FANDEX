@@ -1,6 +1,6 @@
 ---
 order: 760
-title: MySQL 控制器与应用
+title: MySQL 应用控制器设计与实践
 module: 'mysql'
 category: 数据库
 difficulty: intermediate

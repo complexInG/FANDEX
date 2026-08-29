@@ -64,6 +64,9 @@ sealed class MarkdownBlock {
     /** 表格 */
     data class Table(val headers: List<String>, val rows: List<List<String>>) : MarkdownBlock()
 
+    /** 块级数学公式（$$...$$，由解析前置提取，JLatexMath 渲染） */
+    data class MathBlock(val latex: String) : MarkdownBlock()
+
     /** 水平分隔线 */
     object ThematicBreak : MarkdownBlock()
 }
@@ -267,6 +270,26 @@ class MarkdownComposeVisitor : AbstractVisitor() {
             else -> visitChildren(customNode)
         }
     }
+
+    /**
+     * 行内 HTML 标签处理
+     *
+     * 文档中存在少量内联 HTML：<br> 转换为硬换行；
+     * 其余标签（sub/sup/u/mark/kbd/span 等）剥离标签、保留内容
+     */
+    override fun visit(htmlInline: org.commonmark.node.HtmlInline) {
+        val tag = htmlInline.literal.lowercase()
+        if (tag.startsWith("<br")) {
+            currentTextSegments.add(TextSegment.HardBreak)
+        }
+        // 其他行内标签直接丢弃，其后的文本节点继续按普通文本收集
+    }
+
+    /**
+     * HTML 块处理：整体丢弃（标签行本身无阅读价值，
+     * 块内正文在空行后由 commonmark 按普通 Markdown 解析）
+     */
+    override fun visit(htmlBlock: org.commonmark.node.HtmlBlock) = Unit
 
     // ------------------------------------------------------------------
     // 收集逻辑

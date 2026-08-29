@@ -1,6 +1,6 @@
 ---
 order: 510
-title: DNS解析流程
+title: DNS 解析流程
 module: 'cs-fundamentals'
 category: 计算机科学
 difficulty: intermediate

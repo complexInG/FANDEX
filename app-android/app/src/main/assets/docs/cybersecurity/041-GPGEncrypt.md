@@ -1,6 +1,6 @@
 ---
 order: 410
-title: Cybersecurity GPG 加密与签名
+title: GPG 加密与签名
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

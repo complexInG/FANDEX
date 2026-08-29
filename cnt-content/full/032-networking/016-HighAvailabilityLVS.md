@@ -1,6 +1,6 @@
 ---
 order: 160
-title: 高可用LVS
+title: 高可用 LVS
 module: 'networking'
 category: 云与基础设施
 difficulty: intermediate

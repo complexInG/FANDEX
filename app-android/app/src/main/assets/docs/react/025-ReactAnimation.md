@@ -1,6 +1,6 @@
 ---
 order: 250
-title: React动画
+title: React 动画
 module: 'react'
 category: 前端技术
 difficulty: intermediate

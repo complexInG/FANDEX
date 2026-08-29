@@ -1,6 +1,6 @@
 ---
 order: 170
-title: Lua与Nginx
+title: Lua 与 Nginx
 module: 'lua'
 category: 后端技术
 difficulty: intermediate

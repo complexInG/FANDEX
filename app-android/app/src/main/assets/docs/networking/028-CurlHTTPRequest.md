@@ -1,6 +1,6 @@
 ---
 order: 280
-title: Networking curl HTTP 请求
+title: curl HTTP 请求
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

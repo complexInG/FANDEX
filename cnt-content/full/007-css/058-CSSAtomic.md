@@ -1,6 +1,6 @@
 ---
 order: 580
-title: CSS原子化
+title: CSS 原子化
 module: 'css'
 category: 前端技术
 difficulty: intermediate

@@ -8,15 +8,15 @@ description: APM/EAP/TAP 演化、async/await 状态机、Task/ValueTask、Synch
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - 'csharp/001-COverviewEnvSetup'
-  - 'csharp/002-CBasicSyntax'
-  - 'csharp/003-COOP'
+  - 'csharp/001-CSharpOverviewEnvSetup'
+  - 'csharp/002-CSharpBasicSyntax'
+  - 'csharp/003-CSharpOOP'
   - 'csharp/005-CGenericCollection'
-  - 'csharp/008-CAdvancedFeature'
-  - 'csharp/010-CNET'
+  - 'csharp/008-CSharpAdvancedFeature'
+  - 'csharp/010-CSharpDotNet'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
-  - 'csharp/002-CBasicSyntax'
+  - 'csharp/001-CSharpOverviewEnvSetup'
+  - 'csharp/002-CSharpBasicSyntax'
 ---
 
 
@@ -1992,14 +1992,14 @@ await Task.WhenAll(consumers);
 
 ### 11.2 系列交叉引用
 
-- FANDEX C# 系列：[概述与环境配置](./概述与环境配置.md)
-- FANDEX C# 系列：[基础语法](./基础语法.md)
-- FANDEX C# 系列：[面向对象编程](./面向对象编程.md)
-- FANDEX C# 系列：[泛型与集合](./泛型与集合.md)
-- FANDEX C# 系列：[LINQ 与函数式编程](./LINQ与函数式编程.md)
-- FANDEX C# 系列：[高级特性](./高级特性.md)
-- FANDEX C# 系列：[.NET 平台与生态](./NET平台与生态.md)
-- FANDEX C# 系列：[测试与工程化](./测试与工程化.md)
+- FANDEX C# 系列：概述与环境配置
+- FANDEX C# 系列：基础语法
+- FANDEX C# 系列：面向对象编程
+- FANDEX C# 系列：泛型与集合
+- FANDEX C# 系列：LINQ 与函数式编程
+- FANDEX C# 系列：高级特性
+- FANDEX C# 系列：.NET 平台与生态
+- FANDEX C# 系列：测试与工程化
 
 ### 11.3 进阶书籍
 

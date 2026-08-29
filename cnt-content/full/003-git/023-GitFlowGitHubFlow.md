@@ -1,6 +1,6 @@
 ---
 order: 230
-title: Git-Flow与GitHub-Flow
+title: Git Flow 与 GitHub Flow
 module: 'git'
 category: 工具链
 difficulty: intermediate

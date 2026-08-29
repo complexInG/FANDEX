@@ -11,7 +11,7 @@ related:
   - 'cpp/022-VariadicTemplate'
   - 'cpp/023-ConstexprCompileTime'
   - 'cpp/012-DesignPatternCpp'
-  - 'cpp/026-COOPAdvanced'
+  - 'cpp/026-CppOOPAdvanced'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
 ---

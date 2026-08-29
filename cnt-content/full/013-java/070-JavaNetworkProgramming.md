@@ -1,6 +1,6 @@
 ---
 order: 700
-title: Java网络编程
+title: Java 网络编程
 module: 'java'
 category: 后端技术
 difficulty: intermediate

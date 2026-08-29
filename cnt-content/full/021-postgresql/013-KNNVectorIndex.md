@@ -1,6 +1,6 @@
 ---
 order: 130
-title: KNN向量索引
+title: KNN 向量索引
 module: 'postgresql'
 category: 数据库
 difficulty: advanced

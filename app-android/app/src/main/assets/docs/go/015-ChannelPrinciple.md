@@ -1,6 +1,6 @@
 ---
 order: 150
-title: Channel原理
+title: Channel 原理
 module: 'go'
 category: 后端技术
 difficulty: advanced

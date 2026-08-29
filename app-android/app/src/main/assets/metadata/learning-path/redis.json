@@ -21,7 +21,7 @@
         {
           "id": "redis-003",
           "title": "位图",
-          "doc": "005-BitGraph"
+          "doc": "005-BitMapRedis"
         },
         {
           "id": "redis-004",

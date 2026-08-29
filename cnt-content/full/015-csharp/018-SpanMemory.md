@@ -1,6 +1,6 @@
 ---
 order: 180
-title: Span与Memory
+title: Span 与 Memory
 module: 'csharp'
 category: 后端技术
 difficulty: advanced
@@ -12,7 +12,7 @@ related:
   - 'csharp/017-GenericCovarianceContravariance'
   - 'csharp/019-SourceGenerator'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 ## 1. 历史动机与发展脉络

@@ -6,13 +6,12 @@ category: 数学
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：028-discrete-math/001-PropositionalLogic.md ============ -->
-
 
 ## 1. 命题与联结词
 
@@ -252,11 +251,7 @@ $n$ 个变元有 $2^n$ 个极小项，第 $i$ 个极小项 $m_i$ 对应使公式
 > 消解 $\neg p \lor q$ 与 $\neg q$：得 $\neg p$。
 > 消解 $\neg p$ 与 $p$：得 $\square$（空子句）。证毕。
 
-
-
 <!-- ============ 文档分隔线：028-discrete-math/002-PredicateLogic.md ============ -->
-
-
 
 ## 1. 从"命题逻辑的局限"说起
 
@@ -518,11 +513,7 @@ $$\exists y\,\forall x\,L(x,y)$$："有一个人被所有人爱"（存在一个�
 
 **误区四：$\forall x(A \lor B)$ 可以拆开。** → 全称对"或"、存在对"且"都不能拆分（见 4.2 节）。
 
-
-
 <!-- ============ 文档分隔线：028-discrete-math/003-SetAndRelation.md ============ -->
-
-
 
 ## 1. 从"收纳盒"说起
 
@@ -793,11 +784,7 @@ $$st(R) \subseteq ts(R)$$（对称和传递闭包只保证包含关系）
 
 **误区四：传递闭包需要无限并。** → 有限集 $n$ 个元素时，$t(R) = \bigcup_{i=1}^{n} R^i$（最多 $n$ 步），用 Warshall 算法 $O(n^3)$ 计算。
 
-
-
-<!-- ============ 文档分隔线：028-discrete-math/004-FunctionAndNumber.md ============ -->
-
-
+<!-- ============ 文档分隔线：028-discrete-math/004-FunctionAndCardinality.md ============ -->
 
 ## 1. 从"自动售货机"说起
 
@@ -950,11 +937,7 @@ $$f^{-1}(b) = a \iff f(a) = b$$
 
 **误区四：$|S| = |\mathcal{P}(S)|$。** → 永远 $|S| < |\mathcal{P}(S)|$（Cantor 定理），无限集也成立。
 
-
-
 <!-- ============ 文档分隔线：028-discrete-math/005-GraphTheoryBasics.md ============ -->
-
-
 
 ## 1. 从"人际关系网"说起
 
@@ -1208,11 +1191,7 @@ $$\sum_{v \in V} \deg^+(v) = \sum_{v \in V} \deg^-(v) = |E|$$
 
 **误区四：二部图一定没有三角形。** → 正确！三角形是 3 圈（奇圈），二部图无奇圈，所以二部图不可能有三角形。
 
-
-
 <!-- ============ 文档分隔线：028-discrete-math/006-GraphTheoryAdvanced.md ============ -->
-
-
 
 ## 1. 从"地图上色"说起
 
@@ -1448,11 +1427,7 @@ $$n - m + f = 2$$
 
 **误区四：Kruskal 和 Prim 求"最短路径"。** → 它们求的是**最小生成树**（连通所有点的最小总代价），不是两点间的最短路径（Dijkstra 才是）。
 
-
-
 <!-- ============ 文档分隔线：028-discrete-math/007-AlgebraicSystem.md ============ -->
-
-
 
 ## 1. 从"运算的规律"说起
 
@@ -1708,11 +1683,7 @@ $$G / \ker \phi \cong \text{Im}(\phi)$$
 
 **误区四：同态和同构没区别。** → 同构是"结构完全一样"（双射），同态只要求"保持运算"（可能多个映一个）。同构是同态的特例。
 
-
-
 <!-- ============ 文档分隔线：028-discrete-math/008-Combinatorics.md ============ -->
-
-
 
 ## 1. 从"点菜"说起
 

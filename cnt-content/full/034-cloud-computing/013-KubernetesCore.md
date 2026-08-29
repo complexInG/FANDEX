@@ -1,6 +1,6 @@
 ---
 order: 130
-title: Kubernetes核心资源
+title: Kubernetes 核心资源
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: intermediate

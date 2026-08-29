@@ -1,6 +1,6 @@
 ---
 order: 210
-title: Lua脚本原子执行
+title: Lua 脚本原子执行
 module: 'redis'
 category: 数据库
 difficulty: advanced

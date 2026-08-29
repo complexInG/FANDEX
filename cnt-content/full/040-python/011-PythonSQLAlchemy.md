@@ -1,6 +1,6 @@
 ---
 order: 110
-title: Python与SQLAlchemy
+title: Python 与 SQLAlchemy
 module: 'python'
 category: 后端技术
 difficulty: advanced

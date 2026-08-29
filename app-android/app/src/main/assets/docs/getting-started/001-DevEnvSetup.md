@@ -12,26 +12,6 @@ related:
 prerequisites: []
 ---
 
-## 0. 学习路线图：先读什么，再读什么
-
-本模块有 20 多篇文档，0 基础学习者不需要按编号顺序读完。推荐按下表的路径走，每完成一步都有明确产出：
-
-| 天数 | 做什么 | 对应文档 | 完成后验证 |
-| --- | --- | --- | --- |
-| 第 1 天 | 通读总览，选择操作系统，安装 VS Code | 本文 + `getting-started/003-IDEEditorSelection` | 能打开 VS Code 并安装扩展 |
-| 第 2 天 | 学命令行基础（常用命令即可） | `getting-started/005-CommandLineBasics` | 能在终端里 `ls`、`cd`、`mkdir` |
-| 第 3 天 | 按自己的系统配置环境 | `getting-started/011-WindowsEnvConfigTutorial`（或 021/022） | 终端能识别 `node`、`git` 等命令 |
-| 第 4 天 | 安装 Node.js 与 npm | `getting-started/014-NodeJsInstall`、`getting-started/015-NpmManager` | `node -v`、`npm -v` 有输出 |
-| 第 5 天 | 安装 Python 与 pip | `getting-started/018-PythonInstall`、`getting-started/019-PipVenvManager` | `python --version` 有输出 |
-| 第 6 天 | 安装并配置 Git | `getting-started/023-GitInstallConfig` | `git --version` 有输出 |
-| 第 7 天 | 在 GitHub 建第一个仓库并提交代码 | 回看 `getting-started/007-VCSSelection` | 代码成功推送到远端 |
-
-**环境变量与 PATH 建议在第 3 天遇到“命令找不到”时再看**：`getting-started/002-EnvVarPath`。
-
-**完成全部安装后**，用 `getting-started/025-EnvVerificationChecklist` 逐项验证；**卡住时**查 `getting-started/026-TroubleshootingGuide`。
-
-**可以跳过的内容（按需选读）**：Vim/Perforce 等历史工具（010/014 中标注）、Monorepo（015）、构建工具原理（016）、调试思想（018，建议写过代码后再读）、插件生态（011，装完编辑器后再读）。
-
 ## 1. 选择操作系统
 
 三大主流操作系统均可用于开发:

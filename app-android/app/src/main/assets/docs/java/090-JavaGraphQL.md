@@ -1,6 +1,6 @@
 ---
 order: 900
-title: Java与GraphQL
+title: Java 与 GraphQL
 module: 'java'
 category: 后端技术
 difficulty: intermediate

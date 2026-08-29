@@ -1,6 +1,6 @@
 ---
 order: 490
-title: Cybersecurity OAuth2/OIDC 配置命令
+title: OAuth2/OIDC 配置命令
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

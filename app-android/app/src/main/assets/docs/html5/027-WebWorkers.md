@@ -1,6 +1,6 @@
 ---
 order: 270
-title: Web-Workers
+title: Web Workers
 module: 'html5'
 category: 前端技术
 difficulty: advanced

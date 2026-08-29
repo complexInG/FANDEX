@@ -1,6 +1,6 @@
 ---
 order: 340
-title: Python与gRPC
+title: Python 与 gRPC
 module: 'python'
 category: 后端技术
 difficulty: intermediate

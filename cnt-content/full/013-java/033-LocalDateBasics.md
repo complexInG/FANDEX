@@ -1,6 +1,6 @@
 ---
 order: 330
-title: 日期时间救急锦囊：LocalDate / LocalDateTime / DateTimeFormatter
+title: 日期时间救急锦囊： LocalDate / LocalDateTime / DateTimeFormatter
 module: 'java'
 category: 后端技术
 difficulty: beginner

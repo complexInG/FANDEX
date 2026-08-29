@@ -1,6 +1,6 @@
 ---
 order: 470
-title: Java新特性
+title: Java 新特性
 module: 'java'
 category: 后端技术
 difficulty: intermediate

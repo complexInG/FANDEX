@@ -1,6 +1,6 @@
 ---
 order: 100
-title: Vue3编译优化
+title: Vue3 编译优化
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

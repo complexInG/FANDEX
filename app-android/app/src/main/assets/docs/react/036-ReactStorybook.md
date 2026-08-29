@@ -1,6 +1,6 @@
 ---
 order: 360
-title: React与Storybook
+title: React 与 Storybook
 module: 'react'
 category: 前端技术
 difficulty: intermediate

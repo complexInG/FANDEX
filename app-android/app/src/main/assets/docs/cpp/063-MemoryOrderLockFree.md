@@ -11,7 +11,7 @@ related:
   - 'cpp/061-Cpp23NewFeatures'
   - 'cpp/062-CppTemplate'
   - 'cpp/064-CppExceptionAndPerformance'
-  - 'cpp/065-CDebugPerformanceAnalysis'
+  - 'cpp/065-CppDebugPerformanceAnalysis'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
 ---

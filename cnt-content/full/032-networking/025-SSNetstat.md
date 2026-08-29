@@ -1,6 +1,6 @@
 ---
 order: 250
-title: Networking ss 与 netstat
+title: ss 与 netstat
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

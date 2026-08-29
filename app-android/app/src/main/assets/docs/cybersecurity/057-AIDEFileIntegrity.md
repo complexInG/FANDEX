@@ -1,6 +1,6 @@
 ---
 order: 570
-title: Cybersecurity AIDE 文件完整性检查
+title: AIDE 文件完整性检查
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

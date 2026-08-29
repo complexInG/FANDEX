@@ -1,6 +1,6 @@
 ---
 order: 530
-title: WebSocket帧格式
+title: WebSocket 帧格式
 module: 'cs-fundamentals'
 category: 计算机科学
 difficulty: intermediate
@@ -11,7 +11,7 @@ related:
   - 'cs-fundamentals/051-DNSFlow'
   - 'cs-fundamentals/052-CDNPrinciple'
   - 'cs-fundamentals/054-QUIC'
-  - 'cs-fundamentals/055-ARPARP'
+  - 'cs-fundamentals/055-ARPProtocolSpoofing'
 prerequisites:
   - 'cs-fundamentals/001-ComputerOverview'
 ---

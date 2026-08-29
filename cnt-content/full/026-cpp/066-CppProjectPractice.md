@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'cpp/064-CppExceptionAndPerformance'
-  - 'cpp/065-CDebugPerformanceAnalysis'
+  - 'cpp/065-CppDebugPerformanceAnalysis'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
 ---

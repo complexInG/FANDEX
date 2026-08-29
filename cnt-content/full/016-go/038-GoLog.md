@@ -1,6 +1,6 @@
 ---
 order: 380
-title: Go与日志
+title: Go 与日志
 module: 'go'
 category: 后端技术
 difficulty: beginner
@@ -1373,11 +1373,11 @@ Uber 工程团队分享的 zap 使用经验：
 
 ### 相关章节
 
-- [Go 与 HTTP 服务器](./Go与HTTP服务器.md)：HTTP 中间件与日志集成
-- [Go 与配置管理](./Go与配置管理.md)：多环境日志配置
-- [Go 与加密](./Go与加密.md)：敏感字段脱敏
-- [Go 与中间件](./Go与中间件.md)：请求级别日志传播
-- [Go 与依赖注入](./Go与依赖注入.md)：Logger 注入与生命周期
+- Go 与 HTTP 服务器：HTTP 中间件与日志集成
+- Go 与配置管理：多环境日志配置
+- Go 与加密：敏感字段脱敏
+- Go 与中间件：请求级别日志传播
+- Go 与依赖注入：Logger 注入与生命周期
 
 ### 推荐书籍
 

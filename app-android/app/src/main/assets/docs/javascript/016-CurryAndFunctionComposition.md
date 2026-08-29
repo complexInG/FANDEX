@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'javascript/014-HigherOrderFunction'
-  - 'javascript/015-LinearGeneticProgramming'
+  - 'javascript/015-RecursionTailCallOptimization'
   - 'javascript/031-CoroutinesInJavaScript'
   - 'javascript/032-ExploringES6ProxiesAndReflect'
   - 'javascript/034-ClosureMemoryLeakOptimization'

@@ -1,6 +1,6 @@
 ---
 order: 480
-title: Cybersecurity 命令注入防御与检测
+title: 命令注入防御与检测
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

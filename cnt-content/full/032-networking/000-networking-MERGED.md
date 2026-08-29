@@ -6,13 +6,12 @@ category: 云与基础设施
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：032-networking/001-NetworkBasicsAndProtocol.md ============ -->
-
 
 ## 1. OSI 七层模型
 
@@ -855,11 +854,7 @@ echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
 sysctl -p
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/002-NetworkSystemManagement.md ============ -->
-
-
 
 ## 1. Windows Server 部署
 
@@ -1289,11 +1284,7 @@ flowchart TD
 [AC2-wlan-view] ac protect local-ac 192.168.1.2 priority 6
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/003-NetworkWiringAndConstruction.md ============ -->
-
-
 
 ## 1. 综合布线工程设计
 
@@ -1610,10 +1601,7 @@ ADSS — 全介质自承式光缆（电力杆塔）
 | 设备安装 | 位置、固定、接地、标签 | 逐台检查  |
 | 系统测试 | 认证测试、功能测试     | 100% 测试 |
 
-
-
 <!-- ============ 文档分隔线：032-networking/004-OSITCPIPModel.md ============ -->
-
 
 ## 1. OSI 七层模型详解
 
@@ -2231,11 +2219,7 @@ arp -a
 子网 4: 192.168.1.192/26  范围 192-255  可用 193-254
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/005-SwitchingAndRouting.md ============ -->
-
-
 
 ## 1. VLAN 技术
 
@@ -2503,11 +2487,7 @@ interface GigabitEthernet0/0
 - 特定流量走专线
 - 流量清洗引流
 
-
-
 <!-- ============ 文档分隔线：032-networking/006-NetworkSecurityTech.md ============ -->
-
-
 
 ## 1. 防火墙技术
 
@@ -2753,11 +2733,7 @@ router bgp 65001
 - NTP 认证
 - 配置变更管理
 
-
-
 <!-- ============ 文档分隔线：032-networking/007-WirelessNetwork.md ============ -->
-
-
 
 ## 1. WiFi 标准演进
 
@@ -2918,11 +2894,7 @@ $$\text{AP数量} = \frac{\text{总用户数}}{\text{每AP用户数}} \times \te
 | 漫游掉线 | 漫游参数不当  | 启用802.11r     |
 | 连接失败 | 认证问题      | 检查证书/密码   |
 
-
-
 <!-- ============ 文档分隔线：032-networking/008-SDNNetworkAutomation.md ============ -->
-
-
 
 ## 1. SDN 架构
 
@@ -3047,11 +3019,7 @@ result = nr.run(task=netmiko_send_command, command_string="show version")
 print_result(result)
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/009-NetworkStorageTechnology.md ============ -->
-
-
 
 ## 1. 存储架构
 
@@ -3204,11 +3172,7 @@ $$\text{PG数} = \frac{\text{OSD数} \times 100}{\text{副本数}}$$
 
 3-2-1 原则：3份副本、2种介质、1份异地。
 
-
-
 <!-- ============ 文档分隔线：032-networking/010-NetworkDiagnosis.md ============ -->
-
-
 
 ## 1. 故障诊断方法论
 
@@ -3416,11 +3380,7 @@ monitor session 1 type erspan-source
 解决：更换线缆/调整协商
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/011-NetworkDesignPlanning.md ============ -->
-
-
 
 ## 1. 层次化网络设计
 
@@ -3605,11 +3565,7 @@ Management（管理区）
 - 最小权限：仅开放必要访问
 - 持续监控：实时检测异常
 
-
-
 <!-- ============ 文档分隔线：032-networking/012-DNSDHCP.md ============ -->
-
-
 
 ## 1. DNS 体系
 
@@ -3676,11 +3632,7 @@ interface Vlan10
 
 IP地址管理：统一管理IP分配、子网划分、DNS记录。
 
-
-
 <!-- ============ 文档分隔线：032-networking/013-LoadBalanceTech.md ============ -->
-
-
 
 ## 1. 负载均衡概述
 
@@ -3731,11 +3683,7 @@ IP地址管理：统一管理IP分配、子网划分、DNS记录。
 
 策略：地理位置、网络延迟、站点可用性、负载。
 
-
-
 <!-- ============ 文档分隔线：032-networking/014-NetworkAutomation.md ============ -->
-
-
 
 ## 1. NetDevOps 概述
 
@@ -3873,11 +3821,7 @@ class ComplianceTest(aetest.Testcase):
       when: "'Idle' in bgp_status.stdout[0]"
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/015-LoadBalanceAlgorithm.md ============ -->
-
-
 
 ## 1. 静态算法
 
@@ -4030,11 +3974,7 @@ L4 vs L7 负载均衡是负载均衡算法的重要组成部分。本节详细�
 
 L4 vs L7 负载均衡在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：032-networking/016-HighAvailabilityLVS.md ============ -->
-
-
 
 ## 1. LVS 架构
 
@@ -4174,11 +4114,7 @@ Keepalived + LVS在工程实践中需要根据具体场景选择合适的策略�
 
 健康检查在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：032-networking/017-KeepalivedDualHotStandby.md ============ -->
-
-
 
 ## 1. VRRP 协议
 
@@ -4318,10 +4254,7 @@ Nginx 高可用在工程实践中需要根据具体场景选择合适的策略�
 
 双主模式在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：032-networking/018-NetworkNamespaceVirtualBridge.md ============ -->
-
 
 ## 1. 网络命名空间
 
@@ -5273,11 +5206,7 @@ netplan apply
 systemctl restart network
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/019-Tunneling.md ============ -->
-
-
 
 ## 1. 隧道技术概述
 
@@ -5404,11 +5333,7 @@ IPIP 封装在工程实践中需要根据具体场景选择合适的策略，平
 
 与 GRE 对比在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：032-networking/020-NetworkTroubleshootTools.md ============ -->
-
-
 
 ## 1. 抓包分析
 
@@ -5535,11 +5460,7 @@ dig/nslookup在工程实践中需要根据具体场景选择合适的策略，�
 
 常见 DNS 问题在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：032-networking/021-BGP.md ============ -->
-
-
 
 ## 1. 多线接入
 
@@ -5666,11 +5587,7 @@ BGP 属性调优在工程实践中需要根据具体场景选择合适的策略�
 
 流量调度策略在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：032-networking/022-SDN.md ============ -->
-
-
 
 ## 1. SDN 架构
 
@@ -5810,10 +5727,7 @@ SD-WAN在工程实践中需要根据具体场景选择合适的策略，平衡�
 
 网络虚拟化在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：032-networking/023-IPCommands.md ============ -->
-
 
 ## ip addr 地址管理
 
@@ -6147,10 +6061,7 @@ ip tunnel show
 ip tunnel del gre1
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/024-PingTraceroute.md ============ -->
-
 
 ## ping 连通性测试
 
@@ -6459,10 +6370,7 @@ fping -a -g 192.168.1.0/24 2>/dev/null
 fping -f iplist.txt
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/025-SSNetstat.md ============ -->
-
 
 ## ss 基本用法
 
@@ -6810,10 +6718,7 @@ ss -tn state established | awk '{print $4}' | sort | uniq -c | sort -rn
 watch -n 1 'ss -s'
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/026-Tcpdump.md ============ -->
-
 
 ## tcpdump 基本用法
 
@@ -7193,10 +7098,7 @@ timeout 60 tcpdump -w capture.pcap
 tcpdump -tttt -i eth0
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/027-DigNslookup.md ============ -->
-
 
 ## dig 基本查询
 
@@ -7530,10 +7432,7 @@ dig +dnssec example.com
 dig +trace +nodnssec www.example.com
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/028-CurlHTTPRequest.md ============ -->
-
 
 ## curl 基本 GET 请求
 
@@ -7892,10 +7791,7 @@ curl -sL https://example.com/archive.tar.gz | tar xz
 curl -vI https://example.com 2>&1 | grep -i expire_date
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/029-IptablesFirewall.md ============ -->
-
 
 ## iptables 查看规则
 
@@ -8261,10 +8157,7 @@ iptables -P FORWARD DROP
 iptables -P OUTPUT ACCEPT
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/030-SSHRemote.md ============ -->
-
 
 ## ssh 基本连接
 
@@ -8627,10 +8520,7 @@ sed -i 's/#PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_co
 systemctl restart sshd
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/031-NetcatNmap.md ============ -->
-
 
 ## nc 基本用法
 
@@ -9044,10 +8934,7 @@ nmap -sS -sV -O -A -T4 -p- example.com
 nmap -sV -oA fullscan -p- 192.168.1.1
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/032-ARPRouting.md ============ -->
-
 
 ## arp 命令
 
@@ -9432,10 +9319,7 @@ tcpdump -i eth0 arp
 ip neigh | wc -l
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/033-HTTPProtocol.md ============ -->
-
 
 ## HTTP 请求方法
 
@@ -9845,10 +9729,7 @@ Host: example.com
 openssl s_client -connect example.com:443 -servername example.com
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/034-WgetDownload.md ============ -->
-
 
 ## wget 基本下载
 
@@ -10245,10 +10126,7 @@ wget --mirror --convert-links --adjust-extension --page-requisites --no-parent h
 wget --user-agent="Mozilla/5.0" --referer="https://google.com" https://example.com/file.zip
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/035-VPNConfig.md ============ -->
-
 
 ## OpenVPN 服务端配置
 
@@ -10834,10 +10712,7 @@ tcpdump -i tun0 -n
 tcpdump -i wg0 -n udp port 51820
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/036-WiresharkCLI.md ============ -->
-
 
 ## tshark 基础抓包
 
@@ -11223,10 +11098,7 @@ tshark -r capture.pcap -T fields -e frame.number -e ip.src -e ip.dst -e tcp.dstp
 tshark -i eth0 -q -z io,stat,10
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/037-IPv6Commands.md ============ -->
-
 
 ## IPv6 地址配置
 
@@ -11677,10 +11549,7 @@ ip -6 route show
 ip -6 rule show
 ```
 
-
-
 <!-- ============ 文档分隔线：032-networking/038-ProxyConfig.md ============ -->
-
 
 ## 环境变量代理
 

@@ -1,6 +1,6 @@
 ---
 order: 270
-title: PIVOT与UNPIVOT
+title: PIVOT 与 UNPIVOT
 module: 'sql'
 category: 数据库
 difficulty: advanced

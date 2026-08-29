@@ -6,13 +6,12 @@ category: 云与基础设施
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：033-cybersecurity/001-SecurityBasicsDefense.md ============ -->
-
 
 ## 1. 防火墙策略配置
 
@@ -735,10 +734,7 @@ grep -rn "algorithms=\[" src/
 python3 -c "import jwt; h=jwt.get_unverified_header('eyJ...'); print('算法:', h.get('alg')); print('类型:', h.get('typ'))"
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/002-WebSecurityPenetrationTesting.md ============ -->
-
 
 ## 1. OWASP Top 10
 
@@ -1518,11 +1514,7 @@ pandoc report.md -o pentest_report.pdf --pdf-engine=xelatex
 grep -E "CVE-[0-9]+-[0-9]+|OSVDB" scan_report.txt > vulnerabilities.txt
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/003-BinarySecurityAndIncidentResponse.md ============ -->
-
-
 
 ## 1. 二进制逆向工程
 
@@ -2048,11 +2040,7 @@ tcpdump -r capture.pcap -A -s 0 | \
 7. 出具正式报告，提出修复建议
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/004-SecurityToolsPractice.md ============ -->
-
-
 
 ## 1. Metasploit 框架
 
@@ -2658,11 +2646,7 @@ Update-MpSignature
 Write-Host "安全加固完成！"
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/005-XSSAttack.md ============ -->
-
-
 
 ## 1. XSS 攻击原理
 
@@ -2870,11 +2854,7 @@ Set-Cookie: session=abc123; HttpOnly; Secure; SameSite=Strict
 &#60;script&#62;alert(1)&#60;/script&#62;
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/006-SecurityModelFramework.md ============ -->
-
-
 
 ## 1. 安全基本模型
 
@@ -3010,11 +2990,7 @@ Set-Cookie: session=abc123; HttpOnly; Secure; SameSite=Strict
 | 数据渗出 | 窃取数据     |
 | 影响     | 造成破坏     |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/007-CSRFAttack.md ============ -->
-
-
 
 ## 1. CSRF 攻击原理
 
@@ -3209,10 +3185,7 @@ fetch('/api/action', {
 - 测试 SameSite Cookie 配置
 - 检查 JSON API 是否仅依赖 Cookie 认证
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/008-CryptographyApplication.md ============ -->
-
 
 ## 1. PKI 体系
 
@@ -3635,11 +3608,7 @@ while read line; do echo "$line" | base64 -d 2>/dev/null; echo; done < b64list.t
 python3 -c "import chardet; print(chardet.detect(open('file.txt','rb').read()))"
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/009-WebSecurityDeep.md ============ -->
-
-
 
 ## 1. SQL 注入
 
@@ -3749,11 +3718,7 @@ python3 -c "import chardet; print(chardet.detect(open('file.txt','rb').read()))"
 - API 网关
 - 审计日志
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/010-SOC.md ============ -->
-
-
 
 ## 1. SOC 概述
 
@@ -3878,11 +3843,7 @@ steps:
 | 事件数 | 按月/季统计             |
 | 覆盖率 | 已覆盖ATT&CK技术/总技术 |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/011-SSRFAttack.md ============ -->
-
-
 
 ## 1. SSRF 攻击原理
 
@@ -4110,10 +4071,7 @@ http://192.168.1.1:81  (关闭 → 超时)
 | Gopherus   | 生成 Gopher Payload     |
 | Burp Suite | 手动测试与 Collaborator |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/012-MalwareAnalysis.md ============ -->
-
 
 ## 1. 恶意软件分类
 
@@ -4723,11 +4681,7 @@ yara -r -s /rules/*.yar /malware_samples/ > yara_results.txt
 for f in /malware/*; do cuckoo submit "$f"; sleep 60; done
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/013-CloudSecurity.md ============ -->
-
-
 
 ## 1. 共享责任模型
 
@@ -4833,11 +4787,7 @@ OS层：HIDS、漏洞管理
 - GCP Organization Policy
 - OPA/Gatekeeper
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/014-SymmetricEncryption.md ============ -->
-
-
 
 ## 1. 对称加密基础
 
@@ -5026,10 +4976,7 @@ key = kdf.derive(password.encode())
 | 兼容旧系统  | 3DES（仅过渡）     |
 | 禁止使用    | DES、RC4、Blowfish |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/015-IncidentResponse.md ============ -->
-
 
 ## 1. 应急响应框架
 
@@ -5616,11 +5563,7 @@ sha256sum evidence-*.tar.gz > evidence.hash
 sha256sum -c evidence.hash
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/016-AsymmetricEncryption.md ============ -->
-
-
 
 ## 1. 非对称加密基础
 
@@ -5842,11 +5785,7 @@ $$s = B^a \mod p = A^b \mod p = g^{ab} \mod p$$
 | 兼容旧系统 | RSA 2048+             |
 | 禁止使用   | RSA 1024、DH 768      |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/017-HashAlgorithm.md ============ -->
-
-
 
 ## 1. 哈希算法基础
 
@@ -6053,11 +5992,7 @@ key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 600000, dklen=32)
 | HMAC       | HMAC-SHA256                |
 | 禁止使用   | MD5、SHA-1（安全场景）     |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/018-SecureDevelopment.md ============ -->
-
-
 
 ## 1. 安全开发生命周期（SDL）
 
@@ -6199,10 +6134,7 @@ def set_headers(response):
 | 路径遍历       | CWE-22  | 高     |
 | 不安全随机数   | CWE-330 | 中     |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/019-ComplianceAudit.md ============ -->
-
 
 ## 1. 合规体系
 
@@ -6788,10 +6720,7 @@ echo "加固评分: $(grep "Hardening index" /var/log/lynis-report.dat | cut -d=
 diff /etc/ssh/sshd_config /backup/sshd_config.backup
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/020-DigitalCertificate.md ============ -->
-
 
 ## 1. 数字证书基础
 
@@ -7357,11 +7286,7 @@ openssl x509 -text -noout -in cert.pem | grep "OCSP - URI"
 openssl crl -text -noout -in crl.pem
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/021-HTTPSPrinciple.md ============ -->
-
-
 
 ## 1. HTTPS 概述
 
@@ -7575,10 +7500,7 @@ server {
 | HTTP→HTTPS 重定向 | 301 重定向                 |
 | HSTS Preload      | 提交到浏览器预加载列表     |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/022-PenetrationTestingMethodology.md ============ -->
-
 
 ## 1. 渗透测试标准
 
@@ -8168,11 +8090,7 @@ pandoc report.md -o pentest_report.pdf --pdf-engine=xelatex
 grep -E "CVE-[0-9]+-[0-9]+|OSVDB" scan_report.txt > vulnerabilities.txt
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/023-InformationGathering.md ============ -->
-
-
 
 ## 1. 信息收集概述
 
@@ -8382,11 +8300,7 @@ subfinder → httpx → nuclei → 报告
 子域名   存活检测   漏洞扫描
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/024-VulnerabilityScan.md ============ -->
-
-
 
 ## 1. 漏洞扫描概述
 
@@ -8579,11 +8493,7 @@ CI/CD 集成 → 每次部署自动扫描
 合规扫描 → 每季度合规审计
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/025-SecureCodingPrinciples.md ============ -->
-
-
 
 ## 1. 安全编码基础
 
@@ -8795,11 +8705,7 @@ trivy fs .         # 容器/文件系统
 | Brakeman  | Ruby   | SAST |
 | CodeQL    | 多语言 | SAST |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/026-InputValidation.md ============ -->
-
-
 
 ## 1. 输入验证原则
 
@@ -9037,11 +8943,7 @@ const UserSchema = z.object({
 | Schema 验证 | API 层统一验证       |
 | 日志记录    | 记录验证失败事件     |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/027-AuthenticationAuthorization.md ============ -->
-
-
 
 ## 1. 身份认证
 
@@ -9292,11 +9194,7 @@ app.config.update(
 | 最小权限 | 按需授权         |
 | 持续监控 | 实时风险评估     |
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/028-OWASPTop10Detailed.md ============ -->
-
-
 
 ## 1. 注入与身份认证
 
@@ -9436,11 +9334,7 @@ A10 服务器端请求伪造是OWASP-Top-10详解的重要组成部分。本节�
 
 A10 服务器端请求伪造在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/029-XXEAttack.md ============ -->
-
-
 
 ## 1. XXE 原理
 
@@ -9580,11 +9474,7 @@ WAF 过滤在工程实践中需要根据具体场景选择合适的策略，平�
 
 手动测试在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/030-DeserializationVulnerability.md ============ -->
-
-
 
 ## 1. 序列化与反序列化
 
@@ -9724,11 +9614,7 @@ gadget chain 构造在工程实践中需要根据具体场景选择合适的策�
 
 替代方案在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/031-ZeroTrustArchitecture.md ============ -->
-
-
 
 ## 1. 零信任原则
 
@@ -9894,11 +9780,7 @@ CISA ZTMM在工程实践中需要根据具体场景选择合适的策略，平�
 
 工具选型在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/032-IdentityAccessManagement.md ============ -->
-
-
 
 ## 1. SSO 单点登录
 
@@ -10025,11 +9907,7 @@ JWT 结构在工程实践中需要根据具体场景选择合适的策略，平�
 
 最佳实践在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/033-SecurityBaseline.md ============ -->
-
-
 
 ## 1. CIS Benchmark
 
@@ -10156,11 +10034,7 @@ Ansible 加固角色是安全基线的重要组成部分。本节详细介绍Ans
 
 Ansible 加固角色在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/034-VulnerabilityScanTools.md ============ -->
-
-
 
 ## 1. Nmap
 
@@ -10287,11 +10161,7 @@ CVSS 评分在工程实践中需要根据具体场景选择合适的策略，平
 
 修复优先级在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/035-WAFRule.md ============ -->
-
-
 
 ## 1. WAF 架构
 
@@ -10431,10 +10301,7 @@ HTTP 参数污染在工程实践中需要根据具体场景选择合适的策略
 
 地理封锁在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/036-OpenSSLCert.md ============ -->
-
 
 ## 生成私钥
 
@@ -10762,10 +10629,7 @@ for f in *.pem; do echo "$f: $(openssl x509 -enddate -noout -in $f)"; done
 echo | openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -out cert.pem
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/037-OpenSSLEncrypt.md ============ -->
-
 
 ## 对称加密
 
@@ -11117,10 +10981,7 @@ openssl kdf -keylen 32 -kdfopts pass:password:salt:salt123:iter:100000 PBKDF2
 openssl kdf -keylen 32 -kdfopts pass:password scrypt
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/038-NmapScan.md ============ -->
-
 
 ## nmap 基本扫描
 
@@ -11545,10 +11406,7 @@ nmap -sS -f -T2 -D RND:3 --randomize-hosts 192.168.1.1
 nmap -p 80,443,8080,8443 -sV --script http-title,http-headers 192.168.1.1
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/039-HashTools.md ============ -->
-
 
 ## md5sum 哈希计算
 
@@ -11864,10 +11722,7 @@ sha256sum -c checksums.sha256 --quiet && echo "文件无变更" || echo "文件�
 sha256sum document.pdf | cut -d' ' -f1
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/040-Hashcat.md ============ -->
-
 
 ## hashcat 基本用法
 
@@ -12239,10 +12094,7 @@ ssh2john id_rsa > ssh_hash.txt
 john ssh_hash.txt
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/041-GPGEncrypt.md ============ -->
-
 
 ## GPG 密钥生成
 
@@ -12585,10 +12437,7 @@ gpg --export-secret-keys -a > backup.key
 gpg --export -a >> backup.key
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/042-SSHKeys.md ============ -->
-
 
 ## ssh-keygen 密钥生成
 
@@ -12969,10 +12818,7 @@ echo "LoginGraceTime 30" >> /etc/ssh/sshd_config
 systemctl restart sshd
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/043-PasswordHash.md ============ -->
-
 
 ## bcrypt 哈希
 
@@ -13284,10 +13130,7 @@ PBKDF2     iterations=600000+       兼容性最好但较弱`
 grep $USER /etc/shadow | cut -d: -f2 | cut -d$ -f2
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/044-SQLInjection.md ============ -->
-
 
 ## SQL 注入识别
 
@@ -13657,10 +13500,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['example.com']
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/045-XSSDefense.md ============ -->
-
 
 ## XSS 攻击类型
 
@@ -14059,10 +13899,7 @@ grep -iE "<script|onerror=|onload=" /var/log/nginx/access.log | awk '{print $1}'
 SecRule ARGS "(?i)(<script|javascript:|onerror=|onload=|<img.*src.*onerror)" "id:1002,phase:2,deny,status:403"
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/046-CSRFDefense.md ============ -->
-
 
 ## CSRF Token 生成与校验
 
@@ -14431,10 +14268,7 @@ curl -s -X POST https://example.com/api -H "Origin: https://evil.com" -w "%{http
 curl -sI https://example.com | grep -iE "x-frame|x-content|set-cookie|strict-transport"
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/047-XXEDefense.md ============ -->
-
 
 ## XXE 漏洞检测
 
@@ -14744,10 +14578,7 @@ curl -X POST -H "Content-Type: application/xml" -d '<!DOCTYPE foo [<!ENTITY x SY
 grep -rn "XMLReader\|SAXParser\|XmlDocument\|DocumentBuilder" src/ --include=*.java
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/048-CommandInjection.md ============ -->
-
 
 ## 命令注入原理检测
 
@@ -15099,10 +14930,7 @@ grep -rn "shell=True" src/
 php -r "echo ini_get('disable_functions');"
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/049-OAuth2OIDC.md ============ -->
-
 
 ## OAuth2 端点探测
 
@@ -15404,10 +15232,7 @@ python3 -c "import jwt; print(jwt.decode('eyJ...', options={'verify_signature': 
 curl -H "Authorization: Bearer admin_token" https://kc.example.com/admin/realms/myrealm/clients | python3 -m json.tool
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/050-FirewallConfig.md ============ -->
-
 
 ## ufw 基础操作
 
@@ -15838,10 +15663,7 @@ sudo iptables-save > iptables-v4.rules
 sudo ip6tables-save > iptables-v6.rules
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/051-IDSIPSCommands.md ============ -->
-
 
 ## Suricata 基础操作
 
@@ -16235,10 +16057,7 @@ nmap -sS -p 1-1000 192.168.1.10
 sudo tail -f /var/log/suricata/fast.log | grep -i "test\|sqlmap"
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/052-MetasploitCommands.md ============ -->
-
 
 ## msfconsole 基础操作
 
@@ -16727,10 +16546,7 @@ workspace -a pentest
 show module_paths
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/053-BurpSuiteCLI.md ============ -->
-
 
 ## Burp Suite 启动配置
 
@@ -17113,10 +16929,7 @@ java -jar burpsuite_pro.jar --header="Authorization: Bearer token123"
 java -jar burpsuite_pro.jar --ignore-ssl-errors
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/054-NiktoScan.md ============ -->
-
 
 ## Nikto 基础扫描
 
@@ -17507,10 +17320,7 @@ nikto -h example.com -Format json -o - | python3 -c "import sys,json; print(json
 nikto -h example.com -o web_scan.json -Format json && dependency-check --scan ./target/app.jar --out dep_report
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/055-OpenVASCommands.md ============ -->
-
 
 ## OpenVAS/GVM 服务管理
 
@@ -17914,10 +17724,7 @@ sudo gvmd --optimize
 du -sh /var/lib/gvm/*
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/056-SELinuxAppArmor.md ============ -->
-
 
 ## SELinux 状态管理
 
@@ -18333,10 +18140,7 @@ docker run --security-opt label:type:svirt_apache_t nginx
 getsebool -a | grep httpd
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/057-AIDEFileIntegrity.md ============ -->
-
 
 ## AIDE 安装与初始化
 
@@ -18702,10 +18506,7 @@ gpg --verify /var/lib/aide/aide.db.gpg
 grep -E "^/" /etc/aide/aide.conf | head -20
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/058-AuditdCommands.md ============ -->
-
 
 ## auditd 服务管理
 
@@ -19118,10 +18919,7 @@ sudo auditctl -w /etc/shadow -p wa -k user_change
 sudo auditctl -w /etc/group -p wa -k user_change
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/059-SteganographyTools.md ============ -->
-
 
 ## Steghide 隐写工具
 
@@ -19541,10 +19339,7 @@ print(f'差异像素数: {diff}')
 "
 ```
 
-
-
 <!-- ============ 文档分隔线：033-cybersecurity/060-ReverseEngineering.md ============ -->
-
 
 ## radare2 基础操作
 

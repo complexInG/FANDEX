@@ -1,6 +1,6 @@
 ---
 order: 790
-title: Spring 基础：IoC 容器、AOP、Bean 生命周期与企业级开发核心
+title: Spring 基础： IoC 容器、 AOP、 Bean 生命周期与企业级开发核心
 module: 'java'
 category: 后端技术
 difficulty: intermediate

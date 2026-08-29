@@ -10,7 +10,7 @@ updated: '2026-08-02'
 related:
   - 'discrete-math/001-PropositionalLogic'
   - 'discrete-math/003-SetAndRelation'
-  - 'discrete-math/004-FunctionAndNumber'
+  - 'discrete-math/004-FunctionAndCardinality'
 prerequisites:
   - 'discrete-math/001-PropositionalLogic'
 ---

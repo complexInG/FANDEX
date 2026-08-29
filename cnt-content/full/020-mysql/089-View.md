@@ -1,6 +1,6 @@
 ---
 order: 890
-title: 视图 语法速查手册
+title: 视图语法速查手册
 module: 'mysql'
 category: 数据库
 difficulty: beginner

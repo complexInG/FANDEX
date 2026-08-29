@@ -1,6 +1,6 @@
 ---
 order: 360
-title: DevOps GitLab CI/CD
+title: GitLab CI/CD
 module: 'devops'
 category: 云与基础设施
 difficulty: beginner

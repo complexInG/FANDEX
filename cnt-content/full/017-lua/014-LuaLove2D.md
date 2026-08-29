@@ -1,6 +1,6 @@
 ---
 order: 140
-title: Lua与Love2D
+title: Lua 与 Love2D
 module: 'lua'
 category: 后端技术
 difficulty: intermediate

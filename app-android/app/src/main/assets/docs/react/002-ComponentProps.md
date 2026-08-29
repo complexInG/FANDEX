@@ -1,6 +1,6 @@
 ---
 order: 20
-title: 组件与Props
+title: 组件与 Props
 module: 'react'
 category: 前端技术
 difficulty: beginner

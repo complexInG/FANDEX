@@ -9,12 +9,12 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'typescript/014-ConstAssertion'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
   - 'typescript/051-SatisfiesOperator'
   - 'typescript/059-TsconfigStrictMode'
 prerequisites:
   - 'typescript/007-BasicTypeSystem'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
 ---
 
 ## 0. 学习目标（可验证）

@@ -1,6 +1,6 @@
 ---
 order: 240
-title: Kotlin序列化
+title: Kotlin 序列化
 module: 'kotlin'
 category: 后端技术
 difficulty: intermediate

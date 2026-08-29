@@ -1,6 +1,6 @@
 ---
 order: 140
-title: LaTeX数学公式
+title: LaTeX 数学公式
 module: 'markdown'
 category: 工具链
 difficulty: intermediate

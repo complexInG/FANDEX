@@ -1,6 +1,6 @@
 ---
 order: 280
-title: Lambda与函数式编程
+title: Lambda 与函数式编程
 module: 'java'
 category: 后端技术
 difficulty: intermediate

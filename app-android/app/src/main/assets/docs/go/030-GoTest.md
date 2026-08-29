@@ -1,6 +1,6 @@
 ---
 order: 300
-title: Go与测试
+title: Go 与测试
 module: 'go'
 category: 后端技术
 difficulty: intermediate

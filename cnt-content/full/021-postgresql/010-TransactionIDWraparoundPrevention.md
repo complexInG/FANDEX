@@ -1,6 +1,6 @@
 ---
 order: 100
-title: 事务ID回卷预防
+title: 事务 ID 回卷预防
 module: 'postgresql'
 category: 数据库
 difficulty: advanced

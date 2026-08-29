@@ -1,6 +1,6 @@
 ---
 order: 590
-title: CSS-Modules
+title: CSS Modules
 module: 'css'
 category: 前端技术
 difficulty: intermediate

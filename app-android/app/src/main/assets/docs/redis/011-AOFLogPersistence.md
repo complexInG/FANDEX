@@ -1,6 +1,6 @@
 ---
 order: 110
-title: AOF日志持久化
+title: AOF 日志持久化
 module: 'redis'
 category: 数据库
 difficulty: advanced

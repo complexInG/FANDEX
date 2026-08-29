@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'cpp/062-CppTemplate'
   - 'cpp/063-MemoryOrderLockFree'
-  - 'cpp/065-CDebugPerformanceAnalysis'
+  - 'cpp/065-CppDebugPerformanceAnalysis'
   - 'cpp/066-CppProjectPractice'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'

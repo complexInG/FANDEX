@@ -1,6 +1,6 @@
 ---
 order: 450
-title: Python与GraphQL
+title: Python 与 GraphQL
 module: 'python'
 category: 后端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 370
-title: F检验
+title: F 检验
 module: 'probability-statistics'
 category: 数学
 difficulty: intermediate

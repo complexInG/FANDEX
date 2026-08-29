@@ -10,7 +10,7 @@ updated: '2026-07-20'
 related:
   - 'javascript/004-DataTypeOperator'
   - 'javascript/005-ControlFlow'
-  - 'javascript/015-LinearGeneticProgramming'
+  - 'javascript/015-RecursionTailCallOptimization'
   - 'javascript/016-CurryAndFunctionComposition'
 prerequisites: []
 ---
@@ -1398,10 +1398,10 @@ John Hughes. 1989. Why functional programming matters. *Comput. J.* 32, 2 (April
 
 ### 11.4 相关 FANDEX 文档
 
-- [数据类型与运算符](./数据类型与运算符) — 函数类型的底层基础。
-- [控制流](./控制流) — 高阶函数与命令式控制流的对比。
-- [递归与尾调用优化](./递归与尾调用优化) — 高阶函数与递归的配合。
-- [柯里化与偏函数](./柯里化与偏函数) — 高阶函数的核心应用。
+- 数据类型与运算符 — 函数类型的底层基础。
+- 控制流 — 高阶函数与命令式控制流的对比。
+- 递归与尾调用优化 — 高阶函数与递归的配合。
+- 柯里化与偏函数 — 高阶函数的核心应用。
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 order: 510
-title: JUC并发包
+title: JUC 并发包
 module: 'java'
 category: 后端技术
 difficulty: advanced
@@ -1704,4 +1704,4 @@ Java JUC 的优势:与 JVM 生态深度集成、API 成熟稳定、企业级支�
 
 ---
 
-本文系统覆盖了 `java.util.concurrent` 的核心组件、底层原理、工程实践与案例研究。建议读者结合源码阅读与生产实践反复对照,逐步形成对 JUC 的体系化认知。下一篇 [Java 反射](./Java反射.md) 将介绍 Java 反射机制与动态代理的实现原理。
+本文系统覆盖了 `java.util.concurrent` 的核心组件、底层原理、工程实践与案例研究。建议读者结合源码阅读与生产实践反复对照,逐步形成对 JUC 的体系化认知。下一篇 Java 反射 将介绍 Java 反射机制与动态代理的实现原理。

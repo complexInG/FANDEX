@@ -1,6 +1,6 @@
 ---
 order: 30
-title: Bun 内置服务器、SQL 与数据库
+title: Bun 内置服务器、 SQL 与数据库
 module: 'bun'
 category: 后端技术
 difficulty: intermediate

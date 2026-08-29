@@ -1,6 +1,6 @@
 ---
 order: 550
-title: C POSIX 与系统调用速查
+title: C POSIX 与系统调用语法速查手册
 module: 'c'
 category: 计算机科学
 difficulty: beginner

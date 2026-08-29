@@ -1,6 +1,6 @@
 ---
 order: 200
-title: GitHub-CLI
+title: GitHub CLI
 module: 'github'
 category: 工具链
 difficulty: intermediate

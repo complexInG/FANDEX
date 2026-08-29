@@ -1,6 +1,6 @@
 ---
 order: 440
-title: Java记录类
+title: Java 记录类
 module: 'java'
 category: 后端技术
 difficulty: intermediate
@@ -1627,7 +1627,7 @@ switch (s) {
 
 ---
 
-本文系统覆盖了 Java Record、密封类型与模式匹配三大特性的语法、原理、工程实践与案例。Record 是 Java 现代化的重要一步,使 Java 在数据建模上接近 Scala、Kotlin 等现代语言的表达能力。下一篇 [Java 文本块](./Java文本块.md) 将介绍 Java 15+ 的多行字符串语法。
+本文系统覆盖了 Java Record、密封类型与模式匹配三大特性的语法、原理、工程实践与案例。Record 是 Java 现代化的重要一步,使 Java 在数据建模上接近 Scala、Kotlin 等现代语言的表达能力。下一篇 Java 文本块 将介绍 Java 15+ 的多行字符串语法。
 ## 记录类定义
 
 **单行写法：简单记录类**

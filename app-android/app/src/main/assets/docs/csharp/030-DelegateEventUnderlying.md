@@ -13,7 +13,7 @@ related:
   - 'csharp/031-ReflectionAndFeatureApplication'
   - 'csharp/032-EFCoreMigrationOptimization'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 > 阅读建议：底层原理为【进阶原理】，建议先掌握委托与事件基本用法。
 ## 1. 历史动机与发展脉络

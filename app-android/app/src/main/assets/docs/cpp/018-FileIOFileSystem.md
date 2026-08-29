@@ -1,6 +1,6 @@
 ---
 order: 180
-title: 文件IO与文件系统
+title: 文件 IO 与文件系统
 module: 'cpp'
 category: 计算机科学
 difficulty: intermediate
@@ -8,7 +8,7 @@ description: 文件操作与std::filesystem
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cpp/016-CSTL'
+  - 'cpp/016-CppSTL'
   - 'cpp/017-StringProcessing'
   - 'cpp/019-ExceptionSecurity'
   - 'cpp/020-MultithreadingConcurrency'

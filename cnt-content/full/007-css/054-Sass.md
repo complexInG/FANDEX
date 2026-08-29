@@ -16,7 +16,6 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
-> 阅读建议：有项目经验后再读，先掌握 CSS 基础（001-023）。
 
 ## 1. Sass 概述
 

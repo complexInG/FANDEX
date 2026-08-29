@@ -11,7 +11,7 @@ related:
   - 'javascript/003-VariableDataType'
   - 'javascript/004-DataTypeOperator'
   - 'javascript/014-HigherOrderFunction'
-  - 'javascript/015-LinearGeneticProgramming'
+  - 'javascript/015-RecursionTailCallOptimization'
   - 'javascript/029-EventLoopDetailed'
 prerequisites: []
 ---

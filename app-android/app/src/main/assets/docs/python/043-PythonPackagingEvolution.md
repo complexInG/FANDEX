@@ -1,6 +1,6 @@
 ---
 order: 430
-title: Python与打包发布
+title: Python 与打包发布
 module: 'python'
 category: 后端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 500
-title: Python与向量数据库
+title: Python 与向量数据库
 module: 'python'
 category: 后端技术
 difficulty: advanced

@@ -1,6 +1,6 @@
 ---
 order: 150
-title: Mermaid图表
+title: Mermaid 图表
 module: 'markdown'
 category: 工具链
 difficulty: intermediate

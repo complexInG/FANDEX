@@ -11,7 +11,7 @@ related:
   - 'postgresql/021-GeoSpatialObject'
   - 'postgresql/022-StoredProcedureAndFunction'
   - 'postgresql/024-ExtensionModule'
-  - 'postgresql/025-FDWFDW'
+  - 'postgresql/025-FDWForeignDataWrapper'
 prerequisites:
   - 'postgresql/001-OverviewInstallConfig'
 ---

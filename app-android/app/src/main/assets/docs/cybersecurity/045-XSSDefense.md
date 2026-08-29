@@ -1,6 +1,6 @@
 ---
 order: 450
-title: Cybersecurity XSS 防御
+title: XSS 防御
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

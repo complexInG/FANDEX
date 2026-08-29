@@ -1,6 +1,6 @@
 ---
 order: 350
-title: Python与WebSocket
+title: Python 与 WebSocket
 module: 'python'
 category: 后端技术
 difficulty: intermediate

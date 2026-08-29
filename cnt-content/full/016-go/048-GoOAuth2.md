@@ -1,6 +1,6 @@
 ---
 order: 480
-title: Go与OAuth2
+title: Go 与 OAuth2
 module: 'go'
 category: 后端技术
 difficulty: intermediate

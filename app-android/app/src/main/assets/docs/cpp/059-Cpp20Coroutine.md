@@ -1,6 +1,6 @@
 ---
 order: 590
-title: C++20协程
+title: C++20 协程
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced
@@ -11,18 +11,18 @@ related:
   - 'cpp/005-RvalueReferenceMoveSemantics'
   - 'cpp/009-TemplateMetaprogramming'
   - 'cpp/007-SmartPointerDeepDive'
-  - 'cpp/050-CCoreGuidelinesResourceManagement'
+  - 'cpp/050-CppCoreGuidelinesResourceManagement'
   - 'cpp/060-Cpp20Concept'
   - 'cpp/061-Cpp23NewFeatures'
   - 'cpp/008-LambdaExpression'
-  - 'cpp/048-CSTLContainersIterators'
+  - 'cpp/048-CppSTLContainersIterators'
   - 'cpp/064-CppExceptionAndPerformance'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
   - 'cpp/002-CppBasicSyntax'
   - 'cpp/006-CppPointers'
   - 'cpp/004-CppReferenceTypes'
-  - 'cpp/015-COOPBasics'
+  - 'cpp/015-CppOOPBasics'
   - 'cpp/009-TemplateMetaprogramming'
   - 'cpp/005-RvalueReferenceMoveSemantics'
 ---

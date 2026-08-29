@@ -1,6 +1,6 @@
 ---
 order: 280
-title: Go与消息队列
+title: Go 与消息队列
 module: 'go'
 category: 后端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 560
-title: BGP路由协议
+title: BGP 路由协议
 module: 'cs-fundamentals'
 category: 计算机科学
 difficulty: intermediate
@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'cs-fundamentals/054-QUIC'
-  - 'cs-fundamentals/055-ARPARP'
+  - 'cs-fundamentals/055-ARPProtocolSpoofing'
   - 'cs-fundamentals/057-LexicalAnalysis'
   - 'cs-fundamentals/058-GrammarAnalysis'
 prerequisites:

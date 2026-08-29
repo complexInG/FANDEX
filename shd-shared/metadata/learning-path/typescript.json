@@ -83,7 +83,7 @@
           "title": "字面量类型与联合类型",
           "desc": "字面量类型、联合类型、可辨识联合的形式语义、类型论基础与穷尽性检查的工程实践",
           "difficulty": "advanced",
-          "doc": "012-LocalTypeInference"
+          "doc": "012-LiteralUnionTypes"
         },
         {
           "id": "ts-012",
@@ -433,7 +433,7 @@
           "title": "类型安全的事件系统",
           "desc": "类型安全事件系统的形式语义、构建器模式、异步事件、反应式扩展与生产级实现",
           "difficulty": "advanced",
-          "doc": "039-PurelyFunctionalDataStructures"
+          "doc": "039-TypeSafeEventSystem"
         },
         {
           "id": "ts-058",
@@ -475,14 +475,14 @@
           "title": "类型安全的配置系统",
           "desc": "类型安全配置系统的形式语义、深度类型操作、运行时校验与生产级 ConfigManager 工程实践",
           "difficulty": "advanced",
-          "doc": "046-TypeScript54ReleaseNotesNoInferUtilityType"
+          "doc": "046-TypeSafeConfigSystem"
         },
         {
           "id": "ts-064",
           "title": "类型安全的数据库查询",
           "desc": "TypeScript 类型安全数据库访问的形式语义、Row 类型推导原理与 Kysely/Drizzle/Prisma 三大 ORM 的工程对比",
           "difficulty": "advanced",
-          "doc": "047-TypeLevelProgrammingInTypeScript"
+          "doc": "047-TypeSafeDatabaseQuery"
         },
         {
           "id": "ts-065",

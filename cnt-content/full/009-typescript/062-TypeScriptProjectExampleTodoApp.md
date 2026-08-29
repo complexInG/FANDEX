@@ -14,7 +14,7 @@ related:
 prerequisites:
   - 'typescript/007-BasicTypeSystem'
   - 'typescript/010-FunctionGeneric'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
 ---
 
 ## 0. 学习目标（可验证）

@@ -1,6 +1,6 @@
 ---
 order: 80
-title: Lambda表达式
+title: Lambda 表达式
 module: 'cpp'
 category: 计算机科学
 difficulty: intermediate
@@ -8,7 +8,7 @@ description: C++11 至 C++23 Lambda 表达式的捕获语义、闭包类型、�
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - 'cpp/016-CSTL'
+  - 'cpp/016-CppSTL'
   - 'cpp/020-MultithreadingConcurrency'
   - 'cpp/060-Cpp20Concept'
   - 'cpp/007-SmartPointerDeepDive'

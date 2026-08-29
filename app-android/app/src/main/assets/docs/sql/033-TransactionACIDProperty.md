@@ -1,6 +1,6 @@
 ---
 order: 330
-title: 事务ACID特性
+title: 事务 ACID 特性
 module: 'sql'
 category: 数据库
 difficulty: intermediate

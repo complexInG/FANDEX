@@ -1,6 +1,6 @@
 ---
 order: 350
-title: WAF规则
+title: WAF 规则
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: intermediate

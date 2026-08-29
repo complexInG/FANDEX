@@ -16,7 +16,7 @@ related:
 prerequisites:
   - 'typescript/008-InterfaceTypeAlias'
 ---
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 > 一句话直觉：类型守卫 = 安检员。`typeof x === "string"` 就是"请出示证件"——检查通过后，TS 才允许你把 x 当字符串用；检查不通过的分支里，x 还是原类型。

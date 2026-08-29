@@ -1,6 +1,6 @@
 ---
 order: 60
-title: ArkTS语言特性
+title: ArkTS 语言特性
 module: 'harmonyos'
 category: 后端技术
 difficulty: intermediate

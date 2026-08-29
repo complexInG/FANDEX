@@ -1,6 +1,6 @@
 ---
 order: 880
-title: mysqladmin 管理命令 语法速查手册
+title: mysqladmin 管理命令语法速查手册
 module: 'mysql'
 category: 数据库
 difficulty: beginner

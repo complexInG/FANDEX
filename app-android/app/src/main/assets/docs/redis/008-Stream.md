@@ -1,6 +1,6 @@
 ---
 order: 80
-title: 流
+title: Redis Stream
 module: 'redis'
 category: 数据库
 difficulty: advanced

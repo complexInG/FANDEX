@@ -1,6 +1,6 @@
 ---
 order: 870
-title: Java日志系统
+title: Java 日志系统
 module: 'java'
 category: 后端技术
 difficulty: intermediate

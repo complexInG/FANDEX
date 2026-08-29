@@ -1,6 +1,6 @@
 ---
 order: 100
-title: DevOps与CICD集成
+title: DevOps 与 CICD 集成
 module: 'software-engineering'
 category: 云与基础设施
 difficulty: intermediate

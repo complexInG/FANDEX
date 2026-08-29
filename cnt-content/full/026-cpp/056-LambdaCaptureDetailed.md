@@ -1,6 +1,6 @@
 ---
 order: 560
-title: Lambda捕获详解
+title: Lambda 捕获详解
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced

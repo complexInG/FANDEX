@@ -1,6 +1,6 @@
 ---
 order: 530
-title: Cybersecurity Burp Suite 命令行
+title: Burp Suite 命令行
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

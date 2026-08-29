@@ -1,6 +1,6 @@
 ---
 order: 330
-title: C++与Rust对比
+title: C++与 Rust 对比
 module: 'cpp'
 category: 计算机科学
 difficulty: intermediate

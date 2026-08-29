@@ -96,7 +96,7 @@ export function init() { console.log('module loaded'); }
 
 打包是"模块图 → chunk"的流水线，Tree Shaking 是其中一道静态分析优化。
 写库时保持模块纯函数化并正确声明 `sideEffects`，写应用时用 ESM 按需引入，
-再配合 [模块动态导入与代码分割](/FANDEX/javascript/038-ModuleDynamicImportCodeSplitting/) 控制加载节奏。
+再配合 模块动态导入与代码分割 控制加载节奏。
 
 ## 核心知识点
 

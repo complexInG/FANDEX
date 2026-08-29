@@ -8,7 +8,7 @@ description: C++完美转发与引用折叠详解：std::forward、转发引用�
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'cpp/051-CSTLAlgorithmAndFunctionObject'
+  - 'cpp/051-CppSTLAlgorithmAndFunctionObject'
   - 'cpp/052-MoveSemanticsDetailed'
   - 'cpp/054-VTablePolymorphismMemoryLayout'
   - 'cpp/055-SmartPointerCircularReference'

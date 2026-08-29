@@ -1,6 +1,6 @@
 ---
 order: 130
-title: Python与FastAPI
+title: Python 与 FastAPI
 module: 'python'
 category: 后端技术
 difficulty: intermediate

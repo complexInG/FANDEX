@@ -1,6 +1,6 @@
 ---
 order: 420
-title: CSS性能优化详解
+title: CSS 性能优化详解
 module: 'css'
 category: 前端技术
 difficulty: advanced
@@ -16,7 +16,6 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
-> 阅读建议：有性能优化需求后再读，先掌握 060 与 063。
 
 ## 1. 关键渲染路径与 CSS
 

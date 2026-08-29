@@ -6,14 +6,12 @@ category: 计算机科学
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：026-cpp/001-CppOverviewAndModernStandard.md ============ -->
-
-
 
 ## 0.1 现代 C++ 最小知识地图
 
@@ -55,28 +53,6 @@ int main() {
 
 这个示例故意避开裸指针和手动内存管理，优先建立“对象负责资源”的现代 C++ 心智模型。
 
-## 0. 学习路径与阅读指南（先读这一节）
-
-本模块 76 篇文档不要按编号顺序读。零基础推荐路径：
-
-```text
-第 1 阶段（语法基础）：001 概述 → 002 基础语法 → 003 类型系统 → 004 引用
-    → 006 指针 → 015 面向对象基础
-第 2 阶段（资源与库）：013 RAII → 007/044 智能指针 → 016/048 STL → 008 Lambda
-第 3 阶段（现代 C++）：005/052 移动语义 → 053 完美转发 → 062 模板 → 021 类型特征
-第 4 阶段（并发与实战）：020/049 并发 → 059 协程 → 060 概念 → 066 项目实战
-```
-
-**讲解：**
-
-1. 这是 C++ 模块学习路径：四个阶段从语法到工程实践。
-2. 前两阶段是零基础必读，第三阶段面向对象是重点。
-3. 现代 C++（C++20/23）与旧式写法差异大，学习时认准新标准。
-
-
-分层说明：前两阶段为【核心必读】；模板元编程（009）、反射元编程（042）、内存序（063）为【进阶原理】；新标准与速查（067-076）【用到再查】。
-
-> 一句话记住：先学 RAII 和 STL，再学移动语义与模板，最后用并发和项目收尾。
 ## 1. C++ 概述 (Overview)
 
 C++ 是由 **Bjarne Stroustrup** 于 1979 年在贝尔实验室开发的，最初称为 "C with Classes"。它是一门编译型、静态类型、多范式（过程式、面向对象、泛型）的编程语言。C++ 设计的核心目标是提供一种能够与 C 语言兼容，同时支持面向对象编程和泛型编程的语言。
@@ -639,8 +615,6 @@ C++ 是一门强大、灵活且高性能的编程语言，它在系统编程、�
   C++ 是一门需要时间和实践来掌握的语言，但一旦掌握，它将成为你工具箱中最强大的工具之一。无论是系统编程、游戏开发还是科学计算，C++ 都能提供高性能和灵活性的完美平衡。
 
 <!-- ============ 文档分隔线：026-cpp/002-CppBasicSyntax.md ============ -->
-
-
 
 ## 1. 数据类型 (Data Types)
 
@@ -1930,8 +1904,6 @@ std::rcu_retire(p);  // 等待所有读者退出后回收
 
 <!-- ============ 文档分隔线：026-cpp/003-CppTypeSystem.md ============ -->
 
-
-
 ## 1. 常量 (Constants)
 
 ### 1.1 const 常量
@@ -2804,9 +2776,7 @@ enum class Flag : unsigned char { None = 0, All = 0xFF };
 Color c = Color::Red;
 ```
 
-<!-- ============ 文档分隔线：026-cpp/004-CppReferenceTypesTypes.md ============ -->
-
-
+<!-- ============ 文档分隔线：026-cpp/004-CppReferenceTypes.md ============ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -4834,8 +4804,6 @@ ref.show();
 ```
 
 <!-- ============ 文档分隔线：026-cpp/005-RvalueReferenceMoveSemantics.md ============ -->
-
-
 
 ## 第 1 章 学习目标与导论
 
@@ -7979,8 +7947,6 @@ auto result = std::move_if_noexcept(obj);
 
 <!-- ============ 文档分隔线：026-cpp/006-CppPointers.md ============ -->
 
-
-
 ## 第 1 章 学习目标与导论
 
 ### 1.1 本章在 C++ 知识体系中的位置
@@ -10140,10 +10106,6 @@ p = nullptr;
 ```
 
 <!-- ============ 文档分隔线：026-cpp/007-SmartPointerDeepDive.md ============ -->
-
-
-
-
 
 ## 第 1 章 学习目标与导论
 
@@ -12945,25 +12907,25 @@ let w = Arc::downgrade(&p);           // 弱引用 +1
 - [cpp/内存分配器](cpp/内存分配器)：自定义分配器与 `allocate_shared` 的协同机制
 - [cpp/内存池](cpp/内存池)：对象池模式与 `weak_ptr` 的生命周期观察
 - [cpp/垃圾回收](cpp/垃圾回收)：C++ 与 GC 语言的内存管理范式对比，含 Boehm GC 论述
-- [c/指针深度解析](../c/指针深度解析)：C 语言裸指针的底层机制，作为智能指针的前置基础
-- [c/内存管理](../c/内存管理)：`malloc`/`free`、`alloca`、`mmap` 的系统级内存管理
+- c/指针深度解析：C 语言裸指针的底层机制，作为智能指针的前置基础
+- c/内存管理：`malloc`/`free`、`alloca`、`mmap` 的系统级内存管理
 
 #### 15.3.2 跨语言对比
 
-- [rust/所有权系统](../rust/所有权系统)：Rust 所有权、借用、生命周期三件套，与 C++ 智能指针的哲学对比
+- rust/所有权系统：Rust 所有权、借用、生命周期三件套，与 C++ 智能指针的哲学对比
 - [rust/Box Rc Arc](../rust/Box-Rc-Arc)：Rust 的 `Box<T>`、`Rc<T>`、`Arc<T>` 与 C++ `unique_ptr`、`shared_ptr` 的等价性分析
-- [java/引用类型](../java/引用类型)：强引用、软引用、弱引用、虚引用与 GC 的协同机制
-- [go/内存管理](../go/内存管理)：Go 三色标记 GC 与 C++ 引用计数的性能对比
-- [python/引用计数](../python/引用计数)：CPython 的引用计数 + 分代 GC 混合方案
+- java/引用类型：强引用、软引用、弱引用、虚引用与 GC 的协同机制
+- go/内存管理：Go 三色标记 GC 与 C++ 引用计数的性能对比
+- python/引用计数：CPython 的引用计数 + 分代 GC 混合方案
 
 #### 15.3.3 设计模式与架构
 
-- [design-pattern/对象池模式](../design-pattern/对象池模式)：基于 `weak_ptr` 的对象池设计
-- [design-pattern/观察者模式](../design-pattern/观察者模式)：`weak_ptr` 在事件系统中的应用
-- [design-pattern/工厂模式](../design-pattern/工厂模式)：`unique_ptr` 作为工厂返回类型的设计动机
-- [design-pattern/Pimpl惯用法](../design-pattern/Pimpl惯用法)：编译防火墙与 `unique_ptr` 的协同
-- [software-engineering/ABI稳定性](../software-engineering/ABI稳定性)：智能指针作为 ABI 边界的风险与对策
-- [software-engineering/异常安全](../software-engineering/异常安全)：RAII 与异常安全保证等级
+- design-pattern/对象池模式：基于 `weak_ptr` 的对象池设计
+- design-pattern/观察者模式：`weak_ptr` 在事件系统中的应用
+- design-pattern/工厂模式：`unique_ptr` 作为工厂返回类型的设计动机
+- design-pattern/Pimpl惯用法：编译防火墙与 `unique_ptr` 的协同
+- software-engineering/ABI稳定性：智能指针作为 ABI 边界的风险与对策
+- software-engineering/异常安全：RAII 与异常安全保证等级
 
 ### 15.4 推荐学习路径
 
@@ -13009,8 +12971,6 @@ let w = Arc::downgrade(&p);           // 弱引用 +1
 - MIT 6.001、Stanford CS106L、CMU 15-410 等顶尖课程的教学范式
 
 <!-- ============ 文档分隔线：026-cpp/008-LambdaExpression.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -15010,8 +14970,6 @@ process([](int x) { std::cout << x << std::endl; });
 
 <!-- ============ 文档分隔线：026-cpp/009-TemplateMetaprogramming.md ============ -->
 
-
-> 阅读建议：模板元编程为【进阶原理】，先掌握 062 模板基础再读。
 ## 第 1 章 学习目标与导论
 
 本章节阐述读者在完成本模块学习后应具备的认知与工程能力，目标按 Bloom 分类法（修订版）组织，由低阶（记忆、理解）到高阶（应用、分析、评估、创造）递进。
@@ -15025,7 +14983,7 @@ process([](int x) { std::cout << x << std::endl; });
 - 表达精细的类型约束，在编译期捕获接口误用；
 - 通过策略注入与表达式模板等高级范式构建可扩展的高性能库。
 
-模板元编程并非孤立的语法特性，而是与 C++ 的类型系统、值类别、异常机制、模块系统深度耦合。本模块假定读者已掌握 C++ 基础语法、指针与引用、面向对象基础，并建议在学习前先阅读「右值引用与移动语义」「RAII 资源管理」「智能指针详解」模块以建立现代 C++ 心智模型。
+模板元编程并非孤立的语法特性，而是与 C++ 的类型系统、值类别、异常机制、模块系统深度耦合。本模块假定读者已掌握 C++ 基础语法、指针与引用、面向对象基础，
 
 ### 1.2 学习路径
 
@@ -18391,14 +18349,14 @@ Concepts 的错误诊断优势源于其约束的「原子化」。当 `save(Some
 
 | 模块                                       | 关联点                                                                       |
 | ------------------------------------------ | ---------------------------------------------------------------------------- |
-| [右值引用与移动语义](./右值引用与移动语义) | 完美转发依赖 forwarding reference 与引用折叠，是模板推导的核心应用           |
-| [智能指针详解](./智能指针详解)             | `std::unique_ptr` 的删除器策略、`std::shared_ptr` 的控制块设计均使用模板技巧 |
-| [RAII 资源管理](./RAII资源管理)            | 模板与 RAII 结合实现类型安全的资源封装，如 `std::lock_guard<Mutex>`          |
-| [Lambda 表达式](./Lambda表达式)            | Lambda 是编译期生成的闭包类型，与模板泛型算法深度协同                        |
-| [C++20 范围](./C++20范围)                  | `std::ranges` 大量使用 Concepts 约束迭代器与范围类型                         |
-| [C++20 模块](./C++20模块)                  | 模块与模板的交互（export 模板、模块接口实例化）是 C++20 的重要议题           |
-| [STL 容器与迭代器](./STL容器与迭代器)      | `std::iterator_traits` 是 traits 技术的经典案例                              |
-| [类型转换](./类型转换)                     | `static_cast`、`dynamic_cast` 与 CRTP 静态多态的协同                         |
+| 右值引用与移动语义 | 完美转发依赖 forwarding reference 与引用折叠，是模板推导的核心应用           |
+| 智能指针详解             | `std::unique_ptr` 的删除器策略、`std::shared_ptr` 的控制块设计均使用模板技巧 |
+| RAII 资源管理            | 模板与 RAII 结合实现类型安全的资源封装，如 `std::lock_guard<Mutex>`          |
+| Lambda 表达式            | Lambda 是编译期生成的闭包类型，与模板泛型算法深度协同                        |
+| C++20 范围                  | `std::ranges` 大量使用 Concepts 约束迭代器与范围类型                         |
+| C++20 模块                  | 模块与模板的交互（export 模板、模块接口实例化）是 C++20 的重要议题           |
+| STL 容器与迭代器      | `std::iterator_traits` 是 traits 技术的经典案例                              |
+| 类型转换                     | `static_cast`、`dynamic_cast` 与 CRTP 静态多态的协同                         |
 
 ### 17.2 进阶主题
 
@@ -18432,8 +18390,6 @@ Concepts 的错误诊断优势源于其约束的「原子化」。当 `save(Some
 ---
 
 <!-- ============ 文档分隔线：026-cpp/010-Cpp20Range.md ============ -->
-
-
 
 ## 概述
 
@@ -18986,9 +18942,6 @@ std::ranges::transform(v, std::back_inserter(dest), [](int x) { return x * 2; })
 ```
 
 <!-- ============ 文档分隔线：026-cpp/011-Cpp20Module.md ============ -->
-
-
-
 
 # C++20 模块（Modules）
 
@@ -20830,8 +20783,6 @@ cl /std:c++20 /c /interface math.cpp
 
 <!-- ============ 文档分隔线：026-cpp/012-DesignPatternCpp.md ============ -->
 
-
-
 ## 概述
 
 设计模式是面向对象编程中经过验证的解决方案模板，用于解决常见的软件设计问题。GoF（Gang of Four）定义了 23 种经典设计模式，分为创建型、结构型和行为型三大类。C++ 的多态、模板、RAII 和智能指针等特性为设计模式的实现提供了丰富的手段，使得许多模式在 C++ 中有比传统面向对象语言更优雅的实现方式。
@@ -21477,8 +21428,6 @@ actions.push_back([]{ std::cout << "hi"; });
 ```
 
 <!-- ============ 文档分隔线：026-cpp/013-RAIIResourceManagement.md ============ -->
-
-
 
 ## 概述
 
@@ -23089,8 +23038,6 @@ std::ifstream in("data.txt");
 ```
 
 <!-- ============ 文档分隔线：026-cpp/014-OperatorOverloading.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -25163,9 +25110,7 @@ public:
 };
 ```
 
-<!-- ============ 文档分隔线：026-cpp/015-COOPBasics.md ============ -->
-
-
+<!-- ============ 文档分隔线：026-cpp/015-CppOOPBasics.md ============ -->
 
 ## 1. 类与对象 (Class & Object)
 
@@ -26287,9 +26232,7 @@ Animal& ref = dog;
 ref.sound();
 ```
 
-<!-- ============ 文档分隔线：026-cpp/016-CSTL.md ============ -->
-
-
+<!-- ============ 文档分隔线：026-cpp/016-CppSTL.md ============ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -28461,8 +28404,6 @@ auto it = std::upper_bound(vec.begin(), vec.end(), 3);
 ```
 
 <!-- ============ 文档分隔线：026-cpp/017-StringProcessing.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -31208,8 +31149,6 @@ std::string str = R"DELIM(This contains )")DELIM";
 
 <!-- ============ 文档分隔线：026-cpp/018-FileIOFileSystem.md ============ -->
 
-
-
 ### 目录遍历
 
 ```cpp
@@ -31988,9 +31927,6 @@ std::cout << p.parent_path() << std::endl;
 ```
 
 <!-- ============ 文档分隔线：026-cpp/019-ExceptionSecurity.md ============ -->
-
-
-
 
 # 异常安全（Exception Safety）
 
@@ -34219,8 +34155,6 @@ int divide(int a, int b) try {
 
 <!-- ============ 文档分隔线：026-cpp/020-MultithreadingConcurrency.md ============ -->
 
-
-
 ## 概述
 
 并发（Concurrency）是指多个执行流在逻辑上同时进行的能力，并行（Parallelism）则是指多个执行流在物理上同时运行。在多核处理器普及之前，操作系统通过时间片轮转实现"伪并行"——多个线程交替使用单一 CPU 核心，造成同时运行的错觉；而现代多核 CPU 可以让多个线程真正同时执行。C++ 的多线程模型既支持并发（在单核上通过时间片实现），也支持并行（在多核上真正并行）。
@@ -36430,8 +36364,6 @@ std::this_thread::yield();
 ```
 
 <!-- ============ 文档分隔线：026-cpp/021-TypeTraitsSFINAE.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -39397,9 +39329,6 @@ using U = std::underlying_type_t<Color>;
 
 <!-- ============ 文档分隔线：026-cpp/022-VariadicTemplate.md ============ -->
 
-
-
-
 # 变参模板（Variadic Templates）
 
 > 本章节面向已掌握 C++ 基础模板语法的读者，系统讲解可变参数模板（Variadic Templates）的形式化模型、参数包展开机制、折叠表达式语义，以及在标准库与现代工程中的实际应用。内容对标 MIT 6.938 / Stanford CS106L / CMU 15-411 等海外名校课程深度，融合 LLVM、Facebook folly、Google Abseil 等工业界实践。
@@ -41727,9 +41656,6 @@ T add(T a, T b) {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/023-ConstexprCompileTime.md ============ -->
-
-
-
 
 # constexpr 与编译期计算（Constant Expression & Compile-time Computation）
 
@@ -44352,8 +44278,6 @@ constexpr std::vector<int> vec = {1, 2, 3};
 ```
 
 <!-- ============ 文档分隔线：026-cpp/024-NamespaceLinkage.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -47367,8 +47291,6 @@ g++ main.o utils.o -o program
 
 <!-- ============ 文档分隔线：026-cpp/025-CppNetworkProgramming.md ============ -->
 
-
-
 ## 概述
 
 C++ 网络编程是使用 C++ 通过网络协议进行数据通信的技术。最基础的方式是使用操作系统提供的 Socket API，它允许程序通过网络发送和接收数据。更高级的方式是使用第三方库如 Boost.Asio、libcurl 等，它们封装了底层细节，提供了更易用的接口。
@@ -48127,9 +48049,7 @@ struct Socket {
 };
 ```
 
-<!-- ============ 文档分隔线：026-cpp/026-COOPAdvanced.md ============ -->
-
-
+<!-- ============ 文档分隔线：026-cpp/026-CppOOPAdvanced.md ============ -->
 
 ## 1. 构造函数与析构函数
 
@@ -49004,8 +48924,6 @@ private:
 ```
 
 <!-- ============ 文档分隔线：026-cpp/027-CppMemoryModel.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -50705,9 +50623,6 @@ std::binary_semaphore sem(1);
 
 <!-- ============ 文档分隔线：026-cpp/028-CppGraphicsProgramming.md ============ -->
 
-
-
-
 ## 概述
 
 C++ 图形编程是利用 C++ 调用图形 API 在屏幕上绘制图像的技术。主要的图形 API 包括 OpenGL 和 Vulkan。OpenGL 是历史悠久的跨平台图形库，API 简单直观，适合入门学习；Vulkan 是新一代图形 API，提供更底层的控制，性能更高但学习曲线更陡。两者都通过着色器（Shader）在 GPU 上执行图形计算。
@@ -51101,8 +51016,6 @@ bgfx::frame();
 ```
 
 <!-- ============ 文档分隔线：026-cpp/029-CppToolchain.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -52930,8 +52843,6 @@ valgrind --tool=massif ./app     # 堆分析
 
 <!-- ============ 文档分隔线：026-cpp/030-CppRegex.md ============ -->
 
-
-
 ### 替换
 
 ```cpp
@@ -53475,9 +53386,6 @@ std::regex re("(\\d+)(?:\\.\\d+)?");
 
 <!-- ============ 文档分隔线：026-cpp/031-CppPythonInteraction.md ============ -->
 
-
-
-
 ## 概述
 
 C++ 与 Python 交互是指在两种语言之间互相调用代码。Python 有丰富的生态和简洁的语法，但运行速度较慢；C++ 性能强大但开发效率较低。将两者结合，可以用 Python 快速编写业务逻辑，用 C++ 实现性能关键的部分。主要的交互方式有 Python C API（底层但灵活）和 pybind11（现代且易用）。
@@ -53955,8 +53863,6 @@ PyMODINIT_FUNC PyInit_capi_module(void) {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/032-CppTestFramework.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -55723,9 +55629,6 @@ ctest --test-dir build -R MathTest # 按名称过滤
 
 <!-- ============ 文档分隔线：026-cpp/033-CppRustComparison.md ============ -->
 
-
-
-
 ## 概述
 
 C++ 和 Rust 都是系统级编程语言，都能直接操作内存和硬件，都不需要垃圾回收器。但两者的设计哲学截然不同：C++ 追求零开销抽象和向后兼容，信任程序员的能力；Rust 通过所有权系统和借用检查器在编译期保证内存安全，不信任程序员手动管理内存。理解两者的异同，有助于在不同场景下做出合适的技术选择。
@@ -56161,9 +56064,6 @@ fn main() {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/034-Cpp23Cpp26NewFeatures.md ============ -->
-
-
-
 
 ## 概述
 
@@ -56636,8 +56536,6 @@ std::string_view colorName(Color c) {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/035-CppPerformance.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -58305,8 +58203,6 @@ perf stat ./app             # 统计信息
 
 <!-- ============ 文档分隔线：026-cpp/036-CppSerialization.md ============ -->
 
-
-
 ## 概述
 
 序列化是将内存中的数据结构转换为可存储或传输的格式（如字符串或字节流）的过程，反序列化则是其逆过程。C++ 标准库目前没有内置的序列化支持，但社区提供了多种优秀的第三方库，如 nlohmann/json（JSON 序列化）、protobuf（二进制序列化）、cereal（轻量级序列化）等。
@@ -59064,10 +58960,6 @@ struct Data {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/037-CppGameDev.md ============ -->
-
-
-
-
 
 # C++ 游戏开发
 
@@ -61379,10 +61271,6 @@ void example() {
 
 <!-- ============ 文档分隔线：026-cpp/038-CppEmbedded.md ============ -->
 
-
-
-
-
 # C++ 嵌入式开发
 
 > 本文档系统讲解 C++ 在嵌入式系统中的应用，涵盖裸机编程、内存映射 I/O、`volatile` 语义、中断处理、实时性约束、跨编译工具链、嵌入式 C++ 子集 (EC++) 与现代 C++（C++17/C++20/C++23）在资源受限环境中的落地。内容遵循 ISO/IEC 14882:2023 与 IEC 60559 浮点标准，参考 MISRA C++:2023、AUTOSAR C++14、JSF AV C++ Coding Standards 等行业规范。
@@ -63457,8 +63345,6 @@ constexpr std::uint32_t crc32(const std::uint8_t* data, std::size_t len) {
 
 <!-- ============ 文档分隔线：026-cpp/039-CppMemoryManagement.md ============ -->
 
-
-
 ## 1. 内存管理 (Memory Management)
 
 ### 1.1 内存布局
@@ -64765,10 +64651,6 @@ static void operator delete(void* p) {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/040-CppCodeStyle.md ============ -->
-
-
-
-
 
 # C++ 代码规范
 
@@ -66905,10 +66787,6 @@ std::println("result = {}", result);
 
 <!-- ============ 文档分隔线：026-cpp/041-CppWebAssembly.md ============ -->
 
-
-
-
-
 ## 概述
 
 WebAssembly（缩写 Wasm）是一种可移植、紧凑、高效的二进制指令格式，由 W3C WebAssembly Working Group 标准化。它定义了一个基于栈的虚拟机（stack-based virtual machine），其指令集设计参考了 LLVM IR、asm.js 与现代 CPU 指令集。Wasm 模块可以在现代浏览器中以接近原生的速度运行，也可以在 Node.js、Deno、Bun 等 JavaScript 运行时中执行，还可以通过 WASI（WebAssembly System Interface）在服务端、边缘计算节点、嵌入式设备上运行，实现"一次编译，多处运行"。
@@ -68569,7 +68447,6 @@ emcc main.cpp -o main.js -g -O0
 **Q15**：分析浏览器 Streaming Compilation 与同步 Compilation 的性能差异，设计实验量化启动延迟。
 
 <!-- ============ 文档分隔线：026-cpp/042-CppReflectionMetaprogramming.md ============ -->
-
 
 > 阅读建议：反射与元编程为【进阶原理】，建议先掌握模板与类型特征。
 ## Concepts（C++20）
@@ -70483,8 +70360,6 @@ printIndices(std::make_index_sequence<5>{});
 
 <!-- ============ 文档分隔线：026-cpp/043-CppMathLibrary.md ============ -->
 
-
-
 ## 历史动机与背景
 
 C++ 数学库的发展历史反映了数值计算从基础算术到高性能科学计算的演进过程。
@@ -72171,9 +72046,7 @@ double ln2 = std::numbers::ln2;        // 0.69314...
 double phi = std::numbers::phi;        // 黄金比例
 ```
 
-<!-- ============ 文档分隔线：026-cpp/044-SmartPointer.md ============ -->
-
-
+<!-- ============ 文档分隔线：026-cpp/044-CppSmartPointer.md ============ -->
 
 ## 1. 智能指针概述
 
@@ -73004,8 +72877,6 @@ std::unique_ptr<int> p = std::make_unique<int>(10);
 ```
 
 <!-- ============ 文档分隔线：026-cpp/045-CppDateTime.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -75065,10 +74936,6 @@ std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", tm);
 
 <!-- ============ 文档分隔线：026-cpp/046-CppFormatOutput.md ============ -->
 
-
-
-
-
 # C++ 格式化输出
 
 > 本文档系统讲解 C++ 中四代格式化机制：`printf` 家族、`iostream` 抽象、C++20 `std::format` 与 C++23 `std::print`，并对比 {fmt} 库与跨语言方案。内容遵循 ISO/IEC 14882:2024 标准，覆盖语法、类型安全、性能、国际化与工程落地，目标达到海外高校教学水准。
@@ -77075,9 +76942,6 @@ std::format("{:p}", (void*)ptr);
 
 <!-- ============ 文档分隔线：026-cpp/047-Cpp26AndLatestStandard.md ============ -->
 
-
-
-
 ## 1. C++26 标准（2026 年）
 
 C++26 是 C++ 的下一个主要标准版本，计划于 2026 年发布。它引入了多项重大语言和库特性。
@@ -78548,10 +78412,7 @@ int main() {
 }
 ```
 
-<!-- ============ 文档分隔线：026-cpp/048-CSTLContainersIterators.md ============ -->
-
-
-
+<!-- ============ 文档分隔线：026-cpp/048-CppSTLContainersIterators.md ============ -->
 
 ## 1. 序列容器
 
@@ -79000,9 +78861,6 @@ int main() {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/049-ConcurrentProgramming.md ============ -->
-
-
-
 
 ## 1. C++ 并发编程概述
 
@@ -79685,9 +79543,7 @@ cv.wait(lock, []{ return condition; });
 - 线程池：避免频繁创建销毁线程
 - 避免伪共享：对齐频繁修改的原子变量
 
-<!-- ============ 文档分隔线：026-cpp/050-CCoreGuidelinesResourceManagement.md ============ -->
-
-
+<!-- ============ 文档分隔线：026-cpp/050-CppCoreGuidelinesResourceManagement.md ============ -->
 
 ## 第 1 章 学习目标与导论
 
@@ -82849,9 +82705,7 @@ delete p;
 void f(gsl::not_null<Widget*> w);
 ```
 
-<!-- ============ 文档分隔线：026-cpp/051-CSTLAlgorithmAndFunctionObject.md ============ -->
-
-
+<!-- ============ 文档分隔线：026-cpp/051-CppSTLAlgorithmAndFunctionObject.md ============ -->
 
 ## 1. 常用算法
 
@@ -83590,10 +83444,6 @@ std::sort(v.begin(), v.end(), std::greater<int>());
 ```
 
 <!-- ============ 文档分隔线：026-cpp/052-MoveSemanticsDetailed.md ============ -->
-
-
-
-
 
 # 移动语义详解
 
@@ -85039,8 +84889,6 @@ template <typename T> constexpr bool is_rvalue_v = std::is_rvalue_reference_v<T>
 ---
 
 <!-- ============ 文档分隔线：026-cpp/053-PerfectForwardingReferenceCollapse.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -87317,9 +87165,6 @@ void wrapper(T&& arg) {
 
 <!-- ============ 文档分隔线：026-cpp/054-VTablePolymorphismMemoryLayout.md ============ -->
 
-
-
-
 # 虚函数表与多态内存布局（Virtual Function Table & Polymorphic Memory Layout）
 
 > 本章节系统讲解 C++ 动态多态的底层实现机制：虚函数表（vtable）、虚指针（vptr）的对象内存布局、单继承与多重继承下的 vtable 结构、RTTI（运行时类型信息）的实现、thunk 技术与 this 指针调整、以及 CRTP 静态多态替代方案。内容对标 MIT 6.170 / Stanford CS106L / CMU 15-410 课程深度，融合 Itanium C++ ABI、LLVM、GCC、MSVC 等工业实现。
@@ -89338,8 +89183,6 @@ struct CRTPBase { int compute() { return static_cast<D*>(this)->computeImpl(); }
 
 <!-- ============ 文档分隔线：026-cpp/055-SmartPointerCircularReference.md ============ -->
 
-
-
 ## enable_shared_from_this
 
 **基本写法：安全获取自身 shared_ptr**
@@ -89871,8 +89714,6 @@ struct Watched {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/056-LambdaCaptureDetailed.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -92593,10 +92434,6 @@ forEach(v, [](int& x){ x *= 2; });
 
 <!-- ============ 文档分隔线：026-cpp/057-TypeExtractionSFINAE.md ============ -->
 
-
-
-
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 史前时代：C++ 时代的类型查询困境（pre-1998）
@@ -94458,8 +94295,6 @@ C++ 类型萃取与 SFINAE 是泛型编程的核心基础设施。本章节从�
 通过持续实践与社区参与，读者将能够在工程实践中熟练运用类型萃取与 SFINAE，写出既高效又优雅的泛型代码。
 
 <!-- ============ 文档分隔线：026-cpp/058-VariadicTemplateFoldExpression.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -96609,8 +96444,6 @@ bool always_true() {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/059-Cpp20Coroutine.md ============ -->
-
-
 
 ## 第 1 章 学习目标与导论
 
@@ -100485,10 +100318,6 @@ Generator counter() {
 
 <!-- ============ 文档分隔线：026-cpp/060-Cpp20Concept.md ============ -->
 
-
-
-
-
 # C++20 概念 (Concepts)
 
 > 本文档系统讲解 C++20 Concepts 机制的形式化基础、语法体系、语义模型、标准库概念族、子句驱动重载解析与工程实践。内容覆盖 ISO/IEC 14882:2020 [temp.concepts]、[temp.constr]、[temp.req] 等核心条款，对照 SFINAE、`std::enable_if`、标签分发等历史方案，结合 `<concepts>`、`<ranges>`、`<iterator>` 标准库设计实践，目标达到海外高校教学水准。
@@ -102677,8 +102506,6 @@ bool test(F func, int x) { return func(x); }
 
 <!-- ============ 文档分隔线：026-cpp/061-Cpp23NewFeatures.md ============ -->
 
-
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 C++23 标准的定位
@@ -104445,9 +104272,6 @@ uint32_t be = std::byteswap(host_val);
 
 <!-- ============ 文档分隔线：026-cpp/062-CppTemplate.md ============ -->
 
-
-
-
 ## 1. 历史动机与发展脉络
 
 C++ 模板由 Bjarne Stroustrup 于 1988 年前后引入 C++ 2.0 的实验版本，1990 年正式加入 C++ 标准草案，1998 年 C++98 标准化。设计动机是“参数化多态”：让同一份代码适用于多种类型，同时保持静态类型检查与零运行时开销。
@@ -105473,8 +105297,6 @@ if constexpr (std::is_integral_v<T>) {
 ```
 
 <!-- ============ 文档分隔线：026-cpp/063-MemoryOrderLockFree.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -107003,9 +106825,6 @@ counter.notify_one();     // 唤醒一个等待者
 
 <!-- ============ 文档分隔线：026-cpp/064-CppExceptionAndPerformance.md ============ -->
 
-
-
-
 ## 1. 异常处理 (Exceptions)
 
 异常是 C++ 中处理错误的一种机制，允许程序在遇到错误时跳转到相应的处理代码。
@@ -107736,9 +107555,7 @@ LLDB 是 LLVM 项目的调试器，功能类似于 GDB。
  }
 ```
 
-<!-- ============ 文档分隔线：026-cpp/065-CDebugPerformanceAnalysis.md ============ -->
-
-
+<!-- ============ 文档分隔线：026-cpp/065-CppDebugPerformanceAnalysis.md ============ -->
 
 ## 1. 调试工具
 
@@ -108418,7 +108235,6 @@ double seconds = double(std::clock() - start) / CLOCKS_PER_SEC;
 ```
 
 <!-- ============ 文档分隔线：026-cpp/066-CppProjectPractice.md ============ -->
-
 
 > 阅读建议：综合项目，建议完成 RAII、STL 与并发基础后再动手。
 ## 1. 项目一：简易文件管理器
@@ -109726,8 +109542,6 @@ HeaderFilterRegex: '.*'
 
 <!-- ============ 文档分隔线：026-cpp/067-STLContainerUsage.md ============ -->
 
-
-
 ## vector
 
 **基本写法：创建 vector**
@@ -110051,8 +109865,6 @@ for (auto it = v.begin(); it != v.end(); ++it) { }
 
 <!-- ============ 文档分隔线：026-cpp/068-StructuredBinding.md ============ -->
 
-
-
 ## 基础语法
 
 **基本写法：绑定数组**
@@ -110225,8 +110037,6 @@ auto [a, b, c] = t;   // 正确
 ```
 
 <!-- ============ 文档分隔线：026-cpp/069-CppSTLIterator.md ============ -->
-
-
 
 ## 迭代器类别
 
@@ -110478,8 +110288,6 @@ auto sum(It first, It last) {
 
 <!-- ============ 文档分隔线：026-cpp/070-CppTuplePair.md ============ -->
 
-
-
 ## pair 基本用法
 
 **基本写法：构造 pair**
@@ -110682,8 +110490,6 @@ std::cout << std::get<0>(p);
 ```
 
 <!-- ============ 文档分隔线：026-cpp/071-CppVariantOptionalAny.md ============ -->
-
-
 
 ## std::optional 可选值
 
@@ -110948,8 +110754,6 @@ a.reset();
 ```
 
 <!-- ============ 文档分隔线：026-cpp/072-CMakeBuild.md ============ -->
-
-
 
 ## CMake 基础
 
@@ -111231,8 +111035,6 @@ add_executable(app ${SOURCES})
 
 <!-- ============ 文档分隔线：026-cpp/073-DebugCommand.md ============ -->
 
-
-
 ## gdb 基础
 
 **基本写法：启动 gdb**
@@ -111466,8 +111268,6 @@ gdb -x script.gdb ./app
 
 <!-- ============ 文档分隔线：026-cpp/074-LinkSymbol.md ============ -->
 
-
-
 ## 链接基础
 
 **基本写法：链接目标文件**
@@ -111669,8 +111469,6 @@ g++ main.cpp -Wl,-Map,app.map -o app
 
 <!-- ============ 文档分隔线：026-cpp/075-Cpp26LatestStandard.md ============ -->
 
-
-
 ## C++26 概览
 
 **基本写法：编译启用 C++26**
@@ -111855,8 +111653,6 @@ g++ -std=c++2c -dM -E -x c++ /dev/null | sort | grep cpp_
 ```
 
 <!-- ============ 文档分隔线：026-cpp/076-Cpp20Overview.md ============ -->
-
-
 
 ## 四大核心特性
 
@@ -112105,4 +111901,3 @@ for (auto x : std::views::repeat(42) | std::views::take(3)) {
     std::cout << x; // 424242
 }
 ```
-

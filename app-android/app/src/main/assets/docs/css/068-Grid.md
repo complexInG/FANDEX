@@ -1,6 +1,6 @@
 ---
 order: 680
-title: CSS Grid 布局速查
+title: CSS Grid 布局语法速查手册
 module: 'css'
 category: 前端技术
 difficulty: beginner
@@ -11,7 +11,6 @@ related: []
 prerequisites: []
 ---
 
-> 阅读建议：先读 022 完整版，本篇作为速查复习使用。
 
 ## 容器属性
 

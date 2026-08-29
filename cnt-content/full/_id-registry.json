@@ -1527,7 +1527,7 @@
       "module_id": "M004",
       "sequence": 89,
       "doc_order": 2,
-      "english_name": "AccountRegister2FA2FA",
+      "english_name": "AccountRegister2FA",
       "title": "账户注册与双因素认证（2FA）",
       "allocated_at": "2026-07-30T16:22:43.352Z",
       "status": "active"
@@ -2865,7 +2865,7 @@
       "module_id": "M008",
       "sequence": 218,
       "doc_order": 15,
-      "english_name": "LinearGeneticProgramming",
+      "english_name": "RecursionTailCallOptimization",
       "title": "递归与尾调用优化",
       "allocated_at": "2026-07-30T16:22:43.355Z",
       "status": "active"
@@ -2906,7 +2906,7 @@
       "module_id": "M008",
       "sequence": 222,
       "doc_order": 20,
-      "english_name": "ObjectReference",
+      "english_name": "ObjectStaticMethods",
       "title": "Object扩展",
       "allocated_at": "2026-07-30T16:22:43.355Z",
       "status": "active"
@@ -2978,7 +2978,7 @@
       "module_id": "M008",
       "sequence": 229,
       "doc_order": 41,
-      "english_name": "CrossDocumentMessaging",
+      "english_name": "BOMBrowserObjectModel",
       "title": "BOM",
       "allocated_at": "2026-07-30T16:22:43.355Z",
       "status": "active"
@@ -2988,7 +2988,7 @@
       "module_id": "M008",
       "sequence": 230,
       "doc_order": 44,
-      "english_name": "ImageOptimization",
+      "english_name": "FetchApiWebStreams",
       "title": "网络请求API",
       "allocated_at": "2026-07-30T16:22:43.355Z",
       "status": "active"
@@ -3605,7 +3605,7 @@
       "module_id": "M009",
       "sequence": 290,
       "doc_order": 39,
-      "english_name": "PurelyFunctionalDataStructures",
+      "english_name": "TypeSafeEventSystem",
       "title": "类型安全的事件系统",
       "allocated_at": "2026-07-30T16:22:43.356Z",
       "status": "active"
@@ -3675,7 +3675,7 @@
       "module_id": "M009",
       "sequence": 297,
       "doc_order": 46,
-      "english_name": "TypeScript54ReleaseNotesNoInferUtilityType",
+      "english_name": "TypeSafeConfigSystem",
       "title": "类型安全的配置系统",
       "allocated_at": "2026-07-30T16:22:43.356Z",
       "status": "active"
@@ -3685,7 +3685,7 @@
       "module_id": "M009",
       "sequence": 298,
       "doc_order": 47,
-      "english_name": "TypeLevelProgrammingInTypeScript",
+      "english_name": "TypeSafeDatabaseQuery",
       "title": "类型安全的数据库查询",
       "allocated_at": "2026-07-30T16:22:43.356Z",
       "status": "active"
@@ -5358,7 +5358,7 @@
       "module_id": "M013",
       "sequence": 459,
       "doc_order": 63,
-      "english_name": "JVMtuning",
+      "english_name": "JVMTuning",
       "title": "JVM调优",
       "allocated_at": "2026-07-30T16:22:43.358Z",
       "status": "active"
@@ -6126,7 +6126,7 @@
       "module_id": "M015",
       "sequence": 534,
       "doc_order": 1,
-      "english_name": "COverviewEnvSetup",
+      "english_name": "CSharpOverviewEnvSetup",
       "title": "C# 概述与环境配置",
       "allocated_at": "2026-07-30T16:22:43.359Z",
       "status": "active"
@@ -6147,7 +6147,7 @@
       "module_id": "M015",
       "sequence": 536,
       "doc_order": 3,
-      "english_name": "COOP",
+      "english_name": "CSharpOOP",
       "title": "C# 面向对象编程",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6178,7 +6178,7 @@
       "module_id": "M015",
       "sequence": 539,
       "doc_order": 7,
-      "english_name": "CLINQFunctionalProgramming",
+      "english_name": "CSharpLINQFunctionalProgramming",
       "title": "C# LINQ与函数式编程",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6199,7 +6199,7 @@
       "module_id": "M015",
       "sequence": 541,
       "doc_order": 10,
-      "english_name": "CNET",
+      "english_name": "CSharpDotNet",
       "title": "C# .NET 平台与生态",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6209,7 +6209,7 @@
       "module_id": "M015",
       "sequence": 542,
       "doc_order": 11,
-      "english_name": "CTestEngineering",
+      "english_name": "CSharpTestEngineering",
       "title": "C# 测试与工程化",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6219,7 +6219,7 @@
       "module_id": "M015",
       "sequence": 543,
       "doc_order": 12,
-      "english_name": "CGameDevUnity",
+      "english_name": "CSharpGameDevUnity",
       "title": "C# 游戏开发与Unity",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6301,7 +6301,7 @@
       "module_id": "M015",
       "sequence": 551,
       "doc_order": 20,
-      "english_name": "CUnityGameDev",
+      "english_name": "CSharpUnityGameDev",
       "title": "C#与Unity游戏开发",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6311,7 +6311,7 @@
       "module_id": "M015",
       "sequence": 552,
       "doc_order": 21,
-      "english_name": "CBlazor",
+      "english_name": "CSharpBlazor",
       "title": "C#与Blazor",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6321,7 +6321,7 @@
       "module_id": "M015",
       "sequence": 553,
       "doc_order": 22,
-      "english_name": "CMAUI",
+      "english_name": "CSharpMAUI",
       "title": "C#与MAUI",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6331,7 +6331,7 @@
       "module_id": "M015",
       "sequence": 554,
       "doc_order": 23,
-      "english_name": "CEFCore",
+      "english_name": "CSharpEFCore",
       "title": "C#与EF Core",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6341,7 +6341,7 @@
       "module_id": "M015",
       "sequence": 555,
       "doc_order": 24,
-      "english_name": "CDependencyInjection",
+      "english_name": "CSharpDependencyInjection",
       "title": "C#与依赖注入",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -6351,7 +6351,7 @@
       "module_id": "M015",
       "sequence": 556,
       "doc_order": 25,
-      "english_name": "CAPI",
+      "english_name": "CSharpAPI",
       "title": "C#与最小API",
       "allocated_at": "2026-07-30T16:22:43.360Z",
       "status": "active"
@@ -9182,7 +9182,7 @@
       "module_id": "M021",
       "sequence": 832,
       "doc_order": 25,
-      "english_name": "FDWFDW",
+      "english_name": "FDWForeignDataWrapper",
       "title": "FDW外部数据包装器",
       "allocated_at": "2026-07-30T16:22:43.369Z",
       "status": "active"
@@ -10164,7 +10164,7 @@
       "module_id": "M024",
       "sequence": 929,
       "doc_order": 31,
-      "english_name": "ComputerShape",
+      "english_name": "ComputerGraphics",
       "title": "计算机图形学",
       "allocated_at": "2026-07-30T16:22:43.371Z",
       "status": "active"
@@ -10404,7 +10404,7 @@
       "module_id": "M024",
       "sequence": 953,
       "doc_order": 55,
-      "english_name": "ARPARP",
+      "english_name": "ARPProtocolSpoofing",
       "title": "ARP协议与ARP欺骗",
       "allocated_at": "2026-07-30T16:22:43.372Z",
       "status": "active"
@@ -10559,7 +10559,7 @@
       "module_id": "M025",
       "sequence": 968,
       "doc_order": 10,
-      "english_name": "TheLinuxProgrammingInterface",
+      "english_name": "MultiFileCompilation",
       "title": "多文件编译",
       "allocated_at": "2026-07-30T16:22:43.372Z",
       "status": "active"
@@ -10958,7 +10958,7 @@
       "module_id": "M025",
       "sequence": 1007,
       "doc_order": 49,
-      "english_name": "LinuxKernelMemoryBarriers",
+      "english_name": "VolatileKeyword",
       "title": "volatile关键字",
       "allocated_at": "2026-07-30T16:22:43.373Z",
       "status": "active"
@@ -10968,7 +10968,7 @@
       "module_id": "M025",
       "sequence": 1008,
       "doc_order": 50,
-      "english_name": "IO",
+      "english_name": "StdioFileIO",
       "title": "文件 I/O 操作",
       "allocated_at": "2026-07-30T16:22:43.373Z",
       "status": "active"
@@ -11272,7 +11272,7 @@
       "module_id": "M026",
       "sequence": 1037,
       "doc_order": 26,
-      "english_name": "COOPAdvanced",
+      "english_name": "CppOOPAdvanced",
       "title": "C++ 面向对象进阶",
       "allocated_at": "2026-07-30T16:22:43.374Z",
       "status": "active"
@@ -11514,7 +11514,7 @@
       "module_id": "M026",
       "sequence": 1061,
       "doc_order": 50,
-      "english_name": "CCoreGuidelinesResourceManagement",
+      "english_name": "CppCoreGuidelinesResourceManagement",
       "title": "RAII资源管理",
       "allocated_at": "2026-07-30T16:22:43.374Z",
       "status": "active"
@@ -11524,7 +11524,7 @@
       "module_id": "M026",
       "sequence": 1062,
       "doc_order": 51,
-      "english_name": "CSTLAlgorithmAndFunctionObject",
+      "english_name": "CppSTLAlgorithmAndFunctionObject",
       "title": "C++ STL 算法与函数对象",
       "allocated_at": "2026-07-30T16:22:43.374Z",
       "status": "active"
@@ -11664,7 +11664,7 @@
       "module_id": "M026",
       "sequence": 1076,
       "doc_order": 65,
-      "english_name": "CDebugPerformanceAnalysis",
+      "english_name": "CppDebugPerformanceAnalysis",
       "title": "C++ 调试与性能分析",
       "allocated_at": "2026-07-30T16:22:43.375Z",
       "status": "active"
@@ -11913,7 +11913,7 @@
       "module_id": "M028",
       "sequence": 1100,
       "doc_order": 4,
-      "english_name": "FunctionAndNumber",
+      "english_name": "FunctionAndCardinality",
       "title": "函数与基数",
       "allocated_at": "2026-07-30T16:22:43.375Z",
       "status": "active"
@@ -12064,7 +12064,7 @@
       "module_id": "M029",
       "sequence": 1115,
       "doc_order": 10,
-      "english_name": "ChunkingMatrix",
+      "english_name": "BlockMatrix",
       "title": "分块矩阵",
       "allocated_at": "2026-07-30T16:22:43.376Z",
       "status": "active"
@@ -22480,7 +22480,7 @@
       "module_id": "M009",
       "sequence": 2097,
       "doc_order": 12,
-      "english_name": "LocalTypeInference",
+      "english_name": "LiteralUnionTypes",
       "title": "字面量类型与联合类型",
       "allocated_at": "2026-07-30T16:22:43.478Z",
       "status": "active"
@@ -22840,7 +22840,7 @@
       "module_id": "M012",
       "sequence": 2133,
       "doc_order": 9,
-      "english_name": "SVGTransformTransform",
+      "english_name": "SVGTransform",
       "title": "SVG 变换 transform",
       "allocated_at": "2026-07-30T16:22:43.480Z",
       "status": "active"
@@ -22921,7 +22921,7 @@
       "module_id": "M012",
       "sequence": 2141,
       "doc_order": 5,
-      "english_name": "SVGPathPathDetailed",
+      "english_name": "SVGPathDetailed",
       "title": "SVG 路径 path 详解",
       "allocated_at": "2026-07-30T16:22:43.481Z",
       "status": "active"
@@ -23313,7 +23313,7 @@
       "module_id": "M015",
       "sequence": 2180,
       "doc_order": 8,
-      "english_name": "CAdvancedFeature",
+      "english_name": "CSharpAdvancedFeature",
       "title": "C# 高级特性",
       "allocated_at": "2026-07-30T16:22:43.483Z",
       "status": "active"
@@ -23323,7 +23323,7 @@
       "module_id": "M015",
       "sequence": 2181,
       "doc_order": 2,
-      "english_name": "CBasicSyntax",
+      "english_name": "CSharpBasicSyntax",
       "title": "C# 基础语法",
       "allocated_at": "2026-07-30T16:22:43.483Z",
       "status": "active"
@@ -24166,7 +24166,7 @@
       "module_id": "M022",
       "sequence": 2265,
       "doc_order": 5,
-      "english_name": "BitGraph",
+      "english_name": "BitMapRedis",
       "title": "位图",
       "allocated_at": "2026-07-30T16:22:43.488Z",
       "status": "active"
@@ -24377,7 +24377,7 @@
       "module_id": "M026",
       "sequence": 2286,
       "doc_order": 15,
-      "english_name": "COOPBasics",
+      "english_name": "CppOOPBasics",
       "title": "C++ 面向对象基础",
       "allocated_at": "2026-07-30T16:22:43.489Z",
       "status": "active"
@@ -24467,7 +24467,7 @@
       "module_id": "M026",
       "sequence": 2295,
       "doc_order": 44,
-      "english_name": "SmartPointer",
+      "english_name": "CppSmartPointer",
       "title": "智能指针",
       "allocated_at": "2026-07-30T16:22:43.490Z",
       "status": "active"
@@ -24507,7 +24507,7 @@
       "module_id": "M026",
       "sequence": 2299,
       "doc_order": 16,
-      "english_name": "CSTL",
+      "english_name": "CppSTL",
       "title": "C++ STL 容器与迭代器",
       "allocated_at": "2026-07-30T16:22:43.490Z",
       "status": "active"
@@ -28585,7 +28585,7 @@
       "module_id": "M020",
       "sequence": 2705,
       "doc_order": 4,
-      "english_name": "SQL-Playground",
+      "english_name": "SQLPlayground",
       "title": "SQL 沙箱练习",
       "allocated_at": "2026-08-03T04:39:02Z",
       "status": "active"
@@ -29035,7 +29035,7 @@
       "module_id": "M026",
       "sequence": 2750,
       "doc_order": 48,
-      "english_name": "CSTLContainersIterators",
+      "english_name": "CppSTLContainersIterators",
       "title": "C++ STL 容器与迭代器",
       "allocated_at": "2026-08-03T04:40:45Z",
       "status": "active"

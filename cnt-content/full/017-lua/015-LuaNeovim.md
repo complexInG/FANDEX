@@ -1,6 +1,6 @@
 ---
 order: 150
-title: Lua与Neovim
+title: Lua 与 Neovim
 module: 'lua'
 category: 后端技术
 difficulty: intermediate

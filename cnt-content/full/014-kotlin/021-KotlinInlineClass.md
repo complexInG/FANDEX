@@ -1,6 +1,6 @@
 ---
 order: 210
-title: Kotlin内联类
+title: Kotlin 内联类
 module: 'kotlin'
 category: 后端技术
 difficulty: intermediate

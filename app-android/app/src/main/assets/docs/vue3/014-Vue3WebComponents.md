@@ -1,6 +1,6 @@
 ---
 order: 140
-title: Vue3与Web Components
+title: Vue3 与 Web Components
 module: 'vue3'
 category: 前端技术
 difficulty: intermediate

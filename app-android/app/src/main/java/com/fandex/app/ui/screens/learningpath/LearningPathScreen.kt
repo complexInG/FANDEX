@@ -1,5 +1,6 @@
 package com.fandex.app.ui.screens.learningpath
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,12 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,7 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +38,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fandex.app.data.model.LearningPathSummary
+import com.fandex.app.ui.common.fandexEntrance
 import com.fandex.app.ui.common.pressScale
+import com.fandex.app.ui.common.tweenNormal
+import com.fandex.app.ui.components.CategoryColor
 import com.fandex.app.ui.components.ThemeQuickToggle
 import com.fandex.app.ui.components.TopDock
 import com.fandex.app.ui.theme.LocalExtendedColors
@@ -49,8 +52,9 @@ import com.fandex.app.ui.theme.LocalExtendedColors
  * 对齐 Web 端 /learning-path 页面：
  * - 展示所有可用学习路径（顺序与 web 端索引一致）
  * - 点击进入具体路径的阶段与节点
+ *
+ * 动效：状态切换 Crossfade；路径条目轻量入场（仅首次）
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LearningPathScreen(
     onPathClick: (String) -> Unit,
@@ -64,6 +68,13 @@ fun LearningPathScreen(
     }
 
     val state by viewModel.state.collectAsState()
+
+    // 入场门控：内容就绪后的下一帧置 true，触发首次 stagger 入场
+    var hasEntered by remember { mutableStateOf(false) }
+    val dataReady = state is LearningPathUiState.Success
+    LaunchedEffect(dataReady) {
+        if (dataReady) hasEntered = true
+    }
 
     Scaffold(
         topBar = {
@@ -87,38 +98,48 @@ fun LearningPathScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            when (state) {
-                is LearningPathUiState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+            // 状态切换：220ms 淡入淡出
+            Crossfade(
+                targetState = state,
+                animationSpec = tweenNormal(),
+                label = "learningPathStateCrossfade"
+            ) { current ->
+                when (current) {
+                    is LearningPathUiState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
-                }
-                is LearningPathUiState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = (state as LearningPathUiState.Error).message,
-                            color = LocalExtendedColors.current.fgSecondary
-                        )
-                    }
-                }
-                is LearningPathUiState.Success -> {
-                    val paths = (state as LearningPathUiState.Success).paths
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(paths, key = { it.moduleId }) { entry ->
-                            LearningPathItem(
-                                entry = entry,
-                                onClick = { onPathClick(entry.moduleId) }
+                    is LearningPathUiState.Error -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = current.message,
+                                color = LocalExtendedColors.current.fgSecondary
                             )
+                        }
+                    }
+                    is LearningPathUiState.Success -> {
+                        val paths = current.paths
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(paths, key = { _, entry -> entry.moduleId }) { index, entry ->
+                                LearningPathItem(
+                                    entry = entry,
+                                    onClick = { onPathClick(entry.moduleId) },
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .fandexEntrance(index = index, visible = hasEntered)
+                                )
+                            }
                         }
                     }
                 }
@@ -133,14 +154,15 @@ fun LearningPathScreen(
 @Composable
 private fun LearningPathItem(
     entry: LearningPathSummary,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val extendedColors = LocalExtendedColors.current
     val interaction = remember { MutableInteractionSource() }
-    val accent = parsePathAccent(entry.colorHex)
+    val accent = CategoryColor.parse(entry.colorHex)
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .pressScale(interaction)
             .clip(RoundedCornerShape(4.dp))
@@ -185,15 +207,4 @@ private fun LearningPathItem(
             )
         }
     }
-}
-
-
-/**
- * 解析十六进制颜色
- */
-private fun parsePathAccent(hex: String): androidx.compose.ui.graphics.Color {
-    val normalized = hex.removePrefix("#")
-    return runCatching {
-        androidx.compose.ui.graphics.Color(normalized.toLong(16) or 0xFF000000)
-    }.getOrDefault(androidx.compose.ui.graphics.Color(0xFF4F5BD5))
 }

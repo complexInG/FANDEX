@@ -3073,25 +3073,25 @@ print(idx.count_overlap(2, 4))  # 输出: 4 (差分覆盖统计)
 
 以下文档属于 algorithm 模块，与本篇构成知识序列：
 
-- [algorithm/树状数组](../树状数组) — Fenwick Tree 专题，理解线段树与树状数组的代数约束差异
-- [algorithm/树](../树) — 完全二叉树、二叉搜索树的基础性质
-- [algorithm/平衡树与高级树](../平衡树与高级树) — AVL、红黑树、Treap、Splay 树的对比
-- [algorithm/堆与优先队列](../堆与优先队列) — 二叉堆、斐波那契堆、配对堆的实现
-- [algorithm/并查集](../并查集) — 路径压缩与按秩合并的平摊分析
-- [algorithm/跳跃表](../跳跃表) — 概率替代平衡的 $O(\log n)$ 区间结构
-- [algorithm/图算法](../图算法) — 网络流中的扫描线、Kruskal 中的并查集应用
-- [algorithm/动态规划](../动态规划) — 区间 DP 与线段树优化的协同
-- [algorithm/算法分析基础与学习路线](../算法分析基础与学习路线) — 主定理、平摊分析、势能法的预备知识
+- algorithm/树状数组 — Fenwick Tree 专题，理解线段树与树状数组的代数约束差异
+- algorithm/树 — 完全二叉树、二叉搜索树的基础性质
+- algorithm/平衡树与高级树 — AVL、红黑树、Treap、Splay 树的对比
+- algorithm/堆与优先队列 — 二叉堆、斐波那契堆、配对堆的实现
+- algorithm/并查集 — 路径压缩与按秩合并的平摊分析
+- algorithm/跳跃表 — 概率替代平衡的 $O(\log n)$ 区间结构
+- algorithm/图算法 — 网络流中的扫描线、Kruskal 中的并查集应用
+- algorithm/动态规划 — 区间 DP 与线段树优化的协同
+- algorithm/算法分析基础与学习路线 — 主定理、平摊分析、势能法的预备知识
 
 ### 15.2 跨模块横向扩展
 
 线段树的数学基础与工程应用涉及多个学科，以下关联模块提供必要的横向知识：
 
-- [cs-fundamentals/离散数学](../../cs-fundamentals/离散数学) — 抽象代数（半群、群、幺半群）、归纳法、递归关系的形式化基础
-- [math/离散数学](../../math/离散数学) — 离散数学的另一入口，含生成函数与高级组合技巧
-- [math/概率论与数理统计](../../math/概率论与数理统计) — 随机化线段树、Skip List 概率分析的理论基础
-- [cs-fundamentals/算法导论精读](../../cs-fundamentals/算法导论精读) — CLRS 教材的逐章精读笔记，可与本文档交叉学习
-- [cs-fundamentals/计算几何](../../cs-fundamentals/计算几何) — Bentley-Ottmann 扫描线、矩形并集、最近点对等线段树原始应用场景
+- cs-fundamentals/离散数学 — 抽象代数（半群、群、幺半群）、归纳法、递归关系的形式化基础
+- math/离散数学 — 离散数学的另一入口，含生成函数与高级组合技巧
+- math/概率论与数理统计 — 随机化线段树、Skip List 概率分析的理论基础
+- cs-fundamentals/算法导论精读 — CLRS 教材的逐章精读笔记，可与本文档交叉学习
+- cs-fundamentals/计算几何 — Bentley-Ottmann 扫描线、矩形并集、最近点对等线段树原始应用场景
 
 ### 15.3 进阶论文与开放资源
 

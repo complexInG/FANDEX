@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'c/017-BitField'
-  - 'c/050-IO'
+  - 'c/050-StdioFileIO'
   - 'c/052-CAdvancedSystemProgramming'
   - 'c/053-CProjectExampleStudentGradeSystem'
   - 'c/004-DataTypeDetailed'
@@ -18,7 +18,7 @@ prerequisites:
   - 'c/002-CLanguageOverview'
   - 'c/004-DataTypeDetailed'
 ---
-> 阅读建议：理论串讲，建议完成前两阶段基础后再读，可分段查阅。
+> 阅读建议：理论串讲，可分段查阅。
 # C 语言理论知识点
 
 > 本章节面向已掌握 C 基本语法、指针与数据类型的读者，深入剖析 C 语言的编译流程、内存模型、ABI 规范、链接与加载机制、未定义行为、严格别名规则、序列点与内存对齐等核心理论。这些理论是理解 C 程序"为什么这样行为"的根基，对标 MIT 6.S081、Stanford CS107、CMU 15-213 的系统编程教学水准。所有代码示例均可直接编译运行，支持 0 基硕自学。

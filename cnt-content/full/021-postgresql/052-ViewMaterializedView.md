@@ -1,6 +1,6 @@
 ---
 order: 520
-title: 视图与物化视图 语法速查手册
+title: 视图与物化视图语法速查手册
 module: 'postgresql'
 category: 数据库
 difficulty: beginner

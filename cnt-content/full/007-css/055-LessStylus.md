@@ -1,6 +1,6 @@
 ---
 order: 550
-title: Less与Stylus
+title: Less 与 Stylus
 module: 'css'
 category: 前端技术
 difficulty: intermediate
@@ -16,7 +16,6 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
-> 阅读建议：有项目经验后再读，先掌握 CSS 基础（001-023）。
 
 ## 1. Less
 

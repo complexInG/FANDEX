@@ -1,6 +1,6 @@
 ---
 order: 130
-title: LINQ深度解析
+title: LINQ 深度解析
 module: 'csharp'
 category: 后端技术
 difficulty: intermediate
@@ -8,12 +8,12 @@ description: LINQ查询语法与方法语法
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'csharp/011-CTestEngineering'
-  - 'csharp/012-CGameDevUnity'
+  - 'csharp/011-CSharpTestEngineering'
+  - 'csharp/012-CSharpGameDevUnity'
   - 'csharp/014-AsyncProgrammingDetailed'
   - 'csharp/015-PatternMatching'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

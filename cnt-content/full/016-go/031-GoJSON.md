@@ -1,6 +1,6 @@
 ---
 order: 310
-title: Go与JSON
+title: Go 与 JSON
 module: 'go'
 category: 后端技术
 difficulty: beginner

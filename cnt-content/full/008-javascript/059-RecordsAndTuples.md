@@ -1,6 +1,6 @@
 ---
 order: 590
-title: Records与Tuples
+title: Records 与 Tuples
 module: 'javascript'
 category: 前端技术
 difficulty: advanced
@@ -1001,10 +1001,10 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 ### 11.4 相关 FANDEX 文档
 
-- [迭代器帮助器](./迭代器帮助器) — 与 Record/Tuple 配合实现惰性不可变流水线。
-- [Promise构造器](./Promise构造器) — Promise resolve 值的不可变保证。
-- [对象与数组](./对象与数组) — 可变对应物的深入理解。
-- [DOM操作与事件](./DOM操作与事件) — DOM 节点为何不能放入 Record。
+- 迭代器帮助器 — 与 Record/Tuple 配合实现惰性不可变流水线。
+- Promise构造器 — Promise resolve 值的不可变保证。
+- 对象与数组 — 可变对应物的深入理解。
+- DOM操作与事件 — DOM 节点为何不能放入 Record。
 
 ---
 

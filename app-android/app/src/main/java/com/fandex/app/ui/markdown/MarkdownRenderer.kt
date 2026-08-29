@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
@@ -39,17 +41,22 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.fandex.app.ui.theme.CodeTextStyle
 import com.fandex.app.ui.theme.FandexExtendedColors
 import com.fandex.app.ui.theme.InlineCodeStyle
@@ -62,13 +69,17 @@ import org.commonmark.parser.Parser
 /** 链接点击注解标签 */
 private const val URL_TAG = "URL"
 
+/** 行内公式内嵌内容标签前缀 */
+private const val MATH_TAG = "math-"
+
 /**
  * Markdown 渲染引擎
  *
  * 使用 commonmark-java 解析 Markdown 为 AST，
  * 再将块级模型映射到 Jetpack Compose 组件：
- * - 标题 / 段落 / 加粗 / 斜体 / 删除线 / 内联代码
+ * - 标题 / 段落 / 加粗（模块色）/ 斜体 / 删除线 / 内联代码
  * - 代码块（语法高亮 + 复制按钮 + 语言标签）
+ * - 块级数学公式（$$...$$，JLatexMath）与行内公式（$...$）
  * - 有序 / 无序 / 任务 / 嵌套列表
  * - 引用块与告警块（[!NOTE] 等）
  * - 表格 / 分隔线 / 链接点击 / 图片占位
@@ -88,11 +99,20 @@ class MarkdownRenderer {
     /**
      * 解析 Markdown 为块级列表
      *
-     * 供文档页 LazyColumn 分块渲染与目录提取使用
+     * 块级公式（$$...$$）在进入 commonmark 之前先提取（避免被解析为普通段落），
+     * 其余文本按原逻辑解析；供文档页 LazyColumn 分块渲染与目录提取使用
      */
     fun parse(markdown: String): List<MarkdownBlock> {
-        val document = parser.parse(markdown)
-        return MarkdownComposeVisitor().extractBlocks(document)
+        val blocks = mutableListOf<MarkdownBlock>()
+        for (segment in splitMathSegments(markdown)) {
+            if (segment.isMath) {
+                blocks.add(MarkdownBlock.MathBlock(segment.text.trim()))
+            } else {
+                val document = parser.parse(segment.text)
+                blocks.addAll(MarkdownComposeVisitor().extractBlocks(document))
+            }
+        }
+        return blocks
     }
 
     /**
@@ -101,30 +121,33 @@ class MarkdownRenderer {
      * 适用于内容较短的页面；长文档请配合 parse + LazyColumn 使用
      */
     @Composable
-    fun Render(markdown: String) {
+    fun Render(markdown: String, accentColor: Color? = null) {
         val blocks = remember(markdown) { parse(markdown) }
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             blocks.forEach { block ->
-                Block(block)
+                Block(block, accentColor)
             }
         }
     }
 
     /**
      * 渲染单个块级元素（公开供文档页逐块渲染）
+     *
+     * @param accentColor 模块分类色，用于加粗文字着色（对齐 web 端 .prose strong）
      */
     @Composable
-    fun Block(block: MarkdownBlock) {
+    fun Block(block: MarkdownBlock, accentColor: Color? = null) {
         when (block) {
             is MarkdownBlock.Heading -> HeadingBlock(block)
-            is MarkdownBlock.Paragraph -> ParagraphBlock(block)
+            is MarkdownBlock.Paragraph -> ParagraphBlock(block, accentColor)
             is MarkdownBlock.CodeBlock -> CodeBlockView(block)
-            is MarkdownBlock.ListBlock -> ListBlockView(block, depth = 0)
-            is MarkdownBlock.BlockQuote -> BlockQuoteView(block)
-            is MarkdownBlock.Admonition -> AdmonitionView(block)
+            is MarkdownBlock.MathBlock -> MathBlockView(block.latex)
+            is MarkdownBlock.ListBlock -> ListBlockView(block, accentColor, depth = 0)
+            is MarkdownBlock.BlockQuote -> BlockQuoteView(block, accentColor)
+            is MarkdownBlock.Admonition -> AdmonitionView(block, accentColor)
             is MarkdownBlock.Table -> TableView(block)
             MarkdownBlock.ThematicBreak -> ThematicBreakView()
         }
@@ -159,10 +182,10 @@ private fun HeadingBlock(block: MarkdownBlock.Heading) {
 }
 
 /**
- * 段落块（支持链接点击与图片占位）
+ * 段落块（支持链接点击、图片占位、行内公式与模块色加粗）
  */
 @Composable
-private fun ParagraphBlock(block: MarkdownBlock.Paragraph) {
+private fun ParagraphBlock(block: MarkdownBlock.Paragraph, accentColor: Color?) {
     // 段落仅含图片时渲染为图片占位卡
     val images = block.segments.filterIsInstance<TextSegment.Image>()
     if (images.size == 1 && block.segments.size == 1) {
@@ -173,23 +196,22 @@ private fun ParagraphBlock(block: MarkdownBlock.Paragraph) {
     val uriHandler = LocalUriHandler.current
     val extendedColors = LocalExtendedColors.current
     val primaryColor = MaterialTheme.colorScheme.primary
-    val annotated = remember(block.segments, extendedColors, primaryColor) {
-        buildAnnotatedStringFromSegments(block.segments, extendedColors, primaryColor)
-    }
+    val markdown = rememberAnnotatedMarkdown(block.segments, extendedColors, primaryColor, accentColor)
     val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
 
     Text(
-        text = annotated,
+        text = markdown.annotated,
+        inlineContent = markdown.inlineContent,
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurface,
         onTextLayout = { layoutResult.value = it },
         modifier = Modifier
             .fillMaxWidth()
-            .pointerInput(annotated) {
+            .pointerInput(markdown) {
                 detectTapGestures { position ->
                     layoutResult.value?.let { layout ->
                         val offset = layout.getOffsetForPosition(position)
-                        annotated.getStringAnnotations(URL_TAG, offset, offset)
+                        markdown.annotated.getStringAnnotations(URL_TAG, offset, offset)
                             .firstOrNull()
                             ?.let { annotation ->
                                 runCatching { uriHandler.openUri(annotation.item) }
@@ -268,7 +290,7 @@ private fun CodeBlockView(block: MarkdownBlock.CodeBlock) {
  * 列表块（含任务列表与嵌套渲染）
  */
 @Composable
-private fun ListBlockView(block: MarkdownBlock.ListBlock, depth: Int) {
+private fun ListBlockView(block: MarkdownBlock.ListBlock, accentColor: Color?, depth: Int) {
     val extendedColors = LocalExtendedColors.current
 
     Column(
@@ -308,8 +330,9 @@ private fun ListBlockView(block: MarkdownBlock.ListBlock, depth: Int) {
                     }
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = annotatedOf(item.segments),
+                    MarkdownText(
+                        segments = item.segments,
+                        accentColor = accentColor,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -321,8 +344,9 @@ private fun ListBlockView(block: MarkdownBlock.ListBlock, depth: Int) {
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.primary
                             )
-                            Text(
-                                text = annotatedOf(child.segments),
+                            MarkdownText(
+                                segments = child.segments,
+                                accentColor = accentColor,
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -338,7 +362,7 @@ private fun ListBlockView(block: MarkdownBlock.ListBlock, depth: Int) {
  * 引用块
  */
 @Composable
-private fun BlockQuoteView(block: MarkdownBlock.BlockQuote) {
+private fun BlockQuoteView(block: MarkdownBlock.BlockQuote, accentColor: Color?) {
     val extendedColors = LocalExtendedColors.current
 
     Row(
@@ -360,8 +384,9 @@ private fun BlockQuoteView(block: MarkdownBlock.BlockQuote) {
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             block.paragraphs.forEach { paragraph ->
-                Text(
-                    text = annotatedOf(paragraph),
+                MarkdownText(
+                    segments = paragraph,
+                    accentColor = accentColor,
                     style = MaterialTheme.typography.bodyMedium,
                     color = extendedColors.fgSecondary
                 )
@@ -376,7 +401,7 @@ private fun BlockQuoteView(block: MarkdownBlock.BlockQuote) {
  * 左侧主题色竖条 + 类型标题 + 内容段落
  */
 @Composable
-private fun AdmonitionView(block: MarkdownBlock.Admonition) {
+private fun AdmonitionView(block: MarkdownBlock.Admonition, accentColor: Color?) {
     val extendedColors = LocalExtendedColors.current
     val accent = when (block.type) {
         "TIP", "SUCCESS" -> extendedColors.success
@@ -411,8 +436,9 @@ private fun AdmonitionView(block: MarkdownBlock.Admonition) {
                 fontWeight = FontWeight.SemiBold
             )
             block.paragraphs.forEach { paragraph ->
-                Text(
-                    text = annotatedOf(paragraph),
+                MarkdownText(
+                    segments = paragraph,
+                    accentColor = accentColor,
                     style = MaterialTheme.typography.bodyMedium,
                     color = extendedColors.fgSecondary
                 )
@@ -567,35 +593,127 @@ private fun ThematicBreakView() {
 // 行内片段构建
 // ---------------------------------------------------------------------------
 
+/** 组合内带行内公式的富文本结果 */
+private data class AnnotatedMarkdown(
+    val annotated: AnnotatedString,
+    val inlineContent: Map<String, InlineTextContent>
+)
+
 /**
- * 组合内解析行内片段为 AnnotatedString（带主题色缓存键）
+ * 组合内构建富文本（带主题色缓存键与行内公式位图）
  */
 @Composable
-private fun annotatedOf(segments: List<TextSegment>): AnnotatedString {
+private fun MarkdownText(
+    segments: List<TextSegment>,
+    accentColor: Color?,
+    style: androidx.compose.ui.text.TextStyle,
+    color: Color
+) {
     val extendedColors = LocalExtendedColors.current
     val primaryColor = MaterialTheme.colorScheme.primary
-    return remember(segments, extendedColors, primaryColor) {
-        buildAnnotatedStringFromSegments(segments, extendedColors, primaryColor)
+    val markdown = rememberAnnotatedMarkdown(segments, extendedColors, primaryColor, accentColor)
+    Text(
+        text = markdown.annotated,
+        inlineContent = markdown.inlineContent,
+        style = style,
+        color = color
+    )
+}
+
+/**
+ * 构建带行内公式的富文本
+ *
+ * 行内公式从 Plain 片段中以 $...$ 提取（与 web 端 remark-mask 相同的启发式：
+ * 定界符内侧不留空白），位图同步渲染（行内公式规模小，耗时可忽略）
+ */
+@Composable
+private fun rememberAnnotatedMarkdown(
+    segments: List<TextSegment>,
+    extendedColors: FandexExtendedColors,
+    primaryColor: Color,
+    accentColor: Color?
+): AnnotatedMarkdown {
+    val density = LocalDensity.current
+    val onSurface = MaterialTheme.colorScheme.onSurface
+    val mathKeys = remember(segments) { extractInlineMath(segments) }
+    val textSizePx = inlineMathTextSizePx(density)
+    val bitmaps = remember(mathKeys, onSurface, textSizePx) {
+        mathKeys.associateWith { latex -> renderMathBitmap(latex, onSurface.toArgb(), textSizePx) }
+    }
+    // InlineTextContent 为 @Composable 构造，需在组合上下文完成
+    val mathIds = remember(mathKeys) { mathKeys.mapIndexed { i, _ -> "$MATH_TAG$i" } }
+    val mathContents = remember(bitmaps, mathIds) {
+        mutableMapOf<String, InlineTextContent>().apply {
+            mathKeys.forEachIndexed { i, latex ->
+                val bitmap = bitmaps[latex] ?: return@forEachIndexed
+                val (wSp, hSp) = inlineMathPlaceholder(bitmap.width, bitmap.height)
+                put(
+                    mathIds[i],
+                    InlineTextContent(Placeholder(wSp.sp, hSp.sp, PlaceholderVerticalAlign.TextCenter)) {
+                        androidx.compose.foundation.Image(
+                            bitmap = bitmap,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                )
+            }
+        }.toMap()
+    }
+    return remember(segments, extendedColors, primaryColor, accentColor, mathIds, mathContents) {
+        buildAnnotatedMarkdown(segments, extendedColors, primaryColor, accentColor, mathIds, mathContents)
     }
 }
 
 /**
- * 将行内片段序列构建为 AnnotatedString（非组合函数，可在 remember 计算中使用）
+ * 将行内片段序列构建为富文本（非组合函数，可在 remember 计算中使用）
  *
- * 链接以 URL_TAG 注解承载地址，供点击手势解析
+ * - 链接以 URL_TAG 注解承载地址，供点击手势解析
+ * - 加粗文字使用模块分类色（对齐 web 端 .prose strong 的 --module-color）
+ * - 行内公式以内嵌内容承载，未渲染成功的回退为等宽源文本
  */
-private fun buildAnnotatedStringFromSegments(
+private fun buildAnnotatedMarkdown(
     segments: List<TextSegment>,
-    extendedColors: com.fandex.app.ui.theme.FandexExtendedColors,
-    primaryColor: Color
-): AnnotatedString {
+    extendedColors: FandexExtendedColors,
+    primaryColor: Color,
+    accentColor: Color?,
+    mathIds: List<String>,
+    mathContents: Map<String, InlineTextContent>
+): AnnotatedMarkdown {
     val codeBgColor = extendedColors.codeBg
+    val boldColor = accentColor ?: Color.Unspecified
+    var mathIndex = 0
 
-    return buildAnnotatedString {
+    val annotated = buildAnnotatedString {
         segments.forEach { segment ->
             when (segment) {
-                is TextSegment.Plain -> append(segment.text)
-                is TextSegment.Bold -> withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                is TextSegment.Plain -> {
+                    // 拆分行内公式
+                    var rest = segment.text
+                    while (rest.isNotEmpty()) {
+                        val match = INLINE_MATH_RE.find(rest)
+                        if (match == null) {
+                            append(rest)
+                            break
+                        }
+                        append(rest.substring(0, match.range.first))
+                        val latex = match.groupValues[1]
+                        val id = mathIds.getOrNull(mathIndex)
+                        if (id != null && mathContents.containsKey(id)) {
+                            appendInlineContent(id, "［公式］")
+                        } else {
+                            // 回退：等宽源文本
+                            withStyle(
+                                SpanStyle(fontFamily = FontFamily.Monospace, color = primaryColor)
+                            ) { append(latex) }
+                        }
+                        mathIndex++
+                        rest = rest.substring(match.range.last + 1)
+                    }
+                }
+                is TextSegment.Bold -> withStyle(
+                    SpanStyle(fontWeight = FontWeight.Bold, color = boldColor)
+                ) {
                     append(segment.text)
                 }
                 is TextSegment.Italic -> withStyle(SpanStyle(fontStyle = FontStyle.Italic)) {
@@ -609,7 +727,7 @@ private fun buildAnnotatedStringFromSegments(
                 is TextSegment.InlineCode -> withStyle(
                     SpanStyle(
                         fontFamily = InlineCodeStyle.fontFamily,
-                        // web 端内联代码使用深色底浅色字（双主题一致）
+                        // 亮色浅底深字 / 暗色深底浅字（对齐 web 端行内代码观感）
                         background = codeBgColor,
                         color = extendedColors.codeText
                     )
@@ -635,6 +753,111 @@ private fun buildAnnotatedStringFromSegments(
             }
         }
     }
+    return AnnotatedMarkdown(annotated, mathContents)
+}
+
+/**
+ * 行内公式正则：$...$，内容不含 $ 与换行、且定界符内侧不留空白
+ * （"价格 $5 和 $10" 这类货币写法不会误判）
+ */
+private val INLINE_MATH_RE = Regex("\\$([^\\$\n\\s][^$\n]*[^$\n\\s]|[^$\n\\s])\\$")
+
+/** 从片段集合中提取全部行内公式（作为位图缓存键） */
+private fun extractInlineMath(segments: List<TextSegment>): List<String> {
+    val keys = mutableListOf<String>()
+    segments.forEach { segment ->
+        if (segment is TextSegment.Plain) {
+            INLINE_MATH_RE.findAll(segment.text).forEach { keys.add(it.groupValues[1]) }
+        }
+    }
+    return keys.distinct()
+}
+
+// ---------------------------------------------------------------------------
+// 块级公式预提取
+// ---------------------------------------------------------------------------
+
+/** 解析分段：isMath 为 true 时 text 为公式体 */
+private data class ParsedSegment(val isMath: Boolean, val text: String)
+
+/**
+ * 围栏感知的 $$...$$ 预提取
+ *
+ * 代码围栏（``` / ~~~）内出现的 $$ 视为普通文本不参与提取；
+ * 跨行公式块被切出后，剩余文本保持行结构供 commonmark 正常解析
+ */
+private fun splitMathSegments(markdown: String): List<ParsedSegment> {
+    val segments = mutableListOf<ParsedSegment>()
+    val lines = markdown.split('\n')
+    val buf = StringBuilder()
+    var inFence = false
+    var fenceMark = "```"
+
+    fun flush() {
+        if (buf.isNotBlank()) segments.add(ParsedSegment(false, buf.toString()))
+        buf.clear()
+    }
+
+    var i = 0
+    while (i < lines.size) {
+        val line = lines[i]
+        val trimmed = line.trimStart()
+        if (!inFence && (trimmed.startsWith("```") || trimmed.startsWith("~~~"))) {
+            inFence = true
+            fenceMark = trimmed.take(3)
+            buf.append(line).append('\n')
+            i++
+            continue
+        }
+        if (inFence) {
+            buf.append(line).append('\n')
+            if (trimmed.startsWith(fenceMark)) inFence = false
+            i++
+            continue
+        }
+        if (trimmed.startsWith("$$")) {
+            val rest = trimmed.removePrefix("$$")
+            val inlineClose = rest.indexOf("$$")
+            if (inlineClose >= 0) {
+                // 单行 $$...$$
+                flush()
+                segments.add(ParsedSegment(true, rest.take(inlineClose)))
+                buf.append(rest.substring(inlineClose + 2)).append('\n')
+                i++
+                continue
+            }
+            // 跨行块：向后查找闭合 $$
+            val mathLines = mutableListOf<String>()
+            if (rest.isNotBlank()) mathLines.add(rest)
+            var j = i + 1
+            var closed = false
+            while (j < lines.size) {
+                val closeIdx = lines[j].indexOf("$$")
+                if (closeIdx >= 0) {
+                    val before = lines[j].take(closeIdx)
+                    if (before.isNotBlank()) mathLines.add(before)
+                    closed = true
+                    break
+                }
+                mathLines.add(lines[j])
+                j++
+            }
+            if (closed) {
+                flush()
+                segments.add(ParsedSegment(true, mathLines.joinToString("\n").trim()))
+                i = j + 1
+                continue
+            }
+            // 未闭合：按普通文本处理
+            buf.append(line).append('\n')
+            i++
+            continue
+        }
+        buf.append(line).append('\n')
+        i++
+    }
+    flush()
+    return segments
 }
 
 /**

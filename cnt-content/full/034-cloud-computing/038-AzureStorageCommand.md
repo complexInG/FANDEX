@@ -1,6 +1,6 @@
 ---
 order: 380
-title: 云计算 Azure 存储命令
+title: Azure 存储命令
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

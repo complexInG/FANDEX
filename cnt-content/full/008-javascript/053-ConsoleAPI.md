@@ -1,6 +1,6 @@
 ---
 order: 530
-title: JavaScript console API 语法速查
+title: JavaScript console API 语法速查手册
 module: 'javascript'
 category: 前端技术
 difficulty: beginner

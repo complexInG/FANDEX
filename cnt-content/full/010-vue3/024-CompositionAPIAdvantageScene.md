@@ -1,6 +1,6 @@
 ---
 order: 240
-title: 组合式API优势场景
+title: 组合式 API 优势场景
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

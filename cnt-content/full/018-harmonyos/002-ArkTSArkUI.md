@@ -1,6 +1,6 @@
 ---
 order: 20
-title: ArkTS与ArkUI
+title: ArkTS 与 ArkUI
 module: 'harmonyos'
 category: 后端技术
 difficulty: beginner

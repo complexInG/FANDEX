@@ -1,6 +1,6 @@
 ---
 order: 370
-title: Kotlin与原子操作
+title: Kotlin 与原子操作
 module: 'kotlin'
 category: 后端技术
 difficulty: intermediate

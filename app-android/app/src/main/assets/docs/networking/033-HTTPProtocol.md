@@ -1,6 +1,6 @@
 ---
 order: 330
-title: Networking HTTP 协议
+title: HTTP 协议
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

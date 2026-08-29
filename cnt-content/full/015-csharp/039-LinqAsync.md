@@ -1,6 +1,6 @@
 ---
 order: 390
-title: C# LINQ 与异步速查
+title: C# LINQ 与异步语法速查手册
 module: 'csharp'
 category: 后端技术
 difficulty: beginner

@@ -53,7 +53,7 @@
         {
           "id": "cpp-101",
           "title": "C++ 面向对象进阶",
-          "doc": "026-COOPAdvanced"
+          "doc": "026-CppOOPAdvanced"
         },
         {
           "id": "cpp-102",
@@ -83,7 +83,7 @@
         {
           "id": "cpp-107",
           "title": "RAII资源管理",
-          "doc": "050-CCoreGuidelinesResourceManagement"
+          "doc": "050-CppCoreGuidelinesResourceManagement"
         },
         {
           "id": "cpp-108",
@@ -115,7 +115,7 @@
         {
           "id": "cpp-204",
           "title": "C++ 调试与性能分析",
-          "doc": "065-CDebugPerformanceAnalysis"
+          "doc": "065-CppDebugPerformanceAnalysis"
         },
         {
           "id": "cpp-205",

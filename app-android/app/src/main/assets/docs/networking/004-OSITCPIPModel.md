@@ -1,6 +1,6 @@
 ---
 order: 40
-title: OSI与TCP-IP模型
+title: OSI 与 TCP/IP 模型
 module: 'networking'
 category: 云与基础设施
 difficulty: intermediate

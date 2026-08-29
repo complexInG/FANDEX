@@ -10,19 +10,18 @@ updated: '2026-08-03'
 related:
   - 'cpp/007-SmartPointerDeepDive'
   - 'cpp/005-RvalueReferenceMoveSemantics'
-  - 'cpp/050-CCoreGuidelinesResourceManagement'
+  - 'cpp/050-CppCoreGuidelinesResourceManagement'
   - 'cpp/008-LambdaExpression'
   - 'cpp/010-Cpp20Range'
   - 'cpp/011-Cpp20Module'
-  - 'cpp/048-CSTLContainersIterators'
+  - 'cpp/048-CppSTLContainersIterators'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
   - 'cpp/002-CppBasicSyntax'
   - 'cpp/006-CppPointers'
   - 'cpp/004-CppReferenceTypes'
-  - 'cpp/015-COOPBasics'
+  - 'cpp/015-CppOOPBasics'
 ---
-> 阅读建议：模板元编程为【进阶原理】，先掌握 062 模板基础再读。
 ## 第 1 章 学习目标与导论
 
 本章节阐述读者在完成本模块学习后应具备的认知与工程能力，目标按 Bloom 分类法（修订版）组织，由低阶（记忆、理解）到高阶（应用、分析、评估、创造）递进。
@@ -36,7 +35,7 @@ prerequisites:
 - 表达精细的类型约束，在编译期捕获接口误用；
 - 通过策略注入与表达式模板等高级范式构建可扩展的高性能库。
 
-模板元编程并非孤立的语法特性，而是与 C++ 的类型系统、值类别、异常机制、模块系统深度耦合。本模块假定读者已掌握 C++ 基础语法、指针与引用、面向对象基础，并建议在学习前先阅读「右值引用与移动语义」「RAII 资源管理」「智能指针详解」模块以建立现代 C++ 心智模型。
+模板元编程并非孤立的语法特性，而是与 C++ 的类型系统、值类别、异常机制、模块系统深度耦合。本模块假定读者已掌握 C++ 基础语法、指针与引用、面向对象基础，
 
 ### 1.2 学习路径
 
@@ -3402,14 +3401,14 @@ Concepts 的错误诊断优势源于其约束的「原子化」。当 `save(Some
 
 | 模块                                       | 关联点                                                                       |
 | ------------------------------------------ | ---------------------------------------------------------------------------- |
-| [右值引用与移动语义](./右值引用与移动语义) | 完美转发依赖 forwarding reference 与引用折叠，是模板推导的核心应用           |
-| [智能指针详解](./智能指针详解)             | `std::unique_ptr` 的删除器策略、`std::shared_ptr` 的控制块设计均使用模板技巧 |
-| [RAII 资源管理](./RAII资源管理)            | 模板与 RAII 结合实现类型安全的资源封装，如 `std::lock_guard<Mutex>`          |
-| [Lambda 表达式](./Lambda表达式)            | Lambda 是编译期生成的闭包类型，与模板泛型算法深度协同                        |
-| [C++20 范围](./C++20范围)                  | `std::ranges` 大量使用 Concepts 约束迭代器与范围类型                         |
-| [C++20 模块](./C++20模块)                  | 模块与模板的交互（export 模板、模块接口实例化）是 C++20 的重要议题           |
-| [STL 容器与迭代器](./STL容器与迭代器)      | `std::iterator_traits` 是 traits 技术的经典案例                              |
-| [类型转换](./类型转换)                     | `static_cast`、`dynamic_cast` 与 CRTP 静态多态的协同                         |
+| 右值引用与移动语义 | 完美转发依赖 forwarding reference 与引用折叠，是模板推导的核心应用           |
+| 智能指针详解             | `std::unique_ptr` 的删除器策略、`std::shared_ptr` 的控制块设计均使用模板技巧 |
+| RAII 资源管理            | 模板与 RAII 结合实现类型安全的资源封装，如 `std::lock_guard<Mutex>`          |
+| Lambda 表达式            | Lambda 是编译期生成的闭包类型，与模板泛型算法深度协同                        |
+| C++20 范围                  | `std::ranges` 大量使用 Concepts 约束迭代器与范围类型                         |
+| C++20 模块                  | 模块与模板的交互（export 模板、模块接口实例化）是 C++20 的重要议题           |
+| STL 容器与迭代器      | `std::iterator_traits` 是 traits 技术的经典案例                              |
+| 类型转换                     | `static_cast`、`dynamic_cast` 与 CRTP 静态多态的协同                         |
 
 ### 17.2 进阶主题
 

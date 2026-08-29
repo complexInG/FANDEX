@@ -1,6 +1,6 @@
 ---
 order: 270
-title: GROUP-BY与ORDER-BY优化
+title: GROUP BY 与 ORDER BY 优化
 module: 'mysql'
 category: 数据库
 difficulty: advanced

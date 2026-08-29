@@ -1,6 +1,6 @@
 ---
 order: 310
-title: Vue性能优化详解
+title: Vue 性能优化详解
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

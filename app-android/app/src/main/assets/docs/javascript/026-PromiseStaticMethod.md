@@ -1,6 +1,6 @@
 ---
 order: 260
-title: Promise静态方法
+title: Promise 静态方法
 module: 'javascript'
 category: 前端技术
 difficulty: intermediate

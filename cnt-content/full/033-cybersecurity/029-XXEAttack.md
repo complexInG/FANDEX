@@ -1,6 +1,6 @@
 ---
 order: 290
-title: XXE攻击
+title: XXE 攻击
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: intermediate

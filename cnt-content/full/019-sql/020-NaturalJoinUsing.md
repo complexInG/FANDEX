@@ -1,6 +1,6 @@
 ---
 order: 200
-title: 自然连接与USING
+title: 自然连接与 USING
 module: 'sql'
 category: 数据库
 difficulty: intermediate

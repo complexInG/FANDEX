@@ -1,6 +1,6 @@
 ---
 order: 350
-title: DevOps Jenkins Pipeline
+title: Jenkins Pipeline
 module: 'devops'
 category: 云与基础设施
 difficulty: beginner

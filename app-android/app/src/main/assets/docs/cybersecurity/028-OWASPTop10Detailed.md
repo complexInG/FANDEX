@@ -1,6 +1,6 @@
 ---
 order: 280
-title: OWASP-Top-10详解
+title: OWASP Top 10 详解
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: intermediate

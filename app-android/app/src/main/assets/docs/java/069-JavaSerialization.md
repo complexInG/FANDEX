@@ -1,6 +1,6 @@
 ---
 order: 690
-title: Java序列化
+title: Java 序列化
 module: 'java'
 category: 后端技术
 difficulty: intermediate

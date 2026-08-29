@@ -1,6 +1,6 @@
 ---
 order: 120
-title: Fiber架构
+title: Fiber 架构
 module: 'react'
 category: 前端技术
 difficulty: advanced

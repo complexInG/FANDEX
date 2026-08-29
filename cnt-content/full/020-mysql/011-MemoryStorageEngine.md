@@ -1,6 +1,6 @@
 ---
 order: 110
-title: Memory存储引擎
+title: Memory 存储引擎
 module: 'mysql'
 category: 数据库
 difficulty: intermediate

@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'java/010-ArrayDetailed'
-  - 'java/063-JVMtuning'
+  - 'java/063-JVMTuning'
   - 'java/052-ConcurrencyDetailed'
   - 'java/053-CompletableFutureAsync'
 prerequisites:

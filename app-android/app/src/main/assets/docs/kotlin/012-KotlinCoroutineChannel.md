@@ -1,6 +1,6 @@
 ---
 order: 120
-title: Kotlin与协程Channel
+title: Kotlin 与协程 Channel
 module: 'kotlin'
 category: 后端技术
 difficulty: intermediate

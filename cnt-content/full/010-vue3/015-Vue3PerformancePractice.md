@@ -1,6 +1,6 @@
 ---
 order: 150
-title: Vue3性能优化实践
+title: Vue3 性能优化实践
 module: 'vue3'
 category: 前端技术
 difficulty: intermediate

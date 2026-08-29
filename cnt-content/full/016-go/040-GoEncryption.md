@@ -1,6 +1,6 @@
 ---
 order: 400
-title: Go与加密
+title: Go 与加密
 module: 'go'
 category: 后端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 90
-title: 枚举与typedef
+title: 枚举与 typedef
 module: 'c'
 category: 计算机科学
 difficulty: beginner
@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'c/006-BitwiseBitField'
   - 'c/008-OperatorExpression'
-  - 'c/010-TheLinuxProgrammingInterface'
+  - 'c/010-MultiFileCompilation'
   - 'c/011-DynamicMemoryManagement'
 prerequisites:
   - 'c/002-CLanguageOverview'

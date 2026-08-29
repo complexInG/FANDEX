@@ -1,6 +1,6 @@
 ---
 order: 180
-title: GROUP BY与分组集
+title: GROUP BY 与分组集
 module: 'sql'
 category: 数据库
 difficulty: advanced

@@ -1,6 +1,6 @@
 ---
 order: 470
-title: HTTP缓存策略
+title: HTTP 缓存策略
 module: 'cs-fundamentals'
 category: 计算机科学
 difficulty: intermediate

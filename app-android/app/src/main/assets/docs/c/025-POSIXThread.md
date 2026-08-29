@@ -1,6 +1,6 @@
 ---
 order: 250
-title: POSIX线程
+title: POSIX 线程
 module: 'c'
 category: 计算机科学
 difficulty: advanced

@@ -1,6 +1,6 @@
 ---
 order: 330
-title: 云计算 AWS Lambda 命令
+title: AWS Lambda 命令
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

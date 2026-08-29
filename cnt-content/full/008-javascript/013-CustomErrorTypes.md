@@ -1,6 +1,6 @@
 ---
 order: 130
-title: 自定义Error
+title: 自定义错误类型
 module: 'javascript'
 category: 前端技术
 difficulty: intermediate
@@ -8,11 +8,11 @@ description: JavaScript 自定义错误类型体系——Error 子类化、Error
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'javascript/020-ObjectReference'
+  - 'javascript/020-ObjectStaticMethods'
   - 'javascript/028-EventLoop'
   - 'javascript/025-PromiseConstructorDeepDive'
   - 'javascript/032-ExploringES6ProxiesAndReflect'
-  - 'javascript/044-ImageOptimization'
+  - 'javascript/044-FetchApiWebStreams'
 prerequisites: []
 ---
 

@@ -1,6 +1,6 @@
 ---
 order: 180
-title: MERGE语句增强
+title: MERGE 语句增强
 module: 'postgresql'
 category: 数据库
 difficulty: advanced

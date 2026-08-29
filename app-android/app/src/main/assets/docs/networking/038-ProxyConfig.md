@@ -1,6 +1,6 @@
 ---
 order: 380
-title: Networking 代理配置
+title: 代理配置
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

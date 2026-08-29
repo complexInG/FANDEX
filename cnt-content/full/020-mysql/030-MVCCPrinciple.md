@@ -1,6 +1,6 @@
 ---
 order: 300
-title: MVCC原理
+title: MVCC 原理
 module: 'mysql'
 category: 数据库
 difficulty: advanced

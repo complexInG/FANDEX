@@ -1,6 +1,6 @@
 ---
 order: 360
-title: Cybersecurity OpenSSL 证书管理
+title: OpenSSL 证书管理
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

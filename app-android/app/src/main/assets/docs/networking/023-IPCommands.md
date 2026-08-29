@@ -1,6 +1,6 @@
 ---
 order: 230
-title: Networking ip 命令
+title: ip 命令
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

@@ -1,6 +1,6 @@
 ---
 order: 210
-title: HTTPS原理
+title: HTTPS 原理
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: intermediate

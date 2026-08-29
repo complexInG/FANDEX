@@ -1,10 +1,14 @@
 package com.fandex.app.ui.screens.document
 
+import com.fandex.app.ui.components.CategoryColor
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,7 +35,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -52,12 +55,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fandex.app.data.model.DocIndexEntry
+import com.fandex.app.ui.common.fandexEntrance
+import com.fandex.app.ui.common.tweenNormal
 import com.fandex.app.ui.components.DifficultyBadge
+import com.fandex.app.ui.components.FdxIconButton
 import com.fandex.app.ui.components.ThemeQuickToggle
 import com.fandex.app.ui.components.TopDock
 import com.fandex.app.ui.markdown.MarkdownRenderer
@@ -94,6 +101,12 @@ fun DocumentScreen(
     val listState = rememberLazyListState()
     val success = state as? DocumentUiState.Success
 
+    // 入场门控：内容就绪后的下一帧置 true，触发元信息与引用区块的轻量入场
+    var hasEntered by remember { mutableStateOf(false) }
+    LaunchedEffect(success != null) {
+        if (success != null) hasEntered = true
+    }
+
     // 目录滚动目标：块下标 -> 列表项下标（meta 与前置知识位于块之前）
     fun listItemIndexOfBlock(blockIndex: Int): Int {
         var index = 1 // meta
@@ -104,12 +117,24 @@ fun DocumentScreen(
     Scaffold(
         bottomBar = {
             if (success != null) {
-                PersistentDocNav(
-                    prev = success.prev,
-                    next = success.next,
-                    accentHex = success.accentHex,
-                    onDocClick = onDocClick
-                )
+                // 底部导航入场：内容加载完成时自底部 24dp 滑入 + 淡入（仅一次）
+                val enterState = remember {
+                    MutableTransitionState(false).apply { targetState = true }
+                }
+                val density = LocalDensity.current
+                AnimatedVisibility(
+                    visibleState = enterState,
+                    enter = slideInVertically(tweenNormal()) {
+                        with(density) { 24.dp.roundToPx() }
+                    } + fadeIn(tweenNormal())
+                ) {
+                    PersistentDocNav(
+                        prev = success.prev,
+                        next = success.next,
+                        accentHex = success.accentHex,
+                        onDocClick = onDocClick
+                    )
+                }
             }
         },
         topBar = {
@@ -125,6 +150,8 @@ fun DocumentScreen(
                     showNavActions = false,
                     showHome = true,
                     onHome = onHome,
+                    // 模块色竖条装饰
+                    accentHex = success?.accentHex,
                     themeQuickToggle = { ThemeQuickToggle(viewModel = viewModel()) },
                     pageActions = {
                         val toc = success?.toc.orEmpty()
@@ -181,37 +208,49 @@ fun DocumentScreen(
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        // 文档元信息
+                        // 文档元信息（轻量入场）
                         item(key = "meta") {
-                            DocMetaInfo(data)
-                        }
-
-                        // 前置知识
-                        if (data.prerequisites.isNotEmpty()) {
-                            item(key = "prereq") {
-                                DocRefSection(
-                                    title = "前置知识",
-                                    docs = data.prerequisites,
-                                    accentHex = data.accentHex,
-                                    onDocClick = onDocClick
-                                )
+                            Box(
+                                modifier = Modifier.fandexEntrance(index = 0, visible = hasEntered)
+                            ) {
+                                DocMetaInfo(data)
                             }
                         }
 
-                        // 正文分块渲染
-                        itemsIndexed(data.blocks, key = { index, _ -> "block-$index" }) { _, block ->
-                            renderer.Block(block)
+                        // 前置知识（轻量入场）
+                        if (data.prerequisites.isNotEmpty()) {
+                            item(key = "prereq") {
+                                Box(
+                                    modifier = Modifier.fandexEntrance(index = 1, visible = hasEntered)
+                                ) {
+                                    DocRefSection(
+                                        title = "前置知识",
+                                        docs = data.prerequisites,
+                                        accentHex = data.accentHex,
+                                        onDocClick = onDocClick
+                                    )
+                                }
+                            }
                         }
 
-                        // 相关文档
+                        // 正文分块渲染（加粗文字使用模块分类色，对齐 web 端）
+                        itemsIndexed(data.blocks, key = { index, _ -> "block-$index" }) { _, block ->
+                            renderer.Block(block, accentColor = CategoryColor.parse(data.accentHex))
+                        }
+
+                        // 相关文档（轻量入场）
                         if (data.related.isNotEmpty()) {
                             item(key = "related") {
-                                DocRefSection(
-                                    title = "相关文档",
-                                    docs = data.related,
-                                    accentHex = data.accentHex,
-                                    onDocClick = onDocClick
-                                )
+                                Box(
+                                    modifier = Modifier.fandexEntrance(index = 2, visible = hasEntered)
+                                ) {
+                                    DocRefSection(
+                                        title = "相关文档",
+                                        docs = data.related,
+                                        accentHex = data.accentHex,
+                                        onDocClick = onDocClick
+                                    )
+                                }
                             }
                         }
 
@@ -278,7 +317,8 @@ private fun totalItemsOf(state: DocumentUiState.Success): Int {
 /**
  * 阅读进度条
  *
- * 按列表可见项占比估算阅读进度，与 web 端滚动进度对应
+ * 按列表可见项占比估算阅读进度，与 web 端滚动进度对应；
+ * 进度值经 animateFloatAsState 平滑，避免滚动时跳变
  */
 @Composable
 private fun ReadingProgressBar(listState: LazyListState, totalItems: Int) {
@@ -291,8 +331,14 @@ private fun ReadingProgressBar(listState: LazyListState, totalItems: Int) {
             }
         }
     }
+    // 进度平滑过渡（220ms 减速）
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tweenNormal(),
+        label = "readingProgress"
+    )
     LinearProgressIndicator(
-        progress = { progress },
+        progress = { animatedProgress },
         modifier = Modifier
             .fillMaxWidth()
             .height(2.dp)
@@ -313,9 +359,13 @@ private fun DocumentTocButton(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
 
-    IconButton(onClick = { showSheet = true }) {
-        Icon(Icons.AutoMirrored.Filled.MenuBook, contentDescription = "目录")
-    }
+    // 目录按钮（统一走 FdxIconButton，20dp 图标 + 按压缩放）
+    FdxIconButton(
+        icon = Icons.AutoMirrored.Filled.MenuBook,
+        contentDescription = "目录",
+        onClick = { showSheet = true },
+        modifier = Modifier.padding(end = 4.dp)
+    )
 
     if (showSheet) {
         ModalBottomSheet(onDismissRequest = { showSheet = false }, sheetState = sheetState) {
@@ -344,7 +394,8 @@ private fun DocumentTocButton(
                             .clickable {
                                 showSheet = false
                                 scope.launch {
-                                    listState.scrollToItem(index = indexOfBlock(entry.blockIndex))
+                                    // 平滑滚动到目标小节
+                                    listState.animateScrollToItem(index = indexOfBlock(entry.blockIndex))
                                 }
                             }
                             .padding(
@@ -408,7 +459,7 @@ private fun DocRefSection(
     onDocClick: (String, String) -> Unit
 ) {
     val extendedColors = LocalExtendedColors.current
-    val accent = parseDocAccent(accentHex)
+    val accent = CategoryColor.parse(accentHex)
 
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         // 区块标题
@@ -473,7 +524,7 @@ private fun PersistentDocNav(
     onDocClick: (String, String) -> Unit
 ) {
     val extendedColors = LocalExtendedColors.current
-    val accent = parseDocAccent(accentHex)
+    val accent = CategoryColor.parse(accentHex)
 
     Row(
         modifier = Modifier
@@ -557,12 +608,3 @@ private fun PersistentDocNav(
     }
 }
 
-/**
- * 解析十六进制颜色
- */
-private fun parseDocAccent(hex: String): Color {
-    val normalized = hex.removePrefix("#")
-    return runCatching {
-        Color(normalized.toLong(16) or 0xFF000000)
-    }.getOrDefault(Color(0xFF4F5BD5))
-}

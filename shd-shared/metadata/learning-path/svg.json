@@ -31,7 +31,7 @@
         {
           "id": "svg-005",
           "title": "SVG 路径 path 详解",
-          "doc": "005-SVGPathPathDetailed"
+          "doc": "005-SVGPathDetailed"
         },
         {
           "id": "svg-006",
@@ -58,7 +58,7 @@
         {
           "id": "svg-103",
           "title": "SVG 变换 transform",
-          "doc": "009-SVGTransformTransform"
+          "doc": "009-SVGTransform"
         },
         {
           "id": "svg-104",

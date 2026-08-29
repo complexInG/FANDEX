@@ -1,6 +1,6 @@
 ---
 order: 610
-title: JVM垃圾回收
+title: JVM 垃圾回收
 module: 'java'
 category: 后端技术
 difficulty: advanced

@@ -13,7 +13,7 @@ related:
   - 'csharp/018-SpanMemory'
   - 'csharp/019-SourceGenerator'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

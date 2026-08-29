@@ -1,6 +1,6 @@
 ---
 order: 410
-title: Go与文件监控
+title: Go 与文件监控
 module: 'go'
 category: 后端技术
 difficulty: intermediate
@@ -1805,10 +1805,10 @@ func (la *LogAnalyzer) parseLine(line string) {
 
 ### 11.6 相关主题
 
-- [Go 与信号处理](./Go与信号处理.md)：SIGTERM、SIGINT、优雅关闭
-- [Go 与配置管理](./Go与配置管理.md)：viper、envconfig、环境变量优先级
-- [Go 与日志](./Go与日志.md)：zap、zerolog、结构化日志
-- [Go 与正则表达式](./Go与正则表达式.md)：regexp、RE2、模式匹配
+- Go 与信号处理：SIGTERM、SIGINT、优雅关闭
+- Go 与配置管理：viper、envconfig、环境变量优先级
+- Go 与日志：zap、zerolog、结构化日志
+- Go 与正则表达式：regexp、RE2、模式匹配
 
 ---
 

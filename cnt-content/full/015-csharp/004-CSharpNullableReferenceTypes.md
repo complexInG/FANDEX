@@ -8,10 +8,10 @@ description: 把 NullReferenceException 消灭在编译期：可空注解与流�
 author: fanquanpp
 updated: '2026-08-29'
 related:
-  - 'csharp/002-CBasicSyntax'
+  - 'csharp/002-CSharpBasicSyntax'
   - 'csharp/036-ValueTypeReferenceType'
 prerequisites:
-  - 'csharp/002-CBasicSyntax'
+  - 'csharp/002-CSharpBasicSyntax'
 ---
 
 # 可空引用类型 NRT

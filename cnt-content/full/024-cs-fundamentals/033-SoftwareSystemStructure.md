@@ -8,7 +8,7 @@ description: 软件体系结构：架构风格、质量属性、架构评估与�
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'cs-fundamentals/031-ComputerShape'
+  - 'cs-fundamentals/031-ComputerGraphics'
   - 'cs-fundamentals/032-DesignPattern'
   - 'cs-fundamentals/034-HCI'
   - 'cs-fundamentals/035-ProgrammingLanguageTheory'

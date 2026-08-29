@@ -1,6 +1,6 @@
 ---
 order: 350
-title: 类型推断infer扩展
+title: 类型推断 infer 扩展
 module: 'typescript'
 category: 前端技术
 difficulty: advanced
@@ -14,7 +14,7 @@ related:
   - 'typescript/037-ConditionalMappedType'
 prerequisites: []
 ---
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 

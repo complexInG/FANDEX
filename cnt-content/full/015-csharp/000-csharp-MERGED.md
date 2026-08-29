@@ -11,23 +11,8 @@ related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：015-csharp/001-COverviewEnvSetup.md ============ -->
+<!-- ============ 文档分隔线：015-csharp/001-CSharpOverviewEnvSetup.md ============ -->
 
-
-## 0. 学习路径与阅读指南（先读这一节）
-
-本模块 43 篇文档不要按编号顺序读。零基础推荐路径：
-
-```text
-第 1 阶段（语法基础）：001 概述环境 → 002 基础语法 → 003 面向对象 → 004 泛型集合
-第 2 阶段（语言能力）：034 值类型引用类型 → 005/012 异步编程 → 006/011 LINQ
-第 3 阶段（平台与工程）：008 .NET 生态 → 009 测试工程化 → 021 EF Core → 022 依赖注入
-第 4 阶段（方向选择）：010/018 Unity 游戏 或 019 Blazor 或 020 MAUI → 综合练习
-```
-
-分层说明：前两阶段为【核心必读】；async 状态机（027）、委托事件底层（028）、GC 机制（033）、源生成器（017）为【进阶原理】；CLI/速查【用到再查】。
-
-> 一句话记住：先会类和 LINQ，再学异步与平台，最后按方向选框架做项目。
 # C# 概述与环境配置
 
 > 本文是 FANDEX C# 系列的开篇。我们将从语言的诞生背景、设计哲学、运行平台、生态构成，到本地环境的搭建与第一个可运行程序，全方位带你建立对 C# 与 .NET 的宏观认知。内容对标 MIT 6.0001、Stanford CS106X、CMU 15-110 等海外名校入门课程的教学严谨度，同时融入企业级工程实战经验，支持 0 基础自学。
@@ -1809,15 +1794,15 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 
 继续学习 C# 的下一站：
 
-- [基础语法](./基础语法.md) —— 类型、变量、运算符、控制流
-- [面向对象编程](./面向对象编程.md) —— 类、接口、继承、多态
-- [泛型与集合](./泛型与集合.md) —— `List<T>`、`Dictionary<K,V>`、泛型约束
-- [异步编程](./异步编程.md) —— Task、async/await、并行编程
-- [LINQ 与函数式编程](./LINQ与函数式编程.md) —— 查询表达式、Lambda
-- [值类型与引用类型](./值类型与引用类型.md) —— 栈与堆、装箱拆箱
-- [GC 代机制](./GC代机制.md) —— 分代回收、LOH、Server GC
-- [async-await 状态机](./async-await状态机.md) —— 编译器重写原理
-- [Span 与 Memory](./Span与Memory.md) —— 零拷贝编程
+- 基础语法 —— 类型、变量、运算符、控制流
+- 面向对象编程 —— 类、接口、继承、多态
+- 泛型与集合 —— `List<T>`、`Dictionary<K,V>`、泛型约束
+- 异步编程 —— Task、async/await、并行编程
+- LINQ 与函数式编程 —— 查询表达式、Lambda
+- 值类型与引用类型 —— 栈与堆、装箱拆箱
+- GC 代机制 —— 分代回收、LOH、Server GC
+- async-await 状态机 —— 编译器重写原理
+- Span 与 Memory —— 零拷贝编程
 
 ### 11.3 进阶书籍
 
@@ -1843,7 +1828,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 
 至此，我们对 C# 语言与 .NET 平台建立了宏观认知。从 Anders Hejlsberg 在 2000 年的设计哲学，到 2024 年 .NET 9 的 Native AOT、HybridCache、动态 PGO，C# 已经从一个 Windows-only 语言演化为覆盖云、桌面、移动、游戏、IoT 的全栈平台。
 
-下一步，请进入 [基础语法](./基础语法.md)，开始动手编写真正的 C# 代码。记住：
+下一步，请进入 基础语法，开始动手编写真正的 C# 代码。记住：
 
 - **不要满足于"能跑"**：理解每行代码背后发生了什么。
 - **不要怕出错**：错误是最好的老师，善用异常堆栈与调试器。
@@ -1855,10 +1840,7 @@ Console.WriteLine($"Downloaded {data.Length:N0} bytes in {sw.ElapsedMilliseconds
 
 *本文由 FANDEX 团队编写，最后更新于 2026-07-21。若有疑问或建议，欢迎在项目仓库提交 Issue。*
 
-<!-- ============ 文档分隔线：015-csharp/002-CBasicSyntax.md ============ -->
-
-
-
+<!-- ============ 文档分隔线：015-csharp/002-CSharpBasicSyntax.md ============ -->
 
 # C# 基础语法
 
@@ -3386,15 +3368,15 @@ Console.WriteLine(Eval(expr));   // 2
 
 ### 11.2 系列内交叉引用
 
-- [概述与环境配置](./概述与环境配置.md) —— C# 简史、.NET 生态、SDK 安装
-- [面向对象编程](./面向对象编程.md) —— 类、接口、继承、多态、抽象
-- [泛型与集合](./泛型与集合.md) —— `List<T>`、`Dictionary<K,V>`、泛型约束
-- [异步编程](./异步编程.md) —— Task、async/await、并行
-- [LINQ 与函数式编程](./LINQ与函数式编程.md) —— 查询表达式、Lambda
-- [值类型与引用类型](./值类型与引用类型.md) —— 栈与堆、装箱
-- [模式匹配](./模式匹配.md) —— 深入模式匹配
-- [记录类型](./记录类型.md) —— `record` 与不可变性
-- [记录类型与不可变性](./记录类型与不可变性.md) —— `with`、值相等
+- 概述与环境配置 —— C# 简史、.NET 生态、SDK 安装
+- 面向对象编程 —— 类、接口、继承、多态、抽象
+- 泛型与集合 —— `List<T>`、`Dictionary<K,V>`、泛型约束
+- 异步编程 —— Task、async/await、并行
+- LINQ 与函数式编程 —— 查询表达式、Lambda
+- 值类型与引用类型 —— 栈与堆、装箱
+- 模式匹配 —— 深入模式匹配
+- 记录类型 —— `record` 与不可变性
+- 记录类型与不可变性 —— `with`、值相等
 
 ### 11.3 进阶书籍
 
@@ -3415,7 +3397,7 @@ Console.WriteLine(Eval(expr));   // 2
 
 至此，你已经掌握了 C# 的基础语法：类型、变量、运算符、控制流、字符串、模式匹配、可空性、顶级语句。这些是后续学习面向对象、泛型、异步、LINQ 的基石。
 
-下一步，请进入 [面向对象编程](./面向对象编程.md)，开始学习如何用类、接口、继承来组织复杂业务逻辑。
+下一步，请进入 面向对象编程，开始学习如何用类、接口、继承来组织复杂业务逻辑。
 
 记住：
 
@@ -4250,11 +4232,7 @@ List<int> list = [1, 2, 3];
 int[] arr = [..list, 4, 5];
 ```
 
-<!-- ============ 文档分隔线：015-csharp/003-COOP.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：015-csharp/003-CSharpOOP.md ============ -->
 
 ## 历史动机与背景
 
@@ -6482,8 +6460,6 @@ C# 的面向对象编程融合了经典 OOP 范式与现代函数式思想，提
 
 <!-- ============ 文档分隔线：015-csharp/004-CSharpNullableReferenceTypes.md ============ -->
 
-
-
 # 可空引用类型 NRT
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -6497,8 +6473,6 @@ C# 的面向对象编程融合了经典 OOP 范式与现代函数式思想，提
 - 存量项目渐进启用策略
 
 <!-- ============ 文档分隔线：015-csharp/005-CGenericCollection.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -9328,9 +9302,6 @@ int[] combined = [..a, ..b, 7, 8];
 
 <!-- ============ 文档分隔线：015-csharp/006-CAsyncProgramming.md ============ -->
 
-
-
-
 # C# 异步编程
 
 > 本篇是 FANDEX C# 系列的第五篇。我们将系统讲解 C# 异步编程：从 APM/EAP/TAP 模型演化到 async/await，深入剖析状态机转换、SynchronizationContext、ConfigureAwait、ValueTask、Channel、IAsyncEnumerable 等。内容对标 MIT 6.005（Software Construction）、Stanford CS110（Principles of Computer Systems）、CMU 15-440（Distributed Systems）课程教学严谨度，支持 0 基础自学，同时覆盖企业级实战要点。
@@ -11303,14 +11274,14 @@ await Task.WhenAll(consumers);
 
 ### 11.2 系列交叉引用
 
-- FANDEX C# 系列：[概述与环境配置](./概述与环境配置.md)
-- FANDEX C# 系列：[基础语法](./基础语法.md)
-- FANDEX C# 系列：[面向对象编程](./面向对象编程.md)
-- FANDEX C# 系列：[泛型与集合](./泛型与集合.md)
-- FANDEX C# 系列：[LINQ 与函数式编程](./LINQ与函数式编程.md)
-- FANDEX C# 系列：[高级特性](./高级特性.md)
-- FANDEX C# 系列：[.NET 平台与生态](./NET平台与生态.md)
-- FANDEX C# 系列：[测试与工程化](./测试与工程化.md)
+- FANDEX C# 系列：概述与环境配置
+- FANDEX C# 系列：基础语法
+- FANDEX C# 系列：面向对象编程
+- FANDEX C# 系列：泛型与集合
+- FANDEX C# 系列：LINQ 与函数式编程
+- FANDEX C# 系列：高级特性
+- FANDEX C# 系列：.NET 平台与生态
+- FANDEX C# 系列：测试与工程化
 
 ### 11.3 进阶书籍
 
@@ -11341,11 +11312,7 @@ await Task.WhenAll(consumers);
 
 > **结语**：C# 的 `async/await` 是过去十年最重要的语言特性之一，它让异步编程变得直观而高效。掌握状态机转换、同步上下文、`ValueTask` 优化、`Channel`、`IAsyncEnumerable` 等，将帮助你构建高吞吐、低延迟、易维护的现代 .NET 应用。下一篇我们将讲解 .NET 平台与生态：Runtime、BCL、NuGet、DI、配置、日志、ASP.NET Core、EF Core、MAUI 等。
 
-<!-- ============ 文档分隔线：015-csharp/007-CLINQFunctionalProgramming.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：015-csharp/007-CSharpLINQFunctionalProgramming.md ============ -->
 
 ## 1. 历史动机与背景
 
@@ -13714,10 +13681,8 @@ LINQ 是 C# 语言演进中最具革命性的特性之一，它不仅统一了�
 
 下一章节将深入探讨 C# 异步编程模型，async/await 的本质也是一种 Monad 风格的组合，与本章内容存在深层联系。
 
-<!-- ============ 文档分隔线：015-csharp/008-CAdvancedFeature.md ============ -->
+<!-- ============ 文档分隔线：015-csharp/008-CSharpAdvancedFeature.md ============ -->
 
-
-> 阅读建议：本篇为【进阶原理】，建议先掌握 002-006 基础。
 ## 1. 历史动机与背景
 
 ### 1.1 元编程的演进脉络
@@ -16257,8 +16222,6 @@ partial class Service
 
 <!-- ============ 文档分隔线：015-csharp/009-CSharpYieldIteratorStateMachine.md ============ -->
 
-
-
 # yield 迭代器状态机
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -16271,10 +16234,7 @@ partial class Service
 - try/catch 限制与 try/finally
 - 自定义迭代器与 LINQ 衔接
 
-<!-- ============ 文档分隔线：015-csharp/010-CNET.md ============ -->
-
-
-
+<!-- ============ 文档分隔线：015-csharp/010-CSharpDotNet.md ============ -->
 
 # C# .NET 平台与生态
 
@@ -18519,15 +18479,15 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 
 ### 11.2 系列交叉引用
 
-- FANDEX C# 系列：[概述与环境配置](./概述与环境配置.md)
-- FANDEX C# 系列：[基础语法](./基础语法.md)
-- FANDEX C# 系列：[面向对象编程](./面向对象编程.md)
-- FANDEX C# 系列：[泛型与集合](./泛型与集合.md)
-- FANDEX C# 系列：[LINQ 与函数式编程](./LINQ与函数式编程.md)
-- FANDEX C# 系列：[异步编程](./异步编程.md)
-- FANDEX C# 系列：[高级特性](./高级特性.md)
-- FANDEX C# 系列：[测试与工程化](./测试与工程化.md)
-- FANDEX C# 系列：[游戏开发与 Unity](./游戏开发与Unity.md)
+- FANDEX C# 系列：概述与环境配置
+- FANDEX C# 系列：基础语法
+- FANDEX C# 系列：面向对象编程
+- FANDEX C# 系列：泛型与集合
+- FANDEX C# 系列：LINQ 与函数式编程
+- FANDEX C# 系列：异步编程
+- FANDEX C# 系列：高级特性
+- FANDEX C# 系列：测试与工程化
+- FANDEX C# 系列：游戏开发与 Unity
 
 ### 11.3 进阶书籍
 
@@ -18563,11 +18523,7 @@ builder.Services.AddHostedService<BackgroundTaskWorker>();
 
 > **结语**：.NET 平台历经 20 余年演化，从闭源 Windows-only 的 .NET Framework 到开源跨平台的 .NET 9，已成为企业级应用开发的主流平台之一。掌握 Runtime、BCL、DI、配置、日志、中间件、ASP.NET Core、EF Core、MAUI 等核心组件，将帮助你构建高性能、可维护、跨平台的现代应用。下一篇我们将讲解测试与工程化：单元测试、集成测试、CI/CD、代码质量工具等。
 
-<!-- ============ 文档分隔线：015-csharp/011-CTestEngineering.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：015-csharp/011-CSharpTestEngineering.md ============ -->
 
 ## 1. 历史动机与演进脉络
 
@@ -20792,10 +20748,7 @@ Intel Core i7-12700H CPU 2.30GHz, 1 CPU, 20 logical and 14 physical cores
 
 本文档遵循 MIT/Stanford/CMU 教学水准编写，涵盖 C# 测试与工程化的核心概念、形式化定义、性能分析、工程实践与案例研究。所有代码示例均经过工程化设计，可直接应用于生产环境。建议读者结合官方文档与实际项目，逐步掌握现代 .NET 工程化能力。
 
-<!-- ============ 文档分隔线：015-csharp/012-CGameDevUnity.md ============ -->
-
-
-
+<!-- ============ 文档分隔线：015-csharp/012-CSharpGameDevUnity.md ============ -->
 
 ## 1. Unity 中的 C#
 
@@ -21462,9 +21415,6 @@ public class EnemyAI : MonoBehaviour
 | **Burst 编译** | 数学运算、热路径代码            | 2-10x 加速     |
 
 <!-- ============ 文档分隔线：015-csharp/013-LINQDeep.md ============ -->
-
-
-
 
 ## 一、学习目标
 
@@ -22765,8 +22715,6 @@ var top10 = orders
 - **F# 查询表达式**：F# 的 `query { ... }` 计算表达式与 C# LINQ 的对比。
 
 <!-- ============ 文档分隔线：015-csharp/014-AsyncProgrammingDetailed.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -25545,8 +25493,6 @@ catch (Exception ex)
 
 <!-- ============ 文档分隔线：015-csharp/015-PatternMatching.md ============ -->
 
-
-
 ## 一、学习目标
 
 本文以 MIT 6.102 *Software Construction*、Stanford CS193p、CMU 15-150 *Functional Programming* 的模式匹配教学水准为参照，对 C# 模式匹配（Pattern Matching）进行系统性、形式化与工程化的深度剖析。阅读完毕后，读者应能达成以下 Bloom 认知层级目标：
@@ -27327,13 +27273,6 @@ string Classify(object obj) => obj switch {
 2. **中级开发者**：学习属性模式、位置模式、逻辑模式，应用于领域建模；
 3. **高级开发者**：研究列表模式、递归模式、活动模式，构建 DSL 与规则引擎；
 4. **架构师**：用模式匹配设计穷尽性强的领域模型，结合源生成器实现编译期检查。
-
-后续推荐阅读：
-
-- 《记录类型与不可变性》：与模式匹配配合的最佳搭档
-- 《源生成器》：编译期代码生成与模式匹配结合
-- 《表达式树》：理解模式匹配的编译期翻译
-- 《F# 入门》：体验完整穷尽性检查与活动模式
 ## 类型模式
 
 **基本写法：is 类型检查**
@@ -27865,9 +27804,6 @@ if (rect is ( > 5, > 5))
 ```
 
 <!-- ============ 文档分隔线：015-csharp/016-CRecordType.md ============ -->
-
-
-
 
 # C# 记录类型
 
@@ -30213,9 +30149,6 @@ public record DatabaseService(string ConnectionString)
 
 <!-- ============ 文档分隔线：015-csharp/017-GenericCovarianceContravariance.md ============ -->
 
-
-
-
 ## 一、概述
 
 泛型（Generics）是 C# 2.0 在 2005 年引入的核心特性，它允许开发者编写"类型参数化"的代码——即代码中的某些类型在编写时不指定，而在使用时才确定。这一特性从根本上改变了 .NET 生态系统的代码复用方式，让类型安全与代码复用得以兼得。协变（Covariance）与逆变（Contravariance）则进一步定义了泛型类型参数之间的子类型关系如何传递，是写出灵活、可组合泛型代码的关键。
@@ -31987,8 +31920,6 @@ A: struct 是值类型，赋值会发生复制，型变的"引用兼容"语义�
 A: 对值类型，泛型避免装箱，性能提升 5-10 倍。对引用类型，泛型避免类型转换，提升约 2 倍。
 
 <!-- ============ 文档分隔线：015-csharp/018-SpanMemory.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -35999,9 +35930,6 @@ Span<int> ints = MemoryMarshal.Cast<byte, int>(bytes);
 
 <!-- ============ 文档分隔线：015-csharp/019-SourceGenerator.md ============ -->
 
-
-
-
 # C# 源生成器深度解析
 
 > 源生成器（Source Generators）是 C# 9 引入的编译时代码生成技术，标志着 C# 元编程范式从"运行期反射"向"编译期生成"的根本性转移。本文档系统梳理源生成器的语言动机、Roslyn API、增量生成器（Incremental Generators）、设计模式与工程实践，达到 MIT 6.035、Stanford CS243 同等编译器教学水准。
@@ -37472,10 +37400,7 @@ context.RegisterPostInitializationOutput(ctx =>
 *作者：fanquanpp*
 *版本：v2.0（金标准升级版）*
 
-<!-- ============ 文档分隔线：015-csharp/020-CUnityGameDev.md ============ -->
-
-
-
+<!-- ============ 文档分隔线：015-csharp/020-CSharpUnityGameDev.md ============ -->
 
 ## 一、学习目标
 
@@ -39379,11 +39304,7 @@ LoadDataAsync().Forget();
 - OpenUPM（社区包）：<https://openupm.com/>
 - Unity Discord 社区：<https://discord.com/invite/unity>
 
-<!-- ============ 文档分隔线：015-csharp/021-CBlazor.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：015-csharp/021-CSharpBlazor.md ============ -->
 
 ## 1. 历史动机与演进脉络
 
@@ -42702,11 +42623,7 @@ app.MapHealthChecks("/health");
 
 本文档遵循 MIT/Stanford/CMU 教学水准编写，涵盖 Blazor 框架的核心概念、形式化定义、性能分析、工程实践与案例研究。所有代码示例均经过工程化设计，可直接应用于生产环境。建议读者结合官方文档与实践项目，逐步掌握 Blazor 这一现代化的 Web 开发框架。
 
-<!-- ============ 文档分隔线：015-csharp/022-CMAUI.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：015-csharp/022-CSharpMAUI.md ============ -->
 
 ## 1. 历史动机与背景
 
@@ -44658,11 +44575,7 @@ public class SimpleViewModel : BaseViewModel
 
 下一章节将深入探讨 C# 面向对象编程，作为理解 MAUI 控件继承体系与设计模式的基础。
 
-<!-- ============ 文档分隔线：015-csharp/023-CEFCore.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：015-csharp/023-CSharpEFCore.md ============ -->
 
 ## 历史动机与背景
 
@@ -47098,10 +47011,7 @@ EF Core 作为 .NET 生态的主流 ORM 框架，通过对象与关系的自动�
 
 掌握 EF Core 的关键不在于记住 API，而在于理解其工作机制（翻译、追踪、并发、事务）与权衡取舍（开发效率 vs 性能、抽象 vs 控制、便捷 vs 安全）。现代 .NET 开发者应当在享受 ORM 便利的同时，保持对底层 SQL 的理解，在性能敏感场景果断切换到 Dapper 或原生 ADO.NET，构建既高效又可维护的数据访问层。
 
-<!-- ============ 文档分隔线：015-csharp/024-CDependencyInjection.md ============ -->
-
-
-
+<!-- ============ 文档分隔线：015-csharp/024-CSharpDependencyInjection.md ============ -->
 
 ## 一、概述
 
@@ -49193,10 +49103,7 @@ var host = Host.CreateDefaultBuilder(args)
 | `InvalidOperationException: Cannot consume scoped service from singleton` | Captive Dependency | 改用 IServiceScopeFactory |
 | `InvalidOperationException: No service for type` | 类型不匹配 | 检查注册的接口与实现 |
 
-<!-- ============ 文档分隔线：015-csharp/025-CAPI.md ============ -->
-
-
-
+<!-- ============ 文档分隔线：015-csharp/025-CSharpAPI.md ============ -->
 
 ## 一、概述
 
@@ -51139,9 +51046,6 @@ Minimal API 反映了 .NET 平台的几个趋势：
 Minimal API 是现代 .NET Web 开发的入门首选。掌握它，你不仅能快速构建生产级 API，更能深入理解 ASP.NET Core 的中间件管道、端点路由、DI 系统等核心机制。无论你是初学者还是有经验的 .NET 开发者，Minimal API 都值得纳入你的工具箱。
 
 <!-- ============ 文档分隔线：015-csharp/026-C12C13NewFeatures.md ============ -->
-
-
-
 
 ## 一、概述
 
@@ -53603,8 +53507,6 @@ C# 语言持续演进，每个版本都让代码更简洁、更安全、更高�
 
 <!-- ============ 文档分隔线：015-csharp/027-CSharpReflection.md ============ -->
 
-
-
 ## 一、概述
 
 反射（Reflection）是 C# 与 .NET 运行时（CLR，Common Language Runtime）提供给开发者的一种"元编程"能力：在程序运行时，动态地获取类型信息、访问类型成员、创建类型实例、调用方法、读写属性与字段，甚至于在运行时动态生成新的类型。表达式树（Expression Trees）则是一种将代码以数据结构形式表示的技术，它将原本不可见的"代码逻辑"转化为可在运行时遍历、分析、修改、编译的结构化对象，是 LINQ、EF Core、动态查询等高级特性的底层基石。
@@ -55880,9 +55782,6 @@ foreach (var item in span) { }
 ```
 
 <!-- ============ 文档分隔线：015-csharp/028-LINQDeferredImmediate.md ============ -->
-
-
-
 
 # LINQ 延迟与立即执行：从迭代器到表达式树的全景解析
 
@@ -58317,9 +58216,6 @@ var shanghaiUsers = lookup["Shanghai"];
 
 <!-- ============ 文档分隔线：015-csharp/029-AsyncAwaitStateMachine.md ============ -->
 
-
-
-
 # async/await 状态机：从语法糖到执行模型的全景解析
 
 > 本章对标 MIT 6.1020（Software Construction）与 Stanford CS110L（Safety in Systems Programming）的异步教学深度，结合 ECMA-334 规范、CLR RFC 与 .NET Runtime 源码，将 `async/await` 的语法糖层层剥开，揭示编译器生成的状态机、`AsyncMethodBuilder`、`IAsyncStateMachine`、`MoveNext`、`SynchronizationContext`、`TaskScheduler` 与 `ConfigureAwait` 之间的协作机制。
@@ -60452,7 +60348,6 @@ await Task.WhenAll(tasks);
 > **本章小结**：`async/await` 是 C# 语言对状态机模式的语法糖封装。理解 `MoveNext` 状态转移、`AsyncMethodBuilder` 与 awaiter 的契约、`SynchronizationContext` 的捕获与 `ConfigureAwait` 的作用，是从"会写 async"到"写出高性能 async"的关键。在 .NET 9 时代，`ValueTask`、`IAsyncEnumerable`、`Channel` 构成了完整的异步工具箱，结合 `dotnet-trace`、`BenchmarkDotNet` 等工具，可以构建高吞吐、低延迟的企业级异步系统。
 
 <!-- ============ 文档分隔线：015-csharp/030-DelegateEventUnderlying.md ============ -->
-
 
 > 阅读建议：底层原理为【进阶原理】，建议先掌握委托与事件基本用法。
 ## 1. 历史动机与发展脉络
@@ -63528,8 +63423,6 @@ Func<string, Task<string>> fetch = async url => await httpClient.GetStringAsync(
 
 <!-- ============ 文档分隔线：015-csharp/031-ReflectionAndFeatureApplication.md ============ -->
 
-
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 .NET Framework 1.0（2002）：反射的诞生
@@ -65716,10 +65609,6 @@ Type[] types = asm.GetTypes();
 ```
 
 <!-- ============ 文档分隔线：015-csharp/032-EFCoreMigrationOptimization.md ============ -->
-
-
-
-
 
 # Entity-Framework-Core迁移与优化
 
@@ -68429,10 +68318,6 @@ public class Cat : Animal
 ```
 
 <!-- ============ 文档分隔线：015-csharp/033-AspNetCoreMiddlewarePipeline.md ============ -->
-
-
-
-
 
 # ASP-NET-Core中间件管道
 
@@ -71881,9 +71766,6 @@ validator.Validate(app);  // 若顺序错误，抛异常
 
 <!-- ============ 文档分隔线：015-csharp/034-DILifecycle.md ============ -->
 
-
-
-
 ## 一、学习目标
 
 本文以 MIT 6.170 *Software Studio*、Stanford CS193k *Distributed Systems*、CMU 17-447 *Software Engineering for Startups* 的依赖注入与服务生命周期教学水准为参照，对 ASP.NET Core 的 DI 容器与三种服务生命周期进行系统性、形式化与工程化的深度剖析。阅读完毕后，读者应能达成以下 Bloom 认知层级目标：
@@ -73577,17 +73459,7 @@ public sealed class RetryingUserServiceDecorator(
 3. **高级开发者**：研究 Keyed Services、AOP、多租户 DI；
 4. **架构师**：设计 DI 容器策略、性能优化、AOT 友好方案。
 
-后续推荐阅读：
-
-- 《ASP.NET Core 中间件管道》：理解请求管线与 scope 创建
-- 《Entity Framework Core 迁移与优化》：DbContext 生命周期深入
-- 《GC 代机制》：DI 与 GC 的交互
-- 《值类型与引用类型》：DI 容器与对象图构造的内存影响
-
 <!-- ============ 文档分隔线：015-csharp/035-GCGeneration.md ============ -->
-
-
-
 
 # .NET GC 代机制：从弱分代假说到内存回收的全景解析
 
@@ -75449,8 +75321,6 @@ public sealed class GcMonitor : IDisposable
 
 <!-- ============ 文档分隔线：015-csharp/036-ValueTypeReferenceType.md ============ -->
 
-
-
 ## 一、学习目标
 
 本文以 MIT 6.102 *Software Construction*、Stanford CS193、CMU 15-410 *Operating Systems* 的内存模型教学水准为参照，对 C# 值类型与引用类型进行系统性的形式化与工程化剖析。阅读完毕后，读者应能达成以下 Bloom 认知层级目标：
@@ -77164,10 +77034,6 @@ ReadOnlySpan<byte> headerBytes = MemoryMarshal.AsBytes(
 ```
 
 <!-- ============ 文档分隔线：015-csharp/037-RecordTypeImmutability.md ============ -->
-
-
-
-
 
 # 记录类型与不可变性
 
@@ -79144,8 +79010,6 @@ flowchart TD
 
 <!-- ============ 文档分隔线：015-csharp/038-OOP.md ============ -->
 
-
-
 ## 类的定义
 
 **基本写法：私有字段声明**
@@ -79676,8 +79540,6 @@ Console.WriteLine($"{name}, {age}");
 
 <!-- ============ 文档分隔线：015-csharp/039-LinqAsync.md ============ -->
 
-
-
 ## LINQ 查询
 
 **基本写法：Where 过滤**
@@ -79986,8 +79848,6 @@ dict.TryAdd("a", 1);
 ```
 
 <!-- ============ 文档分隔线：015-csharp/040-LinqAdvanced.md ============ -->
-
-
 
 ## 投影与展开
 
@@ -80368,8 +80228,6 @@ var item = list.FirstOrDefault(x => x.Id == 5, fallback);
 ```
 
 <!-- ============ 文档分隔线：015-csharp/041-FileAndStream.md ============ -->
-
-
 
 ## 文件路径
 
@@ -80767,8 +80625,6 @@ await using var fs = new FileStream("a.txt", FileMode.Open);
 
 <!-- ============ 文档分隔线：015-csharp/042-JsonSerialization.md ============ -->
 
-
-
 ## 基本序列化
 
 **基本写法：序列化为 JSON**
@@ -81102,8 +80958,6 @@ string json = JsonSerializer.Serialize(user, MyContext.Default.User);
 
 <!-- ============ 文档分隔线：015-csharp/043-RegularExpression.md ============ -->
 
-
-
 ## 基本匹配
 
 **基本写法：静态匹配**
@@ -81381,8 +81235,6 @@ Match m = Regex.Match("a1", @"\d(?=[a-z])"); // 数字后跟字母
 ```
 
 <!-- ============ 文档分隔线：015-csharp/044-DotnetCli.md ============ -->
-
-
 
 ## SDK 与环境
 
@@ -81783,8 +81635,6 @@ dotnet sn -k key.snk
 
 <!-- ============ 文档分隔线：015-csharp/045-NetworkingHttp.md ============ -->
 
-
-
 ## HttpClient 基础
 
 **基本写法：创建 HttpClient**
@@ -82144,8 +81994,6 @@ var client = new HttpClient(handler);
 
 <!-- ============ 文档分隔线：015-csharp/046-PInvokeNativeInterop.md ============ -->
 
-
-
 # P/Invoke 与原生互操作
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -82160,8 +82008,6 @@ var client = new HttpClient(handler);
 
 <!-- ============ 文档分隔线：015-csharp/047-DotnetPerformanceBenchmarking.md ============ -->
 
-
-
 # .NET 性能测量与优化
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -82173,4 +82019,3 @@ var client = new HttpClient(handler);
 - 常见优化清单（Span/池化/异步）
 - GC 与内存诊断工具
 - 解读结果避免伪优化
-

@@ -2850,29 +2850,29 @@ done:
 
 以下文档属于 algorithm 模块，与本篇构成知识序列：
 
-- [algorithm/动态规划状态压缩](../动态规划状态压缩) — 状压 DP 的专题深化，覆盖 TSP、棋盘覆盖、SOS DP、排列型 DP
-- [algorithm/递归与回溯](../递归与回溯) — DP 的上游思维方法，理解"暴力递归 → 记忆化 → 递推"的演进基础
-- [algorithm/贪心算法](../贪心算法) — 与 DP 互为对照，理解贪心选择性质与最优子结构的分界
-- [algorithm/分治算法](../分治算法) — DP 的"姐妹范式"，理解子问题独立性与重叠性的本质差异
-- [algorithm/图算法](../图算法) — Floyd-Warshall、Bellman-Ford 等基于 DP 的图算法专题
-- [algorithm/Floyd-Warshall算法](../Floyd-Warshall算法) — 经典多源最短路径 DP，本文第 14 章对比分析的延伸
-- [algorithm/算法分析基础与学习路线](../算法分析基础与学习路线) — 复杂度分析的预备知识，理解伪多项式时间等概念
-- [algorithm/字符串算法](../字符串算法) — KMP、Trie、AC 自动机与字符串 DP 的协同应用
-- [algorithm/数组与动态数组](../数组与动态数组) — 一维 DP 的底层数据结构
-- [algorithm/栈与队列](../栈与队列) — 单调队列优化 DP 的基础数据结构
+- algorithm/动态规划状态压缩 — 状压 DP 的专题深化，覆盖 TSP、棋盘覆盖、SOS DP、排列型 DP
+- algorithm/递归与回溯 — DP 的上游思维方法，理解"暴力递归 → 记忆化 → 递推"的演进基础
+- algorithm/贪心算法 — 与 DP 互为对照，理解贪心选择性质与最优子结构的分界
+- algorithm/分治算法 — DP 的"姐妹范式"，理解子问题独立性与重叠性的本质差异
+- algorithm/图算法 — Floyd-Warshall、Bellman-Ford 等基于 DP 的图算法专题
+- algorithm/Floyd-Warshall算法 — 经典多源最短路径 DP，本文第 14 章对比分析的延伸
+- algorithm/算法分析基础与学习路线 — 复杂度分析的预备知识，理解伪多项式时间等概念
+- algorithm/字符串算法 — KMP、Trie、AC 自动机与字符串 DP 的协同应用
+- algorithm/数组与动态数组 — 一维 DP 的底层数据结构
+- algorithm/栈与队列 — 单调队列优化 DP 的基础数据结构
 
 ### 20.2 跨模块横向扩展
 
 DP 的数学基础与工程应用涉及多个学科，以下关联模块提供必要的横向知识：
 
-- [cs-fundamentals/离散数学](../../cs-fundamentals/离散数学) — 归纳法、递归关系、组合数学的形式化基础，DP 正确性证明的数学工具
-- [math/离散数学](../../math/离散数学) — 离散数学的另一入口，含生成函数与递推关系的高级技巧
-- [math/概率论与数理统计](../../math/概率论与数理统计) — 随机 DP、马尔可夫决策过程（MDP）的理论基础
-- [cs-fundamentals/算法导论精读](../../cs-fundamentals/算法导论精读) — CLRS 教材的逐章精读笔记，可与本文档交叉学习
-- [ai/强化学习基础](../../ai/强化学习基础) — Bellman 方程在 RL 中的泛化，Q-Learning 与 Policy Gradient 的起点
-- [ai/马尔可夫决策过程](../../ai/马尔可夫决策过程) — MDP 的形式化定义与求解，理解 DP 在 AI 中的核心地位
-- [bioinformatics/序列比对](../../bioinformatics/序列比对) — Smith-Waterman 与 Needleman-Wunsch 的生物学背景与扩展算法
-- [finance/量化交易基础](../../finance/量化交易基础) — DP 在期权定价、最优停止问题中的金融应用深化
+- cs-fundamentals/离散数学 — 归纳法、递归关系、组合数学的形式化基础，DP 正确性证明的数学工具
+- math/离散数学 — 离散数学的另一入口，含生成函数与递推关系的高级技巧
+- math/概率论与数理统计 — 随机 DP、马尔可夫决策过程（MDP）的理论基础
+- cs-fundamentals/算法导论精读 — CLRS 教材的逐章精读笔记，可与本文档交叉学习
+- ai/强化学习基础 — Bellman 方程在 RL 中的泛化，Q-Learning 与 Policy Gradient 的起点
+- ai/马尔可夫决策过程 — MDP 的形式化定义与求解，理解 DP 在 AI 中的核心地位
+- bioinformatics/序列比对 — Smith-Waterman 与 Needleman-Wunsch 的生物学背景与扩展算法
+- finance/量化交易基础 — DP 在期权定价、最优停止问题中的金融应用深化
 
 ### 20.3 进阶论文与开放资源
 

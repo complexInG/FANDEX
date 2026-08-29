@@ -1,6 +1,6 @@
 ---
 order: 640
-title: TypeScript tsc 编译命令速查
+title: TypeScript tsc 编译命令速查手册
 module: 'typescript'
 category: 前端技术
 difficulty: beginner

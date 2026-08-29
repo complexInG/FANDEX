@@ -1584,7 +1584,7 @@ console.log(img.currentSrc); // 当前加载的 URL
 
 ## 扩展学习
 
-- 格式对比：AVIF/WebP/JPEG 的选择见 `javascript/044-ImageOptimization`（JavaScript 模块）；
+- 格式对比：AVIF/WebP/JPEG 的选择见 `javascript/044-FetchApiWebStreams`（JavaScript 模块）；
 - 性能指标：`javascript/050-CoreWebVitalsAndPerformanceMetrics` 中 LCP/CLS 的测量；
 - 懒加载原理：`javascript/042-WebAPIBrowserInterface` 中 IntersectionObserver 实现；
 - 工程化：`html5/037-CriticalRenderingPathAndResourceLoading` 资源加载策略；

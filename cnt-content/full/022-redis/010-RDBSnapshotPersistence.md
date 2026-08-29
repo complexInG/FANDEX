@@ -1,6 +1,6 @@
 ---
 order: 100
-title: RDB快照持久化
+title: RDB 快照持久化
 module: 'redis'
 category: 数据库
 difficulty: advanced

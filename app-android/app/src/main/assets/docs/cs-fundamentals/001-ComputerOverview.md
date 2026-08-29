@@ -402,15 +402,7 @@ graph LR
     compiler --> design-patterns
 ```
 
-### 6.2 推荐阅读路径
-
-```
-路径A (系统方向):  overview -> architecture -> os -> network
-路径B (语言方向):  overview -> discrete-math -> compiler -> design-patterns
-路径C (全栈方向):  overview -> architecture -> discrete-math -> os -> compiler -> network -> design-patterns
-```
-
-### 6.3 与其他模块的交叉引用
+### 6.2 与其他模块的交叉引用
 
 | 本模块章节      | 外部模块引用                                  | 交叉原因                     |
 | --------------- | --------------------------------------------- | ---------------------------- |

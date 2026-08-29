@@ -10,19 +10,10 @@ updated: '2026-08-03'
 related:
   - 'typescript/007-BasicTypeSystem'
   - 'typescript/008-InterfaceTypeAlias'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
   - 'typescript/016-ClassDecorator'
 prerequisites: []
 ---
-
-## 0. 本篇定位与阅读建议（先读这一节）
-
-本文是 TS 模块的**第 009 课（函数与泛型）**，正文小节从 1 开始。
-
-- 前置：先读完 006-BasicTypeSystem 的类型基础与 007-InterfaceTypeAlias 的接口/类型别名，理解"类型是什么"再学"如何抽象行为"。
-- 推荐路径：读到 **8. 最佳实践** 即可完成本课目标；**9. 代码示例**快速浏览；文件末尾（`## 函数声明` 之后）是**速查区**，按需查阅。
-- 文件最末的 **TypeScript 5.x 新特性** 是进阶预览：有项目经验后再读，第一遍直接跳过。
-- 本文与 006-BasicTypeSystem / 007-InterfaceTypeAlias 的衔接：006-BasicTypeSystem 介绍了泛型推断的入门形态、007-InterfaceTypeAlias 介绍了泛型接口与泛型别名，本文把这些线索汇总成完整体系（约束、默认值、泛型类、工具类型）。
 
 ## 1. 函数重载 (Function Overloading)
 

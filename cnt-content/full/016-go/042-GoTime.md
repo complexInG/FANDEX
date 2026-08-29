@@ -1,6 +1,6 @@
 ---
 order: 420
-title: Go与时间
+title: Go 与时间
 module: 'go'
 category: 后端技术
 difficulty: beginner

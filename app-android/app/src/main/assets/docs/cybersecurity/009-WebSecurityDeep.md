@@ -1,6 +1,6 @@
 ---
 order: 90
-title: Web安全深度
+title: Web 安全深度
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: advanced

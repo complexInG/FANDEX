@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'postgresql/022-StoredProcedureAndFunction'
   - 'postgresql/023-TriggerEventTrigger'
-  - 'postgresql/025-FDWFDW'
+  - 'postgresql/025-FDWForeignDataWrapper'
   - 'postgresql/026-StreamingReplication'
 prerequisites:
   - 'postgresql/001-OverviewInstallConfig'

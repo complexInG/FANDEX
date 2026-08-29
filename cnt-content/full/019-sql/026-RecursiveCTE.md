@@ -1,6 +1,6 @@
 ---
 order: 260
-title: 递归CTE
+title: 递归 CTE
 module: 'sql'
 category: 数据库
 difficulty: advanced

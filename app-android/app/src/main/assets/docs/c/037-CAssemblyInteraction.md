@@ -1,6 +1,6 @@
 ---
 order: 370
-title: C与汇编交互
+title: C 与汇编交互
 module: 'c'
 category: 计算机科学
 difficulty: advanced

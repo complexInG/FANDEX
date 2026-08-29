@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-06-14'
 related:
   - 'c/009-EnumTypedef'
-  - 'c/010-TheLinuxProgrammingInterface'
+  - 'c/010-MultiFileCompilation'
   - 'c/012-FunctionPointerCallback'
   - 'c/013-VarargsFunction'
 prerequisites:

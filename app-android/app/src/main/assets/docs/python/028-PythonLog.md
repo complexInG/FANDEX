@@ -1,6 +1,6 @@
 ---
 order: 280
-title: Python与日志
+title: Python 与日志
 module: 'python'
 category: 后端技术
 difficulty: beginner

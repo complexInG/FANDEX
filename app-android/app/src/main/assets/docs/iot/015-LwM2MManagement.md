@@ -1,6 +1,6 @@
 ---
 order: 150
-title: LwM2M设备管理
+title: LwM2M 设备管理
 module: 'iot'
 category: 云与基础设施
 difficulty: intermediate

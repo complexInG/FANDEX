@@ -1,6 +1,6 @@
 ---
 order: 910
-title: 字符集与排序规则 语法速查手册
+title: 字符集与排序规则语法速查手册
 module: 'mysql'
 category: 数据库
 difficulty: beginner

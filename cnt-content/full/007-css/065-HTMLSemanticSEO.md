@@ -1,6 +1,6 @@
 ---
 order: 650
-title: HTML语义化与SEO优化
+title: HTML 语义化与 SEO 优化
 module: 'css'
 category: 前端技术
 difficulty: intermediate

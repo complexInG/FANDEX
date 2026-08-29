@@ -1,6 +1,6 @@
 ---
 order: 70
-title: CSRF攻击
+title: CSRF 攻击
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: intermediate

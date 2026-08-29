@@ -8,14 +8,14 @@ description: 泛型类型系统、约束、协变逆变、List/Dictionary/HashSe
 author: fanquanpp
 updated: '2026-07-21'
 related:
-  - 'csharp/002-CBasicSyntax'
-  - 'csharp/003-COOP'
+  - 'csharp/002-CSharpBasicSyntax'
+  - 'csharp/003-CSharpOOP'
   - 'csharp/006-CAsyncProgramming'
-  - 'csharp/007-CLINQFunctionalProgramming'
+  - 'csharp/007-CSharpLINQFunctionalProgramming'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
-  - 'csharp/002-CBasicSyntax'
-  - 'csharp/003-COOP'
+  - 'csharp/001-CSharpOverviewEnvSetup'
+  - 'csharp/002-CSharpBasicSyntax'
+  - 'csharp/003-CSharpOOP'
 ---
 
 ## 历史动机与背景

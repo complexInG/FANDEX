@@ -1,6 +1,6 @@
 ---
 order: 40
-title: 高级SQL与扩展
+title: 高级 SQL 与扩展
 module: 'postgresql'
 category: 数据库
 difficulty: advanced

@@ -1,6 +1,6 @@
 ---
 order: 150
-title: Hooks原理
+title: Hooks 原理
 module: 'react'
 category: 前端技术
 difficulty: advanced

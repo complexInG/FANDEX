@@ -6,14 +6,12 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：046-tailwind/001-TailwindOverview.md ============ -->
-
-
 
 ## 0. 从一盒乐高说起
 
@@ -269,11 +267,7 @@ v3 要在配置文件里手动填写 `content` 数组，告诉框架去哪里扫
 
 Tailwind CSS 是一盒乐高积木：不提供成品组件，只提供单条 CSS 声明对应的原子工具类，让你在 HTML 里直接拼出设计——省去命名、杜绝死代码、响应式内联，而 Tailwind 4 用 CSS-first 配置和 Rust 引擎把这些体验推到新高度。
 
-
-
 <!-- ============ 文档分隔线：046-tailwind/002-InstallConfig.md ============ -->
-
-
 
 ## 0. 装修开工前的准备
 
@@ -612,11 +606,7 @@ npx @tailwindcss/upgrade
 
 安装 Tailwind 4 只有两步：装包（`tailwindcss` + 对应构建插件）与写一行 `@import "tailwindcss";`——剩下的扫描范围用 `@source` 按需补充，配置从 `tailwind.config.js` 搬进了 CSS。
 
-
-
 <!-- ============ 文档分隔线：046-tailwind/003-UtilityCore.md ============ -->
-
-
 
 ## 0. 工具箱里的成套扳手
 
@@ -960,11 +950,7 @@ v4 在 4.2 版本还新增了 mauve（灰紫）、olive（橄榄）、mist（雾
 
 工具类就是成套扳手：按"属性前缀 + 刻度值"的规律从颜色、间距、排版、边框、圆角、阴影、滤镜七大族里挑选组合，状态切换靠 `hover:` 等前缀，刻度的例外用任意值与 `@utility` 补充。
 
-
-
 <!-- ============ 文档分隔线：046-tailwind/004-LayoutFlexGrid.md ============ -->
-
-
 
 ## 0. 摆积木的排布学问
 
@@ -1388,11 +1374,7 @@ flowchart TB
 
 一维排布用 Flex（容器管方向与对齐、项目管伸缩），二维排布用 Grid（容器管行列轨道、项目管跨列跨行），兄弟间距用 `gap`、块级居中用 `mx-auto`、悬浮层用 `relative + absolute + z-*`。
 
-
-
 <!-- ============ 文档分隔线：046-tailwind/005-ThemeCustomization.md ============ -->
-
-
 
 ## 0. 先打个比方：装修前先出"设计图纸"
 
@@ -1730,11 +1712,7 @@ function applyTheme(name) {
 
 **设计令牌 = 网站的装修设计图纸；`@theme` 声明令牌，一个变量同时变身"CSS 变量 + 全套工具类"，改一处、全站生效。**
 
-
-
 <!-- ============ 文档分隔线：046-tailwind/006-ResponsiveDark.md ============ -->
-
-
 
 ## 0. 先打个比方：给"变形金刚"准备多套衣服
 
@@ -2034,11 +2012,7 @@ Tailwind 的变体（断点前缀、状态前缀、暗色前缀）可以像积�
 
 **响应式 = "移动优先"断点闸门（`sm:`/`md:`/`lg:` 只是自动包一层媒体查询）；暗色 = `dark:` 变体（默认听系统，`@custom-variant` 后听 `.dark` 类）；二者都是"环境条件 + 类名前缀"的语法糖。**
 
-
-
 <!-- ============ 文档分隔线：046-tailwind/007-ComponentReuse.md ============ -->
-
-
 
 ## 0. 先打个比方：从"预制菜"到"中央厨房"
 
@@ -2357,11 +2331,7 @@ export function Button({ variant, size, className, children }) {
 
 **复用三板斧：组件封装管结构（框架项目首选）、`@apply` 管纯 CSS 沉淀、设计令牌管全局取值；工程化收尾用 `cva + cn()` 管变体和类名冲突——先定方案，再写代码。**
 
-
-
 <!-- ============ 文档分隔线：046-tailwind/008-V4Features.md ============ -->
-
-
 
 ## 0. 先打个比方：汽车界的"年度改款"
 
@@ -2683,3 +2653,44 @@ npx @tailwindcss/upgrade
 ## 13. 一句话记忆
 
 **v4 = 换发动机（Rust 的 Oxide，快 100 倍）+ 换中控（配置搬进 CSS 的 @theme）+ 全系标配（容器查询、OKLCH、新语法全家桶）——"改款"之后，功能更强、上手更简单。**
+
+<!-- ============ 文档分隔线：046-tailwind/009-TailwindAnimationTransition.md ============ -->
+
+# 动画与过渡
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- transition 工具类
+- animation 与关键帧
+- 新版本动画特性概览
+- 条件动画与状态切换
+- 性能与可访问性（prefers-reduced-motion）
+
+<!-- ============ 文档分隔线：046-tailwind/010-TailwindPluginsForms.md ============ -->
+
+# 插件与表单
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- @tailwindcss/forms
+- @tailwindcss/typography
+- 自定义插件 API
+- 插件与主题联动
+
+<!-- ============ 文档分隔线：046-tailwind/011-TailwindContainerQueries.md ============ -->
+
+# 容器查询
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- 容器查询概念
+- @container 工具类
+- 命名容器与嵌套
+- 与媒体查询对比
+- 组件化实践

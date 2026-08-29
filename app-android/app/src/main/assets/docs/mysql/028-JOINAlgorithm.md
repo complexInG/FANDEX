@@ -1,6 +1,6 @@
 ---
 order: 280
-title: JOIN算法
+title: JOIN 算法
 module: 'mysql'
 category: 数据库
 difficulty: advanced

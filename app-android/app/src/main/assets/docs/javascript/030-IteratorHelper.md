@@ -1,6 +1,6 @@
 ---
 order: 300
-title: 迭代器帮助器
+title: 迭代器辅助方法
 module: 'javascript'
 category: 前端技术
 difficulty: advanced
@@ -1311,10 +1311,10 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 ### 11.4 相关 FANDEX 文档
 
-- [索引数据库](./索引数据库) — IDB cursor 是天然的迭代器，与 helpers 配合处理大数据集。
-- [时间API](./时间API) — Temporal 对象可迭代，配合 helpers 实现日期范围遍历。
-- [Promise构造器](./Promise构造器) — AsyncIterator 的异步链式调用基础。
-- [Records与Tuples](./Records与Tuples) — 不可变数据与惰性求值的组合。
+- 索引数据库 — IDB cursor 是天然的迭代器，与 helpers 配合处理大数据集。
+- 时间API — Temporal 对象可迭代，配合 helpers 实现日期范围遍历。
+- Promise构造器 — AsyncIterator 的异步链式调用基础。
+- Records与Tuples — 不可变数据与惰性求值的组合。
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 order: 600
-title: C++20概念
+title: C++20 概念
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced

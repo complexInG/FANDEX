@@ -8,7 +8,7 @@ description: text、tspan、textPath、文字锚点、字体属性与可访问�
 author: fanquanpp
 updated: '2026-07-18'
 related:
-  - 'svg/005-SVGPathPathDetailed'
+  - 'svg/005-SVGPathDetailed'
   - 'svg/007-SVGColorFill'
   - 'svg/012-SVGSymbolReuse'
 prerequisites:

@@ -1,6 +1,6 @@
 ---
 order: 370
-title: 云计算 Azure 资源组与 VM
+title: Azure 资源组与 VM
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

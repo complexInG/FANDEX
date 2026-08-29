@@ -1,6 +1,6 @@
 ---
 order: 290
-title: Networking iptables 防火墙
+title: iptables 防火墙
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

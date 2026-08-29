@@ -4,7 +4,7 @@ title: 标准库与 npm 兼容
 module: 'deno'
 category: 后端技术
 difficulty: intermediate
-description: jsr:@std、npm:、node: 三种导入来源与 deno.json 依赖管理。
+description: 'jsr:@std、npm:、node: 三种导入来源与 deno.json 依赖管理。'
 author: fanquanpp
 updated: '2026-08-29'
 related:

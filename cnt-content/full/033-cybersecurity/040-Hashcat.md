@@ -1,6 +1,6 @@
 ---
 order: 400
-title: Cybersecurity hashcat 密码破解
+title: hashcat 密码破解
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

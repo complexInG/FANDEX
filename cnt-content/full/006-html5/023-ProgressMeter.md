@@ -1,6 +1,6 @@
 ---
 order: 230
-title: progress与meter
+title: progress 与 meter
 module: 'html5'
 category: 前端技术
 difficulty: beginner

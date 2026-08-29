@@ -1,6 +1,6 @@
 ---
 order: 370
-title: Go与配置管理
+title: Go 与配置管理
 module: 'go'
 category: 后端技术
 difficulty: intermediate

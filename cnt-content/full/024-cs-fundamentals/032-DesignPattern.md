@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'cs-fundamentals/030-AIFundamentals'
-  - 'cs-fundamentals/031-ComputerShape'
+  - 'cs-fundamentals/031-ComputerGraphics'
   - 'cs-fundamentals/033-SoftwareSystemStructure'
   - 'cs-fundamentals/034-HCI'
 prerequisites:

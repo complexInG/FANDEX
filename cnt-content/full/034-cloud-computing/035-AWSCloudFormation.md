@@ -1,6 +1,6 @@
 ---
 order: 350
-title: 云计算 AWS CloudFormation
+title: AWS CloudFormation
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

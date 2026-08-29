@@ -1,6 +1,6 @@
 ---
 order: 270
-title: KeepAlive缓存与生命周期
+title: KeepAlive 缓存与生命周期
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

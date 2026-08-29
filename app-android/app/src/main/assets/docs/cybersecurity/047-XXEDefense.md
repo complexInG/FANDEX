@@ -1,6 +1,6 @@
 ---
 order: 470
-title: Cybersecurity XXE 防御与检测
+title: XXE 防御与检测
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

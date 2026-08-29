@@ -1,6 +1,6 @@
 ---
 order: 270
-title: Ansible-Playbook配置管理
+title: Ansible Playbook 配置管理
 module: 'devops'
 category: 云与基础设施
 difficulty: intermediate

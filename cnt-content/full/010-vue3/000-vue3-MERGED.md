@@ -6,14 +6,12 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：010-vue3/001-OverviewEnv.md ============ -->
-
-
 
 > 本节为增量补充，帮助你选择 Vue 与配套工具链版本。
 
@@ -322,11 +320,7 @@ createApp(App)
   .mount('#app');
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/002-Vue3QuickStartGuide.md ============ -->
-
-
 
 ## 1. 环境搭建
 
@@ -632,10 +626,7 @@ const counterStore = useCounterStore();
 6. **性能优化**：使用 `v-memo`、`v-once` 等指令优化渲染性能
    通过本快速入门指南，你已经了解了 Vue3 的基本使用方法。接下来可以深入学习各个核心概念和高级特性。
 
-
-
 <!-- ============ 文档分隔线：010-vue3/003-Vue3TemplateSyntax.md ============ -->
-
 
 ## 1. 插值表达式
 
@@ -1305,10 +1296,7 @@ function update() {
 <span v-pre>{{ this will not be compiled }}</span>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/004-Vue3DirectiveSystem.md ============ -->
-
 
 ## 1. 指令概述
 
@@ -2192,10 +2180,7 @@ Vue3 的指令系统提供了丰富的功能，从基本的条件渲染、列表
 <button @click="onClick">点击</button>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/005-TeleportSuspense.md ============ -->
-
 
 ## 1. Teleport
 
@@ -2620,10 +2605,7 @@ const items = await fetch('/api/items').then(r => r.json());
 </template>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/006-API.md ============ -->
-
 
 ## 1. 组合式 API 概述 | Composition API Overview
 
@@ -3434,11 +3416,7 @@ if (slots.header) {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/007-ProvideInject.md ============ -->
-
-
 
 # Provide 与 Inject | Dependency Injection in Vue 3
 
@@ -6883,10 +6861,7 @@ console.log(isDark.value);   // true / false
 toggleTheme();
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/008-CustomDirectiveAdvanced.md ============ -->
-
 
 ## 1. 指令钩子
 
@@ -7340,10 +7315,7 @@ const app = createApp(App);
 app.directive('ripple', vRipple);
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/009-TransitionAnimation.md ============ -->
-
 
 ## 1. Transition 组件
 
@@ -7777,10 +7749,7 @@ const toggle = () => { isA.value = !isA.value; };
 </style>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/010-Vue3CompileOptimization.md ============ -->
-
 
 ### SSR 优化
 
@@ -8900,11 +8869,7 @@ const Async = defineAsyncComponent({
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/011-Vue3SSR.md ============ -->
-
-
 
 # Vue 3 服务端渲染 | Server-Side Rendering in Vue 3
 
@@ -12298,10 +12263,7 @@ const props = defineProps(['error']);
 </template>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/012-LifecycleHook.md ============ -->
-
 
 ## 1. 生命周期概述
 
@@ -12946,10 +12908,7 @@ function useInterval(callback: () => void, delay: number) {
 | renderTracked | onRenderTracked |
 | renderTriggered | onRenderTriggered |
 
-
-
 <!-- ============ 文档分隔线：010-vue3/013-Vue3TestStrategy.md ============ -->
-
 
 ## 1. 测试工具
 
@@ -13475,11 +13434,7 @@ describe('Counter', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/014-Vue3WebComponents.md ============ -->
-
-
 
 # Vue3 与 Web Components | Vue3 and Web Components Interoperability
 
@@ -15281,11 +15236,7 @@ function App() {
 
 *本文档对标 MIT 6.170 Software Studio、Stanford CS142 Web Applications、CMU 17-437 Engineering of Web Applications 课程水准，旨在为 Vue 3 开发者提供系统化、工程化的 Web Components 互操作参考。*
 
-
-
 <!-- ============ 文档分隔线：010-vue3/015-Vue3PerformancePractice.md ============ -->
-
-
 
 # Vue3 性能优化实践 | Vue3 Performance Optimization in Practice
 
@@ -18296,10 +18247,7 @@ const count = ref(0);
 const state = reactive({ list: [] });
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/016-ReactiveSystem.md ============ -->
-
 
 ## 1. 响应式系统概述 | Reactive System Overview
 
@@ -19128,11 +19076,7 @@ set.add(1);           // 触发更新
 set.has(1);           // true
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/017-CustomHook.md ============ -->
-
-
 
 ## 1. 自定义 Hook 概述
 
@@ -19542,10 +19486,7 @@ export function useSearch(props: { query: string }) {
 4. **灵活组合**：composable之间可以互相调用
 5. **类型安全**：使用泛型提供完整TypeScript支持
 
-
-
 <!-- ============ 文档分隔线：010-vue3/018-ComponentSystem.md ============ -->
-
 
 ## 1. 组件系统概述 | Component System Overview
 
@@ -20639,10 +20580,7 @@ const childRef = useTemplateRef('childRef');
 </script>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/019-TypeScriptIntegration.md ============ -->
-
 
 ## 1. TypeScript 集成概述 | TypeScript Integration Overview
 
@@ -21791,10 +21729,7 @@ defineExpose({ selectedUser });
 </template>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/020-PiniaStateManagementDetailed.md ============ -->
-
 
 ## 1. Pinia 概述
 
@@ -22686,10 +22621,7 @@ function handleBatchUpdate() {
 </template>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/021-PluginDevelopment.md ============ -->
-
 
 ## 1. 插件基础
 
@@ -23480,10 +23412,7 @@ toast.error('网络错误');
 toast.show('自定义', 'warning');
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/022-ComputedCacheWatchTiming.md ============ -->
-
 
 ## 1. computed 缓存机制
 
@@ -23965,10 +23894,7 @@ function useFetchData(url: Ref<string>) {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/023-VueRouterDetailed.md ============ -->
-
 
 ## 1. Vue Router 概述
 
@@ -24856,10 +24782,7 @@ router.afterEach((to) => {
 export default router;
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/024-CompositionAPIAdvantageScene.md ============ -->
-
 
 ## 1. 两种 API 对比
 
@@ -25218,10 +25141,7 @@ const theme = inject('theme', 'light');
 </template>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/025-CustomComposableWrapper.md ============ -->
-
 
 ## 1. Composable 设计原则
 
@@ -25805,12 +25725,7 @@ export function useBreakpoint() {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/026-TeleportPortalApp.md ============ -->
-
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -26292,11 +26207,7 @@ Teleport 的核心一句话：DOM 位置可变，逻辑归属不变。理解这�
 <!-- 结果：a, b -->
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/027-KeepAliveCacheLifecycle.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -27034,11 +26945,7 @@ onActivated(async () => {
 </script>
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/028-AsyncComponentSuspense.md ============ -->
-
-
 
 # 异步组件与 Suspense | Async Components and Suspense in Vue 3
 
@@ -30284,10 +30191,7 @@ const Chart = loadAsync('@/components/Chart.vue');
 const Editor = loadAsync('@/components/Editor.vue');
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/029-PiniaPersistencePlugin.md ============ -->
-
 
 ## 1. 安装与配置
 
@@ -30763,12 +30667,7 @@ store.$patch(state => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/030-VueRouterNavigationGuard.md ============ -->
-
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -31237,11 +31136,7 @@ export default {
 | `false`              | 取消导航 |
 | 路由对象             | 重定向   |
 
-
-
 <!-- ============ 文档分隔线：010-vue3/031-VuePerformanceDetailed.md ============ -->
-
-
 
 ## 1. 响应式优化
 
@@ -31331,11 +31226,7 @@ Vue 3 编译器自动优化：
 - 块级树（Block Tree）
 - 静态属性提升
 
-
-
 <!-- ============ 文档分隔线：010-vue3/032-PerformanceOptimization.md ============ -->
-
-
 
 ## 1. 性能优化概述 | Performance Optimization Overview
 
@@ -31867,10 +31758,7 @@ const users = ref(
 Vue3 应用的性能优化是一个持续的过程，需要从多个方面入手，包括渲染性能、响应式性能、网络性能和构建优化等。通过本章节的学习，你已经了解了 Vue3 应用性能优化的基本方法和最佳实践。
 在实际开发中，要根据应用的具体情况，选择合适的优化策略，同时要定期监控应用的性能，不断优化和改进。只有这样，才能构建出性能优异、用户体验良好的 Vue3 应用。
 
-
-
 <!-- ============ 文档分隔线：010-vue3/033-Vue3AdvancedComponentFeature.md ============ -->
-
 
 ## 1. 动态组件
 
@@ -33121,11 +33009,7 @@ const formCtx = inject(FormKey);
 formCtx?.setField('username', 'Tom');
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/034-Vue3ProjectExampleBlog.md ============ -->
-
-
 
 | 文章详情   | Markdown 渲染、目录导航、阅读进度 |
 | ---------- | --------------------------------- |
@@ -33840,11 +33724,7 @@ const emit = defineEmits<{ (e: 'select', id: number): void }>();
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/035-Vue3TheoryKnowledge.md ============ -->
-
-
 
 Object.defineProperty(obj, key, {
 enumerable: true,
@@ -34171,10 +34051,7 @@ export function render(_ctx) {
 | effect         | 响应式副作用             | track 收集依赖，trigger 触发更新 |
 | computed       | 懒计算 + 缓存            | 依赖变化时标记 dirty，访问时重算 |
 
-
-
 <!-- ============ 文档分隔线：010-vue3/036-Vue3ViteBuildConfig.md ============ -->
-
 
 ## 创建 Vue 项目
 
@@ -34632,10 +34509,7 @@ base: '/app/'
 build: { outDir: 'dist' }
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/037-Vue3NewFeatures3435.md ============ -->
-
 
 ## Vue 3.4 defineModel
 
@@ -35049,11 +34923,7 @@ npm install vue@3.5 vue-router pinia
 # 大部分 API 向后兼容
 ```
 
-
-
 <!-- ============ 文档分隔线：010-vue3/038-ComponentLibraryEngineering.md ============ -->
-
-
 
 ## 概述
 
@@ -35174,10 +35044,7 @@ vue
 组件库工程化没有玄学：目录按组件拆、构建用库模式、样式走变量、发布守语义化版本。
 从第一个 Button 开始就按这个骨架走，后续加组件只是"复制目录 + 导出"的重复劳动。
 
-
-
 <!-- ============ 文档分隔线：010-vue3/039-VueEcosystemVersionMap.md ============ -->
-
 
 ## 概述
 

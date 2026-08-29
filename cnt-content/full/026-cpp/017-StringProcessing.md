@@ -8,8 +8,8 @@ description: std::string与字符串视图
 author: fanquanpp
 updated: '2026-06-14'
 related:
-  - 'cpp/015-COOPBasics'
-  - 'cpp/016-CSTL'
+  - 'cpp/015-CppOOPBasics'
+  - 'cpp/016-CppSTL'
   - 'cpp/018-FileIOFileSystem'
   - 'cpp/019-ExceptionSecurity'
 prerequisites:

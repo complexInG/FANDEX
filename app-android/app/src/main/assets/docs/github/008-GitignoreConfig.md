@@ -1,6 +1,6 @@
 ---
 order: 80
-title: Gitignore配置
+title: Gitignore 配置
 module: 'github'
 category: 工具链
 difficulty: beginner

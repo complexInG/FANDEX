@@ -1,6 +1,6 @@
 ---
 order: 330
-title: React与PWA
+title: React 与 PWA
 module: 'react'
 category: 前端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 110
-title: PL-SQL与存储过程
+title: PL/SQL 与存储过程
 module: 'sql'
 category: 数据库
 difficulty: advanced

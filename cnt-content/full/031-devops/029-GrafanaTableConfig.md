@@ -1,6 +1,6 @@
 ---
 order: 290
-title: Grafana仪表盘配置
+title: Grafana 仪表盘配置
 module: 'devops'
 category: 云与基础设施
 difficulty: intermediate

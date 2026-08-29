@@ -1,6 +1,6 @@
 ---
 order: 640
-title: MVCC快照读与当前读
+title: MVCC 快照读与当前读
 module: 'mysql'
 category: 数据库
 difficulty: advanced

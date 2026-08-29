@@ -1,6 +1,6 @@
 ---
 order: 430
-title: Go与正则表达式
+title: Go 与正则表达式
 module: 'go'
 category: 后端技术
 difficulty: intermediate

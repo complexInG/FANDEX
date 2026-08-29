@@ -1,6 +1,6 @@
 ---
 order: 360
-title: Python与CI-CD
+title: Python 与 CI/CD
 module: 'python'
 category: 后端技术
 difficulty: intermediate

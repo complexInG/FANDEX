@@ -7,10 +7,15 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,7 +42,9 @@ import kotlinx.serialization.json.Json
  * 基于 WebView + 内置 mermaid.min.js（assets/mermaid/）：
  * - 完全离线渲染，无网络依赖
  * - 主题跟随应用深浅色（dark / neutral）
- * - 渲染完成后由 JS 回报实际高度，WebView 自适应
+ * - 初始按宽度适配，支持双指捏合缩放、单指横向平移、双击切换适配与 1:1（见 index.html）
+ * - 渲染完成后由 JS 按自然尺寸回报高度，WebView 自适应，超宽/超高图不再被压缩遮挡
+ * - 容器样式对齐 web 端 .mermaid-figure：边框卡 + 左侧强调竖条 + 小字 caption
  * - 渲染失败时回退展示图表源码
  */
 @SuppressLint("SetJavaScriptEnabled")
@@ -58,7 +65,7 @@ fun MermaidDiagram(
 
     val bridge = remember {
         MermaidBridge(
-            { px -> mainHandler.post { contentHeightPx = px } },
+            { px -> mainHandler.post { if (px > 0) contentHeightPx = px } },
             { mainHandler.post { renderError = true } }
         )
     }
@@ -69,6 +76,7 @@ fun MermaidDiagram(
             settings.domStorageEnabled = true
             setBackgroundColor(android.graphics.Color.TRANSPARENT)
             isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
             addJavascriptInterface(bridge, "AndroidBridge")
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
@@ -88,8 +96,9 @@ fun MermaidDiagram(
         }
     }
 
+    // 高度随 JS 回报自适应；上限 4000dp 防御异常数据（超高层内容随页面滚动查看）
     val height = if (contentHeightPx > 0) {
-        with(density) { contentHeightPx.toDp() }.coerceIn(80.dp, 1600.dp)
+        with(density) { contentHeightPx.toDp() }.coerceIn(80.dp, 4000.dp)
     } else {
         220.dp
     }
@@ -99,7 +108,7 @@ fun MermaidDiagram(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(4.dp))
                 .background(extendedColors.codeBg)
                 .padding(12.dp)
         ) {
@@ -114,17 +123,41 @@ fun MermaidDiagram(
         return
     }
 
-    Box(
+    // 对齐 web 端 .mermaid-figure：边框卡 + 左侧 3dp 强调竖条 + caption
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(extendedColors.codeBg)
+            .clip(RoundedCornerShape(4.dp))
+            .background(extendedColors.bgElevated)
+            .border(1.dp, extendedColors.borderDefault)
     ) {
-        AndroidView(
-            factory = { webView },
+        Row(Modifier.fillMaxWidth().height(height)) {
+            Box(
+                modifier = Modifier
+                    .width(3.dp)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.primary)
+            )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            ) {
+                AndroidView(
+                    factory = { webView },
+                    modifier = Modifier.fillMaxWidth().height(height)
+                )
+            }
+        }
+        Text(
+            text = "MERMAID 图表 · 双指缩放 / 双击适配",
+            style = MaterialTheme.typography.labelSmall,
+            color = extendedColors.fgTertiary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(height)
+                .padding(horizontal = 12.dp, vertical = 6.dp)
         )
     }
 }

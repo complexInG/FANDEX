@@ -1,6 +1,6 @@
 ---
 order: 270
-title: Networking DNS 查询
+title: DNS 查询
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

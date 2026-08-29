@@ -11,18 +11,9 @@ related:
   - 'typescript/002-TypeScriptOverviewEnvSetup'
   - 'typescript/007-BasicTypeSystem'
   - 'typescript/010-FunctionGeneric'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
 prerequisites: []
 ---
-
-## 0. 本篇定位与阅读建议（先读这一节）
-
-本文是 TS 模块的**第 008 课（接口与类型别名）**，正文小节从 1 开始。
-
-- 前置：先读完 006-BasicTypeSystem 的类型基础，理解"类型是什么"再学"如何描述对象"。
-- 推荐路径：读到 **5. 最佳实践** 即可完成本课目标；**6. 代码示例**快速浏览；文件末尾（`## 接口定义` 之后）是**速查区**，按需查阅。
-- **3.6 条件类型**是进阶预览：第一遍可以跳过，008-FunctionGeneric 与 032-ConditionalTypeDistribute 会系统展开。
-- 本文 1.4（函数接口）与 4.5（泛型支持）只是"接口的两种特殊形态"，完整体系分别在 008-FunctionGeneric 的函数与泛型章节讲解。
 
 ## 1. 接口 (Interface)
 

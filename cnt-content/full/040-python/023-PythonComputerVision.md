@@ -1,6 +1,6 @@
 ---
 order: 230
-title: Python与计算机视觉
+title: Python 与计算机视觉
 module: 'python'
 category: 后端技术
 difficulty: intermediate

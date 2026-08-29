@@ -2897,13 +2897,13 @@ def kruskal_fixed(n, edges):
 
 以下 FANDEX 模块与本图算法文档存在强关联，建议结合学习：
 
-1. **[algorithm/动态规划](../动态规划/)**：图算法中大量使用 DP 思想，如 Floyd-Warshall、DAG 最长路径、TSP 状压 DP、Bellman-Ford 的迭代松弛本质上是 DP。
-2. **[algorithm/网络流](../网络流/)**：最大流（Ford-Fulkerson、Dinic、Push-Relabel）、最小割、二分图匹配（匈牙利算法、Hopcroft-Karp）、费用流是图算法的高级主题。
-3. **[algorithm/字符串算法](../字符串算法/)**：后缀自动机、AC 自动机等结构本质上是状态图上的算法，与图遍历、SCC 等技术相通。
-4. **[algorithm/搜索算法](../搜索算法/)**：BFS/DFS 是搜索算法的基础，A*、IDA*、双向 BFS 是图搜索的启发式扩展。
-5. **[algorithm/贪心算法](../贪心算法/)**：Dijkstra、Kruskal、Prim 均基于贪心策略，贪心选择性质与最优子结构是其正确性保证。
-6. **[algorithm/分治算法](../分治算法/)**：分治在图算法中应用较少，但最近点对、平面图判定等问题使用分治策略。
-7. **[math/离散数学](../../math/离散数学/)**：图论的形式化基础（集合、关系、二元关系、等价关系、偏序关系）来自离散数学。
+1. **algorithm/动态规划**：图算法中大量使用 DP 思想，如 Floyd-Warshall、DAG 最长路径、TSP 状压 DP、Bellman-Ford 的迭代松弛本质上是 DP。
+2. **algorithm/网络流**：最大流（Ford-Fulkerson、Dinic、Push-Relabel）、最小割、二分图匹配（匈牙利算法、Hopcroft-Karp）、费用流是图算法的高级主题。
+3. **algorithm/字符串算法**：后缀自动机、AC 自动机等结构本质上是状态图上的算法，与图遍历、SCC 等技术相通。
+4. **algorithm/搜索算法**：BFS/DFS 是搜索算法的基础，A*、IDA*、双向 BFS 是图搜索的启发式扩展。
+5. **algorithm/贪心算法**：Dijkstra、Kruskal、Prim 均基于贪心策略，贪心选择性质与最优子结构是其正确性保证。
+6. **algorithm/分治算法**：分治在图算法中应用较少，但最近点对、平面图判定等问题使用分治策略。
+7. **math/离散数学**：图论的形式化基础（集合、关系、二元关系、等价关系、偏序关系）来自离散数学。
 
 ### 17.2 进阶主题
 

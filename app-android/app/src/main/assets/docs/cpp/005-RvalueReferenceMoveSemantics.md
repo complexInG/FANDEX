@@ -10,18 +10,18 @@ updated: '2026-07-18'
 related:
   - 'cpp/007-SmartPointerDeepDive'
   - 'cpp/006-CppPointers'
-  - 'cpp/050-CCoreGuidelinesResourceManagement'
+  - 'cpp/050-CppCoreGuidelinesResourceManagement'
   - 'cpp/004-CppReferenceTypes'
   - 'cpp/009-TemplateMetaprogramming'
   - 'cpp/008-LambdaExpression'
-  - 'cpp/048-CSTLContainersIterators'
+  - 'cpp/048-CppSTLContainersIterators'
   - 'cpp/064-CppExceptionAndPerformance'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'
   - 'cpp/002-CppBasicSyntax'
   - 'cpp/006-CppPointers'
   - 'cpp/004-CppReferenceTypes'
-  - 'cpp/015-COOPBasics'
+  - 'cpp/015-CppOOPBasics'
 ---
 
 ## 第 1 章 学习目标与导论

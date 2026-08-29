@@ -1,6 +1,6 @@
 ---
 order: 340
-title: DevOps Helm 包管理命令
+title: Helm 包管理命令
 module: 'devops'
 category: 云与基础设施
 difficulty: beginner

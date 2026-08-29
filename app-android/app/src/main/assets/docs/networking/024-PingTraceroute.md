@@ -1,6 +1,6 @@
 ---
 order: 240
-title: Networking 连通性检测
+title: 连通性检测
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

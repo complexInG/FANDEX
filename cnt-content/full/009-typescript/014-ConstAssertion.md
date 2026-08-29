@@ -11,10 +11,10 @@ related:
   - 'typescript/013-TypeInferenceDeepDive'
   - 'typescript/051-SatisfiesOperator'
   - 'typescript/032-EnumAdvanced'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
 prerequisites:
   - 'typescript/007-BasicTypeSystem'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
 ---
 
 ## 0. 学习目标（可验证）

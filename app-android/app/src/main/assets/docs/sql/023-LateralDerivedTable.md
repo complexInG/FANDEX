@@ -1,6 +1,6 @@
 ---
 order: 230
-title: LATERAL派生表
+title: LATERAL 派生表
 module: 'sql'
 category: 数据库
 difficulty: advanced

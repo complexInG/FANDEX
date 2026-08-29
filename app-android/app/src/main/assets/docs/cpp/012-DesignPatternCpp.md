@@ -1,6 +1,6 @@
 ---
 order: 120
-title: 设计模式与C++
+title: 设计模式与 C++
 module: 'cpp'
 category: 计算机科学
 difficulty: intermediate
@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'cpp/023-ConstexprCompileTime'
   - 'cpp/024-NamespaceLinkage'
-  - 'cpp/026-COOPAdvanced'
+  - 'cpp/026-CppOOPAdvanced'
   - 'cpp/009-TemplateMetaprogramming'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'

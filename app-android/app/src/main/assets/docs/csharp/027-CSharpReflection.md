@@ -11,7 +11,7 @@ related:
   - 'csharp/028-LINQDeferredImmediate'
   - 'csharp/029-AsyncAwaitStateMachine'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 ## 一、概述

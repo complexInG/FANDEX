@@ -14,8 +14,8 @@ android {
         applicationId = "com.fandexpp.fandex"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -95,6 +95,9 @@ dependencies {
     implementation(libs.commonmark.ext.gfm.tables)
     implementation(libs.commonmark.ext.gfm.strikethrough)
     implementation(libs.commonmark.ext.task.list)
+
+    // LaTeX 数学公式离线渲染（块级 $$ 与行内 $，Android 适配版 JLatexMath）
+    implementation(libs.jlatexmath.android)
 
     // 协程
     implementation(libs.kotlinx.coroutines.android)

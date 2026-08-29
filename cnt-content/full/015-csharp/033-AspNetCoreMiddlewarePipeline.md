@@ -1,6 +1,6 @@
 ---
 order: 330
-title: ASP-NET-Core中间件管道
+title: ASP.NET Core 中间件管道
 module: 'csharp'
 category: 后端技术
 difficulty: advanced
@@ -13,7 +13,7 @@ related:
   - 'csharp/034-DILifecycle'
   - 'csharp/035-GCGeneration'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

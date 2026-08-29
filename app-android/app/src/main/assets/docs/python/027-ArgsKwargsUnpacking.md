@@ -1,6 +1,6 @@
 ---
 order: 270
-title: *args、**kwargs 与解包
+title: '*args、**kwargs 与解包'
 module: 'python'
 category: 后端技术
 difficulty: beginner

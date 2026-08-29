@@ -1,6 +1,6 @@
 ---
 order: 570
-title: VECTOR向量类型
+title: VECTOR 向量类型
 module: 'mysql'
 category: 数据库
 difficulty: advanced

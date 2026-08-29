@@ -1,6 +1,6 @@
 ---
 order: 370
-title: 交互式rebase
+title: 交互式 rebase
 module: 'git'
 category: 工具链
 difficulty: advanced

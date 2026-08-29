@@ -1,6 +1,6 @@
 ---
 order: 190
-title: Kotlin作用域函数
+title: Kotlin 作用域函数
 module: 'kotlin'
 category: 后端技术
 difficulty: beginner

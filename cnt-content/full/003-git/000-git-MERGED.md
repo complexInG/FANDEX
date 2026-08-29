@@ -6,13 +6,12 @@ category: 工具链
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：003-git/001-Git.md ============ -->
-
 
 ## 2. Git 概述
 
@@ -881,10 +880,7 @@ git worktree list
 git worktree remove ../feature-work
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/002-GitEnvConfigInit.md ============ -->
-
 
 ## 1. 什么是 Git
 
@@ -1698,10 +1694,7 @@ git config --global --edit
 git config --system --edit
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/003-GitBasicOperation.md ============ -->
-
 
 ## 1. Git 工作区、暂存区和本地仓库
 
@@ -2361,10 +2354,7 @@ git stash list;
 git cherry-pick abc1234;
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/004-GitBranchManagement.md ============ -->
-
 
 ## 2. 分支概述
 
@@ -3030,10 +3020,7 @@ git commit;
 git merge --abort;
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/005-GitRemoteRepoOperation.md ============ -->
-
 
 ## 2. 远程仓库概述
 
@@ -3662,11 +3649,7 @@ git push backup main;
 git pull backup main;
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/006-DistributedVCSPrinciple.md ============ -->
-
-
 
 ## 1. 分布式架构
 
@@ -3855,11 +3838,7 @@ git gc --aggressive
 | **社区规模**   | 最大            | 中等       | 小        |
 | **平台支持**   | GitHub/GitLab   | Bitbucket  | Launchpad |
 
-
-
 <!-- ============ 文档分隔线：003-git/007-ObjectModel.md ============ -->
-
-
 
 ## 1. Git 对象概述
 
@@ -4110,11 +4089,7 @@ git cat-file -s <hash>
 git cat-file <hash> | zlib-decompress
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/008-SHA1IntegrityCheck.md ============ -->
-
-
 
 ## 1. SHA-1 在 Git 中的作用
 
@@ -4294,11 +4269,7 @@ git fsck --full                 # 完整检查
 git fsck --connectivity-only    # 只检查连通性（更快）
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/009-ThreeTrees.md ============ -->
-
-
 
 ## 1. 三棵树模型
 
@@ -4524,10 +4495,7 @@ git commit --amend --no-edit    # 追加到上次提交
 git reset --hard HEAD           # 丢弃所有未提交的修改
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/010-GitDiffStagingOperation.md ============ -->
-
 
 ## 1. git diff 概述
 
@@ -5031,11 +4999,7 @@ git config --global alias.dw "diff --color-words";
 git config --global alias.dst "diff --stat";
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/011-GitRestoreFileOperation.md ============ -->
-
-
 
 ## 1. git restore
 
@@ -5229,10 +5193,7 @@ git config --global clean.requireForce true
 echo "important-data/" >> .gitignore
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/012-GitLogDetailed.md ============ -->
-
 
 ## 1. git log 基础
 
@@ -5562,10 +5523,7 @@ git log --numstat
 git log --shortstat
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/013-GitReflog.md ============ -->
-
 
 ## 1. reflog 概述
 
@@ -6017,10 +5975,7 @@ git reflog show stash
 git stash apply stash@{2}
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/014-GitBlame.md ============ -->
-
 
 ## 1. git blame 概述
 
@@ -6399,11 +6354,7 @@ git log -p abc1234 -- src/main.py
 git bisect start && git bisect bad HEAD && git bisect good abc1234
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/015-HEADPointerBranchEssence.md ============ -->
-
-
 
 ## 1. HEAD 指针
 
@@ -6598,10 +6549,7 @@ git log main..feature --oneline
 git merge-base main feature
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/016-GitHookGitLFS.md ============ -->
-
 
 ## 1. Git 钩子概述
 
@@ -7280,10 +7228,7 @@ git lfs prune --dry-run
 git lfs fetch --recent
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/017-MergeConflictResolution.md ============ -->
-
 
 ## 1. 冲突概述
 
@@ -7703,11 +7648,7 @@ git diff --check;
 git merge --abort;
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/018-GitMergetool.md ============ -->
-
-
 
 ## 1. mergetool 概述
 
@@ -7828,10 +7769,7 @@ git mergetool
 | **KDiff3**         | 跨平台      | 免费，自动合并          | 中   |
 | **P4Merge**        | 跨平台      | Perforce 免费           | 中   |
 
-
-
 <!-- ============ 文档分隔线：003-git/019-GitRebase.md ============ -->
-
 
 ## 1. rebase 概述
 
@@ -8274,10 +8212,7 @@ git commit --amend;
 git rebase --continue;
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/020-GitCherryPick.md ============ -->
-
 
 ## 1. cherry-pick 概述
 
@@ -8604,10 +8539,7 @@ git cherry -v main
 git cherry main feature
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/021-GitStash.md ============ -->
-
 
 ## 1. stash 概述
 
@@ -8862,11 +8794,7 @@ git stash branch hotfix-branch stash@{0}
 git stash -p
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/022-RemoteTrackingBranch.md ============ -->
-
-
 
 ## 1. 远程跟踪分支概述
 
@@ -9037,10 +8965,7 @@ git pull → 产生合并提交或 rebase
 git config --global pull.ff only
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/023-GitFlowGitHubFlow.md ============ -->
-
 
 ## 1. 分支模型概述
 
@@ -9562,10 +9487,7 @@ git push origin main
 git push origin develop
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/024-GitCommitAmend.md ============ -->
-
 
 ## 1. amend 概述
 
@@ -10074,11 +9996,7 @@ feat: add export feature
 git commit -m "feat: add export" -m "支持 CSV 与 JSON 两种格式导出"
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/025-GitReset.md ============ -->
-
-
 
 ## 1. reset 概述
 
@@ -10229,10 +10147,7 @@ git restore --staged file.txt  # 替代 git reset file.txt
 git restore file.txt           # 替代 git checkout -- file.txt
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/026-GitRevert.md ============ -->
-
 
 ## 1. revert 概述
 
@@ -10587,11 +10502,7 @@ git revert wrong-commit;
 git commit -m "revert: 回退错误提交，原因：...";
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/027-GitPrincipleObjectModel.md ============ -->
-
-
 
 ## 1. Git 概述
 
@@ -11345,10 +11256,7 @@ Git 是一个强大的版本控制系统，它的核心是基于对象模型的�
 - **持续学习**：关注 Git 的新特性和最佳实践
   通过不断学习和实践，你将能够熟练使用 Git，成为一名高效的开发者，为项目的成功做出贡献
 
-
-
 <!-- ============ 文档分隔线：003-git/028-TagManagement.md ============ -->
-
 
 ## 1. 标签概述
 
@@ -11689,10 +11597,7 @@ git config --global user.signingkey ~/.ssh/id_ed25519.pub;
 git checkout v1.0.0;
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/029-GitBisect.md ============ -->
-
 
 ## 1. bisect 概述
 
@@ -12037,10 +11942,7 @@ git show HEAD
 git diff v1.0.0 HEAD
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/030-GitSubmodule.md ============ -->
-
 
 ## 1. submodule 概述
 
@@ -12429,10 +12331,7 @@ git subtree add --prefix=lib/shared https://github.com/user/shared-lib.git main 
 git subtree pull --prefix=lib/shared https://github.com/user/shared-lib.git main --squash;
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/031-SparseCheckout.md ============ -->
-
 
 ## 1. sparse-checkout 概述
 
@@ -12863,10 +12762,7 @@ git config --get-all core.sparseCheckout
 git config core.sparseCheckoutCone
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/032-GitFormatPatch.md ============ -->
-
 
 ## 1. format-patch 概述
 
@@ -13097,11 +12993,7 @@ git reset --soft HEAD~1
 git reset --mixed HEAD~1
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/033-GitGrep.md ============ -->
-
-
 
 ## 1. git grep 概述
 
@@ -13229,10 +13121,7 @@ git grep -n "eval(\|innerHTML\|dangerouslySetInnerHTML" -- '*.js' '*.jsx' '*.ts'
 git diff HEAD~5..HEAD | git grep "^+.*TODO"
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/034-GitWorktree.md ============ -->
-
 
 ## 1. worktree 概述
 
@@ -13493,11 +13382,7 @@ git worktree add ../v1-compare v1.0.0;
 diff -r src/ ../v1-compare/src/;
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/035-GitGc.md ============ -->
-
-
 
 ## 1. gc 概述
 
@@ -13678,11 +13563,7 @@ git reflog expire --expire=now --all
 git gc --prune=now --aggressive
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/036-GitFlowGitHubFlowComparison.md ============ -->
-
-
 
 ## 1. Git Flow 工作流
 
@@ -13928,11 +13809,7 @@ flowchart TD
 4. **CI 必须通过**：PR 合并前必须通过所有自动化检查
 5. **部署自动化**：合并到 main 后自动触发部署流水线
 
-
-
 <!-- ============ 文档分隔线：003-git/037-InteractiveRebase.md ============ -->
-
-
 
 ## 1. 交互式 rebase 基础
 
@@ -14282,11 +14159,7 @@ git branch backup-before-rebase
 git reset --hard backup-before-rebase
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/038-GitRevertResetComparison.md ============ -->
-
-
 
 ## 1. 核心原理
 
@@ -14536,11 +14409,7 @@ git reflog
 git cherry-pick abc1234       # 逐个捡回需要的提交
 ```
 
-
-
 <!-- ============ 文档分隔线：003-git/039-CodeReviewBestPractice.md ============ -->
-
-
 
 ## 1. Code Review 的价值
 
@@ -14835,11 +14704,7 @@ jobs:
 | 无休止的讨论    | 在 PR 中争论设计决策 | 设计讨论应在 PR 之前完成     |
 | 只审查新代码    | 忽略上下文           | 审查者需理解变更的完整上下文 |
 
-
-
 <!-- ============ 文档分隔线：003-git/040-GitignoreDeepDive.md ============ -->
-
-
 
 ## 一句话理解
 
@@ -14931,11 +14796,7 @@ git config --global core.excludesfile ~/.gitignore_global
 把敏感文件挡在仓库门外。需要现成模板时，直接参考
 [github/gitignore](https://github.com/github/gitignore) 起步。
 
-
-
 <!-- ============ 文档分隔线：003-git/041-SignedCommitsAndSecurityPractices.md ============ -->
-
-
 
 ## 一句话理解
 

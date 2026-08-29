@@ -11,7 +11,7 @@ related:
   - 'cs-fundamentals/027-ComputerNetworkAdvanced'
   - 'cs-fundamentals/028-NetworkSecurity'
   - 'cs-fundamentals/030-AIFundamentals'
-  - 'cs-fundamentals/031-ComputerShape'
+  - 'cs-fundamentals/031-ComputerGraphics'
 prerequisites:
   - 'cs-fundamentals/001-ComputerOverview'
 ---

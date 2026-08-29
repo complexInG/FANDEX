@@ -1,6 +1,6 @@
 ---
 order: 160
-title: Lua与Redis脚本
+title: Lua 与 Redis 脚本
 module: 'lua'
 category: 后端技术
 difficulty: intermediate

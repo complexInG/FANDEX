@@ -1,6 +1,6 @@
 ---
 order: 600
-title: 断言
+title: 正则断言
 module: 'javascript'
 category: 前端技术
 difficulty: advanced

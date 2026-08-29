@@ -1,6 +1,6 @@
 ---
 order: 330
-title: DevOps kubectl 基础命令
+title: kubectl 基础命令
 module: 'devops'
 category: 云与基础设施
 difficulty: beginner

@@ -13,9 +13,6 @@ prerequisites: []
 
 <!-- ============ 文档分隔线：014-kotlin/001-KotlinOverviewEnvSetup.md ============ -->
 
-
-
-
 > 本节为增量补充，帮助你选择 Kotlin 版本。
 
 - Kotlin：2.4.10（2026-07-14）为当前稳定版；K2 编译器自 2.0 起为默认。新项目直接使用 2.x 最新稳定版。
@@ -2342,7 +2339,7 @@ fun main() {
 - **Kotlin Notebook**：交互式 Kotlin 笔记本
   - https://kotlinlang.org/docs/kotlin-notebook-overview.html
 
-### 11.5 实践项目建议
+### 11.4 实践项目建议
 
 完成本文档学习后，建议尝试以下项目巩固知识：
 
@@ -2352,7 +2349,7 @@ fun main() {
 - **KMP 共享库**：创建一个 KMP 项目，实现一个跨平台的 HTTP 客户端封装。
 - **DSL 设计**：为某个领域（如 SQL、HTML、配置）设计一个 Kotlin DSL。
 
-### 11.6 学习路径建议
+### 11.5 学习路径建议
 
 针对不同背景的学习者，推荐如下学习路径：
 
@@ -2380,30 +2377,20 @@ fun main() {
 4. 学习协程与异步编程。
 5. 实战：用 Ktor 构建一个 Web API。
 
-### 11.7 后续学习路线图
+### 11.6 相关 Kotlin 文档
 
-完成本文档与基础语法、类与对象、函数与 Lambda 的学习后，推荐按以下顺序进阶：
-
-1. **协程基础 → 协程进阶 → 协程异常处理 → 协程调度器与上下文**
-2. **Flow 冷流与 SharedFlow 与 StateFlow → Channel 与 BroadcastChannel**
-3. **空安全详解 → 扩展函数 → 密封类与代数数据类型**
-4. **泛型与类型系统 → 委托属性 → 内联类**
-5. **Kotlin 与 Spring / Ktor / Koin / Exposed / Compose**
-
-### 11.8 相关 Kotlin 文档
-
-- [基础语法](./基础语法.md)
-- [函数与 Lambda](./函数与Lambda.md)
-- [类与对象](./类与对象.md)
-- [协程基础](./协程基础.md)
-- [协程进阶](./协程进阶.md)
-- [空安全详解](./空安全详解.md)
-- [扩展函数](./扩展函数.md)
-- [密封类与代数数据类型](./密封类与代数数据类型.md)
-- [委托属性](./委托属性.md)
-- [Kotlin 跨平台](./Kotlin跨平台.md)
-- [DSL 与领域特定语言](./DSL与领域特定语言.md)
-- [测试与最佳实践](./测试与最佳实践.md)
+- 基础语法
+- 函数与 Lambda
+- 类与对象
+- 协程基础
+- 协程进阶
+- 空安全详解
+- 扩展函数
+- 密封类与代数数据类型
+- 委托属性
+- Kotlin 跨平台
+- DSL 与领域特定语言
+- 测试与最佳实践
 
 ---
 
@@ -2715,9 +2702,6 @@ launch { ch.send(2) }
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/002-KotlinBasicSyntax.md ============ -->
-
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -4256,8 +4240,6 @@ fun area(s: JShape): Double = when (s) {
 
 <!-- ============ 文档分隔线：014-kotlin/003-KotlinFunctionAndLambda.md ============ -->
 
-
-
 ## 1. 函数定义
 
 ### 1.1 基本函数
@@ -5090,8 +5072,6 @@ val nameLength = person.let { it.name.length };
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/004-KotlinClassObject.md ============ -->
-
-
 
 ## 1. 类定义
 
@@ -6191,8 +6171,6 @@ class Preference<T>(private val key: String, private val default: T) {
 
 <!-- ============ 文档分隔线：014-kotlin/005-KotlinDataClassDeepDive.md ============ -->
 
-
-
 # data class 详解
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -6206,8 +6184,6 @@ class Preference<T>(private val key: String, private val default: T) {
 - 与普通类/密封类的选择
 
 <!-- ============ 文档分隔线：014-kotlin/006-KotlinGenericTypeSystem.md ============ -->
-
-
 
 ## 1. 泛型基础
 
@@ -6970,8 +6946,6 @@ val nullable: Any? = null;
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/007-KotlinCollectionCoroutine.md ============ -->
-
-
 
 ## 1. 集合框架
 
@@ -8079,8 +8053,6 @@ val result = withTimeoutOrNull(1000) {
 
 <!-- ============ 文档分隔线：014-kotlin/008-KotlinCoroutineAdvanced.md ============ -->
 
-
-
 ## 1. 协程异常处理
 
 ### 1.1 异常传播
@@ -8864,8 +8836,6 @@ launch(CoroutineName("worker")) { }
 
 <!-- ============ 文档分隔线：014-kotlin/009-KotlinMultiplatform.md ============ -->
 
-
-
 ## 1. KMP 架构概述
 
 Kotlin Multiplatform (KMP) 是 JetBrains 推出的多平台开发方案，允许在平台间共享 Kotlin 代码，同时保留平台特定实现的能力。2024 年 Kotlin 2.1 正式将 KMP 标记为稳定版。
@@ -9595,9 +9565,6 @@ val iosArm64Main by getting { dependsOn(iosMain) }
 
 <!-- ============ 文档分隔线：014-kotlin/010-KotlinDSLDomainSpecificLanguage.md ============ -->
 
-
-
-
 ## 1. DSL 概述
 
 DSL（Domain-Specific Language，领域特定语言）是为特定领域设计的专用语言。Kotlin 的语法特性使其非常适合构建内部 DSL：
@@ -10090,9 +10057,6 @@ test {
 6. **文档和示例**：DSL 的正确用法需要清晰的文档和示例
 
 <!-- ============ 文档分隔线：014-kotlin/011-KotlinTestBestPractice.md ============ -->
-
-
-
 
 ## 1. JUnit 5 集成
 
@@ -10782,9 +10746,6 @@ class Service(private val config: Config) {
 
 <!-- ============ 文档分隔线：014-kotlin/012-KotlinCoroutineChannel.md ============ -->
 
-
-
-
 ## 概述
 
 Channel 是 Kotlin 协程中用于协程之间传递数据的并发原语。与 Flow 的冷流不同，Channel 是热通道：发送方发送的数据会立刻传递给接收方，如果没有接收方，发送方会挂起等待。Channel 类似于阻塞队列（BlockingQueue），但所有操作都是非阻塞的挂起函数。
@@ -11239,8 +11200,6 @@ fun main() = runBlocking {
 
 <!-- ============ 文档分隔线：014-kotlin/013-NullSafetyDetailed.md ============ -->
 
-
-
 ## 1. 历史动机与发展脉络
 
 ### 1.1 问题背景：十亿美元的错误
@@ -11303,7 +11262,7 @@ val length: Int = name?.length ?: 0  // Elvis
 
 ### 1.4 Kotlin 1.1（2017）：契约预览与 provideDelegate
 
-Kotlin 1.1 引入了 `provideDelegate` 运算符（详见[委托属性](./委托属性.md)），间接改进了空安全：
+Kotlin 1.1 引入了 `provideDelegate` 运算符（详见委托属性），间接改进了空安全：
 
 ```kotlin
 class User {
@@ -14721,11 +14680,11 @@ fun main() {
 
 ### 11.1 进阶主题
 
-- **协程与空安全**：见[协程调度器与上下文](./协程调度器与上下文.md)与[协程异常处理](./协程异常处理.md)
-- **委托属性**：见[委托属性](./委托属性.md)，深入 `lazy`、`observable`、`vetoable` 的字节码实现
-- **密封类与代数数据类型**：见[密封类与代数数据类型](./密封类与代数数据类型.md)
-- **DSL 设计**：见[DSL与领域特定语言](./DSL与领域特定语言.md)，结合空安全构建类型安全的 DSL
-- **扩展函数**：见[扩展函数](./扩展函数.md)，为可空类型添加扩展
+- **协程与空安全**：见协程调度器与上下文与协程异常处理
+- **委托属性**：见委托属性，深入 `lazy`、`observable`、`vetoable` 的字节码实现
+- **密封类与代数数据类型**：见密封类与代数数据类型
+- **DSL 设计**：见DSL与领域特定语言，结合空安全构建类型安全的 DSL
+- **扩展函数**：见扩展函数，为可空类型添加扩展
 
 ### 11.2 相关项目
 
@@ -14764,16 +14723,16 @@ fun main() {
 
 ### 11.6 相关 Kotlin 文档
 
-- [Kotlin 与 Java 互操作](./Kotlin与Java互操作.md)
-- [扩展函数](./扩展函数.md)
-- [密封类与代数数据类型](./密封类与代数数据类型.md)
-- [委托属性](./委托属性.md)
-- [DSL与领域特定语言](./DSL与领域特定语言.md)
-- [测试与最佳实践](./测试与最佳实践.md)
-- [协程调度器与上下文](./协程调度器与上下文.md)
-- [协程异常处理](./协程异常处理.md)
-- [Flow冷流与SharedFlow和StateFlow](./Flow冷流与SharedFlow和StateFlow.md)
-- [作用域函数区别](./作用域函数区别.md)
+- Kotlin 与 Java 互操作
+- 扩展函数
+- 密封类与代数数据类型
+- 委托属性
+- DSL与领域特定语言
+- 测试与最佳实践
+- 协程调度器与上下文
+- 协程异常处理
+- Flow冷流与SharedFlow和StateFlow
+- 作用域函数区别
 ## 可空类型声明
 
 **基本写法：非空类型**
@@ -15183,10 +15142,6 @@ fun process() {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/014-SealedClassAlgebraicDataType.md ============ -->
-
-
-
-
 
 ## 历史动机与背景
 
@@ -16521,8 +16476,6 @@ fun handle(result: Result): String = when (result) {
   - 密封类与多态序列化的集成。
 
 <!-- ============ 文档分隔线：014-kotlin/015-DelegateProperty.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -19359,8 +19312,6 @@ class CacheDelegate<T>(private val ttlMillis: Long, private val loader: () -> T)
 
 <!-- ============ 文档分隔线：014-kotlin/016-ExtensionFunction.md ============ -->
 
-
-
 ## 历史动机与背景
 
 ### 1. 表达力与可维护性的张力
@@ -21406,8 +21357,6 @@ fun buildString(builderAction: StringBuilder.() -> Unit): String {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/017-CoroutineBasics.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -23456,19 +23405,19 @@ class DynamicPool(initialConcurrency: Int = 4) {
 
 ### 11.7 相关 Kotlin 文档
 
-- [概述与环境配置](./概述与环境配置.md)
-- [协程进阶](./协程进阶.md)
-- [协程异常处理](./协程异常处理.md)
-- [协程调度器与上下文](./协程调度器与上下文.md)
-- [Flow 与响应式流](./Flow与响应式流.md)
-- [Flow 冷流与 SharedFlow 和 StateFlow](./Flow冷流与SharedFlow和StateFlow.md)
-- [Channel 与 BroadcastChannel](./Channel与BroadcastChannel.md)
-- [Kotlin 与并发安全](./Kotlin与并发安全.md)
-- [集合与协程](./集合与协程.md)
-- [Kotlin 与 Spring](./Kotlin与Spring.md)
-- [Kotlin 与 Ktor](./Kotlin与Ktor.md)
-- [Kotlin 与 Android](./Kotlin与Android.md)
-- [测试与最佳实践](./测试与最佳实践.md)
+- 概述与环境配置
+- 协程进阶
+- 协程异常处理
+- 协程调度器与上下文
+- Flow 与响应式流
+- Flow 冷流与 SharedFlow 和 StateFlow
+- Channel 与 BroadcastChannel
+- Kotlin 与并发安全
+- 集合与协程
+- Kotlin 与 Spring
+- Kotlin 与 Ktor
+- Kotlin 与 Android
+- 测试与最佳实践
 
 ---
 
@@ -23989,10 +23938,6 @@ suspend fun fetchAll(): Pair<String, Int> = coroutineScope {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/018-FlowReactiveStream.md ============ -->
-
-
-
-
 
 ## 历史动机与背景
 
@@ -25388,8 +25333,6 @@ fun <T> mergeWithPriority(
   - Spring 生态的响应式实现
 
 <!-- ============ 文档分隔线：014-kotlin/019-KotlinScopeFunction.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -27126,8 +27069,6 @@ val info = with(list) {
 
 <!-- ============ 文档分隔线：014-kotlin/020-KotlinCollectionOperation.md ============ -->
 
-
-
 ## 过滤操作
 
 **基本写法：filter 过滤元素**
@@ -27857,8 +27798,6 @@ val value = map["a"];
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/021-KotlinInlineClass.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -29446,8 +29385,6 @@ value class UserId(val value: Long) {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/022-KotlinContractContracts.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -31445,8 +31382,6 @@ fun main() {
 
 <!-- ============ 文档分隔线：014-kotlin/023-KotlinDSL.md ============ -->
 
-
-
 ### 类型安全构建器
 
 ```kotlin
@@ -32060,8 +31995,6 @@ class Counter : ReadWriteProperty<Any?, Int> {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/024-KotlinSerialization.md ============ -->
-
-
 
 ## 历史动机与背景
 
@@ -33618,9 +33551,6 @@ val response = Json.decodeFromString<ApiResponse>(json);
 
 <!-- ============ 文档分隔线：014-kotlin/025-KotlinAndroid.md ============ -->
 
-
-
-
 ## 概述
 
 Kotlin 是 Android 官方推荐的开发语言。自 2019 年 Google 宣布 Kotlin 为 Android 首选语言以来，几乎所有新项目都使用 Kotlin 开发。Kotlin 的空安全、协程、扩展函数等特性，让 Android 开发更加安全和高效。
@@ -34003,9 +33933,6 @@ fun scheduleSync(context: Context) {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/026-KotlinSpring.md ============ -->
-
-
-
 
 ## 概述
 
@@ -34393,9 +34320,6 @@ suspend fun <T> transactional(template: TransactionTemplate, block: suspend () -
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/027-KotlinTypeSystem.md ============ -->
-
-
-
 
 # Kotlin 类型系统深度解析（Kotlin Type System in Depth）
 
@@ -36676,15 +36600,12 @@ val strings: List<String> = list.filterByType()  // ["two", "four"]
 
 完成本文学习后，建议继续学习：
 
-- [密封类与密封接口](./密封类与密封接口.md)：与协变结合的代数数据类型。
-- [空安全详解](./空安全详解.md)：与类型系统结合的空安全机制。
-- [协程基础](./协程基础.md)：协程中的泛型（`Deferred<out T>`、`Flow<out T>`）。
-- [委托属性](./委托属性.md)：泛型属性委托。
+- 密封类与密封接口：与协变结合的代数数据类型。
+- 空安全详解：与类型系统结合的空安全机制。
+- 协程基础：协程中的泛型（`Deferred<out T>`、`Flow<out T>`）。
+- 委托属性：泛型属性委托。
 
 <!-- ============ 文档分隔线：014-kotlin/028-KotlinCompose.md ============ -->
-
-
-
 
 ﻿# Kotlin kotlinc 编译命令速查手册
 
@@ -37373,9 +37294,6 @@ kotlinc -Xrender-internal-diagnostic-names Main.kt -d out
 
 <!-- ============ 文档分隔线：014-kotlin/029-KotlinArrow.md ============ -->
 
-
-
-
 ## 概述
 
 Arrow 是 Kotlin 的函数式编程库，提供了一系列函数式编程的核心抽象和工具。它让你可以用更安全、更声明式的方式处理错误、异步操作和副作用。如果你来自 Haskell 或 Scala 的函数式编程背景，Arrow 会让你感到熟悉；如果你是初学者，Arrow 提供的类型安全错误处理也能显著提升代码质量。
@@ -37780,8 +37698,6 @@ fun main() {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/030-KotlinKtor.md ============ -->
-
-
 
 ## 概述
 
@@ -38547,9 +38463,6 @@ docker run -p 8080:8080 ktor-app
 
 <!-- ============ 文档分隔线：014-kotlin/031-KotlinExposed.md ============ -->
 
-
-
-
 ## 概述
 
 Exposed 是 JetBrains 开发的 Kotlin SQL 框架，提供两种风格来操作数据库：DSL（领域特定语言）和 DAO（数据访问对象）。DSL 风格让你用 Kotlin 代码写 SQL 查询，类型安全且直观；DAO 风格则提供了类似 ORM 的对象映射。与 Hibernate 等重量级 ORM 不同，Exposed 轻量、透明，让你对 SQL 有完全的控制。
@@ -38960,9 +38873,6 @@ fun migrateDemo() = transaction {
 
 <!-- ============ 文档分隔线：014-kotlin/032-KotlinKoin.md ============ -->
 
-
-
-
 ## 概述
 
 Koin 是一个轻量级的 Kotlin 依赖注入框架。与 Dagger、Hilt 等基于代码生成的框架不同，Koin 完全基于 Kotlin 的 DSL 和运行时解析，不需要注解处理器，配置简单直观。如果你觉得 Dagger 太复杂，Koin 是一个很好的替代选择。
@@ -39351,8 +39261,6 @@ class ModuleCheckTest : KoinTest {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/033-KotlinKtorClient.md ============ -->
-
-
 
 ## 概述
 
@@ -40085,8 +39993,6 @@ val client = HttpClient()
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/034-KotlinTest.md ============ -->
-
-
 
 ## 概述
 
@@ -40829,9 +40735,6 @@ dependencies {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/035-KotlinCompilerPlugin.md ============ -->
-
-
-
 
 ﻿# Kotlin kotlinc 编译命令速查手册
 
@@ -42444,9 +42347,6 @@ kotlinc -Xrender-internal-diagnostic-names Main.kt -d out
 
 <!-- ============ 文档分隔线：014-kotlin/036-KotlinGradle.md ============ -->
 
-
-
-
 ## 概述
 
 Gradle 是 Kotlin 项目最常用的构建工具，而 Kotlin DSL 是 Gradle 推荐的构建脚本编写方式。与传统的 Groovy DSL 相比，Kotlin DSL 提供了编译期类型检查、IDE 自动补全和更好的重构支持。理解 Gradle Kotlin DSL 是搭建和管理 Kotlin 项目的基础。
@@ -42869,9 +42769,6 @@ org.gradle.configuration-cache=true
 
 <!-- ============ 文档分隔线：014-kotlin/037-KotlinAtomicOperation.md ============ -->
 
-
-
-
 ## 概述
 
 原子操作（Atomic Operation）是不可被中断的操作。在多线程环境中，多个线程可能同时读写同一个变量，导致数据竞争和不确定的结果。原子操作通过硬件级别的指令保证操作的原子性，不需要加锁就能实现线程安全。
@@ -43236,10 +43133,6 @@ fun main() {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/038-KotlinBenchmark.md ============ -->
-
-
-
-
 
 ## 历史动机与背景
 
@@ -44898,8 +44791,6 @@ MyBenchmark.test   avgt    5  1.234  ±0.370   us/op
 
 <!-- ============ 文档分隔线：014-kotlin/039-KotlinIO.md ============ -->
 
-
-
 ## 概述
 
 IO（Input/Output）操作是程序与外部世界交互的方式，包括读写文件、网络通信、控制台输入输出等。Kotlin 运行在 JVM 上，可以直接使用 Java 的 IO 类，同时 Kotlin 也提供了一些扩展函数让 IO 操作更简洁。此外，kotlinx-io 是 Kotlin 官方的多平台 IO 库，提供了现代化的字节和字符处理 API。
@@ -45639,8 +45530,6 @@ FileSystem.SYSTEM.write(Path("out.txt")) {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/040-KotlinRegex.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -47683,8 +47572,6 @@ fun check(s: String) = EMAIL_RE.matches(s)
 
 <!-- ============ 文档分隔线：014-kotlin/041-KotlinTime.md ============ -->
 
-
-
 ## 概述
 
 kotlinx-datetime 是 Kotlin 官方的跨平台日期时间库。它基于 ISO 8601 标准，提供了统一的 API 来处理日期、时间、时区等概念。与 Java 的 `java.time` 不同，kotlinx-datetime 从一开始就为 Kotlin 多平台设计，可以在 JVM、JS、Native 等平台上使用。
@@ -48361,9 +48248,6 @@ val until = d1.until(d2)
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/042-KotlinConcurrencySafety.md ============ -->
-
-
-
 
 # Kotlin 与并发安全（Concurrency Safety in Depth）
 
@@ -50994,9 +50878,6 @@ class ConcurrentExecutor(
 
 <!-- ============ 文档分隔线：014-kotlin/043-KotlinWebSocket.md ============ -->
 
-
-
-
 ## 概述
 
 WebSocket 是一种在客户端和服务器之间建立持久双向通信连接的协议。与 HTTP 请求-响应模式不同，WebSocket 连接建立后，双方可以随时发送数据，适合实时聊天、实时推送、在线协作等场景。
@@ -51458,9 +51339,6 @@ private fun processData(data: ByteArray): ByteArray {
 
 <!-- ============ 文档分隔线：014-kotlin/044-KotlinSecurity.md ============ -->
 
-
-
-
 ## 概述
 
 安全编程是指在编写代码时主动防范各种安全威胁，包括空指针异常、数据泄露、注入攻击、密码存储不安全等。Kotlin 在语言层面提供了空安全机制，大幅减少了空指针异常。但在实际开发中，还有许多其他安全问题需要关注，比如输入验证、密码处理、加密解密、网络安全等。
@@ -51857,8 +51735,6 @@ val safeJson = Json {
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/045-CoroutineDispatcherContext.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -54439,9 +54315,6 @@ launch(childCtx) { }
 
 <!-- ============ 文档分隔线：014-kotlin/046-FlowColdSharedState.md ============ -->
 
-
-
-
 # Flow 冷流与 SharedFlow 和 StateFlow（Cold Flow, SharedFlow and StateFlow）
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin Flow 体系从设计哲学到字节码实现的完整链路。内容覆盖 Kotlin Coroutines 1.3 引入 Flow、1.4 引入 StateFlow、1.5 引入 SharedFlow 的完整演进史，配套企业级生产代码、跨语言对比（RxJava、Project Reactor、Swift Combine）、形式化推导与习题解析。文档支持零基础自学，亦适合资深工程师作为参考手册。
@@ -56347,17 +56220,7 @@ viewModelScope.launch {
 - 在 Android、服务端、KMP 项目中正确选择与组合 Flow 类型。
 - 排查常见陷阱，构建高性能、可维护的响应式系统。
 
-后续文档推荐阅读：
-
-- **《协程调度器与上下文》**：深入理解 Flow 的执行线程。
-- **《协程异常处理》**：与 Flow 异常处理的协同。
-- **《Channel与BroadcastChannel》**：理解为什么 SharedFlow 替代了 BroadcastChannel。
-- **《Flow与响应式流》**：与 Reactive Streams 规范的对接。
-
 <!-- ============ 文档分隔线：014-kotlin/047-ChannelBroadcastChannel.md ============ -->
-
-
-
 
 # Channel 与 BroadcastChannel（Channel and BroadcastChannel）
 
@@ -59646,8 +59509,6 @@ launch {
 希望本文档能帮助学习者系统掌握 Kotlin 协程间通信的核心机制，并在工程实践中正确、高效地应用。
 
 <!-- ============ 文档分隔线：014-kotlin/048-SealedClassSealedInterface.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -63782,9 +63643,6 @@ fun <T> handleResult(result: NetworkResult<T>): String = when (result) {
 
 <!-- ============ 文档分隔线：014-kotlin/049-InlineClass.md ============ -->
 
-
-
-
 # 内联类（value class）
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin 内联类（`@JvmInline value class`）从设计哲学到 JVM 字节码实现的完整链路。内容覆盖 Kotlin 1.3 inline class 实验性、1.5 value class 稳定化，以及与 C# struct、Scala AnyVal、Rust struct 的跨语言对比。
@@ -66051,9 +65909,6 @@ value class Serializable(val value: Type)
 希望本文档能帮助学习者深入理解 Kotlin value class 的本质，并在生产实践中正确应用。
 
 <!-- ============ 文档分隔线：014-kotlin/050-ExtensionFunctionCompilePrinciple.md ============ -->
-
-
-
 
 # 扩展函数的编译原理
 
@@ -68484,9 +68339,6 @@ final 成员：静态分发（基于声明类型）
 
 <!-- ============ 文档分隔线：014-kotlin/051-ScopeFunctionDifference.md ============ -->
 
-
-
-
 # 作用域函数区别（Scope Functions: let, run, with, apply, also）
 
 > 本文档对标 MIT 6.005、Stanford CS193P、CMU 15-410 教学水准，系统讲解 Kotlin 标准库五大作用域函数（Scope Functions）的设计哲学、形式化定义、字节码实现与工程实践。作用域函数是 Kotlin 中最具特色的小工具集合，看似简单却蕴含深远的函数式编程思想与 API 设计智慧。本文档涵盖从零基础自学到资深架构师审查代码的全维度内容，包括跨语言对比（JavaScript、Ruby、Swift）、性能基准、案例研究与习题解析。
@@ -70385,16 +70237,7 @@ fun main() {
 - 利用作用域函数设计 DSL 与流畅 API。
 - 理解 inline 机制，避免性能担忧。
 
-后续文档推荐阅读：
-
-- **《函数与Lambda》**：作用域函数的函数式编程基础。
-- **《类与对象》**：apply 在对象初始化中的应用。
-- **《Kotlin与DSL》**：作用域函数在 DSL 设计中的核心作用。
-- **《扩展函数》**：作用域函数本质是扩展函数的特化。
-
 <!-- ============ 文档分隔线：014-kotlin/052-CoroutineExceptionHandling.md ============ -->
-
-
 
 ## 1. 历史动机与发展脉络
 
@@ -73192,9 +73035,6 @@ val handler = CoroutineExceptionHandler { ctx, e ->
 ```
 
 <!-- ============ 文档分隔线：014-kotlin/053-KotlinCrossPlatform.md ============ -->
-
-
-
 
 # Kotlin 跨平台（Kotlin Multiplatform）
 
@@ -76325,8 +76165,6 @@ KMP 的核心价值在于：
 
 <!-- ============ 文档分隔线：014-kotlin/054-FlowAdvanced.md ============ -->
 
-
-
 ## Flow 创建
 
 **基本写法：flow 构建器**
@@ -76709,8 +76547,6 @@ nums().onEach { }.launchIn(scope)
 
 <!-- ============ 文档分隔线：014-kotlin/055-KotlinJavaInterop.md ============ -->
 
-
-
 # Kotlin 与 Java 互操作
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -76722,4 +76558,3 @@ nums().onEach { }.launchIn(scope)
 - 属性访问与 getter/setter 映射
 - SAM 转换与默认方法
 - 混编工程的配置与陷阱
-

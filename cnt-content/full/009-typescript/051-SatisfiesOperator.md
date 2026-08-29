@@ -1,6 +1,6 @@
 ---
 order: 510
-title: satisfies操作符
+title: satisfies 操作符
 module: 'typescript'
 category: 前端技术
 difficulty: intermediate
@@ -17,7 +17,7 @@ prerequisites:
   - 'typescript/021-GenericConstraintDefault'
   - 'typescript/017-IntersectionTypeMerge'
 ---
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 

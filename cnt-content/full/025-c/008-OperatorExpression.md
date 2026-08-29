@@ -11,7 +11,7 @@ related:
   - 'c/005-VariableConstant'
   - 'c/006-BitwiseBitField'
   - 'c/009-EnumTypedef'
-  - 'c/010-TheLinuxProgrammingInterface'
+  - 'c/010-MultiFileCompilation'
 prerequisites:
   - 'c/002-CLanguageOverview'
 ---

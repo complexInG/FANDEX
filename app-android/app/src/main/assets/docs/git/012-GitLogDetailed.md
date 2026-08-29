@@ -1,6 +1,6 @@
 ---
 order: 120
-title: git-log详解
+title: git-log 详解
 module: 'git'
 category: 工具链
 difficulty: intermediate

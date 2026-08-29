@@ -1,6 +1,6 @@
 ---
 order: 580
-title: Java与虚拟线程
+title: Java 与虚拟线程
 module: 'java'
 category: 后端技术
 difficulty: intermediate

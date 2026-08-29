@@ -1,6 +1,6 @@
 ---
 order: 210
-title: 类型特征与SFINAE
+title: 类型特征与 SFINAE
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced

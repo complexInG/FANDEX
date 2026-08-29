@@ -1,6 +1,6 @@
 ---
 order: 210
-title: Python与深度学习
+title: Python 与深度学习
 module: 'python'
 category: 后端技术
 difficulty: advanced

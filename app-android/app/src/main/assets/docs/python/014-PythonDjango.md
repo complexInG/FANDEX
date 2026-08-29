@@ -1,6 +1,6 @@
 ---
 order: 140
-title: Python与Django
+title: Python 与 Django
 module: 'python'
 category: 后端技术
 difficulty: intermediate

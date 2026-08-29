@@ -1,6 +1,6 @@
 ---
 order: 210
-title: REST与GraphQL-API
+title: REST 与 GraphQL API
 module: 'github'
 category: 工具链
 difficulty: advanced

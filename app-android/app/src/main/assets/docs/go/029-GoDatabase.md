@@ -1,6 +1,6 @@
 ---
 order: 290
-title: Go与数据库
+title: Go 与数据库
 module: 'go'
 category: 后端技术
 difficulty: intermediate

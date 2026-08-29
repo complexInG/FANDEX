@@ -1,6 +1,6 @@
 ---
 order: 300
-title: React与GraphQL
+title: React 与 GraphQL
 module: 'react'
 category: 前端技术
 difficulty: intermediate

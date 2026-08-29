@@ -1,6 +1,6 @@
 ---
 order: 780
-title: Java设计模式
+title: Java 设计模式
 module: 'java'
 category: 后端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 330
-title: Python与消息队列
+title: Python 与消息队列
 module: 'python'
 category: 后端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 260
-title: C#12与C#13新特性
+title: C#12 与 C#13 新特性
 module: 'csharp'
 category: 后端技术
 difficulty: intermediate
@@ -10,7 +10,7 @@ updated: '2026-06-14'
 related:
   - 'csharp/028-LINQDeferredImmediate'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

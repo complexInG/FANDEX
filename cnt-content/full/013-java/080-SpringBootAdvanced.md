@@ -1,6 +1,6 @@
 ---
 order: 800
-title: SpringBoot进阶
+title: SpringBoot 进阶
 module: 'java'
 category: 后端技术
 difficulty: intermediate

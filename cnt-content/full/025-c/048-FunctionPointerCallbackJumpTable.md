@@ -11,7 +11,7 @@ related:
   - 'c/046-PointerArrayDifference'
   - 'c/047-DoublePointerPointerArray'
   - 'c/031-DynamicStaticLibrary'
-  - 'c/049-LinuxKernelMemoryBarriers'
+  - 'c/049-VolatileKeyword'
 prerequisites:
   - 'c/002-CLanguageOverview'
 ---

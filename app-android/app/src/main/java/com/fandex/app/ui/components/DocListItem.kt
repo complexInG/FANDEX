@@ -1,6 +1,9 @@
 package com.fandex.app.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,17 +28,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fandex.app.data.model.DocIndexEntry
+import com.fandex.app.ui.common.pressScale
 import com.fandex.app.ui.theme.LocalExtendedColors
 
 /**
  * 文档列表项
  *
- * 对齐 Web 端 DocumentListItem 组件设计：
- * - 编号竖条
- * - 标题
- * - 描述
- * - 难度标签
- * - 更新日期
+ * 对齐 Web 端 DocumentListItem 组件设计，并做"条目行"层次化处理：
+ * - bgElevated 底 + 1dp borderSubtle 边框 + 4dp 直角小圆角（与页面背景分层）
+ * - 左侧 3dp 分类色竖条保留（多彩点缀）
+ * - 编号 / 标题 / 描述 / 难度标签 / 更新日期
+ * - 按压缩放反馈；条目间距由调用方 LazyColumn spacedBy(8.dp) 控制
  *
  * @param moduleLabel 模块归属标签（搜索结果展示来源，普通列表不展示）
  */
@@ -51,12 +53,19 @@ fun DocListItem(
     indexLabel: String? = null
 ) {
     val extendedColors = LocalExtendedColors.current
+    val interaction = remember { MutableInteractionSource() }
 
+    // 条目行：外层 16dp 屏幕边距 + 卡片化条目本体
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp)
+            .pressScale(interaction)
+            .clip(RoundedCornerShape(4.dp))
+            .background(extendedColors.bgElevated)
+            .border(1.dp, extendedColors.borderSubtle, RoundedCornerShape(4.dp))
+            .clickable(interactionSource = interaction, indication = null, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 阅读顺序编号

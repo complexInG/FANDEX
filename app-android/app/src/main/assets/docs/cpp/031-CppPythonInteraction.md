@@ -1,6 +1,6 @@
 ---
 order: 310
-title: C++与Python交互
+title: C++与 Python 交互
 module: 'cpp'
 category: 计算机科学
 difficulty: intermediate

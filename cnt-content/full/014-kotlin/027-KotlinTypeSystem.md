@@ -1,6 +1,6 @@
 ---
 order: 270
-title: Kotlin类型系统
+title: Kotlin 类型系统
 module: 'kotlin'
 category: 后端技术
 difficulty: advanced
@@ -2300,7 +2300,7 @@ val strings: List<String> = list.filterByType()  // ["two", "four"]
 
 完成本文学习后，建议继续学习：
 
-- [密封类与密封接口](./密封类与密封接口.md)：与协变结合的代数数据类型。
-- [空安全详解](./空安全详解.md)：与类型系统结合的空安全机制。
-- [协程基础](./协程基础.md)：协程中的泛型（`Deferred<out T>`、`Flow<out T>`）。
-- [委托属性](./委托属性.md)：泛型属性委托。
+- 密封类与密封接口：与协变结合的代数数据类型。
+- 空安全详解：与类型系统结合的空安全机制。
+- 协程基础：协程中的泛型（`Deferred<out T>`、`Flow<out T>`）。
+- 委托属性：泛型属性委托。

@@ -1,6 +1,6 @@
 ---
 order: 460
-title: 索引数据库
+title: IndexedDB 浏览器数据库
 module: 'javascript'
 category: 前端技术
 difficulty: advanced
@@ -10,7 +10,7 @@ updated: '2026-07-20'
 related:
   - 'javascript/045-StorageForTheWeb'
   - 'javascript/030-IteratorHelper'
-  - 'javascript/044-ImageOptimization'
+  - 'javascript/044-FetchApiWebStreams'
 prerequisites:
   - 'javascript/045-StorageForTheWeb'
 ---

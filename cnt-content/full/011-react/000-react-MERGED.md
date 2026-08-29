@@ -6,14 +6,12 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：011-react/001-OverviewEnvSetup.md ============ -->
-
-
 
 > 本节为增量补充，帮助你选择 React 与元框架版本。
 
@@ -464,10 +462,7 @@ flushSync(() => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/002-ComponentProps.md ============ -->
-
 
 ## 1. 函数组件
 
@@ -1122,10 +1117,7 @@ type CoreInputProps = Pick<React.ComponentProps<'input'>, 'value' | 'onChange' |
 type Props = React.ComponentProps<'button'> & { loading?: boolean };
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/003-StateEvent.md ============ -->
-
 
 ## 1. useState
 
@@ -1771,10 +1763,7 @@ const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
 }, [id, onClick]);
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/004-HooksDeep.md ============ -->
-
 
 ## 1. useEffect
 
@@ -2107,7 +2096,7 @@ const handleClick = useMemo(
 
 ## 5. useContext
 
-`useContext` 用于消费 Context 值，详见 [Context与全局状态](./Context与全局状态.md)。
+`useContext` 用于消费 Context 值，详见 Context与全局状态。
 
 ```tsx
 import { createContext, useContext } from 'react';
@@ -2566,10 +2555,7 @@ const emailId = `${id}-email`;
 const passwordId = `${id}-password`;
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/005-ContextGlobalState.md ============ -->
-
 
 ## 1. Context API
 
@@ -3194,10 +3180,7 @@ const ThemeContext = createContext<Theme>('light');
 ThemeContext.displayName = 'ThemeContext';
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/006-React19NewFeatures.md ============ -->
-
 
 ## 1. React Server Components (RSC)
 
@@ -4047,10 +4030,7 @@ const { pending } = useFormStatus();
 <button disabled={pending}>提交</button>
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/007-RouteDataFetch.md ============ -->
-
 
 ## 1. React Router v7
 
@@ -4981,10 +4961,7 @@ export async function loader() {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/008-PerformanceOptimization.md ============ -->
-
 
 ## 1. React.memo
 
@@ -5770,11 +5747,7 @@ import { debounce } from 'lodash-es';
 <link rel="preload" href="/fonts.woff2" as="font" type="font/woff2" crossOrigin />
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/009-TestEngineering.md ============ -->
-
-
 
 ## 1. Vitest 与 Testing Library
 
@@ -6344,11 +6317,7 @@ import type { User } from '@/types';
 import './styles.css';
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/010-NextJSFullStack.md ============ -->
-
-
 
 ## 1. App Router
 
@@ -7064,10 +7033,7 @@ export default nextConfig;
 | **Railway**          | 简单部署、数据库集成   | 快速原型           |
 | **Cloudflare Pages** | 全球 CDN、Workers      | 边缘计算需求       |
 
-
-
 <!-- ============ 文档分隔线：011-react/011-JSXDeepAnalysis.md ============ -->
-
 
 ## 概述
 
@@ -7527,10 +7493,7 @@ const boxStyle: React.CSSProperties = {
 <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/012-FiberArchitecture.md ============ -->
-
 
 ## 双缓冲机制
 
@@ -8115,10 +8078,7 @@ const Reconciler = require('react-reconciler');
 const renderer = Reconciler(hostConfig);
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/013-ConcurrentMode.md ============ -->
-
 
 ## 概述
 
@@ -8744,11 +8704,7 @@ startTransition(() => setRoute('/detail'));
 setCount(c => c + 1);
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/014-ServerComponents.md ============ -->
-
-
 
 ## 概述
 
@@ -9026,10 +8982,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/015-HooksPrinciple.md ============ -->
-
 
 ## 概述
 
@@ -9656,12 +9609,7 @@ startTransition(() => setList(bigData));
 renderHooks(fiber);
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/016-CustomHooksDesignPattern.md ============ -->
-
-
-
 
 # 自定义 Hooks 设计模式：从原理到工程实践
 
@@ -11766,10 +11714,7 @@ const { result } = renderHook(() => useCounter(5));
 expect(result.current.count).toBe(5);
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/017-StateManagementSolutionComparison.md ============ -->
-
 
 ## 概述
 
@@ -12328,12 +12273,7 @@ const [optimisticCount, addOptimistic] = useOptimistic(
 );
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/018-ReactPerformance.md ============ -->
-
-
-
 
 # React 性能优化：从原理到工程实践
 
@@ -14516,10 +14456,7 @@ import { debounce } from 'lodash-es';
 <link rel="preload" href="/fonts.woff2" as="font" type="font/woff2" crossOrigin />
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/019-ReactErrorBoundary.md ============ -->
-
 
 ## 概述
 
@@ -15043,10 +14980,7 @@ const onClick = async () => {
 };
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/020-ReactForm.md ============ -->
-
 
 ## 概述
 
@@ -15588,10 +15522,7 @@ const nameField = useField('');
 <input {...nameField} />;
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/021-ReactTypeScript.md ============ -->
-
 
 ## 概述
 
@@ -16094,10 +16025,7 @@ const divProps: JSX.IntrinsicElements['div'] = { id: 'root', className: 'box' };
 type InputEl = React.ElementRef<'input'>; // HTMLInputElement
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/022-ReactTest.md ============ -->
-
 
 ## 概述
 
@@ -16758,10 +16686,7 @@ mockFn.mockResolvedValue({ ok: true });
 mockFn.mockRejectedValue(new Error('fail'));
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/023-ReactRouteAdvanced.md ============ -->
-
 
 ## 概述
 
@@ -17428,10 +17353,7 @@ const nav = useNavigation();
 {nav.state === 'loading' && <Spinner />}
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/024-ReactI18n.md ============ -->
-
 
 ## 概述
 
@@ -18045,10 +17967,7 @@ i18n.init({ fallbackLng: 'en' });
 i18n.init({ saveMissing: true, missingKeyHandler: (lng, ns, key) => console.warn(key) });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/025-ReactAnimation.md ============ -->
-
 
 ## 概述
 
@@ -18626,10 +18545,7 @@ useEffect(() => {
 }, []);
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/026-ReactSSR.md ============ -->
-
 
 ## 概述
 
@@ -19224,10 +19140,7 @@ const html = await renderToPipeableStream(<App />);
 export const revalidate = 60;
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/027-ReactDesignPattern.md ============ -->
-
 
 ## 概述
 
@@ -19798,11 +19711,7 @@ function withProviders(...providers) {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/028-ReactWebAssembly.md ============ -->
-
-
 
 ## 概述
 
@@ -20080,11 +19989,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/029-ReactWebSocket.md ============ -->
-
-
 
 ## 概述
 
@@ -20362,11 +20267,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/030-ReactGraphQL.md ============ -->
-
-
 
 ## 概述
 
@@ -20644,11 +20545,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/031-ReactMicroFrontend.md ============ -->
-
-
 
 ## 概述
 
@@ -20926,10 +20823,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/032-ReactAccessibility.md ============ -->
-
 
 ## 概述
 
@@ -21551,11 +21445,7 @@ const results = await axe(container);
 expect(results).toHaveNoViolations();
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/033-ReactPWA.md ============ -->
-
-
 
 ## 概述
 
@@ -21833,11 +21723,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/034-ReactCanvas.md ============ -->
-
-
 
 ## 概述
 
@@ -22115,11 +22001,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/035-ReactD3.md ============ -->
-
-
 
 ## 概述
 
@@ -22397,11 +22279,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/036-ReactStorybook.md ============ -->
-
-
 
 ## 概述
 
@@ -22679,11 +22557,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/037-ReactCICD.md ============ -->
-
-
 
 ## 概述
 
@@ -22961,11 +22835,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/038-ReactMonorepo.md ============ -->
-
-
 
 ## 概述
 
@@ -23243,12 +23113,7 @@ test('点击按钮触发回调', () => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/039-ReactCompilerAutoMemoization.md ============ -->
-
-
-
 
 # React Compiler 自动记忆化：从原理到工程实践
 
@@ -25366,12 +25231,7 @@ module.exports = {
 export default { sources: (f) => !f.includes('__tests__') };
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/040-ServerClientComponents.md ============ -->
-
-
-
 
 # Server Components 与 Client Components：从原理到工程实践
 
@@ -27653,10 +27513,7 @@ function LikeButton({ likes }: { likes: number }) {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/041-NextJsAppRouter.md ============ -->
-
 
 ## 1. 文件夹约定
 
@@ -28123,10 +27980,7 @@ export default function Loading() {
 }
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/042-React19NewAPI.md ============ -->
-
 
 ## 1. use() API
 
@@ -28449,11 +28303,7 @@ import { preconnect } from 'react-dom';
 preconnect('https://cdn.example.com');
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/043-ConcurrentRenderInterruptible.md ============ -->
-
-
 
 ## 1. 并发渲染原理
 
@@ -28555,12 +28405,7 @@ function Search() {
 
 并发模式下，Suspense 不会阻塞整个树，只显示最近的 fallback。
 
-
-
 <!-- ============ 文档分隔线：011-react/044-ErrorBoundarySentry.md ============ -->
-
-
-
 
 # 错误边界与 Sentry 集成：从原理到生产级监控
 
@@ -30135,11 +29980,7 @@ export function useAsyncError() {
 
 **下一章建议**：深入阅读 `react/React-19新增API.md` 了解函数式错误边界，`react/并发渲染与可中断更新.md` 理解并发模式下的错误传播，`react/测试与工程化.md` 学习错误注入测试。
 
-
-
 <!-- ============ 文档分隔线：011-react/045-CustomHooksReuseLogic.md ============ -->
-
-
 
 ## 1. useFetch
 
@@ -30228,10 +30069,7 @@ function useToggle(initial = false) {
 - 清理副作用（定时器、事件监听、AbortController）
 - 接受 ref 或回调作为参数以避免闭包陷阱
 
-
-
 <!-- ============ 文档分隔线：011-react/046-ReactViteToolchainCommand.md ============ -->
-
 
 ## Vite 创建 React 项目
 
@@ -30669,11 +30507,7 @@ vitest
 npm install -D @testing-library/react @testing-library/jest-dom
 ```
 
-
-
 <!-- ============ 文档分隔线：011-react/047-RenderingPriorityAndScheduling.md ============ -->
-
-
 
 ## 一句话理解
 
@@ -30759,5 +30593,5 @@ function SearchPage({ items }: { items: string[] }) {
 
 调度系统的存在意义是"保证交互不被长任务饿死"。
 理解优先级与中断后，`useTransition` 不再神秘：它只是把"不着急"的更新放进低优先级队列。
-继续深入可看 [并发模式](/FANDEX/react/013-ConcurrentMode/) 与
-[Fiber 架构](/FANDEX/react/012-FiberArchitecture/)。
+继续深入可看 并发模式 与
+Fiber 架构。

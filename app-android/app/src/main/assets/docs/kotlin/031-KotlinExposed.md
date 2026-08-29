@@ -1,6 +1,6 @@
 ---
 order: 310
-title: Kotlin与Exposed
+title: Kotlin 与 Exposed
 module: 'kotlin'
 category: 后端技术
 difficulty: intermediate

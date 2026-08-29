@@ -1,6 +1,6 @@
 ---
 order: 420
-title: Kotlin与并发安全
+title: Kotlin 与并发安全
 module: 'kotlin'
 category: 后端技术
 difficulty: advanced

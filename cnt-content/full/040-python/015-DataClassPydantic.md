@@ -1,6 +1,6 @@
 ---
 order: 150
-title: 数据类与Pydantic
+title: 数据类与 Pydantic
 module: 'python'
 category: 后端技术
 difficulty: intermediate

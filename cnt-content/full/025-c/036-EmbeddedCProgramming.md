@@ -1,6 +1,6 @@
 ---
 order: 360
-title: 嵌入式C编程
+title: 嵌入式 C 编程
 module: 'c'
 category: 计算机科学
 difficulty: advanced

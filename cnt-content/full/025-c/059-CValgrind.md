@@ -1,6 +1,6 @@
 ---
 order: 590
-title: C Valgrind 内存检测 语法速查手册
+title: C Valgrind 内存检测语法速查手册
 module: 'c'
 category: 计算机科学
 difficulty: beginner

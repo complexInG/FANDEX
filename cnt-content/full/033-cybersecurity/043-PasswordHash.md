@@ -1,6 +1,6 @@
 ---
 order: 430
-title: Cybersecurity 密码哈希
+title: 密码哈希
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

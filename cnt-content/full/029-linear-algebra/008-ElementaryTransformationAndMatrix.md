@@ -11,7 +11,7 @@ related:
   - 'linear-algebra/006-MatrixOperation'
   - 'linear-algebra/007-InverseMatrix'
   - 'linear-algebra/009-MatrixRank'
-  - 'linear-algebra/010-ChunkingMatrix'
+  - 'linear-algebra/010-BlockMatrix'
 prerequisites: []
 ---
 

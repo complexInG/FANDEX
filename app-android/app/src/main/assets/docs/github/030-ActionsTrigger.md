@@ -1,6 +1,6 @@
 ---
 order: 300
-title: Actions触发器
+title: Actions 触发器
 module: 'github'
 category: 工具链
 difficulty: intermediate

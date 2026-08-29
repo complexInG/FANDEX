@@ -1,6 +1,6 @@
 ---
 order: 960
-title: Java与WebAssembly
+title: Java 与 WebAssembly
 module: 'java'
 category: 后端技术
 difficulty: advanced

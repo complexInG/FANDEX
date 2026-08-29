@@ -1,6 +1,6 @@
 ---
 order: 320
-title: React无障碍
+title: React 无障碍
 module: 'react'
 category: 前端技术
 difficulty: intermediate

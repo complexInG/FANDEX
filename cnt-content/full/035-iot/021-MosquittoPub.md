@@ -1,6 +1,6 @@
 ---
 order: 210
-title: 物联网 mosquitto_pub 发布命令
+title: mosquitto_pub 发布命令
 module: 'iot'
 category: 云与基础设施
 difficulty: beginner

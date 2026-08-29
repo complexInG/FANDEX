@@ -1,6 +1,6 @@
 ---
 order: 170
-title: Keepalived双机热备
+title: Keepalived 双机热备
 module: 'networking'
 category: 云与基础设施
 difficulty: intermediate

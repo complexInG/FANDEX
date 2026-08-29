@@ -1,6 +1,6 @@
 ---
 order: 150
-title: HEAD指针与分支本质
+title: HEAD 指针与分支本质
 module: 'git'
 category: 工具链
 difficulty: intermediate

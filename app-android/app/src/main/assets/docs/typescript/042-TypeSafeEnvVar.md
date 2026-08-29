@@ -8,16 +8,16 @@ description: 构建类型安全的环境变量管理系统，涵盖字面量类�
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'typescript/046-TypeScript54ReleaseNotesNoInferUtilityType'
+  - 'typescript/046-TypeSafeConfigSystem'
   - 'typescript/045-TypeSafeRoute'
   - 'typescript/044-TypeSafeI18n'
   - 'typescript/043-TypeSafeFormValidation'
   - 'typescript/037-ConditionalMappedType'
 prerequisites:
   - 'typescript/008-InterfaceTypeAlias'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
 ---
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 

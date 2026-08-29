@@ -1,6 +1,6 @@
 ---
 order: 200
-title: 物联网 Mosquitto Broker 管理
+title: Mosquitto Broker 管理
 module: 'iot'
 category: 云与基础设施
 difficulty: beginner

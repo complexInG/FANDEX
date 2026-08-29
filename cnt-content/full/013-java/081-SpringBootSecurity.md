@@ -1,6 +1,6 @@
 ---
 order: 810
-title: SpringBoot安全
+title: SpringBoot 安全
 module: 'java'
 category: 后端技术
 difficulty: intermediate

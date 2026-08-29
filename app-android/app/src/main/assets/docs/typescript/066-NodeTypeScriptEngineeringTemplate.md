@@ -13,7 +13,7 @@ related:
 prerequisites:
   - 'typescript/002-TypeScriptOverviewEnvSetup'
 ---
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -111,5 +111,5 @@ createServer((req, res) => {
 
 这套骨架的核心是"开发快、构建干净、类型严格"：
 `tsx` 负责开发体验，`tsc` 负责产物质量，双 tsconfig 让两件事互不干扰。
-继续深化可看 [tsconfig 严格模式](/FANDEX/typescript/059-TsconfigStrictMode/) 与
-[编译与性能优化](/FANDEX/typescript/054-TypeScriptCompilePerformanceOptimization/)。
+继续深化可看 tsconfig 严格模式 与
+编译与性能优化。

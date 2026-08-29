@@ -1,6 +1,6 @@
 ---
 order: 460
-title: Java模块系统
+title: Java 模块系统
 module: 'java'
 category: 后端技术
 difficulty: advanced

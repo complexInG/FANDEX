@@ -1,6 +1,6 @@
 ---
 order: 540
-title: C 标准库函数速查
+title: C 标准库函数语法速查手册
 module: 'c'
 category: 计算机科学
 difficulty: beginner

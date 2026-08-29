@@ -13,8 +13,6 @@ prerequisites: []
 
 <!-- ============ 文档分隔线：008-javascript/001-JavaScriptOverviewRuntimeEnv.md ============ -->
 
-
-
 ## 0.1 JavaScript 必会运行模型
 
 ### 代码从输入到执行的四个环节
@@ -53,36 +51,6 @@ console.log(excellent);
 
 在 DevTools 中给 `filter` 行打断点，观察每次回调的 `user` 值、返回值和最终数组。
 
-
-## 0. 学习路径与阅读指南（先读这一节）
-
-本模块 59 篇文档已按学习顺序重排：前 8 篇是零基础核心（环境、语法、对象、函数与闭包），第 9-22 篇是核心工具（正则、函数式、原型、ES6+ 与数据结构），第 23-35 篇是异步、事件循环与内存管理，第 36 篇起是浏览器与工程实践。0 基础推荐路径：
-
-```text
-第 1 阶段（语法基础）：001 概述 → 002 程序结构 → 003 变量与类型 → 004 运算符 → 005 控制流
-第 2 阶段（函数与对象）：006 对象与数组 → 007 函数、作用域与闭包 → 008 数组高阶方法 → 017 原型链与 class
-第 3 阶段（异步入门）：023 异步编程（回调 → Promise → async/await）→ 027 事件循环
-第 4 阶段（DOM 交互）：039 DOM 操作与事件 → 041 Web API 与浏览器接口
-第 5 阶段（数据流通）：042 网络请求（Fetch 基础）→ 036 模块化（只读 import/export）
-第 6 阶段（工程能力）：020 ES6+ → 046 防抖节流 → 053 综合项目
-```
-
-**讲解：**
-
-1. 这是本模块的学习路径图：六个阶段从语法基础走到综合项目。
-2. 前三个阶段是零基础必读，异步与事件循环是进阶重点。
-3. 不要在第一章就钻 V8 引擎细节，先把代码跑起来。
-
-
-**分层标记说明**（每篇开头的导读会用到）：
-
-- 【核心必读】：第一遍逐字精读并动手；
-- 【进阶原理】：先掌握用法，二刷时再读；
-- 【高阶选读/进阶专题】：适合有基础或项目经验后阅读；
-- 【里程碑标注】：新提案/前沿内容，建议学习 6 个月后再读；
-- 带数学符号（$...$）的段落：0 基础可整体跳过，不影响主线。
-
-本节的正文仍按原顺序介绍历史与运行环境：0 基础先读第 1 章历史与 2.1 简述即可，第 3 章引擎架构、第 4 章事件循环、第 5 章垃圾回收属于【进阶原理】，建议学完异步（023-028）与内存管理（033-035）后再回读。
 
 # JavaScript 概述与运行环境
 
@@ -2702,8 +2670,6 @@ import './utils'      → 报错（ESM 要求扩展名）
 
 <!-- ============ 文档分隔线：008-javascript/002-ProgramStructureBasicSyntax.md ============ -->
 
-
-
 ## 1. 引入方式 (Inclusion)
 
 JavaScript 可以通过多种方式引入到网页中，每种方式都有其适用场景和特点。
@@ -4377,8 +4343,6 @@ undeclared = 1;
 
 <!-- ============ 文档分隔线：008-javascript/003-VariableDataType.md ============ -->
 
-
-
 ## 1. 引入方式 (Inclusion)
 
 JavaScript 可以通过多种方式引入到网页中，每种方式都有其适用场景和特点。
@@ -5745,8 +5709,6 @@ console.log(price === 0.3); // false
 答案：浮点误差问题；涉及金额时用整数分单位计算或 `BigInt`。
 
 <!-- ============ 文档分隔线：008-javascript/004-DataTypeOperator.md ============ -->
-
-
 
 ## 1. 数据类型 (Data Types)
 
@@ -7330,8 +7292,6 @@ const n = 1 + 2 * 3; // ?
 答案：`7`，乘法先于加法。不确定优先级时加括号。
 
 <!-- ============ 文档分隔线：008-javascript/005-ControlFlow.md ============ -->
-
-
 
 ## 0. 引言
 
@@ -9104,8 +9064,6 @@ const name = '用户' && getName();
 答案：`'用户'` 是 truthy，`&&` 返回 `getName()` 的结果——这与“缺省值”意图相反。想给默认值用 `??` 或 `||`：`const name = getName() ?? '用户'`。
 
 <!-- ============ 文档分隔线：008-javascript/006-ObjectArray.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -12000,8 +11958,6 @@ let copy = structuredClone(original);
 
 <!-- ============ 文档分隔线：008-javascript/007-FunctionScopeClosure.md ============ -->
 
-
-
 ## 1. 引言
 
 函数是 JavaScript 中"一等公民"（first-class citizen）的抽象机制：它可以赋值给变量、作为参数传递、从函数返回、存储在数据结构中。这种设计让 JavaScript 拥有函数式编程的能力，但也带来了一些独特的语义——作用域链、闭包、`this` 绑定——这些机制是 React Hooks、Vue 响应式、Node.js 事件循环等现代框架与运行时的基石。
@@ -13978,10 +13934,6 @@ gen.next();
 
 <!-- ============ 文档分隔线：008-javascript/008-ArrayHigherOrderMethod.md ============ -->
 
-
-
-
-
 # 数组高阶方法（Array Higher-Order Methods）
 
 > 本篇对标 MIT 6.031（Software Construction）、Stanford CS110L（Safety in Systems Programming）与 CMU 15-150（Functional Programming）教学水准，系统讲授 JavaScript 数组高阶方法的形式语义、工程实践与性能权衡。所有数学公式使用 KaTeX 渲染，参考文献采用 ACM Reference Format。
@@ -15467,8 +15419,6 @@ let arr = [1, 2, 3].values().map(x => x * 2).toArray();
 
 <!-- ============ 文档分隔线：008-javascript/009-ThisKeywordDeepDive.md ============ -->
 
-
-
 # this 关键字详解
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -15482,8 +15432,6 @@ let arr = [1, 2, 3].values().map(x => x * 2).toArray();
 - 严格模式与全局污染
 
 <!-- ============ 文档分隔线：008-javascript/010-Regex.md ============ -->
-
-
 
 ## 1. 历史动机：正则表达式的起源
 
@@ -18118,8 +18066,6 @@ let escaped = RegExp.escape("a.b*c");
 
 <!-- ============ 文档分隔线：008-javascript/011-ES2018RegExpNamedCaptureGroups.md ============ -->
 
-
-
 > 前置：需先有正则基础（043）。
 
 # 具名捕获组
@@ -19689,8 +19635,6 @@ match (str) {
 持续关注 TC39 提案进展，保持对最新特性的敏感度，是 JavaScript 工程师的重要素养。
 
 <!-- ============ 文档分隔线：008-javascript/012-UnicodePropertyEscape.md ============ -->
-
-
 
 > 前置：需先有正则基础（043）。
 
@@ -21332,8 +21276,6 @@ const regex = /(?u:\p{L})+/;
 持续关注 TC39 提案进展，保持对最新特性的敏感度，是 JavaScript 工程师的重要素养。
 
 <!-- ============ 文档分隔线：008-javascript/013-CustomErrorTypes.md ============ -->
-
-
 
 ## 0. 导言
 
@@ -24468,10 +24410,6 @@ while (current.cause) {
 
 <!-- ============ 文档分隔线：008-javascript/014-HigherOrderFunction.md ============ -->
 
-
-
-
-
 # 高阶函数：JavaScript 函数式编程的核心抽象
 
 > "Programs must be written for people to read, and only incidentally for machines to execute." —— Harold Abelson 与 Gerald Sussman 在 SICP 中的一句话，揭示了高阶函数作为抽象工具的本质。
@@ -25853,10 +25791,10 @@ John Hughes. 1989. Why functional programming matters. *Comput. J.* 32, 2 (April
 
 ### 11.4 相关 FANDEX 文档
 
-- [数据类型与运算符](./数据类型与运算符) — 函数类型的底层基础。
-- [控制流](./控制流) — 高阶函数与命令式控制流的对比。
-- [递归与尾调用优化](./递归与尾调用优化) — 高阶函数与递归的配合。
-- [柯里化与偏函数](./柯里化与偏函数) — 高阶函数的核心应用。
+- 数据类型与运算符 — 函数类型的底层基础。
+- 控制流 — 高阶函数与命令式控制流的对比。
+- 递归与尾调用优化 — 高阶函数与递归的配合。
+- 柯里化与偏函数 — 高阶函数的核心应用。
 
 ---
 
@@ -26013,11 +25951,7 @@ _.reduce([1, 2, 3], (a, b) => a + b, 0);
 
 *本文档基于 ES2024 正式规范撰写。所有代码示例在 Node.js 22+ 与现代浏览器中可直接运行。*
 
-<!-- ============ 文档分隔线：008-javascript/015-LinearGeneticProgramming.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：008-javascript/015-RecursionTailCallOptimization.md ============ -->
 
 # 递归与尾调用优化
 
@@ -28615,8 +28549,6 @@ async function traverseDirSafe(root, visitor) {
 
 <!-- ============ 文档分隔线：008-javascript/016-CurryAndFunctionComposition.md ============ -->
 
-
-
 > 阅读建议：先掌握柯里化“是什么、怎么用”；性能分析章节为【进阶原理】。
 
 # 柯里化与偏函数
@@ -30496,9 +30428,6 @@ const doubled = numbers.map(x => x * 2);  // 新元组
 
 <!-- ============ 文档分隔线：008-javascript/017-JavaScriptPrototypeInheritance.md ============ -->
 
-
-
-
 ## 1. 原型与原型链 (Prototype & Prototype Chain)
 
 ### 1.1 什么是原型
@@ -31309,8 +31238,6 @@ function safeMerge(target, source) {
 防御：递归合并时，对每一层的 key 都做危险 key 过滤。
 
 <!-- ============ 文档分隔线：008-javascript/018-PrototypeChainClassEssence.md ============ -->
-
-
 
 > 前置：先掌握对象（026）与函数基础；形式化定义部分为【高阶选读】。
 
@@ -33033,10 +32960,6 @@ TypeScript 的 `implements` 不影响运行时，仅做编译期类型检查。`
 
 <!-- ============ 文档分隔线：008-javascript/019-DeepShallowCopy.md ============ -->
 
-
-
-
-
 # 深拷贝与浅拷贝（Deep Copy & Shallow Copy）
 
 > 本篇对标 MIT 6.031（Software Construction）、Stanford CS107（Computer Organization & Systems）与 CMU 15-213（Introduction to Computer Systems）教学水准，系统讲授 JavaScript 中值语义与引用语义、深拷贝与浅拷贝的形式语义、算法实现与工程权衡。所有数学公式使用 KaTeX 渲染，参考文献采用 ACM Reference Format。
@@ -34584,11 +34507,7 @@ let copy = structuredClone(obj);
 copy.nested.a = 2;  // obj.nested.a 仍为 1
 ```
 
-<!-- ============ 文档分隔线：008-javascript/020-ObjectReference.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：008-javascript/020-ObjectStaticMethods.md ============ -->
 
 # Object 扩展（ES6+ 静态方法体系）
 
@@ -36768,8 +36687,6 @@ console.log(validator.validate({ age: 25 }));
 > **结语**：`Object` 静态方法是 JavaScript 工程师日常最频繁使用的 API 之一。理解其背后的属性描述符模型、原型链语义、不可变性层级与 TC39 演进历程，是写出健壮、可维护代码的基础。掌握 `Object.freeze` 与 `structuredClone` 的边界、`Object.assign` 的 setter 触发语义、`Object.groupBy` 的 null 原型返回值等细节，能在生产环境避免大量隐蔽 Bug。后续学习推荐结合 `Proxy`/`Reflect`（ES6 反射 API）与 `Symbol`（ES6 新原始类型）章节，构建完整的对象模型知识体系。
 
 <!-- ============ 文档分隔线：008-javascript/021-ES6NewFeatures.md ============ -->
-
-
 
 ## 0. 引言
 
@@ -39137,8 +39054,6 @@ let escaped = RegExp.escape("a.b*c");
 
 <!-- ============ 文档分隔线：008-javascript/022-MapSetWeakMapWeakSet.md ============ -->
 
-
-
 ## Map 基础
 
 **基本写法：创建与增删改查**
@@ -39373,13 +39288,11 @@ m.set(key, 1); // 对象作键
 
 ## 扩展学习
 
-- 对象：`javascript/020-ObjectReference`；
+- 对象：`javascript/020-ObjectStaticMethods`；
 - 内存：`javascript/036-MemoryManagementAndGarbageCollection`；
 - 数组：`javascript/006-ObjectArray`。
 
 <!-- ============ 文档分隔线：008-javascript/023-ArrayBufferTypedArray.md ============ -->
-
-
 
 ## ArrayBuffer 基础
 
@@ -39603,8 +39516,6 @@ console.log(le ? "little-endian" : "big-endian");
 - 文件：`html5/014-HTML5OfflineStorageWebAPI`。
 
 <!-- ============ 文档分隔线：008-javascript/024-AsyncProgramming.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -41969,8 +41880,6 @@ let p = Promise.try(() => {
 ```
 
 <!-- ============ 文档分隔线：008-javascript/025-PromiseConstructorDeepDive.md ============ -->
-
-
 
 ## 0. 学习导览
 
@@ -45023,8 +44932,6 @@ promises.reduce((chain, promise) => chain.then(() => promise()), Promise.resolve
 
 <!-- ============ 文档分隔线：008-javascript/026-PromiseStaticMethod.md ============ -->
 
-
-
 > 前置：先读 030 异步编程，掌握 Promise 基本用法。
 
 # Promise 静态方法（Promise Static Methods）
@@ -47526,10 +47433,6 @@ button.onclick = () => resolve("clicked");
 ```
 
 <!-- ============ 文档分隔线：008-javascript/027-AsyncConcurrencyControl.md ============ -->
-
-
-
-
 
 # 异步并发控制
 
@@ -50191,8 +50094,6 @@ await Promise.all(
 
 <!-- ============ 文档分隔线：008-javascript/028-EventLoop.md ============ -->
 
-
-
 > 阅读建议：核心必读。形式化模型可先跳过，重点看执行顺序示例与对比表；反复读直到能口算执行顺序。
 
 # 事件循环（Event Loop）
@@ -52002,10 +51903,6 @@ console.log('D');
 
 <!-- ============ 文档分隔线：008-javascript/029-EventLoopDetailed.md ============ -->
 
-
-
-
-
 # 事件循环详解（Event Loop In Depth）
 
 > 本篇对标 MIT 6.005（Software Construction）、Stanford CS110L（Safety in Systems Programming）与 CMU 15-410（Operating Systems Design）教学水准，系统讲授 JavaScript 事件循环（Event Loop）的形式语义、调度模型、浏览器与 Node.js 差异及工程实践。所有数学公式使用 KaTeX 渲染，参考文献采用 ACM Reference Format。
@@ -53654,8 +53551,6 @@ console.log("sync");
 
 <!-- ============ 文档分隔线：008-javascript/030-IteratorHelper.md ============ -->
 
-
-
 > 里程碑标注：建议先掌握数组方法与生成器（009）后再读。
 
 ## 1. 历史动机与发展脉络
@@ -54953,10 +54848,10 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 ### 11.4 相关 FANDEX 文档
 
-- [索引数据库](./索引数据库) — IDB cursor 是天然的迭代器，与 helpers 配合处理大数据集。
-- [时间API](./时间API) — Temporal 对象可迭代，配合 helpers 实现日期范围遍历。
-- [Promise构造器](./Promise构造器) — AsyncIterator 的异步链式调用基础。
-- [Records与Tuples](./Records与Tuples) — 不可变数据与惰性求值的组合。
+- 索引数据库 — IDB cursor 是天然的迭代器，与 helpers 配合处理大数据集。
+- 时间API — Temporal 对象可迭代，配合 helpers 实现日期范围遍历。
+- Promise构造器 — AsyncIterator 的异步链式调用基础。
+- Records与Tuples — 不可变数据与惰性求值的组合。
 
 ---
 
@@ -55293,8 +55188,6 @@ const arr = [...new Set([1, 2]), ...range];
 ---
 
 <!-- ============ 文档分隔线：008-javascript/031-CoroutinesInJavaScript.md ============ -->
-
-
 
 ## 0. 学习导览
 
@@ -58081,10 +57974,6 @@ let result = await it.next();
 
 <!-- ============ 文档分隔线：008-javascript/032-ExploringES6ProxiesAndReflect.md ============ -->
 
-
-
-
-
 # Proxy 与 Reflect
 
 > 本文是 FANDEX JavaScript 模块的核心理论文档之一,定位为 MIT 6.S081 / Stanford CS107 / CMU 15-410 级别的工程教学材料,涵盖 Proxy 的形式语义、代理不变量、Reflect 设计哲学、Vue 3 响应式实现等。
@@ -60504,8 +60393,6 @@ const memoized = new Proxy(fn, {
 注:数据基于 V8 8.x 在 Node.js 14 上的典型表现。
 
 <!-- ============ 文档分隔线：008-javascript/033-ProxyReflectPractice.md ============ -->
-
-
 
 ## 1. 历史动机与演化
 
@@ -63878,8 +63765,6 @@ function defineReactive(obj, key, val) {
 
 <!-- ============ 文档分隔线：008-javascript/034-ClosureMemoryLeakOptimization.md ============ -->
 
-
-
 > 前置：先读 016 闭包与 057 内存管理；本篇为【进阶专题】。
 
 # 闭包的内存泄露与优化
@@ -65473,8 +65358,6 @@ node --inspect finalization.js
 ```
 
 <!-- ============ 文档分隔线：008-javascript/035-MemoryLeakTroubleshoot.md ============ -->
-
-
 
 > 前置：先读 031 闭包内存与 057 内存管理；本篇为【进阶专题】。
 
@@ -67192,9 +67075,6 @@ global.gc();
 
 <!-- ============ 文档分隔线：008-javascript/036-MemoryManagementAndGarbageCollection.md ============ -->
 
-
-
-
 ## 一句话理解
 
 JavaScript 的内存管理 = 分配内存 + 使用内存 + 自动回收内存。
@@ -67284,8 +67164,8 @@ function process(el) {
 
 把"内存管理"翻译成三个问题：谁是根？谁可达？谁在引用它？
 回答清楚这三个问题，大部分泄漏问题都能自己定位。
-下一步建议阅读 [闭包的内存泄露与优化](/FANDEX/javascript/034-ClosureMemoryLeakOptimization/) 与
-[内存泄漏排查](/FANDEX/javascript/035-MemoryLeakTroubleshoot/) 实战篇。
+下一步建议阅读 闭包的内存泄露与优化 与
+内存泄漏排查 实战篇。
 
 ## 核心知识点
 
@@ -67319,8 +67199,6 @@ function process(el) {
 - 集合弱引用：`javascript/022-MapSetWeakMapWeakSet`。
 
 <!-- ============ 文档分隔线：008-javascript/037-JavaScriptModular.md ============ -->
-
-
 
 ## 1. 历史动机与背景
 
@@ -70208,8 +70086,6 @@ import x from "./a.json" with { type: "json" };
 
 <!-- ============ 文档分隔线：008-javascript/038-ModuleDynamicImportCodeSplitting.md ============ -->
 
-
-
 ## 1. 历史动机与演化
 
 ### 1.1 模块化之前的黑暗时代（1995-2009）
@@ -72532,9 +72408,6 @@ document.head.appendChild(link);
 
 <!-- ============ 文档分隔线：008-javascript/039-ModuleBundlingAndTreeShaking.md ============ -->
 
-
-
-
 ## 一句话理解
 
 打包器把"浏览器无法直接运行的模块文件"合并成"浏览器能直接运行的 chunk"；
@@ -72616,7 +72489,7 @@ export function init() { console.log('module loaded'); }
 
 打包是"模块图 → chunk"的流水线，Tree Shaking 是其中一道静态分析优化。
 写库时保持模块纯函数化并正确声明 `sideEffects`，写应用时用 ESM 按需引入，
-再配合 [模块动态导入与代码分割](/FANDEX/javascript/038-ModuleDynamicImportCodeSplitting/) 控制加载节奏。
+再配合 模块动态导入与代码分割 控制加载节奏。
 
 ## 核心知识点
 
@@ -72651,8 +72524,6 @@ export function init() { console.log('module loaded'); }
 - 构建：`vite/` 模块。
 
 <!-- ============ 文档分隔线：008-javascript/040-DOMOperationEvent.md ============ -->
-
-
 
 ## 1. DOM 基础 (DOM Basics)
 
@@ -74010,11 +73881,7 @@ document.querySelectorAll(".btn")
     .forEach(btn => btn.addEventListener("click", onClick));
 ```
 
-<!-- ============ 文档分隔线：008-javascript/041-CrossDocumentMessaging.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：008-javascript/041-BOMBrowserObjectModel.md ============ -->
 
 # 浏览器对象模型（BOM）
 
@@ -75627,8 +75494,6 @@ flowchart TD
 | 2.0 | 2026-07-20 | 金标准升级：新增学习目标、历史动机、形式化定义、案例研究、习题、参考文献、延伸阅读 | FANDEX Content Engineering Team |
 
 <!-- ============ 文档分隔线：008-javascript/042-WebAPIBrowserInterface.md ============ -->
-
-
 
 ## 1. 引言
 
@@ -77353,8 +77218,6 @@ ch.close();
 
 <!-- ============ 文档分隔线：008-javascript/043-FetchApiAndAbortController.md ============ -->
 
-
-
 # fetch 与 AbortController
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -77367,11 +77230,7 @@ ch.close();
 - 错误语义与 HTTP 状态陷阱
 - 封装一个可取消请求函数
 
-<!-- ============ 文档分隔线：008-javascript/044-ImageOptimization.md ============ -->
-
-
-
-
+<!-- ============ 文档分隔线：008-javascript/044-FetchApiWebStreams.md ============ -->
 
 # 网络请求 API
 
@@ -80698,8 +80557,6 @@ const response = await fetch('/api/data', { signal: AbortSignal.timeout(5000) })
 
 <!-- ============ 文档分隔线：008-javascript/045-StorageForTheWeb.md ============ -->
 
-
-
 ## 0. 学习导言
 
 > 「Web 存储是浏览器从『无状态终端』迈向『应用平台』的关键基石。从 1994 年 Cookie 的诞生解决状态保持，到 2009 年 Web Storage 简化键值存储，再到 2015 年 IndexedDB 提供完整的事务型数据库，Web 平台的存储能力经历了 30 年的演进。」
@@ -83765,10 +83622,6 @@ const storage = {
 
 <!-- ============ 文档分隔线：008-javascript/046-IndexedDBADatabaseInYourBrowser.md ============ -->
 
-
-
-
-
 # 索引数据库（IndexedDB）
 
 ## 0. 学习导言
@@ -85791,10 +85644,6 @@ IndexedDB 是浏览器内置的强大事务型 NoSQL 数据库，为 Web 应用�
 
 <!-- ============ 文档分隔线：008-javascript/047-ErrorBoundaryGlobalErrorCatch.md ============ -->
 
-
-
-
-
 # 错误边界与全局错误捕获
 
 ## 1. 历史动机：为什么需要错误边界
@@ -87715,8 +87564,6 @@ flowchart LR
 反馈渠道：在 GitHub Issues 提交问题或建议
 
 <!-- ============ 文档分隔线：008-javascript/048-DebounceThrottle.md ============ -->
-
-
 
 ## 1. 历史动机与演化
 
@@ -91001,8 +90848,6 @@ onUnmounted(() => search.cancel());
 
 <!-- ============ 文档分隔线：008-javascript/049-DebugPerformanceOptimization.md ============ -->
 
-
-
 ## 1. 引言
 
 调试（Debugging）与性能优化（Performance Optimization）是软件工程中最具工程性、最依赖工具链与形式化模型的两个领域。调试的本质是**从观测到的异常状态回溯到根因状态**的逆向推理过程；性能优化的本质是**在有限资源约束下最大化用户感知质量**的优化问题。两者共同的特征是：不能依靠经验直觉，必须以**可观测数据**（Observability）为基础，以**形式化模型**为指引，以**工具链**为手段。
@@ -93585,9 +93430,6 @@ function fpsMonitor() {
 
 <!-- ============ 文档分隔线：008-javascript/050-CoreWebVitalsAndPerformanceMetrics.md ============ -->
 
-
-
-
 ## 一句话理解
 
 性能不能靠"感觉"，Core Web Vitals 用三个数字回答：
@@ -93693,10 +93535,6 @@ new PerformanceObserver((list) => {
 - 资源：`html5/019-ImageResponsiveImage`。
 
 <!-- ============ 文档分隔线：008-javascript/051-NodeJsPerformanceOptimization.md ============ -->
-
-
-
-
 
 # Node.js 高级特性与性能优化
 
@@ -95475,8 +95313,6 @@ diagnostics_channel.publish('app.custom-event', { timestamp: Date.now() });
 
 <!-- ============ 文档分隔线：008-javascript/052-PackageManagerCommands.md ============ -->
 
-
-
 ## 初始化项目
 
 **基本写法：生成 package.json**
@@ -95736,8 +95572,6 @@ pnpm install   # 自动链接 store
 
 <!-- ============ 文档分隔线：008-javascript/053-ConsoleAPI.md ============ -->
 
-
-
 ## 基础输出
 
 **基本写法：log 多参数**
@@ -95955,9 +95789,6 @@ if (process.env.NODE_ENV === "production") {
 - 性能：`javascript/050-CoreWebVitalsAndPerformanceMetrics`。
 
 <!-- ============ 文档分隔线：008-javascript/054-JavaScriptProjectPractice.md ============ -->
-
-
-
 
 ## 1. 项目实战案例
 
@@ -97192,9 +97023,6 @@ export function renderProducts(products) {
 
 <!-- ============ 文档分隔线：008-javascript/055-JavaScriptProjectExampleTodoApp.md ============ -->
 
-
-
-
 | 完成任务   | 点击切换完成状态，视觉反馈   |
 | ---------- | ---------------------------- |
 | 删除任务   | 删除单条任务，带确认和动画   |
@@ -98152,8 +97980,6 @@ const pubsub = {
 
 <!-- ============ 文档分隔线：008-javascript/056-ES2024NewFeatures.md ============ -->
 
-
-
 ## ES2023 数组非破坏方法
 
 **基本写法：返回排序副本**
@@ -98505,8 +98331,6 @@ Math.f16round(1.337); // 按 float16 精度舍入
 - 正则：`javascript/010-Regex`。
 
 <!-- ============ 文档分隔线：008-javascript/057-JavaScriptLatestFeature.md ============ -->
-
-
 
 > 里程碑标注：新特性速览，先掌握 ES6 基础（036）再读。
 
@@ -100164,8 +99988,6 @@ console.log(result); // 18
 **最终修订说明**：本文档基于 2026 年 7 月的规范与运行时状态撰写。所有代码示例均经过 Node.js 22.6、Deno 2.1、Bun 1.2 的兼容性验证。如遇规范演进导致的 API 变更，请以 TC39 最新提案为准。
 
 <!-- ============ 文档分隔线：008-javascript/058-TemporalJavaScriptAPI.md ============ -->
-
-
 
 > 里程碑标注：新 API 提案内容，建议学习 6 个月后再读；现阶段可先用date-fns/moment 替代。
 
@@ -101932,8 +101754,6 @@ flowchart TD
 
 <!-- ============ 文档分隔线：008-javascript/059-RecordsAndTuples.md ============ -->
 
-
-
 > 里程碑标注：提案内容，浏览器支持有限，建议了解即可。
 
 # Records 与 Tuples：JavaScript 不可变值语义数据结构
@@ -102920,10 +102740,10 @@ Chris Okasaki. 1999. *Purely Functional Data Structures* (1st. ed.). Cambridge U
 
 ### 11.4 相关 FANDEX 文档
 
-- [迭代器帮助器](./迭代器帮助器) — 与 Record/Tuple 配合实现惰性不可变流水线。
-- [Promise构造器](./Promise构造器) — Promise resolve 值的不可变保证。
-- [对象与数组](./对象与数组) — 可变对应物的深入理解。
-- [DOM操作与事件](./DOM操作与事件) — DOM 节点为何不能放入 Record。
+- 迭代器帮助器 — 与 Record/Tuple 配合实现惰性不可变流水线。
+- Promise构造器 — Promise resolve 值的不可变保证。
+- 对象与数组 — 可变对应物的深入理解。
+- DOM操作与事件 — DOM 节点为何不能放入 Record。
 
 ---
 
@@ -102994,8 +102814,6 @@ new Set().add(#[1,2]).has(#[1,2]);        // true
 *本文档基于 TC39 Stage 2 提案撰写，最终标准可能调整。生产环境使用前请查阅最新规范。*
 
 <!-- ============ 文档分隔线：008-javascript/060-RegexAssertions.md ============ -->
-
-
 
 > 前置：需先有正则基础（043）。
 
@@ -105580,10 +105398,6 @@ console.log('支持后行断言:', supportsLookbehind());
 | `d` 标志 | 90+ | 88+ | 16+ | 90+ | 16+ | 不支持 |
 
 <!-- ============ 文档分隔线：008-javascript/061-JavaScriptTheory.md ============ -->
-
-
-
-
 
 # JavaScript 理论知识点
 
@@ -108240,8 +108054,6 @@ readable.on('end', () => writable.end());
 
 <!-- ============ 文档分隔线：008-javascript/062-WebWorkersMultithreading.md ============ -->
 
-
-
 # Web Workers 多线程
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -108256,8 +108068,6 @@ readable.on('end', () => writable.end());
 
 <!-- ============ 文档分隔线：008-javascript/063-ServiceWorkerPWA.md ============ -->
 
-
-
 # Service Worker 与 PWA
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -108269,4 +108079,3 @@ readable.on('end', () => writable.end());
 - Fetch 拦截与离线回退
 - Manifest 与安装提示
 - 推送与后台同步概览
-

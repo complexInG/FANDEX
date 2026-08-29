@@ -1,6 +1,6 @@
 ---
 order: 280
-title: Service-Worker与PWA
+title: Service Worker 与 PWA
 module: 'html5'
 category: 前端技术
 difficulty: advanced

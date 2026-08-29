@@ -1,6 +1,6 @@
 ---
 order: 930
-title: Java性能调优
+title: Java 性能调优
 module: 'java'
 category: 后端技术
 difficulty: advanced

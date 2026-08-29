@@ -1,6 +1,6 @@
 ---
 order: 440
-title: 错误边界与Sentry集成
+title: 错误边界与 Sentry 集成
 module: 'react'
 category: 前端技术
 difficulty: advanced

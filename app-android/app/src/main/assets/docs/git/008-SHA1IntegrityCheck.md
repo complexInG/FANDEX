@@ -1,6 +1,6 @@
 ---
 order: 80
-title: SHA-1哈希完整性校验
+title: SHA-1 哈希完整性校验
 module: 'git'
 category: 工具链
 difficulty: intermediate

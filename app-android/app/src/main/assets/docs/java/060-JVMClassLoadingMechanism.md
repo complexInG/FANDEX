@@ -1,6 +1,6 @@
 ---
 order: 600
-title: JVM类加载机制
+title: JVM 类加载机制
 module: 'java'
 category: 后端技术
 difficulty: advanced

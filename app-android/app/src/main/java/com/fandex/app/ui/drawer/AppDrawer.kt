@@ -1,6 +1,8 @@
 package com.fandex.app.ui.drawer
 
 import android.app.Application
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -46,6 +48,7 @@ import com.fandex.app.FandexApp
 import com.fandex.app.data.model.CategoryInfo
 import com.fandex.app.data.prefs.ThemeMode
 import com.fandex.app.ui.common.pressScale
+import com.fandex.app.ui.components.CategoryColor
 import com.fandex.app.ui.theme.LocalExtendedColors
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -184,29 +187,42 @@ fun AppDrawer(
             }
         }
 
+        // 品牌头部与固定分区之间的 1dp 分割线：增强分区层次
+        HorizontalDivider(color = extendedColors.borderSubtle)
+
         // ---------------------------------------------------------------
-        // 固定顶部：快捷导航（当前路由高亮）
+        // 固定顶部：快捷导航（当前路由高亮，选中底色平滑过渡）
         // ---------------------------------------------------------------
         navItems.forEach { item ->
             val selected = currentRoute == item.route ||
                 (item.route != com.fandex.app.ui.navigation.Routes.HOME &&
                     currentRoute.startsWith(item.route))
+            // 选中态背景色 180ms 平滑过渡
+            val itemBackground by animateColorAsState(
+                targetValue = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
+                else Color.Transparent,
+                animationSpec = tween(durationMillis = 180),
+                label = "drawerNavBg"
+            )
+            // 图标与文字颜色随选中态过渡
+            val itemTint by animateColorAsState(
+                targetValue = if (selected) MaterialTheme.colorScheme.primary
+                else extendedColors.fgSecondary,
+                animationSpec = tween(durationMillis = 180),
+                label = "drawerNavTint"
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onNavigate(item.route) }
-                    .background(
-                        if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
-                        else Color.Transparent
-                    )
+                    .background(itemBackground)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = item.icon,
                     contentDescription = null,
-                    tint = if (selected) MaterialTheme.colorScheme.primary
-                    else extendedColors.fgSecondary
+                    tint = itemTint
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
@@ -279,7 +295,7 @@ fun AppDrawer(
         ) {
             DrawerSectionTitle("模块导航")
             categories.forEach { category ->
-                val color = parseColor(category.colorHex)
+                val color = CategoryColor.parse(category.colorHex)
                 // 分类小节标题
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
@@ -416,14 +432,6 @@ private fun DrawerStatDivider() {
             .height(14.dp)
             .background(LocalExtendedColors.current.borderSubtle)
     )
-}
-
-/** 解析十六进制颜色 */
-private fun parseColor(hex: String): Color {
-    val normalized = hex.removePrefix("#")
-    return runCatching {
-        Color(normalized.toLong(16) or 0xFF000000)
-    }.getOrDefault(Color(0xFF4F5BD5))
 }
 
 /** Color 亮度粗判 */

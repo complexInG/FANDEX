@@ -1,6 +1,6 @@
 ---
 order: 470
-title: InnoDB-Cluster
+title: InnoDB Cluster
 module: 'mysql'
 category: 数据库
 difficulty: advanced

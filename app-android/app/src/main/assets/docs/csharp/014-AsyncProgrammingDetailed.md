@@ -8,12 +8,12 @@ description: C# 异步编程全景解析：APM/EAP/TAP 三代模型、Task/Value
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'csharp/012-CGameDevUnity'
+  - 'csharp/012-CSharpGameDevUnity'
   - 'csharp/013-LINQDeep'
   - 'csharp/015-PatternMatching'
   - 'csharp/016-CRecordType'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 ## 1. 历史动机与发展脉络

@@ -1,6 +1,6 @@
 ---
 order: 460
-title: Python与代码质量
+title: Python 与代码质量
 module: 'python'
 category: 后端技术
 difficulty: beginner

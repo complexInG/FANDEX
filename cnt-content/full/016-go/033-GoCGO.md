@@ -1,6 +1,6 @@
 ---
 order: 330
-title: Go与CGO
+title: Go 与 CGO
 module: 'go'
 category: 后端技术
 difficulty: advanced

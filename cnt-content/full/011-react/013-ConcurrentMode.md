@@ -1,6 +1,6 @@
 ---
 order: 130
-title: Concurrent模式
+title: Concurrent 模式
 module: 'react'
 category: 前端技术
 difficulty: advanced

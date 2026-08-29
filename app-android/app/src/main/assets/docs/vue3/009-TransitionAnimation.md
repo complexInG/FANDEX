@@ -1,6 +1,6 @@
 ---
 order: 90
-title: Transition与动画
+title: Transition 与动画
 module: 'vue3'
 category: 前端技术
 difficulty: intermediate

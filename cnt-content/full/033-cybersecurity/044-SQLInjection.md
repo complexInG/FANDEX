@@ -1,6 +1,6 @@
 ---
 order: 440
-title: Cybersecurity SQL 注入检测与防御
+title: SQL 注入检测与防御
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

@@ -1,6 +1,6 @@
 ---
 order: 110
-title: git-restore与文件操作
+title: git-restore 与文件操作
 module: 'git'
 category: 工具链
 difficulty: intermediate

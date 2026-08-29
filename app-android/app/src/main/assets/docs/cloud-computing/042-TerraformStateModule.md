@@ -1,6 +1,6 @@
 ---
 order: 420
-title: 云计算 Terraform 状态与模块
+title: Terraform 状态与模块
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

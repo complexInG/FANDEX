@@ -1,6 +1,6 @@
 ---
 order: 210
-title: React与TypeScript
+title: React 与 TypeScript
 module: 'react'
 category: 前端技术
 difficulty: intermediate

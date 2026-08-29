@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'mysql/001-HowToUseThisCourse'
-  - 'mysql/004-SQL-Playground'
+  - 'mysql/004-SQLPlayground'
 prerequisites:
   - 'mysql/001-HowToUseThisCourse'
 ---
@@ -82,4 +82,4 @@ timeline
 
 - 使用指南：`mysql/001-HowToUseThisCourse`；
 - 术语表：`mysql/003-Glossary`；
-- 沙箱：`mysql/004-SQL-Playground`。
+- 沙箱：`mysql/004-SQLPlayground`。

@@ -15,7 +15,7 @@ related:
   - 'cpp/013-RAIIResourceManagement'
 prerequisites:
   - 'cpp/013-RAIIResourceManagement'
-  - 'cpp/044-SmartPointer'
+  - 'cpp/044-CppSmartPointer'
   - 'cpp/052-MoveSemanticsDetailed'
 ---
 

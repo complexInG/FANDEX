@@ -16,7 +16,7 @@ prerequisites:
   - 'getting-started/001-DevEnvSetup'
 ---
 
-> 阅读建议：先完成 `getting-started/022-VSCodeInstall` 装好编辑器，再读本篇；插件可以边用边装，不需要一次装全。
+> 阅读建议：插件可以边用边装，不需要一次装全。
 
 ## 1. 插件体系概述
 

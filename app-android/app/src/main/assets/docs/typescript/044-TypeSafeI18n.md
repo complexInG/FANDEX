@@ -10,11 +10,11 @@ updated: '2026-08-03'
 related:
   - 'typescript/043-TypeSafeFormValidation'
   - 'typescript/045-TypeSafeRoute'
-  - 'typescript/046-TypeScript54ReleaseNotesNoInferUtilityType'
-  - 'typescript/047-TypeLevelProgrammingInTypeScript'
+  - 'typescript/046-TypeSafeConfigSystem'
+  - 'typescript/047-TypeSafeDatabaseQuery'
 prerequisites: []
 ---
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 

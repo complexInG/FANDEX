@@ -1,6 +1,6 @@
 ---
 order: 410
-title: 常见SQL反模式
+title: 常见 SQL 反模式
 module: 'sql'
 category: 数据库
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 720
-title: JSON类型与JSON-TABLE
+title: JSON 类型与 JSON_TABLE
 module: 'mysql'
 category: 数据库
 difficulty: intermediate

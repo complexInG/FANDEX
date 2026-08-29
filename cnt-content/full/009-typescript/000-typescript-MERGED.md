@@ -13,8 +13,6 @@ prerequisites: []
 
 <!-- ============ 文档分隔线：009-typescript/001-HowToReadThisCourse.md ============ -->
 
-
-
 ## 0.1 TypeScript 类型能力速查
 
 ### 从 JavaScript 到 TypeScript 的升级路径
@@ -137,55 +135,6 @@ flowchart LR
 > 先跑通环境，再学语法；公式跳过、代码必敲；遇到问题先查 FAQ 和术语表。
 
 <!-- ============ 文档分隔线：009-typescript/002-TypeScriptOverviewEnvSetup.md ============ -->
-
-
-## 0. 学习路径与阅读指南（先读这一节）
-
-本模块有 67 篇文档，编号就是学习顺序。本文是**第 002 课**：先搭好环境、跑通第一个 TypeScript 程序，再进入 003-006 的零基础前篇（变量、函数、类、泛型）。**零基础只需要一条路径，一次只走一步**：
-
-```text
-新手最小路径（只有这一条，按顺序读）：
-001 本课程使用指南（先读） → 002 概述与环境（本文）
-    → 003 变量基础 → 004 函数基础 → 005 类基础 → 006 泛型基础
-    → 007 基础类型系统 → 008 接口别名 → 009 函数泛型
-    → 010 类型兼容性 → 011 字面量类型 → 012 类型推断深入
-    → 013 as const → 014 never → 015 类与装饰器
-    → 017 类型守卫 → 018 索引签名
-    → 022 声明文件 → 023 import type → 024 模块解析
-    → 049 工程化 → 060 类型安全 API 项目 → 061 TODO 项目实战
-```
-
-读完这条路径就能写真实项目；之后再按需回头补 016、019-021、025-048 等进阶篇章。
-
-> 为什么编号可以放心跟：本版已经按学习顺序整体重排，**编号即学习顺序**。进阶专题（类型论、类型体操、编译器原理）集中排在 025 课以后，零基础主线可以跳过它们，不影响后续内容。
-
-**遇到数学符号怎么办（统一规则）**：正文以代码和白话为主，类型论记号（如 `Γ ⊢ e : τ`）只出现在少数文档文末的"进阶附录"中。零基础第一遍的规则只有一条——**看到公式直接跳过，只看代码示例、表格与"动手试试"**。这些符号是给有项目经验后回来精读的人看的，跳过不影响主线。完整规则见 `000-HowToReadThisCourse`。
-
-进阶参考：四阶段全景图（暂时不用记，需要时再回来看）：
-
-```text
-第 1 阶段（类型基础）：001 指南 → 002 环境 → 003 变量 → 004 函数 → 005 类 → 006 泛型
-    → 007 基础类型系统 → 008 接口别名 → 009 函数泛型 → 010 类型兼容性
-    → 011 字面量类型 → 012 类型推断 → 013 as const → 014 never → 015 类与装饰器
-第 2 阶段（类型进阶）：017 类型守卫 → 018 索引签名 → 019 映射类型 → 020 泛型约束
-    → 021 装饰器详解 → 022 声明文件 → 023 import type → 024 模块解析
-第 3 阶段（类型体操）：025 高级类型演算 → 027 协变逆变 → 032 工具类型原理
-    → 033 条件类型分发 → 034 infer 扩展 → 035 递归类型 → 056 类型体操 → 062 理论串讲
-第 4 阶段（工程实践）：049 工程化 → 050 satisfies → 058 tsconfig 严格模式
-    → 059 装饰器标准实现 → 060 类型安全 API 项目 → 061 TODO 项目实战
-    → 064 类型测试 → 065 Node 工程模板 → 066 TS7 编译器
-```
-
-其中前两阶段为【核心必读】；第三、四阶段与理论串讲（062）为【进阶原理】，有项目经验后再读。
-
-> 一句话记住：类型是 TS 的灵魂——先搭环境，再学语法；先会标注，再会推导，最后用类型安全工程落地。
-
-
-> 本节为增量补充，帮助你选对 TypeScript 与配套运行时版本。
-
-- TypeScript：6.0.x 为当前稳定主线；7.0 已发布，编译器改为 Go 原生实现（tsgo），编译速度约为旧版 10 倍。新项目可直接使用 6.x/7.x，存量项目按官方迁移指南升级。
-- 配套运行时：Node.js 22 LTS 是默认选择；Deno 2.7+ 与 Bun 1.3.x 原生支持 TypeScript，无需先编译。
-- 编辑器：VS Code 内置 TS 语言服务，建议把 TypeScript 升级到与项目一致的最新稳定版。
 
 ## 1. TypeScript 概述 (Overview)
 
@@ -1184,8 +1133,6 @@ c.home; // "/" 字面量
 
 <!-- ============ 文档分隔线：009-typescript/003-TSBasicsVariablesAndTypes.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能用 `let` 和 `const` 声明变量，并说出与 `var` 的关键区别
@@ -1333,8 +1280,6 @@ function f({ a, b }: { a: string; b?: number }): void {
 
 <!-- ============ 文档分隔线：009-typescript/004-TSBasicsFunctions.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能写带参数类型与返回类型的函数（声明式、表达式、箭头式）
@@ -1468,8 +1413,6 @@ console.log(picker()); // "hearts"
 下一篇进入类基础。
 
 <!-- ============ 文档分隔线：009-typescript/005-TSBasicsClasses.md ============ -->
-
-
 
 ## 0. 学习目标（可验证）
 
@@ -1670,8 +1613,6 @@ class AccountingDepartment extends Department {
 
 <!-- ============ 文档分隔线：009-typescript/006-TSBasicsGenerics.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能写 `identity<T>` 泛型函数并说出与 `any` 的区别
@@ -1853,19 +1794,7 @@ console.log(bee.keeper.hasMask); // true
 
 <!-- ============ 文档分隔线：009-typescript/007-BasicTypeSystem.md ============ -->
 
-
-
-
 > 阅读提示：正文以代码和白话为主，不出现类型论公式。文末"进阶附录 A"集中解释 `Γ ⊢ e : τ` 这类记号，零基础第一遍可完全跳过。
-
-## 0. 本篇定位与阅读建议（先读这一节）
-
-本文是 TS 模块的**第 007 课（基础类型）**，正文小节从 1 开始，与 001 的"0. 学习路径"编号方式对应：0 号章节是"先读指引"，1 号以后是正式内容。
-
-- 零基础路径：读完 000 使用指南与 001 环境配置后，先跑通 `tsc --init` 与 `tsc --watch`，再读本文的类型系统。
-- 本文读到 **9. 最佳实践** 即可形成完整认知；**10. 实际应用示例**快速浏览；**11. 常见问题**遇到报错再查。
-- 文件末尾（`## 原始类型` 之后）是**速查区**：与正文内容重复，按需查阅，不需要逐行读。
-- 本文 8.3 只讲"泛型推断"的入门形态，泛型的完整体系在 005-TSBasicsGenerics 与 008-FunctionGeneric 展开。
 
 ## 1. 基础类型 (Basic Types)
 
@@ -3697,17 +3626,6 @@ let display_name: string = name ?? "Anonymous"
 
 <!-- ============ 文档分隔线：009-typescript/008-InterfaceTypeAlias.md ============ -->
 
-
-
-## 0. 本篇定位与阅读建议（先读这一节）
-
-本文是 TS 模块的**第 008 课（接口与类型别名）**，正文小节从 1 开始。
-
-- 前置：先读完 006-BasicTypeSystem 的类型基础，理解"类型是什么"再学"如何描述对象"。
-- 推荐路径：读到 **5. 最佳实践** 即可完成本课目标；**6. 代码示例**快速浏览；文件末尾（`## 接口定义` 之后）是**速查区**，按需查阅。
-- **3.6 条件类型**是进阶预览：第一遍可以跳过，008-FunctionGeneric 与 032-ConditionalTypeDistribute 会系统展开。
-- 本文 1.4（函数接口）与 4.5（泛型支持）只是"接口的两种特殊形态"，完整体系分别在 008-FunctionGeneric 的函数与泛型章节讲解。
-
 ## 1. 接口 (Interface)
 
 接口是 TypeScript 中用于定义对象结构的重要工具，它描述了对象应该具有的属性和方法。
@@ -5400,8 +5318,6 @@ interface ClockInterface {
 
 <!-- ============ 文档分隔线：009-typescript/009-KeyofTypeofIndexedAccessTypes.md ============ -->
 
-
-
 # keyof、typeof 与索引访问类型
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -5415,17 +5331,6 @@ interface ClockInterface {
 - 常见误用与报错解读
 
 <!-- ============ 文档分隔线：009-typescript/010-FunctionGeneric.md ============ -->
-
-
-
-## 0. 本篇定位与阅读建议（先读这一节）
-
-本文是 TS 模块的**第 009 课（函数与泛型）**，正文小节从 1 开始。
-
-- 前置：先读完 006-BasicTypeSystem 的类型基础与 007-InterfaceTypeAlias 的接口/类型别名，理解"类型是什么"再学"如何抽象行为"。
-- 推荐路径：读到 **8. 最佳实践** 即可完成本课目标；**9. 代码示例**快速浏览；文件末尾（`## 函数声明` 之后）是**速查区**，按需查阅。
-- 文件最末的 **TypeScript 5.x 新特性** 是进阶预览：有项目经验后再读，第一遍直接跳过。
-- 本文与 006-BasicTypeSystem / 007-InterfaceTypeAlias 的衔接：006-BasicTypeSystem 介绍了泛型推断的入门形态、007-InterfaceTypeAlias 介绍了泛型接口与泛型别名，本文把这些线索汇总成完整体系（约束、默认值、泛型类、工具类型）。
 
 ## 1. 函数重载 (Function Overloading)
 
@@ -7584,8 +7489,6 @@ type Status = "active" | "inactive"
 
 <!-- ============ 文档分隔线：009-typescript/011-TypeCompatibility.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能用自己的话解释"结构化类型"与"名义类型"的区别
@@ -7881,10 +7784,9 @@ const good: EventHandler = (e: unknown) => console.log(e);
 - `010-LocalTypeInference`：类型收窄如何让联合类型"变成"单类型；
 - `TypeInferenceDeepDive`：推断与兼容性如何配合工作。
 
-<!-- ============ 文档分隔线：009-typescript/012-LocalTypeInference.md ============ -->
+<!-- ============ 文档分隔线：009-typescript/012-LiteralUnionTypes.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 0. 为什么需要这一篇（先读）
@@ -10028,8 +9930,6 @@ function get_status_message(status: Status): string {
 
 <!-- ============ 文档分隔线：009-typescript/013-TypeInferenceDeepDive.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能解释为什么 `let x = 1` 推断为 `number`，而 `const x = 1` 推断为 `1`
@@ -10355,8 +10255,6 @@ const fn = (x: number) => x.toFixed(2);
 
 <!-- ============ 文档分隔线：009-typescript/014-ConstAssertion.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能说出 `as const` 的三个核心效果
@@ -10602,8 +10500,6 @@ const titles = {
 - `010-LocalTypeInference`：字面量类型与联合类型的应用。
 
 <!-- ============ 文档分隔线：009-typescript/015-NeverTypeSemantics.md ============ -->
-
-
 
 ## 0. 学习目标（可验证）
 
@@ -10896,8 +10792,7 @@ function die(): never {
 
 <!-- ============ 文档分隔线：009-typescript/016-ClassDecorator.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 1. 类成员修饰符 (Access Modifiers)
@@ -12841,8 +12736,7 @@ class User {
 
 <!-- ============ 文档分隔线：009-typescript/017-IntersectionTypeMerge.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 历史动机与背景
@@ -14596,8 +14490,7 @@ type S = NonNullable<T>; // string
 
 <!-- ============ 文档分隔线：009-typescript/018-TypeGuardCustomGuard.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 > 一句话直觉：类型守卫 = 安检员。`typeof x === "string"` 就是"请出示证件"——检查通过后，TS 才允许你把 x 当字符串用；检查不通过的分支里，x 还是原类型。
@@ -16875,8 +16768,7 @@ console.log(value.toUpperCase())  // value 被收窄为 string
 
 <!-- ============ 文档分隔线：009-typescript/019-IndexSignatureDynamicProperty.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 第一章 概述
@@ -19741,8 +19633,7 @@ let user: Record<string, any> = new Proxy({}, handler)
 
 <!-- ============ 文档分隔线：009-typescript/020-MappedTypeAdvanced.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 第一章 概述
@@ -19774,7 +19665,7 @@ let user: Record<string, any> = new Proxy({}, handler)
 
 ### 1.3 本教程的定位
 
-本教程面向已经掌握 TypeScript 基础语法、泛型、条件类型的开发者，是"映射类型"主题的进阶篇。如果你对 `{ [K in keyof T]: V }` 这类基础语法尚不熟悉，建议先阅读《基础类型系统》与《条件类型与映射类型》两章。
+本教程面向已经掌握 TypeScript 基础语法、泛型、条件类型的开发者，是"映射类型"主题的进阶篇。如果你对 `{ [K in keyof T]: V }` 这类基础语法，请先学习对应的基础篇目再读本篇。
 
 本教程的风格参考了 MIT 6.102（原 6.005）《软件构造》课程中对"抽象与类型"的讲解方式，以及 Stanford CS110L《并发系统安全》中对"类型作为不变量保证"的论证思路。我们不仅讲解语法，更注重揭示类型变换背后的数学结构与编译器行为，使读者能够建立起可迁移、可推理的类型思维。
 
@@ -21696,8 +21587,7 @@ type XOR<T> = { [K in keyof T]: T[K] } & { [K in keyof T]?: never }
 
 <!-- ============ 文档分隔线：009-typescript/021-GenericConstraintDefault.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 历史动机与背景
@@ -23695,8 +23585,7 @@ function create_instance<T>(factory: Factory<T>): T {
 
 <!-- ============ 文档分隔线：009-typescript/022-DecoratorDetailed.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -25100,8 +24989,7 @@ console.log(svc.fib(40));  // 第二次命中缓存
 
 <!-- ============ 文档分隔线：009-typescript/023-DeclarationFileWriting.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -28814,8 +28702,6 @@ flowchart TD
 
 <!-- ============ 文档分隔线：009-typescript/024-ImportTypeVerbatimModuleSyntax.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能区分"值导入"与"类型导入"，并说明编译后的差异
@@ -29068,8 +28954,7 @@ TS 5.0 起推荐直接迁移到 `verbatimModuleSyntax`，旧的三个开关（re
 
 <!-- ============ 文档分隔线：009-typescript/025-ModuleResolutionModernToolchains.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -31063,10 +30948,8 @@ const x: MyType = myFunc();
 
 <!-- ============ 文档分隔线：009-typescript/026-AdvancedTypeCalculus.md ============ -->
 
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
-
-> 阅读建议：高级类型为【进阶原理】，建议先完成 002-014 基础。
 ## 1. 类型断言 (Type Assertions)
 
 类型断言允许我们手动告诉编译器一个值的具体类型，当我们比编译器更了解变量的类型时非常有用。
@@ -32161,8 +32044,7 @@ console.log(readonlyOrder);
 
 <!-- ============ 文档分隔线：009-typescript/027-TypeGymnasticsPracticalPatterns.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -33766,8 +33648,7 @@ type Leaves<T, P extends string = ''> = T extends object
 
 <!-- ============ 文档分隔线：009-typescript/028-CovarianceContravariance.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -35465,8 +35346,7 @@ flowchart TD
 
 <!-- ============ 文档分隔线：009-typescript/029-ThisTypePolymorphism.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -36617,8 +36497,7 @@ const input = new InputElementBuilder()
 
 <!-- ============ 文档分隔线：009-typescript/030-SymbolsAndUniqueTypes.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -37911,8 +37790,7 @@ Symbol 与 unique symbol 是 TypeScript 类型系统中最微妙、也最强大�
 
 <!-- ============ 文档分隔线：009-typescript/031-NamespaceModule.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -39508,8 +39386,7 @@ export default myLib;
 
 <!-- ============ 文档分隔线：009-typescript/032-EnumAdvanced.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -41659,10 +41536,8 @@ type Config = {
 
 <!-- ============ 文档分隔线：009-typescript/033-UtilityTypePrinciple.md ============ -->
 
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
-
-> 阅读建议：工具类型原理为【进阶原理】，建议先掌握 010 映射类型。
 ## 第一章 概述
 
 ### 1.1 为什么需要理解工具类型实现原理
@@ -43884,8 +43759,7 @@ type RequiredKeys<T> = {
 
 <!-- ============ 文档分隔线：009-typescript/034-ConditionalTypeDistribute.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -45593,8 +45467,7 @@ type R = never extends string ? "yes" : "no"  // "yes"
 
 <!-- ============ 文档分隔线：009-typescript/035-InferTypeDeepDive.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -47178,8 +47051,7 @@ type Path<T, Prefix extends string = ''> =
 
 <!-- ============ 文档分隔线：009-typescript/036-RecursiveTypeDeepOperation.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 1. 学习导论
@@ -49506,8 +49378,7 @@ type Join<S extends string[], D extends string> =
 
 <!-- ============ 文档分隔线：009-typescript/037-ConditionalMappedType.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -51003,8 +50874,7 @@ TypeScript 类型系统的演进方向：
 
 <!-- ============ 文档分隔线：009-typescript/038-TypeScriptTypeDeclarationModuleResolution.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 1. 学习导论
@@ -53782,10 +53652,9 @@ interface ImportMeta {
 export type { User }
 ```
 
-<!-- ============ 文档分隔线：009-typescript/039-PurelyFunctionalDataStructures.md ============ -->
+<!-- ============ 文档分隔线：009-typescript/039-TypeSafeEventSystem.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -55166,8 +55035,7 @@ function createEventBus<Events extends Record<string, unknown>>(): EventEmitter<
 
 <!-- ============ 文档分隔线：009-typescript/040-TypeSafeAPIClient.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -58165,8 +58033,7 @@ const user = await request('/users/{id}', {
 
 <!-- ============ 文档分隔线：009-typescript/041-TypeSafeStateManagement.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -60909,8 +60776,7 @@ global.fetch = jest.fn(() =>
 
 <!-- ============ 文档分隔线：009-typescript/042-TypeSafeEnvVar.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -63322,8 +63188,7 @@ class AppService {
 
 <!-- ============ 文档分隔线：009-typescript/043-TypeSafeFormValidation.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -64907,8 +64772,7 @@ function saveState(state: PersistedState) {
 
 <!-- ============ 文档分隔线：009-typescript/044-TypeSafeI18n.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -66904,8 +66768,7 @@ export function useI18n() {
 
 <!-- ============ 文档分隔线：009-typescript/045-TypeSafeRoute.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -68799,10 +68662,9 @@ function routesToMermaid<R extends Record<string, any>>(routes: R): string {
 
 无论选择哪种方案，"路径模板即类型源"是类型安全路由的核心思想。掌握这一思想，即可在任何路由库上构建类型安全的路由层，将运行时错误前移到编译期，显著提升代码质量与开发效率。
 
-<!-- ============ 文档分隔线：009-typescript/046-TypeScript54ReleaseNotesNoInferUtilityType.md ============ -->
+<!-- ============ 文档分隔线：009-typescript/046-TypeSafeConfigSystem.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -70931,10 +70793,9 @@ describe('ConfigManager performance', () => {
 
 附录：本模块的所有代码示例均经过 TypeScript 5.4+ 与 Zod 3.22+ 验证，可直接用于生产环境。形式化推导部分遵循 Pierce (2002) 与 Cardelli & Martini (1992) 的符号约定。
 
-<!-- ============ 文档分隔线：009-typescript/047-TypeLevelProgrammingInTypeScript.md ============ -->
+<!-- ============ 文档分隔线：009-typescript/047-TypeSafeDatabaseQuery.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -72560,8 +72421,7 @@ function groupBy<T extends Record<string, any>, K extends keyof T & string>(
 
 <!-- ============ 文档分隔线：009-typescript/048-TypeSafePubSub.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -74411,8 +74271,7 @@ Map 是更安全的选择。
 
 <!-- ============ 文档分隔线：009-typescript/049-TypeScript5NewFeatures.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -76387,8 +76246,7 @@ TypeScript 5.x 标志着这门语言从"JavaScript 的类型层"向"ECMAScript �
 
 <!-- ============ 文档分隔线：009-typescript/050-TypeScriptEngineeringConfig.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -77876,8 +77734,7 @@ flowchart TD
 
 <!-- ============ 文档分隔线：009-typescript/051-SatisfiesOperator.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -80066,8 +79923,7 @@ if (isUser(data)) {
 
 <!-- ============ 文档分隔线：009-typescript/052-TypeScriptMigrationPractice.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -82195,8 +82051,7 @@ export {};
 
 <!-- ============ 文档分隔线：009-typescript/053-ConditionalTypeInfer.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -84049,8 +83904,7 @@ type FirstParameter<T> = T extends (first: infer P, ...args: any[]) => any ? P :
 
 <!-- ============ 文档分隔线：009-typescript/054-TypeScriptCompilePerformanceOptimization.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -85699,8 +85553,7 @@ npx tsc -b --clean
 
 <!-- ============ 文档分隔线：009-typescript/055-MappedTypeKeyRemap.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -87861,8 +87714,7 @@ type Config = {
 
 <!-- ============ 文档分隔线：009-typescript/056-TemplateLiteralType.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 ## 1. 学习导论
@@ -90460,8 +90312,7 @@ let path: APIPath = "/api/users"
 
 <!-- ============ 文档分隔线：009-typescript/057-TypeGymnastics.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -92098,8 +91949,7 @@ type Fibonacci<N extends number, T extends any[] = [1], U extends any[] = [], V 
 
 <!-- ============ 文档分隔线：009-typescript/058-ModuleDeclarationGlobalAugmentation.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -94161,8 +94011,7 @@ export type { User }
 
 <!-- ============ 文档分隔线：009-typescript/059-TsconfigStrictMode.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -96996,8 +96845,7 @@ tsc --explainFiles
 
 <!-- ============ 文档分隔线：009-typescript/060-DecoratorStandardImpl.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -99249,10 +99097,8 @@ function Retry(times: number) {
 
 <!-- ============ 文档分隔线：009-typescript/061-TypeScriptProjectExampleTypeSafeAPIClient.md ============ -->
 
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
-
-> 阅读建议：综合项目，建议完成类型进阶与工程化（039）后再动手。
 | 请求拦截器 | 请求前添加认证头、日志等       |
 | ---------- | ------------------------------ |
 | 响应拦截器 | 统一错误处理、响应转换         |
@@ -99907,8 +99753,6 @@ await api.users.list({}, { signal: controller.signal });
 
 <!-- ============ 文档分隔线：009-typescript/062-TypeScriptProjectExampleTodoApp.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能独立搭建一个前后端共享类型的 TypeScript 项目结构
@@ -100404,8 +100248,7 @@ void load();
 
 <!-- ============ 文档分隔线：009-typescript/063-TypeScriptTheory.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 > 里程碑标注：理论串讲，建议学习 6 个月后再读。
 # TypeScript 理论知识点
@@ -102759,8 +102602,6 @@ fp-ts 利用 HKT 模拟实现函数式类型类（Functor、Monad、Applicative�
 
 <!-- ============ 文档分隔线：009-typescript/064-TscCompilerCommands.md ============ -->
 
-
-
 ## 基础编译
 
 **基本写法：编译文件**
@@ -103007,9 +102848,6 @@ tsc -b --force     # 强制全量构建
 
 <!-- ============ 文档分隔线：009-typescript/065-TypeTestingAndAssertions.md ============ -->
 
-
-
-
 ## 概述
 
 类型测试是"类型层 API"的回归测试：运行时测试验证值的行为，类型测试验证编译器眼中的形状。工具类型、泛型函数与声明文件是暴露给其他开发者的"类型层 API"，重构时最容易悄悄改变推断结果，而普通单测根本覆盖不到编译期错误。为此 tsd 提供 `expectType`、`expectAssignable`、`expectError` 三种断言，让类型测试像单元测试一样写在 `.test-d.ts` 文件中；TypeScript 编译器本身也提供 `@ts-expect-error` 注释，用于断言"下一行必须报错"。本文从最小示例到进阶用例，说明如何为工具类型和泛型函数建立可回归的类型契约，并指出 `as` 断言等常见误区。
@@ -103094,13 +102932,12 @@ expectError<ElementOf<string>>(); // 非数组类型应触发约束错误
 
 类型测试的成本很低：一个断言文件 + 一个脚本命令。
 对工具类型、泛型函数、声明文件这些"类型 API"建立契约，重构时 `pnpm test:types`
-就能替你守住边界。下一步可结合 [声明文件编写](/FANDEX/typescript/023-DeclarationFileWriting/)
+就能替你守住边界。下一步可结合 声明文件编写
 理解断言与声明的关系。
 
 <!-- ============ 文档分隔线：009-typescript/066-NodeTypeScriptEngineeringTemplate.md ============ -->
 
-
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 
@@ -103198,12 +103035,10 @@ createServer((req, res) => {
 
 这套骨架的核心是"开发快、构建干净、类型严格"：
 `tsx` 负责开发体验，`tsc` 负责产物质量，双 tsconfig 让两件事互不干扰。
-继续深化可看 [tsconfig 严格模式](/FANDEX/typescript/059-TsconfigStrictMode/) 与
-[编译与性能优化](/FANDEX/typescript/054-TypeScriptCompilePerformanceOptimization/)。
+继续深化可看 tsconfig 严格模式 与
+编译与性能优化。
 
 <!-- ============ 文档分隔线：009-typescript/067-TypeScript7CompilerGuide.md ============ -->
-
-
 
 ## 概述
 
@@ -103271,8 +103106,6 @@ VS Code 用户可以通过官方预览扩展启用原生语言服务：在设置
 TypeScript 7 = 原生编译器 + 相同的语言语义。安装命令不变、CLI 不变、类型行为以 6.0 为基线；真正需要关注的是语言服务与编译器 API 的完成度。对普通项目，执行 `npm install -D typescript` 并跑一遍 `tsc --noEmit` 即可验证。
 
 <!-- ============ 文档分隔线：009-typescript/068-TypeScriptFAQ.md ============ -->
-
-
 
 ## 0. 使用说明
 
@@ -103452,12 +103285,10 @@ const id2 = <T extends unknown>(x: T): T => x;
 ## 扩展阅读
 
 - 各问题对应正文章节已在文中给出；
-- 学习路线与阅读规则见 `000-HowToReadThisCourse`；
+- 学习路线与阅读规则见 `001-HowToReadThisCourse`；
 - 术语速查见 `001-TypeScriptOverviewEnvSetup` 末尾的核心术语表。
 
 <!-- ============ 文档分隔线：009-typescript/069-ProjectReferencesMonorepo.md ============ -->
-
-
 
 # Project References 与 Monorepo
 
@@ -103473,8 +103304,6 @@ const id2 = <T extends unknown>(x: T): T => x;
 
 <!-- ============ 文档分隔线：009-typescript/070-RuntimeSchemaValidation.md ============ -->
 
-
-
 # 运行时 Schema 校验
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -103486,4 +103315,3 @@ const id2 = <T extends unknown>(x: T): T => x;
 - schema 与类型单源（infer）
 - 边界校验：请求/响应/环境变量
 - 与 TypeSafe 系列实践的衔接
-

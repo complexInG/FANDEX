@@ -1,6 +1,6 @@
 ---
 order: 540
-title: Cybersecurity Nikto Web 扫描
+title: Nikto Web 扫描
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

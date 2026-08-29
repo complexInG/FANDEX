@@ -1,6 +1,6 @@
 ---
 order: 190
-title: Redis-Cluster哈希槽
+title: Redis Cluster 哈希槽
 module: 'redis'
 category: 数据库
 difficulty: advanced

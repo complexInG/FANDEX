@@ -1,6 +1,6 @@
 ---
 order: 880
-title: Java与Redis
+title: Java 与 Redis
 module: 'java'
 category: 后端技术
 difficulty: intermediate

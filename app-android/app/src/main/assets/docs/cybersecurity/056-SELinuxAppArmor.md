@@ -1,6 +1,6 @@
 ---
 order: 560
-title: Cybersecurity SELinux/AppArmor 强制访问控制
+title: SELinux/AppArmor 强制访问控制
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

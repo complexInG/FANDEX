@@ -1773,11 +1773,11 @@ AutoValue 通过标准 JSR 269 生成新源文件（`AutoValue_User.java`），�
 
 ### 13.1 关联模块
 
-- [java/泛型进阶](./泛型进阶.md)：与枚举同在 Java 5 引入
-- [java/反射与动态代理](./反射与动态代理.md)：注解的运行时消费
-- [java/注解处理器](./注解处理器.md)：JSR 269 深入
-- [java/Java新特性](./Java新特性.md)：Java 8 类型注解、Java 16 record、Java 17 sealed
-- [java/面向对象编程](./面向对象编程.md)：枚举作为特殊类
+- java/泛型进阶：与枚举同在 Java 5 引入
+- java/反射与动态代理：注解的运行时消费
+- java/注解处理器：JSR 269 深入
+- java/Java新特性：Java 8 类型注解、Java 16 record、Java 17 sealed
+- java/面向对象编程：枚举作为特殊类
 
 ### 13.2 进阶书籍
 

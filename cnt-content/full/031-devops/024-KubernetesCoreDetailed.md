@@ -1,6 +1,6 @@
 ---
 order: 240
-title: Kubernetes核心资源详解
+title: Kubernetes 核心资源详解
 module: 'devops'
 category: 云与基础设施
 difficulty: intermediate

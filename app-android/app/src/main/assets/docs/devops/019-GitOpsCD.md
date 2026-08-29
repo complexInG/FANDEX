@@ -1,6 +1,6 @@
 ---
 order: 190
-title: GitOps与持续交付
+title: GitOps 与持续交付
 module: 'devops'
 category: 云与基础设施
 difficulty: advanced

@@ -1,6 +1,6 @@
 ---
 order: 220
-title: Lua性能优化
+title: Lua 性能优化
 module: 'lua'
 category: 后端技术
 difficulty: advanced

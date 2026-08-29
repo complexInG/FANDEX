@@ -1,6 +1,6 @@
 ---
 order: 220
-title: Python与NLP
+title: Python 与 NLP
 module: 'python'
 category: 后端技术
 difficulty: intermediate

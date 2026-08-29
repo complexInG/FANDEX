@@ -1,6 +1,6 @@
 ---
 order: 240
-title: KMP字符串匹配
+title: KMP 字符串匹配
 module: 'algorithm'
 category: 计算机科学
 difficulty: advanced

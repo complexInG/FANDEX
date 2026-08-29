@@ -1,6 +1,6 @@
 ---
 order: 90
-title: Python与虚拟环境
+title: Python 与虚拟环境
 module: 'python'
 category: 后端技术
 difficulty: beginner

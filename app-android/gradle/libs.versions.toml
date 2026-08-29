@@ -17,6 +17,7 @@ datastorePreferences = "1.2.1"
 
 # Markdown 解析
 commonmark = "0.30.0"
+jlatexmathAndroid = "0.2.0"
 
 # 协程
 coroutines = "1.10.2"
@@ -56,6 +57,9 @@ commonmark = { group = "org.commonmark", name = "commonmark", version.ref = "com
 commonmark-ext-gfm-tables = { group = "org.commonmark", name = "commonmark-ext-gfm-tables", version.ref = "commonmark" }
 commonmark-ext-gfm-strikethrough = { group = "org.commonmark", name = "commonmark-ext-gfm-strikethrough", version.ref = "commonmark" }
 commonmark-ext-task-list = { group = "org.commonmark", name = "commonmark-ext-task-list-items", version.ref = "commonmark" }
+
+# LaTeX 数学公式离线渲染
+jlatexmath-android = { group = "ru.noties", name = "jlatexmath-android", version.ref = "jlatexmathAndroid" }
 
 # 协程
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }

@@ -1,6 +1,6 @@
 ---
 order: 90
-title: Shell脚本编程
+title: Shell 脚本编程
 module: 'devops'
 category: 云与基础设施
 difficulty: intermediate

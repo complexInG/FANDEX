@@ -6,13 +6,12 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：012-svg/001-SVGOverviewEnvSetup.md ============ -->
-
 
 ## 1. 历史动机与发展脉络
 
@@ -1599,10 +1598,7 @@ await Promise.all(
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/002-SVGBasicSyntaxDocStructure.md ============ -->
-
 
 ## 1. 历史动机与发展脉络
 
@@ -3241,10 +3237,7 @@ sprites/icons.svg:
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/003-SVGCoordinateSystemViewBox.md ============ -->
-
 
 ## 1. 历史动机与发展脉络
 
@@ -4765,10 +4758,7 @@ flowchart LR
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/004-SVGBasicShapeDetailed.md ============ -->
-
 
 ## 1. 矩形 rect
 
@@ -5340,10 +5330,7 @@ points="10 90 50 10 90 90 130 10 170 90"
 - rotate(-90 100 100):从 12 点钟方向开始
 - stroke-linecap="round":端点圆滑
 
-
-
-<!-- ============ 文档分隔线：012-svg/005-SVGPathPathDetailed.md ============ -->
-
+<!-- ============ 文档分隔线：012-svg/005-SVGPathDetailed.md ============ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -7212,10 +7199,7 @@ const point = path.getPointAtLength(100); // 路径中点坐标
 - C 到 (100,50):右半弧
 - C 回 (50,30):闭合
 
-
-
 <!-- ============ 文档分隔线：012-svg/006-SVGTextTypography.md ============ -->
-
 
 ## 1. 历史动机与发展脉络
 
@@ -9049,10 +9033,7 @@ component.render('沿曲线排列的文字');
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/007-SVGColorFill.md ============ -->
-
 
 ## 1. 填充 fill
 
@@ -9247,7 +9228,7 @@ component.render('沿曲线排列的文字');
 
 ## 7. fill-rule 填充规则
 
-复杂路径的填充规则，详见 [路径 path 详解](./路径path详解)。
+复杂路径的填充规则，详见 路径 path 详解。
 
 ```html
 <!-- 五角星中心镂空 -->
@@ -9730,10 +9711,7 @@ SVG 可使用 CSS 自定义属性，实现运行时主题切换。
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/008-SVGGradientPattern.md ============ -->
-
 
 ## 1. 线性渐变 linearGradient
 
@@ -10472,10 +10450,7 @@ SVG 可使用 CSS 自定义属性，实现运行时主题切换。
 </svg>
 ```
 
-
-
-<!-- ============ 文档分隔线：012-svg/009-SVGTransformTransform.md ============ -->
-
+<!-- ============ 文档分隔线：012-svg/009-SVGTransform.md ============ -->
 
 ## 1. transform 属性
 
@@ -11220,10 +11195,7 @@ SMIL 提供 `<animateTransform>` 专门用于变换动画。
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/010-SVGFilterDetailed.md ============ -->
-
 
 ## 1. filter 基础
 
@@ -12050,10 +12022,7 @@ SVG 无原生 inner-shadow，可通过 feComposite 实现：
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/011-SVGClipMask.md ============ -->
-
 
 ## 1. clipPath 裁剪路径
 
@@ -12772,10 +12741,7 @@ clipPath 先裁剪(限定为圆形区域),mask 再蒙版(底部渐隐)。
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/012-SVGSymbolReuse.md ============ -->
-
 
 ## 1. 为什么要复用
 
@@ -13392,10 +13358,7 @@ CSS 变量可穿透 shadow DOM,实现实例级定制。
 
 通过 CSS 变量复用同一徽章模板,实现不同状态颜色。
 
-
-
 <!-- ============ 文档分隔线：012-svg/013-SVGAnimationBasics.md ============ -->
-
 
 ## 1. SVG 动画方案对比
 
@@ -14254,10 +14217,7 @@ WAAPI 性能接近 CSS 动画,且更灵活。
 | CSS 动画几何属性     | 90+    | 支持    | 支持   | 支持 |
 | WAAPI on SVG         | 支持   | 支持    | 支持   | 支持 |
 
-
-
 <!-- ============ 文档分隔线：012-svg/014-SVGCSSStyling.md ============ -->
-
 
 ## 1. 样式优先级
 
@@ -15080,10 +15040,7 @@ rect:hover {
 </svg>
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/015-SVGJavaScriptInteraction.md ============ -->
-
 
 ## 1. SVG DOM 与 HTML DOM
 
@@ -16057,10 +16014,7 @@ document.querySelectorAll('svg *').forEach((el) => {
 });
 ```
 
-
-
 <!-- ============ 文档分隔线：012-svg/016-SVGResponsivePerformance.md ============ -->
-
 
 ## 1. 响应式 SVG
 
@@ -16812,10 +16766,7 @@ svg {
 | `non-rotating-stroke` | 描边方向不随变换旋转 |
 | `none` | 默认行为,随变换缩放 |
 
-
-
 <!-- ============ 文档分隔线：012-svg/017-SVGIconAccessibility.md ============ -->
-
 
 ## 1. 为什么用 SVG 图标
 
@@ -17966,10 +17917,7 @@ buildSprite();
 | `<title>` | 简短可访问名称 | `id`(配合 aria-labelledby) |
 | `<desc>` | 详细描述 | `id`(配合 aria-describedby) |
 
-
-
 <!-- ============ 文档分隔线：012-svg/018-SVGPracticeProject.md ============ -->
-
 
 ## 1. 项目一：环形进度条
 

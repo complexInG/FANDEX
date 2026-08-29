@@ -1,6 +1,6 @@
 ---
 order: 640
-title: CSS新特性
+title: CSS 新特性
 module: 'css'
 category: 前端技术
 difficulty: advanced
@@ -16,7 +16,6 @@ prerequisites:
   - 'css/001-CSS3OverviewBasicSyntax'
 ---
 
-> 阅读建议：每项新特性先读对应完整文档（032/039/041 等）再回看本篇。
 
 ## 1. @container 容器查询
 

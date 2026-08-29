@@ -1,9 +1,15 @@
 package com.fandex.app.ui.screens.syntax
 
+import com.fandex.app.ui.components.CategoryColor
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,17 +24,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,16 +45,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fandex.app.data.model.SyntaxCard
-import com.fandex.app.ui.markdown.rememberHighlightedCode
+import com.fandex.app.ui.components.FdxIconButton
+import com.fandex.app.ui.common.fandexEntrance
+import com.fandex.app.ui.common.tweenNormal
 import com.fandex.app.ui.components.ThemeQuickToggle
 import com.fandex.app.ui.components.TopDock
+import com.fandex.app.ui.markdown.rememberHighlightedCode
 import com.fandex.app.ui.theme.CodeTextStyle
 import com.fandex.app.ui.theme.LocalExtendedColors
 
@@ -61,11 +65,12 @@ import com.fandex.app.ui.theme.LocalExtendedColors
  * 语法速览详情页
  *
  * 对齐 Web 端 SyntaxExplorer 交互：
- * - 顶部搜索框（按名称 / 公式 / 代码过滤）
+ * - 顶部搜索框（按名称 / 公式 / 代码过滤；焦点态边框颜色 150ms 过渡）
  * - 按 section 分组展示卡片
  * - 卡片含公式、高亮代码、复制与跳转原文入口
+ *
+ * 动效：状态切换 Crossfade；分组卡片首次入场 stagger
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SyntaxDetailScreen(
     moduleId: String,
@@ -83,7 +88,15 @@ fun SyntaxDetailScreen(
     val query by viewModel.query.collectAsState()
     val title by viewModel.title.collectAsState()
     val accentHex by viewModel.accentHex.collectAsState()
-    val accent = parseSyntaxAccent(accentHex)
+    val accent = CategoryColor.parse(accentHex)
+    val extendedColors = LocalExtendedColors.current
+
+    // 入场门控：内容就绪后的下一帧置 true，触发首次 stagger 入场
+    var hasEntered by remember { mutableStateOf(false) }
+    val dataReady = state is SyntaxDetailUiState.Success
+    LaunchedEffect(dataReady) {
+        if (dataReady) hasEntered = true
+    }
 
     Scaffold(
         topBar = {
@@ -98,6 +111,7 @@ fun SyntaxDetailScreen(
                 showNavActions = false,
                 showHome = true,
                 onHome = onHome,
+                accentHex = accentHex,
                 themeQuickToggle = { ThemeQuickToggle(viewModel = viewModel()) }
             )
         }
@@ -107,88 +121,105 @@ fun SyntaxDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // 搜索框
-            TextField(
-                value = query,
-                onValueChange = { viewModel.updateQuery(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("搜索语法点...") },
-                leadingIcon = {
-                    Icon(Icons.Outlined.Search, contentDescription = null)
-                },
-                singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = LocalExtendedColors.current.bgSecondary,
-                    unfocusedContainerColor = LocalExtendedColors.current.bgSecondary
-                )
+            // 搜索框：容器边框随焦点态 150ms 颜色过渡（对齐 web 端输入框减速过渡）
+            SyntaxSearchField(
+                query = query,
+                onQueryChange = { viewModel.updateQuery(it) }
             )
 
-            when (val s = state) {
-                is SyntaxDetailUiState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-                is SyntaxDetailUiState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = s.message,
-                            color = LocalExtendedColors.current.fgSecondary
-                        )
-                    }
-                }
-                is SyntaxDetailUiState.Success -> {
-                    val filtered = remember(s.cards, query) {
-                        val q = query.trim()
-                        if (q.isEmpty()) s.cards
-                        else s.cards.filter { card ->
-                            card.name.contains(q, ignoreCase = true) ||
-                                card.formula.contains(q, ignoreCase = true) ||
-                                card.code.contains(q, ignoreCase = true) ||
-                                card.section.contains(q, ignoreCase = true)
+            // 状态切换：220ms 淡入淡出
+            Crossfade(
+                targetState = state,
+                animationSpec = tweenNormal(),
+                label = "syntaxDetailStateCrossfade"
+            ) { current ->
+                when (current) {
+                    is SyntaxDetailUiState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
                         }
                     }
-                    // 按 section 分组并保留首次出现顺序
-                    val grouped = remember(filtered) {
-                        filtered.groupBy { it.section.ifEmpty { "其他" } }
-                    }
-
-                    if (filtered.isEmpty()) {
+                    is SyntaxDetailUiState.Error -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "未找到匹配的语法点",
-                                color = LocalExtendedColors.current.fgSecondary
+                                text = current.message,
+                                color = extendedColors.fgSecondary
                             )
                         }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            grouped.forEach { (section, cards) ->
-                                // 分组标题
-                                item(key = "section-$section") {
-                                    SectionHeader(section, accent)
-                                }
-                                items(cards.size, key = { cards[it].id.ifEmpty { "$section-$it" } }) { index ->
-                                    SyntaxCardItem(
-                                        card = cards[index],
-                                        moduleId = moduleId,
-                                        docSlug = s.docTitleToSlug[cards[index].docTitle],
-                                        onDocClick = onDocClick
-                                    )
+                    }
+                    is SyntaxDetailUiState.Success -> {
+                        val s = current
+                        val filtered = remember(s.cards, query) {
+                            val q = query.trim()
+                            if (q.isEmpty()) s.cards
+                            else s.cards.filter { card ->
+                                card.name.contains(q, ignoreCase = true) ||
+                                    card.formula.contains(q, ignoreCase = true) ||
+                                    card.code.contains(q, ignoreCase = true) ||
+                                    card.section.contains(q, ignoreCase = true)
+                            }
+                        }
+                        // 按 section 分组并保留首次出现顺序
+                        val grouped = remember(filtered) {
+                            filtered.groupBy { it.section.ifEmpty { "其他" } }
+                        }
+
+                        if (filtered.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "未找到匹配的语法点",
+                                    color = extendedColors.fgSecondary
+                                )
+                            }
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                // 在 builder 阶段确定性分配全局入场下标（跨分组连续递增）
+                                var runningIndex = 0
+                                grouped.forEach { (section, cards) ->
+                                    val headerIndex = runningIndex
+                                    runningIndex += 1
+                                    // 分组标题
+                                    item(key = "section-$section") {
+                                        SectionHeader(
+                                            section = section,
+                                            accent = accent,
+                                            modifier = Modifier
+                                                .animateItem()
+                                                .fandexEntrance(
+                                                    index = headerIndex,
+                                                    visible = hasEntered
+                                                )
+                                        )
+                                    }
+                                    val cardStart = runningIndex
+                                    runningIndex += cards.size
+                                    items(cards.size, key = { cards[it].id.ifEmpty { "$section-$it" } }) { index ->
+                                        SyntaxCardItem(
+                                            card = cards[index],
+                                            moduleId = moduleId,
+                                            docSlug = s.docTitleToSlug[cards[index].docTitle],
+                                            onDocClick = onDocClick,
+                                            modifier = Modifier
+                                                .animateItem()
+                                                .fandexEntrance(
+                                                    index = cardStart + index,
+                                                    visible = hasEntered
+                                                )
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -200,11 +231,69 @@ fun SyntaxDetailScreen(
 }
 
 /**
+ * 语法搜索框
+ *
+ * 容器边框颜色随焦点态过渡：未聚焦 borderDefault -> 聚焦 borderFocus（150ms）
+ */
+@Composable
+private fun SyntaxSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit
+) {
+    val extendedColors = LocalExtendedColors.current
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+
+    val borderColor by animateColorAsState(
+        targetValue = if (focused) extendedColors.borderFocus else extendedColors.borderDefault,
+        animationSpec = tween(durationMillis = 150),
+        label = "syntaxSearchBorder"
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
+    ) {
+        TextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier.fillMaxWidth(),
+            interactionSource = interaction,
+            placeholder = { Text("搜索语法点...") },
+            leadingIcon = {
+                Icon(Icons.Outlined.Search, contentDescription = null)
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(4.dp),
+            // 隐藏默认下划线指示器，由容器边框承担焦点反馈
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = extendedColors.bgSecondary,
+                unfocusedContainerColor = extendedColors.bgSecondary,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Transparent
+            )
+        )
+    }
+}
+
+/**
  * 分组标题
  */
 @Composable
-private fun SectionHeader(section: String, accent: androidx.compose.ui.graphics.Color) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun SectionHeader(
+    section: String,
+    accent: Color,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(
             modifier = Modifier
                 .width(3.dp)
@@ -232,14 +321,15 @@ private fun SyntaxCardItem(
     card: SyntaxCard,
     moduleId: String,
     docSlug: String?,
-    onDocClick: (String, String) -> Unit
+    onDocClick: (String, String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val extendedColors = LocalExtendedColors.current
     val clipboard = LocalClipboardManager.current
     var copied by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
             .background(extendedColors.bgElevated)
@@ -292,27 +382,17 @@ private fun SyntaxCardItem(
                         .padding(8.dp)
                         .horizontalScroll(scrollState)
                 )
-                // 复制按钮悬浮右上
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(4.dp)
-                        .background(extendedColors.codeBg.copy(alpha = 0.9f))
-                ) {
-                    IconButton(
-                        onClick = {
-                            clipboard.setText(AnnotatedString(card.code))
-                            copied = true
-                        },
-                        modifier = Modifier.width(28.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (copied) Icons.Filled.CheckCircle else Icons.Outlined.ContentCopy,
-                            contentDescription = if (copied) "已复制" else "复制",
-                            tint = if (copied) extendedColors.success else extendedColors.fgTertiary
-                        )
-                    }
-                }
+                // 复制按钮悬浮右上（复制成功切换成功色图标）
+                FdxIconButton(
+                    icon = if (copied) Icons.Filled.CheckCircle else Icons.Outlined.ContentCopy,
+                    contentDescription = if (copied) "已复制" else "复制",
+                    onClick = {
+                        clipboard.setText(AnnotatedString(card.code))
+                        copied = true
+                    },
+                    tint = if (copied) extendedColors.success else extendedColors.fgTertiary,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                )
             }
         }
 
@@ -326,15 +406,4 @@ private fun SyntaxCardItem(
             )
         }
     }
-}
-
-
-/**
- * 解析十六进制颜色
- */
-private fun parseSyntaxAccent(hex: String): androidx.compose.ui.graphics.Color {
-    val normalized = hex.removePrefix("#")
-    return runCatching {
-        androidx.compose.ui.graphics.Color(normalized.toLong(16) or 0xFF000000)
-    }.getOrDefault(androidx.compose.ui.graphics.Color(0xFF4F5BD5))
 }

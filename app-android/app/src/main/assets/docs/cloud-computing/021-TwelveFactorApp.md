@@ -1,6 +1,6 @@
 ---
 order: 210
-title: 12要素应用
+title: 12 要素应用
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: intermediate

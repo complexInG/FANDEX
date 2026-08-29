@@ -1,6 +1,6 @@
 ---
 order: 410
-title: 云计算 Terraform 基础
+title: Terraform 基础
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

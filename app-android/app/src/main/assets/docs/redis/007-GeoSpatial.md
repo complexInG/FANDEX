@@ -8,7 +8,7 @@ description: Redis地理空间GEO：基于Sorted Set的地理位置存储、距�
 author: fanquanpp
 updated: '2026-08-01'
 related:
-  - 'redis/005-BitGraph'
+  - 'redis/005-BitMapRedis'
   - 'redis/006-NumberStats'
   - 'redis/008-Stream'
   - 'redis/009-VectorSet'

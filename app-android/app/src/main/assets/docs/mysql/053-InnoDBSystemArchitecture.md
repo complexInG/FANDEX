@@ -1,6 +1,6 @@
 ---
 order: 530
-title: InnoDB体系架构
+title: InnoDB 体系架构
 module: 'mysql'
 category: 数据库
 difficulty: advanced

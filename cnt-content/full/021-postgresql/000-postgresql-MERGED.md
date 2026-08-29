@@ -6,14 +6,12 @@ category: 数据库
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
 
 <!-- ============ 文档分隔线：021-postgresql/001-OverviewInstallConfig.md ============ -->
-
-
 
 > 本节为增量补充，帮助你选择 PostgreSQL 版本。
 
@@ -354,11 +352,7 @@ CREATE POLICY admin_all ON orders
 SELECT * FROM pg_policies WHERE tablename = 'orders';
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/002-TransactionConcurrencyControl.md ============ -->
-
-
 
 # PostgreSQL 事务与并发控制：从原理到工程实践
 
@@ -4044,11 +4038,7 @@ INSERT INTO orders (user_id, amount) VALUES (1, 100);
 COMMIT;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/003-IndexQueryOptimization.md ============ -->
-
-
 
 ## 1. 索引类型
 
@@ -4533,11 +4523,7 @@ CREATE INDEX idx_logs_user ON access_logs (user_id);
 -- 等效于在每个分区上创建索引
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/004-AdvancedSQLExtension.md ============ -->
-
-
 
 ## 1. 窗口函数
 
@@ -5019,11 +5005,7 @@ GROUP BY u.name;
 -- file_fdw: 读取外部文件
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/005-ReplicationHA.md ============ -->
-
-
 
 ## 1. 流复制
 
@@ -5425,11 +5407,7 @@ SET pgaudit.log_relation = on;
 SELECT pgaudit.audit_object('orders', 'SELECT');
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/006-SystemArchitecture.md ============ -->
-
-
 
 ## 1. 进程模型
 
@@ -5510,11 +5488,7 @@ flowchart TD
     T0 --> T9
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/007-LockMechanism.md ============ -->
-
-
 
 ## 1. 表级锁
 
@@ -5598,11 +5572,7 @@ JOIN pg_locks blocker ON blocked.locktype = blocker.locktype
     AND blocked.pid != blocker.pid;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/008-DeadlockDetectionHandling.md ============ -->
-
-
 
 ## 概述
 
@@ -5948,11 +5918,7 @@ COMMIT;
 -- 3. statement_timeout (30s)：防止语句执行过久
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/009-VACUUMMechanism.md ============ -->
-
-
 
 # PostgreSQL VACUUM 机制深度解析
 
@@ -9503,11 +9469,7 @@ VACUUM 机制并非孤立的清理工具，而是 PostgreSQL MVCC 架构下保�
 
 ——全文完——
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/010-TransactionIDWraparoundPrevention.md ============ -->
-
-
 
 ## 1. 事务ID机制
 
@@ -9569,10 +9531,7 @@ ORDER BY xid_age DESC;
 -- 当 age(relfrozenxid) > autovacuum_freeze_max_age * 0.8 时告警
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/011-IndexType.md ============ -->
-
 
 ## 1. 索引类型总览
 
@@ -9846,11 +9805,7 @@ FROM pg_stat_user_indexes
 WHERE relname = 'users';
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/012-CoveringIndexPartialIndex.md ============ -->
-
-
 
 ## 1. 覆盖索引（INCLUDE）
 
@@ -9906,11 +9861,7 @@ CREATE UNIQUE INDEX uk_users_email ON users(email);
 CREATE UNIQUE INDEX uk_users_email_notnull ON users(email) WHERE email IS NOT NULL;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/013-KNNVectorIndex.md ============ -->
-
-
 
 ## 1. pgvector 概述
 
@@ -9997,11 +9948,7 @@ SET hnsw.ef_search = 100;
 | 索引大小 | 较小             | 较大     |
 | 数据更新 | 需要重建         | 增量更新 |
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/014-QueryOptimization.md ============ -->
-
-
 
 ## 1. 统计信息
 
@@ -10086,10 +10033,7 @@ WITH dept_stats AS MATERIALIZED (
 SELECT * FROM dept_stats WHERE avg_salary > 50000;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/015-PartitionedTable.md ============ -->
-
 
 ## 1. 声明式分区
 
@@ -10354,11 +10298,7 @@ SELECT * FROM orders WHERE order_date BETWEEN '2024-01-01' AND '2024-01-31';
 EXPLAIN SELECT * FROM orders WHERE order_date = '2024-01-15';
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/016-PartitionPruningPartitionJoin.md ============ -->
-
-
 
 ## 1. 分区裁剪
 
@@ -10404,10 +10344,7 @@ SELECT order_date, SUM(amount) FROM orders GROUP BY order_date;
 -- 每个分区先聚合，然后合并结果
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/017-AdvancedSQL.md ============ -->
-
 
 ## 1. 窗口函数
 
@@ -10645,11 +10582,7 @@ FROM employees
 GROUP BY GROUPING SETS ((dept_id, job_title), (dept_id), ());
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/018-MERGEStatementEnhancement.md ============ -->
-
-
 
 ## 1. MERGE 语法
 
@@ -10703,10 +10636,7 @@ VALUES (1, 'Alice', 50000)
 ON CONFLICT (id) DO UPDATE SET salary = EXCLUDED.salary;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/019-JSONTABLE.md ============ -->
-
 
 ## 1. JSON_TABLE 概述
 
@@ -11041,10 +10971,7 @@ SELECT JSON_VALUE(attributes, '$.价格') FROM products WHERE id = 1;
 SELECT JSON_QUERY(attributes, '$.地址') FROM users WHERE id = 1;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/020-FullTextSearch.md ============ -->
-
 
 ## 1. 全文检索概述
 
@@ -11306,11 +11233,7 @@ CREATE TEXT SEARCH DICTIONARY my_simple (
 );
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/021-GeoSpatialObject.md ============ -->
-
-
 
 ## 1. PostGIS 概述
 
@@ -11390,10 +11313,7 @@ SELECT ST_Transform(geom, 3857) FROM locations;
 SELECT ST_Area(ST_Transform(geom, 32650)) AS area_sqm FROM parcels;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/022-StoredProcedureAndFunction.md ============ -->
-
 
 ## 1. PL/pgSQL
 
@@ -11756,10 +11676,7 @@ DROP FUNCTION IF EXISTS CalculateOrderTotal(INT);
 ALTER FUNCTION CalculateOrderTotal(INT) OWNER TO admin;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/023-TriggerEventTrigger.md ============ -->
-
 
 ## 1. 触发器概述
 
@@ -12145,10 +12062,7 @@ SELECT proname, prosrc FROM pg_proc WHERE proname = 'before_user_insert';
 ALTER TRIGGER trg_before_user_insert ON users RENAME TO trg_before_insert;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/024-ExtensionModule.md ============ -->
-
 
 ## 1. 扩展管理
 
@@ -12373,11 +12287,7 @@ FROM pg_stat_statements
 ORDER BY mean_exec_time DESC LIMIT 10;
 ```
 
-
-
-<!-- ============ 文档分隔线：021-postgresql/025-FDWFDW.md ============ -->
-
-
+<!-- ============ 文档分隔线：021-postgresql/025-FDWForeignDataWrapper.md ============ -->
 
 ## 1. FDW 概述
 
@@ -12447,11 +12357,7 @@ SELECT * FROM remote_employees WHERE salary > 50000;
 -- Remote SQL: SELECT id, name, salary FROM public.employees WHERE ((salary > 5000.0))
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/026-StreamingReplication.md ============ -->
-
-
 
 ## 1. 流复制概述
 
@@ -12536,11 +12442,7 @@ SELECT * FROM pg_replication_slots;
 SELECT pg_drop_replication_slot('standby1_slot');
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/027-CascadingReplication.md ============ -->
-
-
 
 ## 概述
 
@@ -12930,11 +12832,7 @@ CONNECTION 'host=primary-b port=5432 user=replicator'
 PUBLICATION data_center_b;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/028-PhysicalReplicationSlot.md ============ -->
-
-
 
 ## 概述
 
@@ -13268,11 +13166,7 @@ pg_ctl -D /var/lib/postgresql/data start
 -- 3. 主库切换时复制槽自动迁移
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/029-LogicalDecodingOutputPlugin.md ============ -->
-
-
 
 ## 1. 逻辑解码概述
 
@@ -13329,11 +13223,7 @@ SELECT data FROM pg_logical_slot_get_changes('json_slot', NULL, NULL);
 SELECT data FROM pg_logical_slot_peek_changes('json_slot', NULL, NULL);
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/030-IncrementalBackup.md ============ -->
-
-
 
 ## 1. pg_basebackup
 
@@ -13397,11 +13287,7 @@ touch /var/lib/postgresql/data/recovery.signal
 systemctl start postgresql
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/031-SubscribePublish.md ============ -->
-
-
 
 ## 1. 逻辑复制概述
 
@@ -13466,11 +13352,7 @@ SELECT subname, pid, received_lsn, latest_end_lsn,
 FROM pg_stat_subscription;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/032-SSLEncryptionConnection.md ============ -->
-
-
 
 ## 1. 配置SSL
 
@@ -13513,10 +13395,7 @@ psql "host=server dbname=mydb user=alice sslmode=verify-full sslcert=client.crt 
 | verify-ca   | 必须SSL，验证CA         |
 | verify-full | 必须SSL，验证CA和主机名 |
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/033-RoleBasedPermissionManagement.md ============ -->
-
 
 ## 1. 角色体系
 
@@ -13795,11 +13674,7 @@ WHERE table_name = 'users';
 SELECT datname, datacl FROM pg_database WHERE datname = 'mydb';
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/034-RowLevelSecurity.md ============ -->
-
-
 
 ## 1. RLS 概述
 
@@ -13866,11 +13741,7 @@ DROP POLICY dept_isolation ON employees;
 ALTER TABLE employees DISABLE ROW LEVEL SECURITY;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/035-DataEncryptionStorage.md ============ -->
-
-
 
 ## 1. pgcrypto 扩展
 
@@ -13930,11 +13801,7 @@ SELECT name, pgp_sym_decrypt(ssn, 'encryption_key') AS ssn
 FROM users;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/036-AuditLog.md ============ -->
-
-
 
 ## 1. pgAudit 扩展
 
@@ -13986,10 +13853,7 @@ log_statement = 'mod'          -- 记录DML+DDL
 log_min_duration_statement = 0 -- 记录所有语句及执行时间
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/037-SequenceAutoIncrement.md ============ -->
-
 
 ## 1. 序列（SEQUENCE）
 
@@ -14243,11 +14107,7 @@ WHERE sequence_name = 'order_seq';
 SELECT * FROM order_seq;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/038-GeneratedColumn.md ============ -->
-
-
 
 ## 1. 生成列概述
 
@@ -14301,11 +14161,7 @@ CREATE TABLE orders (
 CREATE INDEX idx_orders_status ON orders(status);
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/039-UpdatableView.md ============ -->
-
-
 
 ## 1. 自动可更新视图
 
@@ -14371,11 +14227,7 @@ INSTEAD OF UPDATE ON employee_details
 FOR EACH ROW EXECUTE FUNCTION update_employee_details();
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/040-ParallelQuery.md ============ -->
-
-
 
 ## 1. 并行查询架构
 
@@ -14632,11 +14484,7 @@ EXPLAIN (ANALYZE, BUFFERS, VERBOSE)
 SELECT count(*) FROM large_table;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/041-LogicalPhysicalReplicationCompare.md ============ -->
-
-
 
 ## 1. 复制概述
 
@@ -14873,11 +14721,7 @@ ALTER TABLE users ADD COLUMN phone VARCHAR(20);
 ALTER TABLE users ADD COLUMN phone VARCHAR(20);
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/042-JSONBJSONDifference.md ============ -->
-
-
 
 ## 1. JSON 与 JSONB 对比
 
@@ -15129,11 +14973,7 @@ SELECT * FROM users WHERE (data->>'age')::int > 25;
 | JSON Path 查询   | GIN (默认)           |
 | 排序             | btree                |
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/043-ExtensionModuleDetailed.md ============ -->
-
-
 
 ## 1. 扩展模块体系
 
@@ -15415,10 +15255,7 @@ SELECT pg_stat_statements_reset(userid, dbid, queryid);
 | `pg_cron`       | 定时任务                             |
 | `pg_repack`     | 在线清理膨胀                         |
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/044-DDL.md ============ -->
-
 
 ## 数据库操作
 
@@ -15765,10 +15602,7 @@ ALTER SEQUENCE seq_order_no RESTART WITH 1;
 DROP SEQUENCE IF EXISTS seq_order_no;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/045-DML.md ============ -->
-
 
 ## INSERT 插入
 
@@ -16022,10 +15856,7 @@ BEGIN;
 SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/046-WindowFunction.md ============ -->
-
 
 ## 排名函数
 
@@ -16291,10 +16122,7 @@ SELECT * FROM (
 WHERE rn = 1;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/047-CTE.md ============ -->
-
 
 ## 基本 CTE
 
@@ -16610,10 +16438,7 @@ LEFT JOIN employees e ON e.dept_id = dt.id
 GROUP BY dt.id, d.name;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/048-PsqlCLI.md ============ -->
-
 
 ## 连接登录
 
@@ -17143,10 +16968,7 @@ SELECT pg_size_pretty(pg_database_size('mydb'));
 SELECT pg_size_pretty(pg_total_relation_size('users'));
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/049-PgDumpRestore.md ============ -->
-
 
 ## pg_dump 基本备份
 
@@ -17312,10 +17134,7 @@ pg_dump -h 192.168.1.100 -p 5432 -U admin -d mydb -f remote.sql
 pg_dump -U postgres -Fc -Z 6 -d mydb -f mydb.dump
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/050-ArrayType.md ============ -->
-
 
 ## 数组定义与构造
 
@@ -17529,10 +17348,7 @@ CREATE INDEX idx_projects_tags ON projects USING GIN (tags);
 SELECT * FROM projects WHERE tags @> ARRAY['java'];
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/051-SchemaManagement.md ============ -->
-
 
 ## 创建与删除模式
 
@@ -17711,10 +17527,7 @@ CREATE EXTENSION IF NOT EXISTS postgis SCHEMA geo;
 SELECT * FROM pg_catalog.pg_class LIMIT 1;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/052-ViewMaterializedView.md ============ -->
-
 
 ## 普通视图
 
@@ -17897,10 +17710,7 @@ DROP MATERIALIZED VIEW mv_daily_sales;
 ALTER MATERIALIZED VIEW mv_daily_sales_v2 RENAME TO mv_daily_sales;
 ```
 
-
-
 <!-- ============ 文档分隔线：021-postgresql/053-ListenNotify.md ============ -->
-
 
 ## NOTIFY 发送通知
 

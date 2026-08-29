@@ -1,6 +1,6 @@
 ---
 order: 240
-title: 物联网 ESP32 GPIO 与引脚
+title: ESP32 GPIO 与引脚
 module: 'iot'
 category: 云与基础设施
 difficulty: beginner

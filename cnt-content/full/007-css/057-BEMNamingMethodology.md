@@ -1,6 +1,6 @@
 ---
 order: 570
-title: BEM命名方法论
+title: BEM 命名方法论
 module: 'css'
 category: 前端技术
 difficulty: intermediate

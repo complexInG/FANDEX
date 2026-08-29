@@ -1,6 +1,6 @@
 ---
 order: 530
-title: CompletableFuture异步编排
+title: CompletableFuture 异步编排
 module: 'java'
 category: 后端技术
 difficulty: advanced

@@ -1,6 +1,6 @@
 ---
 order: 230
-title: GitHub-Packages
+title: GitHub Packages
 module: 'github'
 category: 工具链
 difficulty: intermediate

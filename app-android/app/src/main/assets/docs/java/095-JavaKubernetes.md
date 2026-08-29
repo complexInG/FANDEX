@@ -1,6 +1,6 @@
 ---
 order: 950
-title: Java与Kubernetes
+title: Java 与 Kubernetes
 module: 'java'
 category: 后端技术
 difficulty: intermediate

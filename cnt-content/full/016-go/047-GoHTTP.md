@@ -1,6 +1,6 @@
 ---
 order: 470
-title: Go与HTTP服务器
+title: Go 与 HTTP 服务器
 module: 'go'
 category: 后端技术
 difficulty: intermediate
@@ -1670,11 +1670,11 @@ server.ListenAndServeTLS("cert.pem", "key.pem")
 
 ### 相关章节
 
-- [Go 与 JSON](./Go与JSON.md)：请求/响应的 JSON 序列化
-- [Go 与 HTTP 客户端](./Go与HTTP客户端.md)：客户端实现
-- [Go 与中间件](./Go与中间件.md)：中间件模式详解
-- [Go 与 OAuth2](./Go与OAuth2.md)：认证授权
-- [Go 与日志](./Go与日志.md)：请求日志集成
+- Go 与 JSON：请求/响应的 JSON 序列化
+- Go 与 HTTP 客户端：客户端实现
+- Go 与中间件：中间件模式详解
+- Go 与 OAuth2：认证授权
+- Go 与日志：请求日志集成
 
 ### 推荐书籍
 

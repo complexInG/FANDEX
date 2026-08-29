@@ -1,6 +1,6 @@
 ---
 order: 120
-title: 样式优先级速查
+title: 样式优先级语法速查手册
 module: 'css'
 category: 前端技术
 difficulty: beginner

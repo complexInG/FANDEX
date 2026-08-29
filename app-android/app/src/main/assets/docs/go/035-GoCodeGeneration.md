@@ -1,6 +1,6 @@
 ---
 order: 350
-title: Go与代码生成
+title: Go 与代码生成
 module: 'go'
 category: 后端技术
 difficulty: intermediate

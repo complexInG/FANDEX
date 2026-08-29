@@ -1,6 +1,6 @@
 ---
 order: 300
-title: C-API栈操作
+title: C API 栈操作
 module: 'lua'
 category: 后端技术
 difficulty: advanced

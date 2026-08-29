@@ -1,6 +1,6 @@
 ---
 order: 320
-title: Java函数式编程
+title: Java 函数式编程
 module: 'java'
 category: 后端技术
 difficulty: intermediate

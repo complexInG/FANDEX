@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'javascript/032-ExploringES6ProxiesAndReflect'
-  - 'javascript/020-ObjectReference'
+  - 'javascript/020-ObjectStaticMethods'
   - 'javascript/011-ES2018RegExpNamedCaptureGroups'
   - 'javascript/060-RegexAssertions'
 prerequisites: []

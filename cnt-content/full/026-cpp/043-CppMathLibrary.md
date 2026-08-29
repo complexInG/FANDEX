@@ -10,7 +10,7 @@ updated: '2026-07-21'
 related:
   - 'cpp/041-CppWebAssembly'
   - 'cpp/042-CppReflectionMetaprogramming'
-  - 'cpp/044-SmartPointer'
+  - 'cpp/044-CppSmartPointer'
   - 'cpp/030-CppRegex'
   - 'cpp/035-CppPerformance'
 prerequisites:

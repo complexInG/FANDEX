@@ -104,8 +104,8 @@ function process(el) {
 
 把"内存管理"翻译成三个问题：谁是根？谁可达？谁在引用它？
 回答清楚这三个问题，大部分泄漏问题都能自己定位。
-下一步建议阅读 [闭包的内存泄露与优化](/FANDEX/javascript/034-ClosureMemoryLeakOptimization/) 与
-[内存泄漏排查](/FANDEX/javascript/035-MemoryLeakTroubleshoot/) 实战篇。
+下一步建议阅读 闭包的内存泄露与优化 与
+内存泄漏排查 实战篇。
 
 ## 核心知识点
 

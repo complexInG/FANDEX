@@ -1,6 +1,6 @@
 ---
 order: 250
-title: Go与Kubernetes
+title: Go 与 Kubernetes
 module: 'go'
 category: 后端技术
 difficulty: advanced

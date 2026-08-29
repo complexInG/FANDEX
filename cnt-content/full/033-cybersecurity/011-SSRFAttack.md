@@ -1,6 +1,6 @@
 ---
 order: 110
-title: SSRF攻击
+title: SSRF 攻击
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: intermediate

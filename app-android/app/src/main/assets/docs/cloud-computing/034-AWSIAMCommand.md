@@ -1,6 +1,6 @@
 ---
 order: 340
-title: 云计算 AWS IAM 命令
+title: AWS IAM 命令
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

@@ -1,6 +1,6 @@
 ---
 order: 110
-title: JSX深度解析
+title: JSX 深度解析
 module: 'react'
 category: 前端技术
 difficulty: intermediate

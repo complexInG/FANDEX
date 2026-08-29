@@ -1,6 +1,6 @@
 ---
 order: 430
-title: 文件系统inode
+title: 文件系统 inode
 module: 'cs-fundamentals'
 category: 计算机科学
 difficulty: intermediate

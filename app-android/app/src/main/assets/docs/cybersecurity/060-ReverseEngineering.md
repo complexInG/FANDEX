@@ -1,6 +1,6 @@
 ---
 order: 600
-title: Cybersecurity 逆向工程命令(radare2/ghidra CLI)
+title: 逆向工程命令（radare2/ghidra CLI）
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

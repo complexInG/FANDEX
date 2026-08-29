@@ -1,6 +1,6 @@
 ---
 order: 580
-title: C gdb 调试 语法速查手册
+title: C gdb 调试语法速查手册
 module: 'c'
 category: 计算机科学
 difficulty: beginner

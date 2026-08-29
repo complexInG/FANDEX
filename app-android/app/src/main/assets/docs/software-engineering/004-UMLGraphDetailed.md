@@ -1,6 +1,6 @@
 ---
 order: 40
-title: UML图详解
+title: UML 图详解
 module: 'software-engineering'
 category: 云与基础设施
 difficulty: intermediate

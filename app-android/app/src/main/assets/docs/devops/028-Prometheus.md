@@ -1,6 +1,6 @@
 ---
 order: 280
-title: Prometheus指标采集与告警
+title: Prometheus 指标采集与告警
 module: 'devops'
 category: 云与基础设施
 difficulty: intermediate

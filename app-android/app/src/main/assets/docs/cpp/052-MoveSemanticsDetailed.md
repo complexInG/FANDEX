@@ -8,8 +8,8 @@ description: C++移动语义详解：移动构造、移动赋值、std::move与�
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'cpp/050-CCoreGuidelinesResourceManagement'
-  - 'cpp/051-CSTLAlgorithmAndFunctionObject'
+  - 'cpp/050-CppCoreGuidelinesResourceManagement'
+  - 'cpp/051-CppSTLAlgorithmAndFunctionObject'
   - 'cpp/053-PerfectForwardingReferenceCollapse'
   - 'cpp/054-VTablePolymorphismMemoryLayout'
 prerequisites:

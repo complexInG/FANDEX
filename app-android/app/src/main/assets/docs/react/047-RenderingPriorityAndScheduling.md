@@ -99,5 +99,5 @@ function SearchPage({ items }: { items: string[] }) {
 
 调度系统的存在意义是"保证交互不被长任务饿死"。
 理解优先级与中断后，`useTransition` 不再神秘：它只是把"不着急"的更新放进低优先级队列。
-继续深入可看 [并发模式](/FANDEX/react/013-ConcurrentMode/) 与
-[Fiber 架构](/FANDEX/react/012-FiberArchitecture/)。
+继续深入可看 并发模式 与
+Fiber 架构。

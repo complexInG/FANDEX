@@ -1,6 +1,6 @@
 ---
 order: 10
-title: 第 0 课：环境搭建与第一个网页
+title: 环境搭建与第一个网页
 module: 'html5'
 category: 前端技术
 difficulty: beginner

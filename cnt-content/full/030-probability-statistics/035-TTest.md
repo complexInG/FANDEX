@@ -1,6 +1,6 @@
 ---
 order: 350
-title: t检验
+title: t 检验
 module: 'probability-statistics'
 category: 数学
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 270
-title: Go与Redis
+title: Go 与 Redis
 module: 'go'
 category: 后端技术
 difficulty: intermediate

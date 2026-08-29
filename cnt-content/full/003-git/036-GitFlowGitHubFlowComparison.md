@@ -1,6 +1,6 @@
 ---
 order: 360
-title: Git-Flow与GitHub-Flow对比
+title: Git Flow 与 GitHub Flow 对比
 module: 'git'
 category: 工具链
 difficulty: advanced

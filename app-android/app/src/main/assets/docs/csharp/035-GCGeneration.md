@@ -1,6 +1,6 @@
 ---
 order: 350
-title: GC代机制
+title: GC 代机制
 module: 'csharp'
 category: 后端技术
 difficulty: advanced
@@ -13,7 +13,7 @@ related:
   - 'csharp/036-ValueTypeReferenceType'
   - 'csharp/037-RecordTypeImmutability'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

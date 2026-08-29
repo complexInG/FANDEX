@@ -1,6 +1,6 @@
 ---
 order: 30
-title: 文本处理三剑客：grep、sed、awk
+title: 文本处理三剑客： grep、 sed、 awk
 module: 'shell'
 category: 工具链
 difficulty: intermediate

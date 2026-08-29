@@ -1,6 +1,6 @@
 ---
 order: 540
-title: QUIC协议
+title: QUIC 协议
 module: 'cs-fundamentals'
 category: 计算机科学
 difficulty: intermediate
@@ -10,7 +10,7 @@ updated: '2026-08-01'
 related:
   - 'cs-fundamentals/052-CDNPrinciple'
   - 'cs-fundamentals/053-WebSocketFrameFormat'
-  - 'cs-fundamentals/055-ARPARP'
+  - 'cs-fundamentals/055-ARPProtocolSpoofing'
   - 'cs-fundamentals/056-BGPRoute'
 prerequisites:
   - 'cs-fundamentals/001-ComputerOverview'

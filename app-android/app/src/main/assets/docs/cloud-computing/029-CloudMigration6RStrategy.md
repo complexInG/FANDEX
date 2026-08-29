@@ -1,6 +1,6 @@
 ---
 order: 290
-title: 云迁移6R策略
+title: 云迁移 6R 策略
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: intermediate

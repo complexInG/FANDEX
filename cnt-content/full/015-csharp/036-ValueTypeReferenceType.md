@@ -12,7 +12,7 @@ related:
   - 'csharp/035-GCGeneration'
   - 'csharp/037-RecordTypeImmutability'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 ## 一、学习目标

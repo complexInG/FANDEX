@@ -1,6 +1,6 @@
 ---
 order: 330
-title: DevEco-Studio调试器
+title: DevEco Studio 调试器
 module: 'harmonyos'
 category: 后端技术
 difficulty: advanced

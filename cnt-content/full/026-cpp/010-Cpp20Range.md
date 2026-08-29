@@ -1,6 +1,6 @@
 ---
 order: 100
-title: C++20范围
+title: C++20 Ranges 范围库
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced

@@ -466,7 +466,7 @@
         {
           "id": "java-056",
           "title": "JVM调优",
-          "doc": "063-JVMtuning",
+          "doc": "063-JVMTuning",
           "desc": "JVM调优详解：堆参数、GC日志、MAT分析、G1/ZGC调优、生产级性能工程。",
           "difficulty": "advanced"
         },

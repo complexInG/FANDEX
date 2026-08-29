@@ -1,5 +1,6 @@
 package com.fandex.app.ui.screens.syntax
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,15 +14,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,16 +27,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fandex.app.ui.common.fandexEntrance
 import com.fandex.app.ui.common.pressScale
+import com.fandex.app.ui.common.tweenNormal
+import com.fandex.app.ui.components.CategoryColor
+import com.fandex.app.ui.components.ModuleIcon
 import com.fandex.app.ui.components.ThemeQuickToggle
 import com.fandex.app.ui.components.TopDock
 import com.fandex.app.ui.theme.LocalExtendedColors
@@ -50,8 +51,9 @@ import com.fandex.app.ui.theme.LocalExtendedColors
  * 对齐 Web 端 /syntax 页面：
  * - 语言列表（预构建索引，含语法点统计与主题色）
  * - 点击进入具体语言的语法卡片列表
+ *
+ * 动效：加载 / 内容切换 Crossfade；语言条目轻量入场（仅首次）
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SyntaxScreen(
     onModuleClick: (String) -> Unit,
@@ -65,6 +67,13 @@ fun SyntaxScreen(
     }
 
     val index by viewModel.index.collectAsState()
+
+    // 入场门控：内容就绪后的下一帧置 true，触发首次 stagger 入场
+    var hasEntered by remember { mutableStateOf(false) }
+    val dataReady = index.languages.isNotEmpty()
+    LaunchedEffect(dataReady) {
+        if (dataReady) hasEntered = true
+    }
 
     Scaffold(
         topBar = {
@@ -88,24 +97,34 @@ fun SyntaxScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (index.languages.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(index.languages, key = { it.id }) { language ->
-                        SyntaxLanguageItem(
-                            language = language,
-                            onClick = { onModuleClick(language.id) }
-                        )
+            // 加载 / 内容切换：220ms 淡入淡出
+            Crossfade(
+                targetState = dataReady,
+                animationSpec = tweenNormal(),
+                label = "syntaxStateCrossfade"
+            ) { loaded ->
+                if (!loaded) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(index.languages, key = { _, language -> language.id }) { position, language ->
+                            SyntaxLanguageItem(
+                                language = language,
+                                onClick = { onModuleClick(language.id) },
+                                modifier = Modifier
+                                    .animateItem()
+                                    .fandexEntrance(index = position, visible = hasEntered)
+                            )
+                        }
                     }
                 }
             }
@@ -121,14 +140,15 @@ fun SyntaxScreen(
 @Composable
 private fun SyntaxLanguageItem(
     language: com.fandex.app.data.model.SyntaxLanguage,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val extendedColors = LocalExtendedColors.current
-    val accent = parseAccent(language.color, fallback = MaterialTheme.colorScheme.primary)
+    val accent = CategoryColor.parse(language.color)
     val interaction = remember { MutableInteractionSource() }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .pressScale(interaction)
             .clip(RoundedCornerShape(4.dp))
@@ -139,7 +159,7 @@ private fun SyntaxLanguageItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 几何图标（索引提供的 2 字符标识，等宽字体）
-        com.fandex.app.ui.components.ModuleIcon(
+        ModuleIcon(
             label = language.icon.ifEmpty { language.title.take(2) },
             color = accent
         )
@@ -160,14 +180,4 @@ private fun SyntaxLanguageItem(
             )
         }
     }
-}
-
-/**
- * 解析索引中的十六进制主题色
- */
-private fun parseAccent(hex: String, fallback: Color): Color {
-    val normalized = hex.removePrefix("#")
-    return runCatching {
-        Color(normalized.toLong(16) or 0xFF000000)
-    }.getOrDefault(fallback)
 }

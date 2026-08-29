@@ -1,6 +1,6 @@
 ---
 order: 420
-title: JSONB与JSON差异
+title: JSONB 与 JSON 差异
 module: 'postgresql'
 category: 数据库
 difficulty: intermediate

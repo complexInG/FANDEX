@@ -1,6 +1,6 @@
 ---
 order: 30
-title: Svelte 5 响应式：runes 与绑定
+title: Svelte 5 响应式： runes 与绑定
 module: 'svelte'
 category: 前端技术
 difficulty: intermediate

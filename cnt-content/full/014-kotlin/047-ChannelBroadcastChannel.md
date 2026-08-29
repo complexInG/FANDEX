@@ -1,6 +1,6 @@
 ---
 order: 470
-title: Channel与BroadcastChannel
+title: Channel 与 BroadcastChannel
 module: 'kotlin'
 category: 后端技术
 difficulty: advanced

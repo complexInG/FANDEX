@@ -1,6 +1,6 @@
 ---
 order: 260
-title: Networking tcpdump 抓包
+title: tcpdump 抓包
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

@@ -9,7 +9,7 @@ author: Anonymous
 updated: '2026-08-02'
 related:
   - 'github/001-GitHubOverview'
-  - 'github/002-AccountRegister2FA2FA'
+  - 'github/002-AccountRegister2FA'
   - 'github/004-SSHHTTPS'
   - 'github/005-CollaborationDevelopmentStandard'
 prerequisites: []

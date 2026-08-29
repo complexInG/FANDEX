@@ -1,6 +1,6 @@
 ---
 order: 220
-title: JavaScript Map/Set/WeakMap/WeakSet 语法速查
+title: JavaScript Map/Set/WeakMap/WeakSet 语法速查手册
 module: 'javascript'
 category: 前端技术
 difficulty: beginner
@@ -245,6 +245,6 @@ m.set(key, 1); // 对象作键
 
 ## 扩展学习
 
-- 对象：`javascript/020-ObjectReference`；
+- 对象：`javascript/020-ObjectStaticMethods`；
 - 内存：`javascript/036-MemoryManagementAndGarbageCollection`；
 - 数组：`javascript/006-ObjectArray`。

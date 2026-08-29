@@ -1,6 +1,6 @@
 ---
 order: 190
-title: Context详解
+title: Context 详解
 module: 'go'
 category: 后端技术
 difficulty: intermediate

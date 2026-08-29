@@ -1,12 +1,12 @@
 ---
 order: 10
-title: 002-markdown 模块文档合集
+title: markdown 模块文档合集
 module: 'markdown'
 category: 工具链
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-13'
+updated: '2026-08-29'
 related: []
 prerequisites: []
 ---
@@ -1030,7 +1030,6 @@ sequenceDiagram
 ```
 ````
 
-
 <!-- ============ 文档分隔线：002-markdown/002-HeadingSyntax.md ============ -->
 
 > **认知导入（Layer 0 生存层）**
@@ -1291,7 +1290,6 @@ Markdown 支持 6 级标题，通过 `#` 的数量区分层级，**`#`** **后�
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
 文档站构建（Astro），见 056-astro 模块（如已加入）。
-
 
 <!-- ============ 文档分隔线：002-markdown/003-ParagraphLineBreak.md ============ -->
 
@@ -1559,7 +1557,6 @@ print("Hello!")
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
 文档站构建（Astro），见 056-astro 模块（如已加入）。
-
 
 <!-- ============ 文档分隔线：002-markdown/004-BasicTextFormat.md ============ -->
 
@@ -1881,7 +1878,6 @@ H<sub>2</sub>O
 使用 `console.log()` 输出内容
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/005-CommonMarkSpec.md ============ -->
 
 > **Layer 2 专业层标注**：本篇讲 CommonMark 规范的解析器原理，属于高级话题。零基础学习者可完全跳过，直接学 Layer 0/1 的语法文档即可。
@@ -2095,7 +2091,6 @@ CommonMark 定义了扩展机制，GFM（GitHub Flavored Markdown）是最著名
 - **删除线**：`~~strikethrough~~`
 - **自动链接**：`https://example.com`
 - **代码围栏语言**：` ```python `
-
 
 <!-- ============ 文档分隔线：002-markdown/006-ListSyntax.md ============ -->
 
@@ -2610,7 +2605,6 @@ CommonMark 定义了扩展机制，GFM（GitHub Flavored Markdown）是最著名
   > 可以跨越多行
 - 列表项 2
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/007-GitHubFlavoredMarkdown.md ============ -->
 
@@ -3363,7 +3357,6 @@ $$
 # 建议提交前在目标平台预览
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/008-EscapeCharacter.md ============ -->
 
 ## 1. 转义机制概述
@@ -3773,7 +3766,6 @@ _文件名: readme_
 ```
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/009-Footnote.md ============ -->
 
 ## 1. 脚注概述
@@ -4086,7 +4078,6 @@ TypeScript[^ts] 添加了静态类型检查。
 <a name="ref1"></a>
 1. Smith, J. "Deep Learning Survey." 2023.
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/010-Strikethrough.md ============ -->
 
@@ -4954,7 +4945,6 @@ Python 3.10 起 `match` 语句与 `|` 联合类型同时可用。
 - ~~`Config.default`~~ → `Config.defaults`
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/011-AutoLink.md ============ -->
 
 ## 1. 自动链接概述
@@ -5257,7 +5247,6 @@ Markdown 解析器通常**不识别** `javascript:` 协议的自动链接：
 <a href="https://example.com" target="_blank" rel="nofollow">新窗口且不追踪</a>
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/012-Emoji.md ============ -->
 
 ## 1. Emoji 概述
@@ -5426,7 +5415,6 @@ git commit -m " refactor: extract validation logic"
 - Emoji 对屏幕阅读器不友好，确保有文字替代
 - 不要仅靠 Emoji 传达关键信息
 - 在正式文档中优先使用文字 + 格式
-
 
 <!-- ============ 文档分隔线：002-markdown/013-SubscriptSuperscript.md ============ -->
 
@@ -5623,7 +5611,6 @@ X^2^
 - HTML 标签在代码块中不会被解析
 - 扩展语法在跨平台时可能不兼容
 - 建议在项目中统一使用一种方式
-
 
 <!-- ============ 文档分隔线：002-markdown/014-LaTeXMathFormula.md ============ -->
 
@@ -6366,7 +6353,6 @@ P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}
 $$
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/015-Mermaid.md ============ -->
 
 > **Layer 2 专业层标注**：图表按需学习，先掌握基础语法再学绘图。
@@ -7107,7 +7093,6 @@ graph TD
 ```
 ````
 
-
 <!-- ============ 文档分隔线：002-markdown/016-EditorFeature.md ============ -->
 
 ## 1. 编辑器类型
@@ -7284,7 +7269,6 @@ markdownlint 是 Markdown 代码质量工具，检查常见问题：
   "MD041": false
 }
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/017-LinkImage.md ============ -->
 
@@ -7638,7 +7622,6 @@ Markdown 提供了简洁而强大的语法来添加链接和图片，使文档�
 <img src="image.png" alt="描述" width="300" />
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/018-ConversionTool.md ============ -->
 
 ## 1. 转换工具概述
@@ -7894,7 +7877,6 @@ pandoc chapter1.md chapter2.md chapter3.md \
   -V toc-title="目录"
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/019-AutoTOC.md ============ -->
 
 ## 1. 自动目录概述
@@ -8061,7 +8043,6 @@ npx doctoc README.md
 - 标题命名要清晰，目录才有意义
 - 控制标题层级不超过 4 级
 - 长文档（超过 5 个章节）建议添加目录
-
 
 <!-- ============ 文档分隔线：002-markdown/020-AnchorJump.md ============ -->
 
@@ -8635,7 +8616,6 @@ document.querySelectorAll('[id]').forEach((el) => {
 - 长文档在每章末尾添加返回目录链接
 - 使用自动目录生成工具而非手动维护
 
-
 <!-- ============ 文档分隔线：002-markdown/021-ImageCDNAcceleration.md ============ -->
 
 ## 1. 图片托管概述
@@ -8864,7 +8844,6 @@ document.querySelectorAll('img:not([loading])').forEach((img) => {
 
 # 使用：粘贴图片后自动上传并插入链接
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/022-VCSPRCollaboration.md ============ -->
 
@@ -9152,7 +9131,6 @@ PR 中涉及功能变更时，应同步更新 README：
 Markdown 基础语法，见 002-markdown 模块文档。
 Markdown 删除线语法，见 002-markdown/010-Strikethrough 文档。
 文档站构建（Astro），见 056-astro 模块（如已加入）。
-
 
 <!-- ============ 文档分隔线：002-markdown/023-CodeBlockSyntaxHighlight.md ============ -->
 
@@ -9791,7 +9769,6 @@ hello();
 E = mc^2
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/024-Table.md ============ -->
 
 > **认知导入（Layer 1 进阶层）**
@@ -10276,7 +10253,6 @@ Markdown 表格是一种强大的工具，用于在文档中展示结构化数�
 </table>
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/025-SpecDocumentWriting.md ============ -->
 
 ## 1. 表格进阶
@@ -10505,7 +10481,6 @@ updated: 2026-06-14
 
 ## 5. 常见问题
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/026-AdvancedSyntaxDocumentAutomation.md ============ -->
 
@@ -11171,7 +11146,6 @@ npm run dev
 - **原因**：语法错误、链接失效或依赖缺失
 - **解决**：使用 markdownlint 检查语法，用 markdown-link-check 校验链接
 
-
 <!-- ============ 文档分隔线：002-markdown/027-TaskList.md ============ -->
 
 ## 基本语法
@@ -11473,7 +11447,6 @@ npm run dev
 - [ ] 待办任务项
 - [x] 已完成任务项
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/028-DefinitionList.md ============ -->
 
@@ -11809,7 +11782,6 @@ HTTP
 术语
 : 这是正确的定义写法
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/029-AdmonitionCallout.md ============ -->
 
@@ -12247,7 +12219,6 @@ HTTP
 <strong>警告</strong>: 此操作不可恢复
 </div>
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/030-HtmlEmbed.md ============ -->
 
@@ -12796,7 +12767,6 @@ x<sup>2</sup> + y<sup>2</sup>
 </div>
 ```
 
-
 <!-- ============ 文档分隔线：002-markdown/031-BlockquoteNestedList.md ============ -->
 
 > **认知导入（Layer 1 进阶层）**
@@ -12958,7 +12928,6 @@ x<sup>2</sup> + y<sup>2</sup>
 
 - 项二
 ```
-
 
 <!-- ============ 文档分隔线：002-markdown/032-FrontmatterYAML.md ============ -->
 
@@ -13200,4 +13169,3 @@ title: 标题
 <!-- frontmatter 必须是文件第一行，前面不能有空行或内容 -->
 正文
 ```
-

@@ -8,15 +8,15 @@ description: 发布订阅模式的形式语义、TypeScript 类型级实现、�
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'typescript/046-TypeScript54ReleaseNotesNoInferUtilityType'
-  - 'typescript/047-TypeLevelProgrammingInTypeScript'
+  - 'typescript/046-TypeSafeConfigSystem'
+  - 'typescript/047-TypeSafeDatabaseQuery'
   - 'typescript/028-CovarianceContravariance'
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
   - 'typescript/049-TypeScript5NewFeatures'
 prerequisites:
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
 ---
-> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `000-HowToReadThisCourse`）。
+> 阅读提示：正文以代码和白话为主，不出现类型论公式。进阶文档中若出现 `Γ ⊢ e : τ` 这类记号，第一遍可完全跳过（完整规则见 `001-HowToReadThisCourse`）。
 
 
 

@@ -11,7 +11,7 @@ related:
   - 'csharp/035-GCGeneration'
   - 'csharp/036-ValueTypeReferenceType'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

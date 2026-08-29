@@ -1,6 +1,6 @@
 ---
 order: 630
-title: JVM调优
+title: JVM 调优
 module: 'java'
 category: 后端技术
 difficulty: advanced

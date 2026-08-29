@@ -1,6 +1,6 @@
 ---
 order: 290
-title: Pinia持久化插件
+title: Pinia 持久化插件
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

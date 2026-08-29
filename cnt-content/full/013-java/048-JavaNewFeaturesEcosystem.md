@@ -11,7 +11,7 @@ related:
   - 'java/046-JavaModuleSystem'
   - 'java/073-JavaDatabaseConnection'
   - 'java/010-ArrayDetailed'
-  - 'java/063-JVMtuning'
+  - 'java/063-JVMTuning'
 prerequisites:
   - 'java/001-JavaOverviewDevEnv'
 ---

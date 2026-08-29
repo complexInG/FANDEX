@@ -8,7 +8,7 @@ description: 正则表达式具名捕获组的形式语义、工程实践与生�
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'javascript/020-ObjectReference'
+  - 'javascript/020-ObjectStaticMethods'
   - 'javascript/028-EventLoop'
   - 'javascript/060-RegexAssertions'
   - 'javascript/012-UnicodePropertyEscape'

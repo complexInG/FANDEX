@@ -1,6 +1,6 @@
 ---
 order: 280
-title: LINQ延迟与立即执行
+title: LINQ 延迟与立即执行
 module: 'csharp'
 category: 后端技术
 difficulty: advanced
@@ -11,7 +11,7 @@ related:
   - 'csharp/029-AsyncAwaitStateMachine'
   - 'csharp/030-DelegateEventUnderlying'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

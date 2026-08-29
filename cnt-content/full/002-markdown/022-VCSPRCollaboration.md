@@ -1,6 +1,6 @@
 ---
 order: 220
-title: 版本控制下的PR协作
+title: 版本控制下的 PR 协作
 module: 'markdown'
 category: 工具链
 difficulty: intermediate

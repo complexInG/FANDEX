@@ -1,6 +1,6 @@
 ---
 order: 500
-title: Cybersecurity 防火墙配置(ufw/firewalld)
+title: 防火墙配置（ufw/firewalld）
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

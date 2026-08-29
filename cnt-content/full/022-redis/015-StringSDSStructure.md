@@ -1,6 +1,6 @@
 ---
 order: 150
-title: 字符串SDS结构
+title: 字符串 SDS 结构
 module: 'redis'
 category: 数据库
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 480
-title: Python与数据库迁移
+title: Python 与数据库迁移
 module: 'python'
 category: 后端技术
 difficulty: intermediate

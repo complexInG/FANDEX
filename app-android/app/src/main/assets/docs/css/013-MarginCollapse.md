@@ -1,6 +1,6 @@
 ---
 order: 130
-title: margin合并与塌陷
+title: margin 合并与塌陷
 module: 'css'
 category: 前端技术
 difficulty: intermediate

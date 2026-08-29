@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-01'
 related:
   - 'svg/003-SVGCoordinateSystemViewBox'
-  - 'svg/005-SVGPathPathDetailed'
+  - 'svg/005-SVGPathDetailed'
   - 'svg/007-SVGColorFill'
 prerequisites:
   - 'svg/003-SVGCoordinateSystemViewBox'

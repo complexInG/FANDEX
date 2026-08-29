@@ -1,6 +1,6 @@
 ---
 order: 510
-title: 模式（Schema）管理 语法速查手册
+title: 模式（Schema）管理语法速查手册
 module: 'postgresql'
 category: 数据库
 difficulty: beginner

@@ -1,6 +1,6 @@
 ---
 order: 190
-title: React错误边界
+title: React 错误边界
 module: 'react'
 category: 前端技术
 difficulty: intermediate

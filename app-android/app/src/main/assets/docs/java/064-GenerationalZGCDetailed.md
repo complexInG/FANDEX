@@ -1,6 +1,6 @@
 ---
 order: 640
-title: 分代ZGC详解
+title: 分代 ZGC 详解
 module: 'java'
 category: 后端技术
 difficulty: advanced

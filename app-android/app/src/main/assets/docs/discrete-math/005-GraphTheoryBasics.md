@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'discrete-math/003-SetAndRelation'
-  - 'discrete-math/004-FunctionAndNumber'
+  - 'discrete-math/004-FunctionAndCardinality'
   - 'discrete-math/006-GraphTheoryAdvanced'
   - 'discrete-math/007-AlgebraicSystem'
 prerequisites:

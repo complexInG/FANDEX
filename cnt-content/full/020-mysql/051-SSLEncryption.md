@@ -1,6 +1,6 @@
 ---
 order: 510
-title: SSL-TLS加密
+title: SSL/TLS 加密
 module: 'mysql'
 category: 数据库
 difficulty: intermediate

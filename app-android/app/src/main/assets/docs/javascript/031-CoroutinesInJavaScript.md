@@ -8,10 +8,10 @@ description: 深入解析 ES6 生成器函数的协程语义、迭代器协议�
 author: fanquanpp
 updated: '2026-07-20'
 related:
-  - 'javascript/015-LinearGeneticProgramming'
+  - 'javascript/015-RecursionTailCallOptimization'
   - 'javascript/016-CurryAndFunctionComposition'
   - 'javascript/032-ExploringES6ProxiesAndReflect'
-  - 'javascript/020-ObjectReference'
+  - 'javascript/020-ObjectStaticMethods'
   - 'javascript/025-PromiseConstructorDeepDive'
 prerequisites:
   - 'javascript/025-PromiseConstructorDeepDive'

@@ -1,6 +1,6 @@
 ---
 order: 230
-title: Lua调试技巧
+title: Lua 调试技巧
 module: 'lua'
 category: 后端技术
 difficulty: intermediate

@@ -8,7 +8,7 @@ description: TypeScript 结构化类型系统的赋值兼容规则：对象、�
 author: fanquanpp
 updated: '2026-08-03'
 related:
-  - 'typescript/012-LocalTypeInference'
+  - 'typescript/012-LiteralUnionTypes'
   - 'typescript/017-IntersectionTypeMerge'
   - 'typescript/028-CovarianceContravariance'
 prerequisites:

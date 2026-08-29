@@ -1,6 +1,6 @@
 ---
 order: 120
-title: DNS与DHCP
+title: DNS 与 DHCP
 module: 'networking'
 category: 云与基础设施
 difficulty: intermediate

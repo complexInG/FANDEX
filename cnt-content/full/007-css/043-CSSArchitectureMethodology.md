@@ -1,6 +1,6 @@
 ---
 order: 430
-title: CSS架构方法论
+title: CSS 架构方法论
 module: 'css'
 category: 前端技术
 difficulty: advanced

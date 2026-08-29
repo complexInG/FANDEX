@@ -10,7 +10,7 @@ updated: '2026-06-14'
 related:
   - 'cpp/013-RAIIResourceManagement'
   - 'cpp/011-Cpp20Module'
-  - 'cpp/015-COOPBasics'
+  - 'cpp/015-CppOOPBasics'
   - 'cpp/007-SmartPointerDeepDive'
 prerequisites:
   - 'cpp/001-CppOverviewAndModernStandard'

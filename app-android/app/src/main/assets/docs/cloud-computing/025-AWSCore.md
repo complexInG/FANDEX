@@ -1,6 +1,6 @@
 ---
 order: 250
-title: AWS核心服务
+title: AWS 核心服务
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: intermediate

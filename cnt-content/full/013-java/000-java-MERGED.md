@@ -13,8 +13,6 @@ prerequisites: []
 
 <!-- ============ 文档分隔线：013-java/001-JavaOverviewDevEnv.md ============ -->
 
-
-
 ## 0.1 Java 入门核心 API 与工程动作
 
 ### 第一阶段必须掌握的类与方法
@@ -48,36 +46,6 @@ public class Hello {
 ```
 
 学习时要同时理解：类名必须与文件名对应、`main` 是程序入口、`String[] args` 接收命令行参数、`System.out.println` 负责输出。
-
-## 0. 学习路径与阅读指南（先读这一节）
-
-本模块 94 篇文档已按学习顺序重排：前 17 篇是零基础核心（语法、面向对象与异常），第 18-23 篇是集合、综合项目与基础文件读写，第 24-41 篇是核心类库与类型系统，第 42-65 篇是并发、JVM 与 IO/网络，第 66-67 篇是数据库（JDBC），第 68 篇起是构建工具、设计模式、Spring 与工程实践。零基础推荐路径：
-
-```text
-第 1 阶段（语法基础）：001 概述 → 002 快速入门 → 003 程序结构 → 004 数据类型
-    → 005 变量常量 → 006 运算符 → 007 控制流 → 008 方法 → 009 数组
-    → 011 字符串 → 013 面向对象 → 014 抽象类与接口 → 015 内部类 → 016 异常
-第 2 阶段（集合与 IO）：018 集合框架 → 019 迭代器 → 020 比较器 → 021 Objects
-    → 022 学生选课系统 → 023 文件读写
-第 3 阶段（核心类库）：024 Lambda → 025 Stream → 028 日期时间 → 031 泛型详解
-    → 034 反射 → 042 多线程基础 → 044 JUC
-第 4 阶段（进阶原理）：053 类加载 → 054 GC → 055 内存模型 → 059 IO/NIO
-    → 066 数据库 → 067 JDBC → 068 构建工具 → 071 设计模式
-    → 072 Spring 基础 → 094 图书管理系统项目
-```
-
-分层说明：前 41 篇为【核心必读】（语法、OOP、集合、IO、泛型、反射）；第 42-67 篇为【进阶原理】（并发、JVM、NIO/网络/数据库）；第 68 篇起为【框架与工程实践】，其中 071 设计模式、072 Spring 基础、086 性能调优、094 项目实战是里程碑；各"语法速查手册"【用到再查】。
-
-另设 5 篇救急锦囊标签页，遇到对应问题按需查阅：`WrapperCacheTrap`（包装类缓存陷阱）、`EqualsHashCodeContract`（equals/hashCode 契约）、`ModernIOQuickstart`（现代文件读写）、`LocalDateBasics`（日期时间速查）、`EnumEssentials`（枚举基础与实战）。
-
-> 一句话记住：先会写类和循环，再学集合与线程，最后用项目把知识串起来。
-
-
-> 本节为增量补充，帮助你选择 JDK 与生态版本。
-
-- JDK：26 已于 2026-03-17 GA；LTS 版本为 8/11/17/21/25。企业生产推荐 JDK 21 或 25（LTS），新项目可评估 JDK 26（半年特性版）。
-- 生态：Spring Boot 4.0（2025-11 发布）为当前主线，Spring Boot 3.5.x 处于维护期；Maven 与 Gradle 仍是主流构建工具。
-- 学习建议：零基础从 JDK 21 LTS 开始即可，教程中绝大多数语法在 21-26 之间兼容。
 
 ## 1. Java 概述 (Overview)
 
@@ -480,9 +448,6 @@ Java 是一种功能强大、跨平台的面向对象编程语言，拥有丰富
 随着 Java 的不断发展，新特性和新框架不断涌现，作为 Java 开发者，需要持续学习和适应变化，以保持竞争力。
 
 <!-- ============ 文档分隔线：013-java/002-QuickStart.md ============ -->
-
-
-
 
 # Java 快速入门：从 Hello World 到工程化实践
 
@@ -1922,8 +1887,6 @@ public class VirtualThreadDemo {
 
 <!-- ============ 文档分隔线：013-java/003-ProgramStructureBasicSyntax.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「程序结构与基本语法」，目标：掌握 Java 源文件结构、注释、标识符、关键字与键盘录入。
@@ -2875,8 +2838,6 @@ module com.example.app {
 
 <!-- ============ 文档分隔线：013-java/004-DataTypeConversion.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「数据类型与类型转换」，目标：分清 8 种基本类型与引用类型，理解自动/强制转换规则。
@@ -3615,8 +3576,6 @@ BigDecimal sum = bd1.add(bd2);
 
 <!-- ============ 文档分隔线：013-java/005-WrapperCacheTrap.md ============ -->
 
-
-
 ## 一句话定调
 
 **包装类比较内容，只用 `equals()`**。`==` 比较的是引用，而 Java 对部分包装类做了"缓存池"，结果时真时假，不能用来判断数值。
@@ -3664,8 +3623,6 @@ System.out.println(c.equals(d)); // true：比较内容，永远正确
 > 包装类比较内容，只用 `equals()`；判空后再拆箱，别让 null 偷偷触发 NPE。
 
 <!-- ============ 文档分隔线：013-java/006-VariableConstant.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -4328,8 +4285,6 @@ var numbers = new int[]{1, 2, 3};
 ```
 
 <!-- ============ 文档分隔线：013-java/007-OperatorExpression.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -5327,8 +5282,6 @@ boolean hasRead = (permissions & FLAG_READ) != 0;
 ```
 
 <!-- ============ 文档分隔线：013-java/008-ControlFlow.md ============ -->
-
-
 
 ## 0. 零基础本节仅需掌握（先读这一节）
 
@@ -7982,8 +7935,6 @@ public void validate(int value) {
 
 <!-- ============ 文档分隔线：013-java/009-MethodDetailed.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「方法详解」，目标：会定义、调用方法，理解参数传递与重载。
@@ -8533,8 +8484,6 @@ public <T> T getFirstElement(List<T> list) {
 ```
 
 <!-- ============ 文档分隔线：013-java/010-ArrayDetailed.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -9402,8 +9351,6 @@ boolean result = Arrays.deepEquals(a, b);
 
 <!-- ============ 文档分隔线：013-java/011-JavaArraysUtility.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Arrays 工具类」语法速查手册，按需查阅，不必从头精读。
@@ -9670,8 +9617,6 @@ Object e = Array.get(arr, 0);
 
 <!-- ============ 文档分隔线：013-java/012-JavaStringDetailed.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能说出 String 不可变性的含义，以及它带来的 3 个好处
@@ -9868,8 +9813,6 @@ String s2 = 42 + "";                 // 也可以，但可读性较差
 > String 不可变、比较用 `equals`、拼接用 `StringBuilder`、正则先记 `\\d` 与 `matches`。
 
 <!-- ============ 文档分隔线：013-java/013-JavaStringFormat.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -10121,8 +10064,6 @@ new Formatter(sb).format("value=%d%n", 42);
 ```
 
 <!-- ============ 文档分隔线：013-java/014-OOP.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -11162,8 +11103,6 @@ public Builder setName(String name) {
 
 <!-- ============ 文档分隔线：013-java/015-AbstractClassInterface.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「抽象类与接口」，目标：理解两种抽象手段的语法与选择。
@@ -11849,8 +11788,6 @@ public class MyClass implements InterfaceA, InterfaceB {
 
 <!-- ============ 文档分隔线：013-java/016-JavaInnerClass.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能说出 4 种内部类的写法与区别
@@ -12056,8 +11993,6 @@ public class Activity {
 > 内部类四种：成员、静态、局部、匿名；静态不持外部引用、匿名可换 Lambda、生命周期长要警惕内存泄漏。
 
 <!-- ============ 文档分隔线：013-java/017-ExceptionHandlingMechanism.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -12947,8 +12882,6 @@ throw new UnsupportedOperationException();
 
 <!-- ============ 文档分隔线：013-java/018-JavaTryWithResources.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「try-with-resources 与异常链」语法速查手册，按需查阅。
@@ -13110,8 +13043,6 @@ StackTraceElement caller = StackWalker.getInstance()
 
 <!-- ============ 文档分隔线：013-java/019-EqualsHashCodeContract.md ============ -->
 
-
-
 ## 一句话定调
 
 **HashSet/HashMap 找对象，先查"门牌号"（hashCode），再比"长相"（equals）**。两个对象相等，门牌号必须相同；门牌号不同，永远不可能相等。
@@ -13169,8 +13100,6 @@ System.out.println(users.contains(new User("S001", "张三"))); // true
 > 重写 `equals` 就必须重写 `hashCode`，字段保持一致；用 `Objects.equals` + `Objects.hash` 一行搞定。
 
 <!-- ============ 文档分隔线：013-java/020-CollectionFrameworkDetailed.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -14345,8 +14274,6 @@ long count = list.stream().count();
 
 <!-- ============ 文档分隔线：013-java/021-HashMapSourceDeepDive.md ============ -->
 
-
-
 # HashMap 源码详解
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -14360,8 +14287,6 @@ long count = list.stream().count();
 - 1.7 与 1.8 实现差异与线程问题
 
 <!-- ============ 文档分隔线：013-java/022-JavaIteratorIterable.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -14602,8 +14527,6 @@ int i = li.nextIndex();
 
 <!-- ============ 文档分隔线：013-java/023-JavaComparatorComparable.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Comparable / Comparator」语法速查手册，按需查阅。
@@ -14786,8 +14709,6 @@ Comparator<Event> byTime = Comparator.comparingLong(Event::getTimestamp);
 ```
 
 <!-- ============ 文档分隔线：013-java/024-JavaObjectsUtility.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -15032,8 +14953,6 @@ public User(String name, int age) {
 ```
 
 <!-- ============ 文档分隔线：013-java/025-JavaProjectExampleCourseSystem.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -15367,8 +15286,6 @@ java Main
 
 <!-- ============ 文档分隔线：013-java/026-ModernIOQuickstart.md ============ -->
 
-
-
 ## 一句话定调
 
 **读写小配置文件，用 `Files.readString()` / `Files.writeString()` 一把梭**，默认 UTF-8，自动关闭资源。
@@ -15424,8 +15341,6 @@ public class FileQuickstart {
 > 小文件读写：`Files.writeString` 写、`Files.readString` 读、`Files.readAllLines` 按行读；异常先 `throws IOException` 再逐步细化。
 
 <!-- ============ 文档分隔线：013-java/027-IOStreamFileOperation.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -16539,8 +16454,6 @@ private static final long serialVersionUID = 1L;
 
 <!-- ============ 文档分隔线：013-java/028-LambdaFunctionalProgramming.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Lambda 与函数式编程」，目标：会写 Lambda、认得出函数式接口、会用方法引用。
@@ -17209,8 +17122,6 @@ Function<String, Integer> combined = doubler.compose(parser);
 ```
 
 <!-- ============ 文档分隔线：013-java/029-StreamAPI.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -17913,8 +17824,6 @@ IntSummaryStatistics stats = intStream.summaryStatistics();
 
 <!-- ============ 文档分隔线：013-java/030-JavaOptionalClass.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Optional 类」语法速查手册，按需查阅。
@@ -18168,8 +18077,6 @@ boolean same = o1.equals(o2);
 
 <!-- ============ 文档分隔线：013-java/031-StreamCollectorsGroupingBy.md ============ -->
 
-
-
 # Collectors.groupingBy 详解
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -18183,8 +18090,6 @@ boolean same = o1.equals(o2);
 - 与 toMap 的选择对比
 
 <!-- ============ 文档分隔线：013-java/032-JavaFunctionalProgramming.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -20420,8 +20325,6 @@ IntPredicate positive = i -> i > 0;
 
 <!-- ============ 文档分隔线：013-java/033-LocalDateBasics.md ============ -->
 
-
-
 ## 一句话定调
 
 **`Date` 已退休，干活用 `java.time` 包**：`LocalDate` 只管日期，`LocalDateTime` 管日期+时间，`DateTimeFormatter` 管格式化。
@@ -20479,8 +20382,6 @@ public class TimeQuickstart {
 > 日期解析失败先怀疑格式；`LocalDate` 没有时分字段；跨时区才上 `ZonedDateTime`。
 
 <!-- ============ 文档分隔线：013-java/034-JavaTimeFormatting.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -21026,8 +20927,6 @@ LocalDate last = today.with(TemporalAdjusters.lastDayOfMonth());
 
 <!-- ============ 文档分隔线：013-java/035-EnumEssentials.md ============ -->
 
-
-
 ## 一句话定调
 
 **enum 是"有身份证的常量"**：每个枚举值不仅是一个名字，还可以携带字段、构造函数和行为。别再用 `public static final int` 拼状态码了。
@@ -21084,8 +20983,6 @@ String tip = switch (OrderStatus.PAID) {
 > 枚举 = 固定集合的常量 + 可携带数据；`==` 可以直接比较枚举值，不用 `equals()`。
 
 <!-- ============ 文档分隔线：013-java/036-JavaAnnotationsTutorial.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -22841,11 +22738,11 @@ AutoValue 通过标准 JSR 269 生成新源文件（`AutoValue_User.java`），�
 
 ### 13.1 关联模块
 
-- [java/泛型进阶](./泛型进阶.md)：与枚举同在 Java 5 引入
-- [java/反射与动态代理](./反射与动态代理.md)：注解的运行时消费
-- [java/注解处理器](./注解处理器.md)：JSR 269 深入
-- [java/Java新特性](./Java新特性.md)：Java 8 类型注解、Java 16 record、Java 17 sealed
-- [java/面向对象编程](./面向对象编程.md)：枚举作为特殊类
+- java/泛型进阶：与枚举同在 Java 5 引入
+- java/反射与动态代理：注解的运行时消费
+- java/注解处理器：JSR 269 深入
+- java/Java新特性：Java 8 类型注解、Java 16 record、Java 17 sealed
+- java/面向对象编程：枚举作为特殊类
 
 ### 13.2 进阶书籍
 
@@ -23269,8 +23166,6 @@ String value = ann.value();
 
 <!-- ============ 文档分隔线：013-java/037-JavaEnumAdvanced.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「枚举进阶」语法速查手册，按需查阅。
@@ -23465,8 +23360,6 @@ public enum AppConfig {
 ```
 
 <!-- ============ 文档分隔线：013-java/038-GenericDetailed.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -24358,8 +24251,6 @@ T instance = clazz.newInstance();
 
 <!-- ============ 文档分隔线：013-java/039-JavaTypeErasure.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「类型擦除与桥接方法」语法速查手册，按需查阅。
@@ -24505,8 +24396,6 @@ String s = b.cast("hello");
 ```
 
 <!-- ============ 文档分隔线：013-java/040-JavaGenericsTutorial.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -25899,11 +25788,11 @@ QueryBuilder.from(User.class)
 
 ### 13.1 关联模块
 
-- [java/泛型详解](./泛型详解.md)：泛型基础语法与入门示例
-- [java/集合框架详解](./集合框架详解.md)：`List`、`Set`、`Map` 的泛型实现
-- [java/反射与动态代理](./反射与动态代理.md)：通过反射获取泛型签名
-- [java/枚举与注解](./枚举与注解.md)：与泛型同在 Java 5 引入
-- [java/JUC并发包](./JUC并发包.md)：并发容器中的泛型设计
+- java/泛型详解：泛型基础语法与入门示例
+- java/集合框架详解：`List`、`Set`、`Map` 的泛型实现
+- java/反射与动态代理：通过反射获取泛型签名
+- java/枚举与注解：与泛型同在 Java 5 引入
+- java/JUC并发包：并发容器中的泛型设计
 
 ### 13.2 进阶书籍
 
@@ -26199,8 +26088,6 @@ public static <T> void copy(List<? super T> dst, List<? extends T> src) {
 ```
 
 <!-- ============ 文档分隔线：013-java/041-JavaReflection.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -29034,8 +28921,6 @@ Class<?> c3 = Class.forName("java.lang.String");
 
 <!-- ============ 文档分隔线：013-java/042-ReflectionDynamicProxy.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「反射与动态代理」进阶文档。
@@ -31165,8 +31050,6 @@ RecordComponent[] comps = Point.class.getRecordComponents();
 
 <!-- ============ 文档分隔线：013-java/043-AnnotationProcessor.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「注解处理器」进阶文档。
@@ -32840,8 +32723,6 @@ javac -AmyOption=value -processor com.example.BuilderProcessor src/Main.java
 
 <!-- ============ 文档分隔线：013-java/044-JavaRecordClass.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Record 记录类」，含较多理论章节。
@@ -34453,7 +34334,7 @@ switch (s) {
 
 ---
 
-本文系统覆盖了 Java Record、密封类型与模式匹配三大特性的语法、原理、工程实践与案例。Record 是 Java 现代化的重要一步,使 Java 在数据建模上接近 Scala、Kotlin 等现代语言的表达能力。下一篇 [Java 文本块](./Java文本块.md) 将介绍 Java 15+ 的多行字符串语法。
+本文系统覆盖了 Java Record、密封类型与模式匹配三大特性的语法、原理、工程实践与案例。Record 是 Java 现代化的重要一步,使 Java 在数据建模上接近 Scala、Kotlin 等现代语言的表达能力。下一篇 Java 文本块 将介绍 Java 15+ 的多行字符串语法。
 ## 记录类定义
 
 **单行写法：简单记录类**
@@ -34677,8 +34558,6 @@ String desc = switch (shape) {
 ```
 
 <!-- ============ 文档分隔线：013-java/045-JavaTextBlock.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -35368,8 +35247,6 @@ boolean b = "".isEmpty();
 
 <!-- ============ 文档分隔线：013-java/046-JavaModuleSystem.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「模块系统（JPMS）」进阶文档。
@@ -36053,8 +35930,6 @@ jdeps -s app.jar
 ```
 
 <!-- ============ 文档分隔线：013-java/047-JavaNewFeatures.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -38857,8 +38732,6 @@ static String desc(Object o) {
 
 <!-- ============ 文档分隔线：013-java/048-JavaNewFeaturesEcosystem.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Java 新特性与生态」进阶综述。
@@ -39446,8 +39319,6 @@ Java 21+ 的新特性正在从根本上改变 Java 的编程范式：
 这些特性组合在一起，使得 Java 在保持向后兼容的同时，不断进化以适应现代软件开发的需求。
 
 <!-- ============ 文档分隔线：013-java/049-MultithreadingBasics.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -40534,8 +40405,6 @@ while (!ready) Thread.onSpinWait();
 ```
 
 <!-- ============ 文档分隔线：013-java/050-ConcurrencyBasics.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -42095,8 +41964,6 @@ public Config get() { return configRef.get(); }
 | 高并发计数 | `LongAdder`(优于 `AtomicLong`) |
 
 <!-- ============ 文档分隔线：013-java/051-JUCConcurrency.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -43786,11 +43653,9 @@ Java JUC 的优势:与 JVM 生态深度集成、API 成熟稳定、企业级支�
 
 ---
 
-本文系统覆盖了 `java.util.concurrent` 的核心组件、底层原理、工程实践与案例研究。建议读者结合源码阅读与生产实践反复对照,逐步形成对 JUC 的体系化认知。下一篇 [Java 反射](./Java反射.md) 将介绍 Java 反射机制与动态代理的实现原理。
+本文系统覆盖了 `java.util.concurrent` 的核心组件、底层原理、工程实践与案例研究。建议读者结合源码阅读与生产实践反复对照,逐步形成对 JUC 的体系化认知。下一篇 Java 反射 将介绍 Java 反射机制与动态代理的实现原理。
 
 <!-- ============ 文档分隔线：013-java/052-ConcurrencyDetailed.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -46133,8 +45998,6 @@ tl.remove(); // 用完清理避免内存泄漏
 
 <!-- ============ 文档分隔线：013-java/053-CompletableFutureAsync.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「CompletableFuture 异步编排」进阶文档。
@@ -48452,8 +48315,6 @@ CompletableFuture<String> next = future1.applyToEither(future2, s -> s + "!");
 
 <!-- ============ 文档分隔线：013-java/054-ThreadLocalMemoryLeak.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「ThreadLocal 与内存泄漏」进阶文档。
@@ -49816,8 +49677,6 @@ Thread.ofVirtual().start(() -> {
 
 <!-- ============ 文档分隔线：013-java/055-ExecutorForkJoinPool.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Executor 与 ForkJoin」语法速查手册，按需查阅。
@@ -50147,8 +50006,6 @@ Integer r = f.get();
 
 <!-- ============ 文档分隔线：013-java/056-JavaCountDownLatchCyclicBarrier.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「CountDownLatch / CyclicBarrier / Phaser」语法速查手册，按需查阅。
@@ -50328,8 +50185,6 @@ String other = ex.exchange("mine", 5, TimeUnit.SECONDS);
 
 <!-- ============ 文档分隔线：013-java/057-JavaBlockingQueue.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「BlockingQueue 阻塞队列」语法速查手册，按需查阅。
@@ -50480,8 +50335,6 @@ new Thread(() -> { for (int i = 0; i < 5; i++) System.out.println(queue.take());
 ```
 
 <!-- ============ 文档分隔线：013-java/058-JavaVirtualThread.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -53108,8 +52961,6 @@ Thread.startVirtualThread(() -> doWork());
 
 <!-- ============ 文档分隔线：013-java/059-JavaReactiveProgramming.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「响应式编程」进阶文档。
@@ -55206,8 +55057,6 @@ Java 21 虚拟线程的出现为"高并发 I/O"提供了另一种选择——保
 
 <!-- ============ 文档分隔线：013-java/060-JVMClassLoadingMechanism.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「JVM 类加载机制」进阶文档。
@@ -56573,8 +56422,6 @@ c.cast(o);  // ClassCastException
 
 <!-- ============ 文档分隔线：013-java/061-JVMGC.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「JVM 垃圾回收」进阶文档。
@@ -57456,8 +57303,6 @@ public final class NativeResource implements AutoCloseable {
 - **Berkeley CS162 Operating Systems**：GC 与运行时系统讲座。
 
 <!-- ============ 文档分隔线：013-java/062-JVMMemoryModel.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -59995,9 +59840,7 @@ private volatile boolean ready = false;
 public void writer() { x = 42; ready = true; }
 ```
 
-<!-- ============ 文档分隔线：013-java/063-JVMtuning.md ============ -->
-
-
+<!-- ============ 文档分隔线：013-java/063-JVMTuning.md ============ -->
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -62058,8 +61901,6 @@ jcmd 12345 JFR.stop filename=rec.jfr
 
 <!-- ============ 文档分隔线：013-java/064-GenerationalZGCDetailed.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「分代 ZGC」进阶文档。
@@ -63058,8 +62899,6 @@ public final class ZgcStatsCollector {
 
 <!-- ============ 文档分隔线：013-java/065-JavaTheoryJVMClassLoadingMemory.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「JVM 理论知识点合集」，适合复习与面试前速览。
@@ -63068,7 +62907,6 @@ public final class ZgcStatsCollector {
 
 前置：058 类加载机制、054 垃圾回收、055 内存模型。
 
-> 阅读建议：理论串讲，建议先读 010 类加载、011 GC、048 JVM 调优后再回读本篇。
 # Java 理论知识点：JVM 原理、类加载机制与内存管理
 
 > 本文系统阐述 Java 虚拟机（JVM）的内部架构与运行机制，包括类加载子系统、运行时数据区、字节码执行引擎、即时编译器、垃圾回收器、内存模型与性能调优等核心理论。内容兼顾形式化定义与工程实践，旨在帮助开发者建立对 JVM 的完整认知框架，具备诊断生产环境 JVM 问题与执行性能调优的能力。
@@ -64977,8 +64815,6 @@ public class NetworkClassLoader extends ClassLoader {
 
 <!-- ============ 文档分隔线：013-java/066-JavaIONIO.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Java IO 与 NIO」进阶文档。
@@ -66799,8 +66635,6 @@ socketChannel.write(buf);
 
 <!-- ============ 文档分隔线：013-java/067-JavaNIOChannelBuffer.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「NIO 通道与缓冲区」语法速查手册，按需查阅。
@@ -67113,8 +66947,6 @@ ch.read(buf, 0, null, new CompletionHandler<Integer, Object>() {
 ```
 
 <!-- ============ 文档分隔线：013-java/068-JavaPathFiles.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -67495,8 +67327,6 @@ Files.walkFileTree(Path.of("C:\\data"), new SimpleFileVisitor<>() {
 ```
 
 <!-- ============ 文档分隔线：013-java/069-JavaSerialization.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -68186,8 +68016,6 @@ UserProto.User u = UserProto.User.parseFrom(new FileInputStream("u.bin"));
 ```
 
 <!-- ============ 文档分隔线：013-java/070-JavaNetworkProgramming.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -69922,8 +69750,6 @@ public class SimplePool<T> {
 
 <!-- ============ 文档分隔线：013-java/071-NetworkProgramming.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「网络编程」进阶实战文档。
@@ -70803,8 +70629,6 @@ try (InputStream in = socket.getInputStream();
 
 <!-- ============ 文档分隔线：013-java/072-JavaHttpClientWebSocket.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「HttpClient 与 WebSocket」语法速查手册，按需查阅。
@@ -71007,8 +70831,6 @@ try (ServerSocket ss = new ServerSocket(8080)) {
 ```
 
 <!-- ============ 文档分隔线：013-java/073-JavaDatabaseConnection.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -72845,8 +72667,6 @@ HikariPool-1 - Connection is not available, request timed out after 30000ms
 
 <!-- ============ 文档分隔线：013-java/074-JDBCDatabaseConnection.md ============ -->
 
-
-
 ## 0. 学习目标（可验证）
 
 - [ ] 能说出原生 JDBC 的 5 个核心步骤
@@ -73215,8 +73035,6 @@ Connection conn = ds.getConnection();
 ```
 
 <!-- ============ 文档分隔线：013-java/075-JavaBuildTool.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -74270,8 +74088,6 @@ publishing {
 
 <!-- ============ 文档分隔线：013-java/076-MavenPomConfiguration.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Maven pom.xml」语法速查手册，按需查阅。
@@ -74510,8 +74326,6 @@ publishing {
 
 <!-- ============ 文档分隔线：013-java/077-GradleBuildConfiguration.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Gradle build.gradle」语法速查手册，按需查阅。
@@ -74726,8 +74540,6 @@ version = '1.0.0'
 ```
 
 <!-- ============ 文档分隔线：013-java/078-JavaDesignPattern.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -75396,8 +75208,6 @@ root.print("");  // 打印目录树
 ```
 
 <!-- ============ 文档分隔线：013-java/079-SpringBasicsIoCAOPBeanLifecycle.md ============ -->
-
-
 
 ## 0. 前置必读与阅读警告（先读这一节）
 
@@ -77881,8 +77691,6 @@ public CacheService cacheService() { }
 
 <!-- ============ 文档分隔线：013-java/080-SpringBootAdvanced.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Spring Boot 进阶」，目标：理解自动配置、Starter、Profile 与条件装配。
@@ -78706,8 +78514,6 @@ java -jar app.jar --server.port=9090
 
 <!-- ============ 文档分隔线：013-java/081-SpringBootSecurity.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Spring Boot 安全」，目标：会用 Spring Security 做认证与授权。
@@ -79243,8 +79049,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 ```
 
 <!-- ============ 文档分隔线：013-java/082-SpringBootDataAccess.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -81605,8 +81409,6 @@ Spring Boot 数据访问栈是 Java 企业级开发的核心能力。从底层�
 
 <!-- ============ 文档分隔线：013-java/083-SpringBootNotes.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Spring Boot 学习笔记」，覆盖面广。
@@ -83594,8 +83396,6 @@ private Customer customer;
 
 <!-- ============ 文档分隔线：013-java/084-JavaMicroservice.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「微服务」进阶文档。
@@ -84065,8 +83865,6 @@ Spring Cloud 微服务通常部署在 Kubernetes 上，利用 K8s 的服务发�
 
 <!-- ============ 文档分隔线：013-java/085-SpringCloudMicroserviceDevelopment.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Spring Cloud 微服务开发」。
@@ -84495,8 +84293,6 @@ spec:
 7. 部署和测试
 
 <!-- ============ 文档分隔线：013-java/086-JavaUnitTest.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -86617,8 +86413,6 @@ class UserServiceTest {
 ```
 
 <!-- ============ 文档分隔线：013-java/087-JavaLogSystem.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -88868,8 +88662,6 @@ if (log.isDebugEnabled()) {
 
 <!-- ============ 文档分隔线：013-java/088-JavaRedis.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Java 与 Redis」。
@@ -89351,8 +89143,6 @@ redisTemplate.execute(new SessionCallback<Object>() {
 ```
 
 <!-- ============ 文档分隔线：013-java/089-JavaMessageQueue.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -90471,8 +90261,6 @@ offsets.forEach((tp, offset) -> consumer.seek(tp, offset));
 
 <!-- ============ 文档分隔线：013-java/090-JavaGraphQL.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Java 与 GraphQL」。
@@ -90999,8 +90787,6 @@ public Map<User, List<Post>> posts(List<User> users) {
 在微服务架构中，GraphQL Federation 允许多个服务各自定义 Schema 的一部分，由网关合并为统一的 Schema。Spring for GraphQL 支持 Federation 规范，适合大型微服务项目的 API 统一。
 
 <!-- ============ 文档分隔线：013-java/091-JavaAI.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -92060,8 +91846,6 @@ public class ChatController {
 - **Fast.ai Practical Deep Learning**：实战深度学习。
 
 <!-- ============ 文档分隔线：013-java/092-JavaSecurity.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -94125,8 +93909,6 @@ byte[] sign = sig.sign();
 
 <!-- ============ 文档分隔线：013-java/093-JavaPerformanceTuning.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「性能调优」进阶文档。
@@ -94535,8 +94317,6 @@ java -XX:+UseContainerSupport \
 不要用 -Xmx 指定固定值，因为容器的内存限制可能变化。使用 -XX:MaxRAMPercentage 更灵活。
 
 <!-- ============ 文档分隔线：013-java/094-JavaDocker.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -96196,8 +95976,6 @@ spec:
 
 <!-- ============ 文档分隔线：013-java/095-JavaKubernetes.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Java 与 Kubernetes」进阶文档。
@@ -96973,8 +96751,6 @@ spec:
 ```
 
 <!-- ============ 文档分隔线：013-java/096-JavaWebAssembly.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -98175,8 +97951,6 @@ public byte[] computeSha256(byte[] data) {
 | SIMD | v128.load, i8x16.add | 128 位向量运算(2.0) |
 
 <!-- ============ 文档分隔线：013-java/097-JavaGraalVM.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -99467,8 +99241,6 @@ GraalVM 的演进仍在继续——从 PGO 到 G1 GC，从 Spring Boot 3 到 Qua
 
 <!-- ============ 文档分隔线：013-java/098-JavaJshellJpackage.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「JShell 与 JPackage」交互环境与打包指南。
@@ -99784,8 +99556,6 @@ jpackage --name MyApp --input target --main-jar app.jar \
 
 <!-- ============ 文档分隔线：013-java/099-JavaCommandLineTools.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「Java 命令行工具」语法速查手册，按需查阅。
@@ -99975,8 +99745,6 @@ jpackage --type msi --input bin --name MyApp --main-jar app.jar
 ```
 
 <!-- ============ 文档分隔线：013-java/100-JavaSwingGUI.md ============ -->
-
-
 
 ## 0. 本节阅读指引（先读这一节）
 
@@ -100613,8 +100381,6 @@ Swing 是 Java 提供的功能强大的 GUI 工具包，通过它可以创建跨
 
 <!-- ============ 文档分隔线：013-java/101-JavaProjectExampleLibrarySystem.md ============ -->
 
-
-
 ## 0. 本节阅读指引（先读这一节）
 
 本篇是「图书管理系统」项目实战，综合运用全模块知识。
@@ -100625,7 +100391,7 @@ Swing 是 Java 提供的功能强大的 GUI 工具包，通过它可以创建跨
 
 > 记住：项目的价值在于跑通并修改它，而不是只看代码。
 
-> 阅读建议：综合项目，建议完成基础语法与集合（001-021）、文件读写（023）后再动手；先运行、再改需求、最后对照讲解。
+> 阅读建议：综合项目；先运行、再改需求、最后对照讲解。
 | 用户管理   | 注册、登录、用户信息维护           |
 | ---------- | ---------------------------------- |
 | 借阅管理   | 借书、还书、借阅记录查询           |
@@ -101514,8 +101280,6 @@ ChronoUnit.DAYS.between(startDate, endDate);
 
 <!-- ============ 文档分隔线：013-java/102-JavaSealedClassesPatternMatching.md ============ -->
 
-
-
 # 密封类与模式匹配
 
 > 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
@@ -101527,4 +101291,3 @@ ChronoUnit.DAYS.between(startDate, endDate);
 - switch 模式匹配与守卫
 - 类型安全的领域建模
 - 与 Visitor 模式的对比
-

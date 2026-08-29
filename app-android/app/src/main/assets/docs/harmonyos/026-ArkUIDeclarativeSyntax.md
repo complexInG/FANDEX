@@ -1,6 +1,6 @@
 ---
 order: 260
-title: ArkUI声明式语法
+title: ArkUI 声明式语法
 module: 'harmonyos'
 category: 后端技术
 difficulty: advanced

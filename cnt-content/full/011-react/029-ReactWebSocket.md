@@ -1,6 +1,6 @@
 ---
 order: 290
-title: React与WebSocket
+title: React 与 WebSocket
 module: 'react'
 category: 前端技术
 difficulty: intermediate

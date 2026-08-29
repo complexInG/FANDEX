@@ -1,6 +1,6 @@
 ---
 order: 580
-title: Cybersecurity auditd 审计命令
+title: auditd 审计命令
 module: 'cybersecurity'
 category: 云与基础设施
 difficulty: beginner

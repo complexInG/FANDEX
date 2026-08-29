@@ -1,6 +1,6 @@
 ---
 order: 340
-title: Networking wget 文件下载
+title: wget 文件下载
 module: 'networking'
 category: 云与基础设施
 difficulty: beginner

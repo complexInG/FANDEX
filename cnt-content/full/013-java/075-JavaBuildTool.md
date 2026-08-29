@@ -1,6 +1,6 @@
 ---
 order: 750
-title: Java构建工具
+title: Java 构建工具
 module: 'java'
 category: 后端技术
 difficulty: intermediate

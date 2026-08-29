@@ -1,6 +1,6 @@
 ---
 order: 100
-title: Next.js全栈开发
+title: Next.js 全栈开发
 module: 'react'
 category: 前端技术
 difficulty: advanced

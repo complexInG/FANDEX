@@ -13,7 +13,7 @@ related:
   - 'csharp/035-GCGeneration'
   - 'csharp/036-ValueTypeReferenceType'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 
@@ -1709,10 +1709,3 @@ public sealed class RetryingUserServiceDecorator(
 2. **中级开发者**：学习 Captive Dependency、并发安全、装饰器模式；
 3. **高级开发者**：研究 Keyed Services、AOP、多租户 DI；
 4. **架构师**：设计 DI 容器策略、性能优化、AOT 友好方案。
-
-后续推荐阅读：
-
-- 《ASP.NET Core 中间件管道》：理解请求管线与 scope 创建
-- 《Entity Framework Core 迁移与优化》：DbContext 生命周期深入
-- 《GC 代机制》：DI 与 GC 的交互
-- 《值类型与引用类型》：DI 容器与对象图构造的内存影响

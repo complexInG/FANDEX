@@ -1,6 +1,6 @@
 ---
 order: 190
-title: 相等契约救急锦囊：equals 与 hashCode
+title: 相等契约救急锦囊： equals 与 hashCode
 module: 'java'
 category: 后端技术
 difficulty: beginner

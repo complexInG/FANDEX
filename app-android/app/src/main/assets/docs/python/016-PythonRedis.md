@@ -1,6 +1,6 @@
 ---
 order: 160
-title: Python与Redis
+title: Python 与 Redis
 module: 'python'
 category: 后端技术
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 670
-title: Redo与Undo与Binlog写入时机
+title: Redo 与 Undo 与 Binlog 写入时机
 module: 'mysql'
 category: 数据库
 difficulty: advanced

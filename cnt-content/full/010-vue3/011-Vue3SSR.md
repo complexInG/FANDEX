@@ -1,6 +1,6 @@
 ---
 order: 110
-title: Vue3服务端渲染
+title: Vue3 服务端渲染
 module: 'vue3'
 category: 前端技术
 difficulty: advanced

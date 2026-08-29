@@ -1,6 +1,6 @@
 ---
 order: 440
-title: Go与信号处理
+title: Go 与信号处理
 module: 'go'
 category: 后端技术
 difficulty: intermediate

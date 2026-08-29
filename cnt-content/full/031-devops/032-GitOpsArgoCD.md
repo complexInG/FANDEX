@@ -1,6 +1,6 @@
 ---
 order: 320
-title: GitOps与ArgoCD
+title: GitOps 与 ArgoCD
 module: 'devops'
 category: 云与基础设施
 difficulty: intermediate

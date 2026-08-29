@@ -1,6 +1,6 @@
 ---
 order: 890
-title: Java与消息队列
+title: Java 与消息队列
 module: 'java'
 category: 后端技术
 difficulty: intermediate

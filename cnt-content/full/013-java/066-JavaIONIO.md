@@ -1,6 +1,6 @@
 ---
 order: 660
-title: JavaIO与NIO
+title: JavaIO 与 NIO
 module: 'java'
 category: 后端技术
 difficulty: intermediate

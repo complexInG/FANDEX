@@ -1,6 +1,6 @@
 ---
 order: 570
-title: 垃圾回收与GC调优
+title: 垃圾回收与 GC 调优
 module: 'go'
 category: 后端技术
 difficulty: advanced

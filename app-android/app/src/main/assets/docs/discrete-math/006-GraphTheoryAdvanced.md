@@ -8,7 +8,7 @@ description: 平面图与Euler公式、图的着色、匹配与覆盖、网络�
 author: fanquanpp
 updated: '2026-08-02'
 related:
-  - 'discrete-math/004-FunctionAndNumber'
+  - 'discrete-math/004-FunctionAndCardinality'
   - 'discrete-math/005-GraphTheoryBasics'
   - 'discrete-math/007-AlgebraicSystem'
   - 'discrete-math/008-Combinatorics'

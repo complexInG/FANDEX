@@ -1,6 +1,6 @@
 ---
 order: 150
-title: SELECT执行顺序
+title: SELECT 执行顺序
 module: 'sql'
 category: 数据库
 difficulty: intermediate

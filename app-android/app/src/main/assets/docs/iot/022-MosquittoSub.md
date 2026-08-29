@@ -1,6 +1,6 @@
 ---
 order: 220
-title: 物联网 mosquitto_sub 订阅命令
+title: mosquitto_sub 订阅命令
 module: 'iot'
 category: 云与基础设施
 difficulty: beginner

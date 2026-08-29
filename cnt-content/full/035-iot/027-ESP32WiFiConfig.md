@@ -1,6 +1,6 @@
 ---
 order: 270
-title: 物联网 ESP32 WiFi 配置
+title: ESP32 WiFi 配置
 module: 'iot'
 category: 云与基础设施
 difficulty: beginner

@@ -11,7 +11,7 @@ related:
   - 'csharp/017-GenericCovarianceContravariance'
   - 'csharp/018-SpanMemory'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

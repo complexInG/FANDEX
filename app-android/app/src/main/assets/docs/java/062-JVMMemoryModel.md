@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'java/052-ConcurrencyDetailed'
-  - 'java/063-JVMtuning'
+  - 'java/063-JVMTuning'
   - 'java/042-ReflectionDynamicProxy'
   - 'java/060-JVMClassLoadingMechanism'
 prerequisites:

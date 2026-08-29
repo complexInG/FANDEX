@@ -1,6 +1,6 @@
 ---
 order: 60
-title: React19新特性
+title: React19 新特性
 module: 'react'
 category: 前端技术
 difficulty: advanced

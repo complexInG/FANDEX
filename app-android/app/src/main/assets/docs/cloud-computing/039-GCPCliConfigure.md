@@ -1,6 +1,6 @@
 ---
 order: 390
-title: 云计算 GCP gcloud 配置
+title: GCP gcloud 配置
 module: 'cloud-computing'
 category: 云与基础设施
 difficulty: beginner

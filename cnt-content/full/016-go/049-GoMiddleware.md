@@ -1,6 +1,6 @@
 ---
 order: 490
-title: Go与中间件
+title: Go 与中间件
 module: 'go'
 category: 后端技术
 difficulty: intermediate

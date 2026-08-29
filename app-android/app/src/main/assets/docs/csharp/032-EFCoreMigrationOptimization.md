@@ -1,6 +1,6 @@
 ---
 order: 320
-title: Entity-Framework-Core迁移与优化
+title: Entity Framework Core 迁移与优化
 module: 'csharp'
 category: 后端技术
 difficulty: advanced
@@ -13,7 +13,7 @@ related:
   - 'csharp/033-AspNetCoreMiddlewarePipeline'
   - 'csharp/034-DILifecycle'
 prerequisites:
-  - 'csharp/001-COverviewEnvSetup'
+  - 'csharp/001-CSharpOverviewEnvSetup'
 ---
 
 

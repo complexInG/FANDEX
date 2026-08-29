@@ -1,6 +1,6 @@
 ---
 order: 230
-title: constexpr与编译期计算
+title: constexpr 与编译期计算
 module: 'cpp'
 category: 计算机科学
 difficulty: advanced

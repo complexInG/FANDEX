@@ -1,6 +1,6 @@
 ---
 order: 490
-title: Python与OAuth2
+title: Python 与 OAuth2
 module: 'python'
 category: 后端技术
 difficulty: intermediate

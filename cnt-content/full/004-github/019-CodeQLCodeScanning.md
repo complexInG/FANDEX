@@ -1,6 +1,6 @@
 ---
 order: 190
-title: CodeQL代码扫描
+title: CodeQL 代码扫描
 module: 'github'
 category: 工具链
 difficulty: intermediate

@@ -1,6 +1,6 @@
 ---
 order: 590
-title: Java与响应式编程
+title: Java 与响应式编程
 module: 'java'
 category: 后端技术
 difficulty: advanced

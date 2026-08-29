@@ -1,6 +1,6 @@
 ---
 order: 210
-title: Lua与World of Warcraft
+title: Lua 与 World of Warcraft
 module: 'lua'
 category: 后端技术
 difficulty: intermediate

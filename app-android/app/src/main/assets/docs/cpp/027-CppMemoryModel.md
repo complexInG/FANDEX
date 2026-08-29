@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-07-21'
 related:
   - 'cpp/012-DesignPatternCpp'
-  - 'cpp/026-COOPAdvanced'
+  - 'cpp/026-CppOOPAdvanced'
   - 'cpp/029-CppToolchain'
   - 'cpp/032-CppTestFramework'
   - 'cpp/035-CppPerformance'

@@ -1,6 +1,6 @@
 ---
 order: 340
-title: C++23与C++26新特性
+title: C++23 与 C++26 新特性
 module: 'cpp'
 category: 计算机科学
 difficulty: intermediate

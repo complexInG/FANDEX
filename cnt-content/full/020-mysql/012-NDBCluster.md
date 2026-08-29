@@ -1,6 +1,6 @@
 ---
 order: 120
-title: NDB-Cluster
+title: NDB Cluster
 module: 'mysql'
 category: 数据库
 difficulty: advanced

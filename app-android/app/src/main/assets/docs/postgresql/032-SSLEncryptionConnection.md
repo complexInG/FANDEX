@@ -1,6 +1,6 @@
 ---
 order: 320
-title: SSL-TLS加密连接
+title: SSL/TLS 加密连接
 module: 'postgresql'
 category: 数据库
 difficulty: intermediate

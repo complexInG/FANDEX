@@ -1,6 +1,6 @@
 ---
 order: 320
-title: 微数据与JSON-LD
+title: 微数据与 JSON-LD
 module: 'html5'
 category: 前端技术
 difficulty: intermediate
