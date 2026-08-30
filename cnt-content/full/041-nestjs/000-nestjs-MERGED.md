@@ -6,12 +6,12 @@ category: 后端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：049-nestjs/001-NestJSOverview.md ============ -->
+<!-- ============================================================ nestjs/001-NestJSOverview ============================================================ -->
 
 ## 0. 五分钟创建第一个接口（先读这里）
 
@@ -91,7 +91,7 @@ bootstrap()
 
 > NestJS = TypeScript + 模块化 + 依赖注入：控制器管请求、服务管业务、模块管组装，三个文件构成一个功能单元。
 
-<!-- ============ 文档分隔线：049-nestjs/002-ModuleControllerService.md ============ -->
+<!-- ============================================================ nestjs/002-ModuleControllerService ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -247,7 +247,7 @@ export class TodosModule {}
 
 > 控制器用装饰器声明路由、服务用类封装业务、模块把它们组装起来；依赖注入让"谁来实例化"这件事交给框架。
 
-<!-- ============ 文档分隔线：049-nestjs/003-ValidationPipes.md ============ -->
+<!-- ============================================================ nestjs/003-ValidationPipes ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -378,7 +378,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
 > 校验交给管道、错误交给过滤器：入口越严格，业务代码越干净；全局统一错误结构，前端对接成本最低。
 
-<!-- ============ 文档分隔线：049-nestjs/004-DatabaseIntegration.md ============ -->
+<!-- ============================================================ nestjs/004-DatabaseIntegration ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -507,7 +507,7 @@ export class TodosService {
 
 > Prisma 把数据库变成类型安全的模型：`create/findMany/update/delete` 就是增删改查，连接生命周期交给 PrismaService 统一管理。
 
-<!-- ============ 文档分隔线：049-nestjs/005-Testing.md ============ -->
+<!-- ============================================================ nestjs/005-Testing ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -679,7 +679,7 @@ describe("Todos (e2e)", () => {
 
 > 单元测试用替身隔离依赖、测逻辑；e2e 测试起真应用、走真 HTTP；两者配合，重构时才有底气。
 
-<!-- ============ 文档分隔线：049-nestjs/006-GuardsAndLifecycle.md ============ -->
+<!-- ============================================================ nestjs/006-GuardsAndLifecycle ============================================================ -->
 
 ## 0. 请求生命周期（先读这里）
 
@@ -880,7 +880,7 @@ me(@CurrentUser() user: AuthUser, @CurrentUser("name") name: string) {
 - 全站性守卫用 `APP_GUARD` token 注册在 `AppModule`，支持 DI 且顺序可控。
 - 延伸：真实项目鉴权用 `@nestjs/passport` + `@nestjs/jwt`（Strategy 模式对接守卫）；限流用 `@nestjs/throttler`（同样基于守卫实现）。
 
-<!-- ============ 文档分隔线：049-nestjs/007-InterceptorsAndFilters.md ============ -->
+<!-- ============================================================ nestjs/007-InterceptorsAndFilters ============================================================ -->
 
 ## 0. 环绕逻辑与错误兜底（先读这里）
 
@@ -1088,7 +1088,7 @@ providers: [{ provide: APP_FILTER, useClass: AllExceptionsFilter }]
 - 全局组件用 `APP_GUARD` / `APP_INTERCEPTOR` / `APP_FILTER` 注册，支持 DI 且顺序可控。
 - 延伸：`@nestjs/terminus` 健康检查与超时控制 `TimeoutInterceptor` 见官方 Interceptors 章节；RxJS 学习重点先掌握 tap、map、catchError 三个操作符即可覆盖八成场景。
 
-<!-- ============ 文档分隔线：049-nestjs/008-ConfigEnvValidation.md ============ -->
+<!-- ============================================================ nestjs/008-ConfigEnvValidation ============================================================ -->
 
 ## 0. 配置为什么值得单独一章（先读这里）
 
@@ -1342,7 +1342,7 @@ ConfigModule.forRoot({
 - 环境分层口诀：example 进库、local 覆盖、生产注入、密钥轮换。
 - 延伸：validate 函数也可用 class-validator + `plainToInstance` 或 Joi 实现，思路相同；NestJS 12 的 Standard Schema 集成与 Configuration 自定义 getter 的进阶写法，以官方文档为准。
 
-<!-- ============ 文档分隔线：049-nestjs/009-CachingAndQueues.md ============ -->
+<!-- ============================================================ nestjs/009-CachingAndQueues ============================================================ -->
 
 ## 0. 什么时候需要它们（先读这里）
 
@@ -1593,7 +1593,7 @@ this.emailQueue.on("failed", (job, err) => {
 - 两者都引入新的失败模式：先量化症状（QPS、耗时、失败率），再决定引入。
 - 延伸：Bull Board 面板可视化队列积压；缓存穿透与雪崩的应对（空值缓存、随机 TTL）；微服务与健康检查见下一篇。
 
-<!-- ============ 文档分隔线：049-nestjs/010-MicroservicesAndHealth.md ============ -->
+<!-- ============================================================ nestjs/010-MicroservicesAndHealth ============================================================ -->
 
 ## 0. 从单应用到多应用（先读这里）
 

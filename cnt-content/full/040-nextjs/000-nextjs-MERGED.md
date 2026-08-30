@@ -6,12 +6,12 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：048-nextjs/001-NextJS16Overview.md ============ -->
+<!-- ============================================================ nextjs/001-NextJS16Overview ============================================================ -->
 
 ## 0. 五分钟创建第一个项目（先读这里）
 
@@ -95,7 +95,7 @@ export default function Home() {
 
 > Next.js = React + 文件路由 + 服务器渲染；`app/` 里放 `page.tsx` 就有页面，默认服务器组件、需要交互才加 `"use client"`。
 
-<!-- ============ 文档分隔线：048-nextjs/002-AppRouterRouting.md ============ -->
+<!-- ============================================================ nextjs/002-AppRouterRouting ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -225,7 +225,7 @@ export default function Error({ reset }: { reset: () => void }) {
 
 > 路由就是文件夹约定：`page` 管页面、`layout` 管外壳、`[id]` 管动态参数、`loading/error/not-found` 管三种状态。
 
-<!-- ============ 文档分隔线：048-nextjs/003-DataFetchingCaching.md ============ -->
+<!-- ============================================================ nextjs/003-DataFetchingCaching ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -344,7 +344,7 @@ export default function ContactPage() {
 
 > 能服务器取数就在服务器取；`no-store` 求实时、`revalidate` 求平衡、默认缓存求速度；表单用 Server Action 最省事。
 
-<!-- ============ 文档分隔线：048-nextjs/004-DeploymentOptimization.md ============ -->
+<!-- ============================================================ nextjs/004-DeploymentOptimization ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -437,7 +437,7 @@ export default function Home() {
 
 > 构建时能静态就静态，密钥只进服务端环境变量，图片字体交给 next/image 与 next/font，性能报告用 Lighthouse 说话。
 
-<!-- ============ 文档分隔线：048-nextjs/005-RouteHandlersApi.md ============ -->
+<!-- ============================================================ nextjs/005-RouteHandlersApi ============================================================ -->
 
 ## 0. Route Handlers 是什么（先读这里）
 
@@ -725,7 +725,7 @@ export async function DELETE(
 - 接口的鉴权与安全响应头设置，见第 8 篇《认证、代理与安全》。
 - 更多接口细节（如 Edge 与 Node 运行时差异、Webhook 校验）以官方文档为准。
 
-<!-- ============ 文档分隔线：048-nextjs/006-ServerActionsForms.md ============ -->
+<!-- ============================================================ nextjs/006-ServerActionsForms ============================================================ -->
 
 ## 0. Server Actions 是什么（先读这里）
 
@@ -1035,7 +1035,7 @@ export async function deleteUser(formData: FormData) {
 - `revalidateTag` 与 fetch 标签的配合细节，见第 3 篇《Next.js 数据获取与缓存》。
 - 渐进增强与 Server Actions 的更多 API 行为，以官方文档为准。
 
-<!-- ============ 文档分隔线：048-nextjs/007-RenderingStrategies.md ============ -->
+<!-- ============================================================ nextjs/007-RenderingStrategies ============================================================ -->
 
 ## 0. 渲染策略全景（先读这里）
 
@@ -1263,7 +1263,7 @@ flowchart TD
 - 缓存与预取对部署产物与 CDN 的影响，见第 4 篇《Next.js 部署与性能优化》。
 - Cache Components、Partial Prefetching 与 Instant Navigations 仍在快速演进，指令与配置的最新形态以官方文档为准。
 
-<!-- ============ 文档分隔线：048-nextjs/008-AuthProxyMiddleware.md ============ -->
+<!-- ============================================================ nextjs/008-AuthProxyMiddleware ============================================================ -->
 
 ## 0. 认证与入口防线（先读这里）
 

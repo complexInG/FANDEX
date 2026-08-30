@@ -6,12 +6,12 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：053-angular/001-AngularOverview.md ============ -->
+<!-- ============================================================ angular/001-AngularOverview ============================================================ -->
 
 ## 0. 五分钟创建第一个应用（先读这里）
 
@@ -106,7 +106,7 @@ export class AppComponent {}
 
 > Angular = 组件树 + 模板绑定 + 依赖注入；22 版新项目默认 standalone、Signal、无 Zone.js，用 `ng new` 起步即可。
 
-<!-- ============ 文档分隔线：053-angular/002-QuickStartComponentTemplate.md ============ -->
+<!-- ============================================================ angular/002-QuickStartComponentTemplate ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -224,7 +224,7 @@ export class AppComponent {
 
 > 模板就是"类属性与页面之间的接线板"：`[属性]` 进、`(事件)` 出、`@if/@for` 控制结构。
 
-<!-- ============ 文档分隔线：053-angular/003-SignalsInputsOutputs.md ============ -->
+<!-- ============================================================ angular/003-SignalsInputsOutputs ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -380,7 +380,7 @@ export class ListComponent {
 
 > 信号管状态（signal/computed/effect），`input/output/model` 管通信；数据单向流动，父组件是唯一改数据的入口。
 
-<!-- ============ 文档分隔线：053-angular/004-DependencyInjectionServices.md ============ -->
+<!-- ============================================================ angular/004-DependencyInjectionServices ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -527,7 +527,7 @@ describe("TodoService", () => {
 
 > API 调用全部收进 `@Injectable` 服务，组件用 `inject()` 取用；Observable 配 `firstValueFrom` 最省心，测试用 `HttpTestingController` 拦截请求。
 
-<!-- ============ 文档分隔线：053-angular/005-RoutingForms.md ============ -->
+<!-- ============================================================ angular/005-RoutingForms ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -667,7 +667,7 @@ export class CreateTodoComponent {
 
 > `provideRouter + RouterOutlet + routerLink` 三件套搞定导航；表单用 FormBuilder 声明结构，校验不过就禁用提交。
 
-<!-- ============ 文档分隔线：053-angular/006-AdvancedRoadmap.md ============ -->
+<!-- ============================================================ angular/006-AdvancedRoadmap ============================================================ -->
 
 ## 0. 你现在在哪里（先读这里）
 
@@ -885,7 +885,7 @@ provideClientHydration(),
 - 官方资源：angular.dev（新文档站）、angular.dev/guide/signals、
   angular.dev/guide/ssr。
 
-<!-- ============ 文档分隔线：053-angular/007-DirectivesPipes.md ============ -->
+<!-- ============================================================ angular/007-DirectivesPipes ============================================================ -->
 
 # 指令与管道
 
@@ -899,7 +899,7 @@ provideClientHydration(),
 - @if/@for 控制流与 track
 - 自定义管道与纯/非纯
 
-<!-- ============ 文档分隔线：053-angular/008-HttpClientStateManagement.md ============ -->
+<!-- ============================================================ angular/008-HttpClientStateManagement ============================================================ -->
 
 # HttpClient 与状态管理
 
@@ -913,7 +913,7 @@ provideClientHydration(),
 - 服务化状态
 - toSignal/toObservable 桥接
 
-<!-- ============ 文档分隔线：053-angular/009-TestingSSRHydration.md ============ -->
+<!-- ============================================================ angular/009-TestingSSRHydration ============================================================ -->
 
 # 测试与 SSR 水合
 

@@ -6,12 +6,69 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：008-javascript/001-JavaScriptOverviewRuntimeEnv.md ============ -->
+<!-- ============================================================ javascript/001-WhatIsJavaScript ============================================================ -->
+
+## 网页的三层分工
+
+把网页想象成一个人：HTML 是骨架（结构）、CSS 是皮肤与衣着（外观）、JavaScript 是肌肉与神经（行为）。你在网页上见到的所有"动起来"的部分——点击按钮弹出提示、下拉刷新、购物车结算、表单校验——都是 JavaScript 在工作。
+
+## JavaScript 能做什么
+
+它的版图远比"网页特效"大：
+
+| 场景 | 说明 |
+| --- | --- |
+| 浏览器交互 | 全部主流网页的界面逻辑，浏览器唯一内置的脚本语言 |
+| 服务端 | 借助 Node.js 运行时，可以写网站后台与接口（见本仓库 nestjs 模块） |
+| 桌面与移动端 | 借助 Electron、React Native 等框架开发跨端应用 |
+| 工具链 | 前端构建工具（Vite 等）本身也由 JavaScript/TypeScript 编写 |
+
+对零基础学习者，这意味着：**学会这一门语言，前端、后端、桌面端三条路都打通了入口。**
+
+## 它在哪里运行
+
+只有两个地方需要关心：
+
+1. **浏览器**：你按 `F12` 打开的控制台就是一个即写即跑的 JavaScript 运行环境；
+2. **Node.js**：让 JavaScript 脱离浏览器、在操作系统里运行的工具（安装见 [Node.js 安装配置](getting-started/017-NodeJsInstall)）。
+
+## 动手环节：第一行代码
+
+不需要安装任何东西。打开浏览器按 `F12`，切到 Console（控制台）标签，输入以下内容并回车：
+
+```javascript
+console.log('你好，世界');
+```
+
+你会立刻看到输出：`你好，世界`。`console.log` 的含义是"把括号里的内容打印到控制台"——它是你未来最主要的调试伙伴。
+
+再来一段带逻辑的：
+
+```javascript
+// 定义一个函数：输入名字，返回问候语
+function greet(name) {
+  return '你好，' + name + '！欢迎来到编程世界。';
+}
+
+console.log(greet('学习者'));   // 输出：你好，学习者！欢迎来到编程世界。
+```
+
+逐行拆解：`function` 定义一个可复用的功能块；`name` 是传入的参数；`return` 把结果交还；最后一行调用它并打印。**编程就是把想法写成这样一段可反复执行的步骤。**
+
+## 报错是正常现象
+
+在控制台输入 `console.log(abc)` 并回车，你会看到红色报错：`Uncaught ReferenceError: abc is not defined`。翻译过来是"abc 这个变量没有定义"。**读报错是编程的核心技能**——报错信息会告诉你出了什么错、在第几行，九成的初学者问题答案就写在报错里。
+
+## 下一步
+
+完成上面的动手环节后，进入 [JavaScript 概述与运行环境](javascript/002-JavaScriptOverviewRuntimeEnv) 系统学习语法主线；想理解页面上 HTML 与 CSS 如何配合，先读 [网页是什么](html5/001-WhatIsWebpage) 与 [CSS 是什么](css/001-WhatIsCSS)。
+
+<!-- ============================================================ javascript/002-JavaScriptOverviewRuntimeEnv ============================================================ -->
 
 ## 0.1 JavaScript 必会运行模型
 
@@ -2668,7 +2725,7 @@ import './utils'      → 报错（ESM 要求扩展名）
 
 注意：性能基准依赖具体场景，不要过度依赖单一指标。生产环境选型应综合考虑生态成熟度、稳定性、维护成本。
 
-<!-- ============ 文档分隔线：008-javascript/002-ProgramStructureBasicSyntax.md ============ -->
+<!-- ============================================================ javascript/003-ProgramStructureBasicSyntax ============================================================ -->
 
 ## 1. 引入方式 (Inclusion)
 
@@ -4341,7 +4398,7 @@ undeclared = 1;
 
 答案：给未声明变量赋值在严格模式下会抛 `ReferenceError`；非严格模式会静默创建全局变量。
 
-<!-- ============ 文档分隔线：008-javascript/003-VariableDataType.md ============ -->
+<!-- ============================================================ javascript/004-VariableDataType ============================================================ -->
 
 ## 1. 引入方式 (Inclusion)
 
@@ -5708,7 +5765,7 @@ console.log(price === 0.3); // false
 
 答案：浮点误差问题；涉及金额时用整数分单位计算或 `BigInt`。
 
-<!-- ============ 文档分隔线：008-javascript/004-DataTypeOperator.md ============ -->
+<!-- ============================================================ javascript/005-DataTypeOperator ============================================================ -->
 
 ## 1. 数据类型 (Data Types)
 
@@ -7291,7 +7348,7 @@ const n = 1 + 2 * 3; // ?
 
 答案：`7`，乘法先于加法。不确定优先级时加括号。
 
-<!-- ============ 文档分隔线：008-javascript/005-ControlFlow.md ============ -->
+<!-- ============================================================ javascript/006-ControlFlow ============================================================ -->
 
 ## 0. 引言
 
@@ -9063,7 +9120,7 @@ const name = '用户' && getName();
 
 答案：`'用户'` 是 truthy，`&&` 返回 `getName()` 的结果——这与“缺省值”意图相反。想给默认值用 `??` 或 `||`：`const name = getName() ?? '用户'`。
 
-<!-- ============ 文档分隔线：008-javascript/007-ObjectArray.md ============ -->
+<!-- ============================================================ javascript/007-ObjectArray ============================================================ -->
 
 ## 1. 历史动机与背景
 
@@ -11956,7 +12013,7 @@ let has = Object.hasOwn(user, "name");
 let copy = structuredClone(original);
 ```
 
-<!-- ============ 文档分隔线：008-javascript/008-FunctionScopeClosure.md ============ -->
+<!-- ============================================================ javascript/008-FunctionScopeClosure ============================================================ -->
 
 ## 1. 引言
 
@@ -13932,7 +13989,7 @@ let gen = generator();
 gen.next();
 ```
 
-<!-- ============ 文档分隔线：008-javascript/009-ArrayHigherOrderMethod.md ============ -->
+<!-- ============================================================ javascript/009-ArrayHigherOrderMethod ============================================================ -->
 
 # 数组高阶方法（Array Higher-Order Methods）
 
@@ -15417,7 +15474,7 @@ let iter = [1, 2, 3, 4].values().drop(2);
 let arr = [1, 2, 3].values().map(x => x * 2).toArray();
 ```
 
-<!-- ============ 文档分隔线：008-javascript/009-ThisKeywordDeepDive.md ============ -->
+<!-- ============================================================ javascript/010-ThisKeywordDeepDive ============================================================ -->
 
 # this 关键字详解
 
@@ -15431,7 +15488,7 @@ let arr = [1, 2, 3].values().map(x => x * 2).toArray();
 - 回调丢失 this 与修复
 - 严格模式与全局污染
 
-<!-- ============ 文档分隔线：008-javascript/011-Regex.md ============ -->
+<!-- ============================================================ javascript/011-Regex ============================================================ -->
 
 ## 1. 历史动机：正则表达式的起源
 
@@ -18064,7 +18121,7 @@ let ok = "hello".isWellFormed();
 let escaped = RegExp.escape("a.b*c");
 ```
 
-<!-- ============ 文档分隔线：008-javascript/011-ES2018RegExpNamedCaptureGroups.md ============ -->
+<!-- ============================================================ javascript/012-ES2018RegExpNamedCaptureGroups ============================================================ -->
 
 > 前置：需先有正则基础（043）。
 
@@ -19634,7 +19691,7 @@ match (str) {
 
 持续关注 TC39 提案进展，保持对最新特性的敏感度，是 JavaScript 工程师的重要素养。
 
-<!-- ============ 文档分隔线：008-javascript/013-UnicodePropertyEscape.md ============ -->
+<!-- ============================================================ javascript/013-UnicodePropertyEscape ============================================================ -->
 
 > 前置：需先有正则基础（043）。
 
@@ -21275,7 +21332,7 @@ const regex = /(?u:\p{L})+/;
 
 持续关注 TC39 提案进展，保持对最新特性的敏感度，是 JavaScript 工程师的重要素养。
 
-<!-- ============ 文档分隔线：008-javascript/013-CustomErrorTypes.md ============ -->
+<!-- ============================================================ javascript/014-CustomErrorTypes ============================================================ -->
 
 ## 0. 导言
 
@@ -24408,7 +24465,7 @@ while (current.cause) {
 }
 ```
 
-<!-- ============ 文档分隔线：008-javascript/015-HigherOrderFunction.md ============ -->
+<!-- ============================================================ javascript/015-HigherOrderFunction ============================================================ -->
 
 # 高阶函数：JavaScript 函数式编程的核心抽象
 
@@ -25951,7 +26008,7 @@ _.reduce([1, 2, 3], (a, b) => a + b, 0);
 
 *本文档基于 ES2024 正式规范撰写。所有代码示例在 Node.js 22+ 与现代浏览器中可直接运行。*
 
-<!-- ============ 文档分隔线：008-javascript/015-RecursionTailCallOptimization.md ============ -->
+<!-- ============================================================ javascript/016-RecursionTailCallOptimization ============================================================ -->
 
 # 递归与尾调用优化
 
@@ -28547,7 +28604,7 @@ async function traverseDirSafe(root, visitor) {
 
 > 本文档基于 ECMAScript 2025 规范、SICP、Scheme R5RS 与 V8 工程实践编写,涵盖递归的形式化定义、尾调用与 TCO 规范、trampoline 与 CPS、栈溢出防护、性能优化、实战案例等内容,旨在作为 MIT/Stanford/CMU 级别的工程教学材料。如需进一步深入,请参阅参考文献与延伸阅读章节。
 
-<!-- ============ 文档分隔线：008-javascript/016-CurryAndFunctionComposition.md ============ -->
+<!-- ============================================================ javascript/017-CurryAndFunctionComposition ============================================================ -->
 
 > 阅读建议：先掌握柯里化“是什么、怎么用”；性能分析章节为【进阶原理】。
 
@@ -30426,7 +30483,7 @@ const doubled = numbers.map(x => x * 2);  // 新元组
 
 **未来展望：** JavaScript 函数式编程正在向 Haskell、Scala 等语言靠拢。柯里化与偏函数作为基础技术，其理念将贯穿未来 ECMAScript 的演进。掌握这些核心概念，将有助于开发者在语言演进中保持竞争力。
 
-<!-- ============ 文档分隔线：008-javascript/017-JavaScriptPrototypeInheritance.md ============ -->
+<!-- ============================================================ javascript/018-JavaScriptPrototypeInheritance ============================================================ -->
 
 ## 1. 原型与原型链 (Prototype & Prototype Chain)
 
@@ -31237,7 +31294,7 @@ function safeMerge(target, source) {
 
 防御：递归合并时，对每一层的 key 都做危险 key 过滤。
 
-<!-- ============ 文档分隔线：008-javascript/018-PrototypeChainClassEssence.md ============ -->
+<!-- ============================================================ javascript/019-PrototypeChainClassEssence ============================================================ -->
 
 > 前置：先掌握对象（026）与函数基础；形式化定义部分为【高阶选读】。
 
@@ -32958,7 +33015,7 @@ TypeScript 的 `implements` 不影响运行时，仅做编译期类型检查。`
 维护者：fanquanpp
 反馈渠道：在 GitHub Issues 提交问题或建议
 
-<!-- ============ 文档分隔线：008-javascript/019-DeepShallowCopy.md ============ -->
+<!-- ============================================================ javascript/020-DeepShallowCopy ============================================================ -->
 
 # 深拷贝与浅拷贝（Deep Copy & Shallow Copy）
 
@@ -34507,7 +34564,7 @@ let copy = structuredClone(obj);
 copy.nested.a = 2;  // obj.nested.a 仍为 1
 ```
 
-<!-- ============ 文档分隔线：008-javascript/021-ObjectStaticMethods.md ============ -->
+<!-- ============================================================ javascript/021-ObjectStaticMethods ============================================================ -->
 
 # Object 扩展（ES6+ 静态方法体系）
 
@@ -36686,7 +36743,7 @@ console.log(validator.validate({ age: 25 }));
 
 > **结语**：`Object` 静态方法是 JavaScript 工程师日常最频繁使用的 API 之一。理解其背后的属性描述符模型、原型链语义、不可变性层级与 TC39 演进历程，是写出健壮、可维护代码的基础。掌握 `Object.freeze` 与 `structuredClone` 的边界、`Object.assign` 的 setter 触发语义、`Object.groupBy` 的 null 原型返回值等细节，能在生产环境避免大量隐蔽 Bug。后续学习推荐结合 `Proxy`/`Reflect`（ES6 反射 API）与 `Symbol`（ES6 新原始类型）章节，构建完整的对象模型知识体系。
 
-<!-- ============ 文档分隔线：008-javascript/021-ES6NewFeatures.md ============ -->
+<!-- ============================================================ javascript/022-ES6NewFeatures ============================================================ -->
 
 ## 0. 引言
 
@@ -39052,7 +39109,7 @@ let arr = new Float16Array([1.0, 2.5, 3.14]);
 let escaped = RegExp.escape("a.b*c");
 ```
 
-<!-- ============ 文档分隔线：008-javascript/023-MapSetWeakMapWeakSet.md ============ -->
+<!-- ============================================================ javascript/023-MapSetWeakMapWeakSet ============================================================ -->
 
 ## Map 基础
 
@@ -39292,7 +39349,7 @@ m.set(key, 1); // 对象作键
 - 内存：`javascript/037-MemoryManagementAndGarbageCollection`；
 - 数组：`javascript/007-ObjectArray`。
 
-<!-- ============ 文档分隔线：008-javascript/023-ArrayBufferTypedArray.md ============ -->
+<!-- ============================================================ javascript/024-ArrayBufferTypedArray ============================================================ -->
 
 ## ArrayBuffer 基础
 
@@ -39515,7 +39572,7 @@ console.log(le ? "little-endian" : "big-endian");
 - 性能：`javascript/050-DebugPerformanceOptimization`；
 - 文件：`html5/015-HTML5OfflineStorageWebAPI`。
 
-<!-- ============ 文档分隔线：008-javascript/025-AsyncProgramming.md ============ -->
+<!-- ============================================================ javascript/025-AsyncProgramming ============================================================ -->
 
 ## 1. 历史动机与背景
 
@@ -41879,7 +41936,7 @@ let p = Promise.try(() => {
 });
 ```
 
-<!-- ============ 文档分隔线：008-javascript/025-PromiseConstructorDeepDive.md ============ -->
+<!-- ============================================================ javascript/026-PromiseConstructorDeepDive ============================================================ -->
 
 ## 0. 学习导览
 
@@ -44930,7 +44987,7 @@ function retry(fn, times) {
 promises.reduce((chain, promise) => chain.then(() => promise()), Promise.resolve());
 ```
 
-<!-- ============ 文档分隔线：008-javascript/027-PromiseStaticMethod.md ============ -->
+<!-- ============================================================ javascript/027-PromiseStaticMethod ============================================================ -->
 
 > 前置：先读 030 异步编程，掌握 Promise 基本用法。
 
@@ -47432,7 +47489,7 @@ const { promise, resolve, reject } = Promise.withResolvers();
 button.onclick = () => resolve("clicked");
 ```
 
-<!-- ============ 文档分隔线：008-javascript/028-AsyncConcurrencyControl.md ============ -->
+<!-- ============================================================ javascript/028-AsyncConcurrencyControl ============================================================ -->
 
 # 异步并发控制
 
@@ -50092,7 +50149,7 @@ await Promise.all(
 2. 实现工作窃取算法
 3. 研究无锁数据结构
 
-<!-- ============ 文档分隔线：008-javascript/029-EventLoop.md ============ -->
+<!-- ============================================================ javascript/029-EventLoop ============================================================ -->
 
 > 阅读建议：核心必读。形式化模型可先跳过，重点看执行顺序示例与对比表；反复读直到能口算执行顺序。
 
@@ -51901,7 +51958,7 @@ console.log('D');
 
 记住一句话：**微任务清空后才轮到下一个宏任务**。遇到 async/await 时，await 后面的代码相当于 `.then` 回调，也进微任务。
 
-<!-- ============ 文档分隔线：008-javascript/029-EventLoopDetailed.md ============ -->
+<!-- ============================================================ javascript/030-EventLoopDetailed ============================================================ -->
 
 # 事件循环详解（Event Loop In Depth）
 
@@ -53549,7 +53606,7 @@ Promise.resolve().then(() => console.log("async"));
 console.log("sync");
 ```
 
-<!-- ============ 文档分隔线：008-javascript/030-IteratorHelper.md ============ -->
+<!-- ============================================================ javascript/031-IteratorHelper ============================================================ -->
 
 > 里程碑标注：建议先掌握数组方法与生成器（009）后再读。
 
@@ -55187,7 +55244,7 @@ const arr = [...new Set([1, 2]), ...range];
 
 ---
 
-<!-- ============ 文档分隔线：008-javascript/031-CoroutinesInJavaScript.md ============ -->
+<!-- ============================================================ javascript/032-CoroutinesInJavaScript ============================================================ -->
 
 ## 0. 学习导览
 
@@ -57972,7 +58029,7 @@ let it = asyncGen();
 let result = await it.next();
 ```
 
-<!-- ============ 文档分隔线：008-javascript/032-ExploringES6ProxiesAndReflect.md ============ -->
+<!-- ============================================================ javascript/033-ExploringES6ProxiesAndReflect ============================================================ -->
 
 # Proxy 与 Reflect
 
@@ -60392,7 +60449,7 @@ const memoized = new Proxy(fn, {
 
 注:数据基于 V8 8.x 在 Node.js 14 上的典型表现。
 
-<!-- ============ 文档分隔线：008-javascript/033-ProxyReflectPractice.md ============ -->
+<!-- ============================================================ javascript/034-ProxyReflectPractice ============================================================ -->
 
 ## 1. 历史动机与演化
 
@@ -63763,7 +63820,7 @@ function defineReactive(obj, key, val) {
 }
 ```
 
-<!-- ============ 文档分隔线：008-javascript/034-ClosureMemoryLeakOptimization.md ============ -->
+<!-- ============================================================ javascript/035-ClosureMemoryLeakOptimization ============================================================ -->
 
 > 前置：先读 016 闭包与 057 内存管理；本篇为【进阶专题】。
 
@@ -65357,7 +65414,7 @@ node --inspect finalization.js
 # 然后在 Chrome 打开 chrome://inspect 连接
 ```
 
-<!-- ============ 文档分隔线：008-javascript/036-MemoryLeakTroubleshoot.md ============ -->
+<!-- ============================================================ javascript/036-MemoryLeakTroubleshoot ============================================================ -->
 
 > 前置：先读 031 闭包内存与 057 内存管理；本篇为【进阶专题】。
 
@@ -67073,7 +67130,7 @@ global.gc();
 
 掌握本篇内容后，应能在 React / Vue / Node.js 项目中独立诊断与修复内存泄漏，并设计内存友好的架构。
 
-<!-- ============ 文档分隔线：008-javascript/037-MemoryManagementAndGarbageCollection.md ============ -->
+<!-- ============================================================ javascript/037-MemoryManagementAndGarbageCollection ============================================================ -->
 
 ## 一句话理解
 
@@ -67198,7 +67255,7 @@ function process(el) {
 - 泄漏排查：`javascript/036-MemoryLeakTroubleshoot`；
 - 集合弱引用：`javascript/023-MapSetWeakMapWeakSet`。
 
-<!-- ============ 文档分隔线：008-javascript/038-JavaScriptModular.md ============ -->
+<!-- ============================================================ javascript/038-JavaScriptModular ============================================================ -->
 
 ## 1. 历史动机与背景
 
@@ -70084,7 +70141,7 @@ let mod = await import("./config.json", { with: { type: "json" } });
 import x from "./a.json" with { type: "json" };
 ```
 
-<!-- ============ 文档分隔线：008-javascript/039-ModuleDynamicImportCodeSplitting.md ============ -->
+<!-- ============================================================ javascript/039-ModuleDynamicImportCodeSplitting ============================================================ -->
 
 ## 1. 历史动机与演化
 
@@ -72406,7 +72463,7 @@ link.href = "/chunk.js";
 document.head.appendChild(link);
 ```
 
-<!-- ============ 文档分隔线：008-javascript/040-ModuleBundlingAndTreeShaking.md ============ -->
+<!-- ============================================================ javascript/040-ModuleBundlingAndTreeShaking ============================================================ -->
 
 ## 一句话理解
 
@@ -72523,7 +72580,7 @@ export function init() { console.log('module loaded'); }
 - 动态导入：`javascript/039-ModuleDynamicImportCodeSplitting`；
 - 构建：`vite/` 模块。
 
-<!-- ============ 文档分隔线：008-javascript/041-DOMOperationEvent.md ============ -->
+<!-- ============================================================ javascript/041-DOMOperationEvent ============================================================ -->
 
 ## 1. DOM 基础 (DOM Basics)
 
@@ -73881,7 +73938,7 @@ document.querySelectorAll(".btn")
     .forEach(btn => btn.addEventListener("click", onClick));
 ```
 
-<!-- ============ 文档分隔线：008-javascript/041-BOMBrowserObjectModel.md ============ -->
+<!-- ============================================================ javascript/042-BOMBrowserObjectModel ============================================================ -->
 
 # 浏览器对象模型（BOM）
 
@@ -75493,7 +75550,7 @@ flowchart TD
 | 1.0 | 2026-06-14 | 初始版本 | fanquanpp |
 | 2.0 | 2026-07-20 | 金标准升级：新增学习目标、历史动机、形式化定义、案例研究、习题、参考文献、延伸阅读 | FANDEX Content Engineering Team |
 
-<!-- ============ 文档分隔线：008-javascript/043-WebAPIBrowserInterface.md ============ -->
+<!-- ============================================================ javascript/043-WebAPIBrowserInterface ============================================================ -->
 
 ## 1. 引言
 
@@ -77216,7 +77273,7 @@ ch.close();
 
 ---
 
-<!-- ============ 文档分隔线：008-javascript/043-FetchApiAndAbortController.md ============ -->
+<!-- ============================================================ javascript/044-FetchApiAndAbortController ============================================================ -->
 
 # fetch 与 AbortController
 
@@ -77230,7 +77287,7 @@ ch.close();
 - 错误语义与 HTTP 状态陷阱
 - 封装一个可取消请求函数
 
-<!-- ============ 文档分隔线：008-javascript/045-FetchApiWebStreams.md ============ -->
+<!-- ============================================================ javascript/045-FetchApiWebStreams ============================================================ -->
 
 # 网络请求 API
 
@@ -80555,7 +80612,7 @@ const response = await fetch('/api/data', { signal: AbortSignal.timeout(5000) })
 
 愿你在 Web 工程之路上,代码稳健、请求高效、响应流畅。
 
-<!-- ============ 文档分隔线：008-javascript/046-StorageForTheWeb.md ============ -->
+<!-- ============================================================ javascript/046-StorageForTheWeb ============================================================ -->
 
 ## 0. 学习导言
 
@@ -83620,7 +83677,7 @@ const storage = {
 // 小数据用 localStorage 大数据用 IndexedDB
 ```
 
-<!-- ============ 文档分隔线：008-javascript/047-IndexedDBADatabaseInYourBrowser.md ============ -->
+<!-- ============================================================ javascript/047-IndexedDBADatabaseInYourBrowser ============================================================ -->
 
 # 索引数据库（IndexedDB）
 
@@ -85642,7 +85699,7 @@ IndexedDB 是浏览器内置的强大事务型 NoSQL 数据库，为 Web 应用�
 3. Web Locks API 改善跨标签页协调
 4. 与 File System Access API 深度集成
 
-<!-- ============ 文档分隔线：008-javascript/048-ErrorBoundaryGlobalErrorCatch.md ============ -->
+<!-- ============================================================ javascript/048-ErrorBoundaryGlobalErrorCatch ============================================================ -->
 
 # 错误边界与全局错误捕获
 
@@ -87563,7 +87620,7 @@ flowchart LR
 维护者：fanquanpp
 反馈渠道：在 GitHub Issues 提交问题或建议
 
-<!-- ============ 文档分隔线：008-javascript/048-DebounceThrottle.md ============ -->
+<!-- ============================================================ javascript/049-DebounceThrottle ============================================================ -->
 
 ## 1. 历史动机与演化
 
@@ -90846,7 +90903,7 @@ const search = debounce(q => fetch(q), 300);
 onUnmounted(() => search.cancel());
 ```
 
-<!-- ============ 文档分隔线：008-javascript/050-DebugPerformanceOptimization.md ============ -->
+<!-- ============================================================ javascript/050-DebugPerformanceOptimization ============================================================ -->
 
 ## 1. 引言
 
@@ -93428,7 +93485,7 @@ function fpsMonitor() {
 }
 ```
 
-<!-- ============ 文档分隔线：008-javascript/051-CoreWebVitalsAndPerformanceMetrics.md ============ -->
+<!-- ============================================================ javascript/051-CoreWebVitalsAndPerformanceMetrics ============================================================ -->
 
 ## 一句话理解
 
@@ -93534,7 +93591,7 @@ new PerformanceObserver((list) => {
 - 渲染路径：`html5/038-CriticalRenderingPathAndResourceLoading`；
 - 资源：`html5/020-ImageResponsiveImage`。
 
-<!-- ============ 文档分隔线：008-javascript/051-NodeJsPerformanceOptimization.md ============ -->
+<!-- ============================================================ javascript/052-NodeJsPerformanceOptimization ============================================================ -->
 
 # Node.js 高级特性与性能优化
 
@@ -95311,7 +95368,7 @@ diagnostics_channel.publish('app.custom-event', { timestamp: Date.now() });
 
 **版本说明**：本文档基于 2026-07-21 时的 Node.js 22.x 版本撰写。所有代码示例均经过 Node.js 22.6+ 验证。如遇版本更新导致的 API 变更，请以官方文档为准。
 
-<!-- ============ 文档分隔线：008-javascript/052-PackageManagerCommands.md ============ -->
+<!-- ============================================================ javascript/053-PackageManagerCommands ============================================================ -->
 
 ## 初始化项目
 
@@ -95570,7 +95627,7 @@ pnpm install   # 自动链接 store
 - 模块：`javascript/038-JavaScriptModular`；
 - 构建：`javascript/040-ModuleBundlingAndTreeShaking`。
 
-<!-- ============ 文档分隔线：008-javascript/053-ConsoleAPI.md ============ -->
+<!-- ============================================================ javascript/054-ConsoleAPI ============================================================ -->
 
 ## 基础输出
 
@@ -95788,7 +95845,7 @@ if (process.env.NODE_ENV === "production") {
 - 错误处理：`javascript/048-ErrorBoundaryGlobalErrorCatch`；
 - 性能：`javascript/051-CoreWebVitalsAndPerformanceMetrics`。
 
-<!-- ============ 文档分隔线：008-javascript/055-JavaScriptProjectPractice.md ============ -->
+<!-- ============================================================ javascript/055-JavaScriptProjectPractice ============================================================ -->
 
 ## 1. 项目实战案例
 
@@ -97021,7 +97078,7 @@ export function renderProducts(products) {
 - **2026-04-05**: 初始化项目实战，涵盖简易待办事项应用的设计与核心实现。
 - **2026-05-03**: 扩展内容，添加更完整的项目实战案例、项目结构和组织、前端构建工具、测试、部署、性能优化、安全最佳实践等内容。
 
-<!-- ============ 文档分隔线：008-javascript/055-JavaScriptProjectExampleTodoApp.md ============ -->
+<!-- ============================================================ javascript/056-JavaScriptProjectExampleTodoApp ============================================================ -->
 
 | 完成任务   | 点击切换完成状态，视觉反馈   |
 | ---------- | ---------------------------- |
@@ -97978,7 +98035,7 @@ const pubsub = {
 4. 用 `Proxy` 做一层数据变更日志（每次修改 console.log）；
 5. 把列表渲染改为“增量 DOM”或对比 `innerHTML` 与 `createElement` 的性能差异。
 
-<!-- ============ 文档分隔线：008-javascript/056-ES2024NewFeatures.md ============ -->
+<!-- ============================================================ javascript/057-ES2024NewFeatures ============================================================ -->
 
 ## ES2023 数组非破坏方法
 
@@ -98330,7 +98387,7 @@ Math.f16round(1.337); // 按 float16 精度舍入
 - Promise：`javascript/027-PromiseStaticMethod`；
 - 正则：`javascript/011-Regex`。
 
-<!-- ============ 文档分隔线：008-javascript/057-JavaScriptLatestFeature.md ============ -->
+<!-- ============================================================ javascript/058-JavaScriptLatestFeature ============================================================ -->
 
 > 里程碑标注：新特性速览，先掌握 ES6 基础（036）再读。
 
@@ -99987,7 +100044,7 @@ console.log(result); // 18
 
 **最终修订说明**：本文档基于 2026 年 7 月的规范与运行时状态撰写。所有代码示例均经过 Node.js 22.6、Deno 2.1、Bun 1.2 的兼容性验证。如遇规范演进导致的 API 变更，请以 TC39 最新提案为准。
 
-<!-- ============ 文档分隔线：008-javascript/058-TemporalJavaScriptAPI.md ============ -->
+<!-- ============================================================ javascript/059-TemporalJavaScriptAPI ============================================================ -->
 
 > 里程碑标注：新 API 提案内容，建议学习 6 个月后再读；现阶段可先用date-fns/moment 替代。
 
@@ -101752,7 +101809,7 @@ flowchart TD
 
 > **结语**：`Temporal` API 是 JavaScript 标准库历史上最大规模的补充之一，标志着 JavaScript 终于在 30 年后拥有了与现代语言（Java 8 的 `java.time`、Python 的 `datetime`、.NET 的 `NodaTime`）相当的日期时间处理能力。掌握 `Instant`、`ZonedDateTime`、`PlainDate` 的语义边界、ISO 8601 字符串格式、IANA 时区数据库、DST 歧义处理策略，是构建国际化应用的基础。建议在生产环境以"UTC 存储 + 本地展示"为黄金准则，所有时间字段在数据库中以 `Temporal.Instant`（或等效的 UTC 时间戳）存储，在展示层用 `withTimeZone()` 转换为用户本地时区。后续学习推荐结合 `Intl`（国际化 API）章节，深入 `Intl.DateTimeFormat` 与 `Intl.NumberFormat` 的格式化能力。
 
-<!-- ============ 文档分隔线：008-javascript/059-RecordsAndTuples.md ============ -->
+<!-- ============================================================ javascript/060-RecordsAndTuples ============================================================ -->
 
 > 里程碑标注：提案内容，浏览器支持有限，建议了解即可。
 
@@ -102813,7 +102870,7 @@ new Set().add(#[1,2]).has(#[1,2]);        // true
 
 *本文档基于 TC39 Stage 2 提案撰写，最终标准可能调整。生产环境使用前请查阅最新规范。*
 
-<!-- ============ 文档分隔线：008-javascript/060-RegexAssertions.md ============ -->
+<!-- ============================================================ javascript/061-RegexAssertions ============================================================ -->
 
 > 前置：需先有正则基础（043）。
 
@@ -105397,7 +105454,7 @@ console.log('支持后行断言:', supportsLookbehind());
 | `s` 标志 | 62+ | 78+ | 11.1+ | 79+ | 8+ | 不支持 |
 | `d` 标志 | 90+ | 88+ | 16+ | 90+ | 16+ | 不支持 |
 
-<!-- ============ 文档分隔线：008-javascript/061-JavaScriptTheory.md ============ -->
+<!-- ============================================================ javascript/062-JavaScriptTheory ============================================================ -->
 
 # JavaScript 理论知识点
 
@@ -108052,7 +108109,7 @@ readable.on('end', () => writable.end());
 本文最后审阅日期：2026-07-20
 审阅方：FANDEX Content Engineering Team
 
-<!-- ============ 文档分隔线：008-javascript/062-WebWorkersMultithreading.md ============ -->
+<!-- ============================================================ javascript/063-WebWorkersMultithreading ============================================================ -->
 
 # Web Workers 多线程
 
@@ -108066,7 +108123,7 @@ readable.on('end', () => writable.end());
 - Worker 池与计算卸载模式
 - 与主线程通信的调试技巧
 
-<!-- ============ 文档分隔线：008-javascript/063-ServiceWorkerPWA.md ============ -->
+<!-- ============================================================ javascript/064-ServiceWorkerPWA ============================================================ -->
 
 # Service Worker 与 PWA
 
@@ -108079,3 +108136,1281 @@ readable.on('end', () => writable.end());
 - Fetch 拦截与离线回退
 - Manifest 与安装提示
 - 推送与后台同步概览
+
+<!-- ============================================================ javascript/065-DenoOverview ============================================================ -->
+
+## 0. 两分钟运行第一个脚本（先读这里）
+
+> 学习目标：安装 Deno 并运行一个 TypeScript 脚本，感受"无需配置文件"的开发体验。
+
+```bash
+# Windows（PowerShell）
+irm https://deno.land/install.ps1 | iex
+
+# 或通过包管理器
+winget install DenoLand.Deno
+```
+
+```typescript
+// hello.ts
+const name = Deno.args[0] ?? "世界"
+console.log(`你好，${name}！`)
+```
+
+```bash
+deno run hello.ts 小明
+```
+
+**讲解：**
+
+1. `Deno.args` 是命令行参数数组，`?? "世界"` 在未传参时给默认值。
+2. 不需要 `package.json`、不需要 `tsconfig.json`、不需要先编译——`deno run` 直接执行 TypeScript。
+3. 输出 `你好，小明！`，第一个 Deno 程序完成。
+
+## 1. Deno 是什么
+
+Deno 是 Node.js 创始人 Ryan Dahl 于 2020 年发布的 JavaScript/TypeScript 运行时，由 Rust 编写。它的设计目标是修复 Node.js 的历史问题：
+
+- 默认安全：脚本不能随意读文件、写网络，必须显式授权；
+- 原生 TypeScript：不需要 ts-node、webpack；
+- 去中心化依赖：直接用 URL 导入，或使用 JSR/npm 包；
+- 内置工具链：格式化、测试、代码检查、打包全部内置。
+
+### 1.1 版本现状（2026-08）
+
+- Deno 2.7+ 为当前稳定版（2.7 于 2026-02 发布，引入 Temporal API、Windows ARM 支持与 npm overrides）。
+- 2.x 兼容 npm 包与 Node.js 项目（`node:` 前缀导入），迁移成本已大幅降低。
+- 配套平台：Deno Deploy 提供边缘部署、KV 存储与 Cron 定时任务。
+
+## 2. 内置工具链
+
+```bash
+deno fmt            # 格式化代码
+deno lint           # 代码检查
+deno test           # 运行测试
+deno compile hello.ts  # 编译成单个可执行文件
+```
+
+**讲解：**
+
+1. `deno fmt` 与 `deno lint` 对标 Prettier/ESLint，零配置即用。
+2. `deno test` 自动发现 `*_test.ts` 文件并运行，内置断言库。
+3. `deno compile` 把脚本连同运行时打包成单文件可执行程序，适合分发 CLI 工具。
+
+## 3. 与 Node.js 的对比
+
+| 维度 | Node.js | Deno |
+| --- | --- | --- |
+| 类型支持 | 需 tsx/ts-node | 原生 TypeScript |
+| 模块 | npm + CommonJS/ESM | URL/JSR/npm，标准 ESM |
+| 权限 | 默认全开 | 默认全关，按需授权 |
+| 配置 | package.json + 一堆工具 | 零配置起步 |
+| 生态 | 全球最大 | 兼容 npm，原生生态快速增长 |
+
+## 4. 动手试试
+
+1. 修改 `hello.ts`，用 `Deno.readTextFile` 读取同目录的一个 txt 文件，运行后观察权限提示。
+2. 运行 `deno fmt hello.ts` 看看格式化效果。
+3. 用 `deno compile hello.ts` 生成可执行文件并运行它。
+
+## 5. 一句话记住
+
+> Deno = 原生 TypeScript + 默认安全的现代运行时；一个命令跑脚本，一条权限规则保护系统。
+
+<!-- ============================================================ javascript/066-DenoQuickStart ============================================================ -->
+
+## 0. 一句话理解
+
+> Deno 的依赖就是"网址或包名"：import 写在文件顶部，首次运行时自动下载缓存；测试就是 `Deno.test`，与业务代码放一起。
+
+## 1. 导入第三方模块
+
+```typescript
+// 从 npm 导入（Deno 2.x 起推荐写法，带版本号）
+import { Hono } from "npm:hono@4"
+
+// 从 JSR 导入（Deno 官方包仓库）
+import { camelCase } from "jsr:@std/text@1"
+
+// 从 URL 直接导入（经典 Deno 风格）
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
+```
+
+**讲解：**
+
+1. `npm:hono@4` 前缀表示"从 npm 拿包"，Deno 会解析其依赖树并缓存，不需要 `npm install`。
+2. `jsr:@std/text` 是 Deno 官方标准库在 JSR 上的发布名，`@1` 表示主版本。
+3. URL 导入是 Deno 1.x 的标志性写法，新项目建议优先 npm/JSR，并锁定版本号。
+
+## 2. 标准库常用模块
+
+```typescript
+// format_date.ts
+import { format } from "jsr:@std/datetime@0.225"
+
+const now = new Date()
+console.log(format(now, "yyyy-MM-dd HH:mm:ss"))
+```
+
+```typescript
+// csv.ts：解析 CSV 并计算总和
+import { parse } from "jsr:@std/csv@1"
+
+const csvText = `name,score\n小明,90\n小红,85`
+const rows = parse(csvText, { skipFirstRow: true })
+
+let total = 0
+for (const row of rows) {
+  total += Number(row.score)
+}
+console.log("平均分：", total / rows.length)
+```
+
+**讲解：**
+
+1. `@std/datetime` 的 `format` 用 `yyyy/MM/dd` 占位符格式化日期，`@std/csv` 的 `parse` 一行把 CSV 变成对象数组。
+2. `skipFirstRow: true` 把第一行当作表头，`row.score` 直接按列名取值。
+3. `Number(row.score)` 把字符串转数字；标准库覆盖了文件、路径、颜色、日志、测试等常用能力。
+
+## 3. 内置测试框架
+
+```typescript
+// avg_test.ts
+import { assertEquals } from "jsr:@std/assert@1"
+
+export function average(scores: number[]): number {
+  if (scores.length === 0) return 0
+  return scores.reduce((a, b) => a + b, 0) / scores.length
+}
+
+Deno.test("average 计算平均值", () => {
+  assertEquals(average([90, 85, 95]), 90)
+})
+
+Deno.test("average 空数组返回 0", () => {
+  assertEquals(average([]), 0)
+})
+```
+
+```bash
+deno test
+```
+
+**讲解：**
+
+1. `Deno.test("名字", 函数)` 定义一个测试用例，`assertEquals` 断言两个值相等。
+2. 测试文件与业务代码同目录，文件名带 `_test.ts` 后缀即可被自动发现。
+3. 空数组返回 0 的用例专门保护边界条件——写测试的入门标准就是"正常情况 + 边界情况"。
+
+## 4. 项目配置文件（可选）
+
+```json
+// deno.json
+{
+  "tasks": {
+    "dev": "deno run --watch main.ts",
+    "test": "deno test"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
+```
+
+**讲解：**
+
+1. `tasks` 相当于 npm scripts：`deno task dev` 运行开发任务，`--watch` 自动重启。
+2. `imports` 是 import map：把 `@std/assert` 映射到具体版本，代码里写 `import { assertEquals } from "@std/assert"` 更干净。
+3. deno.json 是可选文件，没有它 Deno 也能跑，但项目复杂后建议加上。
+
+## 5. 动手试试
+
+1. 写一个 `median`（中位数）函数，包含奇数长度与偶数长度两个测试用例。
+2. 用 `@std/csv` 解析一份 10 行成绩单，输出及格率（>=60 的占比）。
+3. 把 `average` 重构为从 CSV 读取分数再计算，运行 `deno test` 确认测试仍通过。
+
+## 6. 一句话记住
+
+> Deno 的开发节奏是"写文件 → import 带版本的包 → deno test/run"，工具链内置、测试内置，配置按需增加。
+
+<!-- ============================================================ javascript/067-DenoPermissionsSecurity ============================================================ -->
+
+## 0. 一句话理解
+
+> Deno 的默认状态是"什么都不能做"：读文件、写网络都要在运行命令里显式授权；权限最小化是 Deno 最重要的安全特性。
+
+## 1. 权限报错体验
+
+```typescript
+// read_file.ts
+const content = await Deno.readTextFile("secret.txt")
+console.log(content)
+```
+
+```bash
+deno run read_file.ts
+```
+
+**讲解：**
+
+1. 直接运行会报错：`PermissionDenied: Requires read access to "secret.txt"`。
+2. 这是"默认拒绝"的设计：即使脚本被恶意第三方依赖控制，它也无法悄悄读取你的文件。
+3. 相比 Node.js 默认全开，Deno 把"要不要给权限"变成了每次运行时的显式决定。
+
+## 2. 授权参数
+
+```bash
+# 只允许读当前目录
+deno run --allow-read=. read_file.ts
+
+# 只允许访问指定域名
+deno run --allow-net=api.example.com fetch_data.ts
+
+# 允许读写文件与网络（生产环境按需最小化，不要图省事用 --allow-all）
+deno run --allow-read --allow-write --allow-net app.ts
+```
+
+**讲解：**
+
+1. `--allow-read=.` 的 `=.` 表示只读当前目录，比无参数的全盘读取安全得多。
+2. `--allow-net=域名` 限制网络请求只到指定主机，防止脚本外联未知服务器。
+3. 权限可以叠加；`-A`（`--allow-all`）适合本地临时调试，生产环境禁止使用。
+
+## 3. 敏感信息：密钥不进代码
+
+```bash
+# Windows PowerShell 设置环境变量
+$env:DB_PASSWORD = "s3cr3t"
+
+# 运行时显式授权读取环境变量
+deno run --allow-env=DB_PASSWORD app.ts
+```
+
+```typescript
+// app.ts
+const password = Deno.env.get("DB_PASSWORD")
+if (!password) {
+  throw new Error("缺少 DB_PASSWORD 环境变量")
+}
+```
+
+**讲解：**
+
+1. `Deno.env.get` 读取环境变量，密钥放在环境变量或密钥管理服务（如 Vercel/云厂商 Secret Manager）里，绝不写进代码与 git。
+2. `--allow-env=DB_PASSWORD` 只放行这一个变量，其他环境变量脚本读不到。
+3. `if (!password) throw` 是"fail fast"：缺少必需配置时立即失败，而不是带着空密码运行。
+
+## 4. 依赖供应链安全
+
+```bash
+deno install
+deno check --all
+deno audit
+```
+
+**讲解：**
+
+1. `deno install` 根据 import 生成锁文件（deno.lock），锁定每个依赖的精确版本与校验和，后续安装一致复现。
+2. `deno check --all` 对全项目做类型检查，错误在 CI 里暴露而不是运行时。
+3. `deno audit` 扫描依赖漏洞（Deno 2.1+ 提供），类似 `npm audit`，应纳入 CI 流程。
+
+## 5. 生产环境安全清单
+
+- 用最小权限运行：只给 `--allow-net=你的域名`、`--allow-env=必需变量`；
+- 容器内以非 root 用户运行，避免容器逃逸后获得 root；
+- 密钥放 Secret Manager，轮换机制 + 审计日志；
+- 依赖锁文件提交 git，CI 里跑 `deno audit` 与 `deno check`；
+- 不信任任何第三方模块的权限请求：权限永远由你的 `deno run` 命令决定。
+
+## 6. 动手试试
+
+1. 写一个脚本读取系统临时目录（`Deno.env.get("TEMP")`），分别用 `--allow-env` 与不带参数运行，观察差异。
+2. 用 `--allow-net=example.com` 访问 `https://example.com` 成功、再访问 `https://httpbin.org` 失败。
+3. 在项目里启用 deno.lock（`deno install`），查看锁文件内容。
+
+## 7. 一句话记住
+
+> 权限按需给：`--allow-read=.` 只读当前目录、`--allow-net=域名` 只连指定主机；密钥走环境变量，锁文件保供应链。
+
+<!-- ============================================================ javascript/068-DenoWebFrameworkDeploy ============================================================ -->
+
+## 0. 一句话理解
+
+> 用 Hono 写路由、用 Deno KV 存数据、部署到 Deno Deploy——三样都是"边缘原生"，一个项目从零到上线不需要自建服务器。
+
+## 1. Hono 第一个 API
+
+```typescript
+// main.ts
+import { Hono } from "npm:hono@4"
+
+const app = new Hono()
+
+app.get("/", (c) => c.text("你好，Deno!"))
+
+app.get("/hello/:name", (c) => {
+  const name = c.req.param("name")
+  return c.json({ message: `你好，${name}` })
+})
+
+Deno.serve(app.fetch)
+```
+
+```bash
+deno run --allow-net main.ts
+```
+
+**讲解：**
+
+1. `new Hono()` 创建应用，`app.get("/", 处理函数)` 注册路由；`c` 是上下文对象，`c.text/c.json` 返回响应。
+2. `c.req.param("name")` 读取路径参数，`/hello/小明` 会返回 JSON 消息。
+3. `Deno.serve(app.fetch)` 把 Hono 应用挂到 Deno 内置 HTTP 服务器上，不需要 Express 或额外依赖。
+
+## 2. 接入 Deno KV
+
+```typescript
+// kv_todo.ts
+import { Hono } from "npm:hono@4"
+
+const kv = await Deno.openKv()
+const app = new Hono()
+
+app.post("/todos", async (c) => {
+  const { title } = await c.req.json()
+  const id = crypto.randomUUID()
+  await kv.set(["todos", id], { title, done: false })
+  return c.json({ id, title, done: false }, 201)
+})
+
+app.get("/todos", async (c) => {
+  const list = []
+  for await (const entry of kv.list({ prefix: ["todos"] })) {
+    list.push({ id: entry.key[1], ...entry.value })
+  }
+  return c.json(list)
+})
+
+Deno.serve(app.fetch)
+```
+
+**讲解：**
+
+1. `Deno.openKv()` 打开内置键值存储（本地是 SQLite，云端是 Deno KV），零配置即可持久化。
+2. `kv.set(["todos", id], 对象)` 以数组作为分层键，`kv.list({ prefix: ["todos"] })` 遍历该前缀下的所有记录。
+3. `crypto.randomUUID()` 生成唯一 id；`for await` 异步遍历 KV 结果集。
+4. KV 天然适合会话、配置、小型业务数据；复杂关系查询仍然选数据库（如 PostgreSQL）。
+
+## 3. 测试与检查
+
+```typescript
+// main_test.ts
+import { assertEquals } from "jsr:@std/assert@1"
+import { average } from "./main.ts"
+
+Deno.test("average 基本功能", () => {
+  assertEquals(average([1, 2, 3]), 2)
+})
+```
+
+```bash
+deno check main.ts
+deno test
+```
+
+**讲解：**
+
+1. 测试与业务函数同文件导出，`deno test` 自动发现 `_test.ts`。
+2. `deno check` 做全量类型检查，是 CI 里最便宜的一层保障。
+
+## 4. 部署到 Deno Deploy
+
+```bash
+# 安装部署 CLI
+deno install -gArf jsr:@deno/deployctl
+
+# 登录并部署
+deployctl deploy --project=my-deno-app main.ts
+```
+
+**讲解：**
+
+1. `deployctl deploy` 把项目推送到 Deno Deploy 边缘网络，全球节点就近执行，无需配置服务器。
+2. 每次部署会生成新的预览 URL，正式域名在控制台绑定。
+3. 云端自动注入 `Deno.openKv()`、`Deno.cron` 等服务，本地与线上 API 一致，无环境差异。
+
+## 5. 动手试试
+
+1. 给待办 API 增加 `DELETE /todos/:id`（`kv.delete(["todos", id])`）。
+2. 用 `Deno.cron("daily", "0 3 * * *", ...)` 写一个每天 3 点清理已完成待办的定时任务。
+3. 把项目部署到 Deno Deploy，用浏览器访问线上接口。
+
+## 6. 一句话记住
+
+> Deno 的 Web 开发链路最短：Hono 写 API、KV 存数据、Deploy 一键上线，权限参数决定它能碰什么。
+
+<!-- ============================================================ javascript/069-AdvancedRoadmap ============================================================ -->
+
+## 0. 你现在在哪里（先读这里）
+
+> 学习目标：对照进阶路线，明确接下来三站要学什么、为什么按这个顺序学、每站学到什么程度算过关。
+
+前四篇文档带你完成了 Deno 的入门闭环：认识运行时（001）、跑起第一个脚本（002）、
+理解权限模型（003）、用 Web 框架部署了服务（004）。到这里，你已经能用 Deno
+写出并运行一个正经的 TypeScript 服务。
+
+本篇是通往精通阶段的路线图：把剩余的核心能力拆成三站。每一站给出
+"要解决的问题 → 核心 API 清单 → 最小示例 → 常见陷阱 → 过关自检"，
+后续版本会把每一站展开为独立文档（编号紧接本篇）。
+
+## 1. 进阶路线总览
+
+| 站点 | 主题 | 解决的问题 | 核心能力 |
+| --- | --- | --- | --- |
+| 第五站 | 标准库与 npm 兼容 | 依赖从哪来：jsr:@std、npm:、node: 三个生态怎么用 | imports 映射、lockfile、Node 项目迁移 |
+| 第六站 | Deno KV 与队列 | 数据存哪：零配置强一致存储与消息队列 | openKv、原子事务、enqueue/listenQueue |
+| 第七站 | 测试、基准与 CI | 质量怎么保：零依赖的测试与流水线 | deno test/bench、lint/fmt/check |
+
+三站的关系：第五站解决"代码的原料"，第六站解决"状态的归宿"，
+第七站解决"质量的地基"。按顺序学，每一站都会用到前一站的成果——
+例如第六站的项目要用第五站的 imports 映射组织依赖，第七站的测试要覆盖第六站的 KV 逻辑。
+
+## 2. 第五站：标准库与 npm 兼容
+
+Deno 2.x 完全兼容 npm 生态，同时自带走 JSR 发布的官方标准库。
+这一站要建立"选依赖"的判断力。
+
+### 2.1 三种导入来源对比
+
+| 来源 | 示例 | 适用场景 | 特点 |
+| --- | --- | --- | --- |
+| jsr:@std | `import { join } from "jsr:@std/path@1"` | 通用工具 | 官方维护、TypeScript 原生、类型即文档 |
+| npm: | `import express from "npm:express@5"` | 复用 Node 生态 | 全量 npm 包可用 |
+| node: | `import { readFile } from "node:fs/promises"` | 熟悉的内置模块 | 与 Node 行为一致 |
+
+### 2.2 用 deno.json 集中管理依赖
+
+```json
+{
+  "imports": {
+    "@std/path": "jsr:@std/path@^1.0.0",
+    "express": "npm:express@^5.0.0"
+  }
+}
+```
+
+```ts
+// main.ts —— 代码里只写别名，版本集中在 deno.json
+import { join } from "@std/path";
+import express from "express";
+
+const app = express();
+app.get("/", (_req, res) => res.send("Hello Deno + Express"));
+app.listen(3000, () => console.log("http://localhost:3000"));
+```
+
+**讲解：** `imports` 是依赖的"唯一真相"：升级版本只改一处；
+配合 `deno.json` 生成 lockfile 后，CI 与本地的依赖完全一致。
+
+### 2.3 常用标准库速览
+
+| 包 | 用途 | 一句话记忆 |
+| --- | --- | --- |
+| @std/fs | ensureDir、walk、exists | 目录操作不用再手写递归 |
+| @std/path | join、dirname、extname | 跨平台路径拼接 |
+| @std/assert | assertEquals、assertRejects | 测试断言标配 |
+| @std/cli | parseArgs、prompt | 命令行参数解析 |
+| @std/yaml | parse、stringify | YAML 读写 |
+
+### 2.4 常见陷阱
+
+- 直接写完整 URL 导入（`import ... from "jsr:@std/path@1.0.6"）而不进 imports 映射：
+  版本散落各处，升级是灾难。
+- 忘记生成/提交 lockfile：CI 拉到新版本导致"本地好好的，线上挂了"。
+- 把 npm 包的 CommonJS 默认导出当作命名导入用，报 `does not provide an export named`。
+
+### 2.5 过关自检
+
+1. 能说出三种导入来源各自的最佳使用场景。
+2. 新依赖一律先加进 `deno.json` 的 imports 再在代码中引用。
+3. 用 `deno install` 把一个现成 Node 项目跑起来过一次。
+
+## 3. 第六站：Deno KV 与队列
+
+Deno 内置强一致键值数据库与消息队列，不装任何东西就能用——
+这一站解决"小服务不想背一个数据库"的场景。
+
+### 3.1 基本读写
+
+```ts
+// kv.ts —— 打开（本地开发默认使用 SQLite 后端，零配置）
+const kv = await Deno.openKv();
+
+// 写入：key 是数组（天然支持前缀查询），value 是结构化克隆数据
+await kv.set(["users", "u_1001"], { name: "洛天依", vip: true });
+
+// 读取
+const res = await kv.get(["users", "u_1001"]);
+console.log(res.value); // { name: "洛天依", vip: true }
+
+// 前缀列出所有用户
+for await (const entry of kv.list({ prefix: ["users"] })) {
+  console.log(entry.key, entry.value);
+}
+```
+
+**讲解：** key 用数组而不是字符串，是为了支持 `list({ prefix })` ——
+`["users"]` 一次取出全部用户，`["users", "u_1001", "orders"]` 取某用户的订单，
+这是 KV 数据建模的核心手法（把"表"编码进 key 前缀）。
+
+### 3.2 原子操作：乐观并发
+
+```ts
+// 库存扣减：check 保证不超卖，sum 原子自增
+const res = await kv.atomic()
+  .check({ key: ["stock", "sku_1"], versionstamp: current.versionstamp })
+  .sum(["stock", "sku_1"], 1n)
+  .commit();
+if (!res.ok) console.log("有人先改了，重试");
+```
+
+**讲解：** `check` 校验版本戳（别人改过就失败），`sum/set` 是本次变更，
+`commit` 让整组操作原子生效——这就是 KV 版的"事务"。
+
+### 3.3 消息队列
+
+```ts
+// 投递任务：可以晚点做、但必须做的事
+await kv.enqueue({ type: "send-mail", to: "fan@example.com" });
+
+// 消费任务：失败会自动重试
+kv.listenQueue(async (msg) => {
+  if (msg.type === "send-mail") await sendMail(msg.to);
+});
+```
+
+### 3.4 常见陷阱
+
+- 把 KV 当关系库用：需要多表 JOIN、复杂聚合时直接上 Postgres，不要硬建模。
+- 忘记 value 是"结构化克隆"存储：函数、Symbol 这类无法克隆的值会报错。
+- 本地与 Deno Deploy 的 KV 行为差异（配额、备份）部署前要查官方文档。
+
+### 3.5 过关自检
+
+1. 能用 key 前缀设计出"用户—订单"两级数据模型。
+2. 能解释 check/sum/commit 如何防止超卖。
+3. 能写一个"失败自动重试"的队列消费者。
+
+## 4. 第七站：测试、基准与 CI
+
+Deno 把质量工具内置进运行时，零配置即可使用。
+
+### 4.1 测试骨架
+
+```ts
+// calc_test.ts —— 命名约定：*.test.ts 会被 deno test 自动发现
+import { assertEquals, assertRejects } from "@std/assert";
+import { add, loadConfig } from "./calc.ts";
+
+Deno.test("add 两数相加", () => {
+  assertEquals(add(1, 2), 3);
+});
+
+Deno.test("loadConfig 文件缺失时拒绝", async () => {
+  await assertRejects(() => loadConfig("./not-exist.json"));
+});
+
+Deno.test("受限权限下运行", { permissions: { read: true } }, () => {
+  // 只授予 read 权限验证代码在最小权限下可用
+});
+```
+
+### 4.2 流水线三件套
+
+| 命令 | 作用 | CI 用法 |
+| --- | --- | --- |
+| deno fmt | 统一格式 | `deno fmt --check` |
+| deno lint | 静态检查 | `deno lint` |
+| deno check | 类型检查 | `deno check main.ts` |
+
+```yaml
+# .github/workflows/ci.yml 最小流水线
+name: ci
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno fmt --check
+      - run: deno lint
+      - run: deno test -A
+```
+
+### 4.3 常见陷阱
+
+- 测试文件里 `import { test } from "bun:test"` 之类的串台导入（各运行时测试 API 不同）。
+- 异步测试忘记 await，测试永远绿。
+- CI 里不开 `--frozen` 类参数，依赖漂移。
+
+### 4.4 过关自检
+
+1. 能为零依赖项目写出"断言 + 受限权限"的测试。
+2. 能解释 fmt/lint/check 各自拦截什么问题。
+3. 有一条从 push 到测试通过的绿色流水线。
+
+## 5. 学习建议
+
+1. 顺序学，不跳站：第五站的 imports 映射是第六、七站脚本的组织基础。
+2. 每一站做一个可运行的小项目：KV 购物车、带测试的 CLI 工具，比读三遍文档有效。
+3. 版本跟进：Deno 每 12 周一个稳定版，LTS 模式已结束（2.5 是最后一个），
+   建议跟随稳定版并在项目中锁定版本（lockfile + deno.json）。
+
+## 小结与延伸
+
+- 进阶三站：依赖管理 → 数据与队列 → 测试与 CI，对应从"能写"到"能上线"的跨越。
+- 每一站的展开文档将陆续补充在本模块中，编号紧接本篇（006 起）。
+- 官方资源：docs.deno.com（运行时）、jsr.io（标准库）、deno.com/deploy（部署）。
+
+<!-- ============================================================ javascript/070-DenoStdLibNpmCompatibility ============================================================ -->
+
+# 标准库与 npm 兼容
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- 三种导入来源对比与选型
+- deno.json imports 映射与 lockfile
+- 常用标准库实操
+- 从 Node 项目迁移的最短路径
+
+<!-- ============================================================ javascript/071-DenoKVQueues ============================================================ -->
+
+# Deno KV 与队列
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- openKv 基本读写与 key 前缀建模
+- 原子操作与乐观并发
+- kv.watch 实时监听
+- enqueue/listenQueue 与失败重试
+- 适用边界与 Postgres 对比
+
+<!-- ============================================================ javascript/072-DenoTestingBenchCI ============================================================ -->
+
+# 测试、基准与 CI
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- deno test 组织与 @std/assert 断言
+- 异步与权限受限测试
+- deno bench 基准
+- fmt/lint/check 与 GitHub Actions
+
+<!-- ============================================================ javascript/073-BunOverview ============================================================ -->
+
+## 0. 两分钟运行第一个脚本（先读这里）
+
+> 学习目标：安装 Bun 并运行 TypeScript，体验"启动快到感觉不到"。
+
+```bash
+# Windows（PowerShell）
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+```typescript
+// hello.ts
+const start = performance.now()
+console.log("你好，Bun！")
+console.log(`启动耗时：${(performance.now() - start).toFixed(1)}ms`)
+```
+
+```bash
+bun hello.ts
+```
+
+**讲解：**
+
+1. `bun hello.ts` 直接执行 TypeScript，无需安装 ts-node 或先编译。
+2. `performance.now()` 返回毫秒时间戳，前后相减得到运行耗时——Bun 的冷启动通常在十几毫秒内。
+3. 同样代码用 `node hello.js` 对比，能直观感受到运行时差异。
+
+## 1. Bun 是什么
+
+Bun 是一个由 Zig 编写的 JavaScript/TypeScript 运行时与工具链，2022 年发布，目标是"一个工具替代 Node.js + npm + webpack + jest"：
+
+- 运行时：兼容 Node.js API，比 Node 冷启动更快；
+- 包管理器：`bun install` 比 npm/pnpm 快数倍，可直接读取 npm 包；
+- 打包器：内置打包与压缩（对标 webpack/esbuild）；
+- 测试器：内置 Jest 风格测试框架；
+- 运行器：`bunx` 对标 `npx`。
+
+### 1.1 版本现状（2026-08）
+
+- Bun 1.3.x 为当前稳定版（1.3.14，2026-05）；1.3 引入零配置前端开发、统一 SQL API、内置 Redis 客户端。
+- 兼容性：Node.js 项目大多可直接用 `bun run` 启动；Windows 支持已成熟。
+
+## 2. 与 Node.js 对比
+
+| 维度 | Node.js | Bun |
+| --- | --- | --- |
+| 语言 | C++ | Zig |
+| 冷启动 | 较慢 | 极快 |
+| 包管理 | npm/pnpm/yarn | bun（也兼容 npm 仓库） |
+| 测试 | 需额外安装 Jest/Vitest | 内置 |
+| 打包 | 需 webpack/Vite | 内置 |
+| 兼容性 | 标准 | 兼容 Node API，少数边缘差异 |
+
+## 3. 内置命令速览
+
+```bash
+bun run script.ts   # 运行脚本（兼容 package.json scripts）
+bun install         # 安装依赖
+bun add hono        # 添加依赖
+bun test            # 运行测试
+bun build ./src/index.ts --outdir dist  # 打包
+bunx cowsay "hi"    # 临时执行 npm 包
+```
+
+**讲解：**
+
+1. `bun run` 既能跑 TS 文件，也能跑 `package.json` 里的 scripts（如 `bun run dev`）。
+2. `bun add` 与 npm 的 `npm install 包` 等价，生成的还是 `package.json` + 锁文件。
+3. `bun build` 把入口文件连同依赖打包成浏览器可用或服务器可用的产物。
+
+## 4. 动手试试
+
+1. 用 `bun init` 初始化一个项目，观察生成的 `package.json` 与 `index.ts`。
+2. 写一个斐波那契计算脚本，分别用 `node` 与 `bun` 运行 10 次，记录平均耗时。
+3. 用 `bunx` 运行一个 npm CLI 工具（如 `bunx tsc --version`）。
+
+## 5. 一句话记住
+
+> Bun 把运行时、包管理、打包、测试装进一个二进制：`bun run` 一条命令，快是它的名片。
+
+<!-- ============================================================ javascript/074-BunQuickStart ============================================================ -->
+
+## 0. 一句话理解
+
+> Bun 的项目还是 `package.json` + `node_modules` 那套（生态兼容），只是执行更快、命令更短、测试内置。
+
+## 1. 初始化项目
+
+```bash
+bun init -y
+```
+
+**讲解：**
+
+1. `bun init` 生成 `package.json`、`index.ts`、`tsconfig.json` 与 `.gitignore`。
+2. `-y` 跳过交互提问；生成的 `index.ts` 里有一个可运行的 `server` 示例。
+3. 对比 `npm init`：多出了开箱即用的 TypeScript 配置，无需再装 `typescript` 与 `ts-node`。
+
+## 2. 管理依赖
+
+```bash
+bun add hono
+bun add -d @types/bun
+bun remove hono
+```
+
+**讲解：**
+
+1. `bun add` 安装运行时依赖，`-d` 安装开发依赖，`bun remove` 卸载。
+2. 锁文件是 `bun.lock`（也兼容 `bun.lockb`），提交 git 保证环境一致。
+3. 安装速度快的原理：并行下载 + 全局内容寻址缓存，同一版本只存一份。
+
+## 3. 内置测试框架
+
+```typescript
+// math.ts
+export function factorial(n: number): number {
+  if (n < 0) throw new Error("负数没有阶乘")
+  let result = 1
+  for (let i = 2; i <= n; i++) result *= i
+  return result
+}
+```
+
+```typescript
+// math.test.ts
+import { describe, expect, test } from "bun:test"
+import { factorial } from "./math"
+
+describe("factorial", () => {
+  test("0 的阶乘是 1", () => {
+    expect(factorial(0)).toBe(1)
+  })
+
+  test("5 的阶乘是 120", () => {
+    expect(factorial(5)).toBe(120)
+  })
+
+  test("负数抛错", () => {
+    expect(() => factorial(-1)).toThrow("负数")
+  })
+})
+```
+
+```bash
+bun test
+```
+
+**讲解：**
+
+1. `bun:test` 提供与 Jest 几乎相同的 API：`describe/test/expect`。
+2. 测试文件命名 `*.test.ts` 会被自动发现，不需要配置文件。
+3. 三个用例分别覆盖：边界（0）、正常（5）、异常（负数）——这是测试设计的标准三分法。
+4. `bun test` 默认并发运行测试文件，整体速度远快于 Jest。
+
+## 4. scripts 与任务
+
+```json
+// package.json
+{
+  "name": "demo",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch index.ts",
+    "start": "bun index.ts",
+    "test": "bun test",
+    "build": "bun build ./index.ts --outdir dist --target bun"
+  }
+}
+```
+
+**讲解：**
+
+1. `bun --watch index.ts` 监听文件变化自动重启，相当于 Node 生态的 nodemon。
+2. `bun build --target bun` 打出专门给 Bun 运行的产物，还可以用 `--target browser` 或 `--target node`。
+3. `type: "module"` 让项目默认使用 ESM 语法。
+
+## 5. 动手试试
+
+1. 给 `factorial` 加 `1 的阶乘` 测试并运行 `bun test`。
+2. 用 `bun add` 安装 `zod`，写一个校验邮箱的小函数与对应测试。
+3. 用 `bun build` 打包，观察产物文件与体积。
+
+## 6. 一句话记住
+
+> Bun 不改变 Node 的项目形态，只把安装、运行、测试、打包四件事变快变短；测试从第一天就写，成本几乎为零。
+
+<!-- ============================================================ javascript/075-BunBuiltinServerSQL ============================================================ -->
+
+## 0. 一句话理解
+
+> Bun 把服务器、SQL、Redis 客户端都"内置"了：`Bun.serve` 起服务、`Bun.sql` 查数据库，少装一半依赖。
+
+## 1. Bun.serve：HTTP 服务器
+
+```typescript
+// server.ts
+const server = Bun.serve({
+  port: 3000,
+  async fetch(request) {
+    const url = new URL(request.url)
+
+    if (url.pathname === "/" ) {
+      return new Response("你好，Bun!")
+    }
+
+    if (url.pathname === "/api/time") {
+      return Response.json({ time: new Date().toISOString() })
+    }
+
+    return new Response("Not Found", { status: 404 })
+  }
+})
+
+console.log(`服务已启动: http://localhost:${server.port}`)
+```
+
+**讲解：**
+
+1. `Bun.serve({ fetch })` 使用 Web 标准 Request/Response，无需 Express 依赖。
+2. `new URL(request.url)` 解析路径，按 `url.pathname` 分发路由。
+3. `Response.json(...)` 是 Web 标准便捷方法，自动设置 `Content-Type: application/json`。
+4. 最后一行兜底返回 404，避免未知路径静默返回 200。
+
+## 2. Bun.sql：内置 SQLite
+
+```typescript
+// db.ts
+import { Database } from "bun:sqlite"
+
+const db = new Database("app.db")
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS todos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    done INTEGER DEFAULT 0
+  )
+`)
+
+// 插入
+const insert = db.query("INSERT INTO todos (title) VALUES (?) RETURNING *")
+const created = insert.get("学 Bun SQL")
+
+// 查询
+const all = db.query("SELECT * FROM todos ORDER BY id DESC").all()
+
+console.log("创建:", created)
+console.log("全部:", all)
+```
+
+**讲解：**
+
+1. `bun:sqlite` 是内置 SQLite 驱动，`new Database("app.db")` 打开（没有则创建）数据库文件。
+2. `db.run` 执行建表等无返回语句；`db.query(...)` 预编译 SQL，`?` 是参数占位符，防止 SQL 注入。
+3. `insert.get(...)` 执行插入并返回第一行（`RETURNING *` 返回新记录），`.all()` 返回所有行。
+4. 参数化查询是铁律：永远不要用字符串拼接拼 SQL。
+
+## 3. 组合：带数据库的 API
+
+```typescript
+// api.ts
+import { Database } from "bun:sqlite"
+
+const db = new Database("app.db")
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS todos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    done INTEGER DEFAULT 0
+  )
+`)
+
+Bun.serve({
+  port: 3000,
+  async fetch(request) {
+    const url = new URL(request.url)
+
+    if (request.method === "POST" && url.pathname === "/todos") {
+      const body = await request.json()
+      const result = db
+        .query("INSERT INTO todos (title) VALUES (?) RETURNING *")
+        .get(body.title)
+      return Response.json(result, { status: 201 })
+    }
+
+    if (request.method === "GET" && url.pathname === "/todos") {
+      const rows = db.query("SELECT * FROM todos").all()
+      return Response.json(rows)
+    }
+
+    return new Response("Not Found", { status: 404 })
+  }
+})
+```
+
+**讲解：**
+
+1. 请求方法 + 路径组合成路由：`POST /todos` 创建，`GET /todos` 列表。
+2. `await request.json()` 解析请求体，然后参数化插入数据库。
+3. 这 40 行代码就是一个可运行的待办 API：无框架、无 ORM、无额外依赖。
+4. 进阶：多表关联、迁移、连接池等场景再引入 Prisma/Drizzle 等 ORM，简单场景内置 SQLite 足够。
+
+## 4. 内置 Redis 客户端
+
+```typescript
+import { Redis } from "bun"
+
+const redis = new Redis("redis://localhost:6379")
+
+await redis.set("counter", 1)
+await redis.incr("counter")
+const value = await redis.get("counter")
+
+console.log(value) // "2"
+```
+
+**讲解：**
+
+1. Bun 1.3+ 内置 Redis 客户端（`bun` 模块导出），无需安装 `ioredis` 等第三方包。
+2. API 风格与 ioredis 高度一致：`set/get/incr` 都是 Promise，可用 `await`。
+3. 内存缓存、分布式锁、限流等场景可直接使用；连接串支持 Redis 标准 URL。
+
+## 5. 动手试试
+
+1. 给待办 API 增加 `DELETE /todos/:id`（解析路径参数并 `db.run("DELETE ...")`）。
+2. 用 `bun:sqlite` 做一个"点击计数"页面：每次访问 `/counter` 把数字加 1 并返回。
+3. 启动本地 Redis（Docker），用内置客户端写入并读取一个字符串。
+
+## 6. 一句话记住
+
+> Bun.serve 起服务、bun:sqlite 存数据、内置 Redis 做缓存——小项目一个运行时全搞定，SQL 永远用参数占位符。
+
+<!-- ============================================================ javascript/076-AdvancedRoadmap ============================================================ -->
+
+## 0. 你现在在哪里（先读这里）
+
+> 学习目标：对照进阶路线，明确接下来三站要学什么、为什么按这个顺序学、每站学到什么程度算过关。
+
+前三篇文档带你完成了 Bun 的入门闭环：认识这个"全家桶"运行时（001）、
+用 bun init/add/test 跑起项目（002）、用内置服务器与 SQL 写出可运行的后端（003）。
+到这里，你已经能用 Bun 完成从脚本到服务的完整开发。
+
+本篇是通往精通阶段的路线图：把剩余的核心能力拆成三站。每一站给出
+"要解决的问题 → 核心 API 清单 → 最小示例 → 常见陷阱 → 过关自检"，
+后续版本会把每一站展开为独立文档（编号紧接本篇）。
+
+## 1. 进阶路线总览
+
+| 站点 | 主题 | 解决的问题 | 核心能力 |
+| --- | --- | --- | --- |
+| 第四站 | 包管理与工作区 | 依赖怎么管：安装、锁文件与 monorepo | bun install、bun.lock、workspaces |
+| 第五站 | 内置测试与基准 | 质量怎么保：零配置的测试体系 | bun test、mock、覆盖率、基准 |
+| 第六站 | WebSocket 与前端开发服务器 | 实时与一体化：从后端到全栈 | Bun.serve websocket、routes、HTML imports |
+
+三站的关系：第四站让项目"装得快、装得稳"，第五站让代码"改得起"，
+第六站把能力从后端扩展到实时通信与前端一体化。按顺序学，收获最大。
+
+## 2. 第四站：包管理与工作区
+
+Bun 的包管理器以快著称，这一站要建立可复现的依赖管理习惯。
+
+### 2.1 为什么快
+
+| 环节 | npm | bun install |
+| --- | --- | --- |
+| 下载 | 串行为主，包级缓存 | 全局二进制缓存 + 并行下载 |
+| 解压 | 每项目解压全量文件 | 硬链接复用全局缓存 |
+| 实现 | JavaScript | 原生（Zig）实现 |
+
+**讲解：** 快不是魔法，而是"全局缓存 + 硬链接 + 原生实现"三件事。
+理解了这一点，就能解释为什么 `bun install` 在 CI 冷启动时收益最大。
+
+### 2.2 锁文件与 CI
+
+```bash
+# bun.lock 是文本格式：可评审、可合并，告别二进制锁文件冲突
+git add bun.lock
+
+# CI 中锁死依赖，杜绝"本地能装，流水线装了新版本"
+bun install --frozen-lockfile
+```
+
+### 2.3 workspaces 最小 monorepo
+
+```json
+// 根 package.json
+{
+  "name": "my-monorepo",
+  "workspaces": ["packages/*"]
+}
+```
+
+```json
+// packages/web/package.json —— 用 workspace:* 引用本地包
+{
+  "name": "web",
+  "dependencies": {
+    "@my/shared": "workspace:*"
+  }
+}
+```
+
+**讲解：** `bun install` 会把 `packages/shared` 链接进 `packages/web` 的
+node_modules；`bun run --filter '<name>' <script>` 可以按包名执行脚本。
+这就是"多包一仓"的最小骨架，pnpm workspace 的用户可以无缝理解。
+
+### 2.4 生命周期脚本安全
+
+Bun 默认不执行依赖包的 `postinstall` 等生命周期脚本——这是供应链安全的关键设计。
+需要执行脚本的原生包（如 esbuild、sharp）要显式加进白名单：
+
+```json
+{
+  "trustedDependencies": ["esbuild", "sharp"]
+}
+```
+
+### 2.5 常见陷阱
+
+- 忘记提交 bun.lock：队友与 CI 各装各的版本。
+- 用 npm 的思维频繁 `bun pm cache clean`：全局缓存正是速度来源，清它等于自废武功。
+- 白名单一开一大片：`trustedDependencies` 应保持最小集合。
+
+### 2.6 过关自检
+
+1. 能说出 bun install 快的三个来源。
+2. CI 里会配合 bun.lock 使用 `--frozen-lockfile`。
+3. 手工搭过一个两个包的 workspace 并互相引用。
+
+## 3. 第五站：内置测试与基准
+
+`bun test` 让测试零配置起步。
+
+### 3.1 测试骨架
+
+```ts
+// math.test.ts —— 命名约定：*.test.ts 会被 bun test 自动发现
+import { describe, it, expect } from "bun:test";
+import { add } from "./math";
+
+describe("add", () => {
+  it("两数相加", () => {
+    expect(add(1, 2)).toBe(3);
+  });
+
+  it("异步也没问题", async () => {
+    expect(await Promise.resolve(42)).toBe(42);
+  });
+});
+```
+
+**讲解：** API 与 Jest 高度兼容（describe/it/expect/matcher 大表通用），
+存量 Jest 项目基本"换个命令就能跑"。差异集中在模块 mock 上：
+Bun 用 `mock.module()`，迁移时重点核对。
+
+### 3.2 mock 三件套
+
+```ts
+import { test, expect, mock } from "bun:test";
+
+// 函数 mock：记录调用与返回值
+const fetchName = mock(() => "洛天依");
+
+// 模块 mock：替换整个依赖模块
+mock.module("./config", () => ({ API_URL: "http://test.local" }));
+
+// 计时器 mock：不真等 3 秒
+test("重试逻辑", () => {
+  // 配合 fake timers 控制时间流逝（以官方文档为准）
+});
+```
+
+### 3.3 覆盖率与基准
+
+```bash
+bun test --coverage            # 覆盖率报告
+bun test --update-snapshots    # 快照更新
+```
+
+基准测试也是内置能力（细节以官方文档为准），写法仍是"定义用例、
+对比实现"，适合给"两个 JSON 解析方案谁快"这类问题一个数字答案。
+
+### 3.4 常见陷阱
+
+- 从 `bun:test` 之外导入 test API（如混入 vitest 的 import），运行时直接报错。
+- Jest 的 `jest.mock` 提升（hoisting）行为与 `mock.module` 不同，迁移时逐个验证。
+- 快照测试滥用：把易变的大对象做快照，每次都 `--update`，快照形同虚设。
+
+### 3.5 过关自检
+
+1. 零配置给一个现有模块补上测试并跑绿。
+2. 能说出 Jest 与 bun test 在模块 mock 上的差异。
+3. CI 里有一条 `bun test` 步骤（oven-sh/setup-bun 安装）。
+
+## 4. 第六站：WebSocket 与前端开发服务器
+
+Bun.serve 原生集成 WebSocket 与前端开发能力，一个进程跑实时全栈。
+
+### 4.1 最小聊天室
+
+```ts
+// server.ts
+Bun.serve({
+  port: 3000,
+  routes: {                       // Bun 1.3 的路由表：路径直接映射
+    "/": () => new Response(Bun.file("./chat.html")),
+  },
+  websocket: {                    // 原生 WebSocket 处理器
+    open(ws) { ws.subscribe("chat"); },
+    message(ws, msg) {
+      ws.publish("chat", `说: ${msg}`);   // 频道广播
+    },
+    close(ws) { ws.unsubscribe("chat"); },
+  },
+  fetch(req, server) {
+    if (server.upgrade(req)) return;      // 升级为 WebSocket
+    return new Response("预期 WebSocket 连接");
+  },
+});
+```
+
+**讲解：** `subscribe/publish` 是内置的频道广播：不需要自己维护连接列表、
+不需要引入 ws 库。`routes` 让"路径 → 响应"一行一条，通配符兜底动态路径。
+
+### 4.2 前端开发服务器与打包
+
+Bun 1.3 起内置前端开发服务器：HTML 即入口（HTML imports，
+`<script src="./app.ts">` 直接写 TypeScript）、静态资源自动处理、
+保存即热重载；上线用 `Bun.build`（或 `bun build` 命令）产出打包产物。
+细节以官方文档为准。
+
+### 4.3 常见陷阱
+
+- 忘记在 fetch 里调用 `server.upgrade(req)`，WebSocket 永远握不上手。
+- publish 前没有 subscribe：消息静默丢失，排查时先确认 open 里订阅了频道。
+- 生产环境把 WebSocket 直接暴露公网：建议前置 Nginx 做终止与限流。
+
+### 4.4 过关自检
+
+1. 能写出 20 行以内的可广播聊天室。
+2. 能解释 upgrade 与 subscribe/publish 的关系。
+3. 用 routes 组织过多页面/接口并用热重载开发过前端页面。
+
+## 5. 学习建议
+
+1. 顺序学，不跳站：第四站的锁文件与 workspaces 是后续所有项目的地基。
+2. 每站一个小产出：迁移一个现有仓库到 bun install、给 003 的服务补测试、
+   部署一个 WebSocket 聊天室，比通读文档有效得多。
+3. 版本跟进：Bun 迭代很快，依赖 bun.lock 锁定版本，升级前跑一遍测试。
+
+## 小结与延伸
+
+- 进阶三站：依赖管理 → 测试与基准 → 实时与一体化，对应从"能用"到"能交付"的跨越。
+- 每一站的展开文档将陆续补充在本模块中，编号紧接本篇（005 起）。
+- 官方资源：bun.sh/docs（运行时与 API）、bun.sh/blog（版本发布说明）。
+
+<!-- ============================================================ javascript/077-BunPackageManagerWorkspaces ============================================================ -->
+
+# 包管理与工作区
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- 安装速度来源与 npm/pnpm 对比
+- bun.lock 与 --frozen-lockfile
+- workspaces 最小 monorepo
+- 生命周期脚本安全策略
+- bun pm 常用命令
+
+<!-- ============================================================ javascript/078-BunTestBench ============================================================ -->
+
+# 内置测试与基准
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- bun test 骨架与 matcher
+- Jest 兼容与迁移差异
+- mock 三件套
+- 快照与覆盖率
+- CI 接入
+
+<!-- ============================================================ javascript/079-BunWebSocketFrontendDev ============================================================ -->
+
+# WebSocket 与前端开发服务器
+
+> 本篇为占位文档：主题已规划进学习路径，正文内容待补全。
+
+**计划覆盖要点**：
+
+- websocket 处理器与频道广播
+- 最小聊天室实战
+- routes 路由表与 cookies()
+- HTML imports 与热重载
+- 生产部署建议

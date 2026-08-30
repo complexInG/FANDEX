@@ -6,12 +6,79 @@ category: 后端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：014-kotlin/001-KotlinOverviewEnvSetup.md ============ -->
+<!-- ============================================================ kotlin/001-WhatIsKotlin ============================================================ -->
+
+## Kotlin 在技术版图中的位置
+
+Kotlin 是运行在 **JVM 上的现代语言**——与 Java 同一个运行平台，但语法更简洁、更安全。两个标志性事实：**Android 官方首选语言**（Google 于 2019 年宣布）、Spring 官方全面支持的服务端语言之一。
+
+## 与 Java 的关系：同平台、可互操作
+
+```mermaid
+flowchart LR
+    A[你写的 .kt 文件] --> B[Kotlin 编译器]
+    B --> C[同样的 JVM 字节码]
+    D[Java 编译器] --> C
+```
+
+Kotlin 与 Java 编译成同一种字节码，**同一个项目里两种语言可以互相调用**——企业可以在存量 Java 代码上逐步引入 Kotlin，这是它在业界快速铺开的关键。
+
+看一段对比。Java 版：
+
+```java
+if (name != null) {
+    System.out.println(name.length());
+}
+```
+
+Kotlin 版：
+
+```kotlin
+println(name?.length)
+```
+
+`?.`（安全调用）一行完成"判空再取值"——**空指针是 Java 世界最高频的崩溃来源，Kotlin 直接把"可能为空"做进了类型系统**。
+
+## 空安全：初学者最容易体会到的优点
+
+Kotlin 把类型分成"可为空"与"不可为空"两种：`String` 保证永远不为空，`String?` 才允许为空。编译器强制你在使用可空值前处理 null 情况，把一类整站崩溃消灭在编译期。零基础阶段只需要记住这个直觉：**编译器逼你处理的，都是未来线上会炸的。**
+
+## 动手环节：第一次运行
+
+无需安装任何东西——打开浏览器访问 [Kotlin Playground](https://play.kotlinlang.org)，输入：
+
+```kotlin
+fun main() {
+    val name = "学习者"
+    println("你好，$name")
+    println("1 到 100 的和是 ${sumUp()}")
+}
+
+fun sumUp(): Int {
+    var total = 0
+    for (i in 1..100) total += i
+    return total
+}
+```
+
+点击运行。两个语法点先记住：`val` 定义不可变变量（优先用它），`var` 定义可变变量；`$name` 与 `${...}` 是字符串模板，可以直接把值嵌进文本。本地环境安装见 [Kotlin 概述与环境搭建](kotlin/002-KotlinOverviewEnvSetup)。
+
+## 常见困惑
+
+**"先学 Java 还是 Kotlin？"**——本仓库建议：按 java 模块学完面向对象基础后进入 kotlin，两者互相印证，JVM 与集合等知识完全共用。
+
+**"Kotlin 只能写 Android 吗？"**——不。服务端（Ktor、Spring）、多平台（Kotlin Multiplatform）、脚本都在用它。
+
+## 下一步
+
+进入 [Kotlin 概述与环境搭建](kotlin/002-KotlinOverviewEnvSetup) 开始语法主线；写 Android 应用时，kotlin 模块与移动端开发知识将直接派上用场。
+
+<!-- ============================================================ kotlin/002-KotlinOverviewEnvSetup ============================================================ -->
 
 > 本节为增量补充，帮助你选择 Kotlin 版本。
 
@@ -2701,7 +2768,7 @@ launch { ch.send(1) }
 launch { ch.send(2) }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/002-KotlinBasicSyntax.md ============ -->
+<!-- ============================================================ kotlin/003-KotlinBasicSyntax ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -4238,7 +4305,7 @@ fun area(s: JShape): Double = when (s) {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/003-KotlinFunctionAndLambda.md ============ -->
+<!-- ============================================================ kotlin/004-KotlinFunctionAndLambda ============================================================ -->
 
 ## 1. 函数定义
 
@@ -5071,7 +5138,7 @@ val logged = person.also {
 val nameLength = person.let { it.name.length };
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/004-KotlinClassObject.md ============ -->
+<!-- ============================================================ kotlin/005-KotlinClassObject ============================================================ -->
 
 ## 1. 类定义
 
@@ -6169,7 +6236,7 @@ class Preference<T>(private val key: String, private val default: T) {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/005-KotlinDataClassDeepDive.md ============ -->
+<!-- ============================================================ kotlin/006-KotlinDataClassDeepDive ============================================================ -->
 
 # data class 详解
 
@@ -6183,7 +6250,7 @@ class Preference<T>(private val key: String, private val default: T) {
 - equals/hashCode 与数据类约束
 - 与普通类/密封类的选择
 
-<!-- ============ 文档分隔线：014-kotlin/006-KotlinGenericTypeSystem.md ============ -->
+<!-- ============================================================ kotlin/007-KotlinGenericTypeSystem ============================================================ -->
 
 ## 1. 泛型基础
 
@@ -6945,7 +7012,7 @@ val value: Any = "Hello";
 val nullable: Any? = null;
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/007-KotlinCollectionCoroutine.md ============ -->
+<!-- ============================================================ kotlin/008-KotlinCollectionCoroutine ============================================================ -->
 
 ## 1. 集合框架
 
@@ -8051,7 +8118,7 @@ val result = withTimeoutOrNull(1000) {
 }  // null
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/008-KotlinCoroutineAdvanced.md ============ -->
+<!-- ============================================================ kotlin/009-KotlinCoroutineAdvanced ============================================================ -->
 
 ## 1. 协程异常处理
 
@@ -8834,7 +8901,7 @@ val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 launch(CoroutineName("worker")) { }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/009-KotlinMultiplatform.md ============ -->
+<!-- ============================================================ kotlin/010-KotlinMultiplatform ============================================================ -->
 
 ## 1. KMP 架构概述
 
@@ -9563,7 +9630,7 @@ val iosX64Main by getting { dependsOn(iosMain) }
 val iosArm64Main by getting { dependsOn(iosMain) }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/010-KotlinDSLDomainSpecificLanguage.md ============ -->
+<!-- ============================================================ kotlin/011-KotlinDSLDomainSpecificLanguage ============================================================ -->
 
 ## 1. DSL 概述
 
@@ -10056,7 +10123,7 @@ test {
 5. **命名清晰**：DSL 方法名应接近领域语言，避免技术术语
 6. **文档和示例**：DSL 的正确用法需要清晰的文档和示例
 
-<!-- ============ 文档分隔线：014-kotlin/011-KotlinTestBestPractice.md ============ -->
+<!-- ============================================================ kotlin/012-KotlinTestBestPractice ============================================================ -->
 
 ## 1. JUnit 5 集成
 
@@ -10744,7 +10811,7 @@ class Service(private val config: Config) {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/012-KotlinCoroutineChannel.md ============ -->
+<!-- ============================================================ kotlin/013-KotlinCoroutineChannel ============================================================ -->
 
 ## 概述
 
@@ -11198,7 +11265,7 @@ fun main() = runBlocking {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/013-NullSafetyDetailed.md ============ -->
+<!-- ============================================================ kotlin/014-NullSafetyDetailed ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -15141,7 +15208,7 @@ fun process() {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/014-SealedClassAlgebraicDataType.md ============ -->
+<!-- ============================================================ kotlin/015-SealedClassAlgebraicDataType ============================================================ -->
 
 ## 历史动机与背景
 
@@ -16475,7 +16542,7 @@ fun handle(result: Result): String = when (result) {
 - **kotlinx.serialization**：https://github.com/Kotlin/kotlinx.serialization
   - 密封类与多态序列化的集成。
 
-<!-- ============ 文档分隔线：014-kotlin/015-DelegateProperty.md ============ -->
+<!-- ============================================================ kotlin/016-DelegateProperty ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -19310,7 +19377,7 @@ class CacheDelegate<T>(private val ttlMillis: Long, private val loader: () -> T)
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/016-ExtensionFunction.md ============ -->
+<!-- ============================================================ kotlin/017-ExtensionFunction ============================================================ -->
 
 ## 历史动机与背景
 
@@ -21356,7 +21423,7 @@ fun buildString(builderAction: StringBuilder.() -> Unit): String {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/017-CoroutineBasics.md ============ -->
+<!-- ============================================================ kotlin/018-CoroutineBasics ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -23937,7 +24004,7 @@ suspend fun fetchAll(): Pair<String, Int> = coroutineScope {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/018-FlowReactiveStream.md ============ -->
+<!-- ============================================================ kotlin/019-FlowReactiveStream ============================================================ -->
 
 ## 历史动机与背景
 
@@ -25332,7 +25399,7 @@ fun <T> mergeWithPriority(
 - **Project Reactor**：https://github.com/reactor/reactor-core
   - Spring 生态的响应式实现
 
-<!-- ============ 文档分隔线：014-kotlin/019-KotlinScopeFunction.md ============ -->
+<!-- ============================================================ kotlin/020-KotlinScopeFunction ============================================================ -->
 
 ## 历史动机与背景
 
@@ -27067,7 +27134,7 @@ val info = with(list) {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/020-KotlinCollectionOperation.md ============ -->
+<!-- ============================================================ kotlin/021-KotlinCollectionOperation ============================================================ -->
 
 ## 过滤操作
 
@@ -27797,7 +27864,7 @@ val first = numbers[0];
 val value = map["a"];
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/021-KotlinInlineClass.md ============ -->
+<!-- ============================================================ kotlin/022-KotlinInlineClass ============================================================ -->
 
 ## 历史动机与背景
 
@@ -29384,7 +29451,7 @@ value class UserId(val value: Long) {
 @JvmInline value class Score(val value: Int)
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/022-KotlinContractContracts.md ============ -->
+<!-- ============================================================ kotlin/023-KotlinContractContracts ============================================================ -->
 
 ## 1. 历史动机与背景
 
@@ -31380,7 +31447,7 @@ fun main() {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/023-KotlinDSL.md ============ -->
+<!-- ============================================================ kotlin/024-KotlinDSL ============================================================ -->
 
 ### 类型安全构建器
 
@@ -31994,7 +32061,7 @@ class Counter : ReadWriteProperty<Any?, Int> {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/024-KotlinSerialization.md ============ -->
+<!-- ============================================================ kotlin/025-KotlinSerialization ============================================================ -->
 
 ## 历史动机与背景
 
@@ -33549,7 +33616,7 @@ data class ApiResponse(
 val response = Json.decodeFromString<ApiResponse>(json);
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/025-KotlinAndroid.md ============ -->
+<!-- ============================================================ kotlin/026-KotlinAndroid ============================================================ -->
 
 ## 概述
 
@@ -33932,7 +33999,7 @@ fun scheduleSync(context: Context) {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/026-KotlinSpring.md ============ -->
+<!-- ============================================================ kotlin/027-KotlinSpring ============================================================ -->
 
 ## 概述
 
@@ -34319,7 +34386,7 @@ suspend fun <T> transactional(template: TransactionTemplate, block: suspend () -
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/027-KotlinTypeSystem.md ============ -->
+<!-- ============================================================ kotlin/028-KotlinTypeSystem ============================================================ -->
 
 # Kotlin 类型系统深度解析（Kotlin Type System in Depth）
 
@@ -36605,7 +36672,7 @@ val strings: List<String> = list.filterByType()  // ["two", "four"]
 - 协程基础：协程中的泛型（`Deferred<out T>`、`Flow<out T>`）。
 - 委托属性：泛型属性委托。
 
-<!-- ============ 文档分隔线：014-kotlin/028-KotlinCompose.md ============ -->
+<!-- ============================================================ kotlin/029-KotlinCompose ============================================================ -->
 
 ﻿# Kotlin kotlinc 编译命令速查手册
 
@@ -37292,7 +37359,7 @@ kotlinc -Xrender-internal-diagnostic-names Main.kt -d out
 ./gradlew compileKotlin -Pkotlin.incremental.useClasspathSnapshot=true
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/029-KotlinArrow.md ============ -->
+<!-- ============================================================ kotlin/030-KotlinArrow ============================================================ -->
 
 ## 概述
 
@@ -37697,7 +37764,7 @@ fun main() {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/030-KotlinKtor.md ============ -->
+<!-- ============================================================ kotlin/031-KotlinKtor ============================================================ -->
 
 ## 概述
 
@@ -38461,7 +38528,7 @@ docker build -t ktor-app .
 docker run -p 8080:8080 ktor-app
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/031-KotlinExposed.md ============ -->
+<!-- ============================================================ kotlin/032-KotlinExposed ============================================================ -->
 
 ## 概述
 
@@ -38871,7 +38938,7 @@ fun migrateDemo() = transaction {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/032-KotlinKoin.md ============ -->
+<!-- ============================================================ kotlin/033-KotlinKoin ============================================================ -->
 
 ## 概述
 
@@ -39260,7 +39327,7 @@ class ModuleCheckTest : KoinTest {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/033-KotlinKtorClient.md ============ -->
+<!-- ============================================================ kotlin/034-KotlinKtorClient ============================================================ -->
 
 ## 概述
 
@@ -39992,7 +40059,7 @@ HttpClient(CIO).use { c -> c.get("...") }
 val client = HttpClient()
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/034-KotlinTest.md ============ -->
+<!-- ============================================================ kotlin/035-KotlinTest ============================================================ -->
 
 ## 概述
 
@@ -40734,7 +40801,7 @@ dependencies {
 ./gradlew test --tests "com.example.MyTest.sumWorks"
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/035-KotlinCompilerPlugin.md ============ -->
+<!-- ============================================================ kotlin/036-KotlinCompilerPlugin ============================================================ -->
 
 ﻿# Kotlin kotlinc 编译命令速查手册
 
@@ -42345,7 +42412,7 @@ kotlinc -Xrender-internal-diagnostic-names Main.kt -d out
 ./gradlew compileKotlin -Pkotlin.incremental.useClasspathSnapshot=true
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/036-KotlinGradle.md ============ -->
+<!-- ============================================================ kotlin/037-KotlinGradle ============================================================ -->
 
 ## 概述
 
@@ -42767,7 +42834,7 @@ org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m
 org.gradle.configuration-cache=true
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/037-KotlinAtomicOperation.md ============ -->
+<!-- ============================================================ kotlin/038-KotlinAtomicOperation ============================================================ -->
 
 ## 概述
 
@@ -43132,7 +43199,7 @@ fun main() {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/038-KotlinBenchmark.md ============ -->
+<!-- ============================================================ kotlin/039-KotlinBenchmark ============================================================ -->
 
 ## 历史动机与背景
 
@@ -44789,7 +44856,7 @@ MyBenchmark.test   avgt    5  1.234  ±0.370   us/op
 - ACM SIGPLAN 性能工程兴趣组
 - Performance Engineering Devroom (FOSDEM)
 
-<!-- ============ 文档分隔线：014-kotlin/039-KotlinIO.md ============ -->
+<!-- ============================================================ kotlin/040-KotlinIO ============================================================ -->
 
 ## 概述
 
@@ -45529,7 +45596,7 @@ FileSystem.SYSTEM.write(Path("out.txt")) {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/040-KotlinRegex.md ============ -->
+<!-- ============================================================ kotlin/041-KotlinRegex ============================================================ -->
 
 ## 1. 历史动机与背景
 
@@ -47570,7 +47637,7 @@ private val EMAIL_RE = Regex("""^[\w.]+@[\w.]+$""")
 fun check(s: String) = EMAIL_RE.matches(s)
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/041-KotlinTime.md ============ -->
+<!-- ============================================================ kotlin/042-KotlinTime ============================================================ -->
 
 ## 概述
 
@@ -48247,7 +48314,7 @@ if (d1 < d2) { }
 val until = d1.until(d2)
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/042-KotlinConcurrencySafety.md ============ -->
+<!-- ============================================================ kotlin/043-KotlinConcurrencySafety ============================================================ -->
 
 # Kotlin 与并发安全（Concurrency Safety in Depth）
 
@@ -50876,7 +50943,7 @@ class ConcurrentExecutor(
 
 *本文档最后更新于 2026-07-21，对标 MIT 6.005、Stanford CS110、CMU 15-440 教学水准。*
 
-<!-- ============ 文档分隔线：014-kotlin/043-KotlinWebSocket.md ============ -->
+<!-- ============================================================ kotlin/044-KotlinWebSocket ============================================================ -->
 
 ## 概述
 
@@ -51337,7 +51404,7 @@ private fun processData(data: ByteArray): ByteArray {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/044-KotlinSecurity.md ============ -->
+<!-- ============================================================ kotlin/045-KotlinSecurity ============================================================ -->
 
 ## 概述
 
@@ -51734,7 +51801,7 @@ val safeJson = Json {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/045-CoroutineDispatcherContext.md ============ -->
+<!-- ============================================================ kotlin/046-CoroutineDispatcherContext ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -54313,7 +54380,7 @@ val childCtx = coroutineContext + Dispatchers.IO
 launch(childCtx) { }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/046-FlowColdSharedState.md ============ -->
+<!-- ============================================================ kotlin/047-FlowColdSharedState ============================================================ -->
 
 # Flow 冷流与 SharedFlow 和 StateFlow（Cold Flow, SharedFlow and StateFlow）
 
@@ -56220,7 +56287,7 @@ viewModelScope.launch {
 - 在 Android、服务端、KMP 项目中正确选择与组合 Flow 类型。
 - 排查常见陷阱，构建高性能、可维护的响应式系统。
 
-<!-- ============ 文档分隔线：014-kotlin/047-ChannelBroadcastChannel.md ============ -->
+<!-- ============================================================ kotlin/048-ChannelBroadcastChannel ============================================================ -->
 
 # Channel 与 BroadcastChannel（Channel and BroadcastChannel）
 
@@ -59508,7 +59575,7 @@ launch {
 
 希望本文档能帮助学习者系统掌握 Kotlin 协程间通信的核心机制，并在工程实践中正确、高效地应用。
 
-<!-- ============ 文档分隔线：014-kotlin/048-SealedClassSealedInterface.md ============ -->
+<!-- ============================================================ kotlin/049-SealedClassSealedInterface ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -63641,7 +63708,7 @@ fun <T> handleResult(result: NetworkResult<T>): String = when (result) {
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/049-InlineClass.md ============ -->
+<!-- ============================================================ kotlin/050-InlineClass ============================================================ -->
 
 # 内联类（value class）
 
@@ -65908,7 +65975,7 @@ value class Serializable(val value: Type)
 
 希望本文档能帮助学习者深入理解 Kotlin value class 的本质，并在生产实践中正确应用。
 
-<!-- ============ 文档分隔线：014-kotlin/050-ExtensionFunctionCompilePrinciple.md ============ -->
+<!-- ============================================================ kotlin/051-ExtensionFunctionCompilePrinciple ============================================================ -->
 
 # 扩展函数的编译原理
 
@@ -68337,7 +68404,7 @@ final 成员：静态分发（基于声明类型）
 
 希望本文档能帮助学习者深入理解 Kotlin 扩展函数的本质，并在生产实践中正确应用。
 
-<!-- ============ 文档分隔线：014-kotlin/051-ScopeFunctionDifference.md ============ -->
+<!-- ============================================================ kotlin/052-ScopeFunctionDifference ============================================================ -->
 
 # 作用域函数区别（Scope Functions: let, run, with, apply, also）
 
@@ -70237,7 +70304,7 @@ fun main() {
 - 利用作用域函数设计 DSL 与流畅 API。
 - 理解 inline 机制，避免性能担忧。
 
-<!-- ============ 文档分隔线：014-kotlin/052-CoroutineExceptionHandling.md ============ -->
+<!-- ============================================================ kotlin/053-CoroutineExceptionHandling ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -73034,7 +73101,7 @@ val handler = CoroutineExceptionHandler { ctx, e ->
 }
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/053-KotlinCrossPlatform.md ============ -->
+<!-- ============================================================ kotlin/054-KotlinCrossPlatform ============================================================ -->
 
 # Kotlin 跨平台（Kotlin Multiplatform）
 
@@ -76163,7 +76230,7 @@ KMP 的核心价值在于：
 
 未来，随着 K2 编译器、Compose Multiplatform Web、Kotlin/Wasm 的成熟，KMP 将成为跨平台开发的重要选择，与 React Native、Flutter 形成三足鼎立之势。
 
-<!-- ============ 文档分隔线：014-kotlin/054-FlowAdvanced.md ============ -->
+<!-- ============================================================ kotlin/055-FlowAdvanced ============================================================ -->
 
 ## Flow 创建
 
@@ -76545,7 +76612,7 @@ flows.flattenMerge().collect { }
 nums().onEach { }.launchIn(scope)
 ```
 
-<!-- ============ 文档分隔线：014-kotlin/055-KotlinJavaInterop.md ============ -->
+<!-- ============================================================ kotlin/056-KotlinJavaInterop ============================================================ -->
 
 # Kotlin 与 Java 互操作
 

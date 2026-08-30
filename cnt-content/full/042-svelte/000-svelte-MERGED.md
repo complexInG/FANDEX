@@ -6,12 +6,12 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：052-svelte/001-SvelteOverview.md ============ -->
+<!-- ============================================================ svelte/001-SvelteOverview ============================================================ -->
 
 ## 0. 五分钟创建第一个应用（先读这里）
 
@@ -85,7 +85,7 @@ Svelte 5（2024-10 发布）引入 **runes**（符文）语法：用 `$state`、
 
 > Svelte 在编译期把组件变成高效原生代码；Svelte 5 用 `$state/$derived/$effect` 三个符文管理响应式。
 
-<!-- ============ 文档分隔线：052-svelte/002-SvelteKitQuickStart.md ============ -->
+<!-- ============================================================ svelte/002-SvelteKitQuickStart ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -206,7 +206,7 @@ export const load: PageServerLoad = async () => {
 
 > SvelteKit 的文件约定：`+page` 是页面、`+layout` 是外壳、`.server` 后缀在服务器取数；`$props()` 是数据入口。
 
-<!-- ============ 文档分隔线：052-svelte/003-ReactivityRunes.md ============ -->
+<!-- ============================================================ svelte/003-ReactivityRunes ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -315,7 +315,7 @@ export const count = writable(0)
 
 > 响应式三件套：`$state` 存、`$derived` 算、`$effect` 监听；表单交互用 `bind:` 自动同步。
 
-<!-- ============ 文档分隔线：052-svelte/004-ComponentsTransitions.md ============ -->
+<!-- ============================================================ svelte/004-ComponentsTransitions ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -449,7 +449,7 @@ export const count = writable(0)
 
 > 父传子用 `$props()`，子传父用回调属性；列表动画一条 `animate:flip`，进出场一条 `transition:fade`。
 
-<!-- ============ 文档分隔线：052-svelte/005-SvelteKitRoutingLoading.md ============ -->
+<!-- ============================================================ svelte/005-SvelteKitRoutingLoading ============================================================ -->
 
 ## 0. 路由与数据加载全景（先读这里）
 
@@ -767,7 +767,7 @@ export const load: PageServerLoad = async (event) => {
 **延伸阅读：** SvelteKit 官方文档的 The load function、Hooks、Types 三章；本模块
 下一篇 006 讲表单与 action，是 load 之外的另一半服务端交互。
 
-<!-- ============ 文档分隔线：052-svelte/006-FormActionsProgressive.md ============ -->
+<!-- ============================================================ svelte/006-FormActionsProgressive ============================================================ -->
 
 ## 0. 什么是渐进增强（先读这里）
 
@@ -1123,7 +1123,7 @@ export const actions: Actions = {
 **延伸阅读：** SvelteKit 官方文档的 Form actions 与 Progressive enhancement 两章；
 本模块第 5 篇的 hooks 一节是本文权限检查的前置知识。
 
-<!-- ============ 文档分隔线：052-svelte/007-StateSharingDeployment.md ============ -->
+<!-- ============================================================ svelte/007-StateSharingDeployment ============================================================ -->
 
 ## 0. 从组件到生产（先读这里）
 

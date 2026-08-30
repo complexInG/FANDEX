@@ -6,12 +6,12 @@ category: 数据库
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：047-mongodb/001-MongoDBOverviewQuickStart.md ============ -->
+<!-- ============================================================ mongodb/001-MongoDBOverviewQuickStart ============================================================ -->
 
 ## 0. 五分钟跑起 MongoDB（先读这里）
 
@@ -138,7 +138,7 @@ MongoDB 是一个开源的 **NoSQL 文档数据库**，由 MongoDB 公司开发�
 
 下一章进入增删改查的完整语法。
 
-<!-- ============ 文档分隔线：047-mongodb/002-CRUDOperations.md ============ -->
+<!-- ============================================================ mongodb/002-CRUDOperations ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -303,7 +303,7 @@ db.students.countDocuments({ age: { $gte: 18 } })
 
 > 条件一律写 JSON：`{ 字段: 值 }` 是等值，`{ 字段: { $gt: 值 } }` 是比较；改数据记得先查一遍，`updateOne/deleteOne` 只动第一条。
 
-<!-- ============ 文档分隔线：047-mongodb/003-AggregationPipeline.md ============ -->
+<!-- ============================================================ mongodb/003-AggregationPipeline ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -448,7 +448,7 @@ db.books.aggregate([
 
 > 聚合 = 管道里串过滤、分组、投影、排序；`$match` 尽量放最前，`$group` 的 `_id` 决定"按什么分组"。
 
-<!-- ============ 文档分隔线：047-mongodb/004-IndexPerformance.md ============ -->
+<!-- ============================================================ mongodb/004-IndexPerformance ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -533,7 +533,7 @@ db.sessions.createIndex({ createdAt: 1 }, { expireAfterSeconds: 3600 })
 
 > 查询慢先跑 `explain`：看到 `COLLSCAN` 就建索引；索引不是越多越好，查询多、区分度高的字段才值得建。
 
-<!-- ============ 文档分隔线：047-mongodb/005-SchemaDesignEnterprise.md ============ -->
+<!-- ============================================================ mongodb/005-SchemaDesignEnterprise ============================================================ -->
 
 ## 0. 一句话理解
 
@@ -655,7 +655,7 @@ try {
 
 > 一起读一起写的就内嵌，被共享、被独立管理的就引用；高频路径用快照换速度，跨文档强一致才开事务。
 
-<!-- ============ 文档分隔线：047-mongodb/006-TransactionSession.md ============ -->
+<!-- ============================================================ mongodb/006-TransactionSession ============================================================ -->
 
 ## 0. 为什么 NoSQL 也需要事务（先读这里）
 
@@ -932,7 +932,7 @@ rs.initiate({ _id: "rs0", members: [ { _id: 0, host: "127.0.0.1:27017" } ] })
 
 延伸阅读：CRUD 前置见 `002-CRUDOperations`；"内嵌优先"建模决策见 `005-SchemaDesignEnterprise`；事务运行环境（副本集与分片）见 007。官方文档关键词：Transactions、Causal Consistency、Read Concern、Write Concern，参数与默认值以官方文档为准。
 
-<!-- ============ 文档分隔线：047-mongodb/007-ReplicaSetSharding.md ============ -->
+<!-- ============================================================ mongodb/007-ReplicaSetSharding ============================================================ -->
 
 ## 0. 从单机到分片：演进路线（先读这里）
 
@@ -1159,7 +1159,7 @@ sh.setBalancerState(false) // 大批量导入等窗口期可暂停（办完事�
 
 延伸阅读：副本集是多文档事务（006）的运行前提；分片集合的索引设计见 004；建模范式见 005。官方文档关键词：Replication、Replica Set Members、Sharding Introduction、Shard Key，各默认值与版本差异以官方文档为准。
 
-<!-- ============ 文档分隔线：047-mongodb/008-SecurityUserManagement.md ============ -->
+<!-- ============================================================ mongodb/008-SecurityUserManagement ============================================================ -->
 
 ## 0. 把数据库的门锁好（先读这里）
 
@@ -1388,7 +1388,7 @@ db.currentOp(true) // 有没有来源可疑的连接
 
 延伸阅读：安装与首次连接见 `001-MongoDBOverviewQuickStart`；生产落地全景见 `005-SchemaDesignEnterprise`；副本集的 keyFile 内部认证配合 `007-ReplicaSetSharding` 一起读。官方文档关键词：Security Checklist、Authentication、Built-in Roles、TLS，具体配置项以官方文档为准。
 
-<!-- ============ 文档分隔线：047-mongodb/009-ChangeStreamRealtime.md ============ -->
+<!-- ============================================================ mongodb/009-ChangeStreamRealtime ============================================================ -->
 
 ## 0. 让数据变化主动找你（先读这里）
 

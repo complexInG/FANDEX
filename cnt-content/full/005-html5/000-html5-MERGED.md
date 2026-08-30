@@ -6,12 +6,68 @@ category: 前端技术
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：006-html5/001-HTML5EnvSetupFirstPage.md ============ -->
+<!-- ============================================================ html5/001-WhatIsWebpage ============================================================ -->
+
+## HTML 在整张地图上的位置
+
+[上一课](getting-started/003-HowInternetWorks)你已经知道：浏览器拿到服务器返回的文件后渲染成页面。其中 **HTML 文件就是页面的骨架**——它告诉浏览器"这里是一个标题、这里是一段文字、这里是一张图片、这里该跳转到哪里"。
+
+HTML 不是编程语言，而是**标记语言**：它不包含逻辑判断与循环，只负责用一对对"标签"给内容标注含义。
+
+## 认识第一个标签
+
+HTML 的基本单位是**标签（tag）**，通常成对出现：
+
+```html
+<p>这是一段文字。</p>
+```
+
+- `<p>` 是开始标签，`</p>` 是结束标签，中间是内容；
+- `p` 代表 paragraph（段落）。浏览器认识几十种标签：`h1` 到 `h6` 是六级标题，`a` 是链接，`img` 是图片，`ul` 与 `li` 是列表。
+
+## 动手环节：创建人生第一个网页
+
+1. 新建一个文件夹，在其中新建文本文件 `index.html`；
+2. 用任意文本编辑器（推荐 VS Code，安装见 [VS Code 安装配置](getting-started/025-VSCodeInstall)）输入以下内容：
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>我的第一个网页</title>
+  </head>
+  <body>
+    <h1>你好，世界</h1>
+    <p>这是我亲手写出的第一个网页。</p>
+    <a href="https://developer.mozilla.org">点我去 MDN 学更多</a>
+  </body>
+</html>
+```
+
+3. 保存后双击文件（或拖进浏览器）——你看到了一个真正的网页：一个大标题、一段文字、一个可点击的链接。
+
+逐行拆解：`<!DOCTYPE html>` 声明这是 HTML5 文档；`<html>` 是根标签；`<head>` 里放看不见的元信息（`<title>` 是浏览器标签页标题）；`<body>` 里放看得见的全部内容。
+
+## 动手环节二：改出你自己的版本
+
+把 `<h1>` 里的文字改成你的名字，再添加一行 `<h2>` 与两段 `<p>`，保存后刷新浏览器。**改一下、刷新一下、看效果**——这个循环就是前端开发最基础的工作节奏。
+
+## 常见困惑
+
+**"标签写错了会怎样？"**——浏览器会尽力猜测你的意图继续渲染，但结果可能不符合预期。养成配对书写、及时保存刷新的习惯，可以避开绝大多数低级错误。
+
+**"需要背下所有标签吗？"**——不需要。常用的不到三十个，本模块会逐一讲解；遇到陌生标签查 MDN 文档即可。
+
+## 下一步
+
+带着自己的第一个网页进入 [HTML5 环境搭建与第一页](html5/002-HTML5EnvSetupFirstPage) 补齐规范细节；想给这个页面加上颜色与布局，接着读 [CSS 是什么](css/001-WhatIsCSS)。
+
+<!-- ============================================================ html5/002-HTML5EnvSetupFirstPage ============================================================ -->
 
 ## 0.1 HTML 入门实战清单：从文件到页面结构
 
@@ -188,7 +244,7 @@ prerequisites: []
 
 你已经完成了网页制作的完整闭环。接下来 001-004 四篇前置课会依次补上零基础必懂的概念：注释与特殊字符（001）、块级与行内元素（002）、div 与 span 容器（003）、id/class/style 全局属性（004）；然后 `005-HTML5OverviewCoreFeature` 会用 5 分钟写第二个网页，并拆解刚才那几行代码背后的含义。
 
-<!-- ============ 文档分隔线：006-html5/002-HTML5CommentsAndEntities.md ============ -->
+<!-- ============================================================ html5/003-HTML5CommentsAndEntities ============================================================ -->
 
 ## 0. 学习目标（可验证）
 
@@ -301,7 +357,7 @@ prerequisites: []
 
 注释和实体字符解决的是"字符怎么打"的问题。下一篇 `002-HTML5BlockVsInline` 解决"标签怎么排"的问题：为什么 `<h1>` 独占一行，而 `<span>` 不换行。
 
-<!-- ============ 文档分隔线：006-html5/003-HTML5BlockVsInline.md ============ -->
+<!-- ============================================================ html5/004-HTML5BlockVsInline ============================================================ -->
 
 ## 0. 学习目标（可验证）
 
@@ -427,7 +483,7 @@ prerequisites: []
 
 你已经有"盒子"世界观了。下一篇 `003-HTML5DivSpanContainers` 介绍实战中最常用的两个容器：`div` 和 `span`——它们没有语义，但 70% 以上的页面结构都由它们搭出来。
 
-<!-- ============ 文档分隔线：006-html5/004-HTML5DivSpanContainers.md ============ -->
+<!-- ============================================================ html5/005-HTML5DivSpanContainers ============================================================ -->
 
 ## 0. 学习目标（可验证）
 
@@ -575,7 +631,7 @@ span 不能包块级元素（还记得 002 的嵌套铁律吗），它的舞台�
 
 容器有了，接下来给它们"贴标签"：`004-HTML5CoreGlobalAttributes` 讲 `id`、`class`、`style` 三个属性——它们是 HTML 通往 CSS 和 JavaScript 的通道。
 
-<!-- ============ 文档分隔线：006-html5/005-HTML5CoreGlobalAttributes.md ============ -->
+<!-- ============================================================ html5/006-HTML5CoreGlobalAttributes ============================================================ -->
 
 ## 0. 学习目标（可验证）
 
@@ -669,7 +725,7 @@ HTML 只负责"有什么"，CSS 负责"长什么样"，JavaScript 负责"能做�
 
 到这里，0 基础前置四件套完成：注释与实体、块级与行内、div/span 容器、id/class/style。接下来 `005-HTML5OverviewCoreFeature` 快速上手课里的所有代码，你已经没有陌生概念了。完整的全局属性大表（`title`、`hidden`、`data-*` 等）在 `007-HTML5TableAndStructuredContent` 中作为参考保留。
 
-<!-- ============ 文档分隔线：006-html5/007-HTML5OverviewCoreFeature.md ============ -->
+<!-- ============================================================ html5/007-HTML5OverviewCoreFeature ============================================================ -->
 
 ## 0. 快速上手：5 分钟写出你的第一个网页
 
@@ -1334,7 +1390,7 @@ HTML5 是现代 Web 开发的基础，它的语义化标签和新特性为 Web �
 - 工程方向：了解 Web Components 与 `<template>` 插槽，掌握组件化封装能力；
 - 关联文档：`html5/011-Accessibility`、`html5/036-ViewportConfigMobileFirst`、`html5/038-CriticalRenderingPathAndResourceLoading`。
 
-<!-- ============ 文档分隔线：006-html5/007-HTML5BasicContentTags.md ============ -->
+<!-- ============================================================ html5/008-HTML5BasicContentTags ============================================================ -->
 
 ## 0. 核心认知：HTML 标签就是"搭积木"
 
@@ -1803,7 +1859,7 @@ HTML5 是现代 Web 开发的基础，它的语义化标签和新特性为 Web �
 - 无障碍方向：参考 `009-Accessibility` 补齐 ARIA 与键盘导航；
 - 媒体方向：在 `019-AudioVideo` 中学习 `audio`/`video` 的完整 API。
 
-<!-- ============ 文档分隔线：006-html5/008-HTML5TableAndStructuredContent.md ============ -->
+<!-- ============================================================ html5/009-HTML5TableAndStructuredContent ============================================================ -->
 
 ## 0. 核心认知：表格是"数据表"，不是"布局工具"
 
@@ -2281,7 +2337,7 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 - 媒体方向：在 `019-AudioVideo` 中学习 `audio`/`video` 的完整 API；
 - 容器方向：回顾 `003-HTML5DivSpanContainers`，理解 div/span 与语义标签的取舍。
 
-<!-- ============ 文档分隔线：006-html5/010-SemanticTag.md ============ -->
+<!-- ============================================================ html5/010-SemanticTag ============================================================ -->
 
 > 阅读建议（零基础）：本篇是「了解即可」章节。第一遍重点读第 0 节与第 1 节即可。
 
@@ -3063,7 +3119,7 @@ HTML5 引入了一系列语义化标签，用于更清晰地描述网页结构�
 - 交互组件：`html5/024-ProgressMeter`、`html5/025-WebComponentsPWADevelopment` 可延伸自定义组件语义；
 - SEO 方向：参考 `css/066-HTMLSemanticSEO` 了解语义化对搜索排名的影响。
 
-<!-- ============ 文档分隔线：006-html5/011-Accessibility.md ============ -->
+<!-- ============================================================ html5/011-Accessibility ============================================================ -->
 
 > 前置依赖：先读 008 语义化标签。入门必读：第 1-2 章与 4.4 键盘体验；ARIA 组件实现（3.3/6.2）为进阶选读。
 
@@ -3767,7 +3823,7 @@ function trapFocus(element) {
 - 语义基础：先掌握 `html5/010-SemanticTag`，再理解 ARIA 的补充角色；
 - 实测工具：Lighthouse、axe DevTools、NVDA/VoiceOver 与键盘走查流程。
 
-<!-- ============ 文档分隔线：006-html5/012-HTML5FormValidation.md ============ -->
+<!-- ============================================================ html5/012-HTML5FormValidation ============================================================ -->
 
 ## 0. 表单是什么？——生活中的“登记表”
 
@@ -4748,7 +4804,7 @@ fetch('/api/submit', {
 - 无障碍：`html5/011-Accessibility` 中表单与 `aria-describedby` 的规范；
 - 校验实践：在真实项目中把“声明式校验 + JS 补充校验 + 后端校验”三层都实现一遍。
 
-<!-- ============ 文档分隔线：006-html5/013-HTML5MultimediaCanvasDrawing.md ============ -->
+<!-- ============================================================ html5/013-HTML5MultimediaCanvasDrawing ============================================================ -->
 
 > 前置依赖：Canvas 部分需要 JavaScript 基础。速通路径：先做第 0 节与 3.3.6“画一个笑脸”；3.4 变换与 3.6 交互为进阶内容，可先跳过。
 
@@ -5777,7 +5833,7 @@ oscillator.stop(audioCtx.currentTime + 2); // 2 秒后停止
 - 性能：`html5/038-CriticalRenderingPathAndResourceLoading` 中媒体资源加载策略；
 - 工程实践：图片懒加载与 `loading="lazy"` 的组合使用。
 
-<!-- ============ 文档分隔线：006-html5/013-DocTypeDeclaration.md ============ -->
+<!-- ============================================================ html5/014-DocTypeDeclaration ============================================================ -->
 
 ## 0. 直觉：DOCTYPE 是网页的“身份证”
 
@@ -5915,7 +5971,7 @@ if (document.compatMode === 'CSS1Compat') {
 - 盒模型差异：`css/004-CSS3BoxModelDetailed` 中怪异模式与标准模式的对比；
 - 标准动态：持续关注 WHATWG HTML Living Standard 更新日志。
 
-<!-- ============ 文档分隔线：006-html5/015-HTML5OfflineStorageWebAPI.md ============ -->
+<!-- ============================================================ html5/015-HTML5OfflineStorageWebAPI ============================================================ -->
 
 > 0基础速通：必学第 1 章 Web Storage 与第 5 章 Fetch；其余（Geolocation、Worker、Service Worker、Notification 等）按需选学。Service Worker 完整版见 027。
 
@@ -7455,7 +7511,7 @@ ctx.fill();
 - 性能：`javascript/051-CoreWebVitalsAndPerformanceMetrics` 中本地缓存对加载指标的影响；
 - 安全：`javascript/048-ErrorBoundaryGlobalErrorCatch` 与 CSP 内容安全策略的配合。
 
-<!-- ============ 文档分隔线：006-html5/016-MetadataCharacterEncoding.md ============ -->
+<!-- ============================================================ html5/016-MetadataCharacterEncoding ============================================================ -->
 
 ## 1. 元数据概述
 
@@ -7824,7 +7880,7 @@ console.log(document.inputEncoding);
 - SEO：`css/066-HTMLSemanticSEO` 全面理解语义化与元数据的组合；
 - 移动端：`html5/036-ViewportConfigMobileFirst` 深入 viewport 配置。
 
-<!-- ============ 文档分隔线：006-html5/017-TextSemantic.md ============ -->
+<!-- ============================================================ html5/017-TextSemantic ============================================================ -->
 
 ## 1. 标题元素 h1-h6
 
@@ -8146,7 +8202,7 @@ E=mc<sup>2</sup>
 - 无障碍：`html5/011-Accessibility` 中读屏如何消费文本语义；
 - 排版细节：`css/045-TypographyAndGridSystem` 控制文本的视觉呈现。
 
-<!-- ============ 文档分隔线：006-html5/018-List.md ============ -->
+<!-- ============================================================ html5/018-List ============================================================ -->
 
 > 0基础速通：直接读第 2 章三类列表速览、第 4 章代码示例与第 9 章核心知识点；第 1 章历史与第 3 章原理可跳过。
 
@@ -8849,7 +8905,7 @@ ul.custom-mark li::before {
 - 组件化：`vue3` 模块中列表渲染 `v-for` 与 key 规范；
 - 无障碍：`html5/011-Accessibility` 中列表导航快捷键的体验。
 
-<!-- ============ 文档分隔线：006-html5/019-LinkageAnchor.md ============ -->
+<!-- ============================================================ html5/019-LinkageAnchor ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -9550,7 +9606,7 @@ a:active  { color: orange; }     /* 点击时 */
 - 安全：`javascript/048-ErrorBoundaryGlobalErrorCatch` 与外部链接安全基线；
 - SEO：`css/066-HTMLSemanticSEO` 中链接结构与站内权重传递。
 
-<!-- ============ 文档分隔线：006-html5/020-ImageResponsiveImage.md ============ -->
+<!-- ============================================================ html5/020-ImageResponsiveImage ============================================================ -->
 
 > 0基础速通：读第 0 节直觉、第 1-3 章核心概念速览与第 4 章代码示例即可；第 6 章深入理解（选读）供进阶。
 
@@ -11126,7 +11182,7 @@ console.log(img.currentSrc); // 当前加载的 URL
 - 工程化：`html5/038-CriticalRenderingPathAndResourceLoading` 资源加载策略；
 - 组件方案：React 的 `next/image` 或 Vue 的 `v-img` 自动生成多档图。
 
-<!-- ============ 文档分隔线：006-html5/020-AudioVideo.md ============ -->
+<!-- ============================================================ html5/021-AudioVideo ============================================================ -->
 
 > 前置要求：本节主体是纯 HTML 标签（audio/video/source/track），零基础可直接学；涉及播放控制的 JavaScript 示例（play/pause、timeupdate 等事件）需要 JS 基础，建议先完成 `javascript/001`-`005` 与 `javascript/039`（DOM 与事件）后再读。纯 HTML 阶段可先跳过这些代码块，不影响理解标签本身。
 
@@ -11506,7 +11562,7 @@ video.play().then(() => {
 - 无障碍：`html5/011-Accessibility` 中媒体替代文本与字幕规范；
 - 直播流：`html5/031-WebSocket` 与 MSE（Media Source Extensions）。
 
-<!-- ============ 文档分隔线：006-html5/022-SVG.md ============ -->
+<!-- ============================================================ html5/022-SVG ============================================================ -->
 
 > 前置要求：SVG 画图本身零基础可学（形状、路径、渐变都不需要 JS）；涉及交互的示例需要 JavaScript 基础（`javascript/001`-`005`、`039`）。本章末尾的"SVG 与 Canvas 互转"需要先了解 006 的 Canvas 概念，第一遍可跳过。
 
@@ -11985,7 +12041,7 @@ drawSvgToCanvas(document.getElementById('mySvg'), document.getElementById('myCan
 - 图标系统：`html5/013-HTML5MultimediaCanvasDrawing` 中 SVG 图标示例；
 - 绘图选型：`html5/013-HTML5MultimediaCanvasDrawing` 中 Canvas 与 SVG 对比。
 
-<!-- ============ 文档分隔线：006-html5/023-EmbeddedContent.md ============ -->
+<!-- ============================================================ html5/023-EmbeddedContent ============================================================ -->
 
 > 0基础速通：只读第 0 节直觉、第 2 章 iframe 核心速览与 4.1 示例；其余（安全、微前端等）为进阶参考。
 
@@ -13962,7 +14018,7 @@ window.addEventListener('message', (event) => {
 - 性能：`html5/038-CriticalRenderingPathAndResourceLoading` 中第三方嵌入对 LCP 的影响；
 - 权限策略：MDN Permissions Policy 文档了解 `allow` 的完整取值。
 
-<!-- ============ 文档分隔线：006-html5/024-ProgressMeter.md ============ -->
+<!-- ============================================================ html5/024-ProgressMeter ============================================================ -->
 
 ## 1. progress 元素
 
@@ -14333,7 +14389,7 @@ meter.optimum = 60;
 - 组件化：`html5/025-WebComponentsPWADevelopment` 封装自定义进度条；
 - 实时更新：`html5/031-WebSocket` 中上传/下载进度的真实数据来源。
 
-<!-- ============ 文档分隔线：006-html5/025-WebComponentsPWADevelopment.md ============ -->
+<!-- ============================================================ html5/025-WebComponentsPWADevelopment ============================================================ -->
 
 > 分段阅读指南（这篇内容量约等于 2-3 篇，建议**分两次读**，中间完成练习）：
 >
@@ -15375,7 +15431,7 @@ async function syncData() {
 - 推送通知：`html5/015-HTML5OfflineStorageWebAPI` 中 Notification API；
 - 框架集成：Vue/React 中使用自定义元素的官方指南。
 
-<!-- ============ 文档分隔线：006-html5/026-DragAPI.md ============ -->
+<!-- ============================================================ html5/026-DragAPI ============================================================ -->
 
 > 前置要求：本节全部示例依赖 JavaScript 事件监听（dragstart/dragover/drop 等），请先完成 `javascript/001`-`005` 与 `javascript/039`（DOM 与事件）。
 >
@@ -15788,7 +15844,7 @@ document.addEventListener('mouseup', () => {
 - 排序组件：Vue/React 生态中的 drag-and-drop 库（vuedraggable、dnd-kit）；
 - 无障碍：拖拽交互需要为键盘用户提供替代操作（如上下移动按钮）。
 
-<!-- ============ 文档分隔线：006-html5/027-Geolocation.md ============ -->
+<!-- ============================================================ html5/027-Geolocation ============================================================ -->
 
 > 前置要求与运行环境：示例使用 JavaScript 异步回调，需先完成 `javascript/001`-`005` 与 `javascript/023`（Promise/async）。
 >
@@ -16107,7 +16163,7 @@ console.log(fence.contains(39.9050, 116.4080)); // true/false
 - 实时位置：`html5/031-WebSocket` 传输位置实现共享定位；
 - 隐私合规：了解 GDPR/个人信息保护法对位置数据的处理要求。
 
-<!-- ============ 文档分隔线：006-html5/027-WebWorkers.md ============ -->
+<!-- ============================================================ html5/028-WebWorkers ============================================================ -->
 
 > 前置要求（中级）：本节需要 JavaScript 中级基础——Promise、async/await、事件监听、class（`javascript/001`-`005`、`039`、`023`、`017`），以及事件循环概念（`javascript/027`）。Worker 内没有 DOM/window，所有通信都走 postMessage 消息，先理解"消息传递"再写代码。
 >
@@ -16596,7 +16652,7 @@ try {
 - 性能：`javascript/050-DebugPerformanceOptimization` 用性能面板分析主线程任务；
 - 并发模式：`javascript/028-AsyncConcurrencyControl` 对比异步任务与 Worker 的取舍。
 
-<!-- ============ 文档分隔线：006-html5/029-ServiceWorkerPWA.md ============ -->
+<!-- ============================================================ html5/029-ServiceWorkerPWA ============================================================ -->
 
 ## 1. Service Worker 概述
 
@@ -17148,7 +17204,7 @@ window.addEventListener('appinstalled', () => {
 - 性能：`javascript/051-CoreWebVitalsAndPerformanceMetrics` 中缓存对加载指标的影响；
 - 工程化：Workbox 库封装注册、缓存与更新逻辑。
 
-<!-- ============ 文档分隔线：006-html5/029-HistoryAPI.md ============ -->
+<!-- ============================================================ html5/030-HistoryAPI ============================================================ -->
 
 > 前置依赖：先接触过 SPA 路由概念（Vue Router 或 React Router）再读本篇。
 
@@ -17547,7 +17603,7 @@ history.pushState({ storageKey: 'pageState' }, '', '/page');
 - URL 标准：`javascript/011-Regex` 或 WHATWG URL 规范；
 - 服务器配置：Nginx `try_files` 的 SPA fallback 写法。
 
-<!-- ============ 文档分隔线：006-html5/031-WebSocket.md ============ -->
+<!-- ============================================================ html5/031-WebSocket ============================================================ -->
 
 > 前置要求：需要 Promise、async/await、事件监听基础（`javascript/001`-`005`、`039`、`023`）；理解 HTTP 请求-响应模型（`networking/001`）有助于理解握手过程。速查区"WebSocket vs SSE"给出单向推送场景的轻量替代，实际项目按"双向/单向"选型。
 
@@ -18066,7 +18122,7 @@ chat.send('Hello!');
 - 消息格式：JSON 协议设计（type/payload）与错误码约定；
 - 性能：`javascript/051-CoreWebVitalsAndPerformanceMetrics` 中长连接对资源的影响。
 
-<!-- ============ 文档分隔线：006-html5/032-WebRTC.md ============ -->
+<!-- ============================================================ html5/032-WebRTC ============================================================ -->
 
 > 前置要求（本模块最高难度）：除 JavaScript 中级基础（Promise/async/class/事件，`javascript/001`-`005`、`039`、`023`）外，还需要基本网络概念：TCP/UDP、NAT、HTTP（`networking/001`）。信令流程（Offer/Answer/ICE）是本篇核心，建议先读 4.1 完整 demo 建立整体印象，再回头读第 2-3 章理论；调试时用 `chrome://webrtc-internals`（见 4.7）。
 
@@ -20013,7 +20069,7 @@ pc.close();
 - 开源方案：LiveKit、mediasoup、Janus 的架构对比；
 - 性能：`javascript/051-CoreWebVitalsAndPerformanceMetrics` 与实时媒体质量监控。
 
-<!-- ============ 文档分隔线：006-html5/033-MicrodataJSONLD.md ============ -->
+<!-- ============================================================ html5/033-MicrodataJSONLD ============================================================ -->
 
 ## 1. 结构化数据概述
 
@@ -20414,7 +20470,7 @@ pc.close();
 - 社交分享：`html5/016-MetadataCharacterEncoding` 中 Open Graph 与 JSON-LD 的差异；
 - 验证工具：Google Rich Results Test、Schema Markup Validator。
 
-<!-- ============ 文档分隔线：006-html5/033-CustomDataAttribute.md ============ -->
+<!-- ============================================================ html5/034-CustomDataAttribute ============================================================ -->
 
 ## 1. 历史动机与发展脉络
 
@@ -22037,7 +22093,7 @@ const user = JSON.parse(el.dataset.user);
 - 组件实践：`html5/025-WebComponentsPWADevelopment` 自定义元素中 `observedAttributes`；
 - 测试钩子：`javascript/055-JavaScriptProjectPractice` 中 `data-testid` 的 E2E 约定。
 
-<!-- ============ 文档分隔线：006-html5/035-CrossDocumentCommunication.md ============ -->
+<!-- ============================================================ html5/035-CrossDocumentCommunication ============================================================ -->
 
 > 前置依赖：先读 021 的 postMessage 基础章节。
 
@@ -23608,7 +23664,7 @@ window.addEventListener('message', (event) => {
 - 安全：CSP 与 XSS 防护（`javascript/048-ErrorBoundaryGlobalErrorCatch`）；
 - 工程封装：4.5 节生产级 RPC 的完整实现。
 
-<!-- ============ 文档分隔线：006-html5/036-ViewportConfigMobileFirst.md ============ -->
+<!-- ============================================================ html5/036-ViewportConfigMobileFirst ============================================================ -->
 
 ## 1. 视口概念
 
@@ -24004,7 +24060,7 @@ el.addEventListener('gesturechange', (e) => {
 - 移动端布局：`css/034-ResponsiveDesign` 响应式设计模式；
 - 安全区域：Apple 的 safe-area-inset 文档与 `env()` 函数用法。
 
-<!-- ============ 文档分隔线：006-html5/036-HTML5FormProjectExample.md ============ -->
+<!-- ============================================================ html5/037-HTML5FormProjectExample ============================================================ -->
 
 | 实时验证      | 内置验证 + 自定义验证逻辑 |
 | ------------- | ------------------------- |
@@ -26057,7 +26113,7 @@ const data = {
 - 拖拽：`html5/026-DragAPI`（拖拽排序与上传）；
 - 工程化：`javascript/055-JavaScriptProjectPractice` 中小型项目的组织方式。
 
-<!-- ============ 文档分隔线：006-html5/038-CriticalRenderingPathAndResourceLoading.md ============ -->
+<!-- ============================================================ html5/038-CriticalRenderingPathAndResourceLoading ============================================================ -->
 
 > 直觉引入：你按下回车到看到画面，浏览器走了一条"出菜流水线"——解析 HTML 像备菜、解析 CSS 像摆盘、绘制像上桌，任何一环卡住，你就要多等一秒。本篇就是把这条流水线讲清楚，并学会让关键资源"插队"。
 >
@@ -26339,7 +26395,7 @@ list.appendChild(fragment);
 **未来可能用的**（prefetch/preconnect）。配合
 `css/061-CriticalRenderPathOptimization` 与 `javascript/051-CoreWebVitalsAndPerformanceMetrics` 形成闭环验证。
 
-<!-- ============ 文档分隔线：006-html5/038-HTML5ContentModelAndNestingRules.md ============ -->
+<!-- ============================================================ html5/039-HTML5ContentModelAndNestingRules ============================================================ -->
 
 ## 0. 学习目标（可验证）
 
@@ -26462,7 +26518,7 @@ div 属于流内容，span 只能包含措辞内容
 
 内容模型是"标签关系"的正式规则，配合 008-SemanticTag（语义化章节结构）使用：先知道谁能装谁，再知道装什么最有语义。
 
-<!-- ============ 文档分隔线：006-html5/040-HTML5ObsoleteTags.md ============ -->
+<!-- ============================================================ html5/040-HTML5ObsoleteTags ============================================================ -->
 
 ## 0. 学习目标（可验证）
 
@@ -26544,7 +26600,7 @@ frameset 把浏览器窗口切成多个独立框架，问题有三：
 
 考古结束，回到主线。下一篇专项 `039-HTML5DialogPopoverGuide` 讲的是"未来"：`dialog` 与 `popover` 这两个现代交互组件。
 
-<!-- ============ 文档分隔线：006-html5/040-HTML5DialogPopoverGuide.md ============ -->
+<!-- ============================================================ html5/041-HTML5DialogPopoverGuide ============================================================ -->
 
 ## 0. 学习目标（可验证）
 
@@ -26669,7 +26725,7 @@ frameset 把浏览器窗口切成多个独立框架，问题有三：
 
 这两个组件是"结构层就能实现的交互"。下一专项 `040-HTML5InternationalizationTags` 转向国际化：ruby、bdi、bdo 与多语言排版。
 
-<!-- ============ 文档分隔线：006-html5/041-HTML5InternationalizationTags.md ============ -->
+<!-- ============================================================ html5/042-HTML5InternationalizationTags ============================================================ -->
 
 ## 0. 学习目标（可验证）
 
@@ -26768,7 +26824,7 @@ frameset 把浏览器窗口切成多个独立框架，问题有三：
 
 国际化的文字处理已经闭环。最后一篇专项 `041-HTML5ImageMapArea` 是冷门但关键时刻能救场的图像热区。
 
-<!-- ============ 文档分隔线：006-html5/042-HTML5ImageMapArea.md ============ -->
+<!-- ============================================================ html5/043-HTML5ImageMapArea ============================================================ -->
 
 ## 0. 学习目标（可验证）
 

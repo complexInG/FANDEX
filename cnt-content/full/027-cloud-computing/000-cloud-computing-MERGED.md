@@ -6,12 +6,12 @@ category: 云与基础设施
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：034-cloud-computing/001-CloudComputingBasics.md ============ -->
+<!-- ============================================================ cloud-computing/001-CloudComputingBasics ============================================================ -->
 
 ## 1. 云计算概念与演进
 
@@ -365,7 +365,7 @@ def find_idle_resources():
 | **Optimize** | 资源右置、预留实例、闲置回收 | Spot.io、Kubecost       |
 | **Operate**  | 标签治理、成本分摊、持续优化 | FinOps 平台             |
 
-<!-- ============ 文档分隔线：034-cloud-computing/002-CloudNetworkStorage.md ============ -->
+<!-- ============================================================ cloud-computing/002-CloudNetworkStorage ============================================================ -->
 
 ## 1. VPC 虚拟私有云
 
@@ -851,7 +851,7 @@ aliyun cdn AddCdnDomain \
 | **HTTPS**      | 全链路 HTTPS 加密              |
 | **智能路由**   | 就近接入、智能 DNS 解析        |
 
-<!-- ============ 文档分隔线：034-cloud-computing/003-ContainerOrchestration.md ============ -->
+<!-- ============================================================ cloud-computing/003-ContainerOrchestration ============================================================ -->
 
 ## 1. Docker 容器技术
 
@@ -1465,7 +1465,7 @@ trivy image --exit-code 1 --severity HIGH,CRITICAL myapp:v1
 | **分支名**   | 开发分支构建               | `main-20260614` |
 | **latest**   | 最新构建（不推荐生产使用） | `latest`        |
 
-<!-- ============ 文档分隔线：034-cloud-computing/004-IaC.md ============ -->
+<!-- ============================================================ cloud-computing/004-IaC ============================================================ -->
 
 ## 1. Terraform 基础设施即代码
 
@@ -2426,7 +2426,7 @@ Datadog      Datadog   Datadog  Monitor PagerDuty
 | **业务层**   | 自定义指标、日志分析      | 订单量/转化率      |
 | **安全层**   | GuardDuty、WAF 日志       | 异常访问/攻击检测  |
 
-<!-- ============ 文档分隔线：034-cloud-computing/005-IaaSPaaSSaaS.md ============ -->
+<!-- ============================================================ cloud-computing/005-IaaSPaaSSaaS ============================================================ -->
 
 ## 1. 云计算服务模式概述
 
@@ -2567,7 +2567,7 @@ flowchart TD
 通用工具 → SaaS（降低成本）
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/006-VirtualizationTech.md ============ -->
+<!-- ============================================================ cloud-computing/006-VirtualizationTech ============================================================ -->
 
 ## 1. 虚拟化概述
 
@@ -2952,7 +2952,7 @@ $$
 - **IOThread**：QEMU 将 I/O 处理移至独立线程
 - **AIO/IO_uring**：Linux 异步 I/O 后端，io_uring 性能更优
 
-<!-- ============ 文档分隔线：034-cloud-computing/007-CloudArchitectureDesign.md ============ -->
+<!-- ============================================================ cloud-computing/007-CloudArchitectureDesign ============================================================ -->
 
 ## 1. 云架构设计原则
 
@@ -3254,7 +3254,7 @@ ADR-001: 选择事件驱动架构处理订单流程
 - [ ] 是否有结构化日志
 - [ ] 是否有告警与 Runbook
 
-<!-- ============ 文档分隔线：034-cloud-computing/008-PublicCloudPrivateCloudHybridCloud.md ============ -->
+<!-- ============================================================ cloud-computing/008-PublicCloudPrivateCloudHybridCloud ============================================================ -->
 
 ## 1. 部署模型概述
 
@@ -3382,7 +3382,7 @@ flowchart LR
 | 全球化      | 多云          |
 | 合规+弹性   | 混合云        |
 
-<!-- ============ 文档分隔线：034-cloud-computing/009-DockerDeepAnalysis.md ============ -->
+<!-- ============================================================ cloud-computing/009-DockerDeepAnalysis ============================================================ -->
 
 ## 1. Docker 镜像优化
 
@@ -3591,7 +3591,7 @@ docker run --read-only --tmpfs /tmp nginx
 | 日志管理         | stdout/stderr    |
 | 环境变量配置     | 不硬编码         |
 
-<!-- ============ 文档分隔线：034-cloud-computing/010-CloudNativeApp.md ============ -->
+<!-- ============================================================ cloud-computing/010-CloudNativeApp ============================================================ -->
 
 ## 1. 云原生定义与演进
 
@@ -3947,7 +3947,7 @@ $$
 | 99.99%  | 4.38 分钟    | 52.6 分钟    |
 | 99.999% | 26 秒        | 5.26 分钟    |
 
-<!-- ============ 文档分隔线：034-cloud-computing/011-KubernetesArchitecture.md ============ -->
+<!-- ============================================================ cloud-computing/011-KubernetesArchitecture ============================================================ -->
 
 ## 1. Kubernetes 整体架构
 
@@ -4840,7 +4840,7 @@ globalDefault: false
 description: "高优先级 Pod"
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/012-CloudDatabaseService.md ============ -->
+<!-- ============================================================ cloud-computing/012-CloudDatabaseService ============================================================ -->
 
 ## 1. 云数据库服务概述
 
@@ -5154,7 +5154,7 @@ DynamoDB 全球表支持多区域多活写入：
 - **全量演练**：模拟区域级故障，验证完整恢复流程
 - **混沌工程**：生产环境注入故障（Chaos Monkey、Litmus）
 
-<!-- ============ 文档分隔线：034-cloud-computing/013-KubernetesCore.md ============ -->
+<!-- ============================================================ cloud-computing/013-KubernetesCore ============================================================ -->
 
 ## 1. Pod
 
@@ -5474,7 +5474,7 @@ spec:
           restartPolicy: OnFailure
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/014-CloudStorageService.md ============ -->
+<!-- ============================================================ cloud-computing/014-CloudStorageService ============================================================ -->
 
 ## 1. 云存储服务分类
 
@@ -5790,7 +5790,7 @@ S3 Replication Metrics 关键指标：
 - **BytesPendingReplication**：待复制的字节数
 - **OperationsPendingReplication**：待复制的操作数
 
-<!-- ============ 文档分隔线：034-cloud-computing/015-KubernetesNetwork.md ============ -->
+<!-- ============================================================ cloud-computing/015-KubernetesNetwork ============================================================ -->
 
 ## 1. Kubernetes 网络模型
 
@@ -5997,7 +5997,7 @@ spec:
 
 > 注意：NetworkPolicy 需要支持它的 CNI 插件（Calico、Cilium 等），Flannel 不支持。
 
-<!-- ============ 文档分隔线：034-cloud-computing/016-CloudNetworkService.md ============ -->
+<!-- ============================================================ cloud-computing/016-CloudNetworkService ============================================================ -->
 
 ## 1. 虚拟私有云（VPC）
 
@@ -6306,7 +6306,7 @@ $$
 - [ ] 启用 TCP Fast Open
 - [ ] 选择合适的 TCP 拥塞控制算法（BBR / Cubic）
 
-<!-- ============ 文档分隔线：034-cloud-computing/017-KubernetesStorage.md ============ -->
+<!-- ============================================================ cloud-computing/017-KubernetesStorage ============================================================ -->
 
 ## 1. 存储概述
 
@@ -6502,7 +6502,7 @@ volumes:
 | 监控                 | 监控存储使用率   |
 | 清理策略             | 合理设置回收策略 |
 
-<!-- ============ 文档分隔线：034-cloud-computing/018-CloudSecurityService.md ============ -->
+<!-- ============================================================ cloud-computing/018-CloudSecurityService ============================================================ -->
 
 ## 1. 共享责任模型
 
@@ -6853,7 +6853,7 @@ flowchart LR
 - [ ] GuardDuty 启用
 - [ ] 安全告警通知配置
 
-<!-- ============ 文档分隔线：034-cloud-computing/019-HelmPackageManagement.md ============ -->
+<!-- ============================================================ cloud-computing/019-HelmPackageManagement ============================================================ -->
 
 ## 1. Helm 概述
 
@@ -7103,7 +7103,7 @@ helm dependency build
 | 镜像标签 | 不使用 latest                |
 | 测试     | 编写 helm test               |
 
-<!-- ============ 文档分隔线：034-cloud-computing/020-CloudCostOptimization.md ============ -->
+<!-- ============================================================ cloud-computing/020-CloudCostOptimization ============================================================ -->
 
 ## 1. 云成本管理框架
 
@@ -7500,7 +7500,7 @@ Spot 中断通知 → EventBridge → Lambda →
   4. 发送清理报告
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/021-TwelveFactorApp.md ============ -->
+<!-- ============================================================ cloud-computing/021-TwelveFactorApp ============================================================ -->
 
 ## 1. 12-Factor 概述
 
@@ -7723,7 +7723,7 @@ npx prisma migrate deploy
 
 12-Factor 是云原生的理论基础，CNCF 的很多项目（Kubernetes、Istio）都是 12-Factor 的工程实现。
 
-<!-- ============ 文档分隔线：034-cloud-computing/022-MicroserviceArchitecture.md ============ -->
+<!-- ============================================================ cloud-computing/022-MicroserviceArchitecture ============================================================ -->
 
 ## 1. 微服务概述
 
@@ -7912,7 +7912,7 @@ HALF_OPEN → (探测失败) → OPEN
 | 契约测试   | 消费者驱动契约       |
 | CI/CD      | 每个服务独立流水线   |
 
-<!-- ============ 文档分隔线：034-cloud-computing/023-ServiceMesh.md ============ -->
+<!-- ============================================================ cloud-computing/023-ServiceMesh ============================================================ -->
 
 ## 1. 服务网格概述
 
@@ -8141,7 +8141,7 @@ spec:
 | 多集群            | Istio               |
 | 资源受限          | Linkerd             |
 
-<!-- ============ 文档分隔线：034-cloud-computing/024-Observability.md ============ -->
+<!-- ============================================================ cloud-computing/024-Observability ============================================================ -->
 
 ## 1. 可观测性概述
 
@@ -8364,7 +8364,7 @@ receivers:
 | SLO/SLI      | 定义服务等级目标和指标        |
 | 仪表盘分层   | 概览→服务→实例                |
 
-<!-- ============ 文档分隔线：034-cloud-computing/025-AWSCore.md ============ -->
+<!-- ============================================================ cloud-computing/025-AWSCore ============================================================ -->
 
 ## 1. 计算
 
@@ -8478,7 +8478,7 @@ IAM 策略与角色是AWS核心服务的重要组成部分。本节详细介绍I
 
 IAM 策略与角色在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-<!-- ============ 文档分隔线：034-cloud-computing/026-MultiCloudHybridArchitecture.md ============ -->
+<!-- ============================================================ cloud-computing/026-MultiCloudHybridArchitecture ============================================================ -->
 
 ## 1. 多云策略
 
@@ -9308,7 +9308,7 @@ policies:
 custodian run -s output custodian.yml
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/027-LoadBalanceAutoScaling.md ============ -->
+<!-- ============================================================ cloud-computing/027-LoadBalanceAutoScaling ============================================================ -->
 
 ## 1. 负载均衡
 
@@ -9448,7 +9448,7 @@ ELB 健康检查在工程实践中需要根据具体场景选择合适的策略�
 
 容量预留在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-<!-- ============ 文档分隔线：034-cloud-computing/028-ServerlessArchitecture.md ============ -->
+<!-- ============================================================ cloud-computing/028-ServerlessArchitecture ============================================================ -->
 
 ## 1. Serverless 原理
 
@@ -9857,7 +9857,7 @@ plugins:
   - serverless-python-requirements
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/029-CloudMigration6RStrategy.md ============ -->
+<!-- ============================================================ cloud-computing/029-CloudMigration6RStrategy ============================================================ -->
 
 ## 1. 6R 策略概述
 
@@ -10023,7 +10023,7 @@ TCO 分析在工程实践中需要根据具体场景选择合适的策略，平�
 
 切换验证在工程实践中需要根据具体场景选择合适的策略，平衡性能、可靠性和复杂度。
 
-<!-- ============ 文档分隔线：034-cloud-computing/030-AWSCliConfigure.md ============ -->
+<!-- ============================================================ cloud-computing/030-AWSCliConfigure ============================================================ -->
 
 ## 安装与版本
 
@@ -10159,7 +10159,7 @@ cat ~/.aws/credentials
 cat ~/.aws/config
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/031-AWSS3Command.md ============ -->
+<!-- ============================================================ cloud-computing/031-AWSS3Command ============================================================ -->
 
 ## 桶操作
 
@@ -10300,7 +10300,7 @@ aws s3 ls s3://my-bucket --recursive --summarize
 aws s3 sync ./src s3://my-bucket/src --dryrun
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/032-AWSEC2Command.md ============ -->
+<!-- ============================================================ cloud-computing/032-AWSEC2Command ============================================================ -->
 
 ## 实例查询
 
@@ -10519,7 +10519,7 @@ aws ec2 associate-address --instance-id i-1234567890abcdef0 --allocation-id eipa
 aws ec2 release-address --allocation-id eipalloc-12345
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/033-AWSLambdaCommand.md ============ -->
+<!-- ============================================================ cloud-computing/033-AWSLambdaCommand ============================================================ -->
 
 ## 函数管理
 
@@ -10700,7 +10700,7 @@ aws logs describe-log-groups --log-group-name-prefix /aws/lambda/my-function
 aws logs tail /aws/lambda/my-function --since 10m
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/034-AWSIAMCommand.md ============ -->
+<!-- ============================================================ cloud-computing/034-AWSIAMCommand ============================================================ -->
 
 ## 用户管理
 
@@ -10890,7 +10890,7 @@ aws iam add-user-to-group --group-name developers --user-name john
 aws iam get-group --group-name developers
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/035-AWSCloudFormation.md ============ -->
+<!-- ============================================================ cloud-computing/035-AWSCloudFormation ============================================================ -->
 
 ## 模板基础
 
@@ -11092,7 +11092,7 @@ aws cloudformation detect-stack-drift --stack-name myStack
 aws cloudformation describe-stack-drift-detection-status --stack-drift-detection-id abc-123
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/036-AzureCliConfigure.md ============ -->
+<!-- ============================================================ cloud-computing/036-AzureCliConfigure ============================================================ -->
 
 ## 安装与版本
 
@@ -11302,7 +11302,7 @@ az extension add --name azure-devops
 az extension remove --name azure-devops
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/037-AzureGroupVMCommand.md ============ -->
+<!-- ============================================================ cloud-computing/037-AzureGroupVMCommand ============================================================ -->
 
 ## 资源组管理
 
@@ -11521,7 +11521,7 @@ az disk create --resource-group MyResourceGroup --name my-disk --size-gb 20
 az vm disk attach --resource-group MyResourceGroup --vm-name my-vm --name my-disk
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/038-AzureStorageCommand.md ============ -->
+<!-- ============================================================ cloud-computing/038-AzureStorageCommand ============================================================ -->
 
 ## 存储账户
 
@@ -11722,7 +11722,7 @@ az storage message put --queue-name my-queue --content "Hello" --account-name st
 az storage message get --queue-name my-queue --account-name storage134
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/039-GCPCliConfigure.md ============ -->
+<!-- ============================================================ cloud-computing/039-GCPCliConfigure ============================================================ -->
 
 ## 安装与初始化
 
@@ -11959,7 +11959,7 @@ gcloud components install kubectl
 gcloud components remove kubectl
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/040-GCPComputeStorage.md ============ -->
+<!-- ============================================================ cloud-computing/040-GCPComputeStorage ============================================================ -->
 
 ## Compute Engine 实例
 
@@ -12203,7 +12203,7 @@ gcloud run services logs tail my-service --region us-central1
 gcloud run services delete my-service --region us-central1
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/041-TerraformBasic.md ============ -->
+<!-- ============================================================ cloud-computing/041-TerraformBasic ============================================================ -->
 
 ## 模板语法
 
@@ -12451,7 +12451,7 @@ module "vpc" {
 terraform get -update
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/042-TerraformStateModule.md ============ -->
+<!-- ============================================================ cloud-computing/042-TerraformStateModule ============================================================ -->
 
 ## 状态查看
 
@@ -12725,7 +12725,7 @@ module "vpc" {
 }
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/043-AWSCloudWatch.md ============ -->
+<!-- ============================================================ cloud-computing/043-AWSCloudWatch ============================================================ -->
 
 ## 命名空间与指标查看
 
@@ -13194,7 +13194,7 @@ aws cloudwatch put-metric-data \
   --metric-data '[{"MetricName":"Latency","Timestamp":"2026-07-31T00:00:00Z","Value":250,"Unit":"Milliseconds"}]'
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/044-AWSRDSCommands.md ============ -->
+<!-- ============================================================ cloud-computing/044-AWSRDSCommands ============================================================ -->
 
 ## 实例创建与查看
 
@@ -13693,7 +13693,7 @@ aws rds modify-db-instance \
   --apply-immediately
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/045-AWSVPCCommands.md ============ -->
+<!-- ============================================================ cloud-computing/045-AWSVPCCommands ============================================================ -->
 
 ## VPC 创建与管理
 
@@ -14202,7 +14202,7 @@ aws ec2 create-transit-gateway-route \
   --transit-gateway-attachment-id tgw-attach-12345678
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/046-AWSSQSCommands.md ============ -->
+<!-- ============================================================ cloud-computing/046-AWSSQSCommands ============================================================ -->
 
 ## SQS 队列管理
 
@@ -14688,7 +14688,7 @@ aws events put-rule \
   --schedule-expression 'rate(5 minutes)'
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/047-AWSDynamoDB.md ============ -->
+<!-- ============================================================ cloud-computing/047-AWSDynamoDB ============================================================ -->
 
 ## 表创建与管理
 
@@ -15179,7 +15179,7 @@ aws cloudwatch get-metric-statistics \
   --statistics Sum
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/048-AzureFunctions.md ============ -->
+<!-- ============================================================ cloud-computing/048-AzureFunctions ============================================================ -->
 
 ## 核心工具安装
 
@@ -15794,7 +15794,7 @@ az functionapp keys set \
 curl "https://my-func-app.azurewebsites.net/api/HttpExample?code=MySecretValue123"
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/049-AzureAKSCommands.md ============ -->
+<!-- ============================================================ cloud-computing/049-AzureAKSCommands ============================================================ -->
 
 ## 集群创建
 
@@ -16415,7 +16415,7 @@ az acr login --name myacr123
 az acr repository list --name myacr123 --output table
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/050-GCPGKECommands.md ============ -->
+<!-- ============================================================ cloud-computing/050-GCPGKECommands ============================================================ -->
 
 ## 凭证与项目
 
@@ -17029,7 +17029,7 @@ gcloud artifacts docker images list \
   | xargs -I{} gcloud artifacts docker images delete {}
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/051-GCPBigQuery.md ============ -->
+<!-- ============================================================ cloud-computing/051-GCPBigQuery ============================================================ -->
 
 ## bq 工具基础
 
@@ -17727,7 +17727,7 @@ bq query \
   'SELECT * FROM my_dataset.users WHERE age > 18'
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/052-PulumiCommands.md ============ -->
+<!-- ============================================================ cloud-computing/052-PulumiCommands ============================================================ -->
 
 ## 安装与配置
 
@@ -18420,7 +18420,7 @@ const resource = new SomeResource("name", { /* ... */ }, {
 });
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/053-HarborRegistry.md ============ -->
+<!-- ============================================================ cloud-computing/053-HarborRegistry ============================================================ -->
 
 ## 安装与部署
 
@@ -19080,7 +19080,7 @@ curl -X PUT -u admin:Harbor12345 \
   -d '{"metadata": {"storage_limit": "53687091200"}}'
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/054-CloudInitCommands.md ============ -->
+<!-- ============================================================ cloud-computing/054-CloudInitCommands ============================================================ -->
 
 ## cloud-init 基础
 
@@ -19811,7 +19811,7 @@ datasource:
     max_wait: 120
 ```
 
-<!-- ============ 文档分隔线：034-cloud-computing/055-AWSCloudFront.md ============ -->
+<!-- ============================================================ cloud-computing/055-AWSCloudFront ============================================================ -->
 
 ## 分配创建
 

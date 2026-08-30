@@ -6,12 +6,12 @@ category: 数据库
 difficulty: intermediate
 description: 本模块全部文档合并生成的完整合集，按学习顺序排列。
 author: fanquanpp
-updated: '2026-08-29'
+updated: '2026-08-30'
 related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：020-mysql/001-HowToUseThisCourse.md ============ -->
+<!-- ============================================================ mysql/001-HowToUseThisCourse ============================================================ -->
 
 ## 0.1 MySQL 第一阶段实战知识表
 
@@ -117,7 +117,7 @@ DELETE FROM students WHERE score < 60;
 - 沙箱练习：`mysql/004-SQLPlayground`；
 - 第一课：`mysql/005-MySQLOverviewDatabaseDesign`。
 
-<!-- ============ 文档分隔线：020-mysql/002-Roadmap.md ============ -->
+<!-- ============================================================ mysql/002-Roadmap ============================================================ -->
 
 ## 0. 四周时间线
 
@@ -189,7 +189,7 @@ timeline
 - 术语表：`mysql/003-Glossary`；
 - 沙箱：`mysql/004-SQLPlayground`。
 
-<!-- ============ 文档分隔线：020-mysql/003-Glossary.md ============ -->
+<!-- ============================================================ mysql/003-Glossary ============================================================ -->
 
 ## 0. 高频术语（按字母序）
 
@@ -234,7 +234,7 @@ timeline
 - 路线图：`mysql/002-Roadmap`；
 - 第一课：`mysql/005-MySQLOverviewDatabaseDesign`。
 
-<!-- ============ 文档分隔线：020-mysql/004-SQLPlayground.md ============ -->
+<!-- ============================================================ mysql/004-SQLPlayground ============================================================ -->
 
 ## 0. 怎么用这个沙箱
 
@@ -346,7 +346,7 @@ SELECT name FROM students WHERE age > 18 ORDER BY score DESC LIMIT 3;
 - 术语：`mysql/003-Glossary`；
 - 第一课：`mysql/005-MySQLOverviewDatabaseDesign`。
 
-<!-- ============ 文档分隔线：020-mysql/005-MySQLOverviewDatabaseDesign.md ============ -->
+<!-- ============================================================ mysql/005-MySQLOverviewDatabaseDesign ============================================================ -->
 
 ## 0. 五分钟写出第一句 SQL（先读这里）
 
@@ -686,7 +686,7 @@ MySQL 8.0 带来了众多新特性和改进：
 4. **性能调优**：学习使用 EXPLAIN 分析执行计划，优化慢查询
 5. **高可用架构**：了解主从复制、读写分离、分库分表等方案
 
-<!-- ============ 文档分隔线：020-mysql/006-MySQLEnvSetup.md ============ -->
+<!-- ============================================================ mysql/006-MySQLEnvSetup ============================================================ -->
 
 ## 1. 安装方法对比
 
@@ -1068,7 +1068,7 @@ volumes:
 | **Sequel Pro**      | macOS 专用工具，轻量快速                    | macOS 环境下的数据库管理   | 免费 |
 | **DataGrip**        | JetBrains 出品，强大的数据库 IDE            | 专业开发、复杂查询         | 付费 |
 
-<!-- ============ 文档分隔线：020-mysql/007-MySQLDataTypeConstraint.md ============ -->
+<!-- ============================================================ mysql/007-MySQLDataTypeConstraint ============================================================ -->
 
 ## 1. 数据类型选择原则 (Selection Principles)
 
@@ -1411,7 +1411,7 @@ CREATE TABLE user_account (
 );
 ```
 
-<!-- ============ 文档分隔线：020-mysql/008-SQLDataDefinitionAdvanced.md ============ -->
+<!-- ============================================================ mysql/008-SQLDataDefinitionAdvanced ============================================================ -->
 
 ## 1. DDL (数据定义语言) - Data Definition Language
 
@@ -2482,7 +2482,7 @@ DELIMITER ;
 DROP TRIGGER IF EXISTS before_user_insert;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/009-MyISAMStorageEngine.md ============ -->
+<!-- ============================================================ mysql/009-MyISAMStorageEngine ============================================================ -->
 
 ## 1. MyISAM 概述
 
@@ -2799,7 +2799,7 @@ CREATE TABLE session_cache (
 ) ENGINE = MEMORY MAX_ROWS = 10000;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/010-SQLDataOperationQuery.md ============ -->
+<!-- ============================================================ mysql/010-SQLDataOperationQuery ============================================================ -->
 
 ## 1. SQL 概述
 
@@ -3728,7 +3728,7 @@ SELECT status, GROUP_CONCAT(username SEPARATOR ',') AS names
 FROM users GROUP BY status;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/011-MemoryStorageEngine.md ============ -->
+<!-- ============================================================ mysql/011-MemoryStorageEngine ============================================================ -->
 
 ## 1. Memory 概述
 
@@ -3816,7 +3816,7 @@ CREATE TABLE country_codes (
 -- MySQL 内部使用 Memory 引擎处理 GROUP BY、DISTINCT 等操作的临时表
 ```
 
-<!-- ============ 文档分隔线：020-mysql/012-NDBCluster.md ============ -->
+<!-- ============================================================ mysql/012-NDBCluster ============================================================ -->
 
 ## 1. NDB Cluster 概述
 
@@ -3948,7 +3948,7 @@ Node Group 1: Data Node 3 (主) + Data Node 4 (备)
 - 实时会话管理
 - 分布式缓存
 
-<!-- ============ 文档分隔线：020-mysql/013-ClusteredIndexSecondaryIndex.md ============ -->
+<!-- ============================================================ mysql/013-ClusteredIndexSecondaryIndex ============================================================ -->
 
 ## 1. 聚簇索引
 
@@ -4134,7 +4134,7 @@ SELECT name, salary FROM employees WHERE dept_id = 5;
 -- 可能命中覆盖索引
 ```
 
-<!-- ============ 文档分隔线：020-mysql/014-CompositeIndexLeftmostPrefixPrinciple.md ============ -->
+<!-- ============================================================ mysql/014-CompositeIndexLeftmostPrefixPrinciple ============================================================ -->
 
 ## 1. 联合索引结构
 
@@ -4245,7 +4245,7 @@ CREATE INDEX idx_b ON table_name(b);
 -- 且无法用于排序
 ```
 
-<!-- ============ 文档分隔线：020-mysql/015-IndexConditionPushdown.md ============ -->
+<!-- ============================================================ mysql/015-IndexConditionPushdown ============================================================ -->
 
 ## 1. ICP 概述
 
@@ -4318,7 +4318,7 @@ SET optimizer_switch = 'index_condition_pushdown=on';
 SET optimizer_switch = 'index_condition_pushdown=off';
 ```
 
-<!-- ============ 文档分隔线：020-mysql/016-FullTextIndex.md ============ -->
+<!-- ============================================================ mysql/016-FullTextIndex ============================================================ -->
 
 ## 1. 全文索引概述
 
@@ -4595,7 +4595,7 @@ ORDER BY score DESC
 LIMIT 20;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/017-PrefixIndex.md ============ -->
+<!-- ============================================================ mysql/017-PrefixIndex ============================================================ -->
 
 ## 1. 前缀索引概述
 
@@ -4657,7 +4657,7 @@ CREATE INDEX idx_url_prefix ON pages(url(50));
 SELECT id, name FROM users WHERE email LIKE 'test@%';
 ```
 
-<!-- ============ 文档分隔线：020-mysql/018-IndexHintForceIndex.md ============ -->
+<!-- ============================================================ mysql/018-IndexHintForceIndex ============================================================ -->
 
 ## 1. 索引提示概述
 
@@ -4740,7 +4740,7 @@ SELECT * FROM t USE INDEX (idx_b) WHERE a = 1;
 -- 定期审查使用索引提示的查询
 ```
 
-<!-- ============ 文档分隔线：020-mysql/019-IndexStatsHistogram.md ============ -->
+<!-- ============================================================ mysql/019-IndexStatsHistogram ============================================================ -->
 
 ## 1. 索引统计信息
 
@@ -4826,7 +4826,7 @@ ANALYZE TABLE employees DROP HISTOGRAM ON salary;
 -- 直方图告诉优化器这个值很少，选择索引扫描而非全表扫描
 ```
 
-<!-- ============ 文档分隔线：020-mysql/020-SQLFunctionAndAdvancedQuery.md ============ -->
+<!-- ============================================================ mysql/020-SQLFunctionAndAdvancedQuery ============================================================ -->
 
 ## 1. 内置函数详解
 
@@ -6033,7 +6033,7 @@ UNION ALL
 SELECT username FROM users WHERE age > 30;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/021-IndexFailureScene.md ============ -->
+<!-- ============================================================ mysql/021-IndexFailureScene ============================================================ -->
 
 ## 1. 索引失效常见场景
 
@@ -6140,7 +6140,7 @@ EXPLAIN SELECT * FROM orders WHERE YEAR(created_at) = 2026;
 EXPLAIN ANALYZE SELECT * FROM orders WHERE YEAR(created_at) = 2026;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/022-EXPLAINDetailed.md ============ -->
+<!-- ============================================================ mysql/022-EXPLAINDetailed ============================================================ -->
 
 ## 1. EXPLAIN 输出列
 
@@ -6236,7 +6236,7 @@ SELECT * FROM employees WHERE dept_id = 5;
 -- 估算值 vs 实际值对比
 ```
 
-<!-- ============ 文档分隔线：020-mysql/023-SlowQueryLog.md ============ -->
+<!-- ============================================================ mysql/023-SlowQueryLog ============================================================ -->
 
 ## 1. 慢查询日志配置
 
@@ -6312,7 +6312,7 @@ pt-query-digest --since '2026-06-14 00:00:00' --until '2026-06-14 23:59:59' /var
 5. 验证效果 → EXPLAIN ANALYZE
 ```
 
-<!-- ============ 文档分隔线：020-mysql/024-OptimizerTrace.md ============ -->
+<!-- ============================================================ mysql/024-OptimizerTrace ============================================================ -->
 
 ## 1. 优化器追踪概述
 
@@ -6431,7 +6431,7 @@ SELECT TRACE FROM information_schema.OPTIMIZER_TRACE\G
 ANALYZE TABLE large_table;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/025-SubqueryOptimization.md ============ -->
+<!-- ============================================================ mysql/025-SubqueryOptimization ============================================================ -->
 
 ## 1. 子查询优化概述
 
@@ -6521,7 +6521,7 @@ JOIN (
 WHERE e.salary > dept_avg.avg_salary;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/026-DerivedTableOptimization.md ============ -->
+<!-- ============================================================ mysql/026-DerivedTableOptimization ============================================================ -->
 
 ## 1. 派生表概述
 
@@ -6602,7 +6602,7 @@ LATERAL (
 ) top3;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/027-GroupByOrderByOptimization.md ============ -->
+<!-- ============================================================ mysql/027-GroupByOrderByOptimization ============================================================ -->
 
 ## 1. GROUP BY 优化
 
@@ -6689,7 +6689,7 @@ ORDER BY cnt DESC;
 -- 需要临时表 + 额外排序
 ```
 
-<!-- ============ 文档分隔线：020-mysql/028-JOINAlgorithm.md ============ -->
+<!-- ============================================================ mysql/028-JOINAlgorithm ============================================================ -->
 
 ## 1. JOIN 算法概述
 
@@ -7003,7 +7003,7 @@ LATERAL (
 ) o;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/029-TransactionIsolationImplementation.md ============ -->
+<!-- ============================================================ mysql/029-TransactionIsolationImplementation ============================================================ -->
 
 ## 1. InnoDB 隔离级别实现概述
 
@@ -7093,7 +7093,7 @@ creator_trx_id：创建者事务ID
 4. trx_id 不在 m_ids 中 → 可见（事务已提交）
 ```
 
-<!-- ============ 文档分隔线：020-mysql/030-MVCCPrinciple.md ============ -->
+<!-- ============================================================ mysql/030-MVCCPrinciple ============================================================ -->
 
 ## 1. MVCC 基础组件
 
@@ -7191,7 +7191,7 @@ Purge 线程负责清理不再需要的 undo log：
 3. 长事务会阻止 Purge，导致 undo log 膨胀
 ```
 
-<!-- ============ 文档分隔线：020-mysql/031-MultiTableJoinDetailed.md ============ -->
+<!-- ============================================================ mysql/031-MultiTableJoinDetailed ============================================================ -->
 
 ## 1. 联查基础概念
 
@@ -7725,7 +7725,7 @@ flowchart LR
  SELECT * FROM employees e JOIN departments d ON e.dept_id = d.dept_id;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/032-LockClassification.md ============ -->
+<!-- ============================================================ mysql/032-LockClassification ============================================================ -->
 
 ## 1. 锁分类总览
 
@@ -7880,7 +7880,7 @@ JOIN performance_schema.events_statements_current blocking
     ON w.BLOCKING_THREAD_ID = blocking.THREAD_ID;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/033-DeadlockDetectionHandling.md ============ -->
+<!-- ============================================================ mysql/033-DeadlockDetectionHandling ============================================================ -->
 
 ## 1. 死锁检测
 
@@ -7990,7 +7990,7 @@ SET GLOBAL innodb_deadlock_detect = OFF;
 -- 此时依赖 innodb_lock_wait_timeout 超时回滚
 ```
 
-<!-- ============ 文档分隔线：020-mysql/034-DistributedTransaction.md ============ -->
+<!-- ============================================================ mysql/034-DistributedTransaction ============================================================ -->
 
 ## 1. XA 事务概述
 
@@ -8091,7 +8091,7 @@ XA RECOVER CONVERT XID;
 -- 4. Seata 等分布式事务框架
 ```
 
-<!-- ============ 文档分隔线：020-mysql/035-Binlog.md ============ -->
+<!-- ============================================================ mysql/035-Binlog ============================================================ -->
 
 ## 1. binlog 概述
 
@@ -8177,7 +8177,7 @@ SET GLOBAL expire_logs_days = 7;  -- MySQL 5.x
 SET GLOBAL binlog_expire_logs_seconds = 604800;  -- MySQL 8.0+
 ```
 
-<!-- ============ 文档分隔线：020-mysql/036-RedoLog.md ============ -->
+<!-- ============================================================ mysql/036-RedoLog ============================================================ -->
 
 ## 1. redo log 概述
 
@@ -8263,7 +8263,7 @@ SET GLOBAL innodb_flush_log_at_trx_commit = 1;  -- 最安全
 -- 设为 2 可提升性能，但可能丢失1秒数据
 ```
 
-<!-- ============ 文档分隔线：020-mysql/037-UndoLog.md ============ -->
+<!-- ============================================================ mysql/037-UndoLog ============================================================ -->
 
 ## 1. undo log 概述
 
@@ -8338,7 +8338,7 @@ SET GLOBAL innodb_undo_log_truncate = ON;
 SET GLOBAL innodb_max_undo_log_size = 1073741824;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/038-LogSystem.md ============ -->
+<!-- ============================================================ mysql/038-LogSystem ============================================================ -->
 
 ## 1. MySQL 日志体系
 
@@ -8619,7 +8619,7 @@ SELECT trx_id, trx_state, trx_started, trx_mysql_thread_id
 FROM information_schema.INNODB_TRX;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/039-LogicalBackup.md ============ -->
+<!-- ============================================================ mysql/039-LogicalBackup ============================================================ -->
 
 ## 1. mysqldump
 
@@ -8688,7 +8688,7 @@ mysql -u root -p -e "CREATE DATABASE mydb"
 mysql -u root -p mydb < mydb_backup.sql
 ```
 
-<!-- ============ 文档分隔线：020-mysql/040-PhysicalBackup.md ============ -->
+<!-- ============================================================ mysql/040-PhysicalBackup ============================================================ -->
 
 ## 1. 物理备份概述
 
@@ -8757,7 +8757,7 @@ mysqlbackup --user=root --password --backup-dir=/backup/inc1 \
 mysqlbackup --datadir=/var/lib/mysql --backup-dir=/backup/full copy-back
 ```
 
-<!-- ============ 文档分隔线：020-mysql/041-PITR.md ============ -->
+<!-- ============================================================ mysql/041-PITR ============================================================ -->
 
 ## 1. PITR 概述
 
@@ -8839,7 +8839,7 @@ mysqlbinlog --start-position=2048 \
 -- 5. 测试恢复流程
 ```
 
-<!-- ============ 文档分隔线：020-mysql/042-Replication.md ============ -->
+<!-- ============================================================ mysql/042-Replication ============================================================ -->
 
 ## 1. 复制概述
 
@@ -9094,7 +9094,7 @@ CHANGE REPLICATION FILTER REPLICATE_IGNORE_DB = (test, tmp);
 CHANGE REPLICATION FILTER REPLICATE_DO_TABLE = (mydb.users, mydb.orders);
 ```
 
-<!-- ============ 文档分隔线：020-mysql/043-AdvancedQueryMultiTableOperation.md ============ -->
+<!-- ============================================================ mysql/043-AdvancedQueryMultiTableOperation ============================================================ -->
 
 ## 1. 多表联查 (Joins)
 
@@ -10096,7 +10096,7 @@ flowchart LR
  SELECT * FROM dept_hierarchy ORDER BY level, dept_id;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/044-GTID.md ============ -->
+<!-- ============================================================ mysql/044-GTID ============================================================ -->
 
 ## 1. GTID 概述
 
@@ -10375,7 +10375,7 @@ SHOW REPLICA STATUS\G
 RESET MASTER;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/045-ParallelReplication.md ============ -->
+<!-- ============================================================ mysql/045-ParallelReplication ============================================================ -->
 
 ## 1. 并行复制概述
 
@@ -10429,7 +10429,7 @@ SHOW SLAVE STATUS\G
 SELECT * FROM performance_schema.replication_applier_status_by_worker;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/046-GroupReplication.md ============ -->
+<!-- ============================================================ mysql/046-GroupReplication ============================================================ -->
 
 ## 1. 组复制概述
 
@@ -10496,7 +10496,7 @@ SELECT * FROM performance_schema.replication_group_members
 WHERE MEMBER_ROLE = 'PRIMARY';
 ```
 
-<!-- ============ 文档分隔线：020-mysql/047-InnoDBCluster.md ============ -->
+<!-- ============================================================ mysql/047-InnoDBCluster ============================================================ -->
 
 ## 1. InnoDB Cluster 概述
 
@@ -10567,7 +10567,7 @@ clusterset.status();
 clusterset.forcePrimaryCluster('replicaCluster');
 ```
 
-<!-- ============ 文档分隔线：020-mysql/048-PartitionedTable.md ============ -->
+<!-- ============================================================ mysql/048-PartitionedTable ============================================================ -->
 
 ## 1. 分区概述
 
@@ -10868,7 +10868,7 @@ ALTER TABLE orders ANALYZE PARTITION p2024;
 ALTER TABLE orders REMOVE PARTITIONING;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/049-ShardingMiddleware.md ============ -->
+<!-- ============================================================ mysql/049-ShardingMiddleware ============================================================ -->
 
 ## 1. 分库分表概述
 
@@ -10951,7 +10951,7 @@ vtctlclient CreateShard -keyspace commerce -shard '80-'
 -- 使用 ER 分片将关联表放在同一分片
 ```
 
-<!-- ============ 文档分隔线：020-mysql/050-AccountPermissionManagement.md ============ -->
+<!-- ============================================================ mysql/050-AccountPermissionManagement ============================================================ -->
 
 ## 1. 用户管理
 
@@ -11260,7 +11260,7 @@ ALTER USER 'app_user'@'%' ACCOUNT LOCK;
 ALTER USER 'app_user'@'%' ACCOUNT UNLOCK;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/051-SSLEncryption.md ============ -->
+<!-- ============================================================ mysql/051-SSLEncryption ============================================================ -->
 
 ## 1. SSL/TLS 概述
 
@@ -11334,7 +11334,7 @@ JOIN performance_schema.session_connect_attrs sca
 WHERE sca.attr_name = 'ssl_cipher';
 ```
 
-<!-- ============ 文档分隔线：020-mysql/052-FirewallPlugin.md ============ -->
+<!-- ============================================================ mysql/052-FirewallPlugin ============================================================ -->
 
 ## 1. MySQL 企业防火墙
 
@@ -11386,7 +11386,7 @@ SELECT * FROM mysql.firewall_whitelist;
 SELECT * FROM performance_schema.firewall_status;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/053-InnoDBSystemArchitecture.md ============ -->
+<!-- ============================================================ mysql/053-InnoDBSystemArchitecture ============================================================ -->
 
 ## 1. InnoDB 存储引擎概述
 
@@ -11953,7 +11953,7 @@ FROM information_schema.INNODB_TRX
 ORDER BY trx_started;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/054-DataEncryption.md ============ -->
+<!-- ============================================================ mysql/054-DataEncryption ============================================================ -->
 
 ## 1. 透明数据加密（TDE）
 
@@ -12025,7 +12025,7 @@ ALTER INSTANCE ROTATE INNODB MASTER KEY;
 -- 生产环境推荐使用外部密钥管理服务
 ```
 
-<!-- ============ 文档分隔线：020-mysql/055-MySQLIndexExecutionPlan.md ============ -->
+<!-- ============================================================ mysql/055-MySQLIndexExecutionPlan ============================================================ -->
 
 ## 1. 索引是什么 (What is an Index)
 
@@ -12314,7 +12314,7 @@ SELECT * FROM users WHERE username LIKE '%张';
 SELECT * FROM users WHERE username LIKE '张%';
 ```
 
-<!-- ============ 文档分隔线：020-mysql/056-MySQL9NewFeaturesParallelQuery.md ============ -->
+<!-- ============================================================ mysql/056-MySQL9NewFeaturesParallelQuery ============================================================ -->
 
 ## 1. MySQL 9.x 概述
 
@@ -12968,7 +12968,7 @@ SET ROLE 'read_write';
 ALTER USER 'developer1'@'%' DEFAULT ROLE 'read_write';
 ```
 
-<!-- ============ 文档分隔线：020-mysql/057-VectorType.md ============ -->
+<!-- ============================================================ mysql/057-VectorType ============================================================ -->
 
 ## 1. VECTOR 类型概述
 
@@ -13055,7 +13055,7 @@ LIMIT 10;
 -- 2. 基于向量距离搜索相似图像
 ```
 
-<!-- ============ 文档分隔线：020-mysql/058-JSONSchemaValidationAggregate.md ============ -->
+<!-- ============================================================ mysql/058-JSONSchemaValidationAggregate ============================================================ -->
 
 ## 1. JSON 模式验证
 
@@ -13355,7 +13355,7 @@ SELECT user_id, order_no, total_amount,
 FROM orders;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/059-ReplicationHA.md ============ -->
+<!-- ============================================================ mysql/059-ReplicationHA ============================================================ -->
 
 ## 1. 二进制日志 (Binary Log)
 
@@ -13971,7 +13971,7 @@ SELECT COUNT(*) FROM critical_table;
 CHECK TABLE critical_table;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/060-InvisibleIndex.md ============ -->
+<!-- ============================================================ mysql/060-InvisibleIndex ============================================================ -->
 
 ## 1. 不可见索引概述
 
@@ -14031,7 +14031,7 @@ EXPLAIN SELECT * FROM employees WHERE dept_id = 5 ORDER BY salary;
 -- UNIQUE 约束索引设为不可见后，约束仍然生效
 ```
 
-<!-- ============ 文档分隔线：020-mysql/061-PerformanceTuningSecurity.md ============ -->
+<!-- ============================================================ mysql/061-PerformanceTuningSecurity ============================================================ -->
 
 ## 1. 缓冲池配置与优化
 
@@ -15074,7 +15074,7 @@ SELECT id FROM users WHERE email = 'test@example.com';
 SELECT trace FROM information_schema.OPTIMIZER_TRACE\G
 ```
 
-<!-- ============ 文档分隔线：020-mysql/062-FunctionalIndex.md ============ -->
+<!-- ============================================================ mysql/062-FunctionalIndex ============================================================ -->
 
 ## 1. 函数索引概述
 
@@ -15143,7 +15143,7 @@ SELECT * FROM order_items WHERE price * quantity > 1000;
 -- 函数索引占用存储空间（虚拟列索引不占数据空间）
 ```
 
-<!-- ============ 文档分隔线：020-mysql/063-StoredProcedureAndFunction.md ============ -->
+<!-- ============================================================ mysql/063-StoredProcedureAndFunction ============================================================ -->
 
 ## 1. 存储过程基础
 
@@ -16124,7 +16124,7 @@ END //
 DELIMITER ;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/064-MVCCSnapshotCurrentRead.md ============ -->
+<!-- ============================================================ mysql/064-MVCCSnapshotCurrentRead ============================================================ -->
 
 ## 1. MVCC 基础概念
 
@@ -16332,7 +16332,7 @@ T4: SELECT 复用 RV1，仍然看到事务B修改前的数据
 
 所有 SELECT 自动加共享锁，退化为当前读，不存在快照读。
 
-<!-- ============ 文档分隔线：020-mysql/065-IndexPrinciplePerformanceOptimization.md ============ -->
+<!-- ============================================================ mysql/065-IndexPrinciplePerformanceOptimization ============================================================ -->
 
 ## 1. 索引原理 (Index Mechanism)
 
@@ -16746,7 +16746,7 @@ MySQL (InnoDB) 默认使用的索引结构是 B+ 树，它是一种平衡树结�
 - **优化**：根据实际情况调整索引和查询
 - **持续学习**：关注 MySQL 的新特性和优化技巧
 
-<!-- ============ 文档分隔线：020-mysql/066-TriggerEvent.md ============ -->
+<!-- ============================================================ mysql/066-TriggerEvent ============================================================ -->
 
 ## 1. 触发器基础
 
@@ -17595,7 +17595,7 @@ UPDATE products SET price = price * 1.1;
 SET @skip_trigger = 0;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/067-RedoUndoBinlogWriteTiming.md ============ -->
+<!-- ============================================================ mysql/067-RedoUndoBinlogWriteTiming ============================================================ -->
 
 ## 1. 三种日志概览
 
@@ -17776,7 +17776,7 @@ MySQL 索引与优化，见 020-mysql 模块文档。
 MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
 Redis 缓存与 MySQL 组合，见 022-redis 模块。
 
-<!-- ============ 文档分隔线：020-mysql/068-TwoPhaseCommit.md ============ -->
+<!-- ============================================================ mysql/068-TwoPhaseCommit ============================================================ -->
 
 ## 1. 两阶段提交的必要性
 
@@ -17970,7 +17970,7 @@ After Sync 流程:
 - 数据一致！
 ```
 
-<!-- ============ 文档分隔线：020-mysql/069-GapLockNextKeyLockSolutionPhantomRead.md ============ -->
+<!-- ============================================================ mysql/069-GapLockNextKeyLockSolutionPhantomRead ============================================================ -->
 
 ## 1. 幻读问题
 
@@ -18188,7 +18188,7 @@ SHOW ENGINE INNODB STATUS;
 SET GLOBAL innodb_lock_wait_timeout = 50;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/070-ReplicationDelayCauseSolution.md ============ -->
+<!-- ============================================================ mysql/070-ReplicationDelayCauseSolution ============================================================ -->
 
 ## 1. 主从复制架构
 
@@ -18405,7 +18405,7 @@ SELECT * FROM performance_schema.replication_connection_status;
 4. 业务层缓存减少从库读压力
 ```
 
-<!-- ============ 文档分隔线：020-mysql/071-ShardingStrategy.md ============ -->
+<!-- ============================================================ mysql/071-ShardingStrategy ============================================================ -->
 
 ## 1. 分库分表概述
 
@@ -18732,7 +18732,7 @@ SET GLOBAL transaction_type = BASE;
   在线扩容，自动数据迁移，无需停服
 ```
 
-<!-- ============ 文档分隔线：020-mysql/072-JSONTypeJSONTable.md ============ -->
+<!-- ============================================================ mysql/072-JSONTypeJSONTable ============================================================ -->
 
 ## 1. JSON 数据类型
 
@@ -19361,7 +19361,7 @@ SELECT * FROM users WHERE 'dev' MEMBER OF(profile->'$.tags');
 SELECT * FROM users WHERE JSON_OVERLAPS(profile->'$.tags', '["dev", "java"]');
 ```
 
-<!-- ============ 文档分隔线：020-mysql/073-TransactionLockMechanism.md ============ -->
+<!-- ============================================================ mysql/073-TransactionLockMechanism ============================================================ -->
 
 ## 1. 事务特性 (ACID)
 
@@ -19965,7 +19965,7 @@ COMMIT;
 DELETE FROM logs WHERE created_at < '2023-01-01' LIMIT 1000;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/074-MySQLConfigOps.md ============ -->
+<!-- ============================================================ mysql/074-MySQLConfigOps ============================================================ -->
 
 ## 1. 基本操作 (Basic Ops)
 
@@ -20449,7 +20449,7 @@ DELETE FROM logs WHERE created_at < '2023-01-01' LIMIT 1000;
  echo "Backup completed: $DATE"
 ```
 
-<!-- ============ 文档分隔线：020-mysql/075-MySQLQuickLookup.md ============ -->
+<!-- ============================================================ mysql/075-MySQLQuickLookup ============================================================ -->
 
 ## 1. 数据库操作
 
@@ -21058,7 +21058,7 @@ DELETE FROM logs WHERE created_at < '2023-01-01' LIMIT 1000;
  SHOW VARIABLES LIKE 'slow_query%'; -- 慢查询状态
 ```
 
-<!-- ============ 文档分隔线：020-mysql/076-MySQLControlApplication.md ============ -->
+<!-- ============================================================ mysql/076-MySQLControlApplication ============================================================ -->
 
 ## 1. 控制器概述 | Controller Overview
 
@@ -21561,7 +21561,7 @@ Repository模式将数据访问逻辑与业务逻辑分离，通过抽象接口�
 控制器是MySQL应用中的重要组成部分，它连接用户界面与数据库，负责处理用户请求、执行业务逻辑、与数据库交互并返回处理结果。通过合理的设计模式和最佳实践，可以构建高效、安全、可维护的MySQL应用。
 在实际开发中，应根据具体需求选择合适的控制器实现方式，并遵循相关的设计原则和最佳实践，以确保应用的质量和性能。
 
-<!-- ============ 文档分隔线：020-mysql/077-SQLInjectionBasicsDetection.md ============ -->
+<!-- ============================================================ mysql/077-SQLInjectionBasicsDetection ============================================================ -->
 
 ## 1. SQL 注入概述 (Overview)
 
@@ -21896,7 +21896,7 @@ SQLMap 是最流行的自动化 SQL 注入工具。
  $stmt->execute();
 ```
 
-<!-- ============ 文档分隔线：020-mysql/078-SQLInjectionAttackTypePractice.md ============ -->
+<!-- ============================================================ mysql/078-SQLInjectionAttackTypePractice ============================================================ -->
 
 ## 1. SQL 注入攻击类型 (Attack Types)
 
@@ -22586,7 +22586,7 @@ def login_safe():
 - 参数化查询让数据库把输入当数据而非 SQL 代码处理
 - 完整防御方案（WAF、最小权限、错误信息隐藏等）见 075-SQLInjectionDefenseStrategy
 
-<!-- ============ 文档分隔线：020-mysql/079-SQLInjectionDefenseStrategy.md ============ -->
+<!-- ============================================================ mysql/079-SQLInjectionDefenseStrategy ============================================================ -->
 
 ## 1. SQL 注入防御策略 (Defense Strategies)
 
@@ -23438,7 +23438,7 @@ def login_safe():
 4. **代码审计**：学习如何查找和修复漏洞
 5. **持续学习**：关注新的攻击技术和防御方法
 
-<!-- ============ 文档分隔线：020-mysql/080-MySQLProjectExampleDatabaseDesign.md ============ -->
+<!-- ============================================================ mysql/080-MySQLProjectExampleDatabaseDesign ============================================================ -->
 
 | 商品管理 | SPU/SKU、分类、品牌、属性    |
 | -------- | ---------------------------- |
@@ -23850,7 +23850,7 @@ INSERT INTO orders (...) VALUES (...);
 COMMIT;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/081-MySQLTheoryKnowledge.md ============ -->
+<!-- ============================================================ mysql/081-MySQLTheoryKnowledge ============================================================ -->
 
 ```text
           [10|20]   [30|40|50]   [60|70|80]
@@ -24163,7 +24163,7 @@ MySQL 索引与优化，见 020-mysql 模块文档。
 MySQL 日志体系，见 020-mysql 模块 redo/binlog 文档。
 Redis 缓存与 MySQL 组合，见 022-redis 模块。
 
-<!-- ============ 文档分隔线：020-mysql/082-DDL.md ============ -->
+<!-- ============================================================ mysql/082-DDL ============================================================ -->
 
 ## 数据库操作
 
@@ -24429,7 +24429,7 @@ SELECT id, username, email FROM users WHERE status = 1;
 DROP VIEW IF EXISTS active_users;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/083-DML.md ============ -->
+<!-- ============================================================ mysql/083-DML ============================================================ -->
 
 ## INSERT 插入
 
@@ -24658,7 +24658,7 @@ SELECT @@transaction_isolation;
 SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/084-DQL.md ============ -->
+<!-- ============================================================ mysql/084-DQL ============================================================ -->
 
 ## SELECT 基础
 
@@ -24905,7 +24905,7 @@ SELECT * FROM users u WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.i
 SELECT * FROM users u WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id);
 ```
 
-<!-- ============ 文档分隔线：020-mysql/085-IndexManagement.md ============ -->
+<!-- ============================================================ mysql/085-IndexManagement ============================================================ -->
 
 ## 创建索引
 
@@ -25151,7 +25151,7 @@ CREATE INDEX idx_cover ON orders(user_id, status, total_amount);
 EXPLAIN SELECT * FROM users WHERE email = 'test@example.com';
 ```
 
-<!-- ============ 文档分隔线：020-mysql/086-UserPermission.md ============ -->
+<!-- ============================================================ mysql/086-UserPermission ============================================================ -->
 
 ## 用户管理
 
@@ -25434,7 +25434,7 @@ SET GLOBAL validate_password.length = 12;
 SET GLOBAL validate_password.policy = 'MEDIUM';
 ```
 
-<!-- ============ 文档分隔线：020-mysql/087-CLI.md ============ -->
+<!-- ============================================================ mysql/087-CLI ============================================================ -->
 
 ## 连接登录
 
@@ -25791,7 +25791,7 @@ mysqlcheck -u root -p --analyze mydb
 mysqldumpslow -s t -t 10 /var/log/mysql/slow.log
 ```
 
-<!-- ============ 文档分隔线：020-mysql/088-Mysqladmin.md ============ -->
+<!-- ============================================================ mysql/088-Mysqladmin ============================================================ -->
 
 ## 服务状态检查
 
@@ -25968,7 +25968,7 @@ mysqladmin -u root -p flush-threads
 mysqladmin -u root -p refresh
 ```
 
-<!-- ============ 文档分隔线：020-mysql/089-View.md ============ -->
+<!-- ============================================================ mysql/089-View ============================================================ -->
 
 ## 创建视图
 
@@ -26122,7 +26122,7 @@ UPDATE v_user_summary SET email = 'new@example.com' WHERE user_id = 100;
 DELETE FROM v_active_users WHERE user_id = 100;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/090-EventScheduler.md ============ -->
+<!-- ============================================================ mysql/090-EventScheduler ============================================================ -->
 
 ## 调度器开关
 
@@ -26285,7 +26285,7 @@ ALTER EVENT e_daily_clean RENAME TO e_weekly_clean;
 DROP EVENT IF EXISTS e_weekly_clean;
 ```
 
-<!-- ============ 文档分隔线：020-mysql/091-CharsetCollation.md ============ -->
+<!-- ============================================================ mysql/091-CharsetCollation ============================================================ -->
 
 ## 查看字符集
 
