@@ -1,0 +1,91 @@
+# =============================================================================
+# FANDEX Android 双端构建校验工作流
+# =============================================================================
+# 触发时机：
+#   1. push 到 main 分支（Android 工程 / 内容源 / 工作流文件变更时）
+#   2. 指向 main 的 PR（Android 工程变更时）
+#   3. 手动触发
+#
+# 职责：双端并行构建 Release APK，上传为 artifact，不创建 Release。
+# =============================================================================
+
+name: Android Build Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app-Android-new/**'
+      - 'app-Android-old/**'
+      - 'cnt-content/**'
+      - 'shd-shared/**'
+      - '.github/workflows/android-build.yml'
+      - '.github/workflows/android-release.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app-Android-new/**'
+      - 'app-Android-old/**'
+      - '.github/workflows/android-build.yml'
+      - '.github/workflows/android-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 构建 ${{ matrix.label }} APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: new
+            label: 新技术栈
+            app: app-Android-new
+            sync: node app-Android-new/scripts/generate-content.mjs
+            apk: app-Android-new/app/build/outputs/apk/release/app-release.apk
+            artifact: fandex-new-apk
+          - id: old
+            label: 旧技术栈
+            app: app-Android-old
+            sync: node app-Android-old/scripts/generate-legacy-content.mjs
+            apk: app-Android-old/app/build/outputs/apk/release/FANDEX-*.apk
+            artifact: fandex-old-apk
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 配置 JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: 配置 Gradle（含依赖缓存）
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 配置 Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 同步内容资产（${{ matrix.label }}）
+        run: ${{ matrix.sync }}
+
+      - name: 构建 Release APK
+        working-directory: ${{ matrix.app }}
+        run: ./gradlew :app:assembleRelease --stacktrace
+
+      - name: 上传 APK 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.apk }}
+          retention-days: 14
