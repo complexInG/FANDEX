@@ -12,6 +12,8 @@ related:
   - 'getting-started/024-JavaJdkConfig'
 prerequisites:
   - 'getting-started/002-WhatIsProgramming'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## Java 在技术版图中的位置

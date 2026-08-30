@@ -12,6 +12,8 @@ related:
   - 'sql/003-SQLFirstSteps'
 prerequisites:
   - 'getting-started/002-WhatIsProgramming'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## 为什么程序都需要数据库

@@ -12,6 +12,8 @@ related:
   - 'java/002-JavaOverviewDevEnv'
 prerequisites:
   - 'getting-started/002-WhatIsProgramming'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## Kotlin 在技术版图中的位置

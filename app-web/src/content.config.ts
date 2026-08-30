@@ -140,6 +140,19 @@ const docs = defineCollection({
     estimatedReadingTime: z.number().optional().describe('预估阅读时长（分钟）'),
     lastReviewed: z.coerce.date().optional().describe('最后审阅日期'),
     reviewer: z.string().optional().describe('审阅人'),
+    // === 分层教学扩展（v4.4，可选字段） ===
+    // level：五级分层（0基础入门 / 基础 / 进阶 / 重点专项 / 特殊专项），
+    // 与 difficulty 正交：difficulty 描述读者门槛，level 描述文档在教学路径中的层级；
+    // 仅零基础入门与专项文档需要标注，普通文档缺省即为主线基础层。
+    level: z
+      .enum(['zero-beginner', 'basic', 'intermediate', 'advanced', 'special'])
+      .optional()
+      .describe('教学分层：zero-beginner 零基础入门 / basic 基础 / intermediate 进阶 / advanced 重点专项 / special 特殊专项'),
+    estimatedHours: z
+      .number()
+      .positive()
+      .optional()
+      .describe('预估学习投入（小时），零基础与专项文档建议标注'),
   }),
 });
 

@@ -101,7 +101,7 @@ function capCode(code) {
 
 /**
  * 解析单个 Markdown 文档中的语法点
- * 结构约定（mobile 全库统一）：
+ * 结构约定（syntax 素材全库统一）：
  *   # 文档标题
  *   ## 小节标题
  *   **写法名称**（HTML 等文档为 "**form 元素**" 等标签）
@@ -165,7 +165,7 @@ function parseSyntaxPoints(filePath, moduleId) {
 }
 
 /**
- * 主函数：扫描 mobile 语言模块并生成语法速查数据
+ * 主函数：扫描 syntax 素材目录并生成语法速查数据
  */
 function main() {
   console.log('[build-syntax] Scanning', syntaxContentDir);

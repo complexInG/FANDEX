@@ -179,7 +179,7 @@
     "name": "网络安全",
     "icon": "安全",
     "color": "#e05a2b",
-    "description": "攻防·渗透·应急响应"
+    "description": "工程专项扩展：安全攻防与渗透基础（建议在 networking 与 devops 之后选学）"
   },
   {
     "english_short": "cloud-computing",

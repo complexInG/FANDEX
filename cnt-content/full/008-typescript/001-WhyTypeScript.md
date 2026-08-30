@@ -13,6 +13,8 @@ related:
   - 'javascript/001-WhatIsJavaScript'
 prerequisites:
   - 'javascript/001-WhatIsJavaScript'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## 一个真实的烦恼

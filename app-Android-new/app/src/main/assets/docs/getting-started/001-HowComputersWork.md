@@ -11,6 +11,8 @@ related:
   - 'getting-started/004-DevEnvSetup'
   - 'getting-started/002-WhatIsProgramming'
 prerequisites: []
+level: zero-beginner
+estimatedHours: 1.5
 ---
 
 ## 为什么这是第一课

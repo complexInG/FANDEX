@@ -150,7 +150,10 @@ function generateDocIndex() {
             difficulty: fm.difficulty || 'beginner',
             description: fm.description || '',
             order: parseInt(fm.order) || 0,
-            updated: fm.updated || ''
+            updated: fm.updated || '',
+            // 分层扩展字段（v4.4）：仅零基础入门与专项文档携带
+            ...(fm.level ? { level: fm.level } : {}),
+            ...(fm.estimatedHours ? { estimatedHours: parseFloat(fm.estimatedHours) } : {})
         });
     }
 

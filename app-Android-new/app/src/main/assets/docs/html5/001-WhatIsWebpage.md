@@ -12,6 +12,8 @@ related:
   - 'getting-started/003-HowInternetWorks'
 prerequisites:
   - 'getting-started/003-HowInternetWorks'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## HTML 在整张地图上的位置

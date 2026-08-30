@@ -27,7 +27,7 @@ import { MINIMAL_CSP } from '@/lib/csp';
 const base = import.meta.env.BASE_URL;
 ---
 
-<html lang={SITE.lang}>
+<html lang={SITE.lang} data-base={base}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -89,6 +89,12 @@ const base = import.meta.env.BASE_URL;
           <code class="error-path-value" id="error-path-value"></code>
         </div>
 
+        <!-- 归档提示：访问的模块已在内容聚焦优化中下线（v2.0.0） -->
+        <div class="error-archived" id="error-archived-block" hidden>
+          <span class="error-path-label">内容已归档</span>
+          <p class="error-archived-text" id="error-archived-text"></p>
+        </div>
+
         <nav class="error-actions" aria-label="错误页出口">
           <a href={base} class="error-btn error-btn--primary">返回首页</a>
           <a href={`${base}learning-path/`} class="error-btn">学习路线</a>
@@ -96,7 +102,7 @@ const base = import.meta.env.BASE_URL;
       </main>
     </div>
 
-    <!-- 路径展示脚本：仅输出当前失效路径，无其他交互 -->
+    <!-- 路径展示脚本：输出失效路径，并对已归档模块给出专门提示 -->
     <script is:inline>
       (function () {
         var block = document.getElementById('error-path-block');
@@ -104,6 +110,35 @@ const base = import.meta.env.BASE_URL;
         if (!block || !value) return;
         value.textContent = window.location.pathname;
         block.hidden = false;
+
+        // 已归档模块清单（v2.0.0 主线聚焦优化）：命中时展示归档说明
+        var archived = {
+          english: '应试英语与专业英语',
+          lua: '嵌入式脚本引擎',
+          harmonyos: 'HarmonyOS 应用开发',
+          calculus: '微积分与数学分析',
+          'discrete-math': '组合、图论与代数',
+          'linear-algebra': '矩阵、向量与特征值',
+          'probability-statistics': '概率模型与统计推断',
+          iot: '嵌入式与边缘计算',
+          'message-queue': '消息队列（Kafka 与 RabbitMQ）',
+          deno: 'Deno 运行时',
+          bun: 'Bun 运行时'
+        };
+        var base = document.documentElement.getAttribute('data-base') || '/';
+        var rest = window.location.pathname;
+        if (base !== '/' && rest.indexOf(base) === 0) rest = rest.slice(base.length);
+        var seg = rest.replace(/^\/+|\/+$/g, '').split('/')[0];
+        if (archived[seg]) {
+          var ablock = document.getElementById('error-archived-block');
+          var atext = document.getElementById('error-archived-text');
+          if (ablock && atext) {
+            atext.textContent =
+              '「' + archived[seg] + '」（' + seg + '）模块已在内容主线聚焦优化中归档，' +
+              '不再随主站与客户端分发。当前学习主线请从首页或学习路线进入。';
+            ablock.hidden = false;
+          }
+        }
       })();
     </script>
   </body>

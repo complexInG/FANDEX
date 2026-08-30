@@ -1,5 +1,5 @@
 {
-    "version": "4.3.0",
+    "version": "4.4.0",
     "generatedAt": "2026-08-30",
     "categories": [
         {
@@ -425,7 +425,22 @@
                 "061-RegexAssertions",
                 "062-JavaScriptTheory",
                 "063-WebWorkersMultithreading",
-                "064-ServiceWorkerPWA"
+                "064-ServiceWorkerPWA",
+                "065-DenoOverview",
+                "066-DenoQuickStart",
+                "067-DenoPermissionsSecurity",
+                "068-DenoWebFrameworkDeploy",
+                "069-AdvancedRoadmap",
+                "070-DenoStdLibNpmCompatibility",
+                "071-DenoKVQueues",
+                "072-DenoTestingBenchCI",
+                "073-BunOverview",
+                "074-BunQuickStart",
+                "075-BunBuiltinServerSQL",
+                "076-AdvancedRoadmap",
+                "077-BunPackageManagerWorkspaces",
+                "078-BunTestBench",
+                "079-BunWebSocketFrontendDev"
             ]
         },
         {
@@ -1542,7 +1557,7 @@
             "id": "cybersecurity",
             "title": "网络安全",
             "category": "cloud",
-            "description": "攻防·渗透·应急响应",
+            "description": "工程专项扩展：安全攻防与渗透基础（建议在 networking 与 devops 之后选学）",
             "documents": [
                 "001-SecurityBasicsDefense",
                 "002-WebSecurityPenetrationTesting",
@@ -1737,7 +1752,15 @@
                 "005-QualityAttribute",
                 "006-CAP",
                 "007-DDD",
-                "008-ArchitectureEvaluation"
+                "008-ArchitectureEvaluation",
+                "009-MessageQueueOverview",
+                "010-KafkaQuickStart",
+                "011-RabbitMQQuickStart",
+                "012-ReliableMessagingPatterns",
+                "013-AdvancedRoadmap",
+                "014-KafkaConsumerGroupDeepDive",
+                "015-RocketMQQuickStart",
+                "016-MonitoringCapacityOperations"
             ]
         },
         {
@@ -2042,41 +2065,10 @@
             ]
         },
         {
-            "id": "deno",
-            "title": "Deno",
-            "category": "backend",
-            "description": "默认安全的 JS/TS 运行时",
-            "documents": [
-                "001-DenoOverview",
-                "002-DenoQuickStart",
-                "003-DenoPermissionsSecurity",
-                "004-DenoWebFrameworkDeploy",
-                "005-AdvancedRoadmap",
-                "006-DenoStdLibNpmCompatibility",
-                "007-DenoKVQueues",
-                "008-DenoTestingBenchCI"
-            ]
-        },
-        {
-            "id": "bun",
-            "title": "Bun",
-            "category": "backend",
-            "description": "全家桶 JS 运行时与工具链",
-            "documents": [
-                "001-BunOverview",
-                "002-BunQuickStart",
-                "003-BunBuiltinServerSQL",
-                "004-AdvancedRoadmap",
-                "005-BunPackageManagerWorkspaces",
-                "006-BunTestBench",
-                "007-BunWebSocketFrontendDev"
-            ]
-        },
-        {
             "id": "svelte",
             "title": "Svelte",
             "category": "frontend",
-            "description": "编译时响应式前端框架",
+            "description": "前端专项扩展：编译时响应式框架（主推 Vue3 或 React 后按需选学）",
             "documents": [
                 "001-SvelteOverview",
                 "002-SvelteKitQuickStart",
@@ -2091,7 +2083,7 @@
             "id": "angular",
             "title": "Angular",
             "category": "frontend",
-            "description": "企业级前端框架",
+            "description": "前端专项扩展：企业级全功能框架（主推 Vue3 或 React 后按需选学）",
             "documents": [
                 "001-AngularOverview",
                 "002-QuickStartComponentTemplate",
@@ -2102,22 +2094,6 @@
                 "007-DirectivesPipes",
                 "008-HttpClientStateManagement",
                 "009-TestingSSRHydration"
-            ]
-        },
-        {
-            "id": "message-queue",
-            "title": "消息队列",
-            "category": "cloud",
-            "description": "Kafka 与 RabbitMQ 等消息中间件",
-            "documents": [
-                "001-MessageQueueOverview",
-                "002-KafkaQuickStart",
-                "003-RabbitMQQuickStart",
-                "004-ReliableMessagingPatterns",
-                "005-AdvancedRoadmap",
-                "006-KafkaConsumerGroupDeepDive",
-                "007-RocketMQQuickStart",
-                "008-MonitoringCapacityOperations"
             ]
         }
     ],
@@ -4825,6 +4801,126 @@
             "category": "前端技术",
             "difficulty": "advanced",
             "description": "离线优先：Service Worker 生命周期、缓存策略与 PWA 安装体验。"
+        },
+        {
+            "slug": "065-DenoOverview",
+            "title": "Deno 概述与快速上手",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "beginner",
+            "description": "零基础第一课：理解 Deno 的安全模型与内置工具链，用两分钟运行第一个 TypeScript 脚本。"
+        },
+        {
+            "slug": "066-DenoQuickStart",
+            "title": "Deno 快速入门：导入、标准库与测试",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "beginner",
+            "description": "URL 导入、JSR/npm 包、标准库常用模块与内置测试框架，完成一个带测试的小工具。"
+        },
+        {
+            "slug": "067-DenoPermissionsSecurity",
+            "title": "Deno 权限模型与安全实践",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "intermediate",
+            "description": "默认拒绝的权限体系、--allow 系列参数、敏感信息管理与生产环境安全清单。"
+        },
+        {
+            "slug": "068-DenoWebFrameworkDeploy",
+            "title": "Deno Web 开发与云端部署",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "intermediate",
+            "description": "用 Hono 构建 REST API，接入 Deno KV 存储，并部署到 Deno Deploy 边缘网络。"
+        },
+        {
+            "slug": "069-AdvancedRoadmap",
+            "title": "进阶学习路线图",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "intermediate",
+            "description": "承上启下：从已掌握的运行时与权限模型出发，给出通往精通的进阶路线、每站核心 API 与学习自检清单。"
+        },
+        {
+            "slug": "070-DenoStdLibNpmCompatibility",
+            "title": "标准库与 npm 兼容",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "intermediate",
+            "description": "jsr:@std、npm:、node: 三种导入来源与 deno.json 依赖管理。"
+        },
+        {
+            "slug": "071-DenoKVQueues",
+            "title": "Deno KV 与队列",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "advanced",
+            "description": "内置零配置数据库：强一致 KV、原子事务与消息队列。"
+        },
+        {
+            "slug": "072-DenoTestingBenchCI",
+            "title": "测试、基准与 CI",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "intermediate",
+            "description": "零依赖质量三件套：deno test、deno bench 与 lint/fmt/check 流水线。"
+        },
+        {
+            "slug": "073-BunOverview",
+            "title": "Bun 概述与快速上手",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "beginner",
+            "description": "零基础第一课：认识\"全家桶\"运行时 Bun，两分钟跑起第一个 TypeScript 脚本。"
+        },
+        {
+            "slug": "074-BunQuickStart",
+            "title": "Bun 快速入门：项目、依赖与测试",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "beginner",
+            "description": "bun init 创建项目、bun add 管理依赖、bun test 编写测试，完整走一遍小工具开发。"
+        },
+        {
+            "slug": "075-BunBuiltinServerSQL",
+            "title": "Bun 内置服务器、 SQL 与数据库",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "intermediate",
+            "description": "Bun.serve 写 HTTP 服务，Bun.sql 操作 SQLite，内置 Redis 客户端与文件路由，一个运行时完成全栈。"
+        },
+        {
+            "slug": "076-AdvancedRoadmap",
+            "title": "进阶学习路线图",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "beginner",
+            "description": "承上启下：从已掌握的运行时与内置服务器出发，给出通往精通的进阶路线、每站核心 API 与学习自检清单。"
+        },
+        {
+            "slug": "077-BunPackageManagerWorkspaces",
+            "title": "包管理与工作区",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "beginner",
+            "description": "bun install 为什么快：bun.lock、workspaces 与可复现安装。"
+        },
+        {
+            "slug": "078-BunTestBench",
+            "title": "内置测试与基准",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "beginner",
+            "description": "零配置测试：bun test、Jest 兼容面、mock 与覆盖率。"
+        },
+        {
+            "slug": "079-BunWebSocketFrontendDev",
+            "title": "WebSocket 与前端开发服务器",
+            "module": "javascript",
+            "category": "后端技术",
+            "difficulty": "intermediate",
+            "description": "实时与一体化：Bun.serve 的 WebSocket、routes 路由表与前端开发服务器。"
         },
         {
             "slug": "001-WhyTypeScript",
@@ -13851,6 +13947,70 @@
             "description": "ATAM评估方法、CBAM成本收益分析与架构评审实践。"
         },
         {
+            "slug": "009-MessageQueueOverview",
+            "title": "消息队列概述与选型",
+            "module": "software-architecture",
+            "category": "云与基础设施",
+            "difficulty": "beginner",
+            "description": "零基础第一课：消息队列解决什么问题、三种投递语义、Kafka/RabbitMQ/Pulsar 对比与选型。"
+        },
+        {
+            "slug": "010-KafkaQuickStart",
+            "title": "Kafka 快速上手",
+            "module": "software-architecture",
+            "category": "云与基础设施",
+            "difficulty": "intermediate",
+            "description": "主题、分区、消费组的核心模型，Docker Compose 起集群，命令行收发消息与分区键。"
+        },
+        {
+            "slug": "011-RabbitMQQuickStart",
+            "title": "RabbitMQ 快速上手",
+            "module": "software-architecture",
+            "category": "云与基础设施",
+            "difficulty": "intermediate",
+            "description": "交换机、队列、绑定与路由键模型，工作队列、手动确认与限流的基本用法。"
+        },
+        {
+            "slug": "012-ReliableMessagingPatterns",
+            "title": "可靠消息模式与生产实践",
+            "module": "software-architecture",
+            "category": "云与基础设施",
+            "difficulty": "advanced",
+            "description": "投递语义、死信队列、消费幂等、顺序保证与背压控制，把消息系统从\"能通\"做到\"可靠\"。"
+        },
+        {
+            "slug": "013-AdvancedRoadmap",
+            "title": "进阶学习路线图",
+            "module": "software-architecture",
+            "category": "云与基础设施",
+            "difficulty": "intermediate",
+            "description": "承上启下：从已掌握的三大队列入门出发，给出通往精通的进阶路线与学习建议。"
+        },
+        {
+            "slug": "014-KafkaConsumerGroupDeepDive",
+            "title": "Kafka 消费者组与位移管理",
+            "module": "software-architecture",
+            "category": "云与基础设施",
+            "difficulty": "advanced",
+            "description": "分区分配、再均衡与位移提交——消费侧的可靠性与扩展。"
+        },
+        {
+            "slug": "015-RocketMQQuickStart",
+            "title": "RocketMQ 快速上手",
+            "module": "software-architecture",
+            "category": "云与基础设施",
+            "difficulty": "intermediate",
+            "description": "阿里系消息中间件：架构、四种特色消息与选型对比。"
+        },
+        {
+            "slug": "016-MonitoringCapacityOperations",
+            "title": "监控、容量与运维",
+            "module": "software-architecture",
+            "category": "云与基础设施",
+            "difficulty": "advanced",
+            "description": "让消息系统长期健康：lag 观测、容量规划与故障演练。"
+        },
+        {
             "slug": "001-EngineeringPracticeOverview",
             "title": "工程实践概述",
             "module": "engineering-practices",
@@ -15555,126 +15715,6 @@
             "description": "微服务传输层选型与 @MessagePattern，@nestjs/terminus 健康检查，NestJS 12 版本要点。"
         },
         {
-            "slug": "001-DenoOverview",
-            "title": "Deno 概述与快速上手",
-            "module": "deno",
-            "category": "后端技术",
-            "difficulty": "beginner",
-            "description": "零基础第一课：理解 Deno 的安全模型与内置工具链，用两分钟运行第一个 TypeScript 脚本。"
-        },
-        {
-            "slug": "002-DenoQuickStart",
-            "title": "Deno 快速入门：导入、标准库与测试",
-            "module": "deno",
-            "category": "后端技术",
-            "difficulty": "beginner",
-            "description": "URL 导入、JSR/npm 包、标准库常用模块与内置测试框架，完成一个带测试的小工具。"
-        },
-        {
-            "slug": "003-DenoPermissionsSecurity",
-            "title": "Deno 权限模型与安全实践",
-            "module": "deno",
-            "category": "后端技术",
-            "difficulty": "intermediate",
-            "description": "默认拒绝的权限体系、--allow 系列参数、敏感信息管理与生产环境安全清单。"
-        },
-        {
-            "slug": "004-DenoWebFrameworkDeploy",
-            "title": "Deno Web 开发与云端部署",
-            "module": "deno",
-            "category": "后端技术",
-            "difficulty": "intermediate",
-            "description": "用 Hono 构建 REST API，接入 Deno KV 存储，并部署到 Deno Deploy 边缘网络。"
-        },
-        {
-            "slug": "005-AdvancedRoadmap",
-            "title": "进阶学习路线图",
-            "module": "deno",
-            "category": "后端技术",
-            "difficulty": "intermediate",
-            "description": "承上启下：从已掌握的运行时与权限模型出发，给出通往精通的进阶路线、每站核心 API 与学习自检清单。"
-        },
-        {
-            "slug": "006-DenoStdLibNpmCompatibility",
-            "title": "标准库与 npm 兼容",
-            "module": "deno",
-            "category": "后端技术",
-            "difficulty": "intermediate",
-            "description": "jsr:@std、npm:、node: 三种导入来源与 deno.json 依赖管理。"
-        },
-        {
-            "slug": "007-DenoKVQueues",
-            "title": "Deno KV 与队列",
-            "module": "deno",
-            "category": "后端技术",
-            "difficulty": "advanced",
-            "description": "内置零配置数据库：强一致 KV、原子事务与消息队列。"
-        },
-        {
-            "slug": "008-DenoTestingBenchCI",
-            "title": "测试、基准与 CI",
-            "module": "deno",
-            "category": "后端技术",
-            "difficulty": "intermediate",
-            "description": "零依赖质量三件套：deno test、deno bench 与 lint/fmt/check 流水线。"
-        },
-        {
-            "slug": "001-BunOverview",
-            "title": "Bun 概述与快速上手",
-            "module": "bun",
-            "category": "后端技术",
-            "difficulty": "beginner",
-            "description": "零基础第一课：认识\"全家桶\"运行时 Bun，两分钟跑起第一个 TypeScript 脚本。"
-        },
-        {
-            "slug": "002-BunQuickStart",
-            "title": "Bun 快速入门：项目、依赖与测试",
-            "module": "bun",
-            "category": "后端技术",
-            "difficulty": "beginner",
-            "description": "bun init 创建项目、bun add 管理依赖、bun test 编写测试，完整走一遍小工具开发。"
-        },
-        {
-            "slug": "003-BunBuiltinServerSQL",
-            "title": "Bun 内置服务器、 SQL 与数据库",
-            "module": "bun",
-            "category": "后端技术",
-            "difficulty": "intermediate",
-            "description": "Bun.serve 写 HTTP 服务，Bun.sql 操作 SQLite，内置 Redis 客户端与文件路由，一个运行时完成全栈。"
-        },
-        {
-            "slug": "004-AdvancedRoadmap",
-            "title": "进阶学习路线图",
-            "module": "bun",
-            "category": "后端技术",
-            "difficulty": "beginner",
-            "description": "承上启下：从已掌握的运行时与内置服务器出发，给出通往精通的进阶路线、每站核心 API 与学习自检清单。"
-        },
-        {
-            "slug": "005-BunPackageManagerWorkspaces",
-            "title": "包管理与工作区",
-            "module": "bun",
-            "category": "后端技术",
-            "difficulty": "beginner",
-            "description": "bun install 为什么快：bun.lock、workspaces 与可复现安装。"
-        },
-        {
-            "slug": "006-BunTestBench",
-            "title": "内置测试与基准",
-            "module": "bun",
-            "category": "后端技术",
-            "difficulty": "beginner",
-            "description": "零配置测试：bun test、Jest 兼容面、mock 与覆盖率。"
-        },
-        {
-            "slug": "007-BunWebSocketFrontendDev",
-            "title": "WebSocket 与前端开发服务器",
-            "module": "bun",
-            "category": "后端技术",
-            "difficulty": "intermediate",
-            "description": "实时与一体化：Bun.serve 的 WebSocket、routes 路由表与前端开发服务器。"
-        },
-        {
             "slug": "001-SvelteOverview",
             "title": "Svelte 5 概述与快速上手",
             "module": "svelte",
@@ -15801,70 +15841,6 @@
             "category": "前端技术",
             "difficulty": "advanced",
             "description": "质量与首屏：TestBed 单元测试、服务端渲染与客户端水合。"
-        },
-        {
-            "slug": "001-MessageQueueOverview",
-            "title": "消息队列概述与选型",
-            "module": "message-queue",
-            "category": "云与基础设施",
-            "difficulty": "beginner",
-            "description": "零基础第一课：消息队列解决什么问题、三种投递语义、Kafka/RabbitMQ/Pulsar 对比与选型。"
-        },
-        {
-            "slug": "002-KafkaQuickStart",
-            "title": "Kafka 快速上手",
-            "module": "message-queue",
-            "category": "云与基础设施",
-            "difficulty": "intermediate",
-            "description": "主题、分区、消费组的核心模型，Docker Compose 起集群，命令行收发消息与分区键。"
-        },
-        {
-            "slug": "003-RabbitMQQuickStart",
-            "title": "RabbitMQ 快速上手",
-            "module": "message-queue",
-            "category": "云与基础设施",
-            "difficulty": "intermediate",
-            "description": "交换机、队列、绑定与路由键模型，工作队列、手动确认与限流的基本用法。"
-        },
-        {
-            "slug": "004-ReliableMessagingPatterns",
-            "title": "可靠消息模式与生产实践",
-            "module": "message-queue",
-            "category": "云与基础设施",
-            "difficulty": "advanced",
-            "description": "投递语义、死信队列、消费幂等、顺序保证与背压控制，把消息系统从\"能通\"做到\"可靠\"。"
-        },
-        {
-            "slug": "005-AdvancedRoadmap",
-            "title": "进阶学习路线图",
-            "module": "message-queue",
-            "category": "云与基础设施",
-            "difficulty": "intermediate",
-            "description": "承上启下：从已掌握的三大队列入门出发，给出通往精通的进阶路线与学习建议。"
-        },
-        {
-            "slug": "006-KafkaConsumerGroupDeepDive",
-            "title": "Kafka 消费者组与位移管理",
-            "module": "message-queue",
-            "category": "云与基础设施",
-            "difficulty": "advanced",
-            "description": "分区分配、再均衡与位移提交——消费侧的可靠性与扩展。"
-        },
-        {
-            "slug": "007-RocketMQQuickStart",
-            "title": "RocketMQ 快速上手",
-            "module": "message-queue",
-            "category": "云与基础设施",
-            "difficulty": "intermediate",
-            "description": "阿里系消息中间件：架构、四种特色消息与选型对比。"
-        },
-        {
-            "slug": "008-MonitoringCapacityOperations",
-            "title": "监控、容量与运维",
-            "module": "message-queue",
-            "category": "云与基础设施",
-            "difficulty": "advanced",
-            "description": "让消息系统长期健康：lag 观测、容量规划与故障演练。"
         }
     ]
 }

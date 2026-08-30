@@ -14,6 +14,8 @@ related:
 prerequisites:
   - 'getting-started/002-WhatIsProgramming'
   - 'getting-started/003-HowInternetWorks'
+level: zero-beginner
+estimatedHours: 1.5
 ---
 
 ## 网页的三层分工

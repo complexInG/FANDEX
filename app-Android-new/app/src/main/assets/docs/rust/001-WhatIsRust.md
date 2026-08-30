@@ -12,6 +12,8 @@ related:
   - 'rust/003-RustEnvSetup'
 prerequisites:
   - 'getting-started/002-WhatIsProgramming'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## Rust 在技术版图中的位置

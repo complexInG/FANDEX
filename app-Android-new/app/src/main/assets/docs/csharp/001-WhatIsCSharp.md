@@ -12,6 +12,8 @@ related:
   - 'getting-started/002-WhatIsProgramming'
 prerequisites:
   - 'getting-started/002-WhatIsProgramming'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## C# 在技术版图中的位置

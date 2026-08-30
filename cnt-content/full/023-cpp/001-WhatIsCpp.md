@@ -12,6 +12,8 @@ related:
   - 'c/002-CLanguageOverview'
 prerequisites:
   - 'getting-started/002-WhatIsProgramming'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## C 与 C++：同源而不同路

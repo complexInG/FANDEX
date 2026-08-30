@@ -14,6 +14,8 @@ related:
   - 'python/001-WhatIsPython'
 prerequisites:
   - 'getting-started/001-HowComputersWork'
+level: zero-beginner
+estimatedHours: 1.5
 ---
 
 ## 编程到底是什么

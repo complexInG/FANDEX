@@ -10,7 +10,8 @@
 - 每次任务完成后删除一次性脚本、废弃代码文件等临时产物。
 - 文档内容统一存放于 `cnt-content/full`；`cnt-content/syntax` 为语法速览
   专用速查素材源（由 `app-web/scripts/build-syntax.mjs` 消费）；
-  `cnt-content/mobile` 为历史遗留目录，不作为网站内容源，不在其上执行统一化变更。
+- `cnt-content/mobile` 历史遗留目录已于 v2.0.0 内容治理中整体移除（690 篇），
+  语法速览素材唯一来源为 `cnt-content/syntax`，不得再创建 mobile 目录。
 
 ## 文档 frontmatter 规范
 
@@ -18,7 +19,9 @@
 
 ### 字段集合与顺序
 
-frontmatter 仅允许以下 10 个标准字段，且必须按此顺序书写：
+frontmatter 允许以下 10 个标准字段（必须按此顺序书写），以及 2 个可选分层
+扩展字段（level / estimatedHours，置于标准字段之后、frontmatter 结束线之前，
+仅零基础入门与专项文档需要标注，普通文档缺省即为主线基础层）：
 
 ```yaml
 ---
@@ -36,6 +39,18 @@ prerequisites:
   - 'module/文件名'
 ---
 ```
+
+### 分层扩展字段（可选）
+
+```yaml
+level: zero-beginner        # zero-beginner 零基础入门 / basic 基础 / intermediate 进阶 / advanced 重点专项 / special 特殊专项
+estimatedHours: 1.5         # 预估学习投入（小时），正数
+```
+
+- `level` 与 `difficulty` 正交：`difficulty` 描述读者门槛（三档枚举），
+  `level` 描述文档在教学路径中的层级（五档枚举）；
+- 新增字段必须同步 `app-web/src/content.config.ts` 的 schema 校验；
+- 普通主线文档不写这两个字段。
 
 ### 必填字段
 

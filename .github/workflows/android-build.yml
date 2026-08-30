@@ -1,0 +1,82 @@
+# =============================================================================
+# FANDEX Android 双端构建校验工作流
+# =============================================================================
+# 触发条件：push 到 main（任一 Android 工程 / 内容源 / 本工作流路径变更）
+# 行为：双端并行构建 Release APK 并上传构建产物（不发布 Release）
+#
+# 发布流程由独立的 android-release.yml 负责（push v* 标签触发）——
+# GitHub Actions 中 on.push 同时定义 branches 与 tags 时为 AND 语义，
+# 单独 push 标签不会触发，故构建校验与发布拆分为两个工作流。
+# =============================================================================
+
+name: Android Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app-Android-new/**'
+      - 'app-Android-old/**'
+      - 'cnt-content/**'
+      - 'shd-shared/**'
+      - '.github/workflows/android-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 构建 ${{ matrix.label }} APK
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: new
+            label: 新技术栈
+            app: app-Android-new
+            sync: node app-Android-new/scripts/generate-content.mjs
+            apk: app-Android-new/app/build/outputs/apk/release/app-release.apk
+            artifact: fandex-new-apk
+          - id: old
+            label: 旧技术栈
+            app: app-Android-old
+            sync: node app-Android-old/scripts/generate-legacy-content.mjs
+            apk: app-Android-old/app/build/outputs/apk/release/FANDEX-*.apk
+            artifact: fandex-old-apk
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 配置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: 配置 Gradle（含依赖缓存）
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 配置 Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 同步内容资产（${{ matrix.label }}）
+        run: ${{ matrix.sync }}
+
+      - name: 构建 Release APK
+        working-directory: ${{ matrix.app }}
+        run: ./gradlew :app:assembleRelease --stacktrace
+
+      - name: 上传 APK 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.apk }}
+          retention-days: 14

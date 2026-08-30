@@ -12,6 +12,8 @@ related:
   - 'html5/001-WhatIsWebpage'
 prerequisites:
   - 'html5/001-WhatIsWebpage'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## CSS 在整张地图上的位置

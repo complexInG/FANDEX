@@ -1,15 +1,17 @@
 # =============================================================================
-# FANDEX Android 双端自动构建与发布工作流
+# FANDEX Android 双端 Release 发布工作流
 # =============================================================================
 # 覆盖两个 Android 工程：
 #   - app-Android-new  （新技术栈主线，applicationId com.fandexpp.fandex）
 #   - app-Android-old  （旧技术栈归档线，applicationId com.fandex.app）
 #
 # 触发条件：
-#   1. push 到 main（任一 Android 工程 / 内容源 / 本工作流路径变更）
-#      -> 双端构建校验 + 上传 APK 构建产物（不发布）
-#   2. push v* 标签 或 手动触发（release 输入为 true）
-#      -> 双端构建签名 APK 并创建 GitHub Release 附带两个安装包
+#   1. push v* 标签 -> 双端构建签名 APK 并创建 GitHub Release 附带两个安装包
+#   2. 手动触发（release 输入为 true 时发布，否则仅构建校验）
+#
+# 注意：分支构建校验（push 到 main）由独立的 android-build.yml 负责——
+#   GitHub Actions 中 on.push 同时定义 branches 与 tags 时为 AND 语义，
+#   单独 push 标签将不会触发，因此发布与校验必须拆分为两个工作流。
 #
 # 构建流程（双端并行 matrix）：
 #   内容同步脚本 -> JDK 21 -> Gradle assembleRelease
@@ -22,28 +24,21 @@
 #   debug keystore 在 runner 上临时生成，仅用于分发安装，不做覆盖升级。
 #
 # 发布：
-#   - FANDEX-${tag}.apk          （新技术栈主线）
-#   - FANDEX-Legacy-${tag}.apk   （旧技术栈归档线）
+#   - FANDEX-v${tag}.apk        （新技术栈主线，安装名 FANDEX）
+#   - FANDEX-Legacy-v${tag}.apk （旧技术栈归档线，安装名 FANDEXO）
 #   两个 APK applicationId 不同，可并存安装；
 #   Release 说明由 CHANGELOG.md 对应版本段落生成（无匹配段落时回退默认文案）。
 # =============================================================================
 
-name: Android Build & Release
+name: Android Release
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'app-Android-new/**'
-      - 'app-Android-old/**'
-      - 'cnt-content/**'
-      - 'shd-shared/**'
-      - '.github/workflows/android-release.yml'
     tags: ['v*']
   workflow_dispatch:
     inputs:
       release:
-        description: '构建并发布 Release（true 时需要带 v 前缀标签）'
+        description: '构建并发布 Release（true 时发布；false 仅构建校验）'
         required: false
         default: 'false'
 

@@ -13,6 +13,8 @@ related:
   - 'networking/001-NetworkBasicsAndProtocol'
 prerequisites:
   - 'getting-started/002-WhatIsProgramming'
+level: zero-beginner
+estimatedHours: 1
 ---
 
 ## 为什么要学这一课

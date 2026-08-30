@@ -42,10 +42,7 @@
     "mongodb",
     "nextjs",
     "nestjs",
-    "deno",
-    "bun",
     "svelte",
-    "angular",
-    "message-queue"
+    "angular"
   ]
 }

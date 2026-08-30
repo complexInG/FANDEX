@@ -1,5 +1,5 @@
 {
-  "version": "4.3.0",
+  "version": "4.4.0",
   "categoryLabels": {
     "tools": "工具链",
     "frontend": "前端技术",
@@ -683,7 +683,7 @@
       "id": "cybersecurity",
       "title": "网络安全",
       "icon": "安全",
-      "description": "攻防·渗透·应急响应",
+      "description": "工程专项扩展：安全攻防与渗透基础（建议在 networking 与 devops 之后选学）",
       "categories": [
         "cloud"
       ],
@@ -970,58 +970,14 @@
       ]
     },
     {
-      "id": "deno",
-      "title": "Deno",
-      "icon": "De",
-      "description": "默认安全的 JS/TS 运行时",
-      "categories": [
-        "backend"
-      ],
-      "folder_order": 42,
-      "officialDocs": [
-        {
-          "label": "官方文档",
-          "url": "https://docs.deno.com/",
-          "type": "docs"
-        },
-        {
-          "label": "JSR 包仓库",
-          "url": "https://jsr.io/",
-          "type": "api"
-        }
-      ]
-    },
-    {
-      "id": "bun",
-      "title": "Bun",
-      "icon": "Bu",
-      "description": "全家桶 JS 运行时与工具链",
-      "categories": [
-        "backend"
-      ],
-      "folder_order": 43,
-      "officialDocs": [
-        {
-          "label": "官方文档",
-          "url": "https://bun.sh/docs",
-          "type": "docs"
-        },
-        {
-          "label": "官方博客",
-          "url": "https://bun.sh/blog",
-          "type": "docs"
-        }
-      ]
-    },
-    {
       "id": "svelte",
       "title": "Svelte",
       "icon": "Sv",
-      "description": "编译时响应式前端框架",
+      "description": "前端专项扩展：编译时响应式框架（主推 Vue3 或 React 后按需选学）",
       "categories": [
         "frontend"
       ],
-      "folder_order": 44,
+      "folder_order": 42,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1039,11 +995,11 @@
       "id": "angular",
       "title": "Angular",
       "icon": "An",
-      "description": "企业级前端框架",
+      "description": "前端专项扩展：企业级全功能框架（主推 Vue3 或 React 后按需选学）",
       "categories": [
         "frontend"
       ],
-      "folder_order": 45,
+      "folder_order": 43,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1054,33 +1010,6 @@
           "label": "API 参考",
           "url": "https://angular.dev/api",
           "type": "api"
-        }
-      ]
-    },
-    {
-      "id": "message-queue",
-      "title": "消息队列",
-      "icon": "MQ",
-      "description": "Kafka 与 RabbitMQ 等消息中间件",
-      "categories": [
-        "cloud"
-      ],
-      "folder_order": 46,
-      "officialDocs": [
-        {
-          "label": "Kafka 文档",
-          "url": "https://kafka.apache.org/documentation/",
-          "type": "docs"
-        },
-        {
-          "label": "RabbitMQ 文档",
-          "url": "https://www.rabbitmq.com/docs",
-          "type": "docs"
-        },
-        {
-          "label": "Pulsar 文档",
-          "url": "https://pulsar.apache.org/docs/",
-          "type": "docs"
         }
       ]
     }
