@@ -86,6 +86,7 @@ import com.fandex.app.data.DataStoreManager
 import com.fandex.app.data.Document
 import com.fandex.app.data.MarkdownContent
 import com.fandex.app.data.Strings
+import com.fandex.app.data.resolveDocuments
 import com.fandex.app.navigation.Screen
 import com.fandex.app.ui.components.CategoryColorParser
 import com.fandex.app.ui.components.LocalStrings
@@ -710,9 +711,7 @@ fun ArticleScreenContent(
 
     /* 查找当前文档在模块中的位置，计算上一篇/下一篇 */
     val module = contentIndex?.modules?.find { it.id == moduleId }
-    val documents = module?.documents?.map { docName ->
-        Document(slug = docName, title = docName, module = moduleId)
-    } ?: emptyList()
+    val documents = module?.let { contentIndex.resolveDocuments(it) } ?: emptyList()
     val currentIndex = documents.indexOfFirst { it.slug == slug }
     val prevDoc: Document? = if (currentIndex > 0) documents[currentIndex - 1] else null
     val nextDoc: Document? = if (currentIndex >= 0 && currentIndex < documents.size - 1) documents[currentIndex + 1] else null

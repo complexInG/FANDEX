@@ -34,8 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fandex.app.data.ContentIndex
-import com.fandex.app.data.Document
 import com.fandex.app.data.Strings
+import com.fandex.app.data.resolveDocuments
 
 /**
  * 侧边栏内容组件
@@ -69,11 +69,7 @@ fun SidebarContent(
     val category = module?.let { m ->
         contentIndex?.categories?.find { it.id == m.category }
     }
-    val documents = module?.let { m ->
-        m.documents.map { docName ->
-            Document(slug = docName, title = docName, module = m.id)
-        }
-    } ?: emptyList()
+    val documents = module?.let { contentIndex.resolveDocuments(it) } ?: emptyList()
 
     /* 解析分类强调色（解析失败时由 CategoryColorParser 返回兜底色） */
     val accentColor = remember(category?.color) {

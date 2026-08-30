@@ -57,3 +57,16 @@ data class Document(
     val difficulty: String = "",
     val description: String = ""
 )
+
+/**
+ * 将模块的文档 slug 列表解析为完整文档对象
+ *
+ * slug 到中文标题的映射来自全局 documents 索引（由内容生成脚本从 frontmatter 产出）；
+ * 索引缺失对应项时回退用 slug 充当标题，保证渲染不中断
+ */
+fun ContentIndex.resolveDocuments(module: Module): List<Document> {
+    val byKey = documents.associateBy { "${it.module}/${it.slug}" }
+    return module.documents.map { slug ->
+        byKey["${module.id}/$slug"] ?: Document(slug = slug, title = slug, module = module.id)
+    }
+}

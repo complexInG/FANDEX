@@ -23,6 +23,7 @@ import com.fandex.app.data.ContentIndex
 import com.fandex.app.data.DataStoreManager
 import com.fandex.app.data.Document
 import com.fandex.app.data.Strings
+import com.fandex.app.data.resolveDocuments
 import com.fandex.app.ui.background.BackgroundDecorSystem
 import com.fandex.app.ui.components.CategoryColorParser
 import com.fandex.app.ui.components.GeoBgVariant
@@ -51,11 +52,7 @@ fun ModuleScreen(
     val category = module?.let { m ->
         contentIndex.categories.find { it.id == m.category }
     }
-    val documents = module?.let { m ->
-        m.documents.map { docName ->
-            Document(slug = docName, title = docName, module = m.id)
-        }
-    } ?: emptyList()
+    val documents = module?.let { contentIndex.resolveDocuments(it) } ?: emptyList()
 
     /* 从 DataStore 读取动态背景装饰开关，默认 true */
     val context = LocalContext.current
