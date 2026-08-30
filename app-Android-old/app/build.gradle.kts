@@ -83,8 +83,8 @@ android {
              *   旧行为是无条件使用 release 配置，无密钥环境构建 release 直接失败
              */
             signingConfig = if (
-                signingConfigs.getByName("release").storeFile.exists() &&
-                signingConfigs.getByName("release").storePassword.isNotBlank()
+                signingConfigs.getByName("release").storeFile?.exists() == true &&
+                !signingConfigs.getByName("release").storePassword.isNullOrBlank()
             ) {
                 signingConfigs.getByName("release")
             } else {
