@@ -10,7 +10,7 @@ updated: '2026-08-03'
 related:
   - 'message-queue/001-MessageQueueOverview'
   - 'message-queue/004-ReliableMessagingPatterns'
-  - 'python/033-PythonMessageQueue'
+  - 'python/034-PythonMessageQueue'
 prerequisites:
   - 'message-queue/001-MessageQueueOverview'
 ---

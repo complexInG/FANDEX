@@ -10,10 +10,10 @@ updated: '2026-08-03'
 related:
   - 'svelte/002-SvelteKitQuickStart'
   - 'svelte/003-ReactivityRunes'
-  - 'javascript/001-JavaScriptOverviewRuntimeEnv'
+  - 'javascript/002-JavaScriptOverviewRuntimeEnv'
 prerequisites:
-  - 'html5/006-HTML5OverviewCoreFeature'
-  - 'javascript/001-JavaScriptOverviewRuntimeEnv'
+  - 'html5/007-HTML5OverviewCoreFeature'
+  - 'javascript/002-JavaScriptOverviewRuntimeEnv'
 ---
 
 ## 0. 五分钟创建第一个应用（先读这里）

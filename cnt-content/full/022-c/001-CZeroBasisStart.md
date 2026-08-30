@@ -10,8 +10,8 @@ updated: '2026-08-05'
 related:
   - 'c/002-CLanguageOverview'
   - 'c/003-ProgramStructureBasicSyntax'
-  - 'getting-started/001-DevEnvSetup'
-  - 'getting-started/002-EnvVarPath'
+  - 'getting-started/004-DevEnvSetup'
+  - 'getting-started/005-EnvVarPath'
 prerequisites: []
 ---
 

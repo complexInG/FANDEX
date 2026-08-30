@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-28'
 related:
   - 'svelte/003-ReactivityRunes'
-  - 'typescript/002-TypeScriptOverviewEnvSetup'
+  - 'typescript/003-TypeScriptOverviewEnvSetup'
 prerequisites:
   - 'svelte/002-SvelteKitQuickStart'
 ---

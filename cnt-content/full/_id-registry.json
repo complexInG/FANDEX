@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0.0",
-  "updated_at": "2026-08-28T17:47:28.830Z",
+  "updated_at": "2026-08-30T00:00:00.000Z",
   "next_module_sequence": 67,
   "modules": [
     {
@@ -40,19 +40,10 @@
       "status": "active"
     },
     {
-      "module_id": "M005",
-      "english_short": "english",
-      "sequence": 5,
-      "folder_order": 5,
-      "name": "英语",
-      "allocated_at": "2026-07-30T16:22:43.352Z",
-      "status": "active"
-    },
-    {
       "module_id": "M006",
       "english_short": "html5",
       "sequence": 6,
-      "folder_order": 6,
+      "folder_order": 5,
       "name": "HTML5",
       "allocated_at": "2026-07-30T16:22:43.353Z",
       "status": "active"
@@ -61,7 +52,7 @@
       "module_id": "M007",
       "english_short": "css",
       "sequence": 7,
-      "folder_order": 7,
+      "folder_order": 6,
       "name": "CSS",
       "allocated_at": "2026-07-30T16:22:43.353Z",
       "status": "active"
@@ -70,7 +61,7 @@
       "module_id": "M008",
       "english_short": "javascript",
       "sequence": 8,
-      "folder_order": 8,
+      "folder_order": 7,
       "name": "JavaScript",
       "allocated_at": "2026-07-30T16:22:43.355Z",
       "status": "active"
@@ -79,7 +70,7 @@
       "module_id": "M009",
       "english_short": "typescript",
       "sequence": 9,
-      "folder_order": 9,
+      "folder_order": 8,
       "name": "TypeScript",
       "allocated_at": "2026-07-30T16:22:43.355Z",
       "status": "active"
@@ -88,7 +79,7 @@
       "module_id": "M010",
       "english_short": "vue3",
       "sequence": 10,
-      "folder_order": 10,
+      "folder_order": 9,
       "name": "Vue 3",
       "allocated_at": "2026-07-30T16:22:43.356Z",
       "status": "active"
@@ -97,7 +88,7 @@
       "module_id": "M011",
       "english_short": "react",
       "sequence": 11,
-      "folder_order": 11,
+      "folder_order": 10,
       "name": "React",
       "allocated_at": "2026-07-30T16:22:43.357Z",
       "status": "active"
@@ -106,7 +97,7 @@
       "module_id": "M012",
       "english_short": "svg",
       "sequence": 12,
-      "folder_order": 12,
+      "folder_order": 11,
       "name": "SVG",
       "allocated_at": "2026-07-30T16:22:43.357Z",
       "status": "active"
@@ -115,7 +106,7 @@
       "module_id": "M013",
       "english_short": "java",
       "sequence": 13,
-      "folder_order": 13,
+      "folder_order": 12,
       "name": "Java",
       "allocated_at": "2026-07-30T16:22:43.357Z",
       "status": "active"
@@ -124,7 +115,7 @@
       "module_id": "M014",
       "english_short": "kotlin",
       "sequence": 14,
-      "folder_order": 14,
+      "folder_order": 13,
       "name": "Kotlin",
       "allocated_at": "2026-07-30T16:22:43.358Z",
       "status": "active"
@@ -133,7 +124,7 @@
       "module_id": "M015",
       "english_short": "csharp",
       "sequence": 15,
-      "folder_order": 15,
+      "folder_order": 14,
       "name": "C#",
       "allocated_at": "2026-07-30T16:22:43.359Z",
       "status": "active"
@@ -142,34 +133,16 @@
       "module_id": "M016",
       "english_short": "go",
       "sequence": 16,
-      "folder_order": 16,
+      "folder_order": 15,
       "name": "Go",
       "allocated_at": "2026-07-30T16:22:43.360Z",
-      "status": "active"
-    },
-    {
-      "module_id": "M017",
-      "english_short": "lua",
-      "sequence": 17,
-      "folder_order": 17,
-      "name": "Lua",
-      "allocated_at": "2026-07-30T16:22:43.362Z",
-      "status": "active"
-    },
-    {
-      "module_id": "M018",
-      "english_short": "harmonyos",
-      "sequence": 18,
-      "folder_order": 18,
-      "name": "HarmonyOS",
-      "allocated_at": "2026-07-30T16:22:43.362Z",
       "status": "active"
     },
     {
       "module_id": "M019",
       "english_short": "sql",
       "sequence": 19,
-      "folder_order": 19,
+      "folder_order": 16,
       "name": "SQL",
       "allocated_at": "2026-07-30T16:22:43.363Z",
       "status": "active"
@@ -178,7 +151,7 @@
       "module_id": "M020",
       "english_short": "mysql",
       "sequence": 20,
-      "folder_order": 20,
+      "folder_order": 17,
       "name": "MySQL",
       "allocated_at": "2026-07-30T16:22:43.366Z",
       "status": "active"
@@ -187,7 +160,7 @@
       "module_id": "M021",
       "english_short": "postgresql",
       "sequence": 21,
-      "folder_order": 21,
+      "folder_order": 18,
       "name": "PostgreSQL",
       "allocated_at": "2026-07-30T16:22:43.368Z",
       "status": "active"
@@ -196,7 +169,7 @@
       "module_id": "M022",
       "english_short": "redis",
       "sequence": 22,
-      "folder_order": 22,
+      "folder_order": 19,
       "name": "Redis",
       "allocated_at": "2026-07-30T16:22:43.369Z",
       "status": "active"
@@ -205,7 +178,7 @@
       "module_id": "M023",
       "english_short": "algorithm",
       "sequence": 23,
-      "folder_order": 23,
+      "folder_order": 20,
       "name": "算法与数据结构",
       "allocated_at": "2026-07-30T16:22:43.370Z",
       "status": "active"
@@ -214,7 +187,7 @@
       "module_id": "M024",
       "english_short": "cs-fundamentals",
       "sequence": 24,
-      "folder_order": 24,
+      "folder_order": 21,
       "name": "计算机基础",
       "allocated_at": "2026-07-30T16:22:43.371Z",
       "status": "active"
@@ -223,7 +196,7 @@
       "module_id": "M025",
       "english_short": "c",
       "sequence": 25,
-      "folder_order": 25,
+      "folder_order": 22,
       "name": "C",
       "allocated_at": "2026-07-30T16:22:43.372Z",
       "status": "active"
@@ -232,52 +205,16 @@
       "module_id": "M026",
       "english_short": "cpp",
       "sequence": 26,
-      "folder_order": 26,
+      "folder_order": 23,
       "name": "C++",
       "allocated_at": "2026-07-30T16:22:43.373Z",
-      "status": "active"
-    },
-    {
-      "module_id": "M027",
-      "english_short": "calculus",
-      "sequence": 27,
-      "folder_order": 27,
-      "name": "高等数学",
-      "allocated_at": "2026-07-30T16:22:43.375Z",
-      "status": "active"
-    },
-    {
-      "module_id": "M028",
-      "english_short": "discrete-math",
-      "sequence": 28,
-      "folder_order": 28,
-      "name": "离散数学",
-      "allocated_at": "2026-07-30T16:22:43.375Z",
-      "status": "active"
-    },
-    {
-      "module_id": "M029",
-      "english_short": "linear-algebra",
-      "sequence": 29,
-      "folder_order": 29,
-      "name": "线性代数",
-      "allocated_at": "2026-07-30T16:22:43.375Z",
-      "status": "active"
-    },
-    {
-      "module_id": "M030",
-      "english_short": "probability-statistics",
-      "sequence": 30,
-      "folder_order": 30,
-      "name": "概率论与数理统计",
-      "allocated_at": "2026-07-30T16:22:43.376Z",
       "status": "active"
     },
     {
       "module_id": "M031",
       "english_short": "devops",
       "sequence": 31,
-      "folder_order": 31,
+      "folder_order": 24,
       "name": "运维",
       "allocated_at": "2026-07-30T16:22:43.379Z",
       "status": "active"
@@ -286,7 +223,7 @@
       "module_id": "M032",
       "english_short": "networking",
       "sequence": 32,
-      "folder_order": 32,
+      "folder_order": 25,
       "name": "Networking",
       "allocated_at": "2026-07-30T16:22:43.380Z",
       "status": "active"
@@ -295,7 +232,7 @@
       "module_id": "M033",
       "english_short": "cybersecurity",
       "sequence": 33,
-      "folder_order": 33,
+      "folder_order": 26,
       "name": "网络安全",
       "allocated_at": "2026-07-30T16:22:43.381Z",
       "status": "active"
@@ -304,25 +241,16 @@
       "module_id": "M034",
       "english_short": "cloud-computing",
       "sequence": 34,
-      "folder_order": 34,
+      "folder_order": 27,
       "name": "云计算",
       "allocated_at": "2026-07-30T16:22:43.382Z",
-      "status": "active"
-    },
-    {
-      "module_id": "M035",
-      "english_short": "iot",
-      "sequence": 35,
-      "folder_order": 35,
-      "name": "物联网",
-      "allocated_at": "2026-07-30T16:22:43.383Z",
       "status": "active"
     },
     {
       "module_id": "M036",
       "english_short": "software-testing",
       "sequence": 36,
-      "folder_order": 36,
+      "folder_order": 28,
       "name": "软件测试",
       "allocated_at": "2026-07-30T16:22:43.383Z",
       "status": "active"
@@ -331,7 +259,7 @@
       "module_id": "M037",
       "english_short": "software-engineering",
       "sequence": 37,
-      "folder_order": 37,
+      "folder_order": 29,
       "name": "软件工程",
       "allocated_at": "2026-07-30T16:22:43.384Z",
       "status": "active"
@@ -340,7 +268,7 @@
       "module_id": "M038",
       "english_short": "software-architecture",
       "sequence": 38,
-      "folder_order": 38,
+      "folder_order": 30,
       "name": "软件架构",
       "allocated_at": "2026-07-30T16:22:43.384Z",
       "status": "active"
@@ -349,7 +277,7 @@
       "module_id": "M039",
       "english_short": "engineering-practices",
       "sequence": 39,
-      "folder_order": 39,
+      "folder_order": 31,
       "name": "工程实践",
       "allocated_at": "2026-07-30T16:22:43.384Z",
       "status": "active"
@@ -358,7 +286,7 @@
       "module_id": "M040",
       "english_short": "python",
       "sequence": 40,
-      "folder_order": 40,
+      "folder_order": 32,
       "name": "Python",
       "allocated_at": "2026-07-30T16:22:43.385Z",
       "status": "active"
@@ -487,7 +415,7 @@
       "module_id": "M053",
       "english_short": "rust",
       "sequence": 53,
-      "folder_order": 41,
+      "folder_order": 33,
       "name": "Rust",
       "allocated_at": "2026-08-01T09:42:09.781Z",
       "status": "active"
@@ -496,7 +424,7 @@
       "module_id": "M054",
       "english_short": "shell",
       "sequence": 54,
-      "folder_order": 42,
+      "folder_order": 34,
       "name": "Shell",
       "allocated_at": "2026-08-01T09:42:10.119Z",
       "status": "active"
@@ -505,7 +433,7 @@
       "module_id": "M055",
       "english_short": "astro",
       "sequence": 55,
-      "folder_order": 43,
+      "folder_order": 35,
       "name": "Astro",
       "allocated_at": "2026-08-01T09:42:10.473Z",
       "status": "active"
@@ -514,7 +442,7 @@
       "module_id": "M056",
       "english_short": "vite",
       "sequence": 56,
-      "folder_order": 44,
+      "folder_order": 36,
       "name": "Vite",
       "allocated_at": "2026-08-01T09:42:10.832Z",
       "status": "active"
@@ -523,7 +451,7 @@
       "module_id": "M057",
       "english_short": "pnpm-monorepo",
       "sequence": 57,
-      "folder_order": 45,
+      "folder_order": 37,
       "name": "pnpm与Monorepo",
       "allocated_at": "2026-08-01T09:42:11.218Z",
       "status": "active"
@@ -532,7 +460,7 @@
       "module_id": "M058",
       "english_short": "tailwind",
       "sequence": 58,
-      "folder_order": 46,
+      "folder_order": 38,
       "name": "Tailwind CSS",
       "allocated_at": "2026-08-01T09:42:16.405Z",
       "status": "active"
@@ -541,7 +469,7 @@
       "module_id": "M059",
       "english_short": "mongodb",
       "sequence": 59,
-      "folder_order": 47,
+      "folder_order": 39,
       "name": "MongoDB",
       "allocated_at": "2026-08-03T04:39:01Z",
       "status": "active"
@@ -550,7 +478,7 @@
       "module_id": "M060",
       "english_short": "nextjs",
       "sequence": 60,
-      "folder_order": 48,
+      "folder_order": 40,
       "name": "Next.js",
       "allocated_at": "2026-08-03T04:39:01Z",
       "status": "active"
@@ -559,7 +487,7 @@
       "module_id": "M061",
       "english_short": "nestjs",
       "sequence": 61,
-      "folder_order": 49,
+      "folder_order": 41,
       "name": "NestJS",
       "allocated_at": "2026-08-03T04:39:01Z",
       "status": "active"
@@ -568,7 +496,7 @@
       "module_id": "M062",
       "english_short": "deno",
       "sequence": 62,
-      "folder_order": 50,
+      "folder_order": 42,
       "name": "Deno",
       "allocated_at": "2026-08-03T04:39:01Z",
       "status": "active"
@@ -577,7 +505,7 @@
       "module_id": "M063",
       "english_short": "bun",
       "sequence": 63,
-      "folder_order": 51,
+      "folder_order": 43,
       "name": "Bun",
       "allocated_at": "2026-08-03T04:39:01Z",
       "status": "active"
@@ -586,7 +514,7 @@
       "module_id": "M064",
       "english_short": "svelte",
       "sequence": 64,
-      "folder_order": 52,
+      "folder_order": 44,
       "name": "Svelte",
       "allocated_at": "2026-08-03T04:39:01Z",
       "status": "active"
@@ -595,7 +523,7 @@
       "module_id": "M065",
       "english_short": "angular",
       "sequence": 65,
-      "folder_order": 53,
+      "folder_order": 45,
       "name": "Angular",
       "allocated_at": "2026-08-03T04:39:01Z",
       "status": "active"
@@ -604,7 +532,7 @@
       "module_id": "M066",
       "english_short": "message-queue",
       "sequence": 66,
-      "folder_order": 54,
+      "folder_order": 46,
       "name": "消息队列",
       "allocated_at": "2026-08-03T04:39:01Z",
       "status": "active"

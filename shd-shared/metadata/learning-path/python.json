@@ -11,42 +11,42 @@
         {
           "id": "python-001",
           "title": "Python 概述与环境配置",
-          "doc": "001-PythonOverviewEnvSetup"
+          "doc": "002-PythonOverviewEnvSetup"
         },
         {
           "id": "python-002",
           "title": "Python 描述符协议：属性访问的底层机制与工程实践",
-          "doc": "004-PythonDescriptorProtocol"
+          "doc": "005-PythonDescriptorProtocol"
         },
         {
           "id": "python-003",
           "title": "列表推导式进阶",
-          "doc": "007-ListComprehensionAdvanced"
+          "doc": "008-ListComprehensionAdvanced"
         },
         {
           "id": "python-004",
           "title": "元类",
-          "doc": "010-Metaclass"
+          "doc": "011-Metaclass"
         },
         {
           "id": "python-005",
           "title": "Python与FastAPI",
-          "doc": "013-PythonFastAPI"
+          "doc": "014-PythonFastAPI"
         },
         {
           "id": "python-006",
           "title": "Python与Redis",
-          "doc": "016-PythonRedis"
+          "doc": "017-PythonRedis"
         },
         {
           "id": "python-007",
           "title": "Python与Docker",
-          "doc": "019-PythonDocker"
+          "doc": "020-PythonDocker"
         },
         {
           "id": "python-008",
           "title": "Python与NLP",
-          "doc": "022-PythonAndNLP"
+          "doc": "023-PythonAndNLP"
         }
       ]
     },
@@ -58,42 +58,42 @@
         {
           "id": "python-101",
           "title": "Python与自动化",
-          "doc": "025-PythonAutomationCookbook"
+          "doc": "026-PythonAutomationCookbook"
         },
         {
-          "id": "python-102",
+          "id": "python-101",
           "title": "Python 与配置管理：从环境变量到云原生动态配置的工程实践",
-          "doc": "031-Python"
+          "doc": "032-Python"
         },
         {
           "id": "python-103",
           "title": "Python与CI-CD",
-          "doc": "036-PythonCICD"
+          "doc": "037-PythonCICD"
         },
         {
           "id": "python-104",
           "title": "Python与设计模式",
-          "doc": "042-PythonDesignPattern"
+          "doc": "043-PythonDesignPattern"
         },
         {
           "id": "python-105",
           "title": "并发编程",
-          "doc": "047-ConcurrentProgramming"
+          "doc": "048-ConcurrentProgramming"
         },
         {
           "id": "python-106",
           "title": "推导式与生成器",
-          "doc": "052-ComprehensionGenerator"
+          "doc": "053-ComprehensionGenerator"
         },
         {
           "id": "python-107",
           "title": "弱引用",
-          "doc": "057-WeakReference"
+          "doc": "058-WeakReference"
         },
         {
           "id": "python-108",
           "title": "类型注解与mypy",
-          "doc": "062-TypeAnnotationMypy"
+          "doc": "063-TypeAnnotationMypy"
         }
       ]
     },
@@ -105,42 +105,42 @@
         {
           "id": "python-201",
           "title": "面向对象编程",
-          "doc": "063-OOP"
+          "doc": "064-OOP"
         },
         {
           "id": "python-202",
           "title": "Python 理论知识点",
-          "doc": "068-PythonTheoryKnowledge"
+          "doc": "069-PythonTheoryKnowledge"
         },
         {
           "id": "python-203",
           "title": "Python itertools 迭代工具",
-          "doc": "073-Itertools"
+          "doc": "074-Itertools"
         },
         {
           "id": "python-204",
           "title": "Python sys/os 平台接口",
-          "doc": "078-SysOsPlatform"
+          "doc": "079-SysOsPlatform"
         },
         {
           "id": "python-205",
           "title": "Python 字符串格式化与方法",
-          "doc": "083-StringFormattingMethods"
+          "doc": "084-StringFormattingMethods"
         },
         {
           "id": "python-206",
           "title": "Python ssl 安全套接字",
-          "doc": "088-SslCrypto"
+          "doc": "089-SslCrypto"
         },
         {
           "id": "python-207",
           "title": "Python 字符串与文本处理",
-          "doc": "093-StringText"
+          "doc": "094-StringText"
         },
         {
           "id": "python-208",
           "title": "Python httpx 与 requests",
-          "doc": "098-HttpxRequests"
+          "doc": "099-HttpxRequests"
         }
       ]
     },
@@ -154,28 +154,28 @@
           "title": "GIL 与自由线程",
           "desc": "并发选型与 free-threading",
           "difficulty": "advanced",
-          "doc": "100-GILAndFreeThreading"
+          "doc": "101-GILAndFreeThreading"
         },
         {
           "id": "py-902",
           "title": "C 扩展与 FFI",
           "desc": "ctypes/cffi 与原生调用",
           "difficulty": "advanced",
-          "doc": "101-CExtensionsAndFfi"
+          "doc": "102-CExtensionsAndFfi"
         },
         {
           "id": "py-903",
           "title": "*args、**kwargs 与解包",
           "desc": "可变参数完全指南",
           "difficulty": "beginner",
-          "doc": "027-ArgsKwargsUnpacking"
+          "doc": "028-ArgsKwargsUnpacking"
         },
         {
           "id": "py-904",
           "title": "enumerate 与 zip 详解",
           "desc": "并行遍历组合函数",
           "difficulty": "beginner",
-          "doc": "039-EnumerateZipBuiltinPairs"
+          "doc": "040-EnumerateZipBuiltinPairs"
         }
       ]
     }

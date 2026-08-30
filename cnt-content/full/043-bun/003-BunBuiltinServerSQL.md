@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-03'
 related:
   - 'bun/002-BunQuickStart'
-  - 'sql/001-OverviewStandard'
+  - 'sql/002-OverviewStandard'
 prerequisites:
   - 'bun/002-BunQuickStart'
 ---

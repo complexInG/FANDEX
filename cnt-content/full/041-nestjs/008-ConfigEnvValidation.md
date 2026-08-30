@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-29'
 related:
   - 'nestjs/003-ValidationPipes'
-  - 'typescript/002-TypeScriptOverviewEnvSetup'
+  - 'typescript/003-TypeScriptOverviewEnvSetup'
 prerequisites:
   - 'nestjs/002-ModuleControllerService'
 ---

@@ -11,7 +11,7 @@ related:
   - 'pnpm-monorepo/003-WorkspaceSetup'
   - 'pnpm-monorepo/004-WorkspaceProtocol'
 prerequisites:
-  - 'getting-started/006-PackageManager'
+  - 'getting-started/009-PackageManager'
 ---
 
 

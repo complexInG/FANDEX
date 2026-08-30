@@ -11,7 +11,7 @@ related:
   - 'shell/003-TextProcessingTools'
   - 'shell/001-ShellBasics'
 prerequisites:
-  - 'getting-started/005-CommandLineBasics'
+  - 'getting-started/008-CommandLineBasics'
   - 'shell/001-ShellBasics'
 ---
 

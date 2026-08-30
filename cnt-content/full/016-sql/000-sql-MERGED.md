@@ -568,8 +568,8 @@ WHERE NOT EXISTS (SELECT 1 FROM producer WHERE producer_name = 'ry0');
 - 一条 SQL = 定位（库/表）+ 动作（DDL/DML/DQL）+ 分号结尾。
 - 幂等三件套：`IF NOT EXISTS`、`INSERT IGNORE`、存在性检查。
 - 写操作安全流程：先 `SELECT` 验证 → 再 `UPDATE`/`DELETE` → 永远带 `WHERE`。
-- 环境就绪、三张表就位，下一课 [数据查询基础](sql/003-DataQueryBasics) 系统学习 SELECT；
-  想检验综合能力时直接挑战 [SQL 综合实战：曲库数据库](sql/007-SQLProjectMusicLibrary)。
+- 环境就绪、三张表就位，下一课 [数据查询基础](sql/004-DataQueryBasics) 系统学习 SELECT；
+  想检验综合能力时直接挑战 [SQL 综合实战：曲库数据库](sql/008-SQLProjectMusicLibrary)。
 
 <!-- ============ 文档分隔线：019-sql/003-DataQueryBasics.md ============ -->
 
@@ -3464,7 +3464,7 @@ CREATE TABLE IF NOT EXISTS music (
 SHOW TABLES;
 ```
 
-设计要点回顾（对应 [约束详解](sql/014-Constraint)）：
+设计要点回顾（对应 [约束详解](sql/015-Constraint)）：
 
 - 主表在前、从表在后；建表顺序错了外键会建立失败。
 - `CHECK` 让数据库兜底业务规则（身高区间），MySQL 8.0 起真正生效。
@@ -3683,8 +3683,8 @@ SELECT (SELECT COUNT(*) FROM music) AS src_rows,
 
 - 本项目把 DDL → DML → DQL 三阶段连成闭环，12 道查询覆盖了单表、聚合、连接、子查询与窗口函数预览。
 - 设计层面的收获：主表/从表的建表顺序、双外键从表、`CHECK` 兜底业务规则、软删除字段。
-- 延伸方向：查询性能如何保障？继续学习 [索引](sql/031-Index) 与 [执行计划](sql/032-ExecutionPlan)；
-  想见识面试题风格的综合题库，见 [SQL 实战与面试](sql/012-SQLPracticeInterview)。
+- 延伸方向：查询性能如何保障？继续学习 [索引](sql/032-Index) 与 [执行计划](sql/033-ExecutionPlan)；
+  想见识面试题风格的综合题库，见 [SQL 实战与面试](sql/013-SQLPracticeInterview)。
 
 <!-- ============ 文档分隔线：019-sql/008-WindowFunction.md ============ -->
 

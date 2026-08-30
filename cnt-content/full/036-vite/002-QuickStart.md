@@ -12,7 +12,7 @@ related:
   - 'vite/004-StaticAssets'
   - 'vite/006-DevServerHMR'
 prerequisites:
-  - 'javascript/005-ControlFlow'
+  - 'javascript/006-ControlFlow'
 ---
 
 
