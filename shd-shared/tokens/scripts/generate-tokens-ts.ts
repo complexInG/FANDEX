@@ -9,7 +9,7 @@
  * - 分离浅色/深色主题令牌
  * - 单位转换：rem → px 数字、ms → 数字（适配 React Native 无单位样式）
  * - shadow 复合类型转为 RN shadow 对象
- * - 输出到 app-android/src/styles/tokens.ts
+ * - 输出到 app-Android-new/src/styles/tokens.ts
  *
  * 生成策略：
  * 1. primitive 层：输出嵌套对象，原值转换（rem→数字、ms→数字）
@@ -82,8 +82,8 @@ const TOKENS_DIR = resolve(SCRIPT_DIR, '..');
 const SHARED_DIR = resolve(TOKENS_DIR, '..');
 /** 项目根目录 */
 const PROJECT_ROOT = resolve(SHARED_DIR, '..');
-/** TS 输出路径（app-android/src/styles/tokens.ts） */
-const TS_OUTPUT = join(PROJECT_ROOT, 'app-android', 'src', 'styles', 'tokens.ts');
+/** TS 输出路径（app-Android-new/src/styles/tokens.ts） */
+const TS_OUTPUT = join(PROJECT_ROOT, 'app-Android-new', 'src', 'styles', 'tokens.ts');
 
 /**
  * 读取指定层目录下的所有 JSON 令牌文件

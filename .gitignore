@@ -3,7 +3,7 @@
 # =============================================================================
 # 设计原则：
 # 1. 根 .gitignore 负责共享规则与跨子项目的敏感文件排除
-# 2. 各子项目（app-web/app-desktop/app-android）保留各自的 .gitignore 作为独立构建时的兜底
+# 2. 各子项目（app-web/app-desktop/app-Android-new）保留各自的 .gitignore 作为独立构建时的兜底
 # 3. 敏感文件（私钥/密钥库/本地配置）采用最严格策略，前置排除避免误提交
 # 4. 目录命名遵循英文简写前缀约定：app-（应用）/cnt-（内容）/shd-（共享）/tls-（工具）/thd-（第三方）/dcs-（文档）
 # =============================================================================
@@ -25,10 +25,10 @@ tls-tools/keys/
 tauri-private-key.*
 
 # Android 签名密钥库与本地配置
-app-android/fandex-release.jks
-app-android/*.jks
-app-android/*.keystore
-app-android/local.properties
+app-Android-new/fandex-release.jks
+app-Android-new/*.jks
+app-Android-new/*.keystore
+app-Android-new/local.properties
 
 # 通用密钥与证书文件
 *.pem
@@ -79,10 +79,10 @@ venv/
 
 # Gradle 缓存
 .gradle/
-app-android/.gradle/
+app-Android-new/.gradle/
 
 # Kotlin 编译日志
-app-android/.kotlin/
+app-Android-new/.kotlin/
 
 
 # -----------------------------------------------------------------------------
@@ -96,9 +96,9 @@ build/
 out/
 .output/
 
-# 例外：fandex-app-old（旧版 App 历史归档）的内置离线文档资源目录恰好命名为
+# 例外：app-Android-old（旧版 App 历史归档）的内置离线文档资源目录恰好命名为
 # dist-mobile/，属源码资源而非构建产物，需从上方通用规则中重新包含
-!fandex-app-old/android/app/src/main/assets/dist-mobile/
+!app-Android-old/app/src/main/assets/dist-mobile/
 
 # Rust / Tauri 编译产物
 target/
@@ -107,9 +107,9 @@ app-desktop/src-tauri/target/
 *.rs.bk
 
 # Android 构建产物
-app-android/app/build/
-app-android/build/
-app-android/app/.cxx/
+app-Android-new/app/build/
+app-Android-new/build/
+app-Android-new/app/.cxx/
 *.apk
 *.aab
 *.ap_
