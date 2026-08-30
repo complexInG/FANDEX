@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,7 +65,9 @@ object CategoryColor {
  * 全应用顶栏与页面工具区的裸 IconButton 统一替换为此组件
  * （ModalBottomSheet 内部按钮与 FAB 除外）
  *
- * @param tint 图标着色，传 Color.Unspecified 时跟随 LocalContentColor
+ * @param tint 图标着色，默认取主题 onSurface 语义色（深浅色自动跟随）；
+ *             不再落回 LocalContentColor——本组件的自绘 Box 容器不提供
+ *             contentColor，未指定时 Icon 会退化为默认黑色，深色模式下不可读
  */
 @Composable
 fun FdxIconButton(
@@ -71,7 +75,7 @@ fun FdxIconButton(
     contentDescription: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    tint: Color = Color.Unspecified,
+    tint: Color = MaterialTheme.colorScheme.onSurface,
     iconSize: Dp = 20.dp
 ) {
     val extendedColors = LocalExtendedColors.current
@@ -242,6 +246,78 @@ fun FilterChipRow(
                     color = fgColor,
                     fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
                 )
+            }
+        }
+    }
+}
+
+/**
+ * 页面级统计横幅（Hero Stats Bar）
+ *
+ * 语法速览 / 学习路线等功能页的头部统计带，与首页同等级的视觉锚点：
+ * 左侧 3dp 品牌竖条 + 深底卡面，内部横向排布多组「大数字 + 小标签」，
+ * 数字使用等宽字体强调量感，标签使用次级前景色
+ *
+ * @param stats 统计项列表，Pair(数值, 标签)
+ */
+@Composable
+fun StatsBar(
+    stats: List<Pair<String, String>>,
+    modifier: Modifier = Modifier,
+    accent: Color = MaterialTheme.colorScheme.primary
+) {
+    val extendedColors = LocalExtendedColors.current
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(4.dp))
+            .background(extendedColors.bgElevated)
+            .border(1.dp, extendedColors.borderDefault, RoundedCornerShape(4.dp))
+            .heightIn(min = 64.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 左侧品牌竖条（几何提示，与全站 SectionHeader 同语言）
+        Box(
+            modifier = Modifier
+                .width(3.dp)
+                .height(36.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(accent)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = 12.dp, bottom = 12.dp, end = 12.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            stats.forEachIndexed { index, (value, label) ->
+                if (index > 0) {
+                    // 组间分隔刻度线（1dp 竖线，非点状装饰）
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(28.dp)
+                            .background(extendedColors.borderSubtle)
+                    )
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = value,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace
+                    )
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = extendedColors.fgTertiary
+                    )
+                }
             }
         }
     }

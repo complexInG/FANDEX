@@ -264,7 +264,12 @@ private fun SyntaxSearchField(
             interactionSource = interaction,
             placeholder = { Text("搜索语法点...") },
             leadingIcon = {
-                Icon(Icons.Outlined.Search, contentDescription = null)
+                // 显式着色：避免 LocalContentColor 默认黑导致深色模式下不可见
+                Icon(
+                    Icons.Outlined.Search,
+                    contentDescription = null,
+                    tint = extendedColors.fgTertiary
+                )
             },
             singleLine = true,
             shape = RoundedCornerShape(4.dp),

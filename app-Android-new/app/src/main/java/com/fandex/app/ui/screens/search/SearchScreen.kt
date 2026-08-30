@@ -110,7 +110,12 @@ fun SearchScreen(
                     .padding(16.dp),
                 placeholder = { Text("输入关键词...") },
                 leadingIcon = {
-                    Icon(Icons.Outlined.Search, contentDescription = null)
+                    // 显式着色：避免 LocalContentColor 默认黑导致深色模式下不可见
+                    Icon(
+                        Icons.Outlined.Search,
+                        contentDescription = null,
+                        tint = extendedColors.fgTertiary
+                    )
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
