@@ -46,6 +46,7 @@ import com.fandex.app.ui.common.tweenNormal
 import com.fandex.app.ui.components.CategoryColor
 import com.fandex.app.ui.components.FilterChip
 import com.fandex.app.ui.components.ModuleCard
+import com.fandex.app.ui.components.SectionHeader
 import com.fandex.app.ui.components.ThemeQuickToggle
 import com.fandex.app.ui.components.TopDock
 import com.fandex.app.ui.theme.LocalExtendedColors
@@ -253,7 +254,7 @@ private fun RecentDocsSection(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         // 区块标题
         SectionHeader(
-            label = "最近浏览",
+            title = "最近浏览",
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fandexEntrance(index = 1, visible = hasEntered)
@@ -327,9 +328,9 @@ private fun CategorySection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             SectionHeader(
-                label = category.label,
+                title = category.label,
                 color = categoryColor,
-                trailing = "${category.modules.size}",
+                count = category.modules.size,
                 modifier = Modifier.fandexEntrance(index = entranceBase, visible = hasEntered)
             )
         }
@@ -351,51 +352,6 @@ private fun CategorySection(
                     )
                 )
             }
-        }
-    }
-}
-
-/**
- * 区块标题（竖条 + 标签 + 可选计数）
- */
-@Composable
-private fun SectionHeader(
-    label: String,
-    color: Color = MaterialTheme.colorScheme.primary,
-    trailing: String? = null,
-    modifier: Modifier = Modifier
-) {
-    val extendedColors = LocalExtendedColors.current
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .width(3.dp)
-                .height(14.dp)
-                .clip(RoundedCornerShape(2.dp))
-                .background(color)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold
-        )
-        if (trailing != null) {
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = trailing,
-                style = MaterialTheme.typography.labelSmall,
-                color = extendedColors.fgTertiary,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(extendedColors.bgElevated)
-                    .border(1.dp, extendedColors.borderSubtle, RoundedCornerShape(4.dp))
-                    .padding(horizontal = 8.dp, vertical = 1.dp)
-            )
         }
     }
 }
