@@ -21,6 +21,13 @@ on:
   # 推送到 main 分支时自动触发
   push:
     branches: [main]
+    paths:
+      - 'app-web/**'
+      - 'cnt-content/**'
+      - 'shd-shared/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy.yml'
   # 允许从 Actions 面板手动触发
   workflow_dispatch:
 
@@ -42,6 +49,7 @@ jobs:
   build:
     name: Build web
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -89,6 +97,7 @@ jobs:
     name: Deploy to Pages
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

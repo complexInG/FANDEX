@@ -1,49 +1,26 @@
 # =============================================================================
-# FANDEX Android 双端自动构建与发布工作流
+# FANDEX Android 双端发布工作流
 # =============================================================================
-# 覆盖两个 Android 工程：
-#   - app-Android-new  （新技术栈主线，applicationId com.fandexpp.fandex）
-#   - app-Android-old  （旧技术栈归档线，applicationId com.fandex.app）
+# 触发时机：
+#   1. push v* 标签 → 自动构建并发布 GitHub Release
+#   2. 手动触发（release=true） → 构建并发布指定标签的 Release
 #
-# 触发条件：
-#   1. push 到 main（任一 Android 工程 / 内容源 / 本工作流路径变更）
-#      -> 双端构建校验 + 上传 APK 构建产物（不发布）
-#   2. push v* 标签 或 手动触发（release 输入为 true）
-#      -> 双端构建签名 APK 并创建 GitHub Release 附带两个安装包
+# 职责：双端并行构建签名 APK，重命名后创建 GitHub Release 并附带安装包。
 #
-# 构建流程（双端并行 matrix）：
-#   内容同步脚本 -> JDK 21 -> Gradle assembleRelease
-#   - new:  scripts/generate-content.mjs        （docs / 元数据 / 语法数据）
-#   - old:  scripts/generate-legacy-content.mjs （dist-mobile 文档 + 索引，
-#             内容源与 cnt-content 完全同源，构建前重跑保证一致）
-#
-# 签名策略（双端一致的个人分发策略）：
+# 签名策略：
 #   未注入正式 keystore 时回退 debug 签名，CI 可直接出包；
 #   debug keystore 在 runner 上临时生成，仅用于分发安装，不做覆盖升级。
-#
-# 发布：
-#   - FANDEX-${tag}.apk          （新技术栈主线）
-#   - FANDEX-Legacy-${tag}.apk   （旧技术栈归档线）
-#   两个 APK applicationId 不同，可并存安装；
-#   Release 说明由 CHANGELOG.md 对应版本段落生成（无匹配段落时回退默认文案）。
 # =============================================================================
 
 name: Android Build & Release
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'app-Android-new/**'
-      - 'app-Android-old/**'
-      - 'cnt-content/**'
-      - 'shd-shared/**'
-      - '.github/workflows/android-release.yml'
     tags: ['v*']
   workflow_dispatch:
     inputs:
       release:
-        description: '构建并发布 Release（true 时需要带 v 前缀标签）'
+        description: '构建并发布 Release（true 时需要当前提交有对应 v 前缀标签）'
         required: false
         default: 'false'
 
@@ -51,13 +28,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: android-${{ github.ref }}
-  cancel-in-progress: true
+  group: android-release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
     name: 构建 ${{ matrix.label }} APK
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -79,7 +57,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 配置 JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
@@ -104,13 +82,14 @@ jobs:
         with:
           name: ${{ matrix.artifact }}
           path: ${{ matrix.apk }}
-          retention-days: 14
+          retention-days: 90
 
   release:
     name: 发布 GitHub Release
     needs: build
     if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.release == 'true')
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: 检出仓库（读取 CHANGELOG 生成发布说明）
         uses: actions/checkout@v4
@@ -167,3 +146,4 @@ jobs:
           files: |
             apk/FANDEX-${{ github.ref_name }}.apk
             apk/FANDEX-Legacy-${{ github.ref_name }}.apk
+          fail_on_unmatched_files: true
