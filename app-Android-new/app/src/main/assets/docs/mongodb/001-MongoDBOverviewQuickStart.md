@@ -10,9 +10,9 @@ updated: '2026-08-03'
 related:
   - 'mongodb/002-CRUDOperations'
   - 'mongodb/005-SchemaDesignEnterprise'
-  - 'sql/001-OverviewStandard'
+  - 'sql/002-OverviewStandard'
 prerequisites:
-  - 'sql/001-OverviewStandard'
+  - 'sql/002-OverviewStandard'
 ---
 
 ## 0. 五分钟跑起 MongoDB（先读这里）

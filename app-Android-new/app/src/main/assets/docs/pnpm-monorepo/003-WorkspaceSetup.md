@@ -12,7 +12,7 @@ related:
   - 'pnpm-monorepo/004-WorkspaceProtocol'
   - 'pnpm-monorepo/005-CatalogManagement'
 prerequisites:
-  - 'getting-started/006-PackageManager'
+  - 'getting-started/009-PackageManager'
   - 'pnpm-monorepo/002-PnpmCore'
 ---
 

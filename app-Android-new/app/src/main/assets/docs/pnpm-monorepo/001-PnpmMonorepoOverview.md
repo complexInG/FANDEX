@@ -11,7 +11,7 @@ related:
   - 'vite/001-ViteOverview'
   - 'devops/005-CICDPipeline'
 prerequisites:
-  - 'getting-started/006-PackageManager'
+  - 'getting-started/009-PackageManager'
 ---
 
 

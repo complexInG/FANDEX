@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-29'
 related:
   - 'angular/005-RoutingForms'
-  - 'typescript/002-TypeScriptOverviewEnvSetup'
+  - 'typescript/003-TypeScriptOverviewEnvSetup'
 prerequisites:
   - 'angular/005-RoutingForms'
 ---

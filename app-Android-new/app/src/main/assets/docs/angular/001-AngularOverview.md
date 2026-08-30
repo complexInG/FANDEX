@@ -10,9 +10,9 @@ updated: '2026-08-03'
 related:
   - 'angular/002-QuickStartComponentTemplate'
   - 'angular/003-SignalsInputsOutputs'
-  - 'typescript/007-BasicTypeSystem'
+  - 'typescript/008-BasicTypeSystem'
 prerequisites:
-  - 'typescript/007-BasicTypeSystem'
+  - 'typescript/008-BasicTypeSystem'
 ---
 
 ## 0. 五分钟创建第一个应用（先读这里）

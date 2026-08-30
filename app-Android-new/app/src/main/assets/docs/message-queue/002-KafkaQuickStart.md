@@ -10,7 +10,7 @@ updated: '2026-08-03'
 related:
   - 'message-queue/001-MessageQueueOverview'
   - 'message-queue/004-ReliableMessagingPatterns'
-  - 'go/028-GoMessageQueue'
+  - 'go/029-GoMessageQueue'
 prerequisites:
   - 'message-queue/001-MessageQueueOverview'
 ---

@@ -10,9 +10,9 @@ updated: '2026-08-03'
 related:
   - 'deno/002-DenoQuickStart'
   - 'deno/003-DenoPermissionsSecurity'
-  - 'typescript/002-TypeScriptOverviewEnvSetup'
+  - 'typescript/003-TypeScriptOverviewEnvSetup'
 prerequisites:
-  - 'javascript/001-JavaScriptOverviewRuntimeEnv'
+  - 'javascript/002-JavaScriptOverviewRuntimeEnv'
 ---
 
 ## 0. 两分钟运行第一个脚本（先读这里）

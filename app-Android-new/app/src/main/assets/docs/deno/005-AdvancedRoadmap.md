@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-29'
 related:
   - 'deno/004-DenoWebFrameworkDeploy'
-  - 'typescript/002-TypeScriptOverviewEnvSetup'
+  - 'typescript/003-TypeScriptOverviewEnvSetup'
 prerequisites:
   - 'deno/004-DenoWebFrameworkDeploy'
 ---

@@ -10,7 +10,7 @@ updated: '2026-08-03'
 related:
   - 'mongodb/002-CRUDOperations'
   - 'mongodb/004-IndexPerformance'
-  - 'sql/003-DataQueryBasics'
+  - 'sql/004-DataQueryBasics'
 prerequisites:
   - 'mongodb/002-CRUDOperations'
 ---

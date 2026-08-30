@@ -9,9 +9,9 @@ author: fanquanpp
 updated: '2026-08-02'
 related:
   - 'tailwind/003-UtilityCore'
-  - 'css/007-CSS3SelectorSystem'
+  - 'css/008-CSS3SelectorSystem'
 prerequisites:
-  - 'css/007-CSS3SelectorSystem'
+  - 'css/008-CSS3SelectorSystem'
 ---
 
 

@@ -9,7 +9,7 @@ author: fanquanpp
 updated: '2026-08-29'
 related:
   - 'bun/003-BunBuiltinServerSQL'
-  - 'javascript/001-JavaScriptOverviewRuntimeEnv'
+  - 'javascript/002-JavaScriptOverviewRuntimeEnv'
 prerequisites:
   - 'bun/003-BunBuiltinServerSQL'
 ---

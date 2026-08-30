@@ -10,9 +10,9 @@ updated: '2026-08-03'
 related:
   - 'bun/002-BunQuickStart'
   - 'bun/003-BunBuiltinServerSQL'
-  - 'javascript/001-JavaScriptOverviewRuntimeEnv'
+  - 'javascript/002-JavaScriptOverviewRuntimeEnv'
 prerequisites:
-  - 'javascript/001-JavaScriptOverviewRuntimeEnv'
+  - 'javascript/002-JavaScriptOverviewRuntimeEnv'
 ---
 
 ## 0. 两分钟运行第一个脚本（先读这里）

@@ -10,7 +10,7 @@ updated: '2026-08-03'
 related:
   - 'nestjs/001-NestJSOverview'
   - 'nestjs/003-ValidationPipes'
-  - 'typescript/008-InterfaceTypeAlias'
+  - 'typescript/009-InterfaceTypeAlias'
 prerequisites:
   - 'nestjs/001-NestJSOverview'
 ---
