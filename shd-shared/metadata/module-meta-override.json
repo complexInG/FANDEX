@@ -28,13 +28,6 @@
     "description": "代码协作与CI/CD"
   },
   {
-    "english_short": "english",
-    "name": "英语",
-    "icon": "En",
-    "color": "#4f5bd5",
-    "description": "应试英语与专业英语"
-  },
-  {
     "english_short": "html5",
     "name": "HTML5",
     "icon": "H5",
@@ -112,20 +105,6 @@
     "description": "云原生系统编程"
   },
   {
-    "english_short": "lua",
-    "name": "Lua",
-    "icon": "Lua",
-    "color": "#e17055",
-    "description": "嵌入式脚本引擎"
-  },
-  {
-    "english_short": "harmonyos",
-    "name": "HarmonyOS",
-    "icon": "鸿蒙",
-    "color": "#e17055",
-    "description": "HarmonyOS应用开发"
-  },
-  {
     "english_short": "sql",
     "name": "SQL",
     "icon": "SQL",
@@ -182,34 +161,6 @@
     "description": "高性能与泛型编程"
   },
   {
-    "english_short": "calculus",
-    "name": "高等数学",
-    "icon": "高数",
-    "color": "#6c5ce7",
-    "description": "微积分与数学分析"
-  },
-  {
-    "english_short": "discrete-math",
-    "name": "离散数学",
-    "icon": "离散",
-    "color": "#6c5ce7",
-    "description": "组合·图论·代数系统"
-  },
-  {
-    "english_short": "linear-algebra",
-    "name": "线性代数",
-    "icon": "线代",
-    "color": "#6c5ce7",
-    "description": "矩阵·向量空间·特征值"
-  },
-  {
-    "english_short": "probability-statistics",
-    "name": "概率论与数理统计",
-    "icon": "概率",
-    "color": "#6c5ce7",
-    "description": "概率模型与统计推断"
-  },
-  {
     "english_short": "devops",
     "name": "运维",
     "icon": "运维",
@@ -236,13 +187,6 @@
     "icon": "云",
     "color": "#e05a2b",
     "description": "云架构与容器编排"
-  },
-  {
-    "english_short": "iot",
-    "name": "物联网",
-    "icon": "物联",
-    "color": "#e05a2b",
-    "description": "嵌入式与边缘计算"
   },
   {
     "english_short": "software-testing",

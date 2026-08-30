@@ -1,5 +1,5 @@
 {
-  "version": "4.2.0",
+  "version": "4.3.0",
   "categoryLabels": {
     "tools": "工具链",
     "frontend": "前端技术",
@@ -120,16 +120,6 @@
       ]
     },
     {
-      "id": "english",
-      "title": "英语",
-      "icon": "En",
-      "description": "应试英语与专业英语",
-      "categories": [
-        "tools"
-      ],
-      "folder_order": 5
-    },
-    {
       "id": "html5",
       "title": "HTML5",
       "icon": "H5",
@@ -137,7 +127,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 6,
+      "folder_order": 5,
       "updatePriority": true,
       "updateNote": "重点更新模块",
       "officialDocs": [
@@ -166,7 +156,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 7,
+      "folder_order": 6,
       "updatePriority": true,
       "updateNote": "重点更新模块",
       "officialDocs": [
@@ -195,7 +185,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 8,
+      "folder_order": 7,
       "updatePriority": true,
       "updateNote": "重点更新模块",
       "officialDocs": [
@@ -224,7 +214,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 9,
+      "folder_order": 8,
       "updatePriority": true,
       "updateNote": "重点更新模块",
       "officialDocs": [
@@ -253,7 +243,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 10,
+      "folder_order": 9,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -280,7 +270,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 11,
+      "folder_order": 10,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -307,7 +297,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 12,
+      "folder_order": 11,
       "officialDocs": [
         {
           "label": "MDN 文档",
@@ -334,7 +324,7 @@
       "categories": [
         "backend"
       ],
-      "folder_order": 13,
+      "folder_order": 12,
       "updatePriority": true,
       "updateNote": "重点更新模块",
       "officialDocs": [
@@ -368,7 +358,7 @@
       "categories": [
         "backend"
       ],
-      "folder_order": 14,
+      "folder_order": 13,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -400,7 +390,7 @@
       "categories": [
         "backend"
       ],
-      "folder_order": 15,
+      "folder_order": 14,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -433,7 +423,7 @@
         "backend",
         "cloud"
       ],
-      "folder_order": 16,
+      "folder_order": 15,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -458,70 +448,6 @@
       ]
     },
     {
-      "id": "lua",
-      "title": "Lua",
-      "icon": "Lua",
-      "description": "嵌入式脚本引擎",
-      "categories": [
-        "backend"
-      ],
-      "folder_order": 17,
-      "officialDocs": [
-        {
-          "label": "官方手册",
-          "url": "https://www.lua.org/manual/5.4/",
-          "type": "docs"
-        },
-        {
-          "label": "参考手册",
-          "url": "https://www.lua.org/manual/5.4/manual.html",
-          "type": "api"
-        },
-        {
-          "label": "Lua 站点",
-          "url": "https://www.lua.org/",
-          "type": "docs"
-        },
-        {
-          "label": "Programming in Lua",
-          "url": "https://www.lua.org/pil/",
-          "type": "docs"
-        }
-      ]
-    },
-    {
-      "id": "harmonyos",
-      "title": "HarmonyOS",
-      "icon": "鸿蒙",
-      "description": "HarmonyOS应用开发",
-      "categories": [
-        "backend"
-      ],
-      "folder_order": 18,
-      "officialDocs": [
-        {
-          "label": "官方文档",
-          "url": "https://developer.huawei.com/consumer/cn/doc/",
-          "type": "docs"
-        },
-        {
-          "label": "API 参考",
-          "url": "https://developer.huawei.com/consumer/cn/doc/harmonyos-references/",
-          "type": "api"
-        },
-        {
-          "label": "开发指南",
-          "url": "https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/",
-          "type": "docs"
-        },
-        {
-          "label": "ArkTS 语言",
-          "url": "https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-getting-started",
-          "type": "spec"
-        }
-      ]
-    },
-    {
       "id": "sql",
       "title": "SQL",
       "icon": "SQL",
@@ -529,7 +455,7 @@
       "categories": [
         "database"
       ],
-      "folder_order": 19,
+      "folder_order": 16,
       "officialDocs": [
         {
           "label": "ISO 标准索引",
@@ -556,7 +482,7 @@
       "categories": [
         "database"
       ],
-      "folder_order": 20,
+      "folder_order": 17,
       "updatePriority": true,
       "updateNote": "重点更新模块",
       "officialDocs": [
@@ -585,7 +511,7 @@
       "categories": [
         "database"
       ],
-      "folder_order": 21,
+      "folder_order": 18,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -613,7 +539,7 @@
         "database",
         "cloud"
       ],
-      "folder_order": 22,
+      "folder_order": 19,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -640,7 +566,7 @@
       "categories": [
         "cs"
       ],
-      "folder_order": 23
+      "folder_order": 20
     },
     {
       "id": "cs-fundamentals",
@@ -650,7 +576,7 @@
       "categories": [
         "cs"
       ],
-      "folder_order": 24
+      "folder_order": 21
     },
     {
       "id": "c",
@@ -660,7 +586,7 @@
       "categories": [
         "cs"
       ],
-      "folder_order": 25,
+      "folder_order": 22,
       "updatePriority": true,
       "updateNote": "重点更新模块",
       "officialDocs": [
@@ -689,7 +615,7 @@
       "categories": [
         "cs"
       ],
-      "folder_order": 26,
+      "folder_order": 23,
       "updatePriority": true,
       "updateNote": "重点更新模块",
       "officialDocs": [
@@ -716,46 +642,6 @@
       ]
     },
     {
-      "id": "calculus",
-      "title": "高等数学",
-      "icon": "高数",
-      "description": "微积分与数学分析",
-      "categories": [
-        "math"
-      ],
-      "folder_order": 27
-    },
-    {
-      "id": "discrete-math",
-      "title": "离散数学",
-      "icon": "离散",
-      "description": "组合·图论·代数系统",
-      "categories": [
-        "math"
-      ],
-      "folder_order": 28
-    },
-    {
-      "id": "linear-algebra",
-      "title": "线性代数",
-      "icon": "线代",
-      "description": "矩阵·向量空间·特征值",
-      "categories": [
-        "math"
-      ],
-      "folder_order": 29
-    },
-    {
-      "id": "probability-statistics",
-      "title": "概率论与数理统计",
-      "icon": "概率",
-      "description": "概率模型与统计推断",
-      "categories": [
-        "math"
-      ],
-      "folder_order": 30
-    },
-    {
       "id": "devops",
       "title": "运维",
       "icon": "运维",
@@ -763,7 +649,7 @@
       "categories": [
         "cloud"
       ],
-      "folder_order": 31
+      "folder_order": 24
     },
     {
       "id": "networking",
@@ -774,7 +660,7 @@
         "cloud",
         "cs"
       ],
-      "folder_order": 32,
+      "folder_order": 25,
       "officialDocs": [
         {
           "label": "RFC 编辑器",
@@ -801,7 +687,7 @@
       "categories": [
         "cloud"
       ],
-      "folder_order": 33
+      "folder_order": 26
     },
     {
       "id": "cloud-computing",
@@ -811,17 +697,7 @@
       "categories": [
         "cloud"
       ],
-      "folder_order": 34
-    },
-    {
-      "id": "iot",
-      "title": "物联网",
-      "icon": "物联",
-      "description": "嵌入式与边缘计算",
-      "categories": [
-        "cloud"
-      ],
-      "folder_order": 35
+      "folder_order": 27
     },
     {
       "id": "software-testing",
@@ -831,7 +707,7 @@
       "categories": [
         "cloud"
       ],
-      "folder_order": 36
+      "folder_order": 28
     },
     {
       "id": "software-engineering",
@@ -841,7 +717,7 @@
       "categories": [
         "cloud"
       ],
-      "folder_order": 37
+      "folder_order": 29
     },
     {
       "id": "software-architecture",
@@ -851,7 +727,7 @@
       "categories": [
         "cloud"
       ],
-      "folder_order": 38
+      "folder_order": 30
     },
     {
       "id": "engineering-practices",
@@ -861,7 +737,7 @@
       "categories": [
         "cloud"
       ],
-      "folder_order": 39
+      "folder_order": 31
     },
     {
       "id": "python",
@@ -871,7 +747,7 @@
       "categories": [
         "backend"
       ],
-      "folder_order": 40,
+      "folder_order": 32,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -903,7 +779,7 @@
       "categories": [
         "backend"
       ],
-      "folder_order": 41,
+      "folder_order": 33,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -925,7 +801,7 @@
       "categories": [
         "tools"
       ],
-      "folder_order": 42,
+      "folder_order": 34,
       "officialDocs": [
         {
           "label": "Bash 参考手册",
@@ -947,7 +823,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 43,
+      "folder_order": 35,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -969,7 +845,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 44,
+      "folder_order": 36,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -991,7 +867,7 @@
       "categories": [
         "tools"
       ],
-      "folder_order": 45,
+      "folder_order": 37,
       "officialDocs": [
         {
           "label": "pnpm 官方文档",
@@ -1013,7 +889,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 46,
+      "folder_order": 38,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1035,7 +911,7 @@
       "categories": [
         "database"
       ],
-      "folder_order": 47,
+      "folder_order": 39,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1057,7 +933,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 48,
+      "folder_order": 40,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1079,7 +955,7 @@
       "categories": [
         "backend"
       ],
-      "folder_order": 49,
+      "folder_order": 41,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1101,7 +977,7 @@
       "categories": [
         "backend"
       ],
-      "folder_order": 50,
+      "folder_order": 42,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1123,7 +999,7 @@
       "categories": [
         "backend"
       ],
-      "folder_order": 51,
+      "folder_order": 43,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1145,7 +1021,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 52,
+      "folder_order": 44,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1167,7 +1043,7 @@
       "categories": [
         "frontend"
       ],
-      "folder_order": 53,
+      "folder_order": 45,
       "officialDocs": [
         {
           "label": "官方文档",
@@ -1189,7 +1065,7 @@
       "categories": [
         "cloud"
       ],
-      "folder_order": 54,
+      "folder_order": 46,
       "officialDocs": [
         {
           "label": "Kafka 文档",
