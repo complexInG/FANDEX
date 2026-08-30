@@ -19,6 +19,12 @@
 
 ### 变更
 
+- 仓库形态治理：确认单一 monorepo（根目录唯一 `.git`），全面扫描确认
+  无嵌套 `.git`、无 `.gitmodules`、无 submodule 记录；`LICENSE` 由
+  `app-Android-old` 上提至仓库根统一许可归属；`app-Android-new/README.md`
+  补充 monorepo 子项目定位声明并修正过时版本与文档规模信息；
+  AGENTS.md 新增"仓库形态约束"章节，明确禁止在子目录初始化独立
+  Git 仓库或将其当作独立项目维护。
 - 目录结构重组：
   - `app-android` 更名为 `app-Android-new`（新技术栈 Android 工程主线）；
   - 旧版 FANDEX-App 归档目录更名为 `app-Android-old`，并参考

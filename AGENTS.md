@@ -1,5 +1,18 @@
 # FANDEX 仓库规则
 
+## 仓库形态约束（最高优先级）
+
+- 本仓库是单一 monorepo：根目录是唯一的仓库根，全仓库只有一个 `.git`。
+- app-web、app-desktop、app-Android-new、app-Android-old 以及 cnt-content、
+  shd-shared、tls-tools、thd-third-party、tools 均为根仓库下的普通子目录，
+  严禁在其中初始化独立 Git 仓库（git init / 嵌套 .git / .gitmodules /
+  submodule / 独立 remote），也不得将任何子目录当作独立项目维护。
+- 子目录内如发现历史遗留的嵌套 .git 或独立仓库配置，应立即清理并在
+  变更说明中报备。
+- 子目录的 README 只能以"本目录是 FANDEX monorepo 的子项目"定位书写，
+  完整说明指向根 README.md 与本文件；子目录 .gitignore 仅作为构建
+  兜底保留，不得包含仓库级声明。
+
 ## 通用工程规范
 
 - 代码与对话中一律不使用 emoji 表情。

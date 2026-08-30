@@ -1,13 +1,19 @@
 # FANDEX
 
 **FANDEX 是一套「代码语法速查伴侣」体系**：为已具备基础的开发者提供 50+ 技术模块、
-1900+ 篇语法速查文档，全部内容离线可用。单仓库（monorepo）内同时维护网站、
-双端 Android 应用与共享内容层。
+1900+ 篇语法速查文档，全部内容离线可用。
+
+本体系托管在**单一 Git 仓库（monorepo）**中：根目录是唯一的仓库根（全仓库只有一个
+`.git`），网站、桌面端、双端 Android 应用与共享内容层全部是根仓库下的普通子目录，
+不存在任何子仓库、submodule 或嵌套 Git 配置。四端应用共享同一内容体系——内容单一
+来源为 `cnt-content/full`，模块元数据唯一来源为 `shd-shared/metadata/modules.json`，
+任何一端不维护独立内容副本。
 
 ## 仓库结构
 
 ```
-FANDEX/
+FANDEX/                        # 仓库根（唯一 .git 所在）
+├── README.md  AGENTS.md  CHANGELOG.md  LICENSE   # 根级信息文件
 ├── app-web/            # 官网（Astro 7 + React 19 + Tailwind CSS 4），GitHub Pages 部署
 ├── app-desktop/        # 桌面端占位（Tauri 2，规划中）
 ├── app-Android-new/    # Android 应用 · 新技术栈主线（Kotlin + Jetpack Compose）
@@ -103,4 +109,5 @@ cd app-Android-old && ./gradlew :app:assembleDebug
 
 ## 许可
 
-MIT License
+MIT License，全文见 [LICENSE](LICENSE)；`thd-third-party/licenses/` 存放
+第三方组件的许可文本。
