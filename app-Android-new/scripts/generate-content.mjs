@@ -20,9 +20,9 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// 项目根目录（从 app-android/scripts 上两级到 FANDEX 根目录）
+// 项目根目录（从 app-Android-new/scripts 上两级到 FANDEX 根目录）
 const ROOT = join(__dirname, '..', '..');
-const ANDROID_ASSETS = join(ROOT, 'app-android', 'app', 'src', 'main', 'assets');
+const ANDROID_ASSETS = join(ROOT, 'app-Android-new', 'app', 'src', 'main', 'assets');
 
 // 内容源
 const CONTENT_DIR = join(ROOT, 'cnt-content', 'full');

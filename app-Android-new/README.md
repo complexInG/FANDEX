@@ -34,7 +34,7 @@ UI/UX 美术风格（ark-ui 设计语言）均与 web 端对齐。
 ## 目录架构（模块化拆解，对齐 app-web 分层）
 
 ```
-app-android/
+app-Android-new/
 ├── scripts/
 │   └── generate-content.mjs        # 内容管线：从仓库内容源生成 assets
 ├── legacy/                          # 旧版 FANDEX-App APK 归档（不入库）
@@ -107,10 +107,10 @@ app-android/
 
 ```bash
 # 1. 内容变更后重新生成 assets（仓库根目录执行）
-node app-android/scripts/generate-content.mjs
+node app-Android-new/scripts/generate-content.mjs
 
 # 2. 构建 Debug APK
-cd app-android && ./gradlew :app:assembleDebug
+cd app-Android-new && ./gradlew :app:assembleDebug
 
 # 产物：app/build/outputs/apk/debug/app-debug.apk
 ```

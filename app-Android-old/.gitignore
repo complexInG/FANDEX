@@ -8,21 +8,13 @@ local.properties
 /captures
 .externalNativeBuild
 .cxx
-android/app/build/
-android/build/
-android/.kotlin/
+app/build/
+build/
+.kotlin/
 
-# Node / 前端工具链
-node_modules/
-dist/
-.astro/
-
-# Web 构建产物（GitHub Actions 工作流构建后上传 artifact，无需入库）
-docs/
-
-# 例外：android 内置离线文档资源目录恰好命名为 docs/，属源码资源而非
-# web 构建产物（原仓库中这些文件已被追踪），需从上方通用规则中重新包含
-!android/app/src/main/assets/dist-mobile/docs/
+# 例外：内置离线文档资源目录恰好命名为 dist-mobile/docs/，属源码资源
+# 而非 web 构建产物，需从下方通用规则中重新包含
+!app/src/main/assets/dist-mobile/docs/
 
 # 环境变量（禁止提交密钥）
 .env

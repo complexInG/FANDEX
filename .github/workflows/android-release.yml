@@ -2,7 +2,7 @@
 # FANDEX Android 端自动构建与发布工作流
 # =============================================================================
 # 触发条件：
-#   1. push 到 main（仅 app-android / cnt-content / shd-shared 路径变更）
+#   1. push 到 main（仅 app-Android-new / cnt-content / shd-shared 路径变更）
 #      -> 构建校验 + 上传 APK 构建产物（不发布）
 #   2. push v* 标签 或 手动触发（release 输入为 true）
 #      -> 构建签名 APK 并创建 GitHub Release 附带安装包
@@ -26,7 +26,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'app-android/**'
+      - 'app-Android-new/**'
       - 'cnt-content/**'
       - 'shd-shared/**'
     tags: ['v*']
@@ -67,17 +67,17 @@ jobs:
           node-version: '22'
 
       - name: 同步内容资产（docs / 元数据 / 语法数据）
-        run: node app-android/scripts/generate-content.mjs
+        run: node app-Android-new/scripts/generate-content.mjs
 
       - name: 构建 Release APK
-        working-directory: app-android
+        working-directory: app-Android-new
         run: ./gradlew :app:assembleRelease --stacktrace
 
       - name: 上传 APK 构建产物
         uses: actions/upload-artifact@v4
         with:
           name: fandex-android-apk
-          path: app-android/app/build/outputs/apk/release/app-release.apk
+          path: app-Android-new/app/build/outputs/apk/release/app-release.apk
           retention-days: 14
 
   release:
