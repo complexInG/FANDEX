@@ -28,6 +28,7 @@ import remarkGfm from 'remark-gfm'; // GitHub Flavored Markdown 支持（表格�
 import remarkEmoji from 'remark-emoji'; // Emoji 短代码转换（如 :smile: → 😄）
 import rehypeSlug from 'rehype-slug'; // 为标题自动添加 id 属性
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'; // 为标题添加锚点链接
+import { createJavaScriptRegexEngine } from 'shiki'; // Shiki JS 正则引擎（替代 oniguruma WASM）
 
 export default defineConfig({
   // 站点地址，用于生成 sitemap 和规范链接
@@ -114,6 +115,12 @@ export default defineConfig({
     ],
     // 代码高亮配置：Shiki 双主题支持亮色/暗色模式切换
     shikiConfig: {
+      // 高亮引擎：JS 正则引擎替代默认的 oniguruma WASM 引擎。
+      // 全站约 1900 篇文档连续高亮时 oniguruma 的线性内存池会越界
+      // （CI 报 "memory access out of bounds"，构建 14 分钟后失败）；
+      // JS 引擎跑在 V8 堆上，无 WASM 内存上限，构建全程稳定。
+      // forgiving=true：个别语法的高亮规则无法转换为 JS 正则时降级为纯文本，不中断构建。
+      engine: createJavaScriptRegexEngine({ forgiving: true }),
       themes: { light: 'github-light', dark: 'github-dark' },
       // 不输出内联 color 属性，通过 CSS 变量（--shiki-light / --shiki-dark）控制主题切换
       defaultColor: false,

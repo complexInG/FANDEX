@@ -1,23 +1,31 @@
 # =============================================================================
-# FANDEX Android 端自动构建与发布工作流
+# FANDEX Android 双端自动构建与发布工作流
 # =============================================================================
+# 覆盖两个 Android 工程：
+#   - app-Android-new  （新技术栈主线，applicationId com.fandexpp.fandex）
+#   - app-Android-old  （旧技术栈归档线，applicationId com.fandex.app）
+#
 # 触发条件：
-#   1. push 到 main（仅 app-Android-new / cnt-content / shd-shared 路径变更）
-#      -> 构建校验 + 上传 APK 构建产物（不发布）
+#   1. push 到 main（任一 Android 工程 / 内容源 / 本工作流路径变更）
+#      -> 双端构建校验 + 上传 APK 构建产物（不发布）
 #   2. push v* 标签 或 手动触发（release 输入为 true）
-#      -> 构建签名 APK 并创建 GitHub Release 附带安装包
+#      -> 双端构建签名 APK 并创建 GitHub Release 附带两个安装包
 #
-# 构建流程：
-#   Node 内容同步（generate-content.mjs）→ JDK 21 → Gradle assembleRelease
+# 构建流程（双端并行 matrix）：
+#   内容同步脚本 -> JDK 21 -> Gradle assembleRelease
+#   - new:  scripts/generate-content.mjs        （docs / 元数据 / 语法数据）
+#   - old:  scripts/generate-legacy-content.mjs （dist-mobile 文档 + 索引，
+#             内容源与 cnt-content 完全同源，构建前重跑保证一致）
 #
-# 说明：
-# - release 构建使用 debug 签名（个人项目分发策略，与本地构建一致），
-#   CI 首次构建时 AGP 会自动生成 debug keystore，无需注入密钥。
-# - assets/docs 已随仓库提交；构建前仍重跑内容同步，保证产物与
-#   cnt-content 源始终一致（即使有人忘记同步直接提交）。
-# - 标签触发时使用 softprops/action-gh-release：若同名 Release 已存在
-#   则更新并替换同名资产，与本地 gh release create 发布链路兼容。
-# - Gradle wrapper 使用腾讯镜像下载发行包，GitHub 托管运行器可正常访问。
+# 签名策略（双端一致的个人分发策略）：
+#   未注入正式 keystore 时回退 debug 签名，CI 可直接出包；
+#   debug keystore 在 runner 上临时生成，仅用于分发安装，不做覆盖升级。
+#
+# 发布：
+#   - FANDEX-${tag}.apk          （新技术栈主线）
+#   - FANDEX-Legacy-${tag}.apk   （旧技术栈归档线）
+#   两个 APK applicationId 不同，可并存安装；
+#   Release 说明由 CHANGELOG.md 对应版本段落生成（无匹配段落时回退默认文案）。
 # =============================================================================
 
 name: Android Build & Release
@@ -27,8 +35,10 @@ on:
     branches: [main]
     paths:
       - 'app-Android-new/**'
+      - 'app-Android-old/**'
       - 'cnt-content/**'
       - 'shd-shared/**'
+      - '.github/workflows/android-release.yml'
     tags: ['v*']
   workflow_dispatch:
     inputs:
@@ -46,8 +56,24 @@ concurrency:
 
 jobs:
   build:
-    name: 构建签名 APK
+    name: 构建 ${{ matrix.label }} APK
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: new
+            label: 新技术栈
+            app: app-Android-new
+            sync: node app-Android-new/scripts/generate-content.mjs
+            apk: app-Android-new/app/build/outputs/apk/release/app-release.apk
+            artifact: fandex-new-apk
+          - id: old
+            label: 旧技术栈
+            app: app-Android-old
+            sync: node app-Android-old/scripts/generate-legacy-content.mjs
+            apk: app-Android-old/app/build/outputs/apk/release/FANDEX-*.apk
+            artifact: fandex-old-apk
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
@@ -66,18 +92,18 @@ jobs:
         with:
           node-version: '22'
 
-      - name: 同步内容资产（docs / 元数据 / 语法数据）
-        run: node app-Android-new/scripts/generate-content.mjs
+      - name: 同步内容资产（${{ matrix.label }}）
+        run: ${{ matrix.sync }}
 
       - name: 构建 Release APK
-        working-directory: app-Android-new
+        working-directory: ${{ matrix.app }}
         run: ./gradlew :app:assembleRelease --stacktrace
 
       - name: 上传 APK 构建产物
         uses: actions/upload-artifact@v4
         with:
-          name: fandex-android-apk
-          path: app-Android-new/app/build/outputs/apk/release/app-release.apk
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.apk }}
           retention-days: 14
 
   release:
@@ -86,26 +112,58 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.release == 'true')
     runs-on: ubuntu-latest
     steps:
-      - name: 下载 APK 产物
+      - name: 检出仓库（读取 CHANGELOG 生成发布说明）
+        uses: actions/checkout@v4
+
+      - name: 下载新技术栈 APK 产物
         uses: actions/download-artifact@v4
         with:
-          name: fandex-android-apk
-          path: apk
+          name: fandex-new-apk
+          path: apk-new
+
+      - name: 下载旧技术栈 APK 产物
+        uses: actions/download-artifact@v4
+        with:
+          name: fandex-old-apk
+          path: apk-old
 
       - name: 重命名为发布文件名
-        run: mv apk/app-release.apk apk/FANDEX-${{ github.ref_name }}.apk
+        run: |
+          mkdir -p apk
+          mv apk-new/*.apk "apk/FANDEX-${{ github.ref_name }}.apk"
+          mv apk-old/*.apk "apk/FANDEX-Legacy-${{ github.ref_name }}.apk"
+          ls -la apk/
 
-      - name: 创建 Release 并上传 APK
+      - name: 生成发布说明
+        id: notes
+        run: |
+          # 优先取 CHANGELOG.md 中对应版本的段落作为发布说明
+          VERSION="${{ github.ref_name }}"
+          NOTES=$(awk -v ver="$VERSION" '
+            $0 ~ "^## \\["ver"\\]" { flag=1; next }
+            flag && /^## \[/ { exit }
+            flag { print }
+          ' CHANGELOG.md)
+          if [ -z "$NOTES" ]; then
+            NOTES="FANDEX 双端 $VERSION 自动构建产物。
+
+          - FANDEX-$VERSION.apk：新技术栈主线（React 生态三端统一）
+          - FANDEX-Legacy-$VERSION.apk：旧技术栈归档线（Kotlin Compose 原生）
+          - 两个安装包 applicationId 不同，可并存安装"
+          fi
+          # 多行文本写入 GITHUB_OUTPUT
+          {
+            echo "body<<EOF"
+            echo "$NOTES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: 创建 Release 并上传双端 APK
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: FANDEX Android ${{ github.ref_name }}
-          body: |
-            FANDEX Android 端 ${{ github.ref_name }} 自动构建产物。
-
-            - 安装包：FANDEX-${{ github.ref_name }}.apk（debug 签名，可直接安装）
-            - 与旧版 FANDEX-App（com.fandex.app）相互独立，可并存安装
-            - 详细更新说明见提交历史与发布说明
-
-            完整变更请查阅 [提交历史](https://github.com/fanquanpp/FANDEX/commits/main)。
-          files: apk/FANDEX-${{ github.ref_name }}.apk
+          name: FANDEX ${{ github.ref_name }}
+          body: ${{ steps.notes.outputs.body }}
+          files: |
+            apk/FANDEX-${{ github.ref_name }}.apk
+            apk/FANDEX-Legacy-${{ github.ref_name }}.apk

@@ -76,7 +76,20 @@ android {
         release {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("release")
+            /**
+             * 签名回退策略（与 app-Android-new 的个人分发策略一致）：
+             * - 提供正式 keystore（文件存在且密码非空）时使用 release 签名
+             * - 否则回退 debug 签名，保证无密钥环境（CI / 新 clone）可直接出包；
+             *   旧行为是无条件使用 release 配置，无密钥环境构建 release 直接失败
+             */
+            signingConfig = if (
+                signingConfigs.getByName("release").storeFile.exists() &&
+                signingConfigs.getByName("release").storePassword.isNotBlank()
+            ) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 
