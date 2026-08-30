@@ -51,7 +51,6 @@ const LANGUAGE_FOLDERS = {
   '014-kotlin': 'kotlin',
   '015-csharp': 'csharp',
   '016-go': 'go',
-  '017-lua': 'lua',
   '019-sql': 'sql',
   '020-mysql': 'mysql',
   '021-postgresql': 'postgresql',

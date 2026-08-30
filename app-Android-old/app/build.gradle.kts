@@ -15,8 +15,8 @@ plugins {
  * 2. 通过顶级变量在 `android.defaultConfig` 与 `androidComponents.onVariants`
  *    之间共享同一份版本数据，保证输出文件名与内置版本号一致。
  */
-val appVersionName = "3.7.0"
-val appVersionCode = 13
+val appVersionName = "4.0.0"
+val appVersionCode = 14
 
 android {
     namespace = "com.fandex.app"
@@ -38,7 +38,7 @@ android {
         buildConfigField(
             "String",
             "GITHUB_API_URL",
-            "\"https://api.github.com/repos/fanquanpp/FANDEX-App/releases/latest\""
+            "\"https://api.github.com/repos/fanquanpp/FANDEX/releases/latest\""
         )
     }
 

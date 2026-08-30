@@ -143,11 +143,15 @@ function main() {
         m.documents.sort((a, b) => (orders[a] || 0) - (orders[b] || 0));
     });
 
-    // 旧版 ContentIndex 结构：分类沿用 modules.json 的语义分类与配色
+    // 旧版 ContentIndex 结构：分类沿用 modules.json 的语义分类与配色，
+    // 仅保留仍有模块归属的分类，避免旧版首页出现空分类组
+    const usedCategories = new Set(modules.map(m => m.category));
     const index = {
         version: meta.version || '',
         generatedAt: new Date().toISOString().slice(0, 10),
-        categories: meta.categoryOrder.map(id => ({
+        categories: meta.categoryOrder
+            .filter(id => usedCategories.has(id))
+            .map(id => ({
             id,
             label: meta.categoryLabels[id] || id,
             color: meta.categoryColors[id] || '#4f5bd5'

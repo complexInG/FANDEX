@@ -14,7 +14,7 @@
  * 6. assets/docs/{moduleId}/{docSlug}.md (从 cnt-content/full 复制)
  */
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, copyFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, copyFileSync, existsSync, rmSync } from 'fs';
 import { join, basename, dirname, relative } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -215,6 +215,21 @@ function copySyntaxData() {
 function copyDocs() {
     console.log('\n[6/6] 复制文档内容...');
     const mdFiles = walkDir(CONTENT_DIR, '.md');
+    // 清理 assets/docs 下已不在内容源中的残留模块目录，保证生成幂等
+    const validIds = new Set(
+        readdirSync(CONTENT_DIR)
+            .filter(e => statSync(join(CONTENT_DIR, e)).isDirectory())
+            .map(e => e.replace(/^d+-/, ''))
+    );
+    const docsRoot = join(ANDROID_ASSETS, 'docs');
+    if (existsSync(docsRoot)) {
+        for (const entry of readdirSync(docsRoot)) {
+            if (!validIds.has(entry)) {
+                rmSync(join(docsRoot, entry), { recursive: true });
+                console.log('  [清理] docs/' + entry);
+            }
+        }
+    }
     let count = 0;
 
     for (const filePath of mdFiles) {

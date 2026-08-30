@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
  *   1. 构造 GET 请求至 GitHub Releases API
  *   2. 设置 User-Agent 与 Accept 头（GitHub API 强制要求）
  *   3. 解析 JSON 响应为 GitHubRelease 模型
- *   4. 从 assets 列表中查找名为 FANDEX-v*.apk 的附件作为下载目标
+ *   4. 从 assets 列表中查找名为 FANDEX-Legacy-v*.apk 的附件作为下载目标
  *   5. 将 GitHubRelease 转换为应用内 UpdateInfo
  *   6. 版本对比：解析 "v3.0.0" 与 BuildConfig.VERSION_NAME 比较大小
  *
@@ -153,7 +153,7 @@ class UpdateChecker(
      *
      * 流程：
      *   1. 从 tagName 解析最新版本号（去 "v" 前缀）
-     *   2. 从 assets 列表中查找名为 FANDEX-v*.apk 的附件
+     *   2. 从 assets 列表中查找名为 FANDEX-Legacy-v*.apk 的附件
      *   3. 计算版本码并对比当前版本判断是否更新可用
      *
      * 异常处理：
@@ -164,9 +164,9 @@ class UpdateChecker(
     private fun mapToUpdateInfo(release: GitHubRelease): UpdateInfo {
         val latestVersion = parseVersionName(release.tagName)
 
-        /* 查找名为 FANDEX-v*.apk 的 asset */
+        /* 查找名为 FANDEX-Legacy-v*.apk 的 asset */
         val apkAsset = release.assets.firstOrNull { asset ->
-            asset.name.startsWith("FANDEX-v", ignoreCase = true) &&
+            asset.name.startsWith("FANDEX-Legacy-v", ignoreCase = true) &&
                 asset.name.endsWith(".apk", ignoreCase = true)
         } ?: throw IllegalStateException("未找到可下载的 APK 文件")
 
