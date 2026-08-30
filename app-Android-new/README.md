@@ -1,10 +1,14 @@
-# FANDEX Android
+# FANDEX Android（新技术栈主线）
 
-FANDEX 知识体系的 Android 端应用，基于 Jetpack Compose 的离线全量内容客户端。
-开发重构以 `app-web`（Astro 站点）为唯一设计基准：数据管线、Service 分层、
-UI/UX 美术风格（ark-ui 设计语言）均与 web 端对齐。
+> 本目录是 FANDEX 单一 monorepo 的子项目，不是独立仓库。仓库结构、内容体系、
+> 工程规范与贡献流程的完整说明见根 [README.md](../README.md) 与 [AGENTS.md](../AGENTS.md)；
+> 版本变更历史见根 [CHANGELOG.md](../CHANGELOG.md)。
 
-> 本应用与旧版 FANDEX-App（`com.fandex.app`，仅语法速查）是**两个独立应用**，
+FANDEX 知识体系的 Android 端应用（新技术栈主线），基于 Jetpack Compose 的离线
+全量内容客户端。开发重构以 `app-web`（Astro 站点）为唯一设计基准：数据管线、
+Service 分层、UI/UX 美术风格（ark-ui 设计语言）均与 web 端对齐。
+
+> 本应用与旧技术栈归档线 `app-Android-old`（`com.fandex.app`）是两个并存应用，
 > applicationId 不同、签名不同，互不覆盖更新，可并存安装。
 
 ## 应用信息
@@ -12,12 +16,14 @@ UI/UX 美术风格（ark-ui 设计语言）均与 web 端对齐。
 | 项 | 值 |
 | --- | --- |
 | applicationId | `com.fandexpp.fandex` |
-| 版本 | 1.0.0 (versionCode 1) |
+| 版本 | 1.2.0 (versionCode 3) |
 | 技术栈 | Kotlin 2.4 + Jetpack Compose (BOM 2026.08) + Material 3 |
 | minSdk / targetSdk | 26 / 37 |
-| 内容规模 | 54 模块 / 1822 篇文档 / 4530 语法点 / 40+ 学习路径，全部离线内置 |
+| 内容规模 | 54 模块 / 1903 篇文档 / 4500+ 语法点 / 40+ 学习路径，全部离线内置 |
 
-旧版安装包归档于 `legacy/`（已 gitignore），用于设备上的恢复参考。
+内容单一来源为仓库根 `cnt-content/full`，模块元数据唯一来源为
+`shd-shared/metadata/modules.json`；本目录不维护独立内容副本，
+构建前运行内容管线同步。
 
 ## 信息架构（参考旧版 FANDEX-App 设计）
 
@@ -37,7 +43,6 @@ UI/UX 美术风格（ark-ui 设计语言）均与 web 端对齐。
 app-Android-new/
 ├── scripts/
 │   └── generate-content.mjs        # 内容管线：从仓库内容源生成 assets
-├── legacy/                          # 旧版 FANDEX-App APK 归档（不入库）
 └── app/src/main/
     ├── assets/                      # 生成产物（勿手改，运行 generate-content.mjs 再生成）
     │   ├── metadata/
