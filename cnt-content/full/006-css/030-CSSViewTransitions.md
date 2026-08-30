@@ -86,8 +86,8 @@ html {
 
 ## 5. 与动画/新特性的关系
 
-- `css/028-CSSAnimationTransition`：transition/keyframes 基础，是自定义过渡动画的前提；
-- `css/064-CSSNewFeatures`：视图过渡属于现代 CSS 新特性族，与容器查询、@scope 同期推进；
+- `css/029-CSSAnimationTransition`：transition/keyframes 基础，是自定义过渡动画的前提；
+- `css/065-CSSNewFeatures`：视图过渡属于现代 CSS 新特性族，与容器查询、@scope 同期推进；
 - 视图过渡适合“状态切换”而非“持续动画”，持续动效仍用 animation。
 
 ## 6. 动手试试
@@ -119,7 +119,7 @@ html {
 
 ## 9. 扩展学习
 
-- 动画与过渡：`css/028-CSSAnimationTransition`；
-- 新特性总览：`css/064-CSSNewFeatures`；
-- 可访问性与减少动效：`css/045-AccessibleStyling`；
-- 滚动驱动动画：`css/030-CSSScrollDrivenAnimations`。
+- 动画与过渡：`css/029-CSSAnimationTransition`；
+- 新特性总览：`css/065-CSSNewFeatures`；
+- 可访问性与减少动效：`css/046-AccessibleStyling`；
+- 滚动驱动动画：`css/031-CSSScrollDrivenAnimations`。

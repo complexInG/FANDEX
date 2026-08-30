@@ -146,8 +146,8 @@ if (document.compatMode === 'CSS1Compat') {
 
 ## 7. 扩展学习
 
-- 元数据：`html5/015-MetadataCharacterEncoding` 学习 charset 与编码声明优先级；
-- 渲染原理：`html5/037-CriticalRenderingPathAndResourceLoading` 理解解析与渲染流程；
-- 废弃标签：`html5/039-HTML5ObsoleteTags` 考古 font/center/frameset 等老标签与现代替代方案；
-- 盒模型差异：`css/003-CSS3BoxModelDetailed` 中怪异模式与标准模式的对比；
+- 元数据：`html5/016-MetadataCharacterEncoding` 学习 charset 与编码声明优先级；
+- 渲染原理：`html5/038-CriticalRenderingPathAndResourceLoading` 理解解析与渲染流程；
+- 废弃标签：`html5/040-HTML5ObsoleteTags` 考古 font/center/frameset 等老标签与现代替代方案；
+- 盒模型差异：`css/004-CSS3BoxModelDetailed` 中怪异模式与标准模式的对比；
 - 标准动态：持续关注 WHATWG HTML Living Standard 更新日志。

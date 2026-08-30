@@ -84,4 +84,4 @@ p a { }             /* 选中所有 p 标签里面的 a 标签 */
 
 ## 下一步
 
-进入 [CSS3 概述与基础语法](css/002-CSS3OverviewBasicSyntax) 系统学习盒模型与常用属性；想给页面加交互行为，接着进入 [JavaScript 模块](javascript/002-WhatIsJavaScript)。
+进入 [CSS3 概述与基础语法](css/002-CSS3OverviewBasicSyntax) 系统学习盒模型与常用属性；想给页面加交互行为，接着进入 [JavaScript 模块](javascript/001-WhatIsJavaScript)。

@@ -53,6 +53,9 @@ function collectMarkdownFiles(dir, result = []) {
     } else {
       const ext = extname(entry.name);
       if (ext === '.md' || ext === '.mdx') {
+        // 排除模块汇总文档（000-*-MERGED.md）：其为构建期合并产物，
+        // 不作为独立教学条目进入侧边栏与统计（与 Android 内容管线保持一致）
+        if (entry.name.includes('MERGED')) continue;
         result.push(fullPath);
       }
     }

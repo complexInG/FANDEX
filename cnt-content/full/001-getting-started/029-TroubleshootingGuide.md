@@ -23,7 +23,7 @@ prerequisites:
 可能原因与对应解法：
 
 1. **没安装**：先执行 `node -v` 对应的安装文档确认已安装；
-2. **PATH 未包含目录**：把安装目录加入 PATH（见 `getting-started/002-EnvVarPath`）；
+2. **PATH 未包含目录**：把安装目录加入 PATH（见 `getting-started/005-EnvVarPath`）；
 3. **没有重开终端**：PATH 修改只对新终端生效，**关掉重开**；
 4. **安装时没勾选“添加到 PATH”**：重装或手动补 PATH；
 5. **nvm 场景**：`nvm` 是 shell 函数，脚本（非交互）里不可用，先在交互终端安装并 `nvm use`。
@@ -99,6 +99,6 @@ taskkill /PID <PID> /F
 
 ## 扩展学习
 
-- 环境变量：`getting-started/002-EnvVarPath`；
-- 验证清单：`getting-started/025-EnvVerificationChecklist`；
-- 平台配置：`getting-started/011-WindowsEnvConfigTutorial`、`getting-started/012-MacOSEnvConfigTutorial`、`getting-started/013-LinuxEnvConfigTutorial`。
+- 环境变量：`getting-started/005-EnvVarPath`；
+- 验证清单：`getting-started/028-EnvVerificationChecklist`；
+- 平台配置：`getting-started/014-WindowsEnvConfigTutorial`、`getting-started/015-MacOSEnvConfigTutorial`、`getting-started/016-LinuxEnvConfigTutorial`。

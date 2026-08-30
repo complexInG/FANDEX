@@ -131,9 +131,9 @@ prerequisites:
 
 ### 2.4 相关标签的衔接
 
-- 响应式图片 `<picture>` / `<source>`：见 `html5/019-ImageResponsiveImage`；
-- Web Components 的 `<template>` / `<slot>`：见 `html5/024-WebComponentsPWADevelopment`；
-- 拖放 `<draggable>` 的完整 API：见 `html5/025-DragAPI`。
+- 响应式图片 `<picture>` / `<source>`：见 `html5/020-ImageResponsiveImage`；
+- Web Components 的 `<template>` / `<slot>`：见 `html5/025-WebComponentsPWADevelopment`；
+- 拖放 `<draggable>` 的完整 API：见 `html5/026-DragAPI`。
 
 ## 3. 全局属性
 

@@ -7375,7 +7375,7 @@ class Cache:
 - `python/元类`: 元类与描述符的协作
 - `python/装饰器`: 装饰器与描述符的等价关系（`property` 即装饰器即描述符）
 - `python/类与对象`: 新式类与 MRO
-- `python/031-Python与设计模式`: 描述符实现的设计模式（观察者、代理、单例）
+- `python/032-Python与设计模式`: 描述符实现的设计模式（观察者、代理、单例）
 
 <!-- ============ 文档分隔线：040-python/005-DataTypeObjectModelDeepDive.md ============ -->
 
@@ -30707,10 +30707,10 @@ def process_order(order: Order):
 
 ### 11.5 相关主题
 
-- `python/031-Python与Redis`: Redis 作为 Broker 与 Backend
-- `python/031-Python与消息队列`: AMQP 协议与消息中间件
-- `python/031-Python与Docker`: 容器化部署 Celery
-- `python/031-Python与Django`: Django 项目中集成 Celery
+- `python/032-Python与Redis`: Redis 作为 Broker 与 Backend
+- `python/032-Python与消息队列`: AMQP 协议与消息中间件
+- `python/032-Python与Docker`: 容器化部署 Celery
+- `python/032-Python与Django`: Django 项目中集成 Celery
 
 <!-- ============ 文档分隔线：040-python/018-ControlFlow.md ============ -->
 
@@ -42286,11 +42286,11 @@ def enable_asyncio_debug():
 ### 19.2 FANDEX 学习路径
 
 继续学习：
-- `python/031-Python与Web爬虫`：构建数据采集流水线；
-- `python/031-Python与CLI`：编写可配置的命令行工具；
-- `python/031-Python与测试`：为自动化脚本编写测试；
-- `python/031-Python与日志`：结构化日志与审计；
-- `python/031-Python与配置管理`：环境变量与配置文件管理。
+- `python/032-Python与Web爬虫`：构建数据采集流水线；
+- `python/032-Python与CLI`：编写可配置的命令行工具；
+- `python/032-Python与测试`：为自动化脚本编写测试；
+- `python/032-Python与日志`：结构化日志与审计；
+- `python/032-Python与配置管理`：环境变量与配置文件管理。
 
 ---
 
@@ -46290,11 +46290,11 @@ def hybrid_kem_demo():
 ### 20.2 FANDEX 学习路径
 
 继续学习：
-- `python/031-Python与测试`：为密码学代码编写单元测试与属性测试；
-- `python/031-Python与日志`：安全日志记录与审计；
-- `python/031-Python与CLI`：构建密钥生成、轮转等命令行工具；
-- `python/031-Python与配置管理`：安全配置文件加载与密钥注入；
-- `python/031-Python与Web开发`：将加密服务集成到 FastAPI/Flask。
+- `python/032-Python与测试`：为密码学代码编写单元测试与属性测试；
+- `python/032-Python与日志`：安全日志记录与审计；
+- `python/032-Python与CLI`：构建密钥生成、轮转等命令行工具；
+- `python/032-Python与配置管理`：安全配置文件加载与密钥注入；
+- `python/032-Python与Web开发`：将加密服务集成到 FastAPI/Flask。
 
 ---
 
@@ -48211,7 +48211,7 @@ Python 测试生态历经二十余年演进，已形成理论扎实、工具丰�
 
 掌握 Python 测试，不仅是掌握 pytest、Mock、coverage 这些工具，更是掌握一种工程思维：**代码是为了人而写，测试是为了信心而写**。本篇文档希望成为读者构建企业级 Python 测试体系的参考指南，让每一行生产代码都有测试守护，让每一次重构都充满信心。
 
-<!-- ============ 文档分隔线：040-python/031-Python.md ============ -->
+<!-- ============ 文档分隔线：040-python/032-Python.md ============ -->
 
 ## 1. 历史动机与背景
 

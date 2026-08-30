@@ -557,8 +557,8 @@ window.addEventListener('appinstalled', () => {
 
 ## 扩展学习
 
-- 基础铺垫：`html5/014-HTML5OfflineStorageWebAPI` 的 Cache Storage 与离线章节；
-- 组件对比：`html5/024-WebComponentsPWADevelopment` 中 PWA 三件套；
+- 基础铺垫：`html5/015-HTML5OfflineStorageWebAPI` 的 Cache Storage 与离线章节；
+- 组件对比：`html5/025-WebComponentsPWADevelopment` 中 PWA 三件套；
 - 推送完整流程：Web Push 协议与 VAPID 密钥管理；
-- 性能：`javascript/050-CoreWebVitalsAndPerformanceMetrics` 中缓存对加载指标的影响；
+- 性能：`javascript/051-CoreWebVitalsAndPerformanceMetrics` 中缓存对加载指标的影响；
 - 工程化：Workbox 库封装注册、缓存与更新逻辑。

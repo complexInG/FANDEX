@@ -126,6 +126,6 @@ export function init() { console.log('module loaded'); }
 
 ## 扩展学习
 
-- 模块：`javascript/037-JavaScriptModular`；
-- 动态导入：`javascript/038-ModuleDynamicImportCodeSplitting`；
+- 模块：`javascript/038-JavaScriptModular`；
+- 动态导入：`javascript/039-ModuleDynamicImportCodeSplitting`；
 - 构建：`vite/` 模块。

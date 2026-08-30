@@ -11,7 +11,7 @@ related: []
 prerequisites: []
 ---
 
-<!-- ============ 文档分隔线：001-getting-started/001-DevEnvSetup.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/004-DevEnvSetup.md ============ -->
 
 ## 1. 选择操作系统
 
@@ -272,7 +272,7 @@ set
 Get-ChildItem Env:
 ```
 
-<!-- ============ 文档分隔线：001-getting-started/002-EnvVarPath.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/005-EnvVarPath.md ============ -->
 
 ## 1. 环境变量基础
 
@@ -3844,7 +3844,7 @@ perf record -g ./myapp          # Linux 性能分析
 Instruments                     # macOS 性能分析
 ```
 
-<!-- ============ 文档分隔线：001-getting-started/011-WindowsEnvConfigTutorial.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/014-WindowsEnvConfigTutorial.md ============ -->
 
 ## 0. 快速开始：一键脚本与完整教程
 
@@ -3855,7 +3855,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 .\cnt-content\full\001-getting-started\scripts\setup-windows.ps1
 ```
 
-脚本会自动安装 VS Code、Git、Node.js LTS、Python，并配置 npm/pip 国内镜像。装完后用 `getting-started/025-EnvVerificationChecklist` 验证，卡住查 `getting-started/026-TroubleshootingGuide`。
+脚本会自动安装 VS Code、Git、Node.js LTS、Python，并配置 npm/pip 国内镜像。装完后用 `getting-started/028-EnvVerificationChecklist` 验证，卡住查 `getting-started/029-TroubleshootingGuide`。
 
 想理解每一步在做什么，或需要 WSL2、Docker 等进阶配置，继续阅读本篇完整教程。
 
@@ -4431,7 +4431,7 @@ code --diff a.txt b.txt  # 对比两个文件
 > [!tip] 配置同步
 > VS Code 支持 Settings Sync，通过 GitHub 或 Microsoft 账号同步你的设置、插件和快捷键到云端，换设备时一键恢复。
 
-<!-- ============ 文档分隔线：001-getting-started/012-MacOSEnvConfigTutorial.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/015-MacOSEnvConfigTutorial.md ============ -->
 
 ## 1. Homebrew 安装
 
@@ -5003,7 +5003,7 @@ chmod +x setup-macos.sh
 ./setup-macos.sh
 ```
 
-<!-- ============ 文档分隔线：001-getting-started/013-LinuxEnvConfigTutorial.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/016-LinuxEnvConfigTutorial.md ============ -->
 
 ## 1. 包管理器
 
@@ -5809,7 +5809,7 @@ npm -v
 node -e "console.log('Node.js 运行正常')"
 ```
 
-<!-- ============ 文档分隔线：001-getting-started/015-NpmManager.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/018-NpmManager.md ============ -->
 
 ## 项目初始化
 
@@ -6533,7 +6533,7 @@ python -m pip install --upgrade pip
 pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-<!-- ============ 文档分隔线：001-getting-started/019-PipVenvManager.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/022-PipVenvManager.md ============ -->
 
 ## pip 包安装
 
@@ -7114,7 +7114,7 @@ echo %JAVA_HOME%
 java -e "System.out.println(\"Java 运行正常\")"
 ```
 
-<!-- ============ 文档分隔线：001-getting-started/022-VSCodeInstall.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/025-VSCodeInstall.md ============ -->
 
 ## 安装 VS Code
 
@@ -7538,7 +7538,7 @@ git --help
 git help commit
 ```
 
-<!-- ============ 文档分隔线：001-getting-started/024-DockerInstall.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/027-DockerInstall.md ============ -->
 
 ## Windows 安装
 
@@ -7739,11 +7739,11 @@ docker info
 docker compose version
 ```
 
-<!-- ============ 文档分隔线：001-getting-started/025-EnvVerificationChecklist.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/028-EnvVerificationChecklist.md ============ -->
 
 ## 0. 这份清单怎么用
 
-打开终端（Windows 用 PowerShell 或 WSL，macOS/Linux 用自带终端），逐条执行下面的命令。每一条都有“预期结果”；如果输出与预期不符，跳到 `getting-started/026-TroubleshootingGuide` 找对应问题。
+打开终端（Windows 用 PowerShell 或 WSL，macOS/Linux 用自带终端），逐条执行下面的命令。每一条都有“预期结果”；如果输出与预期不符，跳到 `getting-started/029-TroubleshootingGuide` 找对应问题。
 
 建议按顺序勾选：
 
@@ -7781,7 +7781,7 @@ node -v
 npm -v
 ```
 
-**预期**：`node -v` 输出 `v20+` 或更高（LTS 版）；`npm -v` 输出 `10+`。若提示找不到命令，检查是否安装了 Node.js，或 PATH 是否包含 Node 目录（`getting-started/002-EnvVarPath`）。
+**预期**：`node -v` 输出 `v20+` 或更高（LTS 版）；`npm -v` 输出 `10+`。若提示找不到命令，检查是否安装了 Node.js，或 PATH 是否包含 Node 目录（`getting-started/005-EnvVarPath`）。
 
 ## 4. Python 与 pip
 
@@ -7832,7 +7832,7 @@ npm config get registry
 pip config list
 ```
 
-**预期**：npm 输出国内镜像地址（如 `https://registry.npmmirror.com`）或官方源；pip 输出镜像配置（如有）。配置方法见 `getting-started/015-NpmManager` 与 `getting-started/019-PipVenvManager`。
+**预期**：npm 输出国内镜像地址（如 `https://registry.npmmirror.com`）或官方源；pip 输出镜像配置（如有）。配置方法见 `getting-started/018-NpmManager` 与 `getting-started/022-PipVenvManager`。
 
 ## 8. 版本管理工具（可选）
 
@@ -7862,11 +7862,11 @@ where.exe node # Windows PowerShell
 
 ## 扩展学习
 
-- 环境变量与 PATH：`getting-started/002-EnvVarPath`；
-- 卡住排查：`getting-started/026-TroubleshootingGuide`；
-- 平台配置：`getting-started/011-WindowsEnvConfigTutorial`、`getting-started/012-MacOSEnvConfigTutorial`、`getting-started/013-LinuxEnvConfigTutorial`。
+- 环境变量与 PATH：`getting-started/005-EnvVarPath`；
+- 卡住排查：`getting-started/029-TroubleshootingGuide`；
+- 平台配置：`getting-started/014-WindowsEnvConfigTutorial`、`getting-started/015-MacOSEnvConfigTutorial`、`getting-started/016-LinuxEnvConfigTutorial`。
 
-<!-- ============ 文档分隔线：001-getting-started/026-TroubleshootingGuide.md ============ -->
+<!-- ============ 文档分隔线：001-getting-started/029-TroubleshootingGuide.md ============ -->
 
 ## 0. 使用说明
 
@@ -7877,7 +7877,7 @@ where.exe node # Windows PowerShell
 可能原因与对应解法：
 
 1. **没安装**：先执行 `node -v` 对应的安装文档确认已安装；
-2. **PATH 未包含目录**：把安装目录加入 PATH（见 `getting-started/002-EnvVarPath`）；
+2. **PATH 未包含目录**：把安装目录加入 PATH（见 `getting-started/005-EnvVarPath`）；
 3. **没有重开终端**：PATH 修改只对新终端生效，**关掉重开**；
 4. **安装时没勾选“添加到 PATH”**：重装或手动补 PATH；
 5. **nvm 场景**：`nvm` 是 shell 函数，脚本（非交互）里不可用，先在交互终端安装并 `nvm use`。
@@ -7953,6 +7953,6 @@ taskkill /PID <PID> /F
 
 ## 扩展学习
 
-- 环境变量：`getting-started/002-EnvVarPath`；
-- 验证清单：`getting-started/025-EnvVerificationChecklist`；
-- 平台配置：`getting-started/011-WindowsEnvConfigTutorial`、`getting-started/012-MacOSEnvConfigTutorial`、`getting-started/013-LinuxEnvConfigTutorial`。
+- 环境变量：`getting-started/005-EnvVarPath`；
+- 验证清单：`getting-started/028-EnvVerificationChecklist`；
+- 平台配置：`getting-started/014-WindowsEnvConfigTutorial`、`getting-started/015-MacOSEnvConfigTutorial`、`getting-started/016-LinuxEnvConfigTutorial`。

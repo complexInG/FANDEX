@@ -416,6 +416,6 @@ progress {
 
 ## 扩展学习
 
-- 特性检测：`css/040-FeatureQuery`；
-- 容器查询：`css/032-ContainerQuery`；
-- 颜色：`css/034-ModernColorSpace`。
+- 特性检测：`css/041-FeatureQuery`；
+- 容器查询：`css/033-ContainerQuery`；
+- 颜色：`css/035-ModernColorSpace`。

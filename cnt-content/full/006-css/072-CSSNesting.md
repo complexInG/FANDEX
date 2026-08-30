@@ -237,6 +237,6 @@ prerequisites: []
 
 ## 扩展学习
 
-- 原生嵌套：`css/041-CSSNativeNesting`；
-- 作用域：`css/070-ScopeAtRule`；
-- Sass：`css/054-Sass`。
+- 原生嵌套：`css/042-CSSNativeNesting`；
+- 作用域：`css/071-ScopeAtRule`；
+- Sass：`css/055-Sass`。

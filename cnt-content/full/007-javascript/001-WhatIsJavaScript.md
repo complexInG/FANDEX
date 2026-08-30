@@ -71,4 +71,4 @@ console.log(greet('学习者'));   // 输出：你好，学习者！欢迎来到
 
 ## 下一步
 
-完成上面的动手环节后，进入 [JavaScript 概述与运行环境](javascript/002-JavaScriptOverviewRuntimeEnv) 系统学习语法主线；想理解页面上 HTML 与 CSS 如何配合，先读 [网页是什么](html5/001-WhatIsWebpage) 与 [CSS 是什么](css/002-WhatIsCSS)。
+完成上面的动手环节后，进入 [JavaScript 概述与运行环境](javascript/002-JavaScriptOverviewRuntimeEnv) 系统学习语法主线；想理解页面上 HTML 与 CSS 如何配合，先读 [网页是什么](html5/001-WhatIsWebpage) 与 [CSS 是什么](css/001-WhatIsCSS)。

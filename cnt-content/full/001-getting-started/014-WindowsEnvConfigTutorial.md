@@ -23,7 +23,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 .\cnt-content\full\001-getting-started\scripts\setup-windows.ps1
 ```
 
-脚本会自动安装 VS Code、Git、Node.js LTS、Python，并配置 npm/pip 国内镜像。装完后用 `getting-started/025-EnvVerificationChecklist` 验证，卡住查 `getting-started/026-TroubleshootingGuide`。
+脚本会自动安装 VS Code、Git、Node.js LTS、Python，并配置 npm/pip 国内镜像。装完后用 `getting-started/028-EnvVerificationChecklist` 验证，卡住查 `getting-started/029-TroubleshootingGuide`。
 
 想理解每一步在做什么，或需要 WSL2、Docker 等进阶配置，继续阅读本篇完整教程。
 

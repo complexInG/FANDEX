@@ -75,7 +75,7 @@ interface DocIndexItem {
  */
 export async function getAllDocs(): Promise<DocEntry[]> {
   try {
-    const docs = await getCollection('docs');
+    const docs = (await getCollection('docs')).filter((entry) => !entry.id.includes('MERGED'));
     return docs.sort((a, b) => {
       if (a.data.module !== b.data.module) {
         return a.data.module.localeCompare(b.data.module);
@@ -94,7 +94,7 @@ export async function getAllDocs(): Promise<DocEntry[]> {
  */
 export async function getDocsByModule(moduleId: string): Promise<DocEntry[]> {
   try {
-    const docs = await getCollection('docs', ({ data }) => data.module === moduleId);
+    const docs = await getCollection('docs', ({ data, id }) => data.module === moduleId && !id.includes('MERGED'));
     return docs.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
   } catch {
     return [];
@@ -203,7 +203,7 @@ export function getDocsIndex(): DocIndexItem[] {
  */
 export async function getDocsByCategory(categoryId: string): Promise<DocEntry[]> {
   try {
-    const docs = await getCollection('docs', ({ data }) => data.category === categoryId);
+    const docs = await getCollection('docs', ({ data, id }) => data.category === categoryId && !id.includes('MERGED'));
     return docs.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
   } catch {
     return [];

@@ -357,6 +357,6 @@ Math.f16round(1.337); // 按 float16 精度舍入
 
 ## 扩展学习
 
-- 数组方法：`javascript/008-ArrayHigherOrderMethod`；
-- Promise：`javascript/026-PromiseStaticMethod`；
-- 正则：`javascript/010-Regex`。
+- 数组方法：`javascript/009-ArrayHigherOrderMethod`；
+- Promise：`javascript/027-PromiseStaticMethod`；
+- 正则：`javascript/011-Regex`。

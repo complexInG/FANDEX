@@ -400,6 +400,6 @@ prerequisites:
 
 ## 扩展学习
 
-- 定位：`css/014-PositionDetailed`；
-- 优先级：`css/009-PriorityCalculation`；
-- 合成与性能：`css/042-CSSPerformanceOptimizationDetailed`。
+- 定位：`css/015-PositionDetailed`；
+- 优先级：`css/010-PriorityCalculation`；
+- 合成与性能：`css/043-CSSPerformanceOptimizationDetailed`。

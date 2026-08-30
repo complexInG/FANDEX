@@ -245,6 +245,6 @@ m.set(key, 1); // 对象作键
 
 ## 扩展学习
 
-- 对象：`javascript/020-ObjectStaticMethods`；
-- 内存：`javascript/036-MemoryManagementAndGarbageCollection`；
-- 数组：`javascript/006-ObjectArray`。
+- 对象：`javascript/021-ObjectStaticMethods`；
+- 内存：`javascript/037-MemoryManagementAndGarbageCollection`；
+- 数组：`javascript/007-ObjectArray`。

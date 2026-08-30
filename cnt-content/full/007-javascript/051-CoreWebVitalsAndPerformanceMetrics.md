@@ -115,6 +115,6 @@ new PerformanceObserver((list) => {
 
 ## 扩展学习
 
-- 性能：`javascript/049-DebugPerformanceOptimization`；
-- 渲染路径：`html5/037-CriticalRenderingPathAndResourceLoading`；
-- 资源：`html5/019-ImageResponsiveImage`。
+- 性能：`javascript/050-DebugPerformanceOptimization`；
+- 渲染路径：`html5/038-CriticalRenderingPathAndResourceLoading`；
+- 资源：`html5/020-ImageResponsiveImage`。

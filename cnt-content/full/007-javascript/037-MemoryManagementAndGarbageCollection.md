@@ -134,6 +134,6 @@ function process(el) {
 
 ## 扩展学习
 
-- 闭包：`javascript/007-FunctionScopeClosure`；
-- 泄漏排查：`javascript/035-MemoryLeakTroubleshoot`；
-- 集合弱引用：`javascript/022-MapSetWeakMapWeakSet`。
+- 闭包：`javascript/008-FunctionScopeClosure`；
+- 泄漏排查：`javascript/036-MemoryLeakTroubleshoot`；
+- 集合弱引用：`javascript/023-MapSetWeakMapWeakSet`。

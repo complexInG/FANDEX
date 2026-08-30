@@ -139,6 +139,6 @@ CSS 原生嵌套（CSS Nesting）允许在选择器内部嵌套子选择器，�
 
 ## 扩展学习
 
-- Sass：`css/054-Sass`；
-- 新特性：`css/064-CSSNewFeatures`；
-- 选择器：`css/007-CSS3SelectorSystem`。
+- Sass：`css/055-Sass`；
+- 新特性：`css/065-CSSNewFeatures`；
+- 选择器：`css/008-CSS3SelectorSystem`。

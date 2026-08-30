@@ -68,4 +68,4 @@ HTML 的基本单位是**标签（tag）**，通常成对出现：
 
 ## 下一步
 
-带着自己的第一个网页进入 [HTML5 环境搭建与第一页](html5/002-HTML5EnvSetupFirstPage) 补齐规范细节；想给这个页面加上颜色与布局，接着读 [CSS 是什么](css/002-WhatIsCSS)。
+带着自己的第一个网页进入 [HTML5 环境搭建与第一页](html5/002-HTML5EnvSetupFirstPage) 补齐规范细节；想给这个页面加上颜色与布局，接着读 [CSS 是什么](css/001-WhatIsCSS)。

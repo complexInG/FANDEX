@@ -20,7 +20,7 @@ prerequisites:
 
 ## 0. 这份清单怎么用
 
-打开终端（Windows 用 PowerShell 或 WSL，macOS/Linux 用自带终端），逐条执行下面的命令。每一条都有“预期结果”；如果输出与预期不符，跳到 `getting-started/026-TroubleshootingGuide` 找对应问题。
+打开终端（Windows 用 PowerShell 或 WSL，macOS/Linux 用自带终端），逐条执行下面的命令。每一条都有“预期结果”；如果输出与预期不符，跳到 `getting-started/029-TroubleshootingGuide` 找对应问题。
 
 建议按顺序勾选：
 
@@ -58,7 +58,7 @@ node -v
 npm -v
 ```
 
-**预期**：`node -v` 输出 `v20+` 或更高（LTS 版）；`npm -v` 输出 `10+`。若提示找不到命令，检查是否安装了 Node.js，或 PATH 是否包含 Node 目录（`getting-started/002-EnvVarPath`）。
+**预期**：`node -v` 输出 `v20+` 或更高（LTS 版）；`npm -v` 输出 `10+`。若提示找不到命令，检查是否安装了 Node.js，或 PATH 是否包含 Node 目录（`getting-started/005-EnvVarPath`）。
 
 ## 4. Python 与 pip
 
@@ -109,7 +109,7 @@ npm config get registry
 pip config list
 ```
 
-**预期**：npm 输出国内镜像地址（如 `https://registry.npmmirror.com`）或官方源；pip 输出镜像配置（如有）。配置方法见 `getting-started/015-NpmManager` 与 `getting-started/019-PipVenvManager`。
+**预期**：npm 输出国内镜像地址（如 `https://registry.npmmirror.com`）或官方源；pip 输出镜像配置（如有）。配置方法见 `getting-started/018-NpmManager` 与 `getting-started/022-PipVenvManager`。
 
 ## 8. 版本管理工具（可选）
 
@@ -139,6 +139,6 @@ where.exe node # Windows PowerShell
 
 ## 扩展学习
 
-- 环境变量与 PATH：`getting-started/002-EnvVarPath`；
-- 卡住排查：`getting-started/026-TroubleshootingGuide`；
-- 平台配置：`getting-started/011-WindowsEnvConfigTutorial`、`getting-started/012-MacOSEnvConfigTutorial`、`getting-started/013-LinuxEnvConfigTutorial`。
+- 环境变量与 PATH：`getting-started/005-EnvVarPath`；
+- 卡住排查：`getting-started/029-TroubleshootingGuide`；
+- 平台配置：`getting-started/014-WindowsEnvConfigTutorial`、`getting-started/015-MacOSEnvConfigTutorial`、`getting-started/016-LinuxEnvConfigTutorial`。

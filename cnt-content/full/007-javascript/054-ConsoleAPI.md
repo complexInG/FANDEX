@@ -223,6 +223,6 @@ if (process.env.NODE_ENV === "production") {
 
 ## 扩展学习
 
-- 调试：`javascript/049-DebugPerformanceOptimization`；
-- 错误处理：`javascript/047-ErrorBoundaryGlobalErrorCatch`；
-- 性能：`javascript/050-CoreWebVitalsAndPerformanceMetrics`。
+- 调试：`javascript/050-DebugPerformanceOptimization`；
+- 错误处理：`javascript/048-ErrorBoundaryGlobalErrorCatch`；
+- 性能：`javascript/051-CoreWebVitalsAndPerformanceMetrics`。

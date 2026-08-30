@@ -1050,8 +1050,8 @@ async function syncData() {
 
 ## 扩展学习
 
-- 组件细节：`html5/022-EmbeddedContent` 对比 iframe 与 Web Components 的隔离方式；
-- PWA 深化：`html5/028-ServiceWorkerPWA` 完整生命周期与缓存策略；
-- 离线存储：`html5/014-HTML5OfflineStorageWebAPI` 本地存储与 Cache API；
-- 推送通知：`html5/014-HTML5OfflineStorageWebAPI` 中 Notification API；
+- 组件细节：`html5/023-EmbeddedContent` 对比 iframe 与 Web Components 的隔离方式；
+- PWA 深化：`html5/029-ServiceWorkerPWA` 完整生命周期与缓存策略；
+- 离线存储：`html5/015-HTML5OfflineStorageWebAPI` 本地存储与 Cache API；
+- 推送通知：`html5/015-HTML5OfflineStorageWebAPI` 中 Notification API；
 - 框架集成：Vue/React 中使用自定义元素的官方指南。

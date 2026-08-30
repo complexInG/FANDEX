@@ -2437,11 +2437,11 @@ def enable_asyncio_debug():
 ### 19.2 FANDEX 学习路径
 
 继续学习：
-- `python/031-Python与Web爬虫`：构建数据采集流水线；
-- `python/031-Python与CLI`：编写可配置的命令行工具；
-- `python/031-Python与测试`：为自动化脚本编写测试；
-- `python/031-Python与日志`：结构化日志与审计；
-- `python/031-Python与配置管理`：环境变量与配置文件管理。
+- `python/032-Python与Web爬虫`：构建数据采集流水线；
+- `python/032-Python与CLI`：编写可配置的命令行工具；
+- `python/032-Python与测试`：为自动化脚本编写测试；
+- `python/032-Python与日志`：结构化日志与审计；
+- `python/032-Python与配置管理`：环境变量与配置文件管理。
 
 ---
 

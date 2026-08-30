@@ -21,7 +21,7 @@ prerequisites: []
 
 ### 0.1 用 Docker 启动（30 秒）
 
-先确认本机已安装 Docker（参考 `getting-started/024-DockerInstall`），然后执行：
+先确认本机已安装 Docker（参考 `getting-started/027-DockerInstall`），然后执行：
 
 ```bash
 docker run -d --name mongo-dev -p 27017:27017 mongo:8.3

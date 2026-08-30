@@ -677,4 +677,4 @@ HTML5 是现代 Web 开发的基础，它的语义化标签和新特性为 Web �
 - 无障碍方向：学习 ARIA 角色与属性，配合屏幕阅读器（NVDA、VoiceOver）实测；
 - 性能方向：结合 Critical Rendering Path 理解解析、布局与绘制的完整流程；
 - 工程方向：了解 Web Components 与 `<template>` 插槽，掌握组件化封装能力；
-- 关联文档：`html5/010-Accessibility`、`html5/035-ViewportConfigMobileFirst`、`html5/037-CriticalRenderingPathAndResourceLoading`。
+- 关联文档：`html5/011-Accessibility`、`html5/036-ViewportConfigMobileFirst`、`html5/038-CriticalRenderingPathAndResourceLoading`。

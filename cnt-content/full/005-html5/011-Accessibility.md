@@ -712,7 +712,7 @@ function trapFocus(element) {
 ## 11. 扩展学习
 
 - 规范原文：阅读 W3C WCAG 2.2 与 WAI-ARIA 1.2 官方文档；
-- 组件模式：`html5/024-WebComponentsPWADevelopment` 中自定义元素如何内置无障碍；
-- 表单无障碍：`html5/011-HTML5FormValidation` 的验证提示与 `aria-describedby` 结合；
-- 语义基础：先掌握 `html5/009-SemanticTag`，再理解 ARIA 的补充角色；
+- 组件模式：`html5/025-WebComponentsPWADevelopment` 中自定义元素如何内置无障碍；
+- 表单无障碍：`html5/012-HTML5FormValidation` 的验证提示与 `aria-describedby` 结合；
+- 语义基础：先掌握 `html5/010-SemanticTag`，再理解 ARIA 的补充角色；
 - 实测工具：Lighthouse、axe DevTools、NVDA/VoiceOver 与键盘走查流程。

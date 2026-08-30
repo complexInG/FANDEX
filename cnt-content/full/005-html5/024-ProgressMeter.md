@@ -380,7 +380,7 @@ meter.optimum = 60;
 
 ## 扩展学习
 
-- 无障碍：`html5/010-Accessibility` 中 ARIA 的 `progressbar`/`meter` 角色；
-- 动画：`css/028-CSSAnimationTransition` 让进度变化更平滑；
-- 组件化：`html5/024-WebComponentsPWADevelopment` 封装自定义进度条；
-- 实时更新：`html5/030-WebSocket` 中上传/下载进度的真实数据来源。
+- 无障碍：`html5/011-Accessibility` 中 ARIA 的 `progressbar`/`meter` 角色；
+- 动画：`css/029-CSSAnimationTransition` 让进度变化更平滑；
+- 组件化：`html5/025-WebComponentsPWADevelopment` 封装自定义进度条；
+- 实时更新：`html5/031-WebSocket` 中上传/下载进度的真实数据来源。

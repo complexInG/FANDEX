@@ -123,7 +123,7 @@ prerequisites:
 
 ## 9. 扩展学习
 
-- 定位体系：`css/014-PositionDetailed`；
-- 新特性总览：`css/064-CSSNewFeatures`；
-- 层叠上下文与弹层层级：`css/016-StackingContext`；
-- 可访问性样式：`css/045-AccessibleStyling`。
+- 定位体系：`css/015-PositionDetailed`；
+- 新特性总览：`css/065-CSSNewFeatures`；
+- 层叠上下文与弹层层级：`css/017-StackingContext`；
+- 可访问性样式：`css/046-AccessibleStyling`。

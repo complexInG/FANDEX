@@ -9063,7 +9063,7 @@ const name = '用户' && getName();
 
 答案：`'用户'` 是 truthy，`&&` 返回 `getName()` 的结果——这与“缺省值”意图相反。想给默认值用 `??` 或 `||`：`const name = getName() ?? '用户'`。
 
-<!-- ============ 文档分隔线：008-javascript/006-ObjectArray.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/007-ObjectArray.md ============ -->
 
 ## 1. 历史动机与背景
 
@@ -11956,7 +11956,7 @@ let has = Object.hasOwn(user, "name");
 let copy = structuredClone(original);
 ```
 
-<!-- ============ 文档分隔线：008-javascript/007-FunctionScopeClosure.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/008-FunctionScopeClosure.md ============ -->
 
 ## 1. 引言
 
@@ -13932,7 +13932,7 @@ let gen = generator();
 gen.next();
 ```
 
-<!-- ============ 文档分隔线：008-javascript/008-ArrayHigherOrderMethod.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/009-ArrayHigherOrderMethod.md ============ -->
 
 # 数组高阶方法（Array Higher-Order Methods）
 
@@ -15431,7 +15431,7 @@ let arr = [1, 2, 3].values().map(x => x * 2).toArray();
 - 回调丢失 this 与修复
 - 严格模式与全局污染
 
-<!-- ============ 文档分隔线：008-javascript/010-Regex.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/011-Regex.md ============ -->
 
 ## 1. 历史动机：正则表达式的起源
 
@@ -19634,7 +19634,7 @@ match (str) {
 
 持续关注 TC39 提案进展，保持对最新特性的敏感度，是 JavaScript 工程师的重要素养。
 
-<!-- ============ 文档分隔线：008-javascript/012-UnicodePropertyEscape.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/013-UnicodePropertyEscape.md ============ -->
 
 > 前置：需先有正则基础（043）。
 
@@ -24408,7 +24408,7 @@ while (current.cause) {
 }
 ```
 
-<!-- ============ 文档分隔线：008-javascript/014-HigherOrderFunction.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/015-HigherOrderFunction.md ============ -->
 
 # 高阶函数：JavaScript 函数式编程的核心抽象
 
@@ -34507,7 +34507,7 @@ let copy = structuredClone(obj);
 copy.nested.a = 2;  // obj.nested.a 仍为 1
 ```
 
-<!-- ============ 文档分隔线：008-javascript/020-ObjectStaticMethods.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/021-ObjectStaticMethods.md ============ -->
 
 # Object 扩展（ES6+ 静态方法体系）
 
@@ -39052,7 +39052,7 @@ let arr = new Float16Array([1.0, 2.5, 3.14]);
 let escaped = RegExp.escape("a.b*c");
 ```
 
-<!-- ============ 文档分隔线：008-javascript/022-MapSetWeakMapWeakSet.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/023-MapSetWeakMapWeakSet.md ============ -->
 
 ## Map 基础
 
@@ -39288,9 +39288,9 @@ m.set(key, 1); // 对象作键
 
 ## 扩展学习
 
-- 对象：`javascript/020-ObjectStaticMethods`；
-- 内存：`javascript/036-MemoryManagementAndGarbageCollection`；
-- 数组：`javascript/006-ObjectArray`。
+- 对象：`javascript/021-ObjectStaticMethods`；
+- 内存：`javascript/037-MemoryManagementAndGarbageCollection`；
+- 数组：`javascript/007-ObjectArray`。
 
 <!-- ============ 文档分隔线：008-javascript/023-ArrayBufferTypedArray.md ============ -->
 
@@ -39511,11 +39511,11 @@ console.log(le ? "little-endian" : "big-endian");
 
 ## 扩展学习
 
-- 存储：`javascript/046-IndexedDBADatabaseInYourBrowser`；
-- 性能：`javascript/049-DebugPerformanceOptimization`；
-- 文件：`html5/014-HTML5OfflineStorageWebAPI`。
+- 存储：`javascript/047-IndexedDBADatabaseInYourBrowser`；
+- 性能：`javascript/050-DebugPerformanceOptimization`；
+- 文件：`html5/015-HTML5OfflineStorageWebAPI`。
 
-<!-- ============ 文档分隔线：008-javascript/024-AsyncProgramming.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/025-AsyncProgramming.md ============ -->
 
 ## 1. 历史动机与背景
 
@@ -44930,7 +44930,7 @@ function retry(fn, times) {
 promises.reduce((chain, promise) => chain.then(() => promise()), Promise.resolve());
 ```
 
-<!-- ============ 文档分隔线：008-javascript/026-PromiseStaticMethod.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/027-PromiseStaticMethod.md ============ -->
 
 > 前置：先读 030 异步编程，掌握 Promise 基本用法。
 
@@ -47432,7 +47432,7 @@ const { promise, resolve, reject } = Promise.withResolvers();
 button.onclick = () => resolve("clicked");
 ```
 
-<!-- ============ 文档分隔线：008-javascript/027-AsyncConcurrencyControl.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/028-AsyncConcurrencyControl.md ============ -->
 
 # 异步并发控制
 
@@ -50092,7 +50092,7 @@ await Promise.all(
 2. 实现工作窃取算法
 3. 研究无锁数据结构
 
-<!-- ============ 文档分隔线：008-javascript/028-EventLoop.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/029-EventLoop.md ============ -->
 
 > 阅读建议：核心必读。形式化模型可先跳过，重点看执行顺序示例与对比表；反复读直到能口算执行顺序。
 
@@ -65357,7 +65357,7 @@ node --inspect finalization.js
 # 然后在 Chrome 打开 chrome://inspect 连接
 ```
 
-<!-- ============ 文档分隔线：008-javascript/035-MemoryLeakTroubleshoot.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/036-MemoryLeakTroubleshoot.md ============ -->
 
 > 前置：先读 031 闭包内存与 057 内存管理；本篇为【进阶专题】。
 
@@ -67073,7 +67073,7 @@ global.gc();
 
 掌握本篇内容后，应能在 React / Vue / Node.js 项目中独立诊断与修复内存泄漏，并设计内存友好的架构。
 
-<!-- ============ 文档分隔线：008-javascript/036-MemoryManagementAndGarbageCollection.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/037-MemoryManagementAndGarbageCollection.md ============ -->
 
 ## 一句话理解
 
@@ -67194,11 +67194,11 @@ function process(el) {
 
 ## 扩展学习
 
-- 闭包：`javascript/007-FunctionScopeClosure`；
-- 泄漏排查：`javascript/035-MemoryLeakTroubleshoot`；
-- 集合弱引用：`javascript/022-MapSetWeakMapWeakSet`。
+- 闭包：`javascript/008-FunctionScopeClosure`；
+- 泄漏排查：`javascript/036-MemoryLeakTroubleshoot`；
+- 集合弱引用：`javascript/023-MapSetWeakMapWeakSet`。
 
-<!-- ============ 文档分隔线：008-javascript/037-JavaScriptModular.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/038-JavaScriptModular.md ============ -->
 
 ## 1. 历史动机与背景
 
@@ -70084,7 +70084,7 @@ let mod = await import("./config.json", { with: { type: "json" } });
 import x from "./a.json" with { type: "json" };
 ```
 
-<!-- ============ 文档分隔线：008-javascript/038-ModuleDynamicImportCodeSplitting.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/039-ModuleDynamicImportCodeSplitting.md ============ -->
 
 ## 1. 历史动机与演化
 
@@ -72406,7 +72406,7 @@ link.href = "/chunk.js";
 document.head.appendChild(link);
 ```
 
-<!-- ============ 文档分隔线：008-javascript/039-ModuleBundlingAndTreeShaking.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/040-ModuleBundlingAndTreeShaking.md ============ -->
 
 ## 一句话理解
 
@@ -72519,11 +72519,11 @@ export function init() { console.log('module loaded'); }
 
 ## 扩展学习
 
-- 模块：`javascript/037-JavaScriptModular`；
-- 动态导入：`javascript/038-ModuleDynamicImportCodeSplitting`；
+- 模块：`javascript/038-JavaScriptModular`；
+- 动态导入：`javascript/039-ModuleDynamicImportCodeSplitting`；
 - 构建：`vite/` 模块。
 
-<!-- ============ 文档分隔线：008-javascript/040-DOMOperationEvent.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/041-DOMOperationEvent.md ============ -->
 
 ## 1. DOM 基础 (DOM Basics)
 
@@ -75493,7 +75493,7 @@ flowchart TD
 | 1.0 | 2026-06-14 | 初始版本 | fanquanpp |
 | 2.0 | 2026-07-20 | 金标准升级：新增学习目标、历史动机、形式化定义、案例研究、习题、参考文献、延伸阅读 | FANDEX Content Engineering Team |
 
-<!-- ============ 文档分隔线：008-javascript/042-WebAPIBrowserInterface.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/043-WebAPIBrowserInterface.md ============ -->
 
 ## 1. 引言
 
@@ -77230,7 +77230,7 @@ ch.close();
 - 错误语义与 HTTP 状态陷阱
 - 封装一个可取消请求函数
 
-<!-- ============ 文档分隔线：008-javascript/044-FetchApiWebStreams.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/045-FetchApiWebStreams.md ============ -->
 
 # 网络请求 API
 
@@ -80555,7 +80555,7 @@ const response = await fetch('/api/data', { signal: AbortSignal.timeout(5000) })
 
 愿你在 Web 工程之路上,代码稳健、请求高效、响应流畅。
 
-<!-- ============ 文档分隔线：008-javascript/045-StorageForTheWeb.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/046-StorageForTheWeb.md ============ -->
 
 ## 0. 学习导言
 
@@ -83620,7 +83620,7 @@ const storage = {
 // 小数据用 localStorage 大数据用 IndexedDB
 ```
 
-<!-- ============ 文档分隔线：008-javascript/046-IndexedDBADatabaseInYourBrowser.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/047-IndexedDBADatabaseInYourBrowser.md ============ -->
 
 # 索引数据库（IndexedDB）
 
@@ -85642,7 +85642,7 @@ IndexedDB 是浏览器内置的强大事务型 NoSQL 数据库，为 Web 应用�
 3. Web Locks API 改善跨标签页协调
 4. 与 File System Access API 深度集成
 
-<!-- ============ 文档分隔线：008-javascript/047-ErrorBoundaryGlobalErrorCatch.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/048-ErrorBoundaryGlobalErrorCatch.md ============ -->
 
 # 错误边界与全局错误捕获
 
@@ -90846,7 +90846,7 @@ const search = debounce(q => fetch(q), 300);
 onUnmounted(() => search.cancel());
 ```
 
-<!-- ============ 文档分隔线：008-javascript/049-DebugPerformanceOptimization.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/050-DebugPerformanceOptimization.md ============ -->
 
 ## 1. 引言
 
@@ -93428,7 +93428,7 @@ function fpsMonitor() {
 }
 ```
 
-<!-- ============ 文档分隔线：008-javascript/050-CoreWebVitalsAndPerformanceMetrics.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/051-CoreWebVitalsAndPerformanceMetrics.md ============ -->
 
 ## 一句话理解
 
@@ -93530,9 +93530,9 @@ new PerformanceObserver((list) => {
 
 ## 扩展学习
 
-- 性能：`javascript/049-DebugPerformanceOptimization`；
-- 渲染路径：`html5/037-CriticalRenderingPathAndResourceLoading`；
-- 资源：`html5/019-ImageResponsiveImage`。
+- 性能：`javascript/050-DebugPerformanceOptimization`；
+- 渲染路径：`html5/038-CriticalRenderingPathAndResourceLoading`；
+- 资源：`html5/020-ImageResponsiveImage`。
 
 <!-- ============ 文档分隔线：008-javascript/051-NodeJsPerformanceOptimization.md ============ -->
 
@@ -95567,8 +95567,8 @@ pnpm install   # 自动链接 store
 ## 扩展学习
 
 - Monorepo：`pnpm-monorepo/` 模块；
-- 模块：`javascript/037-JavaScriptModular`；
-- 构建：`javascript/039-ModuleBundlingAndTreeShaking`。
+- 模块：`javascript/038-JavaScriptModular`；
+- 构建：`javascript/040-ModuleBundlingAndTreeShaking`。
 
 <!-- ============ 文档分隔线：008-javascript/053-ConsoleAPI.md ============ -->
 
@@ -95784,11 +95784,11 @@ if (process.env.NODE_ENV === "production") {
 
 ## 扩展学习
 
-- 调试：`javascript/049-DebugPerformanceOptimization`；
-- 错误处理：`javascript/047-ErrorBoundaryGlobalErrorCatch`；
-- 性能：`javascript/050-CoreWebVitalsAndPerformanceMetrics`。
+- 调试：`javascript/050-DebugPerformanceOptimization`；
+- 错误处理：`javascript/048-ErrorBoundaryGlobalErrorCatch`；
+- 性能：`javascript/051-CoreWebVitalsAndPerformanceMetrics`。
 
-<!-- ============ 文档分隔线：008-javascript/054-JavaScriptProjectPractice.md ============ -->
+<!-- ============ 文档分隔线：008-javascript/055-JavaScriptProjectPractice.md ============ -->
 
 ## 1. 项目实战案例
 
@@ -98326,9 +98326,9 @@ Math.f16round(1.337); // 按 float16 精度舍入
 
 ## 扩展学习
 
-- 数组方法：`javascript/008-ArrayHigherOrderMethod`；
-- Promise：`javascript/026-PromiseStaticMethod`；
-- 正则：`javascript/010-Regex`。
+- 数组方法：`javascript/009-ArrayHigherOrderMethod`；
+- Promise：`javascript/027-PromiseStaticMethod`；
+- 正则：`javascript/011-Regex`。
 
 <!-- ============ 文档分隔线：008-javascript/057-JavaScriptLatestFeature.md ============ -->
 

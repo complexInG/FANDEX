@@ -141,6 +141,6 @@ h1
 
 ## 扩展学习
 
-- Sass：`css/054-Sass`；
-- PostCSS：`css/056-PostCSS`；
+- Sass：`css/055-Sass`；
+- PostCSS：`css/057-PostCSS`；
 - 构建：`vite/005-CSSPreprocessors`。

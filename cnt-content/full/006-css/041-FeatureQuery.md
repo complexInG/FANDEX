@@ -126,6 +126,6 @@ if (CSS.supports('(display: grid) and (gap: 1rem)')) {
 
 ## 扩展学习
 
-- 渐进增强：`css/064-CSSNewFeatures`；
-- 容器查询：`css/032-ContainerQuery`；
-- 兼容性：`css/009-PriorityCalculation` 附录。
+- 渐进增强：`css/065-CSSNewFeatures`；
+- 容器查询：`css/033-ContainerQuery`；
+- 兼容性：`css/010-PriorityCalculation` 附录。

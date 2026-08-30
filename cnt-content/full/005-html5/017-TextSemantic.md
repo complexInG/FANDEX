@@ -331,7 +331,7 @@ E=mc<sup>2</sup>
 
 ## 扩展学习
 
-- 列表语义：`html5/017-List` 掌握 `ul`/`ol`/`dl` 的选择；
-- 链接语义：`html5/018-LinkageAnchor` 中链接文案与无障碍；
-- 无障碍：`html5/010-Accessibility` 中读屏如何消费文本语义；
-- 排版细节：`css/044-TypographyAndGridSystem` 控制文本的视觉呈现。
+- 列表语义：`html5/018-List` 掌握 `ul`/`ol`/`dl` 的选择；
+- 链接语义：`html5/019-LinkageAnchor` 中链接文案与无障碍；
+- 无障碍：`html5/011-Accessibility` 中读屏如何消费文本语义；
+- 排版细节：`css/045-TypographyAndGridSystem` 控制文本的视觉呈现。

@@ -236,6 +236,6 @@ prerequisites: []
 
 ## 扩展学习
 
-- 渐变：`css/024-Gradient`；
-- 变量：`css/035-CSSVariableCustomAttribute`；
-- 滤镜：`css/048-CSSFilters`。
+- 渐变：`css/025-Gradient`；
+- 变量：`css/036-CSSVariableCustomAttribute`；
+- 滤镜：`css/049-CSSFilters`。

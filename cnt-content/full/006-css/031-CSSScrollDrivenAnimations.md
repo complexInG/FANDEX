@@ -127,7 +127,7 @@ prerequisites:
 
 ## 9. 扩展学习
 
-- 动画与过渡：`css/028-CSSAnimationTransition`；
-- 滚动捕捉：`css/038-ScrollSnap`；
-- 视图过渡：`css/029-CSSViewTransitions`；
-- 减少动效：`css/045-AccessibleStyling`。
+- 动画与过渡：`css/029-CSSAnimationTransition`；
+- 滚动捕捉：`css/039-ScrollSnap`；
+- 视图过渡：`css/030-CSSViewTransitions`；
+- 减少动效：`css/046-AccessibleStyling`。
