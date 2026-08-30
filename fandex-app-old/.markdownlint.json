@@ -1,0 +1,14 @@
+{
+  "comment": "FANDEX 文档格式检查配置 - 兼容 FANDEXAPP文档格式模板",
+  "default": true,
+  "MD013": false,
+  "MD024": { "siblings_only": true },
+  "MD033": false,
+  "MD036": false,
+  "MD041": true,
+  "MD040": true,
+  "MD009": { "br_spaces": 2 },
+  "MD007": { "indent": 4 },
+  "MD029": { "style": "ordered" },
+  "MD035": { "style": "---" }
+}

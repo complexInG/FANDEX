@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+/* Tailwind v4 自定义 dark 变体：基于 [data-theme="dark"] 切换主题 */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/**
+ * FANDEX-App 下载页设计令牌
+ * 严格对齐 FANDEX-Web src/styles/tokens.css 设计系统
+ * 主色：Sky 天蓝 / 辅助：Teal 蓝绿 / 强调：Amber 琥珀 / 中性：Slate 石板灰
+ */
+@theme {
+  /* 字族：对齐 FANDEX-Web 排版系统 */
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Microsoft YaHei', 'Hiragino Sans GB', 'Noto Sans SC', 'Source Han Sans SC',
+    sans-serif;
+  --font-mono:
+    'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, 'Courier New',
+    monospace;
+  --font-display:
+    'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei',
+    'Noto Sans SC', sans-serif;
+
+  /* 基础色板：Primary（Sky 天蓝） */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+  --color-primary-950: #082f49;
+
+  /* 基础色板：Secondary（Teal 蓝绿） */
+  --color-secondary-50: #f0fdfa;
+  --color-secondary-100: #ccfbf1;
+  --color-secondary-200: #99f6e4;
+  --color-secondary-300: #5eead4;
+  --color-secondary-400: #2dd4bf;
+  --color-secondary-500: #14b8a6;
+  --color-secondary-600: #0d9488;
+  --color-secondary-700: #0f766e;
+  --color-secondary-800: #115e59;
+  --color-secondary-900: #134e4a;
+  --color-secondary-950: #042f2e;
+
+  /* 基础色板：Accent（Amber 琥珀） */
+  --color-accent-50: #fffbeb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+
+  /* 基础色板：Neutral（Slate 石板灰） */
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+  --color-neutral-950: #020617;
+
+  /* 语义令牌别名（亮色模式） */
+  --color-text: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94a3b8;
+  --color-text-disabled: #cbd5e1;
+  --color-text-inverse: #ffffff;
+
+  --color-bg: #ffffff;
+  --color-bg-card: #f8fafc;
+  --color-bg-hover: #f1f5f9;
+  --color-bg-active: #e2e8f0;
+  --color-bg-sunken: #f1f5f9;
+
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  --color-border-strong: #cbd5e1;
+  --color-border-focus: #0ea5e9;
+
+  --color-primary: #0ea5e9;
+  --color-secondary: #14b8a6;
+  --color-accent: #f59e0b;
+}
+
+/* 暗色主题：重新映射语义令牌（基础色板保持不变） */
+[data-theme='dark'] {
+  --color-text: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #94a3b8;
+  --color-text-disabled: #475569;
+  --color-text-inverse: #0f172a;
+
+  --color-bg: #0f172a;
+  --color-bg-card: #1e293b;
+  --color-bg-hover: #1e293b;
+  --color-bg-active: #334155;
+  --color-bg-sunken: #020617;
+
+  --color-border: #334155;
+  --color-border-light: #1e293b;
+  --color-border-strong: #475569;
+  --color-border-focus: #38bdf8;
+
+  --color-primary: #38bdf8;
+  --color-secondary: #2dd4bf;
+  --color-accent: #fbbf24;
+}
+
+/* 全局基础样式 */
+:root {
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* color-scheme 由 useTheme 与 index.html 防闪烁脚本同步设置 */
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  /* 仅在主题切换时启用过渡，首次加载不触发（避免 FOUC 视觉抖动） */
+  transition:
+    background-color 200ms ease-out,
+    color 200ms ease-out;
+  overflow-wrap: break-word;
+  font-size: 16px;
+  line-height: 1.625;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 选中态配色 */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+/* 滚动条美化：跟随主题 color-scheme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* 链接基础 */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+
+/* FANDEX-Web 风格：1px 网格分割线工具类 */
+.grid-divide > * {
+  outline: 1px solid var(--color-border);
+  outline-offset: -1px;
+}
+
+/* 几何背景装饰：极简点阵（对齐 FANDEX-Web GeoBgDecor 简化版） */
+.bg-dot-grid {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-text) 8%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
